@@ -31,6 +31,7 @@ $lang['mod_publication'] = [
     'remove_image_oke' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
+    'delete_confirm' => 'Are you sure you want to delete this publication?',
     'quick_unpublish_confirm' => 'Are you sure you want to unpublish this publication?',
     'quick_publish_confirm' => 'Are you sure you want to publish this publication?',
     'resim_ekle' => 'Add Image',
@@ -59,6 +60,10 @@ $lang['mod_publication'] = [
         'select_lang' => 'Select Language',
         'all_langs' => 'All Languages',
         'select_label' => 'Select',
+        'delete_error' => 'Deletion failed!',
+        'video_success_sim' => 'Video Successfully Added (Simulation)',
+        'video_embed_error' => 'Invalid Embed Code',
+        'video_title_error' => 'Invalid Title',
     ],
 
     // === Messages ===
@@ -132,6 +137,7 @@ $lang['mod_publication'] = [
 
     // === Permission Roles ===
     'roll' => [
+        'ad' => 'Publication Management Roles',
         'name' => 'publication Management Roles',
         'add' => 'Can Add publication',
         'edit' => 'Can Edit publication',
@@ -183,7 +189,9 @@ $lang['mod_publication'] = [
             'gallery_id' => 'Gallery',
             'file_id' => 'File',
             'acl_id' => 'Access Control',
+            'menu' => 'Add to Menu',
             'video' => 'Video Gallery',
+            'video_help' => 'Search for the video name you want to display in the publication',
         ],
         'radio' => [
             'publish_yes' => 'Published',
@@ -264,6 +272,7 @@ $lang['mod_publication'] = [
         'labelHour' => 'Hour',
         'labelMinute' => 'Minute',
         'labelMonth' => 'Month',
+        'labelSecond' => 'Second',
         'labelTitle' => 'Select Date and Time',
         'labelYear' => 'Year',
         'dayAbbreviations' => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -291,6 +300,7 @@ $lang['mod_publication'] = [
     // === Wizard ===
     'wizard' => [
         'step' => [
+            'lang' => 'Language Selection',
             'language' => 'Language Selection',
             'category' => 'Category',
             'title' => 'Title',

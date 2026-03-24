@@ -60,6 +60,10 @@ $lang['mod_publication'] = [
         'select_lang' => 'Dil Seç',
         'all_langs' => 'Tüm Diller',
         'select_label' => 'Seç',
+        'delete_error' => 'Silme işlemi başarısız oldu!',
+        'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
+        'video_embed_error' => 'Geçersiz embed kodu',
+        'video_title_error' => 'Geçersiz başlık',
     ],
 
     // === Messages ===
@@ -134,6 +138,7 @@ $lang['mod_publication'] = [
     // === Permission Roles ===
     'roll' => [
         'ad' => 'Yayın Yönetim Rolleri',
+        'name' => 'Yayın Yönetim Rolleri',
         'add' => 'Yayın Ekleyebilir',
         'edit' => 'Yayın Düzenleyebilir',
         'delete' => 'Yayın Silebilir',
@@ -267,6 +272,7 @@ $lang['mod_publication'] = [
         'labelHour' => 'Saat',
         'labelMinute' => 'Dakika',
         'labelMonth' => 'Aylar',
+        'labelSecond' => 'Saniye',
         'labelTitle' => 'Lütfen Tarih ve Zamanı Seçin',
         'labelYear' => 'Yıl',
         'dayAbbreviations' => ['Pz', 'Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct'],
@@ -294,6 +300,7 @@ $lang['mod_publication'] = [
     // === Wizard ===
     'wizard' => [
         'step' => [
+            'lang' => 'Dil Seçimi',
             'language' => 'Dil Seçimi',
             'category' => 'Kategori',
             'title' => 'Başlık',
@@ -350,6 +357,10 @@ $lang['mod_publication'] = [
         'files' => 'Dosya İşlemleri',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
+        'delete_error' => 'Silme işlemi başarısız oldu!',
+        'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
+        'video_embed_error' => 'Geçersiz embed kodu',
+        'video_title_error' => 'Geçersiz başlık',
         'publish' => 'Yayınla',
         'unpublish' => 'Yayından Kaldır',
         'published_msg' => 'Yayınlandı',
