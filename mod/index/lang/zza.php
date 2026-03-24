@@ -268,3 +268,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'Na Tema Aktîf Kê',
     'in_use' => 'Nıka Gureniyena'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

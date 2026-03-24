@@ -78,6 +78,21 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_content", "arsiv");
     }
 
+    public function news($seo = null)
+    {
+        return $this->_loadHelper("index.mod_news", "content", [$seo]);
+    }
+
+    public function newses($category = null, $sayfa = 1)
+    {
+        return $this->_loadHelper("index.mod_news", "contents", [$category, $sayfa]);
+    }
+
+    public function news_archive()
+    {
+        return $this->_loadHelper("index.mod_news", "arsiv");
+    }
+
     // Mod Announcements
     public function announcement($id = null)
     {
@@ -93,6 +108,11 @@ class index_mod extends indexBase
     public function _latest_content($limit, $select)
     {
         return $this->_loadHelper("index.mod_content", "_latest_content", [$limit, $select]);
+    }
+
+    public function _latest_news($limit, $select)
+    {
+        return $this->_loadHelper("index.mod_news", "_latest_content", [$limit, $select]);
     }
 
     // Latest Announcements

@@ -1,0 +1,295 @@
+<script>
+    let selectedCategoryId = null;
+    let sortableInstances = [];
+    let isReorderActive = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- 1. Global Search Integration ---
+        const globalSearchInput = document.getElementById('searchInput');
+        if (globalSearchInput) {
+            globalSearchInput.addEventListener('input', function(e) {
+                filterCategories(e.target.value);
+            });
+        }
+
+        window.clearSearch = function() {
+            if (globalSearchInput) {
+                globalSearchInput.value = '';
+                filterCategories('');
+            }
+        };
+
+        // --- 2. Sortable (Safe Reorder Mode) ---
+        function initSortable(el) {
+            if (!el || typeof Sortable === 'undefined') return;
+            var s = new Sortable(el, {
+                group: 'nested',
+                animation: 300,
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                handle: '.drag-handle',
+                disabled: true, // LOCKED BY DEFAULT
+                ghostClass: 'sortable-ghost',
+                dragClass: 'sortable-drag',
+                onEnd: function(evt) {
+                    // ASK USER CONFIRMATION
+                    Swal.fire({
+                        title: '{{ lang.mod_news_category.messages.warning.reorder }}',
+                        text: '{{ lang.mod_news_category.confirmations.reorder_single }}',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '{{ lang.mod_news_category.options.yes|default("Erê") }}',
+                        cancelButtonText: '{{ lang.mod_news_category.options.no|default("Na") }}',
+                        customClass: { popup: 'm3-swal-popup' }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                             updateOrder(evt);
+                        } else {
+                            // Revert
+                            location.reload();
+                        }
+                    });
+                }
+            });
+            sortableInstances.push(s);
+        }
+
+        const rootList = document.getElementById('categoryRootList');
+        if(rootList) initSortable(rootList);
+        document.querySelectorAll('.list-children').forEach(el => initSortable(el));
+
+        // --- Toggle Logic ---
+        window.toggleReorderMode = function() {
+            isReorderActive = !isReorderActive;
+            var btn = document.getElementById('reorderToggleBtn');
+            var icon = document.getElementById('reorderIcon');
+            var text = document.getElementById('reorderText');
+
+            if(isReorderActive) {
+                document.body.classList.add('reorder-active');
+                icon.className = 'bi bi-unlock-fill';
+                text.innerText = '{{ lang.mod_news_category.actions.lock_reorder }}';
+                btn.style.background = '#eaddff'; 
+                
+                // Enable Sortables
+                sortableInstances.forEach(s => s.option('disabled', false));
+                
+                const Toast = Swal.mixin({
+                    toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
+                });
+                Toast.fire({ icon: 'info', title: '{{ lang.mod_news_category.messages.info.mode_unlocked|default("Mode: Rêzkirin (Unlocked)") }}' });
+
+            } else {
+                document.body.classList.remove('reorder-active');
+                icon.className = 'bi bi-lock-fill';
+                text.innerText = '{{ lang.mod_news_category.actions.unlock_reorder }}';
+                btn.style.background = '#f3edf7';
+                
+                // Disable Sortables
+                sortableInstances.forEach(s => s.option('disabled', true));
+            }
+        };
+
+        function updateOrder(evt) {
+            const itemEl = evt.item;
+            const id = itemEl.dataset.id;
+            const container = evt.to;
+            
+            let parentId = 0;
+            if (container.classList.contains('list-children')) {
+                const wrapperNode = container.closest('.category-node');
+                if (wrapperNode) parentId = wrapperNode.dataset.id;
+            }
+
+            const allIds = [];
+            // Scope query to direct children of the new container to get correct order for that level
+            // But dragging between lists might be tricky. The original code gathered ALL .category-node ids?
+            // Wait, original code: document.querySelectorAll('.category-node').forEach(node => { allIds.push(node.dataset.id); });
+            // This sends a flat list of ALL categories to the server?
+            // If the server expects a flat list of ALL categories to rebuild the tree or update order, that's fine.
+            // But usually nested sortable updates just the siblings. 
+            // Let's stick to the EXACT original logic for data gathering to avoid breaking backend.
+            /* Original:
+            document.querySelectorAll('.category-node').forEach(node => {
+                if (node.dataset.id) { allIds.push(node.dataset.id); }
+            });
+            */
+            // Actually, for nested sets or adjacency list, we usually send the NEW parent and the NEW order of siblings.
+            // The original code was sending 'sira[]' with ALL element IDs. This implies the backend might be re-indexing everything or just looking for the ID in the list.
+            // Let's assume the backend 'tasi' (move) function handles it.
+            
+            document.querySelectorAll('.category-node').forEach(node => {
+                if (node.dataset.id) { allIds.push(node.dataset.id); }
+            });
+
+            // Visual feedback loop
+            const card = itemEl.querySelector('.m3-list-card');
+            if(card) card.style.opacity = "0.5";
+
+            const formData = new URLSearchParams();
+            formData.append('id', id);
+            formData.append('parent_id', parentId);
+            allIds.forEach(sid => formData.append('order[]', sid));
+
+            fetch(SITE_URL + 'mod_news_category/tasi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(response => response.text())
+            .then(resp => {
+                if(card) card.style.opacity = "1";
+                if (resp.trim() === 'Oke') {
+                    const Toast = Swal.mixin({
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
+                    });
+                    Toast.fire({ icon: 'success', title: '{{ lang.mod_news_category.messages.success.reordered }}' });
+                } else {
+                    Swal.fire({ icon: 'error', title: '{{ lang.mod_news_category.error_messages.fatal|default("Oops...") }}', text: '{{ lang.mod_news_category.error_messages.general|default("Çewtiyek çêbû: ") }}' + resp });
+                }
+            })
+            .catch(err => {
+                if(card) card.style.opacity = "1";
+                console.error('Order update error:', err);
+            });
+        }
+    });
+
+    // --- 3. Premium Search Logic ---
+    window.filterCategories = function(val) {
+        const term = val.toLowerCase().trim();
+        const nodes = document.querySelectorAll('.category-node');
+        
+        if (!term) {
+            nodes.forEach(n => {
+                n.style.display = '';
+                const children = n.querySelector('.list-children');
+                if(children) children.classList.remove('collapsed');
+                n.querySelector('.toggle-btn')?.classList.remove('collapsed');
+            });
+            return;
+        }
+
+        nodes.forEach(n => n.style.display = 'none');
+
+        nodes.forEach(n => {
+            const name = n.dataset.name || '';
+            if (name.includes(term)) {
+                showRecursively(n);
+            }
+        });
+
+        function showRecursively(node) {
+            node.style.display = 'block';
+            let parent = node.parentElement.closest('.category-node');
+            while (parent) {
+                parent.style.display = 'block';
+                parent.querySelector('.list-children')?.classList.remove('collapsed');
+                parent.querySelector('.toggle-btn')?.classList.remove('collapsed');
+                parent = parent.parentElement.closest('.category-node');
+            }
+        }
+    };
+
+    // --- 4. Smooth Toggle ---
+    window.toggleCategory = function(btn, event) {
+        if (event) event.stopPropagation();
+        const node = btn.closest('.category-node');
+        const children = node.querySelector('.list-children');
+        
+        if (children) {
+            children.classList.toggle('collapsed');
+            btn.classList.toggle('collapsed');
+        }
+    };
+
+    // --- 5. Premium Selection ---
+    window.selectCategory = function(id, element) {
+        const isCurrent = element.classList.contains('selected');
+        
+        // Remove all selections
+        document.querySelectorAll('.m3-list-card.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+
+        if (!isCurrent) {
+            element.classList.add('selected');
+            selectedCategoryId = id;
+            toggleToolbar(true);
+            
+            // Haptic-like micro feedback
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        } else {
+            selectedCategoryId = null;
+            toggleToolbar(false);
+        }
+    };
+
+    function toggleToolbar(active) {
+        const edit = document.getElementById('toolbarEdit');
+        const del = document.getElementById('toolbarDelete');
+        if (edit && del) {
+            if (active) {
+                edit.classList.add('active');
+                del.classList.add('active');
+                edit.style.pointerEvents = "auto";
+                del.style.pointerEvents = "auto";
+            } else {
+                edit.classList.remove('active');
+                del.classList.remove('active');
+                edit.style.pointerEvents = "none";
+                del.style.pointerEvents = "none";
+            }
+        }
+    }
+
+    // --- 6. Final Actions ---
+    window.editSelected = function() {
+        if (selectedCategoryId) {
+            window.location.href = "{{ site.sadres }}mod_news_category/edit/" + selectedCategoryId;
+        }
+    };
+
+    window.deleteSelected = function() {
+        if (!selectedCategoryId) return;
+
+        Swal.fire({
+            title: '{{ lang.mod_news_category.confirmations.delete_single }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff4444',
+            cancelButtonColor: '#999',
+            confirmButtonText: '{{ lang.mod_news_category.button.delete|default(lang.mod_news_category.button.delete) }}',
+            cancelButtonText: '{{ lang.mod_news_category.button.cancel|default(lang.mod_news_category.button.vazgec) }}',
+            background: 'rgba(255,255,255,0.95)',
+            backdrop: `rgba(0,0,10,0.5)`,
+            customClass: {
+                popup: 'premium-swal-popup'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formData = new URLSearchParams();
+                formData.append('id', selectedCategoryId);
+
+                fetch(SITE_URL + 'mod_news_category/dragdrop_delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(response => response.text())
+                .then(resp => {
+                    if (resp.trim() === 'Oke') {
+                        Swal.fire({ icon: 'success', title: '{{ lang.mod_news_category.messages.success.operation_completed|default("Serkeftî!") }}', timer: 1000, showConfirmButton: false });
+                        setTimeout(() => window.location.reload(), 1000);
+                    } else {
+                        Swal.fire('{{ lang.mod_news_category.error_messages.fatal|default("Çewtî") }}', resp, 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Delete error:', err);
+                    Swal.fire('{{ lang.mod_news_category.error_messages.fatal|default("Çewtî") }}', '{{ lang.mod_news_category.error_messages.network|default("Çewtiya torê") }}', 'error');
+                });
+            }
+        });
+    };
+</script>

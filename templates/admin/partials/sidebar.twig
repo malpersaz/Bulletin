@@ -65,7 +65,7 @@
         {% endif %}
 
         <!-- 2. Group: Content & Page -->
-        <div class="nav-group {% if mod == 'mod_category' or mod == 'mod_content' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}expanded{% endif %}">
+        <div class="nav-group {% if mod == 'mod_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}expanded{% endif %}">
             <div class="nav-group-header" onclick="toggleGroup(this)">
                 <i class="bi bi-rocket-takeoff-fill nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.content_and_page|default('İçerik ve Sayfa') }}</span>
@@ -77,9 +77,19 @@
                     <i class="bi bi-tags-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.content_categories }}</span>
                 </a>
                 {% endif %}
+                {% if session.permissions.mod_news_category.list is defined %}
+                <a href="{{ site.sadres }}mod_news_category/list" class="nav-item {% if mod == 'mod_news_category' %}active{% endif %}">
+                    <i class="bi bi-bookmarks-fill nav-item-icon"></i> <span class="nav-item-label">News Categories</span>
+                </a>
+                {% endif %}
                 {% if session.permissions.mod_content.list is defined %}
                 <a href="{{ site.sadres }}mod_content/list" class="nav-item {% if mod == 'mod_content' %}active{% endif %}">
                     <i class="bi bi-file-text-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.content_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_news.list is defined %}
+                <a href="{{ site.sadres }}mod_news/list" class="nav-item {% if mod == 'mod_news' %}active{% endif %}">
+                    <i class="bi bi-newspaper nav-item-icon"></i> <span class="nav-item-label">News Management</span>
                 </a>
                 {% endif %}
                 {% if session.permissions.mod_menu.list is defined %}

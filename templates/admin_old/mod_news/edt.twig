@@ -1,0 +1,504 @@
+{% extends "management/admin-layout.twig" %}
+
+{% block title %}
+	{{ lang.mod_news.edit }}
+{% endblock %}
+
+{% block body %}
+	{% if error is defined %}
+		<div class="alert alert-danger">
+			<strong>{{ lang.mod_news.error }}</strong>
+			{{ mesaj }}
+		</div>
+	{% else %}
+		<div class="portlet box green">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-edit"></i>
+					{{ lang.mod_news.edit }}
+				</div>
+			</div>
+			<div
+				class="portlet-body form">
+				{# Mesajlar #}
+				{% if oke is defined %}
+					<div class="alert alert-success">
+						<strong>{{ lang.mod_news.oke }}</strong>
+						{{ mesaj }}
+						<hr>
+						<a href="{{ site.sadres }}mod_news/add" class="btn green">{{ lang.mod_news.button.add }}</a>
+						<a href="{{ site.sadres }}mod_news/edit/{{ d.id }}" class="btn red">{{ lang.mod_news.button.edit }}</a>
+						    <a href="{{ site.sadres }}mod_news/list">
+        {{ lang.mod_news.list }}</a>
+					</div>
+				{% else %}
+					{% if hatalar is defined %}
+						{% for hata in hatalar %}
+							<div class="alert alert-danger">
+								<strong>{{ lang.mod_news.hata }}</strong>
+								{{ hata }}
+							</div>
+						{% endfor %}
+					{% endif %}
+
+					<form method="POST" action="" id="edit" enctype="multipart/form-data" class="form-horizontal">
+						<div class="form-body">
+							{# İnputlar Başlar #}
+
+							{# lang Input #}
+								<div class="form-group"> <label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.lang }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge validate[required]" name="lang" id="lang">
+											{% for item in lang_lang %}
+												<option value="{{ item.seo }}" {% if d.lang == item.seo %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+
+							{# name Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.name }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required,length[2,255]]" name="name" value="{{ d.name }}" type="text" id="name">
+									</div>
+								</div>
+							</div>
+
+							{# Kategori ID İçin İç İçe Select Oluşturma Makrosu #}
+							{% macro select_nested_category_id_function(parent_id, level) %}
+								{% for entry in attribute(select_nested_category_id_result, parent_id) %}
+									{% set parent_id = entry.id %}
+									{% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+										<optgroup label="{{ '-'|repeat(level) ~ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
+										{% else %}
+											<option value="{{ entry.id }}" {% if d.category_id == entry.id %} selected="selected" {% endif %}>
+												{{ '-'|repeat(level) ~ entry.name }}
+												{% if entry.lang is defined %}({{ entry.lang }})
+												{% endif %}
+											</option>
+										{% endif %}
+
+										{% if attribute(select_nested_category_id_result, parent_id) is not empty and attribute(select_nested_category_id_result, parent_id) is iterable %}
+											{{ _self.select_nested_category_id_function(parent_id, level + 1) }}
+										{% endif %}
+
+										{% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+										</optgroup>
+									{% endif %}
+								{% endfor %}
+							{% endmacro %}
+
+							{# category_id Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.category_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge validate[required]" name="category_id" id="category_id">
+											{{ _self.select_nested_category_id_function(0, 0) }}
+										</select>
+									</div>
+								</div>
+							</div>
+
+							{# status Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.status }}
+									:</label>
+								<div class="col-md-4">
+									<div class="radio-list">
+										<label class="radio-inline">
+											{{ lang.mod_news.admin.radio.publish_yes }}
+											<input name="status" value="y" type="radio" {% if d.status == 'y' %} checked="checked" {% endif %}/>
+										</label>
+										<label class="radio-inline">
+											{{ lang.mod_news.admin.radio.publish_no }}
+											<input name="status" value="n" type="radio" {% if d.status == 'n' %} checked="checked" {% endif %}/>
+										</label>
+									</div>
+								</div>
+							</div>
+
+							{# created_at Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.created_at }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required]" name="created_at" value="{{ d.created_at }}" type="text" id="created_at">
+									</div>
+								</div>
+							</div>
+
+							{# dtarih Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.updated_at }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge" name="updated_at" value="{{ d.updated_at }}" type="text" id="updated_at">
+									</div>
+								</div>
+							</div>
+
+							{# deck Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.deck }}
+									:</label>
+								<div class="col-md-4">
+									<div class="radio-list">
+										<label class="radio-inline">
+											{{ lang.mod_news.admin.radio.deck_yes }}
+											<input name="deck" value="y" type="radio" {% if d.deck is defined and d.deck == 'y' %} checked="checked" {% endif %}/>
+										</label>
+										<label class="radio-inline">
+											{{ lang.mod_news.admin.radio.deck_no }}
+											<input name="deck" value="n" type="radio" {% if d.deck == 'n' %} checked="checked" {% endif %}/>
+										</label>
+									</div>
+								</div>
+							</div>
+
+							{# summary Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.summary }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<textarea class="form-control input-xlarge" name="summary" id="summary">{{ d.summary|raw }}</textarea>
+									</div>
+								</div>
+							</div>
+
+							{# content Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.content }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<div id="content" class="form-control">{{ d.content|default('')|raw }}</div>
+										<input type="hidden" name="content" value="{{ d.content|default('')|raw }}">
+									</div>
+								</div>
+							</div>
+
+							{# seo Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.seo }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required]" name="seo" value="{{ d.seo }}" type="text" id="seo">
+									</div>
+								</div>
+							</div>
+
+							{# title Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.title }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required]" name="title" value="{{ d.title }}" type="text" id="title">
+									</div>
+								</div>
+							</div>
+
+							{# keywords Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.keywords }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required]" name="keywords" value="{{ d.keywords }}" type="text" id="keywords">
+									</div>
+								</div>
+							</div>
+
+							{# description Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.description }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge validate[required]" name="description" value="{{ d.description }}" type="text" id="description">
+									</div>
+								</div>
+							</div>
+
+							{# gallery_id Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.gallery_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge validate[required]" name="gallery_id" id="gallery_id">
+											<option value="0" {% if d.gallery_id == 0 %} selected="selected" {% endif %}>{{ lang.mod_news.choose_wish }}</option>
+											{% for item in mod_news_gallery_id %}
+												<option value="{{ item.id }}" {% if d.gallery_id == item.id %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+
+							{# file_id Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.file_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge validate[required]" name="file_id" id="file_id">
+											<option value="0" {% if d.file_id == 0 %} selected="selected" {% endif %}>{{ lang.mod_news.choose_wish }}</option>
+											{% for item in mod_news_dosya_id %}
+												<option value="{{ item.id }}" {% if d.file_id == item.id %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+
+							{# image Image #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.image }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										{% if d.image == "" %}
+											<input name="image" type="file">
+										{% else %}
+											<p id="image-{{ d.id }}">
+												<img src="static/mod_news/thumb/{{ d.image }}">
+												<a href="javascript:void(0)" onclick="image_remove_image('{{ d.id }}');">{{ lang.mod_news.button.kaldir }}</a>
+											</p>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+
+							{# acl_id Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.acl_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge validate[required]" name="acl_id" id="acl_id">
+											<option value="0" {% if d.acl_id == 0 %} selected="selected" {% endif %}>{{ lang.mod_news.choose_wish }}</option>
+											{% for item in mod_acl_acl_id %}
+												<option value="{{ item.id }}" {% if d.acl_id == item.id %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+
+							{# video Input #}
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_news.admin.columns.video }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge" name="video" value="" type="text" id="video">
+									</div>
+								</div>
+							</div>
+
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-md-offset-3 col-md-9">
+									<button class="btn green" name="edit" value="{{ lang.mod_news.button.edit }}">
+										{{ lang.mod_news.button.edit }}
+									</button>
+									<a class="btn blue" href="{{ site.sadres }}mod_news/list">{{ lang.mod_news.button.vazgec }}</a>
+								</div>
+							</div>
+						</div>
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block extra %}
+	<script>
+		$(document).ready(function () {
+$("#edit").validationEngine();
+
+function temizle(veri) {
+var temiz = veri.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, " ");
+temiz = temiz.replace(/^\s+|\s+$/g, "");
+for (i = 0; i <= 15; i ++) {
+temiz = temiz.replace('  ', ' ');
+}
+return temiz;
+}
+
+// SEO, Title, Keywords, Açıklama oluşturma fonksiyonları
+function make_seo(name, seo) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, "_");
+deger = deger.replace('İ', 'i');
+$("#" + seo).val(deger);
+});
+}
+
+function make_keywords(name, keywords) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, ",");
+deger = deger.toLowerCase();
+deger = deger.replace('İ', 'i');
+$("#" + keywords).val(deger);
+});
+}
+
+function make_title(name, title) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + title).val(deger);
+});
+}
+
+function make_aciklama(name, description) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + description).val(deger);
+});
+}
+
+make_seo('name', 'seo');
+make_title('name', 'title');
+make_keywords('name', 'keywords');
+make_aciklama('name', 'description');
+
+// Tarih ve Zaman Seçiciler
+var simdi = new Date();
+var yil = simdi.getFullYear();
+var ay = (simdi.getMonth() < 9 ? '0' : '') + (simdi.getMonth() + 1);
+var gun = (simdi.getDate() < 10 ? '0' : '') + simdi.getDate();
+var saat = (simdi.getHours() < 10 ? '0' : '') + simdi.getHours();
+var dakika = (simdi.getMinutes() < 10 ? '0' : '') + simdi.getMinutes();
+var now = yil + "-" + ay + "-" + gun + " " + saat + ":" + dakika;
+
+if ($("#created_at").val() == "") {
+$("#created_at").val(now);
+}
+
+var anytime_settings = {
+format: "%z-%m-%d %H:%i",
+firstDOW: 1,
+placement: "popup",
+labelDayOfMonth: "{{ lang.mod_news.anytime.labelDayOfMonth }}",
+labelHour: "{{ lang.mod_news.anytime.labelHour }}",
+labelMinute: "{{ lang.mod_news.anytime.labelMinute }}",
+labelMonth: "{{ lang.mod_news.anytime.labelMonth }}",
+labelTitle: "{{ lang.mod_news.anytime.labelTitle }}",
+labelYear: "{{ lang.mod_news.anytime.labelYear }}",
+dayAbbreviations: [{% for item in lang.mod_news.anytime.dayAbbreviations %}"{{ item }}",{% endfor %}],
+dayNames: [{% for item in lang.mod_news.anytime.dayNames %}"{{ item }}",{% endfor %}],
+monthAbbreviations: [{% for item in lang.mod_news.anytime.monthAbbreviations %}"{{ item }}",{% endfor %}],
+monthNames: [{% for item in lang.mod_news.anytime.monthNames %}"{{ item }}",{% endfor %}]
+};
+
+AnyTime.picker("created_at", anytime_settings);
+
+if ($("#updated_at").val() == "") {
+$("#updated_at").val(now);
+}
+AnyTime.picker("updated_at", anytime_settings);
+
+// Token Input for Videos
+{% if d.video is defined and d.video is not empty %}
+var video_populate = null;
+$.ajax({
+    url: '{{ site.sadres }}mod_news/all_video_get/{{ d.video|base64_encode }}',
+    async: false,
+    dataType: "json",
+    success: function (data) {
+        video_populate = data;
+    }
+});
+{% endif %}
+$("#video").tokenInput("{{ site.sadres }}mod_news/all_video", {
+    minChars: 0,
+    method: "POST",
+    hintText: "{{ lang.mod_news.tokenizing.hintText }}",
+    noResultsText: "{{ lang.mod_news.tokenizing.noResultsText }}",
+    searchingText: "{{ lang.mod_news.tokenizing.searchingText }}",
+    preventDuplicates: true,
+    {% if d.video is defined and d.video is not empty %}prePopulate : video_populate,{% endif %}classes: {
+tokenList: "token-input-list-facebook",
+token: "token-input-token-facebook",
+tokenDelete: "token-input-delete-token-facebook",
+selectedToken: "token-input-selected-token-facebook",
+highlightedToken: "token-input-highlighted-token-facebook",
+dropdown: "token-input-dropdown-facebook",
+dropdownItem: "token-input-dropdown-item-facebook",
+dropdownItem2: "token-input-dropdown-item2-facebook",
+selectedDropdownItem: "token-input-selected-dropdown-item-facebook",
+inputToken: "token-input-input-token-facebook"
+}
+});
+
+rich_editor('#content');
+});
+
+function image_remove_image(id) {
+$.prompt('{{ lang.mod_news.remove_image }}', {
+buttons: [
+{
+title: '{{ lang.mod_news.button.evet }}',
+value: true
+}, {
+title: '{{ lang.mod_news.button.hayir }}',
+value: false
+}
+],
+submit: function (v, m, f) {
+if (v === true) {
+$.ajax({
+type: "POST",
+url: "{{ site.sadres }}mod_news/image_remove_image",
+data: {
+id: id
+},
+success: function (msg) {
+if (msg == 'Oke') {
+$.achtung({className: 'achtungSuccess', message: '{{ lang.mod_news.remove_image_oke }}', timeout: 5});
+$("#image-" + id).html('<input name="image" type="file">');
+} else {
+$.achtung({className: 'achtungFail', message: msg, timeout: 5});
+}
+}
+});
+}
+}
+});
+}
+	</script>
+{% endblock %}

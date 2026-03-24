@@ -150,3 +150,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'تفعيل هذا القالب',
     'in_use' => 'قيد الاستخدام حاليا'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

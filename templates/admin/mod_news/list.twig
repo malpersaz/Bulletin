@@ -1,0 +1,133 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_news.list|default('Content Management') }}{% endblock %}
+
+{% block headline %}{{ lang.mod_news.list|default('Content List') }}{% endblock %}
+
+{% block content %}
+<!-- Quick Stats & Actions -->
+
+
+<!-- Quick Stats & Actions -->
+<div style="padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;">
+    <!-- Stats Row -->
+    <div style="display: flex; gap: 12px;">
+        <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.mod_user.panel.total_content }}</div>
+        </div>
+        <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
+            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.mod_user.panel.draft_content }}</div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- PULL TO REFRESH SPINNER -->
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<!-- DYNAMIC CONTENT (Cards) -->
+<div id="content-list-container" class="content-list">
+    <!-- Cards will be injected here via JS -->
+</div>
+
+<!-- EMPTY STATE -->
+<div id="empty-state" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+    <h3>{{ lang.mod_news.grid[105]|default(lang.mod_news.datatable.zeroRecords)|default('No Content Found') }}</h3>
+    <p>{{ lang.mod_news.grid[4]|default(lang.mod_news.datatable.emptyTable)|default('No content matches your filters.') }}</p>
+</div>
+
+<!-- INFINITE SCROLL LOADER -->
+<div id="infinite-loader" class="infinite-loader" style="display: none;">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>{{ lang.mod_news.grid[104]|default(lang.mod_news.datatable.loadingRecords)|default('Loading...') }}</span>
+</div>
+
+<!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
+<form id="filterForm" style="display: none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    
+    <!-- Search -->
+    <input type="hidden" name="arama[name]" id="filterSearch" value="">
+    
+    <!-- Custom Filters -->
+    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    <input type="hidden" name="arama[category_id]" id="filterCategory" value="">
+    
+    <!-- Standard DT order (default id desc) -->
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1"> 
+    <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_news.button.edit|default('Biguhere') }}</span>
+        </button>
+        
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-images"></i>
+            <span>{{ lang.mod_news.button.gallery|default('Galerî') }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_news/add'">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+
+        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span>{{ lang.mod_news.button.file|default('Dosya') }}</span>
+        </button>
+
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_news.button.delete|default('Jê bibe') }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Module specific variables (SITE_URL is already defined in layout.twig)
+    const MODULE_URL = SITE_URL + "mod_news/";
+    const DATA_URL = SITE_URL + "mod_news/datatable_json";
+    
+    // Category mapping for JS
+    const CATEGORY_MAP = {
+        {% for cat in categories %}
+        "{{ cat.id }}": "{{ cat.name|escape('js') }}",
+        {% endfor %}
+    };
+    const CONTENT_LANG = {
+        active: "{{ lang.mod_news.status_badge.active|e('js') }}",
+        draft: "{{ lang.mod_news.status_badge.draft|e('js') }}",
+        general: "{{ lang.mod_news.status_badge.general|e('js') }}",
+        sheet_all: "{{ lang.mod_news.sheet.all|e('js') }}",
+        confirm_delete: "{{ lang.mod_news.delete_confirm|default(lang.mod_news.context_menu.delete_confirm)|e('js') }}",
+        confirm_publish: "{{ lang.mod_news.quick_publish_confirm|default(lang.mod_news.grid.approve.value)|e('js') }}",
+        confirm_unpublish: "{{ lang.mod_news.quick_unpublish_confirm|default(lang.mod_news.grid.unapprove.value)|e('js') }}",
+        error_general: "{{ lang.mod_news.hata|e('js') }}",
+        error_upload: "{{ lang.mod_news.message.error.add|e('js') }}",
+        loading: "{{ lang.mod_news.grid[104]|default(lang.mod_news.datatable.loadingRecords)|e('js') }}",
+        grid: {
+            load_more: "{{ lang.mod_news.grid.load_more|default('Load More')|e('js') }}"
+        }
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_news.js?v=2.2"></script>
+{% endblock %}

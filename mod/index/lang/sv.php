@@ -269,3 +269,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'Aktivera detta tema',
     'in_use' => 'Används för närvarande'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

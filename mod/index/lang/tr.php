@@ -253,3 +253,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'Bu Temayı Aktif Et',
     'in_use' => 'Şu An Kullanımda'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

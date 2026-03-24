@@ -778,6 +778,14 @@ class mod_user_mod extends indexMain
                 'meta' => $quick_access,
             ],
             [
+                'module' => 'mod_news',
+                'permission' => 'list',
+                'href' => $this->site['sadres'] . 'mod_news/list',
+                'icon' => 'bi bi-newspaper',
+                'title' => 'News Management',
+                'meta' => $quick_access,
+            ],
+            [
                 'module' => 'mod_video_embed',
                 'permission' => 'list',
                 'href' => $this->site['sadres'] . 'mod_video_embed/list',

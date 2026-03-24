@@ -1,0 +1,586 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}
+	{{ lang.mod_news_category.edit|default('Biguhere') }}
+{% endblock %}
+
+{% block headline %}
+	{{ lang.mod_news_category.edit|default('Biguhere') }}
+{% endblock %}
+
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0) %}
+    {% if select_nested_parent_id_result[parent_id] is defined %}
+        {% for entry in select_nested_parent_id_result[parent_id] %}
+            {% set sub_loop = entry.id %}
+            {% if entry.id != self_id %}
+                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+                </option>
+                {% if select_nested_parent_id_result[sub_loop] is defined and select_nested_parent_id_result[sub_loop] is iterable and sub_loop != parent_id and level < 20 %}
+                    {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, sub_loop, selected_id, self_id, level + 1) }}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+	<style>
+		.edit-container {
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-bottom: 120px;
+		}
+		.edit-card {
+			background: var(--md-sys-color-surface);
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: var(--md-sys-elevation-1);
+		}
+		.card-header-edit {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 16px;
+			color: var(--md-sys-color-primary);
+		}
+		.card-header-edit i {
+			font-size: 20px;
+		}
+		.card-header-edit h3 {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 500;
+		}
+		.form-row {
+			margin-bottom: 20px;
+		}
+		.m3-input-wrapper {
+			position: relative;
+			margin-bottom: 4px;
+		}
+		.m3-input-wrapper:focus-within {
+			z-index: 9999;
+		}
+		.m3-input-lg {
+			width: 100%;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 1px solid var(--md-sys-color-outline);
+			background: transparent;
+			color: var(--md-sys-color-on-surface);
+			font-size: 16px;
+			outline: none;
+            box-sizing: border-box;
+		}
+		.m3-input-lg:focus {
+			border-color: var(--md-sys-color-primary);
+			border-width: 2px;
+			padding: 11px 15px;
+		}
+		.m3-floating-label {
+			position: absolute;
+			top: 12px;
+			left: 16px;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 16px;
+			pointer-events: none;
+			transition: all 0.2s;
+            z-index: 10;
+		}
+        .m3-input-lg:focus ~ .m3-floating-label,
+		.m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label,
+        select.m3-input-lg ~ .m3-floating-label,
+        .ts-wrapper.m3-input-lg ~ .m3-floating-label {
+			top: -10px;
+			left: 12px;
+			font-size: 12px;
+			color: var(--md-sys-color-on-surface-variant);
+			background: var(--md-sys-color-surface);
+			padding: 0 4px;
+		}
+        .m3-input-lg:focus ~ .m3-floating-label,
+        select.m3-input-lg:focus ~ .m3-floating-label,
+        .ts-wrapper.m3-input-lg.focus ~ .m3-floating-label {
+            color: var(--md-sys-color-primary);
+        }
+        /* TomSelect override */
+        .ts-wrapper.m3-input-lg {
+            padding: 0;
+            border: none;
+        }
+        .ts-wrapper.m3-input-lg .ts-control {
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background: transparent;
+            padding: 12px 16px;
+            min-height: 48px;
+            font-size: 16px;
+            box-shadow: none;
+        }
+        .ts-wrapper.m3-input-lg.focus .ts-control {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 11px 15px;
+        }
+        .image-upload-area {
+            border: 2px dashed var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            color: var(--md-sys-color-on-surface-variant);
+            position: relative;
+            background: rgba(0,0,0,0.02);
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+        .image-upload-area:hover {
+            background: rgba(0,0,0,0.05);
+            border-color: var(--md-sys-color-primary);
+        }
+		.advanced-toggle {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 0;
+			cursor: pointer;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 14px;
+			border-top: 1px solid var(--md-sys-color-outline-variant);
+			margin-top: 16px;
+		}
+		.advanced-content {
+			display: none;
+			padding-top: 16px;
+		}
+		.advanced-content.active {
+			display: block;
+		}
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .selection-card {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .selection-card.active {
+            background: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
+        }
+        .check-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--md-sys-color-primary);
+            display: none;
+        }
+        .selection-card.active .check-icon {
+            display: block;
+        }
+        .upload-icon {
+            font-size: 32px;
+            color: var(--md-sys-color-primary);
+            margin-bottom: 8px;
+        }
+        .remove-img-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ba1a1a !important;
+            color: white !important;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .remove-img-btn:hover {
+            background: #93000a !important;
+            transform: scale(1.1);
+        }
+        .remove-img-btn i {
+            font-size: 18px;
+            color: white !important;
+        }
+	</style>
+
+	<form id="editForm" method="POST" action="{{ site.sadres }}mod_news_category/edit/{{ d.id }}" enctype="multipart/form-data">
+		<input type="hidden" name="id" value="{{ d.id }}">
+		<input type="hidden" name="edit" value="1">
+
+		<div class="edit-container">
+            {% if error is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'warning',
+                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                            confirmButtonText: '{{ lang.mod_news_category.buttons.yes|default("Tamam") }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if hatalar is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let errorHtml = '<div style="text-align: left;">';
+                        {% for hata in hatalar %}
+                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                        {% endfor %}
+                        errorHtml += '</div>';
+
+                        Swal.fire({
+                            icon: 'warning',
+                            html: errorHtml,
+                            confirmButtonText: '{{ lang.mod_news_category.buttons.yes|default("Tamam") }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "{{ site.sadres }}mod_news_category/list";
+                    }, 2000);
+                </script>
+            {% endif %}
+
+			{# Card 1: Basics #}
+			<div class="edit-card">
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="lang" id="lang" required>
+                            {% for item in lang_lang %}
+                                <option value="{{ item.seo }}" {% if d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                            {% endfor %}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.language }}</label>
+                    </div>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="name" id="name" placeholder=" " autocomplete="off" value="{{ d.name }}" required oninput="updateMetaFields()">
+						<label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.name }}</label>
+					</div>
+				</div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="parent_id" id="parent_id">
+                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.mod_news_category.form.parent_category|default('Kategoriya Jorîn') }} (Root)</option>
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, d.parent_id, d.id) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.parent_id }}</label>
+                    </div>
+                </div>
+			</div>
+
+			{# Card 3: Media & Settings #}
+			<div class="edit-card">
+
+                <div class="form-row">
+                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_news_category.admin.columns.root }}</label>
+                    <input type="hidden" name="root" value="{{ d.root }}" id="rootHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.root == 'y' %} active {% endif %}" onclick="selectRootStatus(this, 'y')">
+                            <i class="bi bi-folder-check" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_yes|default('Erê') }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.root == 'n' %} active {% endif %}" onclick="selectRootStatus(this, 'n')">
+                            <i class="bi bi-folder" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_no|default('Na') }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+				<div class="form-row">
+					<label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_news_category.admin.columns.image }}</label>
+					<div id="image-container-edit">
+                        <label for="editImgInput" class="image-upload-area" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            {% if d.image %}
+                                <img id="editImgPreview" src="{{ site.radres }}mod_news_category/thumb/{{ d.image }}" style="width:100%; height:auto; border-radius:8px;">
+                                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
+                            {% else %}
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <p>{{ lang.mod_news_category.admin.columns.image_select|default('Wêne Hilbijêre') }}</p>
+                            {% endif %}
+                        </label>
+                        <input type="file" name="image" id="editImgInput" style="display:none;" onchange="previewImage(this)">
+                    </div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_news_category.admin.columns.acl_id|raw }}</label>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <select class="m3-input-lg" name="acl_id" id="acl_id" style="flex: 1;">
+                            <option value="0" {% if d.acl_id == 0 %}selected{% endif %}>-- {{ lang.mod_news_category.choose_wish }} --</option>
+                            {% for item in mod_acl_acl_id %}
+                                <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_news_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
+                            <i class="bi bi-gear" style="font-size: 20px;"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="menu" id="menu">
+                            <option value="0" {% if d.menu == 0 %}selected{% endif %}>{{ lang.mod_news_category.choose_wish }}</option>
+                            {{ _self.select_nested_parent_id_function(select_nested_menu_result, 0, d.menu, 0) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.menu }}</label>
+                    </div>
+                </div>
+
+				<div class="advanced-toggle" onclick="toggleAdvanced()">
+					<span>{{ lang.mod_news_category.form.seo_settings|default('SEO / Meta') }}</span>
+					<i class="bi bi-chevron-down" id="advancedIcon"></i>
+				</div>
+
+                <div class="advanced-content" id="advancedContent">
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.seo|default('SEO URL') }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="title" id="title" value="{{ d.title }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.title }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="keywords" id="keywords" value="{{ d.keywords }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.keywords }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="description" id="description" value="{{ d.description }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.description }}</label>
+                        </div>
+                    </div>
+                </div>
+			</div>
+
+		</div>
+	</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<style>
+		.m3-final-bar {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			height: 80px !important;
+			background: var(--md-sys-color-surface-container) !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 12px !important;
+			padding: 0 16px !important;
+			z-index: 1000 !important;
+			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+		}
+		.m3-btn-half {
+			flex: 1 !important;
+			height: 52px !important;
+			border-radius: 26px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 8px !important;
+			font-size: 14px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		}
+		.m3-btn-half:active {
+			transform: scale(0.98) !important;
+			opacity: 0.9 !important;
+		}
+		@media(min-width: 600px) {
+			.m3-final-bar {
+				max-width: 480px !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-bottom-left-radius: 32px !important;
+				border-bottom-right-radius: 32px !important;
+				bottom: 8px !important;
+				height: 88px !important;
+				width: calc(100% - 16px) !important;
+			}
+		}
+	</style>
+	<div class="m3-final-bar">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_news_category/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_news_category.buttons.cancel|default("Vazgeç") }}
+		</button>
+		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_news_category.buttons.edit|default("Düzenle") }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tom Select Initialization
+        if (document.getElementById('parent_id')) new TomSelect('#parent_id', { create: false });
+        if (document.getElementById('acl_id')) new TomSelect('#acl_id', { create: false });
+        if (document.getElementById('menu')) new TomSelect('#menu', { create: false });
+    });
+
+    function temizle(veri) {
+        var temiz = veri.replace(/[^a-zA-ZıIğĞüÜşŞöÖçÇîêûÎÊÛ1234567890\s_]/g, " ");
+        temiz = temiz.replace(/^\s+|\s+$/g, "");
+        return temiz.replace(/\s+/g, ' ');
+    }
+
+    function makeSeoValue(veri) {
+        return temizle(veri).replace(/\s+/g, "_").replace(/İ/g, 'i').toLowerCase();
+    }
+
+    function makeKeywordsValue(veri) {
+        return temizle(veri).replace(/\s+/g, ",").toLowerCase().replace(/İ/g, 'i');
+    }
+
+    function updateMetaFields() {
+        const name = document.getElementById('name').value;
+        const seoInput = document.getElementById('seo');
+        
+        // Let's just update all dynamically since we simplified it.
+        document.getElementById('seo').value = makeSeoValue(name);
+        document.getElementById('title').value = temizle(name);
+        document.getElementById('keywords').value = makeKeywordsValue(name);
+        document.getElementById('description').value = temizle(name);
+    }
+
+    function toggleAdvanced() {
+        const content = document.getElementById('advancedContent');
+        const icon = document.getElementById('advancedIcon');
+        content.classList.toggle('active');
+        icon.classList.toggle('bi-chevron-up');
+        icon.classList.toggle('bi-chevron-down');
+    }
+
+    function selectRootStatus(el, val) {
+        document.querySelectorAll('#rootHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('rootHidden').value = val;
+    }
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const area = document.querySelector('.image-upload-area');
+                area.innerHTML = `
+                    <img id="editImgPreview" src="${e.target.result}" style="width:100%; height:auto; border-radius:8px;">
+                    <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
+                `;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeImage() {
+        const id = "{{ d.id }}";
+        Swal.fire({
+            title: '{{ lang.mod_news_category.confirmations.remove_image|default("Wêneyê jê bibe?") }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ba1a1a',
+            cancelButtonColor: '#6e7881',
+            confirmButtonText: '{{ lang.mod_news_category.buttons.yes|default("Erê") }}',
+            cancelButtonText: '{{ lang.mod_news_category.buttons.no|default("Na") }}'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new URLSearchParams();
+                formData.append('id', id);
+
+                fetch('{{ site.sadres }}mod_news_category/image_remove_image', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(r => r.text())
+                .then(data => {
+                    if (data.trim() === 'Oke') {
+                        Swal.fire('{{ lang.mod_news_category.oke|default("Serkeftî") }}', '{{ lang.mod_news_category.messages.success.image_removed|default("Wêne hate jêbirin.") }}', 'success');
+                        const area = document.querySelector('.image-upload-area');
+                        area.innerHTML = `
+                            <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                            <p>{{ lang.mod_news_category.buttons.add|default("Wêne Hilbijêre") }}</p>
+                        `;
+                        document.getElementById('editImgInput').value = '';
+                    } else {
+                        Swal.fire('{{ lang.mod_news_category.hata|default("Çewtî!") }}', data, 'error');
+                    }
+                });
+            }
+        });
+    }
+
+    function submitEditForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        form.submit();
+    }
+</script>
+{% endblock %}

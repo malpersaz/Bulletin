@@ -268,3 +268,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'Vê Dirbê Çalak Bike',
     'in_use' => 'Vê Gavê Tê Bikaranîn'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

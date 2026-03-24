@@ -249,3 +249,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'ئەم ڕووکارە چالاک بکە',
     'in_use' => 'لە ئێستادا بەکاردێت'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

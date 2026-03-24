@@ -264,3 +264,5 @@ $lang['index']['template'] = [
     'activate_btn' => 'Activate This Theme',
     'in_use' => 'Currently In Use'
 ];
+
+$lang['index']['mod_news'] = $lang['index']['mod_content'];

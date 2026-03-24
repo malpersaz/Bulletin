@@ -1,0 +1,701 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}
+	{{ lang.mod_news.edit|default('Biguhere') }}
+{% endblock %}
+
+{% block headline %}
+	{{ lang.mod_news.edit|default('Biguhere') }}
+{% endblock %}
+
+{% block content %}
+	<style>
+		.edit-container {
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-bottom: 120px; /* Increased to avoid covering content */
+		}
+		.edit-card {
+			background: var(--md-sys-color-surface);
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: var(--md-sys-elevation-1);
+		}
+		.card-header-edit {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 16px;
+			color: var(--md-sys-color-primary);
+		}
+		.card-header-edit i {
+			font-size: 20px;
+		}
+		.card-header-edit h3 {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 500;
+		}
+		.form-row {
+			margin-bottom: 20px;
+		}
+		.form-row:last-child {
+			margin-bottom: 0;
+		}
+		.m3-input-wrapper {
+			position: relative;
+			margin-bottom: 4px;
+		}
+		.m3-input-lg {
+			width: 100%;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 1px solid var(--md-sys-color-outline);
+			background: transparent;
+			color: var(--md-sys-color-on-surface);
+			font-size: 16px;
+			outline: none;
+		}
+		.m3-input-lg:focus {
+			border-color: var(--md-sys-color-primary);
+			border-width: 2px;
+			padding: 11px 15px;
+		}
+		.m3-input-lg:focus + .m3-floating-label,
+		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
+			top: -10px;
+			left: 12px;
+			font-size: 12px;
+			color: var(--md-sys-color-primary);
+			background: var(--md-sys-color-surface);
+			padding: 0 4px;
+		}
+		.m3-floating-label {
+			position: absolute;
+			top: 12px;
+			left: 16px;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 16px;
+			pointer-events: none;
+			transition: all 0.2s;
+		}
+		.rich-editor-content {
+			min-height: 200px;
+			border: 1px solid var(--md-sys-color-outline);
+			border-radius: 8px;
+			padding: 16px;
+			background: transparent;
+			margin-top: 8px;
+		}
+		.m3-fake-select {
+			width: 100%;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 1px solid var(--md-sys-color-outline);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			cursor: pointer;
+			background: transparent;
+		}
+		.bottom-bar-box {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			width: 100%;
+			height: 80px;
+			background: var(--md-sys-color-surface-container);
+			padding: 0 24px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+			z-index: 200;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
+		}
+        
+        /* Ensure it matches simulator width on desktop if it somehow breaks out */
+        @media(min-width: 1024px) {
+            .bottom-bar-box {
+               max-width: 100%;
+               border-bottom-left-radius: 32px; /* Match simulator radius if needed */
+               border-bottom-right-radius: 32px;
+            }
+        }
+        
+        /* Button Style Adjustments */
+        .btn-edit-save {
+            flex: 0 1 auto !important;
+            min-width: 140px;
+            height: 48px; /* Slightly taller */
+            border-radius: 24px !important;
+            font-weight: 600;
+            background: #198754 !important; /* Proper green */
+        }
+        
+        .btn-edit-cancel {
+            color: var(--md-sys-color-primary) !important;
+            font-weight: 600;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+
+		.advanced-toggle {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 12px 0;
+			cursor: pointer;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 14px;
+			border-top: 1px solid #eee;
+			margin-top: 16px;
+		}
+		.advanced-content {
+			display: none;
+			padding-top: 16px;
+		}
+		.advanced-content.active {
+			display: block;
+		}
+        .remove-img-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ba1a1a !important; /* Material Red */
+            color: white !important;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .remove-img-btn:hover {
+            background: #93000a !important;
+            transform: scale(1.1);
+        }
+        .remove-img-btn i {
+            font-size: 18px;
+            color: white !important;
+        }
+
+        .image-upload-area { position: relative; }
+	</style>
+
+	<form id="editForm" method="POST" action="{{ site.sadres }}mod_news/edit/{{ d.id }}" enctype="multipart/form-data">
+		<input type="hidden" name="edit" value="{{ lang.mod_news.button.edit }}">
+		<input type="hidden" name="lang" id="editLang" value="{{ d.lang }}">
+		<input type="hidden" name="category_id" id="editCategoryId" value="{{ d.category_id }}">
+
+
+		{# SEO/Meta Fields #}
+
+
+		<div class="edit-container">
+            {% if error is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let errorHtml = '<div style="text-align: left;">';
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ mesaj }}</b></div>';
+                        {% if hatalar is defined and hatalar|length > 0 %}
+                            errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
+                            {% for hata in hatalar %}
+                                errorHtml += '<li style="margin-bottom: 4px;">{{ hata }}</li>';
+                            {% endfor %}
+                            errorHtml += '</ul>';
+                        {% endif %}
+                        errorHtml += '</div>';
+
+                        Swal.fire({
+                            icon: 'warning',
+                            html: errorHtml,
+                            confirmButtonText: '{{ lang.mod_news.button.tamam|default("Tamam") }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "{{ site.sadres }}mod_news/list";
+                    }, 2000);
+                </script>
+            {% endif %}
+
+			{# Card 1: Basics #}
+			<div class="edit-card">
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.wizard.step.lang }}</label>
+					<div class="m3-input-wrapper">
+                        <div class="m3-fake-select" onclick="openLangSheetForEdit()">
+                            <span id="editSelectedLang">
+                                {% set current_lang_name = d.lang|upper %}
+                                {% if lang_lang is defined %}
+                                    {% for l in lang_lang %}
+                                        {% if l.seo == d.lang %}
+                                            {% set current_lang_name = l.name %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                {{ current_lang_name }}
+                            </span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
+                    </div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.wizard.step.category }}</label>
+					<div class="m3-input-wrapper">
+						<div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
+							<span id="wizardSelectedCategory">
+								{% set current_cat_name = '' %}
+								{% if categories is defined %}
+									{% for cat in categories %}
+										{% if cat.id == d.category_id %}
+											{% set current_cat_name = cat.name %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+								{{ current_cat_name|default(lang.mod_news.choose_wish) }}
+							</span>
+							<i class="bi bi-chevron-down"></i>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" oninput="updateMetaFields()">
+						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.content_title }}</label>
+					</div>
+				</div>
+                
+                <div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="datetime-local" class="m3-input-lg" name="created_at" id="editDateInput" value="{{ d.created_at|replace({' ': 'T'}) }}">
+						<label class="m3-floating-label">{{ lang.mod_news.wizard.step.date }}</label>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="datetime-local" class="m3-input-lg" name="updated_at" id="editUpdatedAtInput" value="{{ d.updated_at|replace({' ': 'T'}) }}">
+						<label class="m3-floating-label">{{ lang.mod_news.admin.columns.updated_at }}</label>
+					</div>
+				</div>
+			</div>
+
+			{# Card 2: Main Content #}
+			<div class="edit-card">
+				<div class="card-header-edit">
+					<i class="bi bi-file-earmark-text"></i>
+					<h3>{{ lang.mod_news.wizard.step.intro }} & {{ lang.mod_news.wizard.step.content }}</h3>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<textarea class="m3-input-lg" name="summary" id="editIntroInput" rows="3" placeholder=" " maxlength="280" oninput="updateCharCounter(this, 'editIntroCounter', 280)">{{ d.summary|striptags }}</textarea>
+						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.intro_text }}</label>
+					</div>
+					<div class="char-counter" id="editIntroCounter" style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">{{ d.summary|length }} / 280</div>
+				</div>
+
+				{# Deck / Manşet #}
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.admin.columns.deck }}</label>
+					<div class="selection-grid" style="grid-template-columns: 1fr 1fr; margin-top:8px;">
+						<input type="hidden" name="deck" id="deckHidden" value="{{ d.deck|default('n') }}">
+						<div class="selection-card {% if d.deck == 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'y')" style="padding:12px;">
+							<div class="selection-label">{{ lang.mod_news.admin.radio.deck_yes }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
+						<div class="selection-card {% if d.deck != 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'n')" style="padding:12px;">
+							<div class="selection-label">{{ lang.mod_news.admin.radio.deck_no }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.wizard.step.content }}</label>
+                    <div style="margin-top: 8px;">
+					    <textarea name="content" id="editContentTextarea">{{ d.content|raw }}</textarea>
+                    </div>
+				</div>
+			</div>
+
+			{# Card 3: Status & Media #}
+			<div class="edit-card">
+				<div class="card-header-edit">
+					<i class="bi bi-gear"></i>
+					<h3>{{ lang.mod_news.admin.columns.status }} & {{ lang.mod_news.admin.columns.image }}</h3>
+				</div>
+
+
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.admin.columns.image }}</label>
+					<label for="editImgInput" class="image-upload-area" style="margin-top: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+						{% if d.image %}
+							<img id="editImgPreview" src="{{ site.radres }}mod_news/thumb/{{ d.image }}" style="width:100%; height:auto; border-radius:8px;">
+                            <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage()"><i class="bi bi-trash"></i></button>
+						{% else %}
+							<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+							<p>{{ lang.mod_news.wizard.label.upload_text }}</p>
+						{% endif %}
+					</label>
+                    <input type="file" name="image" id="editImgInput" style="display:none;" onchange="previewEditImage(this)">
+					</div>
+
+
+
+
+				{# Video #}
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="video" id="video" value="{{ d.video }}" placeholder=" ">
+						<label class="m3-floating-label">{{ lang.mod_news.admin.columns.video }}</label>
+					</div>
+				</div>
+
+				{# Gallery #}
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.admin.columns.gallery_id }}</label>
+					<div class="m3-input-wrapper">
+						<select class="m3-input-lg" name="gallery_id">
+							<option value="0">{{ lang.mod_news.choose_wish }}</option>
+							{% for item in mod_news_gallery_id %}
+								<option value="{{ item.id }}" {% if d.gallery_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				{# File #}
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.admin.columns.file_id }}</label>
+					<div class="m3-input-wrapper">
+						<select class="m3-input-lg" name="file_id">
+							<option value="0">{{ lang.mod_news.choose_wish }}</option>
+							{% for item in mod_news_dosya_id %}
+								<option value="{{ item.id }}" {% if d.file_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				{# ACL #}
+				<div class="form-row">
+					<label class="filter-group-label">{{ lang.mod_news.admin.columns.acl_id }}</label>
+					<div class="m3-input-wrapper">
+						<select class="m3-input-lg" name="acl_id">
+							<option value="0">{{ lang.mod_news.choose_wish }}</option>
+							{% for item in mod_acl_acl_id %}
+								<option value="{{ item.id }}" {% if d.acl_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+							{% endfor %}
+						</select>
+					</div>
+				</div>
+
+				<div class="advanced-toggle" onclick="toggleAdvanced()">
+					<span>{{ lang.mod_news.button.yenile|default('Têkiliyên Pêşketî') }} (SEO, Meta)</span>
+					<i class="bi bi-chevron-down" id="advancedIcon"></i>
+				</div>
+
+                <div class="advanced-content" id="advancedContent">
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}">
+                            <label class="m3-floating-label">SEO URL</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="title" id="title" value="{{ d.title }}">
+                            <label class="m3-floating-label">{{ lang.mod_news.admin.columns.title }}</label>
+                        </div>
+                    </div>
+                     <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="keywords" id="keywords" value="{{ d.keywords }}">
+                            <label class="m3-floating-label">{{ lang.mod_news.admin.columns.keywords }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="description" id="description" value="{{ d.description }}">
+                            <label class="m3-floating-label">{{ lang.mod_news.admin.columns.description }}</label>
+                        </div>
+                    </div>
+                </div>
+				</div>
+
+                {# Card 4: Publishing Decision #}
+                <div class="edit-card">
+                    <div class="card-header-edit">
+                        <i class="bi bi-send"></i>
+                        <h3>{{ lang.mod_news.admin.columns.status }}</h3>
+                    </div>
+                    
+                    <p class="step-subhead" style="margin-left:0; margin-bottom:16px;">{{ lang.mod_news.wizard.subtitle.finish }}</p>
+                    
+                    <input type="hidden" name="status" value="{{ d.status }}" id="publishHidden">
+                    
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.status == 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'y')">
+                            <i class="bi bi-cloud-check selection-icon" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_news.context_menu.publish }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.status != 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'n')">
+                            <i class="bi bi-pencil-square selection-icon" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_news.context_menu.unpublish }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+			</div>
+
+	</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<style>
+		.m3-final-bar {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			height: 80px !important;
+			background: var(--md-sys-color-surface-container) !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 12px !important;
+			padding: 0 16px !important;
+			z-index: 1000 !important;
+			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+		}
+		.m3-btn-half {
+			flex: 1 !important;
+			height: 52px !important;
+			border-radius: 26px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 8px !important;
+			font-size: 14px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		}
+		.m3-btn-half:active {
+			transform: scale(0.98) !important;
+			opacity: 0.9 !important;
+		}
+		@media(min-width: 600px) {
+			.m3-final-bar {
+				max-width: 480px !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-bottom-left-radius: 32px !important;
+				border-bottom-right-radius: 32px !important;
+				bottom: 8px !important;
+				height: 88px !important;
+				width: calc(100% - 16px) !important;
+			}
+		}
+	</style>
+	<div class="m3-final-bar">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_news/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_news.button.vazgec }}
+		</button>
+		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_news.button.edit }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+        // Initialize Rich Editor
+        document.addEventListener('DOMContentLoaded', () => {
+            initRichEditor('#editContentTextarea', 400);
+        });
+
+        // Store current edit mode to override sheet behavior
+        let isEditMode = true;
+
+		// Handle Language Selection via Sheet
+        function openLangSheetForEdit() {
+            // Re-render sheet to use radio-like selection for single lang
+            tempSelectedLang = document.getElementById('editLang').value;
+            renderLangList();
+            
+            // Override toggle functionality for this session
+            window.toggleLangSelection = function(code) {
+                tempSelectedLang = code;
+                window.confirmLangSelection();
+            };
+            
+            // Override confirm functionality
+            window.confirmLangSelection = function() {
+                const lang = tempSelectedLang;
+                document.getElementById('editLang').value = lang;
+                
+                // Update Name Label
+                const langObj = adminLang.languages.find(l => l.code === lang.toUpperCase() || l.code === lang.toLowerCase());
+                document.getElementById('editSelectedLang').innerText = langObj ? langObj.name : lang.toUpperCase();
+                
+                closeLangSheet();
+                
+                // Sync with wizardData for category filtering if needed
+                if(window.wizardData) wizardData.lang = lang;
+            };
+            
+            openLangSheet();
+        }
+
+		// Handle Category Selection
+		window.selectWizardCategory = function (name, id) {
+			document.getElementById('editCategoryId').value = id;
+			document.getElementById('wizardSelectedCategory').innerText = name;
+            document.getElementById('wizardSelectedCategory').style.color = 'var(--md-sys-color-on-surface)';
+			toggleWizardCategorySheet();
+		};
+
+        // Character Counter
+        window.updateCharCounter = function(input, counterId, max) {
+            const currentLength = input.value.length;
+            const counter = document.getElementById(counterId);
+            if(counter) {
+                counter.innerText = `${currentLength} / ${max}`;
+            }
+        };
+
+		// Image Preview
+		function previewEditImage(input) {
+			if (input.files && input.files[0]) {
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					let preview = document.getElementById('editImgPreview');
+					if (!preview) {
+						const area = document.querySelector('.image-upload-area');
+						area.innerHTML = `<img id="editImgPreview" style="width:100%; height:auto; border-radius:8px;">`;
+						preview = document.getElementById('editImgPreview');
+					}
+					preview.src = e.target.result;
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+
+		// Advanced Accordion
+		        function selectPublishStatus(el, val) {
+            document.querySelectorAll('#publishHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('publishHidden').value = val;
+        }
+
+		function selectDeckStatus(el, val) {
+            document.querySelectorAll('#deckHidden ~ div .selection-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('deckHidden').value = val;
+        }
+
+        function toggleAdvanced() {
+			const content = document.getElementById('advancedContent');
+			const icon = document.getElementById('advancedIcon');
+			content.classList.toggle('active');
+			icon.classList.toggle('bi-chevron-up');
+			icon.classList.toggle('bi-chevron-down');
+		}
+
+		// Meta Fields Sync
+		function updateMetaFields() {
+			const name = document.getElementById('editTitleInput').value;
+			document.getElementById('seo').value = makeSeoValue(name);
+			document.getElementById('title').value = temizle(name);
+			document.getElementById('keywords').value = makeKeywordsValue(name);
+			document.getElementById('description').value = temizle(name);
+            
+			document.getElementById('keywords').value = makeKeywordsValue(name);
+			document.getElementById('description').value = temizle(name);
+		}
+
+        function submitEditForm(formId) {
+            const form = document.getElementById(formId);
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            form.submit();
+        }
+
+        function removeEditImage() {
+            const id = "{{ d.id }}";
+            Swal.fire({
+                title: '{{ lang.mod_news.remove_image }}',
+                text: '{{ lang.mod_news.context_menu.delete_confirm }}',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ba1a1a',
+                cancelButtonColor: '#6e7881',
+                confirmButtonText: '{{ lang.mod_news.button.evet }}',
+                cancelButtonText: '{{ lang.mod_news.button.hayir }}'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var formData = new URLSearchParams();
+                    formData.append('id', id);
+
+                    fetch('{{ site.sadres }}mod_news/image_remove_image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    })
+                    .then(r => r.text())
+                    .then(data => {
+                        if (data.trim() === 'Oke') {
+                            Swal.fire('{{ lang.mod_news.oke }}', '{{ lang.mod_news.remove_image_oke }}', 'success');
+                            const area = document.querySelector('.image-upload-area');
+                            area.innerHTML = `
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <p>{{ lang.mod_news.wizard.label.upload_text }}</p>
+                            `;
+                            document.getElementById('editImgInput').value = '';
+                        } else {
+                            Swal.fire('{{ lang.mod_news.hata }}', data, 'error');
+                        }
+                    });
+                }
+            });
+        }
+	</script>
+{% endblock %}

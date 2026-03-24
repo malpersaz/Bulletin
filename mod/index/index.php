@@ -86,6 +86,28 @@ class index_mod extends indexBase
         unset($content);
     }
 
+    public function news($seo = null)
+    {
+        Load::lib("Session");
+        $news = Load::helper("index.mod_news");
+        $news->content($seo);
+        unset($news);
+    }
+
+    public function newses($category = null, $sayfa = 1)
+    {
+        $news = Load::helper("index.mod_news");
+        $news->contents($category, $sayfa);
+        unset($news);
+    }
+
+    public function news_archive()
+    {
+        $news = Load::helper('index.mod_news');
+        $news->arsiv();
+        unset($news);
+    }
+
     public function announcement($id = null)
     {
         $announcement = Load::helper("index.mod_announcements");
@@ -189,6 +211,14 @@ class index_mod extends indexBase
         $helper = Load::helper('index.mod_content');
         $result = $helper->_latest_content($limit, $select);
         $t->ctx_set('latest_content', $result);
+        unset($helper);
+    }
+
+    public function _latest_news($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_news');
+        $result = $helper->_latest_content($limit, $select);
+        $t->ctx_set('latest_news', $result);
         unset($helper);
     }
 

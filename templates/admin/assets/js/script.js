@@ -588,12 +588,9 @@ function openWizard() {
 }
 
 function closeWizard() {
-    // Check if we are on the standalone add page (/mod_content/add)
-    if (window.location.pathname.indexOf('/mod_content/add') !== -1) {
-        // Redirect to user panel
-        // Replace current path segment with user panel path
-        // e.g. /ku/mod_content/add -> /ku/mod_user/panel/
-        const newPath = window.location.pathname.replace('mod_content/add', 'mod_user/panel/');
+    const wizardAddPath = '/' + WIZARD_MODULE + '/add';
+    if (window.location.pathname.indexOf(wizardAddPath) !== -1) {
+        const newPath = window.location.pathname.replace(WIZARD_MODULE + '/add', 'mod_user/panel/');
         window.location.href = newPath;
         return;
     }
@@ -1067,7 +1064,7 @@ function prepareAndSubmitWizard() {
 
     // Send AJAX
     // Ensure SITE_URL or similar is defined, otherwise relative path
-    const url = (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + 'mod_content/add';
+    const url = (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + WIZARD_MODULE + '/add';
     console.log('Sending to URL:', url);
     console.log('FormData entries:');
     for (let pair of formData.entries()) {

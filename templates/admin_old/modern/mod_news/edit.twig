@@ -1,0 +1,88 @@
+{% extends 'admin/modern/layout.twig' %}
+
+{% block title %}{{ lang.mod_news.edit|default('İçerik Düzenle') }}{% endblock %}
+
+{% block content %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Open Wizard
+            const wizardOverlay = document.getElementById('contentWizard');
+            if(wizardOverlay) {
+                wizardOverlay.classList.add('active');
+                wizardOverlay.style.visibility = 'visible';
+            }
+            
+            // PRE-FILL WIZARD DATA
+            // We use Twig variables passed from the controller
+            
+            // 1. Lang
+            // selectWizardLang(null, '{{ d.lang|upper }}'); // Logic needs adaptation
+            
+            // 2. Category
+            // document.getElementById('wizardSelectedCategory').textContent = "{{ d.category_name|default('Kategori') }}";
+            selectedCategoryId = "{{ d.category_id }}";
+            
+            // 3. Title
+            document.getElementById('wizardTitleInput').value = "{{ d.name|e('js') }}";
+            
+            // 4. Date
+            // Format needs to match input type datetime-local (YYYY-MM-DDTHH:MM)
+            document.getElementById('wizardDateInput').value = "{{ d.created_at|replace({' ': 'T'}) }}"; 
+            
+            // 5. Intro
+            document.getElementById('wizardIntroInput').value = `{{ d.summary|raw }}`;
+            
+            // 6. Content
+            document.getElementById('wizardContentInput').innerHTML = `{{ d.content|raw }}`;
+            
+            // 7. Image (PREVIEW)
+            const imgPath = "{{ site.url }}uploads/{{ d.image }}"; // Adjust path logic
+            if("{{ d.image }}") {
+                const imgPreview = document.getElementById('wizardImgPreview');
+                imgPreview.src = imgPath;
+                imgPreview.style.display = 'block';
+            }
+            
+            // 8. Publish
+            document.getElementById('wizardPublishSwitch').checked = {{ d.status == 'y' ? 'true' : 'false' }};
+            
+            // Update UI Counters
+            // ...
+        });
+        
+        // OVERRIDE FINISH for UPDATE
+        function finishWizard() {
+            const formData = new FormData();
+            formData.append('id', "{{ d.id }}"); // ID for update
+             
+            // ... (Same fields as add)
+            formData.append('category_id', selectedCategoryId);
+            formData.append('name', document.getElementById('wizardTitleInput').value);
+            formData.append('created_at', document.getElementById('wizardDateInput').value);
+            formData.append('summary', document.getElementById('wizardIntroInput').value);
+            formData.append('content', document.getElementById('wizardContentInput').innerHTML);
+            
+            const fileInput = document.getElementById('wizardImgInput');
+            if(fileInput.files[0]) {
+                formData.append('image', fileInput.files[0]);
+            }
+            
+            formData.append('status', document.getElementById('wizardPublishSwitch').checked ? 'y' : 'n');
+            formData.append('duzenle', 'Kaydet'); // Trigger update check
+            
+            fetch('{{ site.sadres }}mod_news/edit/{{ d.id }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                 alert('Güncelleme Başarılı');
+                 window.location.href = '{{ site.sadres }}mod_news/list';
+            });
+        }
+    </script>
+    
+    <div style="padding: 24px; text-align: center;">
+        <p>Düzenleme Modu Yükleniyor...</p>
+    </div>
+{% endblock %}

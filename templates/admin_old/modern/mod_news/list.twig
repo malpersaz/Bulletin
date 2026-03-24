@@ -1,0 +1,61 @@
+{% extends 'admin/modern/layout.twig' %}
+
+{% block title %}{{ lang.mod_news.list }} - Rojname Admin{% endblock %}
+{% block headline %}{{ lang.mod_news.list }}{% endblock %}
+
+{% block content %}
+<!-- PULL TO REFRESH SPINNER -->
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<!-- DYNAMIC CONTENT (Cards) -->
+<div id="content-list-container" class="content-list">
+    <!-- Cards will be injected here via JS -->
+</div>
+
+<!-- EMPTY STATE -->
+<div id="empty-state" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+    <h3>Kayıt Bulunamadı</h3>
+    <p>Aradığınız kriterlere uygun içerik yok veya henüz hiç içerik eklenmemiş.</p>
+</div>
+
+<!-- INFINITE SCROLL LOADER -->
+<div id="infinite-loader" class="infinite-loader" style="display: none;">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>Yükleniyor...</span>
+</div>
+
+<!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
+<form id="filterForm" style="display: none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    
+    <!-- Search -->
+    <input type="hidden" name="search[value]" id="filterSearch" value="">
+    
+    <!-- Custom Filters -->
+    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    <input type="hidden" name="arama[category_id]" id="filterCategory" value="">
+    
+    <!-- Standard DT order (default id desc) -->
+    <input type="hidden" name="order[0][column]" value="1"> 
+    <input type="hidden" name="order[0][dir]" value="desc">
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Module specific variables
+    const SITE_URL = "{{ site.sadres }}";
+    const MODULE_URL = "{{ site.sadres }}mod_news/";
+    const DATA_URL = "{{ site.sadres }}mod_news/datatable_json";
+</script>
+<script src="templates/admin/modern/assets/js/mod_news.js?v={{ constant('VERSION') }}"></script>
+{% endblock %}

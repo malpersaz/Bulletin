@@ -76,7 +76,7 @@ $mods = array(
     'mod_menu',
     'mod_slider',
     'mod_headline',
-    'mod_category',
+    'mod_news_category',
     'mod_acl',
     'mod_survey',
     'mod_announcements',
@@ -95,7 +95,7 @@ $mods = array(
     # --- Level 2: Dependencies on Level 0, 1 ---
     'mod_user_pm', // Depends on mod_user
     'mod_video_embed', // Depends on mod_user, mod_video_embed_category
-    'mod_content', // Depends on mod_category, mod_gallery, mod_user
+    'mod_news', // Depends on mod_news_category, mod_gallery, mod_user
 );
 
 $installer = new installer();
