@@ -21,6 +21,97 @@
     </title>
 {% endblock %}
 
+{% block css_custom %}
+    {{ parent() }}
+    <style>
+        #mod_publication_list .list-group-item {
+            border: 0;
+            border-top: 1px solid rgba(15, 23, 42, 0.06);
+            padding: 0.95rem 1.25rem;
+            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        #mod_publication_list .list-group-item:first-child {
+            border-top: 0;
+        }
+
+        #mod_publication_list .list-group-item:hover {
+            background: rgba(15, 23, 42, 0.04);
+            transform: translateX(2px);
+        }
+
+        #mod_publication_list .list-group-item.active {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            border-color: transparent;
+            color: #fff;
+        }
+
+        #mod_publication_list .list-group-item.active .badge {
+            background: rgba(255, 255, 255, 0.16) !important;
+            color: #fff;
+        }
+
+        #mod_publication_list .card article,
+        #mod_publication_list article.card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border-radius: 1rem;
+        }
+
+        #mod_publication_list article.card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 1.25rem 2.5rem rgba(15, 23, 42, 0.12) !important;
+        }
+
+        #mod_publication_list .card-img-top {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.05), rgba(14, 116, 144, 0.10));
+        }
+
+        #mod_publication_list .publication-card-title {
+            line-height: 1.35;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 3.8rem;
+        }
+
+        #mod_publication_list .publication-summary {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.65;
+        }
+
+        #mod_publication_list .publication-author {
+            font-weight: 500;
+            letter-spacing: 0.01em;
+        }
+
+        #mod_publication_list .publication-hero {
+            border-radius: 1rem;
+        }
+
+        #mod_publication_list .page-link {
+            border-radius: 0.75rem;
+            margin: 0 0.2rem;
+            border-color: rgba(15, 23, 42, 0.08);
+            color: #0f172a;
+        }
+
+        #mod_publication_list .page-item.active .page-link {
+            background: #0f172a;
+            border-color: #0f172a;
+        }
+
+        @media (max-width: 991.98px) {
+            #mod_publication_list .publication-hero {
+                border-radius: 0.9rem;
+            }
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
 <div class="row mt-4" id="mod_publication_list">
     <div class="col-lg-3 col-md-4">
@@ -73,7 +164,7 @@
             </ol>
         </nav>
 
-        <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+        <div class="card mb-4 border-0 shadow-sm overflow-hidden publication-hero">
             <div class="card-body p-4 p-lg-5" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.04), rgba(14, 116, 144, 0.10));">
                 <span class="badge text-bg-dark mb-3">{{ lang.index.mod_publication.latest_publications.1|default(lang.index.mod_publication.2) }}</span>
                 {% if category_seo is not empty and category_seo != 'all' %}
@@ -118,23 +209,26 @@
                                 <h2 class="h5 card-title mb-2">
                                     <a href="{{ site.sadres }}publication/{{ publication.seo }}"
                                        title="{{ publication.name }}"
-                                       class="text-decoration-none text-dark">
+                                       class="text-decoration-none text-dark publication-card-title d-inline-block">
                                         {{ publication.name }}
                                     </a>
                                 </h2>
-                                <p class="text-muted small mb-3">
+                                <p class="text-muted small mb-3 publication-author">
                                     {{ publication.u_name }} {{ publication.u_last_name }}
                                 </p>
-                                <p class="card-text text-muted flex-grow-1">
+                                <p class="card-text text-muted flex-grow-1 publication-summary">
                                     {% if publication.summary is not empty %}
                                         {{ publication.summary|striptags|slice(0, 150) }}{% if publication.summary|striptags|length > 150 %}...{% endif %}
                                     {% else %}
                                         {{ publication.description|default(publication.name)|striptags|slice(0, 150) }}{% if publication.description|default(publication.name)|striptags|length > 150 %}...{% endif %}
                                     {% endif %}
                                 </p>
-                                <div class="mt-3">
+                                <div class="mt-3 d-flex justify-content-between align-items-center">
+                                    <span class="small text-muted">
+                                        <i class="bi bi-arrow-up-right me-1"></i>{{ publication.seo }}
+                                    </span>
                                     <a href="{{ site.sadres }}publication/{{ publication.seo }}" class="btn btn-sm btn-outline-dark">
-                                        {{ lang.index.mod_publication.latest_publications.2|default('View') }}
+                                        <i class="bi bi-eye me-1"></i>Oku
                                     </a>
                                 </div>
                             </div>
