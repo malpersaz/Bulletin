@@ -1,0 +1,23 @@
+<!-- SPEED DIAL FAB -->
+<div class="fab-container" id="fabContainer">
+    <div class="fab-actions">
+        <button class="fab-mini" onclick="alert('{{ lang.mod_user.fab.add_content_alert }}')" title="{{ lang.mod_user.fab.add_content }}">
+            <span class="fab-label">{{ lang.mod_user.fab.add_content }}</span>
+            <i class="bi bi-file-text-fill main-icon"></i>
+            <div class="add-badge"><i class="bi bi-plus"></i></div>
+        </button>
+        <button class="fab-mini" onclick="alert('{{ lang.mod_user.fab.add_video_alert }}')" title="{{ lang.mod_user.fab.add_video }}">
+            <span class="fab-label">{{ lang.mod_user.fab.add_video }}</span>
+            <i class="bi bi-camera-reels-fill main-icon"></i>
+            <div class="add-badge"><i class="bi bi-plus"></i></div>
+        </button>
+        <button class="fab-mini" onclick="alert('{{ lang.mod_user.fab.add_announcement_alert }}')" title="{{ lang.mod_user.fab.add_announcement }}">
+            <span class="fab-label">{{ lang.mod_user.fab.add_announcement }}</span>
+            <i class="bi bi-megaphone-fill main-icon"></i>
+            <div class="add-badge"><i class="bi bi-plus"></i></div>
+        </button>
+    </div>
+    <div class="fab-large" onclick="toggleFabMenu()">
+        <i class="bi bi-plus-lg" id="fabIcon"></i>
+    </div>
+</div>

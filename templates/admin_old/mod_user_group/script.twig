@@ -1,0 +1,145 @@
+<script type="text/javascript">
+function yenile(){
+	window.location.reload();
+}
+var simpleTreeCollection;
+$(document).ready(function(){
+	simpleTreeCollection = $('.simpleTree').simpleTree({
+		autoclose: false,
+
+		
+		afterClick:function(node){
+			//alert("text-"+$('span:first',node).text());
+			//alert($('span:first',node).attr('id'));
+		},
+		afterDblClick:function(node){
+			//alert($(node).attr('id'));
+			//alert($(node).attr('url'));
+			//alert($(node).attr('parent_id'));
+			var katid=$(node).attr('id');
+			$("#sayfaedit").slideDown('normal');
+			//$("#id").val(katid);
+			//$("#katedit").slideDown('normal');
+			//$("#id").val(katid);
+			//return ekle(katid,"AAAAAAAAAAA");
+		},
+		afterMove:function(destination, source, pos){
+			return tasi(destination.attr('id'),source.attr('id'));
+		},
+	//	afterAjax:function()
+	//	{
+			//alert('Loaded');
+		//},
+		animate:true
+		,docToFolderConvert:true
+	});
+
+});
+function sil(id){
+	$.prompt('{{lang.mod_user_group.8}}',
+			{
+			buttons:[
+				{title: '{{lang.mod_user_group.15}}',value:true},
+				{title: '{{lang.mod_user_group.16}}',value:false}
+					],
+			submit: function(v,m,f){
+					if(v===true){
+						 Del(id);
+					}
+		}
+	});
+}
+
+function Del(id){
+
+    if(id==false){
+        var id=simpleTreeCollection.get(0).getSelected().attr('id');
+    }
+
+
+	$.post('{{ site.adres }}mod_user_group/delete', { group_id: id},
+			   function(data){
+		 //  console.log(data);
+			     if(data=='Oke'){
+			    	 //simpleTreeCollection.get(0).delNode();
+					 	$.achtung({
+							className: 'achtungSuccess',
+							message: '{{lang.mod_user_group.9}}',
+							timeout:5
+						});
+			        // $("#sayfaedit").hide("slow");
+                     location.reload();
+			     }else{
+					 	$.achtung({
+							className: 'achtungFail',
+							message: data,
+							timeout:5
+						});
+				}
+			   });
+	return false;
+}
+
+function duzenle(id){
+	/*//alert(simpleTreeCollection.get(0).attr('id'));
+	$("#dad").val(simpleTreeCollection.get(0).getSelected().attr('name'));
+	$("#durl").val(simpleTreeCollection.get(0).getSelected().attr('url'));
+	$("#did").val(simpleTreeCollection.get(0).getSelected().attr('id'));
+	*/
+//	$("#sayfaedit").slideDown('normal');
+    if(id==false){
+        var id=simpleTreeCollection.get(0).getSelected().attr('id');
+    }
+	window.location = '{{ site.adres }}mod_user_group/edit/'+id;
+	return false;	
+}
+
+function tasi(parent_id,id){
+	var sira='';
+	$.post('{{ site.adres }}mod_user_group/tasi', { group_id: id, parent_id: parent_id },
+			   function(data){
+			     if(data=='Oke'){
+			    	 $("#menudegis").slideDown('normal');
+			    		$(".root li").each(function(){
+			    			var rez=$(this).attr("id");	
+			    				if(rez!=""){
+			    					sira+="&sira[]="+rez;	
+			    					}
+			    			});
+
+						$.ajax({
+							   type: "POST",
+							   url: "{{ site.adres }}mod_user_group/sira",
+							   data: sira,
+							   success: function(msg){
+										if(msg=='Oke'){
+											
+										 	$.achtung({
+												className: 'achtungSuccess',
+												message: '{{lang.mod_user_group.10}}',
+												timeout:5
+											});
+
+										}else{
+
+											$.prompt(msg,{
+												submit : yenile,
+												buttons: { Ok:true }
+											});
+											
+											}
+							        
+							   }
+							 });
+			    		
+
+			     }else{
+						$.prompt(data,{
+							submit : yenile,
+							buttons: { Ok:true }
+						});
+					 }
+			   });
+}
+
+</script>

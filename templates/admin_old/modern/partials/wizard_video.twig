@@ -1,0 +1,157 @@
+<!-- NEW: Video Embed Wizard -->
+<div id="videoWizard" class="wizard-overlay">
+    <!-- Wizard Header -->
+    <header class="wizard-header">
+        <button class="icon-btn" onclick="closeVideoWizard()"><i class="bi bi-x-lg"></i></button>
+        <div class="wizard-title">
+            <span id="videoWizardStepTitle">Dil Seçimi</span>
+            <span id="videoWizardStepCounter">1/6</span>
+        </div>
+        <button class="m3-btn-text" onclick="alert('Taslak Kaydedildi')">Kaydet</button>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="wizard-progress-bar">
+        <div class="wizard-progress-fill" id="videoWizardProgressFill" style="width: 16.6%;"></div>
+    </div>
+
+    <!-- Wizard Content Scrollable -->
+    <div class="wizard-content">
+
+        <!-- Step 1: Language -->
+        <div class="wizard-step active" id="videoWizardStep1">
+            <h2 class="step-headline">Video Dili</h2>
+            <p class="step-subhead">Videonun ana dilini seçiniz.</p>
+            <div class="selection-grid">
+                <div class="selection-card active" onclick="selectVideoWizardLang(this, 'TR')">
+                    <div class="selection-icon">TR</div>
+                    <div class="selection-label">Türkçe</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card" onclick="selectVideoWizardLang(this, 'EN')">
+                    <div class="selection-icon">EN</div>
+                    <div class="selection-label">English</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <!-- Other langs -->
+                <div class="selection-card" onclick="selectVideoWizardLang(this, 'KU')">
+                    <div class="selection-icon">KU</div>
+                    <div class="selection-label">Kurdî</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card" onclick="selectVideoWizardLang(this, 'AR')">
+                    <div class="selection-icon">AR</div>
+                    <div class="selection-label">العربية</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Category -->
+        <div class="wizard-step" id="videoWizardStep2">
+            <h2 class="step-headline">Video Kategorisi</h2>
+            <p class="step-subhead">Videonun ekleneceği kategoriyi belirleyin.</p>
+
+            <div class="m3-input-wrapper">
+                <div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
+                    <!-- Reusing the same category sheet logic for now, or we can make a new one if needed -->
+                    <span id="videoWizardSelectedCategory">Kategori Seçiniz...</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Embed Info -->
+        <div class="wizard-step" id="videoWizardStep3">
+            <h2 class="step-headline">Embed Bilgileri</h2>
+            <p class="step-subhead">Video embed kodu ve orijinal başlık.</p>
+
+            <div class="input-wrapper-lg">
+                <textarea class="m3-input-lg" id="videoEmbedInput" rows="4" placeholder=" "></textarea>
+                <label class="m3-floating-label">Embed Kodu (iframe)</label>
+            </div>
+
+            <div class="input-wrapper-lg" style="margin-top: 16px;">
+                <input type="text" class="m3-input-lg" id="videoOriginalTitleInput" placeholder=" "
+                    autocomplete="off">
+                <label class="m3-floating-label">Orijinal Başlık</label>
+            </div>
+        </div>
+
+        <!-- Step 4: Details -->
+        <div class="wizard-step" id="videoWizardStep4">
+            <h2 class="step-headline">Detaylar</h2>
+            <p class="step-subhead">Başlık, süre ve created_at bilgileri.</p>
+
+            <div class="input-wrapper-lg">
+                <input type="text" class="m3-input-lg" id="videoTitleInput" placeholder=" " autocomplete="off">
+                <label class="m3-floating-label">Video Başlığı</label>
+            </div>
+
+            <div class="input-wrapper-lg" style="margin-top: 16px;">
+                <input type="text" class="m3-input-lg" id="videoDurationInput" placeholder=" "
+                    autocomplete="off">
+                <label class="m3-floating-label">Süre (örn: 05:30)</label>
+            </div>
+
+            <div class="input-wrapper-lg" style="margin-top: 16px;">
+                <input type="datetime-local" class="m3-input-lg" id="videoDateInput">
+            </div>
+        </div>
+
+        <!-- Step 5: Image -->
+        <div class="wizard-step" id="videoWizardStep5">
+            <h2 class="step-headline">Kapak Görseli</h2>
+            <p class="step-subhead">Video için kapak görseli yükleyin.</p>
+
+            <div class="image-upload-area" onclick="document.getElementById('videoWizardImgInput').click()">
+                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                <p>Görsel Yüklemek İçin Dokunun</p>
+                <input type="file" id="videoWizardImgInput" hidden onchange="previewVideoWizardImage(this)">
+            </div>
+            <img id="videoWizardImgPreview" class="wizard-img-preview" style="display:none;">
+        </div>
+
+        <!-- Step 6: Publish -->
+        <div class="wizard-step" id="videoWizardStep6">
+            <h2 class="step-headline">Tamamla</h2>
+            <p class="step-subhead">Son kontroller ve yayınlama.</p>
+
+            <div class="publish-card">
+                <div class="publish-option">
+                    <div class="publish-label">
+                        <span>Yayında</span>
+                        <small>Video siteye eklendiği an herkes tarafından görülebilecek.</small>
+                    </div>
+                    <label class="m3-switch">
+                        <input type="checkbox" checked id="videoWizardPublishSwitch">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="wizard-summary">
+                <h3>Özet</h3>
+                <div class="summary-item">
+                    <i class="bi bi-translate"></i> <span id="videoSummaryLang">TR</span>
+                </div>
+                <div class="summary-item">
+                    <i class="bi bi-folder"></i> <span id="videoSummaryCategory">Seçilmedi</span>
+                </div>
+                <div class="summary-item">
+                    <i class="bi bi-camera-reels"></i> <span id="videoSummaryTitle">-</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Wizard Footer -->
+    <div class="wizard-footer">
+        <button class="m3-btn-outlined" id="btnVideoWizardPrev" onclick="prevVideoWizardStep()"
+            disabled>Geri</button>
+        <button class="m3-btn-filled" id="btnVideoWizardNext" onclick="nextVideoWizardStep()">Devam Et</button>
+        <button class="m3-btn-filled success" id="btnVideoWizardFinish" onclick="finishVideoWizard()"
+            style="display:none;">Kaydet ve Bitir</button>
+    </div>
+</div>

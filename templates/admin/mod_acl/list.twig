@@ -1,0 +1,256 @@
+{% extends 'admin/layout.twig' %}
+
+{% block title %}
+	{{ lang.mod_acl.list|default('Lîsteya Rolan') }}
+{% endblock %}
+
+{% block headline %}
+	{{ lang.mod_acl.list|default('Lîsteya Rolan') }}
+{% endblock %}
+
+{% block content %}
+<style>
+    .list-container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-bottom: 120px;
+    }
+    
+    .filter-card {
+        background: var(--md-sys-color-surface);
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: var(--md-sys-elevation-1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .bulk-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .m3-select {
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--md-sys-color-outline);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font-size: 14px;
+        outline: none;
+    }
+
+    .m3-btn {
+        padding: 8px 24px;
+        border-radius: 20px;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .m3-btn-primary {
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+    }
+    
+    .m3-btn-primary:active {
+        box-shadow: var(--md-sys-elevation-1);
+    }
+
+    .m3-btn-tonal {
+        background: var(--md-sys-color-secondary-container);
+        color: var(--md-sys-color-on-secondary-container);
+    }
+
+    .table-card {
+        background: var(--md-sys-color-surface);
+        border-radius: 12px;
+        box-shadow: var(--md-sys-elevation-1);
+        overflow: hidden;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .data-table th {
+        background: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: left;
+        padding: 16px;
+        font-weight: 500;
+        font-size: 14px;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+    }
+
+    .data-table td {
+        padding: 16px;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        vertical-align: middle;
+        color: var(--md-sys-color-on-surface);
+        font-size: 14px;
+    }
+
+    .data-table tr:hover {
+        background: rgba(0,0,0,0.02);
+    }
+
+    .data-table .filter-row td {
+        padding: 12px 16px;
+        background: rgba(0,0,0,0.01);
+    }
+
+    .m3-input-sm {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid var(--md-sys-color-outline);
+        background: var(--md-sys-color-surface);
+        color: var(--md-sys-color-on-surface);
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+    }
+    
+    .m3-input-sm:focus {
+        border-color: var(--md-sys-color-primary);
+        border-width: 2px;
+        padding: 7px 11px;
+    }
+
+    .table-checkbox {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--md-sys-color-primary);
+        cursor: pointer;
+    }
+
+    .action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--md-sys-color-on-surface-variant);
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .action-btn:hover {
+        background: rgba(0,0,0,0.05);
+        color: var(--md-sys-color-primary);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 8px;
+    }
+</style>
+
+<div class="list-container">
+    {% if error is defined %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '{{ lang.mod_acl.error|default("Çewtî") }}',
+                    text: '{{ mesaj }}',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            });
+        </script>
+    {% endif %}
+
+    {% if oke is defined %}
+        <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ mesaj }}</span>
+        </div>
+    {% endif %}
+
+    <div class="filter-card">
+        <div class="bulk-actions">
+            <select class="m3-select table-group-action-input">
+                <option value="">{{ lang.mod_acl.actions.select_action|default('Çalakî...') }}</option>
+                {% if session.permissions.mod_acl.sil is defined %}
+                    <option value="{{ lang.mod_acl.button.delete|default('Jê Bibe') }}">{{ lang.mod_acl.button.delete|default('Jê Bibe') }}</option>
+                {% endif %}
+            </select>
+            <button class="m3-btn m3-btn-tonal table-group-action-submit">
+                <i class="bi bi-check2"></i> {{ lang.mod_acl.button.apply|default('Bicih Bîne') }}
+            </button>
+        </div>
+        
+        <div class="header-actions">
+            <a href="{{ site.sadres }}mod_acl/ekle" class="m3-btn m3-btn-primary" style="text-decoration: none;">
+                <i class="bi bi-plus-lg"></i> {{ lang.mod_acl.button.add|default('Rola Nû') }}
+            </a>
+        </div>
+    </div>
+
+    <div class="table-card">
+        <div class="table-responsive">
+            <table class="data-table" id="mod_acl_datatable">
+                <thead>
+                    <tr>
+                        <th width="40px" style="text-align: center;">
+                            <input type="checkbox" class="table-checkbox group-checkable">
+                        </th>
+                        <th width="80px">{{ lang.mod_acl.admin.columns.id|default('ID') }}</th>
+                        <th>{{ lang.mod_acl.admin.columns.name|default('Navê Rolê') }}</th>
+                        <th width="120px">{{ lang.mod_acl.admin.columns.actions|default('Çalakî') }}</th>
+                    </tr>
+                    <tr class="filter-row">
+                        <td></td>
+                        <td>
+                            <input type="text" class="m3-input-sm form-filter" name="arama[id]">
+                        </td>
+                        <td>
+                            <input type="text" class="m3-input-sm form-filter" name="arama[name]">
+                        </td>
+                        <td>
+                            <div class="filter-actions">
+                                <button class="action-btn filter-submit" title="Lêgerîn" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container);">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                                <button class="action-btn filter-cancel" title="Sifir Bike">
+                                    <i class="bi bi-x-circle"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- DataTable rows will be loaded here via AJAX -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% include mod ~ '/script.twig' %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        mod_acl_table_ajax.init();
+    });
+</script>
+{% endblock %}

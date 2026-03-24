@@ -1,0 +1,356 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_sidebar = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+
+{% block title %}{{ lang.mod_settings.settings.title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.settings.title }}{% endblock %}
+
+{% macro asset_card(field, setting, selected_lang, label, help_text, accept, preview_type) %}
+    {% set value = attribute(setting, field)|default('') %}
+    {% set input_name = field == 'logo_path' ? 'logo_' ~ selected_lang : field ~ '_' ~ selected_lang %}
+    {% set extension = value and '.' in value ? value|split('.')|last|upper : '' %}
+    <section class="settings-asset-card" id="asset-card-{{ field }}">
+        <div class="settings-asset-top">
+            <div>
+                <h3>{{ label }}</h3>
+                <p>{{ help_text }}</p>
+            </div>
+            {% if value %}
+                <button
+                    class="asset-remove-btn"
+                    type="button"
+                    title="{{ lang.mod_settings.delete }}"
+                    aria-label="{{ lang.mod_settings.delete }}"
+                    data-remove-asset="true"
+                    data-lang="{{ selected_lang }}"
+                    data-field="{{ field }}">
+                    <i class="bi bi-trash3"></i>
+                    <span class="sr-only">{{ lang.mod_settings.delete }}</span>
+                </button>
+            {% endif %}
+        </div>
+
+        <div class="settings-asset-body">
+            <div class="asset-preview" id="asset-preview-{{ field }}">
+                {% if value %}
+                    {% if preview_type == 'file' %}
+                        <div class="asset-file-box">
+                            <i class="bi bi-file-earmark-code"></i>
+                            {% if extension %}
+                                <strong>{{ extension }}</strong>
+                            {% endif %}
+                            <a
+                                href="{{ site.adres }}static/mod_settings/{{ value }}"
+                                target="_blank"
+                                rel="noopener"
+                                title="{{ lang.mod_settings.view_file }}"
+                                aria-label="{{ lang.mod_settings.view_file }}">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                                <span class="sr-only">{{ lang.mod_settings.view_file }}</span>
+                            </a>
+                        </div>
+                    {% else %}
+                        <img src="{{ site.adres }}static/mod_settings/{{ value }}" alt="{{ label }}">
+                    {% endif %}
+                {% else %}
+                    <div class="asset-empty">
+                        <i class="bi bi-image"></i>
+                        <span>{{ lang.mod_settings.not_uploaded }}</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="asset-input-col">
+                <input type="text" class="m3-input-lg asset-path-input" id="current-{{ field }}" value="{{ value }}" readonly>
+
+                <label
+                    class="asset-file-trigger"
+                    for="upload-{{ field }}"
+                    title="{{ lang.mod_settings.choose_file }}"
+                    aria-label="{{ lang.mod_settings.choose_file }}">
+                    <i class="bi bi-upload"></i>
+                    <span>{{ lang.mod_settings.choose_file }}</span>
+                </label>
+                <input
+                    id="upload-{{ field }}"
+                    class="asset-file-input"
+                    type="file"
+                    name="{{ input_name }}"
+                    accept="{{ accept }}"
+                    data-asset-input="true"
+                    data-field="{{ field }}"
+                    data-preview-type="{{ preview_type }}"
+                    data-label="{{ label }}">
+
+                <div class="asset-file-name" id="file-name-{{ field }}">{{ lang.mod_settings.no_file_selected }}</div>
+                <div class="asset-file-meta" id="file-meta-{{ field }}"></div>
+            </div>
+        </div>
+    </section>
+{% endmacro %}
+
+{% macro generated_asset_row(label, value, base_url, empty_text) %}
+    <div class="generated-asset-row">
+        <span>{{ label }}</span>
+        {% if value %}
+            <a href="{{ base_url }}static/mod_settings/{{ value }}" target="_blank" rel="noopener">{{ value }}</a>
+        {% else %}
+            <span>{{ empty_text }}</span>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_settings.css?v=1.7">
+{% endblock %}
+
+{% block content %}
+<div class="settings-page">
+    {% if hata is defined %}
+        <div class="settings-banner error">
+            <i class="bi bi-exclamation-octagon-fill"></i>
+            <span>{{ mesaj }}</span>
+        </div>
+    {% endif %}
+
+    {% if oke is defined %}
+        <div class="settings-banner success">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ mesaj }}</span>
+        </div>
+    {% endif %}
+
+    {% if hatalar is defined %}
+        <div class="settings-banner error">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                {% for hata_mesaji in hatalar %}
+                    <div>{{ hata_mesaji }}</div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    <form
+        id="settingsForm"
+        method="POST"
+        action="{{ site.sadres }}mod_settings/edit/{{ selected_lang }}"
+        enctype="multipart/form-data"
+        class="settings-shell">
+
+        <input type="hidden" name="lang" value="{{ selected_lang }}">
+        <input type="hidden" name="edit" value="1">
+
+        <section class="settings-topbar">
+            <div class="settings-lang-inline">
+                <select
+                    name="selected_lang"
+                    id="selectedLang"
+                    class="m3-input-lg">
+                    {% for lang_item in langs %}
+                        <option value="{{ lang_item.seo }}" {% if lang_item.seo == selected_lang %}selected{% endif %}>
+                            {{ lang_item.name }} ({{ lang_item.seo|upper }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="m3-btn-half m3-btn-half-primary">
+                {{ lang.mod_settings.save }}
+            </button>
+        </section>
+
+        <section class="settings-panel">
+            <div class="settings-grid">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="title" id="title" placeholder=" " value="{{ setting.title|default('') }}">
+                    <label class="m3-floating-label">{{ lang.mod_settings.title }}</label>
+                </div>
+
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="description" id="description" placeholder=" ">{{ setting.description|default('') }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_settings.description }}</label>
+                </div>
+
+                <div class="settings-grid two">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="owner_name" id="owner_name" placeholder=" " value="{{ setting.owner_name|default('') }}">
+                        <label class="m3-floating-label">{{ lang.mod_settings.owner_name }}</label>
+                    </div>
+
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="established_year" id="established_year" placeholder=" " value="{{ setting.established_year|default('') }}">
+                        <label class="m3-floating-label">{{ lang.mod_settings.established_year }}</label>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="settings-panel">
+            <div class="settings-contact-grid">
+                {% include 'mod_user/parts/phone_input.twig' with {
+                    'phone_value': setting.phone|default(''),
+                    'label_text': lang.mod_settings.phone,
+                    'input_id': 'phone',
+                    'field_name': 'phone',
+                    'store_mode': 'full',
+                    'icon_class': 'bi-telephone'
+                } %}
+
+                {% include 'mod_user/parts/phone_input.twig' with {
+                    'phone_value': setting.whatsapp|default(''),
+                    'label_text': lang.mod_settings.whatsapp,
+                    'input_id': 'whatsapp',
+                    'field_name': 'whatsapp',
+                    'store_mode': 'full',
+                    'icon_class': 'bi-whatsapp'
+                } %}
+            </div>
+
+            <div class="m3-input-wrapper">
+                <input type="email" class="m3-input-lg" name="email" id="email" placeholder=" " value="{{ setting.email|default('') }}">
+                <label class="m3-floating-label">{{ lang.mod_settings.email }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <textarea class="m3-input-lg" name="office_address" id="office_address" placeholder=" ">{{ setting.office_address|default('') }}</textarea>
+                <label class="m3-floating-label">{{ lang.mod_settings.office_address }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <textarea class="m3-input-lg" name="work_address" id="work_address" placeholder=" ">{{ setting.work_address|default('') }}</textarea>
+                <label class="m3-floating-label">{{ lang.mod_settings.work_address }}</label>
+            </div>
+        </section>
+
+        <details class="settings-section-toggle" open>
+            <summary>
+                <span class="settings-section-icon"><i class="bi bi-search"></i></span>
+                <span class="settings-section-label">
+                    <strong>{{ lang.mod_settings.sections.seo_title }}</strong>
+                    <span>{{ lang.mod_settings.sections.seo_description }}</span>
+                </span>
+                <span class="settings-section-chevron"><i class="bi bi-chevron-down"></i></span>
+            </summary>
+            <div class="settings-section-body">
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="map_embed_code" id="map_embed_code" placeholder=" ">{{ setting.map_embed_code|default('') }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_settings.map_embed_code }}</label>
+                </div>
+
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="google_search_console" id="google_search_console" placeholder=" ">{{ setting.google_search_console|default('') }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_settings.google_search_console }}</label>
+                </div>
+
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="google_analytics" id="google_analytics" placeholder=" ">{{ setting.google_analytics|default('') }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_settings.google_analytics }}</label>
+                </div>
+
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="meta_tags" id="meta_tags" placeholder=" ">{{ setting.meta_tags|default('') }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_settings.meta_tags }}</label>
+                </div>
+            </div>
+        </details>
+
+
+
+        <details class="settings-section-toggle" id="assetsSection">
+            <summary>
+                <span class="settings-section-icon"><i class="bi bi-images"></i></span>
+                <span class="settings-section-label">
+                    <strong>{{ lang.mod_settings.sections.assets_title }}</strong>
+                    <span>{{ lang.mod_settings.sections.assets_description }}</span>
+                </span>
+                <span class="settings-section-chevron"><i class="bi bi-chevron-down"></i></span>
+            </summary>
+            <div class="settings-section-body">
+                <section class="settings-asset-card mb-4" style="display: flex; justify-content: space-between; align-items: center; padding-right: 20px; padding-bottom: 20px;">
+                    <div class="settings-asset-top" style="border-bottom: none; padding-bottom: 0; margin-bottom: 0; flex: 1;">
+                        <div>
+                            <h3 style="margin-bottom: 2px;">{{ lang.mod_settings.show_logo_title }}</h3>
+                            <p style="margin-bottom: 0;">{{ lang.mod_settings.show_logo_desc }}</p>
+                        </div>
+                    </div>
+                    <label class="m3-modern-switch" title="{{ lang.mod_settings.show_logo_title }}" style="margin-left: 15px;">
+                        <input type="hidden" name="show_logo" value="n">
+                        <input type="checkbox" id="show_logo" name="show_logo" value="y" {% if setting.show_logo|default('y') == 'y' %}checked{% endif %}>
+                        <span class="m3-modern-slider"></span>
+                    </label>
+                </section>
+                <div class="settings-asset-grid">
+                    {{ _self.asset_card('logo_path', setting|default({}), selected_lang, lang.mod_settings.logo_path, lang.mod_settings.logo_help_text, 'image/png', 'image') }}
+                    <div class="asset-generate-action">
+                        <button type="button" id="generateAssetsButton" class="m3-btn-half asset-generate-btn">
+                            {{ lang.mod_settings.button.generate_assets }}
+                        </button>
+                    </div>
+                    <div class="generated-asset-list">
+                        {{ _self.generated_asset_row(lang.mod_settings.favicon_path, setting.favicon_path|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                        {{ _self.generated_asset_row(lang.mod_settings.favicon_96, setting.favicon_96|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                        {{ _self.generated_asset_row(lang.mod_settings.apple_touch_icon, setting.apple_touch_icon|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                        {{ _self.generated_asset_row(lang.mod_settings.manifest_icon_192, setting.manifest_192|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                        {{ _self.generated_asset_row(lang.mod_settings.manifest_icon_512, setting.manifest_512|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                        {{ _self.generated_asset_row(lang.mod_settings.web_manifest, setting.site_webmanifest|default(''), site.adres, lang.mod_settings.not_uploaded) }}
+                    </div>
+                </div>
+            </div>
+        </details>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="m3-final-bar">
+    <a
+        href="{{ site.sadres }}mod_user/panel"
+        class="m3-btn-half m3-btn-half-neutral"
+        data-skip-unsaved-warning="true">
+        {{ lang.mod_settings.button.close }}
+    </a>
+    <button
+        type="submit"
+        form="settingsForm"
+        class="m3-btn-half m3-btn-half-primary">
+        {{ lang.mod_settings.save }}
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.modSettingsConfig = {
+        selectedLang: '{{ selected_lang|e('js') }}',
+        editBaseUrl: '{{ site.sadres }}mod_settings/edit/',
+        generateUrl: '{{ site.sadres }}mod_settings/generate_assets_ajax',
+        removeUrl: '{{ site.sadres }}mod_settings/image_remove_image',
+        toggleLogoUrl: '{{ site.sadres }}mod_settings/ajax_toggle_logo',
+
+        messages: {
+            confirm: '{{ lang.mod_settings.button.confirm|e('js') }}',
+            cancel: '{{ lang.mod_settings.button.cancel|e('js') }}',
+            delete: '{{ lang.mod_settings.delete|e('js') }}',
+            confirmDelete: '{{ lang.mod_settings.confirm_delete|e('js') }}',
+            deleteSuccess: '{{ lang.mod_settings.delete_success|e('js') }}',
+            deleteError: '{{ lang.mod_settings.delete_error|e('js') }}',
+            genericError: '{{ lang.mod_settings.generic_error|e('js') }}',
+            noFileSelected: '{{ lang.mod_settings.no_file_selected|e('js') }}',
+            notUploaded: '{{ lang.mod_settings.not_uploaded|e('js') }}',
+            unsavedChanges: '{{ lang.mod_settings.unsaved_changes|e('js') }}',
+            leavePage: '{{ lang.mod_settings.button.leave_page|e('js') }}',
+            stayOnPage: '{{ lang.mod_settings.button.stay|e('js') }}',
+            edit: '{{ lang.mod_settings.button.edit|e('js') }}',
+            save: '{{ lang.mod_settings.save|e('js') }}'
+        }
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_settings.js?v=1.7"></script>
+{% endblock %}

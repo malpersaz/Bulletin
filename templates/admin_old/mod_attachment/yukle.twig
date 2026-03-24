@@ -1,0 +1,86 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+	<script>
+		// Method 1: Using Dropzone.options (requires camelCase ID)
+Dropzone.options.uploader = {
+url: "{{ site.sadres }}mod_attachment/up",
+paramName: "file",
+params: {
+'vid': '{{ vid }}',
+'isim': 'file',
+'sid': '{{ session.sid }}',
+'mod_name': '{{ mod_name }}'
+},
+success: function (file, response) {
+var kobmesaj = '<em>' + file.name + '</em> (' + Math.round(file.size / 1024) + ' KB) ';
+$.achtung({className: 'achtungSuccess', message: {{ lang.mod_attachment.admin.35|format("'+kobmesaj+'")|raw }}, timeout: 8});
+},
+error: function (file, errorMessage, xhr) {
+console.error('Upload error:', errorMessage);
+$.achtung({
+className: 'achtungFail',
+message: 'Upload failed: ' + errorMessage,
+timeout: 10
+});
+}
+};
+
+// Alternative Method 2: Direct initialization (more reliable)
+/*
+$(document).ready(function() {
+    var myDropzone = new Dropzone("#uploader", {
+        url: "/mod_attachment/up",
+        paramName: "file",
+        params: {
+            'vid': '{{ vid }}',
+            'isim': 'file',
+            'sid': '{{ session.sid }}',
+            'mod_name': '{{ mod_name }}'
+        },
+        success: function(file, response) {
+            var kobmesaj = '<em>' + file.name + '</em> (' + Math.round(file.size / 1024) + ' KB) ';
+            $.achtung({
+                className: 'achtungSuccess',
+                message: {{ lang.mod_attachment.admin.35|format("'+kobmesaj+'") }},
+                timeout: 8
+            });
+        },
+        error: function(file, errorMessage, xhr) {
+            console.error('Upload error:', errorMessage);
+            $.achtung({
+                className: 'achtungFail',
+                message: 'Upload failed: ' + errorMessage,
+                timeout: 10
+            });
+        }
+    });
+});
+*/
+	</script>
+{% endblock %}
+{% block title %}
+	{{ lang.mod_attachment.admin.22|format(d[value]) |e }}
+{% endblock %}
+{% block body %}
+	<div class="portlet box green">
+		<div class="portlet-title">
+			<div class="caption">
+				<a href="javascript:history.go(-1)" class="btn red">
+					<i class="fa fa-backward"></i>
+					{{ lang.mod_attachment.admin.12 }}
+				</a>
+			</div>
+		</div>
+		<div class="portlet-body">
+			<div class="alert alert-info">
+				<strong>{{ lang.mod_attachment.admin.info }}</strong>
+				{{ lang.mod_attachment.admin.3 }}
+			</div>
+			<div class="alert alert-info">
+				<strong>{{ lang.mod_attachment.admin.message }}</strong>
+				{{ lang.mod_attachment.admin.2 }}
+			</div>
+			<div id="uploader" class="dropzone"></div>
+		</div>
+	</div>
+{% endblock %}

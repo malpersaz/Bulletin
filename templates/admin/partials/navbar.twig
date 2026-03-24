@@ -1,0 +1,14 @@
+<!-- NAVIGATION BAR -->
+{% if not hide_navbar %}
+<nav class="navigation-bar">
+    <div class="nav-dest active" title="{{ lang.mod_content.list }}" onclick="window.location.href='{{ site.sadres }}mod_content/list'">
+        <div class="nav-icon-container"><i class="bi bi-file-text-fill"></i></div>
+    </div>
+    <div class="nav-dest" title="{{ lang.mod_content.button.gallery }}">
+        <div class="nav-icon-container"><i class="bi bi-images"></i></div>
+    </div>
+    <div class="nav-dest" title="{{ lang.mod_content.button.file }}">
+        <div class="nav-icon-container"><i class="bi bi-file-earmark-text-fill"></i></div>
+    </div>
+</nav>
+{% endif %}

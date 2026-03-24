@@ -1,0 +1,576 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+{% set hide_search = true %}
+{% set hide_fab = true %}
+
+{% block title %}{{ lang.mod_slider.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_slider.edit }}{% endblock %}
+
+{% block content %}
+    <style>
+        .edit-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 120px;
+        }
+        .edit-card {
+            background: var(--md-sys-color-surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+        .card-header-edit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: var(--md-sys-color-primary);
+        }
+        .card-header-edit i {
+            font-size: 20px;
+        }
+        .card-header-edit h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .form-row {
+            margin-bottom: 20px;
+        }
+        .form-row:last-child {
+            margin-bottom: 0;
+        }
+        .m3-input-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .m3-input-wrapper:focus-within {
+            z-index: 9999;
+        }
+        .m3-input-lg {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background: transparent;
+            color: var(--md-sys-color-on-surface);
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .m3-input-lg:focus {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 11px 15px;
+        }
+        .m3-floating-label {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .m3-input-lg:focus ~ .m3-floating-label,
+        .m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label,
+        select.m3-input-lg ~ .m3-floating-label,
+        input[type="datetime-local"].m3-input-lg ~ .m3-floating-label {
+            top: -10px;
+            left: 12px;
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            background: var(--md-sys-color-surface);
+            padding: 0 4px;
+        }
+        .m3-input-lg:focus ~ .m3-floating-label,
+        select.m3-input-lg:focus ~ .m3-floating-label,
+        input[type="datetime-local"].m3-input-lg:focus ~ .m3-floating-label {
+            color: var(--md-sys-color-primary);
+        }
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .selection-card {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            user-select: none;
+            background: var(--md-sys-color-surface);
+        }
+        .selection-card.active {
+            border-color: var(--md-sys-color-primary);
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+        .selection-card .check-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--md-sys-color-primary);
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s;
+        }
+        .selection-card.active .check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .image-upload-area { position: relative; }
+        .remove-img-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ba1a1a !important;
+            color: white !important;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+    </style>
+
+    <form id="editForm" method="POST" action="{{ site.sadres }}mod_slider/edit/{{ d.id }}" enctype="multipart/form-data">
+        <input type="hidden" name="edit" value="{{ lang.mod_slider.button.edit }}">
+
+        <div class="edit-container">
+            {% if error is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let errorHtml = '<div style="text-align: left;">';
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ mesaj }}</b></div>';
+                        {% if errors is defined and errors|length > 0 %}
+                            errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
+                            {% for e in errors %}
+                                errorHtml += '<li style="margin-bottom: 4px;">{{ e }}</li>';
+                            {% endfor %}
+                            errorHtml += '</ul>';
+                        {% endif %}
+                        errorHtml += '</div>';
+
+                        Swal.fire({
+                            icon: 'warning',
+                            html: errorHtml,
+                            confirmButtonText: '{{ lang.mod_slider.button.ok }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "{{ site.sadres }}mod_slider/list";
+                    }, 2000);
+                </script>
+            {% endif %}
+
+            {# Card 1: Basics #}
+            <div class="edit-card">
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="lang" id="editLangSelect">
+                            {% if lang_lang is defined %}
+                                {% for l in lang_lang %}
+                                    <option value="{{ l.seo }}" {% if d.lang == l.seo %}selected{% endif %}>{{ l.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_slider.admin.columns.lang }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="name" id="nameInput" placeholder=" " value="{{ d.name }}" required>
+                        <label class="m3-floating-label">{{ lang.mod_slider.admin.columns.name }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="url" id="urlInput" value="{{ d.url }}" placeholder=" ">
+                        <label class="m3-floating-label">{{ lang.mod_slider.admin.columns.url }}</label>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="datetime-local" class="m3-input-lg" name="created_at" id="createdInput" value="{{ d.created_at|replace({' ': 'T'}) }}">
+                        <label class="m3-floating-label">{{ lang.mod_slider.admin.columns.created_at }}</label>
+                    </div>
+                </div>
+            </div>
+
+            {# Card 2: Details #}
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-file-earmark-text"></i>
+                    <h3>{{ lang.mod_slider.admin.columns.description }} &amp; {{ lang.mod_slider.admin.columns.image }}</h3>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <textarea class="m3-input-lg" name="description" id="introInput" rows="3" placeholder=" ">{{ d.description }}</textarea>
+                        <label class="m3-floating-label">{{ lang.mod_slider.admin.columns.description }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row" style="display:flex; gap:16px; align-items:flex-end;">
+                    <div style="flex: none; width: 160px;">
+                        <label class="filter-group-label" style="display:block; margin-bottom:8px; font-size:12px;">{{ lang.mod_slider.admin.columns.image_desktop }}</label>
+                        <label for="imgInput" class="image-upload-area" id="areaDesk" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: {% if d.image %}0{% else %}12px{% endif %}; border: 2px dashed var(--md-sys-color-outline); border-radius: 8px; width: 160px; height: 90px !important; min-height: 0 !important; overflow: hidden; position: relative; box-sizing: border-box;">
+                            {% if d.image %}
+                                <img src="{{ site.radres }}mod_slider/thumb/{{ d.image }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
+                                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage('desk')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>
+                            {% else %}
+                                <i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
+                            {% endif %}
+                        </label>
+                        <input type="file" name="image" id="imgInput" style="display:none;" accept="image/*" onchange="previewDeskImage(this)">
+                    </div>
+                    <div style="flex: none; width: 68px;">
+                        <label class="filter-group-label" style="display:block; margin-bottom:8px; font-size:12px;">{{ lang.mod_slider.admin.columns.image_mobile }}</label>
+                        <label for="imgMobileInput" class="image-upload-area" id="areaMob" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: {% if d.image_mobile %}0{% else %}12px{% endif %}; border: 2px dashed var(--md-sys-color-outline); border-radius: 8px; width: 68px; height: 90px !important; min-height: 0 !important; overflow: hidden; position: relative; box-sizing: border-box;">
+                            {% if d.image_mobile %}
+                                <img src="{{ site.radres }}mod_slider/{{ d.image_mobile }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
+                                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage('mob')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>
+                            {% else %}
+                                <i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
+                            {% endif %}
+                        </label>
+                        <input type="file" name="image_mobile" id="imgMobileInput" style="display:none;" accept="image/*" onchange="previewMobImage(this)">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label">{{ lang.mod_slider.admin.columns.target }}</label>
+                    <div class="selection-grid" style="grid-template-columns: 1fr 1fr; margin-top:8px;">
+                        <input type="hidden" name="target" id="targetHidden" value="{{ d.target|default('y') }}">
+                        <div class="selection-card {% if d.target == 'y' %} active {% endif %}" onclick="selectTargetStatus(this, 'y')" style="padding:12px;">
+                            <div class="selection-label">{{ lang.mod_slider.admin.radio.target_e }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.target != 'y' %} active {% endif %}" onclick="selectTargetStatus(this, 'n')" style="padding:12px;">
+                            <div class="selection-label">{{ lang.mod_slider.admin.radio.target_h }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <label class="filter-group-label" style="display:block; margin-bottom:8px;">{{ lang.mod_slider.admin.columns.acl_id|raw }}</label>
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="acl_id">
+                            <option value="0">{{ lang.mod_slider.acl_all }}</option>
+                            {% if mod_acl_acl_id is defined %}
+                                {% for item in mod_acl_acl_id %}
+                                    <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            {# Card 3: Publishing #}
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-send"></i>
+                    <h3>{{ lang.mod_slider.admin.columns.status }}</h3>
+                </div>
+                
+                <input type="hidden" name="status" value="{{ d.status|default('y') }}" id="publishHidden">
+                
+                <div class="selection-grid">
+                    <div class="selection-card {% if d.status == 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'y')">
+                        <i class="bi bi-cloud-check selection-icon" style="font-size:24px;"></i>
+                        <div class="selection-label">{{ lang.mod_slider.admin.radio.publish_yes }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    <div class="selection-card {% if d.status != 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'n')">
+                        <i class="bi bi-pencil-square selection-icon" style="font-size:24px;"></i>
+                        <div class="selection-label">{{ lang.mod_slider.admin.radio.publish_no }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <style>
+        .m3-final-bar {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            height: 80px !important;
+            background: var(--md-sys-color-surface-container) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 12px !important;
+            padding: 0 16px !important;
+            z-index: 1000 !important;
+            border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+        }
+        .m3-btn-half {
+            flex: 1 !important;
+            height: 52px !important;
+            border-radius: 26px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+        .m3-btn-half:active {
+            transform: scale(0.98) !important;
+            opacity: 0.9 !important;
+        }
+        @media(min-width: 600px) {
+            .m3-final-bar {
+                max-width: 480px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+                border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+                border-bottom-left-radius: 32px !important;
+                border-bottom-right-radius: 32px !important;
+                bottom: 8px !important;
+                height: 88px !important;
+                width: calc(100% - 16px) !important;
+            }
+        }
+    </style>
+    <div class="m3-final-bar">
+        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+            <i class="bi bi-x-lg"></i>
+            {{ lang.mod_slider.button.cancel }}
+        </button>
+        <button type="button" class="m3-btn-half" onclick="submitEditForm()" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+            <i class="bi bi-check-lg"></i>
+            {{ lang.mod_slider.button.edit }}
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <link href="{{ site.tadres }}base_static/js/cropper/cropper.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="{{ site.tadres }}base_static/js/cropper/cropper.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function selectPublishStatus(el, val) {
+            el.closest('.selection-grid').querySelectorAll('.selection-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('publishHidden').value = val;
+        }
+
+        function selectTargetStatus(el, val) {
+            el.closest('.selection-grid').querySelectorAll('.selection-card').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('targetHidden').value = val;
+        }
+
+        function previewDeskImage(input) {
+            if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.cropper === 'undefined') {
+                if (typeof Swal !== 'undefined') { Swal.fire('{{ lang.mod_slider.cropper.error_title|escape("js") }}', '{{ lang.mod_slider.cropper.error_plugin|escape("js") }}', 'error'); } else { alert('{{ lang.mod_slider.cropper.error_plugin|escape("js") }}'); }
+                return;
+            }
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    let imageSrc = e.target.result;
+                    Swal.fire({
+                        title: '{{ lang.mod_slider.cropper.title_desk|escape("js") }}',
+                        html: '<div><img id="cropperObjDesk" src="'+imageSrc+'" style="max-width: 100%; display:block;"></div>',
+                        width: '80%',
+                        allowOutsideClick: false,
+                        showCancelButton: true,
+                        confirmButtonText: '{{ lang.mod_slider.cropper.finish|escape("js") }}',
+                        cancelButtonText: '{{ lang.mod_slider.button.vazgec|escape("js") }}',
+                        didOpen: () => {
+                            const img = document.getElementById('cropperObjDesk');
+                            const initCropper = () => { window.jQuery(img).cropper({ aspectRatio: 16 / 9, strict: true }); };
+                            if(img.complete) { initCropper(); } else { img.onload = initCropper; }
+                        },
+                        preConfirm: () => {
+                            return new Promise((resolve) => {
+                                let canvas = window.jQuery('#cropperObjDesk').cropper('getCroppedCanvas', { width: 1920, height: 1080 });
+                                if (canvas && canvas.toBlob) {
+                                    canvas.toBlob((blobDesk) => { resolve(blobDesk); }, 'image/jpeg', 0.9);
+                                } else if (canvas) {
+                                    let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                                    let arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                                    while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+                                    resolve(new Blob([u8arr], {type:mime}));
+                                } else {
+                                    Swal.showValidationMessage('{{ lang.mod_slider.cropper.error_canvas|escape("js") }}');
+                                    resolve(false);
+                                }
+                            });
+                        }
+                    }).then((result) => {
+                        if(result.isConfirmed) {
+                            let blobDesk = result.value;
+                            const fileDesk = new File([blobDesk], 'desktop.jpg', { type: 'image/jpeg' });
+                            const dtDesk = new DataTransfer(); dtDesk.items.add(fileDesk);
+                            document.getElementById('imgInput').files = dtDesk.files;
+
+                            const areaDesk = document.getElementById('areaDesk');
+                            areaDesk.style.padding = '0';
+                            areaDesk.innerHTML = '<img src="'+URL.createObjectURL(blobDesk)+'" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">' +
+                                                 '<button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage(\'desk\')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>';
+                        } else { document.getElementById('imgInput').value = ''; }
+                    });
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function previewMobImage(input) {
+            if (typeof window.jQuery === 'undefined' || typeof window.jQuery.fn.cropper === 'undefined') {
+                if (typeof Swal !== 'undefined') { Swal.fire('{{ lang.mod_slider.cropper.error_title|escape("js") }}', '{{ lang.mod_slider.cropper.error_plugin|escape("js") }}', 'error'); } else { alert('{{ lang.mod_slider.cropper.error_plugin|escape("js") }}'); }
+                return;
+            }
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    let imageSrc = e.target.result;
+                    Swal.fire({
+                        title: '{{ lang.mod_slider.cropper.title_mob|escape("js") }}',
+                        html: '<div><img id="cropperObjMob" src="'+imageSrc+'" style="max-width: 100%; display:block;"></div>',
+                        width: '80%',
+                        allowOutsideClick: false,
+                        showCancelButton: true,
+                        confirmButtonText: '{{ lang.mod_slider.cropper.finish|escape("js") }}',
+                        cancelButtonText: '{{ lang.mod_slider.button.vazgec|escape("js") }}',
+                        didOpen: () => {
+                            const img = document.getElementById('cropperObjMob');
+                            const initCropper = () => { window.jQuery(img).cropper({ aspectRatio: 9 / 16, strict: true }); };
+                            if(img.complete) { initCropper(); } else { img.onload = initCropper; }
+                        },
+                        preConfirm: () => {
+                            return new Promise((resolve) => {
+                                let canvas = window.jQuery('#cropperObjMob').cropper('getCroppedCanvas', { width: 1080, height: 1920 });
+                                if (canvas && canvas.toBlob) {
+                                    canvas.toBlob((blobMob) => { resolve(blobMob); }, 'image/jpeg', 0.9);
+                                } else if (canvas) {
+                                    let dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                                    let arr = dataUrl.split(','), mime = arr[0].match(/:(.*?);/)[1], bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                                    while(n--){ u8arr[n] = bstr.charCodeAt(n); }
+                                    resolve(new Blob([u8arr], {type:mime}));
+                                } else {
+                                    Swal.showValidationMessage('{{ lang.mod_slider.cropper.error_canvas|escape("js") }}');
+                                    resolve(false);
+                                }
+                            });
+                        }
+                    }).then((result) => {
+                        if(result.isConfirmed) {
+                            let blobMob = result.value;
+                            const fileMob = new File([blobMob], 'mobile.jpg', { type: 'image/jpeg' });
+                            const dtMob = new DataTransfer(); dtMob.items.add(fileMob);
+                            document.getElementById('imgMobileInput').files = dtMob.files;
+
+                            const areaMob = document.getElementById('areaMob');
+                            areaMob.style.padding = '0';
+                            areaMob.innerHTML = '<img src="'+URL.createObjectURL(blobMob)+'" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">' + 
+                                                '<button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage(\'mob\')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>';
+                        } else { document.getElementById('imgMobileInput').value = ''; }
+                    });
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeEditImage(type) {
+            const id = "{{ d.id }}";
+            Swal.fire({
+                title: '{{ lang.mod_slider.remove_image }}',
+                text: '{{ lang.mod_slider.messages.confirm_delete }}',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ba1a1a',
+                cancelButtonColor: '#6e7881',
+                confirmButtonText: '{{ lang.mod_slider.button.yes }}',
+                cancelButtonText: '{{ lang.mod_slider.button.no }}'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    var formData = new URLSearchParams();
+                    formData.append('id', id);
+                    if (type) formData.append('type', type);
+
+                    fetch('{{ site.sadres }}mod_slider/image_remove_image', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: formData
+                    })
+                    .then(r => r.text())
+                    .then(data => {
+                        if (data.trim() === 'Oke') {
+                            Swal.fire('{{ lang.mod_slider.button.ok }}', '{{ lang.mod_slider.remove_image_oke }}', 'success');
+                            if (type === 'desk') {
+                                const areaDesk = document.getElementById('areaDesk');
+                                areaDesk.style.padding = '12px';
+                                areaDesk.innerHTML = '<i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>';
+                                document.getElementById('imgInput').value = '';
+                            } else if (type === 'mob') {
+                                const areaMob = document.getElementById('areaMob');
+                                areaMob.style.padding = '12px';
+                                areaMob.innerHTML = '<i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>';
+                                document.getElementById('imgMobileInput').value = '';
+                            }
+                        } else {
+                            Swal.fire('{{ lang.mod_slider.error }}', data, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+        function submitEditForm() {
+            const form = document.getElementById('editForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            form.submit();
+        }
+    </script>
+{% endblock %}

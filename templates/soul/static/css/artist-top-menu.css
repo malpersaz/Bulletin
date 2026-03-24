@@ -1,0 +1,271 @@
+/* Artist Top Menu - Modern Floating Glassmorphism design */
+
+:root {
+    --artist-navbar-height: 70px;
+    --artist-float-margin: 20px;
+    --artist-blur: 15px;
+    --artist-glass-bg: rgba(255, 255, 255, 0.7);
+    --artist-glass-border: rgba(255, 255, 255, 0.3);
+    --artist-glass-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+[data-bs-theme="dark"] {
+    --artist-glass-bg: rgba(15, 23, 42, 0.7);
+    --artist-glass-border: rgba(255, 255, 255, 0.1);
+    --artist-glass-shadow: 0 15px 45px rgba(0, 0, 0, 0.4);
+}
+
+body {
+    padding-top: calc(var(--artist-navbar-height) + var(--artist-float-margin));
+}
+
+/* Base Navbar Container (Full width, transparent) */
+.artist-top-nav-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1050;
+    padding: var(--artist-float-margin) 0;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+    /* Let clicks pass through to bar */
+}
+
+/* The actual floating bar */
+.artist-navbar-floating-bar {
+    pointer-events: auto;
+    /* Re-enable clicks */
+    background: var(--artist-glass-bg);
+    backdrop-filter: blur(var(--artist-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--artist-blur)) saturate(180%);
+    border: 1px solid var(--artist-glass-border);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    box-shadow: var(--artist-glass-shadow);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Scrolled state */
+.artist-top-nav-container.scrolled {
+    padding: 10px 0;
+}
+
+.artist-top-nav-container.scrolled .artist-navbar-floating-bar {
+    border-radius: 20px;
+    transform: scale(0.98);
+}
+
+/* Brand area */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.brand-text {
+    transition: opacity 0.3s ease;
+}
+
+/* Navigation Links */
+.artist-nav-links {
+    display: flex;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.artist-nav-link {
+    color: var(--bs-body-color);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.artist-nav-link:hover,
+.artist-nav-link.active {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6 !important;
+}
+
+/* Action Center (Lêgerîn, Ziman, Mafîd) */
+.artist-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Search mini pill */
+.artist-search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.artist-search-input {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50px;
+    padding: 0.4rem 1rem 0.4rem 2.2rem;
+    font-size: 0.85rem;
+    width: 150px;
+    transition: all 0.3s ease;
+    color: var(--bs-body-color);
+}
+
+[data-bs-theme="dark"] .artist-search-input {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.artist-search-input:focus {
+    width: 200px;
+    background: #fff;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+[data-bs-theme="dark"] .artist-search-input:focus {
+    background: #1e293b;
+    border-color: #3b82f6;
+}
+
+.artist-search-icon {
+    position: absolute;
+    left: 0.8rem;
+    color: #64748b;
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+[data-bs-theme="dark"] .artist-search-icon {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Profile area / Login button */
+.artist-profile-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(59, 130, 246, 0.1);
+    padding: 2px 10px 2px 2px;
+    border-radius: 50px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .artist-profile-box {
+    background: rgba(59, 130, 246, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.artist-profile-box:hover {
+    background: rgba(59, 130, 246, 0.25);
+    transform: translateY(-1px);
+}
+
+/* Auth Buttons */
+.auth-buttons .btn-outline-primary {
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #3b82f6;
+}
+
+[data-bs-theme="dark"] .auth-buttons .btn-outline-primary {
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #60a5fa;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+[data-bs-theme="dark"] .auth-buttons .btn-outline-primary:hover {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.artist-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #fff;
+}
+
+[data-bs-theme="dark"] .artist-avatar {
+    border-color: #1e293b;
+}
+
+/* Mobile Toggler */
+.artist-mobile-toggler {
+    display: none;
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    font-size: 1.5rem;
+    color: var(--bs-body-color);
+}
+
+/* Mobile Responsive */
+@media (max-width: 991.98px) {
+    .artist-top-nav-container {
+        padding: 10px;
+    }
+
+    .artist-nav-links {
+        display: none;
+        /* Hide on mobile - will use a modal or off-canvas if needed */
+    }
+
+    .artist-mobile-toggler {
+        display: block;
+    }
+
+    .artist-search-bar {
+        display: none;
+    }
+}
+
+/* Glass Dropdowns - Unique class to avoid conflicts with footer.css */
+.artist-glass-dropdown {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background-color: var(--artist-glass-bg) !important;
+    border: 1px solid var(--artist-glass-border) !important;
+    border-radius: 1.25rem !important;
+    box-shadow: var(--artist-glass-shadow) !important;
+    padding: 0.75rem !important;
+    margin-top: 15px !important;
+}
+
+/* Fix text color in light mode for dropdowns */
+[data-bs-theme="light"] .artist-glass-dropdown .dropdown-item {
+    color: #1e293b !important;
+}
+
+[data-bs-theme="dark"] .artist-glass-dropdown .dropdown-item {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.artist-glass-dropdown .dropdown-item {
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem !important;
+    transition: all 0.2s ease;
+}
+
+.artist-glass-dropdown .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1) !important;
+    color: #3b82f6 !important;
+}

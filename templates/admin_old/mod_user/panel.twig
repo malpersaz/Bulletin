@@ -1,0 +1,5 @@
+{% extends "management/admin-layout.twig" %}
+{% block body %}
+    {{ lang.mod_user.panel.welcome|format(session.full_name) }}
+    <small>{{ lang.mod_user.panel.description }}</small>
+{% endblock %}

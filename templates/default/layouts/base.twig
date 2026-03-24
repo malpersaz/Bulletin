@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}" data-bs-theme="auto" class="h-100">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="color-scheme" content="light dark">
+
+
+
+		{% block title %}
+			<title>{{ site.title }}</title>
+		{% endblock %}
+		{% block description %}<meta name="description" content="{{ site.description }}">
+		{% endblock %}
+		{% block keywords %}<meta name="keywords" content="{{ site.keywords }}">
+		{% endblock %}
+		{% block canonical %}<link rel="canonical" href="{{ site.adres }}"/>
+		{% endblock %}
+
+		{% block meta_tags %}
+			<!-- Standard Meta -->
+			<meta name="author" content="{{ site.title }}">
+			<meta name="robots" content="index, follow">
+			<meta
+			name="theme-color" content="#ffffff">
+
+			<!-- Open Graph / Facebook -->
+			<meta property="og:type" content="website">
+			<meta property="og:url" content="{{ site.adres }}">
+			<meta property="og:title" content="{{ site.title }}">
+			<meta property="og:description" content="{{ site.description }}">
+			<meta property="og:image" content="{{ site.radres }}mod_settings/logo.png">
+			<meta property="og:site_name" content="{{ site.title }}">
+			<meta
+			property="og:locale" content="{{ site.lang }}_{{ site.lang|upper }}">
+
+			<!-- Twitter -->
+			<meta name="twitter:card" content="summary_large_image">
+			<meta name="twitter:url" content="{{ site.adres }}">
+			<meta name="twitter:title" content="{{ site.title }}">
+			<meta name="twitter:description" content="{{ site.description }}">
+			<meta name="twitter:image" content="{{ site.radres }}mod_settings/logo.png">
+		{% endblock %}
+
+		<base
+		href="{{ site.adres }}">
+
+		<!-- Favicons -->
+		<link rel="icon" type="image/png" href="{{ site.radres }}mod_settings/favicon-96x96.png" sizes="96x96"/>
+		<link rel="shortcut icon" href="{{ site.radres }}mod_settings/favicon.ico"/>
+		<link rel="apple-touch-icon" sizes="180x180" href="{{ site.radres }}mod_settings/apple-touch-icon.png"/>
+		<link
+		rel="manifest" href="{{ site.adres }}static/mod_settings/site.webmanifest"/>
+
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link
+		href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+		<!-- Bootstrap 5.3 CSS CDN -->
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+		<link
+		rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css">
+
+		<!-- Modern Eklenti CDN'leri -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
+		<link
+		rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+
+		<!-- Custom CSS - Bootstrap 5.3.8 Color Modes Test için geçici olarak devre dışı bırakılmıştı, tekrar aktif edildi -->
+		<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
+
+		{% block css_custom %}{% endblock %}
+		{% block head %}{% endblock %}
+	</head>
+	<body class="d-flex flex-column h-100">
+
+		{{ run({"mod": "index", "method": "_menu"}) }}
+		{% set menu = ctx_get('menu') %}
+
+		{% include 'index/mod_menu/top_menu.twig' %}
+
+		<main class="flex-shrink-0 flex-grow-1">
+			<div class="container">
+				{# Flash Mesajları Gösterimi - TEMPORARILY DISABLED #}
+				{# {% if session.flash_message is not empty %}
+																                <div class="alert alert-{{ session.flash_message.type }} alert-dismissible fade show" role="alert">
+																                    {{ session.flash_message.text }}
+																                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+																                </div>
+																            {% endif %} #}
+
+				<!-- DEBUG: Flash message disabled -->{% block content %}
+			{% endblock %}
+		</div>
+		</main>{% include "index/footer.twig" %}
+
+		<!-- Bootstrap 5.3 JS Bundle CDN (Popper.js dahil) --><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"> </script>
+
+		<!-- Modern Eklenti CDN'leri -->
+		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/tr.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+		<!-- Masonry & ImagesLoaded CDN -->
+		<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+
+		<!-- jQuery -->
+		<script src="{{ site.tadres }}base_static/js/jquery.js"></script>
+		<script src="{{ site.tadres }}base_static/js/jquery.cookie.js"></script>
+
+		<!-- Custom JS - DISABLED -->
+		<!-- <script src="{{ site.tadres }}{{ site.app_template }}/static/js/custom.js?v={{ "now"|date("U") }}"></script> -->
+
+		<!-- <script type="text/javascript">
+								        document.addEventListener('DOMContentLoaded', function() {
+								            // Bootstrap 5 Tooltips
+								            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+								            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+								                return new bootstrap.Tooltip(tooltipTriggerEl);
+								            });
+								
+								            // GLightbox
+								            const lightbox = GLightbox({
+								                selector: '[data-bs-toggle="lightbox"]'
+								            });
+								
+								            // Swiper
+								            if (document.querySelector('.swiper')) {
+								                new Swiper('.swiper', {
+								                    loop: true,
+								                    pagination: {
+								                        el: '.swiper-pagination',
+								                    },
+								                    navigation: {
+								                        nextEl: '.swiper-button-next',
+								                        prevEl: '.swiper-button-prev',
+								                    }
+								                });
+								            }
+								
+								            // Flatpickr
+								            if (document.querySelector('.datepicker')) {
+								                flatpickr(".datepicker", {
+								                    locale: "tr"
+								                });
+								            }
+								        });
+								    </script> -->{% block js_custom %}
+		{% endblock %}
+
+		{# Context JavaScript #}
+			{% if ctx_get('javascript') is not empty %}
+				<script>
+{% for script in ctx_get('javascript') %}
+{{ script|raw }}
+{% endfor %}
+		</script>
+		{% endif %}
+
+		{# jQuery Document Ready Scripts #}
+
+			{% if ctx_get('jquery_document') is not empty %}
+
+				<script>
+
+$(document).ready(function () {
+
+{% for script in ctx_get('jquery_document') %}
+
+{{ script|raw }}
+
+{% endfor %}
+
+});
+		</script>
+
+		{% endif %}
+
+
+	{% include 'partials/_cookie_consent.twig' %}
+
+</body></html>

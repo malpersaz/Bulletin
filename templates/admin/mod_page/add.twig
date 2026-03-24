@@ -1,0 +1,59 @@
+{% extends 'admin/layout.twig' %}
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_sidebar = false %}
+{% set show_filter_sheet = false %}
+
+{% block title %}{{ lang.mod_page.add }}{% endblock %}
+{% block headline %}{{ lang.mod_page.add }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_page_wizard.css?v=2">
+{% endblock %}
+
+{% block content %}
+    {% if oke is defined %}
+        <div class="mod-page-wizard-loader">
+            <div class="spinner-track mod-page-wizard-spinner">
+                <div class="spinner-fill"></div>
+            </div>
+            <p>{{ mesaj|default(lang.mod_page.messages.oke.add|default('Page created successfully. Redirecting...')) }}</p>
+        </div>
+    {% else %}
+        <div class="mod-page-wizard-loader">
+            <div class="spinner-track mod-page-wizard-spinner">
+                <div class="spinner-fill"></div>
+            </div>
+            <p>{{ lang.mod_page.add|default('Page Add') }} wizard is loading...</p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block wizards %}
+    {% include 'admin/partials/wizard_page.twig' %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.MOD_PAGE_WIZARD_CONFIG = {
+        submitUrl: {{ (site.sadres ~ 'mod_page/add')|json_encode|raw }},
+        initialLang: {{ selected_lang|default(site.lang)|lower|json_encode|raw }},
+        initialStep: {{ wizard_step|default(1)|json_encode|raw }},
+        hasErrors: {{ (hatalar is defined and hatalar is not empty)|json_encode|raw }},
+        hasSuccess: {{ (oke is defined)|json_encode|raw }},
+        errorMessages: {{ hatalar|default([])|json_encode|raw }},
+        texts: {
+            selectedNone: {{ lang.mod_page.choose_wish|default('Select')|json_encode|raw }},
+            save: {{ lang.mod_page.button.add|default('Save')|json_encode|raw }},
+            next: {{ lang.mod_page.button.next|default(lang.mod_content.wizard.button.next)|default('Next')|json_encode|raw }},
+            prev: {{ lang.mod_page.button.prev|default(lang.mod_content.wizard.button.prev)|default('Previous')|json_encode|raw }},
+            finish: {{ lang.mod_page.button.add|default('Create Page')|json_encode|raw }},
+            validationName: {{ lang.mod_page.admin.columns.name|default('Name')|json_encode|raw }},
+            validationContent: {{ lang.mod_page.admin.columns.content|default('Content')|json_encode|raw }},
+            closeRedirect: {{ (site.sadres ~ 'mod_user/panel/')|json_encode|raw }}
+        }
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_page_wizard.js?v=3"></script>
+{% endblock %}

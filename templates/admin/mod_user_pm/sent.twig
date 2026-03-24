@@ -1,0 +1,438 @@
+{% set show_fab = false %}
+{% set show_navbar = false %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set hide_contextual_bar = true %}
+{% set search_placeholder = lang.mod_user_pm.search %}
+{% set show_sidebar = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_user_pm.sent_title }}{% endblock %}
+{% block headline %}{{ lang.mod_user_pm.sent_title }}{% endblock %}
+
+{% block content %}
+<div class="pm-sent-shell"
+     data-delete-title="{{ lang.mod_user_pm.confirm_delete_msg }}"
+     data-delete-text="{{ lang.mod_user_pm.confirm_delete_msg }}"
+     data-delete-confirm="{{ lang.mod_user_pm.confirm_delete_yes }}"
+     data-delete-cancel="{{ lang.mod_user_pm.cancel }}"
+     data-delete-success="{{ lang.mod_user_pm.message_deleted_success }}">
+
+    {% if messages is defined and messages|length > 0 %}
+        <section class="pm-grid" id="sentboxGrid">
+            {% for message_item in messages %}
+                {% set subject_text = message_item.subject|default('') %}
+                {% set preview_text = subject_text|length > 96 ? subject_text|slice(0, 96) ~ '...' : subject_text %}
+                {% set recipient_name = message_item.username|default('') %}
+                {% set initial = recipient_name|slice(0, 1)|upper %}
+                {% set iso_date = message_item.created_at|date('Y-m-d') %}
+                {% set time_text = message_item.created_at|date('H:i') %}
+                {% set formatted_date = message_item.created_at|date('d M Y') %}
+                {% set date_label = iso_date == "now"|date('Y-m-d')
+                    ? lang.mod_user_pm.today_label ~ ' ' ~ time_text
+                    : (iso_date == ("-1 day"|date('Y-m-d'))
+                        ? lang.mod_user_pm.yesterday_label ~ ' ' ~ time_text
+                        : formatted_date) %}
+                <article class="pm-message-card"
+                         id="message_{{ message_item.id }}"
+                         data-search="{{ (recipient_name ~ ' ' ~ subject_text ~ ' ' ~ message_item.created_at)|lower }}">
+
+                    <div class="pm-card-topline">
+                        <div class="pm-avatar-orb" aria-hidden="true">{{ initial }}</div>
+                        <div class="pm-recipient-meta">
+                            <span class="pm-recipient-label">{{ lang.mod_user_pm.recipient_col }}</span>
+                            <h2>{{ recipient_name }}</h2>
+                        </div>
+                        <div class="pm-date-cluster">
+                            <time datetime="{{ iso_date }}">{{ date_label }}</time>
+                        </div>
+                    </div>
+
+                    <a href="mod_user_pm/sent_read/{{ message_item.id }}" class="pm-subject-link" aria-label="{{ subject_text }}">
+                        <span class="pm-subject-line">{{ subject_text }}</span>
+                        {% if preview_text and preview_text != subject_text %}
+                            <span class="pm-preview-line">{{ preview_text }}</span>
+                        {% endif %}
+                    </a>
+
+                    <div class="pm-card-footer">
+                        <div class="pm-card-actions">
+                            <button type="button"
+                                    class="pm-action-btn pm-action-danger"
+                                    onclick="deleteMessage('{{ message_item.id }}', 'sent')">
+                                <i class="bi bi-trash3"></i>
+                                <span>{{ lang.mod_user_pm.delete_action }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </section>
+
+        <section class="pm-empty-state" id="sentboxEmpty" hidden>
+            <div class="pm-empty-icon"><i class="bi bi-search-heart"></i></div>
+            <h3>{{ lang.mod_user_pm.no_messages }}</h3>
+            <p>{{ lang.mod_user_pm.empty_search_desc }}</p>
+        </section>
+    {% else %}
+        <section class="pm-empty-state pm-empty-state-static">
+            <div class="pm-empty-icon"><i class="bi bi-send-slash"></i></div>
+            <h3>{{ lang.mod_user_pm.no_messages_yet }}</h3>
+            <p>{{ lang.mod_user_pm.no_sent_messages_desc }}</p>
+            {% if session.permissions.mod_user_pm.send is defined %}
+                <a href="mod_user_pm/send" class="pm-primary-action">
+                    <i class="bi bi-plus-circle"></i>
+                    <span>{{ lang.mod_user_pm.new_message_action }}</span>
+                </a>
+            {% endif %}
+        </section>
+    {% endif %}
+
+    <form id="filterForm" hidden>
+        <input type="hidden" name="arama[subject]" id="filterSearch" value="">
+    </form>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .pm-sent-shell {
+        --pm-bg: linear-gradient(180deg, #f7f0e6 0%, #f4efe7 40%, #eef3ee 100%);
+        --pm-surface: rgba(255, 255, 255, 0.76);
+        --pm-line: rgba(48, 59, 47, 0.12);
+        --pm-text: #1c261b;
+        --pm-muted: #5d675b;
+        --pm-primary: #264f3f;
+        --pm-danger: #ad2d2d;
+        --pm-primary-soft: #dbe9df;
+        padding: 8px 16px 16px;
+        min-height: auto;
+        background:
+            radial-gradient(circle at top left, rgba(194, 107, 45, 0.16), transparent 24%),
+            radial-gradient(circle at bottom right, rgba(38, 79, 63, 0.18), transparent 26%),
+            var(--pm-bg);
+        color: var(--pm-text);
+    }
+
+    .pm-grid {
+        display: grid;
+        gap: 12px;
+    }
+
+    .pm-message-card {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(48, 59, 47, 0.1);
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+            linear-gradient(135deg, rgba(219, 233, 223, 0.4), rgba(255, 255, 255, 0.2));
+        box-shadow: 0 12px 40px rgba(35, 47, 33, 0.06);
+    }
+
+    .pm-card-topline {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .pm-avatar-orb {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--pm-primary-soft), #f0f4ee);
+        color: var(--pm-primary);
+        font-size: 18px;
+        font-weight: 800;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    }
+
+    .pm-recipient-label {
+        display: block;
+        margin-bottom: 2px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--pm-muted);
+    }
+
+    .pm-recipient-meta h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .pm-date-cluster {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 6px;
+    }
+
+    .pm-date-cluster time {
+        font-size: 11px;
+        color: var(--pm-muted);
+        font-weight: 700;
+    }
+
+    .pm-subject-link {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.76);
+        text-decoration: none;
+        border: 1px solid rgba(48, 59, 47, 0.08);
+    }
+
+    .pm-subject-line {
+        color: var(--pm-text);
+        font-size: 16px;
+        font-weight: 750;
+        line-height: 1.35;
+        letter-spacing: -0.02em;
+    }
+
+    .pm-preview-line {
+        color: var(--pm-muted);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .pm-card-footer {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .pm-card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .pm-primary-action,
+    .pm-action-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        border: 0;
+        cursor: pointer;
+        transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+    }
+
+    .pm-primary-action {
+        padding: 12px 16px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, var(--pm-primary), #356850);
+        color: #fff;
+        font-weight: 700;
+        box-shadow: 0 12px 32px rgba(38, 79, 63, 0.24);
+    }
+
+    .pm-action-btn {
+        min-height: 36px;
+        padding: 0 12px;
+        border-radius: 12px;
+        background: #fff;
+        color: var(--pm-text);
+        border: 1px solid rgba(48, 59, 47, 0.1);
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .pm-action-danger {
+        color: var(--pm-danger);
+        border-color: rgba(173, 45, 45, 0.16);
+        background: rgba(173, 45, 45, 0.04);
+    }
+
+    .pm-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 56px 28px;
+        border-radius: 26px;
+        border: 1px dashed rgba(48, 59, 47, 0.18);
+        background: var(--pm-surface);
+        text-align: center;
+    }
+
+    .pm-empty-state[hidden],
+    .pm-message-card[hidden] {
+        display: none !important;
+    }
+
+    .pm-empty-state-static {
+        margin-top: 8px;
+    }
+
+    .pm-empty-icon {
+        width: 76px;
+        height: 76px;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(38, 79, 63, 0.1), rgba(194, 107, 45, 0.12));
+        color: var(--pm-primary);
+        font-size: 30px;
+    }
+
+    .pm-empty-state h3 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .pm-empty-state p {
+        max-width: 52ch;
+        margin: 0;
+        color: var(--pm-muted);
+        line-height: 1.7;
+    }
+
+    @media (max-width: 767px) {
+        .pm-sent-shell {
+            padding: 8px 12px 12px;
+        }
+
+        .pm-message-card,
+        .pm-empty-state {
+            border-radius: 18px;
+        }
+
+        .pm-card-topline {
+            grid-template-columns: auto 1fr;
+        }
+
+        .pm-date-cluster {
+            grid-column: 1 / -1;
+            align-items: flex-start;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .pm-card-actions {
+            width: 100%;
+        }
+
+        .pm-action-btn {
+            flex: 1 1 calc(50% - 8px);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item" onclick="history.back()">
+            <i class="bi bi-chevron-left"></i>
+            <span>{{ lang.mod_user_pm.back }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.href='mod_user_pm/inbox'">
+            <i class="bi bi-inbox"></i>
+            <span>{{ lang.mod_user_pm.inbox_title }}</span>
+        </button>
+
+        {% if session.permissions.mod_user_pm.send is defined %}
+            <button type="button"
+                    class="toolbar-fab"
+                    onclick="location.href='mod_user_pm/send'"
+                    aria-label="{{ lang.mod_user_pm.new_message_action }}"
+                    title="{{ lang.mod_user_pm.new_message_action }}">
+                <i class="bi bi-plus-lg"></i>
+            </button>
+        {% endif %}
+
+        <button class="toolbar-item active" onclick="location.href='mod_user_pm/sent'">
+            <i class="bi bi-send-fill"></i>
+            <span>{{ lang.mod_user_pm.sent_title }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+            <i class="bi bi-arrow-up"></i>
+            <span>{{ lang.mod_user_pm.scroll_top_action }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const clearSearchBtn = document.getElementById('clearSearchBtn');
+        const hiddenSearchInput = document.getElementById('filterSearch');
+        const grid = document.getElementById('sentboxGrid');
+        const cards = grid ? Array.from(grid.querySelectorAll('.pm-message-card')) : [];
+        const emptyState = document.getElementById('sentboxEmpty');
+
+        function applySearch() {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            let visibleCount = 0;
+
+            if (hiddenSearchInput) {
+                hiddenSearchInput.value = query;
+            }
+
+            cards.forEach(card => {
+                const visible = !query || card.dataset.search.includes(query);
+                card.hidden = !visible;
+
+                if (visible) {
+                    visibleCount += 1;
+                }
+            });
+
+            if (emptyState) {
+                emptyState.hidden = visibleCount !== 0;
+            }
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applySearch);
+        }
+
+        if (clearSearchBtn) {
+            clearSearchBtn.addEventListener('click', function () {
+                window.setTimeout(applySearch, 0);
+            });
+        }
+    });
+
+    const RADRES_URL = '{{ site.radres }}';
+    const PM_LANG = {
+        read: "{{ lang.mod_user_pm.view_action|e('js') }}",
+        reply: "{{ lang.mod_user_pm.reply_action|e('js') }}",
+        delete: "{{ lang.mod_user_pm.delete_action|e('js') }}",
+        unread: "{{ lang.mod_user_pm.unread_status|e('js') }}",
+        read_status: "{{ lang.mod_user_pm.read_status|e('js') }}",
+        new_tag: "{{ lang.mod_user_pm.new_tag|e('js') }}",
+        loading: "{{ lang.mod_user_pm.loading|e('js') }}",
+        load_more: "{{ lang.mod_user_pm.next|e('js') }}",
+        confirm_title: "{{ lang.mod_user_pm.confirm_delete_msg|e('js') }}",
+        confirm_yes: "{{ lang.mod_user_pm.confirm_delete_yes|e('js') }}",
+        confirm_no: "{{ lang.mod_user_pm.cancel|e('js') }}",
+        delete_success: "{{ lang.mod_user_pm.message_deleted_success|e('js') }}"
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_user_pm.js?v=1.5"></script>
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- START: @templates/admin/management/index.twig -->
+{% extends "management/admin-layout.twig" %}
+{% block title %}
+	{{ lang.management.admin_panel }}
+{% endblock %}
+{% block body %}
+
+
+	{% if hata %}
+		<!-- BEGIN PAGE HEAD -->
+		<div class="page-head">
+			<div
+				class="container">
+				<!-- BEGIN PAGE TITLE -->
+				<div class="page-title">
+					<h1>{{ lang.mod_user.hata.32 }}</h1>
+				</div>
+				<!-- END PAGE TITLE -->
+			</div>
+		</div>
+		<!-- END PAGE HEAD -->
+		<!-- BEGIN PAGE CONTENT -->
+		<div class="page-content">
+			<div class="container">
+				<div class="portlet box green">
+					<div class="portlet-title">
+						<div class="caption">
+							<i class="fa fa-gift"></i>
+							{{ lang.mod_user.hata.32 }}
+						</div>
+					</div>
+					<div class="portlet-body">
+						<div class="alert alert-danger">
+							<strong>{{ lang.mod_user.hata.32 }}!</strong>
+							{{ mesaj }}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- END PAGE CONTENT -->
+	{% endif %}
+
+{% endblock %}
+{% block extra %}{% endblock %}
+
+
+<!-- END: @templates/admin/management/index.twig -->

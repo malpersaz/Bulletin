@@ -1,0 +1,45 @@
+{% extends 'admin/layout.twig' %}
+
+{% block title %}Ana Sayfa - Rojname Admin{% endblock %}
+
+{% block content %}
+<!-- PULL TO REFRESH SPINNER -->
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<!-- DYNAMIC CONTENT (Cards) -->
+<!-- In a real logic, this should verify if data is available, otherwise show empty state or infinite loader logic -->
+<!-- For now, it will be populated via JS similar to prototype -->
+
+<!-- INFINITE SCROLL LOADER -->
+<div id="infinite-loader" class="infinite-loader" style="display: none;">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>Yükleniyor...</span>
+</div>
+
+<!-- PAGINATION (If needed in standard php pagination) -->
+<div class="pagination-container">
+    <button class="pagination-btn" id="btnPagePrev" onclick="prevPage()">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="pagination-info" id="paginationInfo">1 - 10 / 124</span>
+    <button class="pagination-btn" id="btnPageNext" onclick="nextPage()">
+        <i class="bi bi-chevron-right"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize Dashboard logic, similar to demo.html script
+    document.addEventListener("DOMContentLoaded", function () {
+        // Initial Load
+        loadMoreContent();
+    });
+</script>
+{% endblock %}

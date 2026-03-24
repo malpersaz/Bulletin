@@ -1,0 +1,453 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}
+	{{ lang.mod_user.admin.6 }}
+{% endblock %}
+
+{% block content %}
+	<style>
+		.edit-container {
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-bottom: 120px;
+		}
+		.edit-card {
+			background: var(--md-sys-color-surface);
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: var(--md-sys-elevation-1);
+		}
+		.card-header-edit {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 16px;
+			color: var(--md-sys-color-primary);
+		}
+		.card-header-edit i {
+			font-size: 20px;
+		}
+		.card-header-edit h3 {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 500;
+		}
+			.form-row {
+				margin-bottom: 20px;
+			}
+		.form-row:last-child {
+			margin-bottom: 0;
+		}
+		.m3-input-wrapper {
+			position: relative;
+			margin-bottom: 4px;
+		}
+		.m3-input-lg {
+			width: 100%;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 1px solid var(--md-sys-color-outline);
+			background: transparent;
+			color: var(--md-sys-color-on-surface);
+			font-size: 16px;
+			outline: none;
+            box-sizing: border-box;
+		}
+		.m3-input-lg:focus {
+			border-color: var(--md-sys-color-primary);
+			border-width: 2px;
+			padding: 11px 15px;
+		}
+		.m3-input-lg:focus + .m3-floating-label,
+		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
+			top: -10px;
+			left: 12px;
+			font-size: 12px;
+			color: var(--md-sys-color-primary);
+			background: var(--md-sys-color-surface);
+			padding: 0 4px;
+		}
+		.m3-floating-label {
+			position: absolute;
+			top: 12px;
+			left: 16px;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 16px;
+			pointer-events: none;
+			transition: all 0.2s;
+		}
+        .image-upload-area {
+            position: relative;
+            margin-top: 8px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 150px;
+            transition: all 0.2s;
+        }
+        .image-upload-area:hover {
+            background: rgba(0,0,0,0.02);
+            border-color: var(--md-sys-color-primary);
+        }
+        .image-upload-area img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        .remove-img-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #ba1a1a !important;
+            color: white !important;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .remove-img-btn:hover {
+            background: #93000a !important;
+            transform: scale(1.1);
+        }
+        .upload-icon {
+            font-size: 48px;
+            color: var(--md-sys-color-primary);
+            opacity: 0.5;
+            margin-bottom: 8px;
+        }
+	        .filter-group-label {
+	            display: block;
+	            font-size: 12px;
+	            font-weight: 500;
+	            color: var(--md-sys-color-primary);
+	            margin-bottom: 8px;
+	            margin-left: 4px;
+	        }
+	        .contact-grid {
+	            display: grid;
+	            gap: 20px;
+	        }
+		</style>
+
+	<div class="edit-container">
+		{% if oke is defined %}
+			<div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+				<i class="bi bi-check-circle-fill"></i>
+				<span>{{ mesaj }}</span>
+			</div>
+			<script>
+				setTimeout(() => {
+					window.location.href = "{{ site.sadres }}mod_user/list";
+				}, 2000);
+			</script>
+		{% else %}
+			{% if errors is defined %}
+				<div class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+					{% for error in errors %}
+						<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
+							<i class="bi bi-exclamation-circle-fill"></i>
+							<span>{{ error }}</span>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			<form method="POST" action="" id="editForm" enctype="multipart/form-data">
+				{# Card 1: Hesab (Account) #}
+				<div class="edit-card">
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="username" value="{{ d.username }}" type="text" id="username" placeholder=" " required>
+							<label class="m3-floating-label">{{ lang.mod_user.username }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="password" type="password" id="password" placeholder=" ">
+							<label class="m3-floating-label">{{ lang.mod_user.current_password }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="email" value="{{ d.email }}" type="email" id="email" placeholder=" " required>
+							<label class="m3-floating-label">{{ lang.mod_user.email }}</label>
+						</div>
+					</div>
+
+					{% macro select(parent_id, level, selected_id, group) %}
+						{% for entry in group[parent_id] %}
+							{% set current_parent_id = entry.group_id %}
+							<option value="{{ entry.group_id }}" {% if selected_id == entry.group_id %} selected="selected" {% endif %}>
+								{{ '-'|repeat(level * 2) }} {{ entry.name }}
+							</option>
+							{% if group[current_parent_id] is defined %}
+								{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
+							{% endif %}
+						{% endfor %}
+					{% endmacro %}
+
+					<div class="form-row">
+						<label class="filter-group-label">{{ lang.mod_user.admin.user_group }}</label>
+						<div class="m3-input-wrapper">
+							<select class="m3-input-lg" name="group_id" id="group_id" required>
+								{{ _self.select(0, 0, d.group_id, group) }}
+							</select>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<label class="filter-group-label">{{ lang.mod_user.admin.columns.status }}</label>
+						<div class="m3-input-wrapper">
+							<select class="m3-input-lg" name="status" id="status" required>
+								<option value="y" {% if d.status == 'y' %} selected {% endif %}>{{ lang.mod_user.grid.active }}</option>
+								<option value="n" {% if d.status == 'n' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_email_activation }}</option>
+								<option value="a" {% if d.status == 'a' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_admin_activation }}</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				{# Card 2: Agahiyên Kesane (Personal Info) #}
+				<div class="edit-card" style="margin-top: 16px;">
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="name" value="{{ d.name }}" type="text" id="name" placeholder=" " required>
+							<label class="m3-floating-label">{{ lang.mod_user.your_name }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="last_name" value="{{ d.last_name }}" type="text" id="last_name" placeholder=" " required>
+							<label class="m3-floating-label">{{ lang.mod_user.your_surname }}</label>
+						</div>
+					</div>
+
+					<div class="contact-grid">
+						<div class="form-row" id="phone-section">
+							{% include 'mod_user/parts/phone_input.twig' with {
+                                'country_code_value': d.country_code,
+                                'phone_value': d.phone,
+                                'label_text': lang.mod_user.mobile_phone,
+                                'input_id': 'phone'
+                            } %}
+						</div>
+
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="city" value="{{ d.city }}" type="text" id="city" placeholder=" ">
+								<label class="m3-floating-label">{{ lang.mod_user.city }}</label>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{# Card 3: Nivîskar û Derbarê (Author Info) #}
+				<div class="edit-card" style="margin-top: 16px;">
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name }}" type="text" id="blog_name" placeholder=" ">
+							<label class="m3-floating-label">{{ lang.mod_user.blog_name }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<textarea class="m3-input-lg" name="about" id="about" rows="4" placeholder=" " oninput="updateCharCounter(this, 'aboutCounter', 255)">{{ d.about }}</textarea>
+							<label class="m3-floating-label">{{ lang.mod_user.about_me }}</label>
+						</div>
+						<div style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;" id="aboutCounter">
+							{{ d.about|length }} / 255
+						</div>
+					</div>
+				</div>
+
+				{# Card 4: Wêne û Dîrok (Image & Dates) #}
+				<div class="edit-card" style="margin-top: 16px;">
+					<div class="form-row">
+						<label class="filter-group-label">{{ lang.mod_user.profile_picture }}</label>
+						<label for="image" class="image-upload-area" id="image-upload-area">
+							{% if d.image %}
+								<img id="editImgPreview" src="{{ site.radres }}mod_user/{{ d.image }}">
+								<button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeUserImage('{{ d.id }}')">
+									<i class="bi bi-trash"></i>
+								</button>
+							{% else %}
+								<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+								<p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.admin.17|default('Wêne hilbijêre') }}</p>
+							{% endif %}
+						</label>
+						<input type="file" name="image" id="image" style="display:none;" onchange="previewAvatar(this)">
+					</div>
+
+					<div class="form-row" style="margin-top: 24px;">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" value="{{ d.created_at }}" type="text" disabled placeholder=" ">
+							<label class="m3-floating-label">{{ lang.mod_user.membership_date }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" value="{{ d.updated_at }}" type="text" disabled placeholder=" ">
+							<label class="m3-floating-label">{{ lang.mod_user.update_date }}</label>
+						</div>
+					</div>
+				</div>
+			</form>
+		{% endif %}
+	</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<style>
+		.m3-final-bar {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			height: 80px !important;
+			background: var(--md-sys-color-surface-container) !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 12px !important;
+			padding: 0 16px !important;
+			z-index: 1000 !important;
+			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+		}
+		.m3-btn-half {
+			flex: 1 !important;
+			height: 52px !important;
+			border-radius: 26px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 8px !important;
+			font-size: 14px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		}
+		.m3-btn-half:active {
+			transform: scale(0.98) !important;
+			opacity: 0.9 !important;
+		}
+		@media(min-width: 600px) {
+			.m3-final-bar {
+				max-width: 480px !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-bottom-left-radius: 32px !important;
+				border-bottom-right-radius: 32px !important;
+				bottom: 8px !important;
+				height: 88px !important;
+				width: calc(100% - 16px) !important;
+			}
+		}
+	</style>
+	{% if oke is not defined %}
+		<div class="m3-final-bar">
+			<a href="{{ site.sadres }}mod_user/list" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+				<i class="bi bi-x-lg"></i>
+				{{ lang.mod_user.button.cancel }}
+			</a>
+			<button type="submit" form="editForm" name="edit" value="{{ lang.mod_user.admin.edit_user }}" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+				<i class="bi bi-check-lg"></i>
+				{{ lang.mod_user.admin.edit_user }}
+			</button>
+		</div>
+	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script>
+		function previewAvatar(input) {
+			if (input.files && input.files[0]) {
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					var area = document.getElementById('image-upload-area');
+					area.innerHTML = '<img id="editImgPreview" src="' + e.target.result + '"><button type="button" class="remove-img-btn" onclick="event.preventDefault(); resetUpload()"><i class="bi bi-x-lg"></i></button>';
+				}
+				reader.readAsDataURL(input.files[0]);
+			}
+		}
+
+        function resetUpload() {
+            var area = document.getElementById('image-upload-area');
+            area.innerHTML = '<i class="bi bi-cloud-arrow-up-fill upload-icon"></i><p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.admin.17|default("Wêne hilbijêre") }}</p>';
+            document.getElementById('image').value = '';
+        }
+
+        function removeUserImage(id) {
+            Swal.fire({
+                title: '{{ lang.mod_user.admin.confirm_remove_image }}',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ba1a1a',
+                cancelButtonColor: '#6e7881',
+                confirmButtonText: '{{ lang.mod_user.admin.yes }}',
+                cancelButtonText: '{{ lang.mod_user.admin.no }}'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.append('id', id);
+
+                    fetch("{{ site.adres }}mod_user/imagedelete", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(r => r.text())
+                    .then(msg => {
+                        if (msg === 'Oke') {
+                            Swal.fire('{{ lang.mod_user.admin.image_removed_success }}', '', 'success');
+                            resetUpload();
+                        } else {
+                            Swal.fire('{{ lang.mod_user.error_label }}', msg, 'error');
+                        }
+                    });
+                }
+            });
+        }
+
+		function updateCharCounter(input, counterId, max) {
+			const currentLength = input.value.length;
+			const counter = document.getElementById(counterId);
+			if (counter) {
+				counter.innerText = `${currentLength} / ${max}`;
+				if (currentLength > max) {
+					counter.style.color = 'var(--md-sys-color-error)';
+				} else {
+					counter.style.color = 'var(--md-sys-color-on-surface-variant)';
+				}
+			}
+		}
+	</script>
+{% endblock %}

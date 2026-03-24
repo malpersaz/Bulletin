@@ -1,0 +1,4 @@
+{% set sitelang = site.lang %}
+{{ js({"url": "base_static/js/jquery.metadata.js", "v": 1}) }}
+{{ js({"url": "base_static/js/jquery-validate/jquery.validate.js", "v": 1}) }}
+{{ js({url: 'base_static/js/jquery-validate/localization/messages_' ~ sitelang ~ '.js', v: 1}) }}

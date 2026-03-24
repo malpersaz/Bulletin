@@ -1,0 +1,221 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+	<script>
+		$(document).ready(function () {
+$("#addForm").validationEngine();
+
+$.datepicker.setDefaults($.datepicker.regional['tr']);
+
+$('#about').kalanKarakter({
+limit: 255,
+mesaj: '#1',
+kapsa: $('#remaining'),
+uyari: function () {
+alert('{{ lang.mod_user.max_chars_255 }}');
+}
+});
+});
+	</script>
+{% endblock %}
+{% block title %}
+	{{ lang.mod_user.admin.1 }}
+{% endblock %}
+{% block body %}
+	<div class="portlet box green">
+		<div class="portlet-title">
+			<div class="caption">
+				<i class="fa fa-gift"></i>
+				{{ lang.mod_user.admin.1 }}
+			</div>
+		</div>
+		<div class="portlet-body form">
+			{% if oke is defined %}
+				<!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+				<div class="alert alert-success">
+					<strong>Tamam!</strong>
+					{{ mesaj }}
+				</div>
+				<!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+			{% else %}
+				{% if errors is defined %}
+					<!--[if !IE]>Error Messages<![endif]-->
+					{% for error in errors %}
+						<div class="alert alert-danger">
+							<strong>{{ lang.mod_user.error_title }}</strong>
+							{{ error }}
+						</div>
+					{% endfor %}
+					<!--[if !IE]>Error Messages<![endif]-->
+				{% endif %}
+				<!-- BEGIN FORM-->
+				<form method="POST" action="" id="addForm" class="form-horizontal" enctype="multipart/form-data">
+					<div class="form-body">
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.username }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left validate[required,length[3,20],ajax[usernamecheck]]" name="username" value="{{ username }}" type="text" id="username">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-user"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.password }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left validate[required,length[6,20]]" name="password" type="password" id="password">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-user"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.email }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left validate[required,custom[email],ajax[emailcheck]]" name="email" value="{{ email }}" type="text" id="email">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-envelope"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						{% macro select(parent_id, level) %}
+							{% for entry in attribute(group, parent_id) %}
+								{% set parent_id = entry.group_id %}
+								<option value="{{ entry.group_id }}">{{ '-'|repeat(level) }}{{ entry.name }}</option>
+								{% if attribute(group, parent_id) is not empty and attribute(group, parent_id) is iterable %}
+									{{ _self.select(parent_id, level + 1) }}
+								{% endif %}
+							{% endfor %}
+						{% endmacro %}
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.admin.user_group }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<select class="form-control input-xlarge validate[required]" name="group_id" id="group_id">{{ _self.select(0, 0) }}</select>
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-user"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.grid.accounts_activated }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<select class="form-control input-xlarge validate[required]" name="status" id="status">
+										<option value="y" {% if status == 'y' %} selected {% endif %}>{{ lang.mod_user.grid.active }}</option>
+										<option value="n" {% if status == 'n' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_email_activation }}</option>
+										<option value="a" {% if status == 'a' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_admin_activation }}</option>
+									</select>
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-check"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.your_name }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left validate[required,length[2,50]]" name="name" value="{{ name }}" type="text" id="name">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-user"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.your_surname }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left validate[required,length[2,50]]" name="last_name" value="{{ last_name }}" type="text" id="last_name">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-user"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.mobile_phone }}
+								:</label>
+							<div class="col-md-4">
+								{% include 'management/mod_user/parts/phone_input.twig' with {
+                                    'country_code_value': country_code,
+                                    'phone_value': phone
+                                } %}
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.city }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left" name="city" value="{{ city }}" type="text" id="city">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-map-marker"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.blog_name }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input class="form-control input-circle-left" name="blog_name" value="{{ blog_name }}" type="text" id="blog_name">
+									<span class="input-group-addon input-circle-right">
+										<i class="fa fa-pencil"></i>
+									</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.about_me }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<textarea class="form-control" name="about" id="about" rows="3">{{ about }}</textarea>
+									<span id="remaining" style="font-weight:bold"></span>
+								</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="col-md-3 control-label">{{ lang.mod_user.profile_picture }}
+								:</label>
+							<div class="col-md-4">
+								<div class="input-group">
+									<input type="file" name="image" id="image" class="form-control">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<div class="row">
+							<div class="col-md-offset-3 col-md-9">
+								<button type="submit" name="add" value="{{ lang.mod_user.admin.add_user }}" class="btn green">{{ lang.mod_user.admin.add_user }}</button>
+								<a href="mod_user/list" class="btn default">{{ lang.mod_user.button.vazgec }}</a>
+							</div>
+						</div>
+					</div>
+				</form>
+				<!-- END FORM-->
+			{% endif %}
+		</div>
+	</div>
+{% endblock %}

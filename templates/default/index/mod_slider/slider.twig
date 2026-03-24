@@ -1,0 +1,38 @@
+{# Slider verilerini çağıralım #}
+{{ run({"mod": "index", "method": "_slider", "extra": [6]}) }}
+{% set slider = ctx_get('slider') %}
+{% if slider %}
+<div id="mainSlider" class="carousel slide mb-4">
+  <div class="carousel-indicators">
+    {% for slide in slider %}
+    <button type="button" data-bs-target="#mainSlider" data-bs-slide-to="{{ loop.index0 }}" class="{{ loop.first ? 'active' : '' }}" aria-current="{{ loop.first ? 'true' : 'false' }}" aria-label="Slide {{ loop.index }}"></button>
+    {% endfor %}
+  </div>
+  <div class="carousel-inner">
+    {% for slide in slider %}
+    <div class="carousel-item {{ loop.first ? 'active' : '' }}">
+      <a href="{{ slide.url }}" title="{{ slide.description }}" {% if slide.target != 'y' %}target="_blank"{% endif %}>
+        <picture>
+          {% if slide.image_mobile %}
+          <source media="(max-width: 767px)" srcset="{{ site.radres }}mod_slider/{{ slide.image_mobile }}">
+          {% endif %}
+          <img src="{{ site.radres }}mod_slider/{{ slide.image }}" class="d-block w-100" alt="{{ slide.name }}" loading="lazy">
+        </picture>
+        <div class="carousel-caption">
+          <h5>{{ slide.name|raw }}</h5>
+          <p>{{ slide.description|raw }}</p>
+        </div>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#mainSlider" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#mainSlider" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+{% endif %}

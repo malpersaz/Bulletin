@@ -1,0 +1,104 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_slider.search_placeholder %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_slider.list }}{% endblock %}
+
+{% block headline %}{{ lang.mod_slider.list }}{% endblock %}
+
+{% block content %}
+<!-- PULL TO REFRESH SPINNER -->
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<!-- DYNAMIC CONTENT (Cards) -->
+<div id="content-list-container" class="content-list">
+    <!-- Cards will be injected here via JS -->
+</div>
+
+<!-- EMPTY STATE -->
+<div id="empty-state" class="empty-state" style="display: none;">
+    <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+    <h3 id="empty-state-desc"></h3>
+</div>
+
+<!-- INFINITE SCROLL LOADER -->
+<div id="infinite-loader" class="infinite-loader" style="display: none;">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>{{ lang.mod_slider.datatable.loadingRecords }}</span>
+</div>
+
+<!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
+<form id="filterForm" style="display: none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    
+    <!-- Search -->
+    <input type="hidden" name="arama[name]" id="filterSearch" value="">
+    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    
+    <!-- Order -->
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
+    <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_slider.button.edit }}</span>
+        </button>
+        
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-images"></i>
+            <span>{{ lang.mod_slider.button.gallery }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_slider/add'">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+
+        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span>{{ lang.mod_slider.button.file }}</span>
+        </button>
+
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_slider.button.delete }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MODULE_URL = SITE_URL + "mod_slider/";
+    const DATA_URL = SITE_URL + "mod_slider/datatable_json";
+    
+    const CONTENT_LANG = {
+        active: "{{ lang.mod_slider.admin.radio.publish_yes|e('js') }}",
+        draft: "{{ lang.mod_slider.admin.radio.publish_no|e('js') }}",
+        confirm_delete: "{{ lang.mod_slider.messages.confirm_delete|e('js') }}",
+        error_general: "{{ lang.mod_slider.error|e('js') }}",
+        loading: "{{ lang.mod_slider.datatable.loadingRecords|e('js') }}",
+        load_more: "{{ lang.mod_slider.grid.load_more|e('js') }}",
+        success_delete: "{{ lang.mod_slider.messages.success_delete|e('js') }}",
+        ok: "{{ lang.mod_slider.button.ok|e('js') }}",
+        cancel: "{{ lang.mod_slider.button.cancel|e('js') }}",
+        yes: "{{ lang.mod_slider.button.yes|e('js') }}",
+        no: "{{ lang.mod_slider.button.no|e('js') }}",
+        empty_no_data: "{{ lang.mod_slider.empty.no_data|e('js') }}",
+        empty_no_search_results: "{{ lang.mod_slider.empty.no_search_results|e('js') }}"
+    };
+</script>
+<script src="{{ site.adres }}templates/admin/assets/js/mod_slider.js?v=1.1"></script>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "layouts/base.twig" %}
+
+
+{% block title %}
+<title>{{ lang.index.modal.login }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.sadres }}login" />
+{% endblock %}
+
+{% block head %}
+    <meta name="robots" content="noindex">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('login-form');
+            const loginButton = document.getElementById('manual-submit-button');
+
+            if (loginButton) {
+                // Button click event
+                loginButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    submitForm();
+                });
+            }
+
+            if (loginForm) {
+                // Form submit event (for ENTER key)
+                loginForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    submitForm();
+                });
+
+                // ENTER key event for both fields
+                const usernameInput = document.getElementById('username');
+                const passwordInput = document.getElementById('password');
+
+                function handleEnterKey(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        submitForm();
+                    }
+                }
+
+                if (usernameInput) {
+                    usernameInput.addEventListener('keypress', handleEnterKey);
+                }
+
+                if (passwordInput) {
+                    passwordInput.addEventListener('keypress', handleEnterKey);
+                }
+            }
+
+            function submitForm() {
+                const form = document.getElementById('login-form');
+                if (form) {
+                    // Create hidden input for submit detection
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'login';
+                    hiddenInput.value = 'login';
+                    form.appendChild(hiddenInput);
+
+                    // Normal form submit
+                    form.submit();
+                }
+            }
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+{% set hata = ctx_get('hata') %}
+{% set mesaj = ctx_get('mesaj') %}
+{% set hatalar = ctx_get('hatalar') %}
+{% set username = ctx_get('username') %}
+{% set password = ctx_get('password') %}
+
+
+<!-- START: mod_user/login.twig -->
+<div class="row justify-content-center" id="mod_user">
+    <div class="col-md-6 col-lg-4">
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>{{ lang.index.modal.login }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if ctx_get('oke') is not empty %}
+                    <div class="alert alert-success" role="alert">
+                        {{ mesaj }}
+                    </div>
+                {% elseif hata %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ mesaj }}
+                    </div>
+                {% else %}
+                    {% if hatalar is not empty %}
+                        {% set is_activation_error = false %}
+                        {% for hata in hatalar %}
+                            {% if 'Kaydınız bulundu, fakat mailinize gelen aktivasyonu gerçekleştirmemişsiniz' in hata %}
+                                {% set is_activation_error = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="alert {% if is_activation_error %}alert-info{% else %}alert-danger{% endif %}" role="alert">
+                            <ul class="mb-0">
+                                {% for hata in hatalar %}
+                                    <li>{{ hata }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <form method="post" action="{{ site.sadres }}login" id="login-form">
+                            <div class="mb-3">
+                                <label class="form-label" for="username">{{ lang.mod_user.username }}</label>
+                                <input type="text"
+                                       name="username"
+                                       id="username"
+                                       class="form-control"
+                                       value="{{ username }}"
+                                       placeholder="{{ lang.mod_user.username }}"
+                                       required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label" for="password">{{ lang.mod_user.password }}</label>
+                                <input type="password"
+                                       name="password"
+                                       id="password"
+                                       class="form-control"
+                                       value="{{ password }}"
+                                       placeholder="{{ lang.mod_user.password }}"
+                                       required>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="button" name="summary" id="manual-submit-button" class="btn btn-primary">
+                                    {{ lang.mod_user.login }}
+                                </button>
+                            </div>
+                        </form>
+
+                    <hr>
+                    <div class="text-center">
+                        <a href="forgot-password" class="btn btn-link p-0">{{ lang.mod_user.forgot_password }}</a>
+                        <span class="mx-2">|</span>
+                        <a href="activation" class="btn btn-link p-0">{{ lang.mod_user.account_activation }}</a>
+                        <span class="mx-2">|</span>
+                        <a href="register" class="btn btn-link p-0">{{ lang.mod_user.register }}</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: mod_user/login.twig -->
+{% endblock %}

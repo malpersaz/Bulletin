@@ -1,0 +1,502 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+
+{% block title %}
+	{{ lang.mod_menu.edit }}
+{% endblock %}
+
+{% block headline %}
+	{{ lang.mod_menu.edit }}
+{% endblock %}
+
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0, disable = false) %}
+    {% if select_nested_parent_id_result[parent_id] is defined %}
+        {% for entry in select_nested_parent_id_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %} {% if entry.id == self_id or disable %} disabled="disabled" {% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+            </option>
+            {% if select_nested_parent_id_result[parent_id_loop] is defined and select_nested_parent_id_result[parent_id_loop] is iterable and parent_id_loop != parent_id and level < 20 %}
+                {% set next_disable = disable or (entry.id == self_id) %}
+                {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id_loop, selected_id, self_id, level + 1, next_disable) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+	<style>
+		.edit-container {
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 16px;
+			padding-bottom: 120px;
+		}
+		.edit-card {
+			background: var(--md-sys-color-surface);
+			border-radius: 12px;
+			padding: 20px;
+			box-shadow: var(--md-sys-elevation-1);
+		}
+		.card-header-edit {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 16px;
+			color: var(--md-sys-color-primary);
+		}
+		.card-header-edit i {
+			font-size: 20px;
+		}
+		.card-header-edit h3 {
+			margin: 0;
+			font-size: 16px;
+			font-weight: 500;
+		}
+		.form-row {
+			margin-bottom: 20px;
+		}
+		.m3-input-wrapper {
+			position: relative;
+			margin-bottom: 4px;
+		}
+		.m3-input-wrapper:focus-within {
+			z-index: 9999;
+		}
+		.m3-input-lg {
+			width: 100%;
+			padding: 12px 16px;
+			border-radius: 8px;
+			border: 1px solid var(--md-sys-color-outline);
+			background: transparent;
+			color: var(--md-sys-color-on-surface);
+			font-size: 16px;
+			outline: none;
+            box-sizing: border-box;
+		}
+		.m3-input-lg:focus {
+			border-color: var(--md-sys-color-primary);
+			border-width: 2px;
+			padding: 11px 15px;
+		}
+		.m3-floating-label {
+			position: absolute;
+			top: 12px;
+			left: 16px;
+			color: var(--md-sys-color-on-surface-variant);
+			font-size: 16px;
+			pointer-events: none;
+			transition: all 0.2s;
+            z-index: 10;
+		}
+        .m3-input-lg:focus ~ .m3-floating-label,
+		.m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label,
+        select.m3-input-lg ~ .m3-floating-label,
+        .ts-wrapper.m3-input-lg ~ .m3-floating-label {
+			top: -10px;
+			left: 12px;
+			font-size: 12px;
+			color: var(--md-sys-color-on-surface-variant);
+			background: var(--md-sys-color-surface);
+			padding: 0 4px;
+		}
+        .m3-input-lg:focus ~ .m3-floating-label,
+        select.m3-input-lg:focus ~ .m3-floating-label,
+        .ts-wrapper.m3-input-lg.focus ~ .m3-floating-label {
+            color: var(--md-sys-color-primary);
+        }
+        /* TomSelect override */
+        .ts-wrapper.m3-input-lg {
+            padding: 0;
+            border: none;
+        }
+        .ts-wrapper.m3-input-lg .ts-control {
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background: transparent;
+            padding: 12px 16px;
+            min-height: 48px;
+            font-size: 16px;
+            box-shadow: none;
+        }
+        .ts-wrapper.m3-input-lg.focus .ts-control {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 11px 15px;
+        }
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .selection-card {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .selection-card.active {
+            background: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
+        }
+        .check-icon {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--md-sys-color-primary);
+            display: none;
+        }
+        .selection-card.active .check-icon {
+            display: block;
+        }
+        
+        /* Icon Input Enhancements */
+        .icon-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .icon-preview-box {
+            position: absolute;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: var(--md-sys-color-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-sys-color-on-surface-variant);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Helper Text Enhancements */
+        .m3-help-text {
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-top: 6px;
+            margin-left: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .m3-help-text i {
+            font-size: 14px;
+            color: var(--md-sys-color-primary);
+        }
+	</style>
+
+	<form id="editForm" method="POST" action="{{ site.sadres }}mod_menu/edit/{{ d.id }}">
+		<input type="hidden" name="id" value="{{ d.id }}">
+		<input type="hidden" name="edit" value="1">
+
+		<div class="edit-container">
+            {% if error is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'warning',
+                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                            confirmButtonText: '{{ lang.mod_menu.options.ok }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if hatalar is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let errorHtml = '<div style="text-align: left;">';
+                        {% for hata in hatalar %}
+                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                        {% endfor %}
+                        errorHtml += '</div>';
+
+                        Swal.fire({
+                            icon: 'warning',
+                            html: errorHtml,
+                            confirmButtonText: '{{ lang.mod_menu.options.ok }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "{{ site.sadres }}mod_menu/list";
+                    }, 2000);
+                </script>
+            {% endif %}
+
+			{# Card 1: Basics #}
+			<div class="edit-card">
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="lang" id="lang" required>
+                            {% for item in lang_lang %}
+                                <option value="{{ item.seo }}" {% if d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                            {% endfor %}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.language }}</label>
+                    </div>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="name" id="name" placeholder=" " autocomplete="off" value="{{ d.name }}" required>
+						<label class="m3-floating-label">{{ lang.mod_menu.admin.columns.name }}</label>
+					</div>
+				</div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="parent_id" id="parent_id">
+                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.mod_menu.columns.parent_menu }} (Root)</option>
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, d.parent_id, d.id) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.parent_id }}</label>
+                    </div>
+                </div>
+			</div>
+
+			{# Card 2: Links & Content #}
+			<div class="edit-card">
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="url" id="url" placeholder=" " value="{{ d.url }}">
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.url }}</label>
+                    </div>
+                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.url }}</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="file" id="file" placeholder=" " value="{{ d.file }}">
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.file }}</label>
+                    </div>
+                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.file }}</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper icon-input-group">
+                        <input type="text" class="m3-input-lg pr-5" name="icon" id="icon" placeholder=" " value="{{ d.icon }}">
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.icon }}</label>
+                        <div class="icon-preview-box" id="iconPreview">
+                            {% if d.icon %}<i class="{{ d.icon }}"></i>{% else %}<i class="bi bi-question"></i>{% endif %}
+                        </div>
+                    </div>
+                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.icon }}</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <textarea class="m3-input-lg" name="html" id="html" rows="3" placeholder=" ">{{ d.html }}</textarea>
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.html }}</label>
+                    </div>
+                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.html }}</div>
+                </div>
+            </div>
+
+			{# Card 3: Display Settings #}
+			<div class="edit-card">
+
+                <div class="form-row">
+                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_menu.admin.columns.target }}</label>
+                    <input type="hidden" name="target" value="{{ d.target }}" id="targetHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.target == 'n' or d.target == '' %} active {% endif %}" onclick="selectTargetStatus(this, 'n')">
+                            <i class="bi bi-box-arrow-in-right" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_menu.admin.select_value.target_h }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.target == 'y' %} active {% endif %}" onclick="selectTargetStatus(this, 'y')">
+                            <i class="bi bi-box-arrow-up-right" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_menu.admin.select_value.target_e }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_menu.admin.columns.status }}</label>
+                    <input type="hidden" name="status" value="{{ d.status }}" id="statusHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.status == 'y' %} active {% endif %}" onclick="updateStatusSelection(this, 'y')">
+                            <i class="bi bi-eye" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_menu.admin.radio.publish_yes }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.status == 'n' %} active {% endif %}" onclick="updateStatusSelection(this, 'n')">
+                            <i class="bi bi-eye-slash" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.mod_menu.admin.radio.publish_no }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper" style="display: flex; align-items: center; gap: 8px;">
+                        <select class="m3-input-lg" name="acl_id" id="acl_id" style="flex: 1;">
+                            <option value="0" {% if d.acl_id == 0 %}selected{% endif %}>{{ lang.mod_menu.choose_wish }}</option>
+                            {% for item in mod_acl_acl_id %}
+                                <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_menu.form.acl_settings }}">
+                            <i class="bi bi-gear" style="font-size: 20px;"></i>
+                        </a>
+                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.acl_id|raw }}</label>
+                    </div>
+                </div>
+			</div>
+
+		</div>
+	</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<style>
+		.m3-final-bar {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			height: 80px !important;
+			background: var(--md-sys-color-surface-container) !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 12px !important;
+			padding: 0 16px !important;
+			z-index: 1000 !important;
+			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+		}
+		.m3-btn-half {
+			flex: 1 !important;
+			height: 52px !important;
+			border-radius: 26px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 8px !important;
+			font-size: 14px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		}
+		.m3-btn-half:active {
+			transform: scale(0.98) !important;
+			opacity: 0.9 !important;
+		}
+		@media(min-width: 600px) {
+			.m3-final-bar {
+				max-width: 480px !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-bottom-left-radius: 32px !important;
+				border-bottom-right-radius: 32px !important;
+				bottom: 8px !important;
+				height: 88px !important;
+				width: calc(100% - 16px) !important;
+			}
+		}
+	</style>
+	<div class="m3-final-bar">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_menu/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_menu.actions.cancel }}
+		</button>
+		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_menu.actions.edit }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('parent_id')) new TomSelect('#parent_id', { create: false });
+        if (document.getElementById('acl_id')) new TomSelect('#acl_id', { create: false });
+
+        // Icon Preview functionality
+        const iconInput = document.getElementById('icon');
+        const iconPreview = document.getElementById('iconPreview');
+        
+        if (iconInput && iconPreview) {
+            iconInput.addEventListener('input', function() {
+                const iconClass = this.value.trim();
+                
+                // Add pop animation effect
+                iconPreview.style.transform = 'scale(0.8)';
+                
+                setTimeout(() => {
+                    if (iconClass) {
+                        iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
+                        iconPreview.style.color = 'var(--md-sys-color-primary)';
+                        iconPreview.style.background = 'var(--md-sys-color-primary-container)';
+                    } else {
+                        iconPreview.innerHTML = '<i class="bi bi-question"></i>';
+                        iconPreview.style.color = 'var(--md-sys-color-on-surface-variant)';
+                        iconPreview.style.background = 'var(--md-sys-color-surface-variant)';
+                    }
+                    iconPreview.style.transform = 'scale(1.1)';
+                    
+                    setTimeout(() => {
+                        iconPreview.style.transform = 'scale(1)';
+                    }, 150);
+                }, 150);
+            });
+        }
+    });
+
+    function selectTargetStatus(el, val) {
+        document.querySelectorAll('#targetHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('targetHidden').value = val;
+    }
+
+    function updateStatusSelection(el, val) {
+        document.querySelectorAll('#statusHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('statusHidden').value = val;
+    }
+
+    function submitEditForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        form.submit();
+    }
+</script>
+{% endblock %}

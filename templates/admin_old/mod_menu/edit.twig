@@ -1,0 +1,308 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}
+	{{ lang.mod_menu.edit }}
+{% endblock %}
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, level, disable) %}
+	{% for entry in select_nested_parent_id_result[parent_id] %}
+		{% set parent_id = entry.id %}
+		<option value="{{ entry.id }}" {% if entry.id == d.parent_id %} selected="selected" {% endif %} {% if entry.id == d.id or disable == "true" %} disabled="disabled" {% endif %}>
+			{{ '-'|repeat(level) }}{{ entry.name }}
+		</option>
+		{# Eğer Alt Kategorisi Varsa #}
+		{% if select_nested_parent_id_result[parent_id] is defined and select_nested_parent_id_result[parent_id] is iterable %}
+			{# Eğer Düzenlenen Kayıt İle Alt Kategori ID'si eşitse Disable ET Alt Kategorileri #}
+			{% if parent_id == d.id %}
+				{{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id, level + 1, "true") }}
+			{% else %}
+				{# Eğer Disable True İsi Disableye devam et çünkü düzenlenen kaydın 2 3 level parent_id kayıtlarıdır #}
+				{% if disable == "true" %}
+					{{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id, level + 1, "true") }}
+				{% else %}
+					{{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id, level + 1, "false") }}
+				{% endif %}
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+{% endmacro %}
+{% block body %}
+	{% if error is defined %}
+		<div class="alert alert-danger">
+			<strong>{{ lang.mod_menu.error }}</strong>
+			{{ mesaj }}
+		</div>
+	{% else %}
+		<div class="portlet box green">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-edit"></i>
+					{{ lang.mod_menu.edit }}
+				</div>
+			</div>
+			<div
+				class="portlet-body form">
+				<!--  Mesajlar -->
+				{% if oke is defined %}
+					<!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+					<div class="alert alert-success">
+						<strong>{{ lang.mod_menu.oke }}</strong>
+						{{ mesaj }}
+						<hr>
+						<a href="{{ site.adres }}mod_menu/ekle" class="btn green">{{ lang.mod_menu.actions.add }}</a>
+						<a href="{{ site.adres }}mod_menu/edit/{{ d.id }}" class="btn red">{{ lang.mod_menu.actions.edit }}</a>
+						<a href="{{ site.adres }}mod_menu/list" class="btn blue">{{ lang.mod_menu.list }}</a>
+					</div>
+					<!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+				{% else %}
+					{% if hatalar is defined %}
+						<!--[if !IE]>Hata Mesajı Varsa<![endif]-->
+						{% for hata in hatalar %}
+							<div class="alert alert-danger">
+								<strong>{{ lang.mod_menu.hata }}</strong>
+								{{ hata }}
+							</div>
+						{% endfor %}
+						<!--[if !IE]>Hata Mesajı Varsa<![endif]-->
+					{% endif %}
+					<form method="POST" action="" id="edit" enctype="multipart/form-data" class="form-horizontal">
+						<div class="form-body">
+							<!-- İnputlar Başlar -->
+							<!--[if !IE]>lang Input Başlar<![endif]-->
+								<div class="form-group"> <label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.lang }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="lang" id="lang">
+											{% for item in lang_lang %}
+												<option value="{{ item.seo }}" {% if d.lang == item.seo %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>lang Input Biter<![endif]-->
+							<!--[if !IE]>name Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.name }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge  validate[required,length[2,255]]" name="name" value="{{ d.name }}" type="text" id="name">
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>name Input Biter<![endif]-->
+							<!--[if !IE]>url Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.url }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge " name="url" value="{{ d.url }}" type="text" id="url">
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>url Input Biter<![endif]-->
+							<!--[if !IE]>file Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.file }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge " name="file" value="{{ d.file }}" type="text" id="file">
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>file Input Biter<![endif]-->
+							<!--[if !IE]>parent_id Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.parent_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="parent_id" id="parent_id">
+											<option value="0" {% if d.parent_id == '0' %} selected="selected" {% endif %}>{{ lang.mod_menu.choose_wish }}</option>
+											{{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, 0, "false") }}
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>parent_id Input Biter<![endif]-->
+							<!--[if !IE]>target Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.target }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="target" id="target">
+											<option value="y" {% if d.target == 'y' %} selected="selected" {% endif %}>
+												{{ lang.mod_menu.admin.select_value.target_e }}
+											</option>
+											<option value="n" {% if d.target == 'n' %} selected="selected" {% endif %}>
+												{{ lang.mod_menu.admin.select_value.target_h }}
+											</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>target Input Biter<![endif]-->
+							<!--[if !IE]>status Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.status }}
+									:</label>
+								<div class="col-md-4">
+									<div class="radio-list">
+										<label class="radio-inline">
+											{{ lang.mod_menu.admin.radio.publish_yes }}
+											<input name="status" value="y" type="radio" {% if d.status == 'y' %} checked="checked" {% endif %}/>
+										</label>
+										<label class="radio-inline">
+											{{ lang.mod_menu.admin.radio.publish_no }}
+											<input name="status" value="n" type="radio" {% if d.status == 'n' %} checked="checked" {% endif %}/>
+										</label>
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>status Input Biter<![endif]-->
+							<!--[if !IE]>html Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.html }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge " name="html" value="{{ d.html }}" type="text" id="html">
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>html Input Biter<![endif]-->
+							<!--[if !IE]>icon Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.icon }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge " name="icon" value="{{ d.icon }}" type="text" id="icon">
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>icon Input Biter<![endif]-->
+							<!--[if !IE]>acl_id Input Başlar<![endif]-->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_menu.admin.columns.acl_id }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="acl_id" id="acl_id">
+											<option value="0" {% if d.acl_id == 0 %} selected="selected" {% endif %}>{{ lang.mod_menu.choose_wish }}</option>
+											{% for item in mod_acl_acl_id %}
+												<option value="{{ item.id }}" {% if d.acl_id == item.id %} selected="selected" {% endif %}>
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+							<!--[if !IE]>acl_id Input Biter<![endif]-->
+							<!-- İnputlar Biter -->
+						</div>
+						<!-- form body end -->
+						<div class="form-actions">
+							<div class="row">
+								<div
+									class="col-md-offset-3 col-md-9">
+									<!--[if !IE]>{# lang.mod_menu.button.edit #} Butonu<![endif]-->
+									<button class="btn green" name="edit" value="{{ lang.mod_menu.actions.edit }}">
+										{{ lang.mod_menu.actions.edit }}
+									</button>
+									<a class="btn blue" href="mod_menu/list">{{ lang.mod_menu.actions.cancel }}</a>
+									<!--[if !IE]>{# lang.mod_menu.button.edit #} Butonu<![endif]-->
+								</div>
+							</div>
+						</div>
+						<!-- form actions end -->
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+{% block extra %}
+	<script>
+		$(document).ready(function () {
+$("#edit").validationEngine();
+
+function temizle(veri) {
+var temiz = veri.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, " ");
+temiz = temiz.replace(/^\s+|\s+$/g, "");
+
+for (i = 0; i <= 15; i ++) {
+temiz = temiz.replace('  ', ' ');
+}
+return temiz;
+}
+
+// SEO YAPAR
+function make_seo(name, seo) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, "_");
+deger = deger.replace('İ', 'i');
+
+$("#" + seo).val(deger);
+});
+}
+
+// Make keywords
+function make_keywords(name, keywords) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, ",");
+deger = deger.toLowerCase();
+deger = deger.replace('İ', 'i');
+
+$("#" + keywords).val(deger);
+});
+}
+
+// Make Title
+function make_title(name, title) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + title).val(deger);
+});
+}
+
+// Make Açıklama
+function make_aciklama(name, description) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + description).val(deger);
+});
+}
+// Make Preview
+function make_preview(name) {
+$("#" + name).change(function () {
+$("#" + name + "_preview").html($("#" + name).val());
+});
+}
+
+var simdi = new Date();
+var yil = simdi.getFullYear();
+var ay = (simdi.getMonth() < 9 ? '0' : '') + (simdi.getMonth() + 1);
+var gun = (simdi.getDate() < 10 ? '0' : '') + simdi.getDate();
+var saat = (simdi.getHours() < 10 ? '0' : '') + simdi.getHours();
+var dakika = (simdi.getMinutes() < 10 ? '0' : '') + simdi.getMinutes();
+
+var now = yil + "-" + ay + "-" + gun + " " + saat + ":" + dakika;
+
+});
+	</script>
+	<!-- Javascript Başlar -->
+	<!-- Javascript Biter -->
+{% endblock %}

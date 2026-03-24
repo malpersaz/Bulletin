@@ -1,0 +1,38 @@
+{# Popup Function #}
+{{ run({"mod": "index", "method": "_popup"}) }}
+
+{% set popup = ctx_get('popup') %}
+{% set pop = ctx_get('pop') %}
+{% if pop is defined and pop != false %}
+    <i {% if pop.image != '' %} data-remote="{{ site.radres }}mod_popup/{{ pop.image }}" data-type="image" {% if pop.link != '' %} data-title="<a href='{{ pop.link }}' class='btn btn-danger'>{{ pop.name }}</a>"
+    {% else %}
+        data-title="{{ pop.name }}"
+    {% endif %}
+{% else %}
+    data-title="{{ pop.name }}" data-remote="{{ pop.link }}" data-type="{{ pop.video }}"
+{% endif %}
+data-keyboard="false" data-backdrop="static" data-footer="{{ pop.content }}" data-gallery="pop" id="pop" style="display: none"></i>
+{% set popcookiename_jquery_document %}
+    <script>
+    var popcookiename = 'pop{{ pop.id }}';
+    try {
+        if ($.cookie(popcookiename) == undefined) {
+            $.cookie(popcookiename, true, {expires: 1, path: '/'});
+            
+            var myModal = new bootstrap.Modal(document.getElementById('popModal'), {
+                keyboard: false
+            });
+            myModal.show();
+        }
+    } catch(e) {
+        console.warn('Popup cookie error:', e);
+        // If cookies blocked, show modal anyway or decide logic
+        var myModal = new bootstrap.Modal(document.getElementById('popModal'), {
+            keyboard: false
+        });
+        myModal.show();
+    }
+    </script>
+{% endset %}
+{{ ctx_add('jquery_document', popcookiename_jquery_document) }}
+{% endif %}

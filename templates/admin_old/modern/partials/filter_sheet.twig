@@ -1,0 +1,23 @@
+<!-- Filter Sheet -->
+<div class="overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="sheet-menu">
+    <div class="sheet-handle-bar"></div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h3 style="margin: 0; font-size: 22px; color: var(--md-sys-color-on-surface);">Filtrele & Sırala</h3>
+        <button onclick="closeSheet()"
+            style="background:none; border:none; color: var(--md-sys-color-primary); font-weight:500; font-size: 14px;">Kapat</button>
+    </div>
+
+    <!-- Sort/Filter Content -->
+    <!-- This should be dynamic based on module -->
+    <label class="filter-group-label">Sıralama</label>
+    <div class="chip-scroll-container">
+        <div class="filter-chip active" onclick="selectChip(this, 'sort')">En Yeni</div>
+        <div class="filter-chip" onclick="selectChip(this, 'sort')">En Eski</div>
+        <div class="filter-chip" onclick="selectChip(this, 'sort')">Başlık (A-Z)</div>
+        <div class="filter-chip" onclick="selectChip(this, 'sort')">Başlık (Z-A)</div>
+        <div class="filter-chip" onclick="selectChip(this, 'sort')">Okunma Sayısı</div>
+    </div>
+    
+    <!-- More filter options from prototype... -->
+</div>

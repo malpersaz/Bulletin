@@ -1,0 +1,337 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}
+    {{ lang.mod_acl.edit|default('Rolê Biguhere') }}
+{% endblock %}
+
+{% block headline %}
+    {{ lang.mod_acl.edit|default('Rolê Biguhere') }}
+{% endblock %}
+
+{% block content %}
+    <style>
+        .edit-container {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-bottom: 120px;
+        }
+        .edit-card {
+            background: var(--md-sys-color-surface);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--md-sys-elevation-1);
+        }
+        .card-header-edit {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: var(--md-sys-color-primary);
+        }
+        .card-header-edit i {
+            font-size: 20px;
+        }
+        .card-header-edit h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .form-row {
+            margin-bottom: 20px;
+        }
+        .m3-input-wrapper {
+            position: relative;
+            margin-bottom: 4px;
+        }
+        .m3-input-wrapper:focus-within {
+            z-index: 9999;
+        }
+        .m3-input-lg {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background: transparent;
+            color: var(--md-sys-color-on-surface);
+            font-size: 16px;
+            outline: none;
+            box-sizing: border-box;
+        }
+        .m3-input-lg:focus {
+            border-color: var(--md-sys-color-primary);
+            border-width: 2px;
+            padding: 11px 15px;
+        }
+        .m3-floating-label {
+            position: absolute;
+            top: 12px;
+            left: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+        .m3-input-lg:focus ~ .m3-floating-label,
+        .m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label {
+            top: -10px;
+            left: 12px;
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+            background: var(--md-sys-color-surface);
+            padding: 0 4px;
+        }
+        .m3-input-lg:focus ~ .m3-floating-label {
+            color: var(--md-sys-color-primary);
+        }
+
+        .selection-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        
+        @media (min-width: 768px) {
+            .selection-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .selection-card {
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .selection-card:hover {
+            background: rgba(0,0,0,0.02);
+            border-color: var(--md-sys-color-primary);
+        }
+        .selection-card.active {
+            background: var(--md-sys-color-primary-container);
+            border-color: var(--md-sys-color-primary);
+        }
+        .selection-icon {
+            font-size: 24px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        .selection-card.active .selection-icon {
+            color: var(--md-sys-color-primary);
+        }
+        .selection-label {
+            flex: 1;
+            font-weight: 500;
+            color: var(--md-sys-color-on-surface);
+        }
+        .selection-card.active .selection-label {
+            color: var(--md-sys-color-on-primary-container);
+        }
+        .check-icon {
+            color: var(--md-sys-color-primary);
+            display: none;
+            font-size: 20px;
+        }
+        .selection-card.active .check-icon {
+            display: block;
+        }
+        .hidden-checkbox {
+            display: none;
+        }
+    </style>
+
+    <form id="editForm" method="POST" action="{{ site.sadres }}mod_acl/edit/{{ d.id }}" enctype="multipart/form-data">
+        <input type="hidden" name="id" value="{{ d.id }}">
+        <input type="hidden" name="edit" value="1">
+
+        <div class="edit-container">
+            {% if error is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'warning',
+                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                            confirmButtonText: '{{ lang.mod_acl.button.tamam|default("Tamam") }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if hatalar is defined %}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        let errorHtml = '<div style="text-align: left;">';
+                        {% for hata in hatalar %}
+                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                        {% endfor %}
+                        errorHtml += '</div>';
+
+                        Swal.fire({
+                            icon: 'warning',
+                            html: errorHtml,
+                            confirmButtonText: '{{ lang.mod_acl.button.tamam|default("Tamam") }}',
+                            confirmButtonColor: '#ba1a1a'
+                        });
+                    });
+                </script>
+            {% endif %}
+
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+                <script>
+                    setTimeout(() => {
+                        window.location.href = "{{ site.sadres }}mod_acl/list";
+                    }, 2000);
+                </script>
+            {% endif %}
+
+            <div class="edit-card">
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="name" id="name" placeholder=" " autocomplete="off" value="{{ d.name }}" required>
+                        <label class="m3-floating-label">{{ lang.mod_acl.admin.columns.name|default('Navê Rolê (Mînak: Nivîskar, Moderator)') }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-shield-lock"></i>
+                    <h3>{{ lang.mod_acl.admin.columns.acl|default('Destûrên Vê Rolê (ACL)') }}</h3>
+                </div>
+
+                <div class="form-row">
+                    <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px; margin-bottom: 16px;">{{ lang.mod_acl.messages.info.select_roles|default('Ji kerema xwe destûrên ku tu dixwazî bidî vê rolê, hilbijêre.') }}</p>
+                    <div class="selection-grid">
+                        {% for grup in _group_list %}
+                            <!-- Checking the group_id against d.acl directly -->
+                            {% set is_checked = false %}
+                            {% if grup.group_id in d.acl %}
+                                {% set is_checked = true %}
+                            {% endif %}
+                            
+                            <label class="selection-card {% if is_checked %}active{% endif %}" onclick="toggleRole(this, event)">
+                                <i class="bi bi-key selection-icon"></i>
+                                <div class="selection-label">{{ grup.name }}</div>
+                                <i class="bi bi-check-circle-fill check-icon"></i>
+                                <input type="checkbox" name="group_id[{{ grup.group_id }}]" value="{{ grup.group_id }}" class="hidden-checkbox" {% if is_checked %}checked{% endif %}>
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<style>
+		.m3-final-bar {
+			position: fixed !important;
+			bottom: 0 !important;
+			left: 0 !important;
+			right: 0 !important;
+			height: 80px !important;
+			background: var(--md-sys-color-surface-container) !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 12px !important;
+			padding: 0 16px !important;
+			z-index: 1000 !important;
+			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
+			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
+		}
+		.m3-btn-half {
+			flex: 1 !important;
+			height: 52px !important;
+			border-radius: 26px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			gap: 8px !important;
+			font-size: 14px !important;
+			font-weight: 600 !important;
+			text-decoration: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+		}
+		.m3-btn-half:active {
+			transform: scale(0.98) !important;
+			opacity: 0.9 !important;
+		}
+		@media(min-width: 600px) {
+			.m3-final-bar {
+				max-width: 480px !important;
+				left: 50% !important;
+				transform: translateX(-50%) !important;
+				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
+				border-bottom-left-radius: 32px !important;
+				border-bottom-right-radius: 32px !important;
+				bottom: 8px !important;
+				height: 88px !important;
+				width: calc(100% - 16px) !important;
+			}
+		}
+	</style>
+	<div class="m3-final-bar">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_acl/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_acl.button.vazgec }}
+		</button>
+		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_acl.button.edit }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function submitEditForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+        form.submit();
+    }
+
+    function toggleRole(element, event) {
+        // Since element is a label, the browser automatically toggles the checkbox
+        // However, if we click directly on the checkbox or icon, it might fire multiple times
+        // To be safe, we just check the underlying checkbox state to bind the class
+        
+        // Timeout ensures the checkbox state has updated natively before we read it
+        setTimeout(() => {
+            const checkbox = element.querySelector('.hidden-checkbox');
+            if (checkbox.checked) {
+                element.classList.add('active');
+            } else {
+                element.classList.remove('active');
+            }
+        }, 10);
+    }
+</script>
+{% endblock %}

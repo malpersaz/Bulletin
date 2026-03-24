@@ -1,0 +1,365 @@
+{% set show_fab = false %}
+{% set show_navbar = false %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set show_sidebar = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
+{% set search_placeholder = lang.mod_attachment.admin[23]|default('File Name') %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_attachment.admin[37]|format(d[value])|default('File Management') }}{% endblock %}
+{% block headline %}{{ lang.mod_attachment.admin[14]|default('File Management') }}{% endblock %}
+
+{% block styles %}
+<style>
+    .attachment-shell {
+        padding: 8px 16px 16px;
+        display: grid;
+        gap: 14px;
+        background:
+            radial-gradient(circle at top left, rgba(103, 80, 164, 0.10), transparent 24%),
+            radial-gradient(circle at bottom right, rgba(0, 105, 92, 0.10), transparent 28%),
+            linear-gradient(180deg, #f4f1fb 0%, #eef5f4 100%);
+    }
+    .attachment-banner {
+        border-radius: 20px;
+        padding: 16px 18px;
+        background: rgba(255,255,255,0.82);
+        border: 1px solid rgba(0,0,0,0.06);
+        box-shadow: 0 12px 30px rgba(22, 30, 52, 0.06);
+    }
+    .attachment-banner h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+    }
+    .attachment-banner p {
+        margin: 6px 0 0;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 13px;
+        line-height: 1.6;
+    }
+    .attachment-grid {
+        display: grid;
+        gap: 12px;
+    }
+    .attachment-card {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.9);
+        border: 1px solid rgba(0,0,0,0.08);
+        box-shadow: 0 12px 40px rgba(35, 47, 33, 0.06);
+    }
+    .attachment-card.hidden-by-search { display: none; }
+    .attachment-topline {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+    }
+    .attachment-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #e8def8, #d0f0ea);
+        color: #356859;
+        font-size: 22px;
+    }
+    .attachment-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 750;
+        line-height: 1.35;
+        word-break: break-word;
+    }
+    .attachment-meta {
+        margin-top: 4px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 12px;
+    }
+    .attachment-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 24px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: #eef2ff;
+        color: #32408f;
+        font-weight: 700;
+        text-transform: uppercase;
+    }
+    .attachment-menu {
+        width: 38px;
+        height: 38px;
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.88);
+        color: var(--md-sys-color-on-surface-variant);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    .attachment-inline-edit {
+        display: grid;
+        gap: 10px;
+    }
+    .attachment-input {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid var(--md-sys-color-outline);
+        background: transparent;
+        padding: 12px 14px;
+        color: var(--md-sys-color-on-surface);
+        box-sizing: border-box;
+        outline: none;
+    }
+    .attachment-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+    }
+    .attachment-actions button,
+    .attachment-actions a {
+        min-height: 40px;
+        border-radius: 999px;
+        border: none;
+        padding: 0 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        cursor: pointer;
+    }
+    .attachment-download {
+        background: #dff3ec;
+        color: #1d5c4e;
+    }
+    .attachment-edit {
+        background: #efe7fb;
+        color: #5e35b1;
+    }
+    .attachment-delete {
+        background: #fce8e6;
+        color: #b3261e;
+    }
+    .attachment-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 56px 28px;
+        border-radius: 26px;
+        border: 1px dashed rgba(48,59,47,0.18);
+        background: rgba(255,255,255,0.88);
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attachment-shell">
+    <form id="attachmentUploadForm" method="POST" action="{{ site.sadres }}mod_attachment/yukle" hidden>
+        <input type="hidden" name="vid" value="{{ vid }}">
+        <input type="hidden" name="mod_name" value="{{ mod_name }}">
+    </form>
+
+    <section class="attachment-banner">
+        <h2>{{ d[value]|default(lang.mod_attachment.admin[14]) }}</h2>
+        <p>{{ lang.mod_attachment.admin.help|default('Help!') }} {{ lang.mod_attachment.admin[24]|default('Double-click the file you want to rename.') }}</p>
+    </section>
+
+    <div id="attachment-list" class="attachment-grid">
+        {% if dosyalar is defined and dosyalar is not empty %}
+            {% for dosya in dosyalar %}
+                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-name="{{ dosya.filename|lower }}">
+                    <div class="attachment-topline">
+                        <div class="attachment-icon"><i class="bi bi-file-earmark-text"></i></div>
+                        <div>
+                            <h3 class="attachment-title" data-display>{{ dosya.filename }}</h3>
+                            <div class="attachment-meta">
+                                <span class="attachment-chip">{{ dosya.ext|default('file') }}</span>
+                                <span>#{{ dosya.id }}</span>
+                                <span>{{ dosya.original_name|default(dosya.filename) }}</span>
+                            </div>
+                        </div>
+                        <button class="attachment-menu" type="button" onclick="toggleAttachmentEdit('{{ dosya.id }}')">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                    </div>
+
+                    <div class="attachment-inline-edit" id="attachment-edit-{{ dosya.id }}" style="display:none;">
+                        <input class="attachment-input" type="text" id="attachment-input-{{ dosya.id }}" value="{{ dosya.filename }}">
+                        <div class="attachment-actions">
+                            <button type="button" class="attachment-edit" onclick="saveAttachmentName('{{ dosya.id }}')">
+                                <i class="bi bi-check2"></i>
+                                <span>{{ lang.mod_attachment.admin[21]|default('Save') }}</span>
+                            </button>
+                            <a class="attachment-download" href="{{ site.sadres }}tools/saveFile/{{ mod_name }}/{{ dosya.vid }}/{{ dosya.id }}">
+                                <i class="bi bi-download"></i>
+                                <span>{{ lang.mod_attachment.admin[29]|default('Download File') }}</span>
+                            </a>
+                            <button type="button" class="attachment-delete" onclick="deleteAttachment('{{ dosya.id }}')">
+                                <i class="bi bi-trash3"></i>
+                                <span>{{ lang.mod_attachment.admin[31]|default('Remove File') }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        {% else %}
+            <section id="attachment-empty" class="attachment-empty">
+                <div class="empty-icon-box"><i class="bi bi-folder2-open"></i></div>
+                <h3>{{ lang.mod_attachment.admin[27]|default('No registered files found!') }}</h3>
+                <p>{{ lang.mod_attachment.admin[28]|default('Select a category and add files') }}</p>
+            </section>
+        {% endif %}
+    </div>
+
+    <section id="search-empty" class="attachment-empty" style="display:none;">
+        <div class="empty-icon-box"><i class="bi bi-search"></i></div>
+        <h3>{{ lang.mod_attachment.admin[25]|default('No files found!') }}</h3>
+        <p>{{ lang.mod_attachment.admin[23]|default('File Name') }}</p>
+    </section>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar">
+    <button class="toolbar-item" onclick="history.back()">
+        <i class="bi bi-chevron-left"></i>
+        <span>{{ lang.mod_attachment.admin[12]|default('Back') }}</span>
+    </button>
+
+    <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
+        <i class="bi bi-folder2-open"></i>
+        <span>{{ lang.mod_attachment.admin[14]|default('File Management') }}</span>
+    </button>
+
+    <button type="button" class="toolbar-fab" onclick="openAttachmentUpload()">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <button class="toolbar-item" onclick="openAttachmentUpload()">
+        <i class="bi bi-upload"></i>
+        <span>{{ lang.mod_attachment.admin[38]|default('Add File') }}</span>
+    </button>
+
+    <button class="toolbar-item" onclick="document.getElementById('searchInput')?.focus()">
+        <i class="bi bi-search"></i>
+        <span>{{ lang.mod_attachment.admin[23]|default('File Name') }}</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function openAttachmentUpload() {
+        document.getElementById('attachmentUploadForm')?.submit();
+    }
+
+    function toggleAttachmentEdit(id) {
+        const panel = document.getElementById('attachment-edit-' + id);
+        if (!panel) return;
+        panel.style.display = panel.style.display === 'none' ? 'grid' : 'none';
+    }
+
+    function saveAttachmentName(id) {
+        const input = document.getElementById('attachment-input-' + id);
+        if (!input) return;
+
+        const body = new URLSearchParams();
+        body.set('id', id);
+        body.set('name', input.value.trim());
+        body.set('vid', '{{ vid }}');
+        body.set('mod_name', '{{ mod_name }}');
+
+        fetch('{{ site.sadres }}mod_attachment/addegis', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: body.toString()
+        })
+        .then(response => response.text())
+        .then(text => {
+            if (text.trim() !== 'Oke') throw new Error(text);
+            const card = document.getElementById('attachment-' + id);
+            card.querySelector('[data-display]').textContent = input.value.trim();
+            showSnackbar('{{ lang.mod_attachment.admin[39]|e('js') }}', 'success');
+        })
+        .catch(error => showSnackbar(String(error.message || error), 'error'));
+    }
+
+    function deleteAttachment(id) {
+        Swal.fire({
+            icon: 'warning',
+            title: '{{ lang.mod_attachment.admin[18]|e('js') }}',
+            text: '{{ lang.mod_attachment.admin[17]|e('js') }}',
+            showCancelButton: true,
+            confirmButtonText: '{{ lang.mod_attachment.admin[19]|e('js') }}',
+            cancelButtonText: '{{ lang.mod_attachment.admin[20]|e('js') }}'
+        }).then(result => {
+            if (!result.isConfirmed) return;
+
+            const body = new URLSearchParams();
+            body.set('id', id);
+            body.set('vid', '{{ vid }}');
+            body.set('mod_name', '{{ mod_name }}');
+
+            fetch('{{ site.sadres }}mod_attachment/sil', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            })
+            .then(response => response.text())
+            .then(text => {
+                if (text.trim() !== 'Oke') throw new Error(text);
+                document.getElementById('attachment-' + id)?.remove();
+                showSnackbar('{{ lang.mod_attachment.admin[36]|e('js') }}', 'success');
+            })
+            .catch(error => showSnackbar(String(error.message || error), 'error'));
+        });
+    }
+
+    function clearSearch() {
+        const input = document.getElementById('searchInput');
+        if (input) input.value = '';
+        filterAttachments('');
+    }
+
+    function filterAttachments(value) {
+        const term = String(value || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.attachment-card');
+        let visible = 0;
+
+        cards.forEach(card => {
+            const matched = !term || (card.dataset.name || '').includes(term);
+            card.classList.toggle('hidden-by-search', !matched);
+            if (matched) visible++;
+        });
+
+        const searchEmpty = document.getElementById('search-empty');
+        if (searchEmpty) searchEmpty.style.display = (cards.length > 0 && visible === 0) ? 'flex' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', e => filterAttachments(e.target.value));
+        }
+    });
+</script>
+{% endblock %}

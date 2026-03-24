@@ -1,0 +1,50 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+	<script>
+		Dropzone.options.uploader = {
+url: "{{ site.sadres }}mod_gallery/up",
+paramName: "image",
+params: {
+'vid': '{{ vid }}',
+'isim': 'image',
+'sid': '{{ session.sid }}',
+'mod_name': '{{ mod_name }}',
+'vname': '{{ d[value] }}'
+},
+success: function (file, response) {
+
+var kobmesaj = '<em>' + file.name + '</em> (' + Math.round(file.size / 1024) + ' KB) ';
+$.achtung({
+className: 'achtungSuccess', message: {{ lang.mod_gallery.admin.35|format("'+kobmesaj+'", "'+response+'")|raw }},
+// message: kobmesaj+'{{ lang.mod_gallery.admin.35 }} Sunucuya '+response+' Olarak kaydedildi!',
+timeout: 8
+});
+}
+};
+	</script>
+{% endblock %}
+{% block title %}
+	{{ lang.mod_gallery.admin.22|format(d[value]) |e }}
+{% endblock %}
+{% block body %}
+	<div class="portlet box green">
+		<div class="portlet-title">
+			<div class="caption">
+				<a href="javascript:history.go(-1)" class="btn red">
+					<i class="fa fa-backward"></i>
+					{{ lang.mod_gallery.admin.12 }}</a>
+			</div>
+		</div>
+		<div class="portlet-body">
+			<div class="alert alert-info">
+				<strong>{{ lang.mod_gallery.info }}</strong>
+				{{ lang.mod_gallery.admin.3 }}
+			</div>
+			<div class="alert alert-info">
+				<strong>{{ lang.mod_gallery.message }}</strong>
+				{{ lang.mod_gallery.admin.2 }}
+			</div>
+			<div id="uploader" class="dropzone"></div>
+		</div>
+	</div>
+{% endblock %}

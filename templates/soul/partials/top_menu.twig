@@ -1,0 +1,40 @@
+<!-- START: partials/top_menu.twig -->
+{{ run({"mod": "index", "method": "_menu"}) }}
+{% set menu = ctx_get('menu') }}
+
+<!-- Debug: Check menu data -->
+Menu Debug: {{ menu is defined ? 'Menu exists' : 'No menu' }} | Count: {{ menu|length }}
+
+<!-- Main Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            {% if menu is defined and menu is not empty %}
+                <ul class="navbar-nav me-auto">
+                    {% if menu[0] is defined %}
+                        {% for m in menu[0] %}
+                            {% if m.lang == site.lang and m.status == 'y' %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ m.url|default('#') }}" title="{{ m.name }}">
+                                        {% if m.icon is defined and m.icon != '' %}<i class="{{ m.icon }} me-1"></i>{% endif %}
+                                        {{ m.name }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <li class="nav-item"><span class="navbar-text">No menu[0] found</span></li>
+                    {% endif %}
+                </ul>
+            {% else %}
+                <span class="navbar-text">No menu data</span>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<!-- END: partials/top_menu.twig -->

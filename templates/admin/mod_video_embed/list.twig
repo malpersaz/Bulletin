@@ -1,0 +1,110 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_video_embed.list }}{% endblock %}
+
+{% block headline %}{{ lang.mod_video_embed.list }}{% endblock %}
+
+{% block content %}
+
+<!-- PULL TO REFRESH SPINNER -->
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<!-- DYNAMIC CONTENT (Cards) -->
+<div id="content-list-container" class="content-list">
+    <!-- Cards will be injected here via JS -->
+</div>
+
+<!-- EMPTY STATE -->
+<div id="empty-state" class="empty-state-container" style="display: none;">
+    <div class="empty-icon-box">
+        <i class="bi bi-camera-video"></i>
+    </div>
+    <h2 style="font-weight: 800;">{{ lang.mod_video_embed.datatable.zero_records }}</h2>
+    <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px; margin-top: 4px;">{{ lang.mod_video_embed.datatable.empty_table }}</p>
+</div>
+
+<!-- INFINITE SCROLL LOADER -->
+<div id="infinite-loader" class="infinite-loader" style="display: none;">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>{{ lang.mod_video_embed.datatable.loading_records }}</span>
+</div>
+
+<!-- HIDDEN FILTERS -->
+<form id="filterForm" style="display: none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="arama[name]" id="filterSearch" value="">
+    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
+    <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_video_embed.button.edit }}</span>
+        </button>
+        
+        <button id="toolbarImage" class="toolbar-item" onclick="imageSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-image"></i>
+            <span>{{ lang.mod_video_embed.admin.columns.image }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_video_embed/add'">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+
+        <button id="toolbarPublish" class="toolbar-item" onclick="publishToggleSelected()" style="opacity:0.3; pointer-events:none;">
+            <i id="toolbarPublishIcon" class="bi bi-eye-fill"></i>
+            <span id="toolbarPublishText">{{ lang.mod_video_embed.admin.publish.key }}</span>
+        </button>
+
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_video_embed.button.delete }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MODULE_URL = SITE_URL + "mod_video_embed/";
+    const DATA_URL = SITE_URL + "mod_video_embed/datatable_json";
+    
+    const VIDEO_LANG = {
+        active: "{{ lang.mod_video_embed.status_badge.active|e('js') }}",
+        draft: "{{ lang.mod_video_embed.status_badge.draft|e('js') }}",
+        publish: "{{ lang.mod_video_embed.admin.publish.key|e('js') }}",
+        unpublish: "{{ lang.mod_video_embed.admin.unpublish.key|e('js') }}",
+        confirm_delete: "{{ lang.mod_video_embed.delete_confirm|e('js') }}",
+        confirm_publish: "{{ lang.mod_video_embed.quick_publish_confirm|e('js') }}",
+        confirm_unpublish: "{{ lang.mod_video_embed.quick_unpublish_confirm|e('js') }}",
+        error_general: "{{ lang.mod_video_embed.hata|e('js') }}",
+        confirm_yes: "{{ lang.mod_video_embed.button.evet|e('js') }}",
+        confirm_no: "{{ lang.mod_video_embed.button.hayir|e('js') }}",
+        loading: "{{ lang.mod_video_embed.datatable.loading_records|e('js') }}",
+        information: "{{ lang.mod_video_embed.information|e('js') }}",
+        image_update_confirm: "{{ lang.mod_video_embed.image_update_confirm|e('js') }}",
+        button: {
+            cancel: "{{ lang.mod_video_embed.button.cancel|e('js') }}"
+        },
+        sheet: {
+            ok: "{{ lang.mod_video_embed.sheet.ok|e('js') }}"
+        },
+        grid: {
+            load_more: "{{ lang.mod_video_embed.grid.load_more|e('js') }}"
+        }
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_video_embed.js?v=1.0"></script>
+{% endblock %}

@@ -1,0 +1,147 @@
+/** Üst Menü AYRAÇLARI İÇİN Boşlukları kapatma ve Facebook Twitter Drop Menü Genişlik **/
+.borderversag {
+  border-right: 1px solid #65C6CF;
+
+}
+
+.borderversol {
+  border-left: 1px solid #18818B;
+  border-right: 1px solid #65C6CF;
+}
+
+.facetwit {
+  padding-bottom: 0px !important;
+  padding-top: 10px !important;
+}
+
+#ust-menu {
+
+  > .container {
+    padding: 0;
+  }
+  //color: #000011;
+  margin-bottom: 0 !important;
+
+  .navbar-brand {
+    .fa {
+      //font-size: 18px;
+    }
+    &:hover {
+      color: @navustyazi;
+    }
+  }
+
+  .navbar-toggle {
+    background: @nav-drop-color-box !important;
+
+  }
+
+  .navbar-nav > li {
+    .borderversag;
+    .borderversol;
+  }
+  .navbar-nav > li:first-child {
+    border-left: 0;
+  }
+  .navbar-nav > li:last-child {
+    border-right: 0;
+  }
+  #hizlimenu {
+    //text-shadow: 1px 1px @navtextshadow;
+    //;
+    font-family: 'kulturista', Arial, Helvetica, sans-serif;
+    font-weight: 700 !important;
+    .dropdown-menu {
+      background-color: @nav-drop-color !important;
+      box-shadow: 0 0 10px 2px @nav-drop-color-box;
+      color: @navicyazi;
+      p {
+        //color: @navicyazi;
+        font-size: 12px;
+        //font-family: Georgia;
+        text-align: center;
+        .btn {
+          color: @beyaz;
+          a {
+            .fa {
+              color: @beyaz;
+            }
+          }
+        }
+      }
+    }
+    #hizli-menu-sub {
+      .hizli-menu-sub-item {
+        float: left;
+        text-align: center;
+        display: block;
+        width: 12.5%;
+        font-size: 15px;
+        margin-top: -13px;
+
+        @media (max-width: @screen-xs-max) {
+          float: left;
+          text-align: center;
+          display: block;
+          padding: 10px 0px 10px 0px;
+          width: 25%;
+        }
+        @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+          margin-bottom: -18px;
+        }
+        img {
+          //width: 60px !important;
+          height: 66px;
+          width: 80% !important;
+          padding: 0 10%;
+
+        }
+        span {
+          display: block;
+          @media (max-width: @screen-xs-max) {
+            display: none;
+          }
+          //text-indent: -999em;
+          color: @navicyazi;
+          font-size: 13px;
+        }
+
+
+        a {
+
+          display: block;
+          &:hover {
+            text-decoration: none;
+
+          }
+        }
+
+        &:hover {
+          background: #0d9fad;
+        }
+      }
+    }
+    .nav {
+      li {
+        a {
+          color: @navustyazi;
+          font-size: 14px;
+
+          .fa {
+            font-size: 17px;
+            color: @navusticon;
+            //transition: all 0.3s ease-in-out;
+          }
+          &:hover {
+            .fa {
+              //font-size: 17px;
+              color: @naviconhover;
+              font-weight: bold;
+              transform: scale(1.1);
+            }
+          }
+        }
+      }
+    }
+  }
+}

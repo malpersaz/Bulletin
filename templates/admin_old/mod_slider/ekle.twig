@@ -1,0 +1,309 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+	<script>
+		$(document).ready(function () {
+$("#add").validationEngine();
+
+function temizle(veri) {
+
+var temiz = veri.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, " ");
+temiz = temiz.replace(/^\s+|\s+$/g, "");
+
+for (i = 0; i <= 15; i ++) {
+temiz = temiz.replace('  ', ' ');
+}
+return temiz;
+}
+
+// SEO YAPAR
+function make_seo(name, seo) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, "_");
+deger = deger.replace('İ', 'i');
+
+$("#" + seo).val(deger);
+});
+}
+
+// Make keywords
+function make_keywords(name, keywords) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+deger = deger.replace(/\s+/g, ",");
+deger = deger.toLowerCase();
+deger = deger.replace('İ', 'i');
+
+$("#" + keywords).val(deger);
+});
+}
+
+// Make Title
+function make_title(name, title) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + title).val(deger);
+});
+}
+
+// Make Açıklama
+function make_aciklama(name, description) {
+$("#" + name).change(function () {
+var deger = temizle($("#" + name).val());
+$("#" + description).val(deger);
+});
+}
+
+// Make Preview
+function make_preview(name) {
+$("#" + name).change(function () {
+$("#" + name + "_preview").html($("#" + name).val());
+});
+}
+
+var simdi = new Date();
+var yil = simdi.getFullYear();
+var ay = (simdi.getMonth() < 9 ? '0' : '') + (simdi.getMonth() + 1);
+var gun = (simdi.getDate() < 10 ? '0' : '') + simdi.getDate();
+var saat = (simdi.getHours() < 10 ? '0' : '') + simdi.getHours();
+var dakika = (simdi.getMinutes() < 10 ? '0' : '') + simdi.getMinutes();
+
+var now = yil + "-" + ay + "-" + gun + " " + saat + ":" + dakika;
+
+if ($("#created_at").val() == "") {
+$("#created_at").val(now);
+}
+
+AnyTime.picker("created_at", {
+format: "%z-%m-%d %H:%i",
+firstDOW: 1,
+placement: "popup",
+labelDayOfMonth: "Haftanın Günleri",
+labelHour: "Saat",
+labelMinute: "Dakika",
+labelMonth: "Aylar",
+labelTitle: "Lütfen Tarih ve Zamanı Seçin",
+labelYear: "Yıl",
+dayAbbreviations: [
+"Pz",
+"Pt",
+"Sa",
+"Ça",
+"Pe",
+"Cu",
+"Ct"
+],
+dayNames: [
+"Pazar",
+"Pazartesi",
+"Salı",
+"Çarşamba",
+"Perşembe",
+"Cuma",
+"Cumartesi"
+],
+monthAbbreviations: [
+"Oca",
+"Şub",
+"Mar",
+"Nis",
+"May",
+"Haz",
+"Tem",
+"Ağu",
+"Eyl",
+"Eki",
+"Kas",
+"Ara"
+],
+monthNames: [
+"Ocak",
+"Şubat",
+"Mart",
+"Nisan",
+"Mayıs",
+"Haziran",
+"Temmuz",
+"Ağustos",
+"Eylül",
+"Ekim",
+"Kasım",
+"Aralık"
+]
+});
+
+});
+	</script>
+{% endblock %}
+{% block title %}
+	{{ lang.mod_slider.add }}
+{% endblock %}
+{% block body %}
+	{% if error is defined %}
+		<div class="alert alert-danger">
+			<strong>{{ lang.mod_slider.error }}</strong>
+			{{ mesaj }}
+		</div>
+	{% else %}
+		<div class="portlet box green">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-edit"></i>
+					{{ lang.mod_slider.add }}
+				</div>
+			</div>
+			<div class="portlet-body form">
+				{% if oke is defined %}
+					<div class="alert alert-success">
+						<strong>{{ lang.mod_slider.oke }}</strong>
+						{{ mesaj }}
+						<hr>
+						<a href="{{ site.adres }}mod_slider/ekle" class="btn green">{{ lang.mod_slider.add }}</a>
+						<a href="{{ site.adres }}mod_slider/list" class="btn blue">{{ lang.mod_slider.list }}</a>
+					</div>
+				{% else %}
+					{% if hatalar is defined %}
+						{% for hata in hatalar %}
+							<div class="alert alert-danger">
+								<strong>{{ lang.mod_slider.hata }}</strong>
+								{{ hata }}
+							</div>
+						{% endfor %}
+					{% endif %}
+					<form method="POST" action="" id="add" enctype="multipart/form-data" class="form-horizontal">
+						<div class="form-body">
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.lang }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="lang" id="lang">
+											{% for item in lang_lang %}
+												<option value="{{ item.seo }}">
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.name }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge  validate[required,length[2,255]]" name="name" value="{{ name }}" type="text" id="name">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.url }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge  validate[required,length[2,255]]" name="url" value="{{ url }}" type="text" id="url">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.status }}
+									:</label>
+								<div class="col-md-4">
+									<div class="radio-list">
+										<label class="radio-inline">
+											{{ lang.mod_slider.admin.radio.publish_yes }}
+											<input name="status" value="y" type="radio" checked="checked"/>
+										</label>
+										<label class="radio-inline">
+											{{ lang.mod_slider.admin.radio.publish_no }}
+											<input name="status" value="n" type="radio"/>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">
+									{{ lang.mod_slider.admin.columns.target }}
+									:
+								</label>
+								<div class="col-md-4">
+									<div class="radio-list">
+										<label class="radio-inline">
+											{{ lang.mod_slider.admin.radio.target_e }}
+											<input name="target" value="y" type="radio" checked="checked"/>
+										</label>
+										<label class="radio-inline">
+											{{ lang.mod_slider.admin.radio.target_h }}
+											<input name="target" value="n" type="radio"/>
+										</label>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.created_at }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input class="form-control input-xlarge  validate[required]" name="created_at" value="{{ created_at }}" type="text" id="created_at">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">
+									{{ lang.mod_slider.admin.columns.description }}
+									:
+								</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<textarea class="form-control input-xlarge" name="description" id="description">{{ description }}</textarea>
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_slider.admin.columns.image }}
+									:</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<input name="image" type="file">
+									</div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-md-3 control-label">
+									{{ lang.mod_slider.admin.columns.acl_id }}
+									:
+								</label>
+								<div class="col-md-4">
+									<div class="input-group">
+										<select class="form-control input-xlarge  validate[required]" name="acl_id" id="acl_id">
+											<option value="0" selected="selected">{{ lang.mod_slider.choose_wish }}</option>
+											{% for item in mod_acl_acl_id %}
+												<option value="{{ item.id }}">
+													{{ item.name }}
+													{% if item.lang is defined %}({{ item.lang }})
+													{% endif %}
+												</option>
+											{% endfor %}
+										</select>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-md-offset-3 col-md-9">
+									<button class="btn green" name="add" value="{{ lang.mod_slider.button.add }}">
+										{{ lang.mod_slider.button.add }}
+									</button>
+									<a class="btn blue" href="mod_slider/list">{{ lang.mod_slider.button.vazgec }}</a>
+								</div>
+							</div>
+						</div>
+					</form>
+				{% endif %}
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}

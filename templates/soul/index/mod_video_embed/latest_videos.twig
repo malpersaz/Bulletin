@@ -1,0 +1,28 @@
+{{ run({"mod": "index", "method": "_latest_videos", "extra": ["5", "id,image,name,content,keywords"]}) }}
+{% set latest_videos = ctx_get('latest_videos') %}
+{% if latest_videos is not empty %}
+    <div class="koberz_3_2_2_1">
+        <h3 class="index_videolar_ust">{{ lang.index.mod_video_embed.latest_videos.1 }}</h3>
+        <h3 class="index_tum_videolar_ust">
+            <a href="{{ site.sadres }}videos"
+               title="{{ lang.index.mod_video_embed.latest_videos.2 }}">{{ lang.index.mod_video_embed.latest_videos.2 }}</a>
+        </h3>
+        <div class="index_videolar_kutu">
+            {% for video in latest_videos %}
+                <div class="index_video_kutu">
+                    <a class="index_video_play tooltip"
+                       href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|sefurl }}"
+                       title="{{ video.content }}"></a>
+                    <a href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|sefurl }}"
+                       title="{{ video.content }}">
+                        <img src="{{ site.radres }}mod_video_embed/thumb/{{ video.image }}"
+                             parent_id="{{ video.name }},{{ video.keywords }}">
+                    </a>
+                    <a class="index_video_baslik tooltip"
+                       href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|sefurl }}"
+                       title="{{ video.content }}">{{ video.name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

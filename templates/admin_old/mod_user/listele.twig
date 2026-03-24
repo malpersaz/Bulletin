@@ -1,0 +1,111 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}
+	{{ lang.mod_user.list|escape }}
+{% endblock %}
+{% block body %}
+	<!-- Begin: life time stats -->
+	<div class="portlet light">
+		<div class="portlet-title">
+			<div class="caption">
+				<i class="fa fa-gift font-green-sharp"></i>
+				<span class="caption-subject font-green-sharp bold uppercase">{{ lang.mod_user.list|escape }}</span>
+				<span class="caption-helper">{{ lang.mod_user.list.management|escape }}</span>
+			</div>
+			<div class="actions">
+				<a href="{{ site.adres|escape }}mod_user/add" class="btn green">
+					<i class="fa fa-plus"></i>
+					<span class="hidden-480">{{ lang.mod_user.button.add|escape }}</span>
+				</a>
+			</div>
+		</div>
+		<div class="portlet-body">
+			<div class="table-container">
+				<div class="table-actions-wrapper">
+					<span></span>
+					<select class="table-group-action-input form-control input-inline input-xsmall input-sm">
+						<option value="">{{ lang.mod_user.list.action|escape }}</option>
+						{% if session.permissions.mod_user.edit is defined %}
+							<option value="{{ lang.mod_user.grid.status.key|escape }}">{{ lang.mod_user.grid.status.key|escape }}</option>
+							<option value="{{ lang.mod_user.grid.deactivate.key|escape }}">
+								{{ lang.mod_user.grid.deactivate.key|escape }}
+							</option>
+						{% endif %}
+					</select>
+					<button class="btn btn-xs yellow table-group-action-submit">
+						<i class="fa fa-check"></i>
+						{{ lang.mod_user.list.apply|escape }}
+					</button>
+				</div>
+				<table class="table table-striped table-bordered table-hover" id="mod_user_datatable">
+					<thead>
+						<tr role="row" class="heading">
+							<th width="2%">
+								<input type="checkbox" class="group-checkable">
+							</th>
+							<th width="5%">{{ lang.mod_user.admin.columns.id|escape }}&nbsp;</th>
+							<th width="20%">{{ lang.mod_user.admin.columns.username|escape }}&nbsp;</th>
+							<th width="15%">{{ lang.mod_user.admin.columns.email|escape }}&nbsp;</th>
+							<th width="10%">{{ lang.mod_user.admin.columns.name|escape }}&nbsp;</th>
+							<th width="10%">{{ lang.mod_user.admin.columns.last_name|escape }}&nbsp;</th>
+							<th width="10%">{{ lang.mod_user.admin.columns.status|escape }}&nbsp;</th>
+							<th width="15%">{{ lang.mod_user.admin.columns.grup|escape }}&nbsp;</th>
+							<th width="13%">{{ lang.mod_user.list.actions|escape }}</th>
+						</tr>
+						<tr role="row" class="filter">
+							<td></td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[id]">
+							</td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[username]">
+							</td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[email]">
+							</td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[name]">
+							</td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[last_name]">
+							</td>
+							<td>
+								<select name="arama_radio[status]" class="form-control form-filter input-sm">
+									<option value="">{{ lang.mod_user.list.select|escape }}</option>
+									<option value="y">{{ lang.mod_user.grid.active|escape }}</option>
+									<option value="n">{{ lang.mod_user.grid.waiting_email_activation|escape }}</option>
+									<option value="a">{{ lang.mod_user.grid.waiting_admin_activation|escape }}</option>
+								</select>
+							</td>
+							<td>
+								<input type="text" class="form-control form-filter input-sm" name="arama[grup]">
+							</td>
+							<td>
+								<button class="btn yellow filter-submit margin-bottom">
+									<i class="fa fa-search"></i>
+									{{ lang.mod_user.list.search|escape }}
+								</button>
+								<button class="btn red filter-cancel">
+									<i class="fa fa-times"></i>
+									{{ lang.mod_user.list.reset|escape }}
+								</button>
+							</td>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block extra %}
+	{% include mod ~ '/script.twig' %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+if (typeof mod_user_table_ajax !== 'undefined') {
+mod_user_table_ajax.init();
+} else {
+console.error('mod_user_table_ajax is not defined');
+}
+});
+	</script>
+{% endblock %}

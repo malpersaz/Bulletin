@@ -1,0 +1,36 @@
+<div id="cookieConsentBanner" class="cookie-consent-banner">
+    <div class="cookie-content">
+        <div class="d-flex align-items-center mb-2">
+            <i class="bi bi-info-circle-fill text-primary me-2 fs-5"></i>
+            <h6 class="mb-0 fw-bold">{{ lang.cookie_consent.title|default('Çerez (Cookies)') }}</h6>
+        </div>
+        <p class="cookie-consent-text small">{{ lang.cookie_consent.message|default('Web sitemiz, deneyiminizi iyileştirmek ve hizmetlerimizi sunmak için çerezleri kullanır. Sitemizi kullanarak çerez politikamızı kabul etmiş olursunuz.') }}</p>
+        <div class="cookie-consent-actions d-flex gap-2 justify-content-end mt-3">
+            <a href="{{ site.sadres }}page/cookie-policy" class="btn btn-link link-secondary btn-sm text-decoration-none">{{ lang.cookie_consent.policy_link|default('Daha Fazla Bilgi') }}</a>
+            <button id="acceptCookies" class="btn btn-primary btn-sm rounded-pill px-3">{{ lang.cookie_consent.accept_button|default('Kabul Et') }}</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const banner = document.getElementById('cookieConsentBanner');
+    const acceptBtn = document.getElementById('acceptCookies');
+    
+    // Check if user already accepted
+    if (!localStorage.getItem('cookieConsent')) {
+        setTimeout(() => {
+            banner.classList.add('show');
+        }, 2000);
+    }
+
+    acceptBtn.addEventListener('click', function() {
+        localStorage.setItem('cookieConsent', 'true');
+        banner.style.opacity = '0';
+        banner.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+            banner.classList.remove('show');
+        }, 500);
+    });
+});
+</script>

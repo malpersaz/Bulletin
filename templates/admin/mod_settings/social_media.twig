@@ -1,0 +1,115 @@
+{% set show_fab = false %}
+{% set show_navbar = false %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_settings.sections.social_title|default('Social Media') }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.sections.social_title|default('Social Media') }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_settings.css?v=1.8">
+<style>
+.m3-modern-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+.m3-modern-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.m3-modern-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 34px;
+}
+.m3-modern-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+input:checked + .m3-modern-slider {
+    background-color: var(--bs-primary, #3b82f6);
+}
+input:checked + .m3-modern-slider:before {
+    transform: translateX(22px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-page" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <!-- Dummy form to satisfy mod_settings.js logic without crashing -->
+    <form id="settingsForm" style="display:none;"></form>
+
+    <div class="m3-card" style="background: transparent; border: none; box-shadow: none;">
+        <div class="m3-card-body" style="padding: 0;">
+            <div class="settings-social-list" id="socialMediaList" style="display: flex; flex-direction: column;">
+                <!-- Social Media items will be loaded here via AJAX -->
+                <div class="text-center p-5" style="background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
+                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; opacity: 0.5;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.modSettingsConfig = window.modSettingsConfig || {};
+    Object.assign(window.modSettingsConfig, {
+        socialListUrl: '{{ site.sadres }}mod_settings/ajax_social_list',
+        socialSaveUrl: '{{ site.sadres }}mod_settings/ajax_social_save',
+        socialToggleUrl: '{{ site.sadres }}mod_settings/ajax_social_toggle_status',
+        socialReorderUrl: '{{ site.sadres }}mod_settings/ajax_social_reorder',
+    });
+    window.modSettingsConfig.messages = window.modSettingsConfig.messages || {};
+    Object.assign(window.modSettingsConfig.messages, {
+        edit: '{{ lang.mod_settings.button.edit|e('js') }}',
+        save: '{{ lang.mod_settings.save|e('js') }}',
+        cancel: '{{ lang.mod_settings.button.cancel|e('js') }}',
+        noRecordsFound: '{{ lang.mod_settings.no_records_found|e('js') }}',
+        noUrlConfigured: '{{ lang.mod_settings.no_url_configured|e('js') }}'
+    });
+</script>
+<script src="/templates/admin/assets/js/mod_settings.js?v=1.9"></script>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-house-door-fill"></i>
+            <span>{{ lang.management.anasayfa }}</span>
+        </button>
+        
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/info'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-person-fill"></i>
+            <span>{{ lang.management.profil }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_settings/edit'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-gear-fill"></i>
+            <span>{{ lang.management.settings }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="history.back()" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_settings.button.close }}</span>
+        </button>
+    </div>
+{% endblock %}

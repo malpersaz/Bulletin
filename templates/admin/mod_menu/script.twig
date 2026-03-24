@@ -1,0 +1,267 @@
+<script>
+    var selectedMenuId = null;
+    var sortableInstances = [];
+    var isReorderActive = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        // --- 1. Init SortableJS (Disabled by Default) ---
+        var root = document.getElementById('menuRootList');
+        if(root) initSortable(root);
+
+        document.querySelectorAll('.list-children').forEach(function(el) {
+            initSortable(el);
+        });
+
+        function initSortable(el) {
+            var s = new Sortable(el, {
+                group: 'menu_nested',
+                animation: 300,
+                handle: '.drag-handle',
+                disabled: true, // LOCKED BY DEFAULT
+                fallbackOnBody: true,
+                swapThreshold: 0.65,
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    // ASK USER CONFIRMATION
+                    Swal.fire({
+                        title: '{{ lang.mod_menu.messages.warning.reorder }}',
+                        text: '{{ lang.mod_menu.confirmations.reorder_single }}',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '{{ lang.mod_menu.options.yes }}',
+                        cancelButtonText: '{{ lang.mod_menu.options.no }}',
+                        customClass: { popup: 'm3-swal-popup' }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Proceed with update
+                            var itemEl = evt.item;
+                            var newParentId = 0;
+                            var container = evt.to;
+                            if (container.classList.contains('list-children')) {
+                                var parentNode = container.closest('.menu-node');
+                                if(parentNode) newParentId = parentNode.getAttribute('data-id');
+                            }
+
+                            var activeIds = [];
+                            var siblings = container.querySelectorAll(':scope > .menu-node');
+                            siblings.forEach(function(node) {
+                                activeIds.push(node.getAttribute('data-id'));
+                            });
+                            
+                            updateMenuOrder(itemEl.getAttribute('data-id'), newParentId, activeIds);
+                        } else {
+                            // Revert Change if Cancelled
+                            // Sortable doesn't have a simple 'revert', we move it back manually logic or reload
+                            // Simple revert: reload page or better, move DOM back.
+                            // Since reloading is safest to restore tree state:
+                            location.reload(); 
+                        }
+                    });
+                }
+            });
+            sortableInstances.push(s);
+        }
+
+        // --- Toggle Logic ---
+        window.toggleReorderMode = function() {
+            isReorderActive = !isReorderActive;
+            var btn = document.getElementById('reorderToggleBtn');
+            var icon = document.getElementById('reorderIcon');
+            var text = document.getElementById('reorderText');
+
+            if(isReorderActive) {
+                document.body.classList.add('reorder-active');
+                icon.className = 'bi bi-unlock-fill';
+                text.innerText = '{{ lang.mod_menu.actions.lock_reorder }}';
+                btn.style.background = '#eaddff'; // Active color
+                
+                // Enable Sortables
+                sortableInstances.forEach(s => s.option('disabled', false));
+                
+                const Toast = Swal.mixin({
+                    toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
+                });
+                Toast.fire({ icon: 'info', title: '{{ lang.mod_menu.messages.info.reorder_mode }}' });
+
+            } else {
+                document.body.classList.remove('reorder-active');
+                icon.className = 'bi bi-lock-fill';
+                text.innerText = '{{ lang.mod_menu.actions.unlock_reorder }}';
+                btn.style.background = '#f3edf7';
+                
+                // Disable Sortables
+                sortableInstances.forEach(s => s.option('disabled', true));
+            }
+        };
+
+        // --- 2. AJAX Order Update ---
+        function updateMenuOrder(id, parent_id, orderList, cardElement) {
+            var formData = new URLSearchParams();
+            formData.append('id', id);
+            formData.append('parent_id', parent_id);
+            orderList.forEach(function(sid) { formData.append('order[]', sid); });
+            
+            fetch('{{ site.adres }}mod_menu/tasi', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(function(response) { return response.text(); })
+            .then(function(data) {
+                if (data.trim() === 'Oke') {
+                    const Toast = Swal.mixin({
+                        toast: true, position: 'top-end', showConfirmButton: false, timer: 2000
+                    });
+                    Toast.fire({ icon: 'success', title: '{{ lang.mod_menu.messages.success.reordered }}' });
+                } else {
+                    Swal.fire({ icon: 'error', title: '{{ lang.mod_menu.error }}', text: data });
+                }
+            });
+        }
+
+        // --- 3. Search Filter (Global Layout Input) ---
+        // mod_category accesses globalSearchInput. We should do the same.
+        // Assuming layout provides an input with id="searchInput"
+        var searchInput = document.getElementById('searchInput');
+        
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                filterMenus(e.target.value);
+            });
+        }
+
+        // Expose function globally in case layout uses it
+        window.filterMenus = function(val) {
+            var term = val.toLowerCase().trim();
+            var nodes = document.querySelectorAll('.menu-node');
+            
+            if (term.length < 1) {
+                nodes.forEach(function(n) { 
+                    n.style.display = ''; 
+                    // Remove collapsed modifications if any
+                    // But we don't want to re-collapse everything, just leave as is
+                });
+                return;
+            }
+
+            nodes.forEach(function(n) { n.style.display = 'none'; });
+
+            nodes.forEach(function(n) {
+                var name = n.getAttribute('data-name');
+                if (name && name.includes(term)) {
+                    showNodeRecursive(n);
+                }
+            });
+        };
+
+        function showNodeRecursive(node) {
+            node.style.display = 'block';
+            var parent = node.parentElement.closest('.menu-node');
+            if (parent) {
+                showNodeRecursive(parent);
+                var children = parent.querySelector('.list-children');
+                if(children) {
+                    children.classList.remove('collapsed');
+                }
+                var btn = parent.querySelector('.toggle-btn');
+                if(btn) btn.classList.remove('collapsed');
+            }
+        }
+    });
+
+    // --- 4. Interactivity Functions ---
+
+    window.toggleMenu = function(btn, e) {
+        if(e) e.stopPropagation();
+        var node = btn.closest('.menu-node');
+        var children = node.querySelector('.list-children');
+        if (children) {
+            children.classList.toggle('collapsed');
+            btn.classList.toggle('collapsed');
+        }
+    };
+
+    window.selectMenu = function(id, card) {
+        document.querySelectorAll('.m3-list-card.selected').forEach(function(el) {
+            el.classList.remove('selected');
+        });
+
+        if (selectedMenuId === id) {
+            selectedMenuId = null;
+            updateToolbar(false);
+        } else {
+            card.classList.add('selected');
+            selectedMenuId = id;
+            updateToolbar(true);
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+    };
+
+    function updateToolbar(active) {
+        var editBtn = document.getElementById('toolbarEdit');
+        var delBtn = document.getElementById('toolbarDelete');
+        
+        if (active) {
+            editBtn.style.pointerEvents = 'auto';
+            editBtn.classList.add('active');
+            
+            delBtn.style.pointerEvents = 'auto';
+            delBtn.classList.add('active');
+        } else {
+            editBtn.style.pointerEvents = 'none';
+            editBtn.classList.remove('active');
+            
+            delBtn.style.pointerEvents = 'none';
+            delBtn.classList.remove('active');
+        }
+    }
+
+    window.editSelected = function() {
+        if (selectedMenuId) {
+            window.location.href = '{{ site.sadres }}mod_menu/edit/' + selectedMenuId;
+        }
+    };
+
+    window.deleteSelected = function() {
+        if (!selectedMenuId) return;
+
+        Swal.fire({
+            title: '{{ lang.mod_menu.messages.warning.delete }}',
+            text: "{{ lang.mod_menu.confirmations.delete_single }}",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '{{ lang.mod_menu.options.yes }}',
+            cancelButtonText: '{{ lang.mod_menu.options.no }}',
+            background: 'rgba(255,255,255,0.95)',
+            backdrop: `rgba(0,0,10,0.5)`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new URLSearchParams();
+                formData.append('delete', selectedMenuId);
+
+                fetch('{{ site.adres }}mod_menu/dragdrop_delete', {
+                    method: 'POST',
+                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(r => r.text())
+                .then(data => {
+                    if (data.trim() === 'Oke') {
+                         Swal.fire(
+                            '{{ lang.mod_menu.oke }}',
+                            '{{ lang.mod_menu.messages.success.delete }}',
+                            'success'
+                        ).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{ lang.mod_menu.error }}', data, 'error');
+                    }
+                });
+            }
+        });
+    };
+</script>

@@ -1,0 +1,8 @@
+{{ js({"url": "base_static/js/jquery-ui/jquery.ui.core.js", "v": 1}) }}
+{{ js({"url": "base_static/js/jquery-ui/jquery.ui.datepicker.js", "v": 1}) }}
+{% if site.lang is defined and site.lang != 'en' %}
+    {{ js({url: 'base_static/js/jquery-ui/i18n/jquery.ui.datepicker-' ~ site.lang ~ '.js', v: 1}) }}
+{% endif %}
+{{ css({"url": "base_static/js/jquery-ui/themes/redmond/jquery.ui.core.css", "v": 1}) }}
+{{ css({"url": "base_static/js/jquery-ui/themes/redmond/jquery.ui.datepicker.css", "v": 1}) }}
+{{ css({"url": "base_static/js/jquery-ui/themes/redmond/jquery.ui.theme.css", "v": 1}) }}

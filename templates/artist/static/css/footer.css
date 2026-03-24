@@ -1,0 +1,197 @@
+/* Minimalist Floating Footer - Artist Template */
+
+.site-footer {
+    margin-top: auto;
+    margin-bottom: 1rem !important;
+    /* Footerê nizm bike */
+}
+
+.footer-floating-bar {
+    pointer-events: auto;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.7) !important;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 100px;
+    padding: 0.4rem 1.5rem !important;
+    /* Padding kêm bike ji bo ziravbûnê */
+    color: #fff;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Cookie Consent Banner - Modern Floating Card */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px) saturate(180%);
+    -webkit-backdrop-filter: blur(15px) saturate(180%);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 1.5rem;
+    padding: 1.25rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    transition: all 0.4s ease;
+    display: none;
+    /* By default hidden, JS shows it */
+}
+
+[data-bs-theme="dark"] .cookie-consent-banner {
+    background: rgba(15, 23, 42, 0.85);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cookie-consent-banner.show {
+    display: block;
+    animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cookie-consent-text {
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    color: var(--bs-body-color);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 576px) {
+    .cookie-consent-banner {
+        bottom: 1rem;
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+}
+
+.footer-floating-bar:hover {
+    background: rgba(15, 23, 42, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Social Dock Buttons */
+.social-dock-btn, .footer-action-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: #fff;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.social-dock-btn:hover, .footer-action-btn:hover {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    transform: scale(1.2);
+    color: #fff !important;
+}
+
+/* Info Dropdown */
+.glass-dropdown {
+    backdrop-filter: blur(20px) saturate(180%);
+    background-color: rgba(15, 23, 42, 0.85) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1.25rem !important;
+    min-width: 250px;
+}
+
+.glass-dropdown .dropdown-item {
+    color: rgba(255, 255, 255, 0.8);
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.glass-dropdown .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.15);
+    color: #3b82f6;
+    transform: translateX(5px);
+}
+
+/* Animations */
+@keyframes slideUpFooter {
+    from {
+        opacity: 0;
+        transform: translateY(100px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .footer-floating-bar {
+        max-width: 95%;
+        padding: 0.5rem 1rem !important;
+        border-radius: 25px;
+    }
+
+    .footer-floating-bar .small {
+        font-size: 0.75rem;
+    }
+}
+
+/* Dark/Light Theme Support */
+[data-bs-theme="light"] .footer-floating-bar {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: rgba(0, 0, 0, 0.05);
+    color: #1e293b;
+}
+
+[data-bs-theme="light"] .footer-floating-bar .btn-link {
+    color: #1e293b !important;
+}
+
+[data-bs-theme="light"] .social-dock-btn, [data-bs-theme="light"] .footer-action-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+    color: #1e293b;
+}
+
+[data-bs-theme="light"] .glass-dropdown {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-bs-theme="light"] .glass-dropdown .dropdown-item,
+[data-bs-theme="light"] .glass-dropdown .dropdown-item-text,
+[data-bs-theme="light"] .glass-dropdown li {
+    color: #1e293b !important;
+}
+
+[data-bs-theme="light"] .glass-dropdown .dropdown-item:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: #2563eb !important;
+}
+
+[data-bs-theme="light"] .glass-dropdown .dropdown-divider {
+    border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Light theme for toggle buttons hover */
+[data-bs-theme="light"] .glass-dropdown .footer-owner-name {
+    color: #1e293b !important;
+}

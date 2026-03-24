@@ -1,0 +1,236 @@
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/css/intlTelInput.css">
+<style>
+    .phone-input-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        display: grid;
+        gap: 8px;
+    }
+    .phone-input-shell {
+        position: relative;
+        border: 1px solid var(--md-sys-color-outline, #79747e);
+        border-radius: 16px;
+        background: var(--md-sys-color-surface, #fff);
+        padding: 10px 12px 8px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .phone-input-shell:focus-within {
+        border-color: var(--md-sys-color-primary);
+        box-shadow: 0 0 0 1px var(--md-sys-color-primary);
+    }
+    .phone-input-label {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--md-sys-color-on-surface-variant, #5f6368);
+        margin-bottom: 8px;
+    }
+    .phone-input-label i {
+        font-size: 14px;
+        color: var(--md-sys-color-primary);
+    }
+    .iti {
+        width: 100%;
+    }
+    .iti--allow-dropdown {
+        width: 100%;
+    }
+    .iti__country-list {
+        background-color: var(--md-sys-color-surface-container-high, #fff);
+        color: var(--md-sys-color-on-surface, #000);
+        border: 1px solid var(--md-sys-color-outline-variant, #ccc);
+        border-radius: 14px;
+        box-shadow: var(--md-sys-elevation-3);
+        z-index: 1001; /* Ensure it stays above other elements */
+    }
+    .iti__country {
+        padding: 10px 14px;
+    }
+    .iti__country:hover, .iti__country.iti__highlight {
+        background-color: var(--md-sys-color-surface-variant, #eee);
+    }
+    .phone-input-wrapper .form-input {
+        width: 100% !important;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 6px 6px 6px 52px;
+        font-size: 15px;
+        transition: all 0.2s;
+        box-sizing: border-box;
+        color: var(--md-sys-color-on-surface, inherit);
+        outline: none;
+        height: 36px;
+        box-shadow: none;
+    }
+    .phone-input-wrapper .form-input:focus {
+        border: none;
+        box-shadow: none;
+    }
+    .phone-input-wrapper .iti__selected-country-primary {
+        height: 36px;
+        border-radius: 10px;
+        background: var(--md-sys-color-surface-container-low, rgba(0,0,0,0.04));
+    }
+    .phone-input-wrapper .iti__flag-container {
+        padding: 0;
+        left: 4px;
+        top: 6px;
+        bottom: 6px;
+    }
+    .phone-input-wrapper .iti__selected-dial-code {
+        font-size: 13px;
+        color: var(--md-sys-color-on-surface, inherit);
+    }
+    .phone-input-wrapper .iti__arrow {
+        margin-left: 6px;
+    }
+</style>
+
+{% set phone_input_id = input_id|default(field_name|default('phone')) %}
+{% set phone_field_name = field_name|default('phone') %}
+{% set hidden_country_id = hidden_country_input_id|default('country_code') %}
+{% set hidden_country_name = hidden_country_input_name|default('country_code') %}
+{% set store_mode = store_mode|default('split') %}
+
+<div class="phone-input-wrapper">
+    <label class="phone-input-label" for="{{ phone_input_id }}">
+        <i class="bi {{ icon_class|default('bi-phone') }}"></i>
+        <span>{{ label_text|default('Phone') }}</span>
+    </label>
+    <div class="phone-input-shell">
+        {% if store_mode == 'split' %}
+            <input type="hidden" id="{{ hidden_country_id }}" name="{{ hidden_country_name }}" value="{{ country_code_value }}">
+        {% endif %}
+        <input
+            class="form-input"
+            name="{{ phone_field_name }}"
+            value="{{ phone_value }}"
+            type="tel"
+            id="{{ phone_input_id }}"
+            data-phone-store-mode="{{ store_mode }}"
+            {% if store_mode == 'split' %}
+            data-country-target-id="{{ hidden_country_id }}"
+            {% endif %}
+            autocomplete="tel"
+            inputmode="tel">
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/intlTelInput.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.querySelector("#{{ phone_input_id }}");
+        if (!phoneInput || phoneInput.dataset.intlReady === '1') {
+            return;
+        }
+
+        const storeMode = phoneInput.dataset.phoneStoreMode || 'split';
+        const countryCodeInput = storeMode === 'split'
+            ? document.getElementById(phoneInput.dataset.countryTargetId)
+            : null;
+        const form = phoneInput.closest('form');
+
+        const getInitialCountry = (callback) => {
+            fetch("https://ipapi.co/json")
+                .then(res => res.json())
+                .then(data => callback(data.country_code))
+                .catch(() => callback("TR"));
+        };
+
+        const iti = window.intlTelInput(phoneInput, {
+            initialCountry: "auto",
+            geoIpLookup: getInitialCountry,
+            utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/utils.js",
+            separateDialCode: true,
+            strictMode: true,
+            preferredCountries: ["tr", "iq", "de", "gb", "us"],
+            autoPlaceholder: "aggressive",
+            i18n: {
+                searchPlaceholder: "Welat bigere...",
+                noCountryFound: "Welat nehat dîtin"
+            }
+        });
+
+        const syncCountryCode = () => {
+            if (!countryCodeInput) return;
+            const countryData = iti.getSelectedCountryData();
+            if (countryData && countryData.dialCode) {
+                countryCodeInput.value = "+" + countryData.dialCode;
+            }
+        };
+
+        const formatNumberUI = () => {
+            const currentVal = phoneInput.value.trim();
+            if (!currentVal || typeof intlTelInputUtils === 'undefined') {
+                return;
+            }
+
+            const formatted = iti.getNumber(intlTelInputUtils.numberFormat.NATIONAL);
+            if (formatted) {
+                phoneInput.value = formatted;
+            }
+        };
+
+        const initialNumber = "{{ phone_value|e('js') }}".trim();
+        if (initialNumber) {
+            setTimeout(() => {
+                iti.setNumber(initialNumber);
+                formatNumberUI();
+                syncCountryCode();
+            }, 500);
+        } else {
+            syncCountryCode();
+        }
+
+        phoneInput.addEventListener('input', function () {
+            const val = this.value.trim();
+            if (val.startsWith('0')) {
+                this.value = val.substring(1);
+            }
+        });
+
+        phoneInput.addEventListener('blur', formatNumberUI);
+        phoneInput.addEventListener('countrychange', () => {
+            syncCountryCode();
+            formatNumberUI();
+        });
+
+        if (form && !form.dataset.phoneSubmitBound) {
+            form.addEventListener('submit', function () {
+                form.querySelectorAll('.form-input[data-phone-store-mode]').forEach((input) => {
+                    const inputMode = input.dataset.phoneStoreMode || 'split';
+                    const instance = window.intlTelInput.getInstance(input);
+                    if (!instance) return;
+
+                    if (inputMode === 'split') {
+                        const hiddenInput = document.getElementById(input.dataset.countryTargetId);
+                        const countryData = instance.getSelectedCountryData();
+                        if (hiddenInput && countryData && countryData.dialCode) {
+                            hiddenInput.value = '+' + countryData.dialCode;
+                        }
+                        input.value = input.value.replace(/\D/g, '');
+                        return;
+                    }
+
+                    if (typeof intlTelInputUtils !== 'undefined') {
+                        const internationalNumber = instance.getNumber(intlTelInputUtils.numberFormat.E164);
+                        if (internationalNumber) {
+                            input.value = internationalNumber;
+                            return;
+                        }
+                    }
+
+                    const fallbackCountry = instance.getSelectedCountryData();
+                    const digits = input.value.replace(/\D/g, '');
+                    input.value = fallbackCountry && fallbackCountry.dialCode ? `+${fallbackCountry.dialCode}${digits}` : digits;
+                });
+            });
+            form.dataset.phoneSubmitBound = '1';
+        }
+
+        phoneInput.dataset.intlReady = '1';
+    });
+</script>

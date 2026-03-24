@@ -1,0 +1,106 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}{{ lang.mod_attachment_mod.list }}{% endblock %}
+{% block body %}
+    <!-- Begin: life time stats -->
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-gift font-green-sharp"></i>
+                <span class="caption-subject font-green-sharp bold uppercase">{{ lang.mod_attachment_mod.list }}</span>
+                <span class="caption-helper">Kayıt Yönetimi</span>
+            </div>
+            <div class="actions">
+                <a href="{{ site.adres }}mod_attachment_mod/ekle" class="btn green ">
+                    <i class="fa fa-plus"></i>
+                    <span class="hidden-480">{{ lang.mod_attachment_mod.button.add }}</span>
+                </a>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="table-container">
+                <div class="table-actions-wrapper">
+                    <span></span>
+                    <select class="table-group-action-input form-control input-inline input-xsmall input-sm">
+                        <option value="">İşlem...</option>
+                        {% if session.permissions.mod_attachment_mod.gallery is defined %}
+                            <option value="{{ lang.mod_attachment_mod.button.gallery }}">{{ lang.mod_attachment_mod.button.gallery }}</option>
+                        {% endif %}
+                        {% if session.permissions.mod_attachment_mod.file is defined %}
+                            <option value="{{ lang.mod_attachment_mod.button.file }}">{{ lang.mod_attachment_mod.button.file }}</option>
+                        {% endif %}
+                        {% if session.permissions.mod_attachment_mod.sil is defined %}
+                            <option value="{{ lang.mod_attachment_mod.button.sil }}">{{ lang.mod_attachment_mod.button.sil }}</option>
+                        {% endif %}
+                    </select>
+                    <button class="btn btn-xs yellow table-group-action-submit">
+                        <i class="fa fa-check"></i> Uygula
+                    </button>
+                </div>
+                <table class="table table-striped table-bordered table-hover"
+                       id="mod_attachment_mod_datatable">
+                    <thead>
+                        <tr role="row" class="heading">
+                            <th width="2%">
+                                <input type="checkbox" class="group-checkable">
+                            </th>
+                            <th width="5%">{{ lang.mod_attachment_mod.admin.columns.id }}&nbsp;</th>
+                            <th width="20%">{{ lang.mod_attachment_mod.admin.columns.name }}&nbsp;</th>
+                            <th width="20%">{{ lang.mod_attachment_mod.admin.columns.mod_name }}&nbsp;</th>
+                            <th width="20%">{{ lang.mod_attachment_mod.admin.columns.mod_key }}&nbsp;</th>
+                            <th width="20%">{{ lang.mod_attachment_mod.admin.columns.mod_value }}&nbsp;</th>
+                            <th width="25%">İşlem</th>
+                        </tr>
+                        <tr role="row" class="filter">
+                            <td></td>
+                            <td width="5%">
+                                <input type="text"
+                                       class="form-control form-filter input-sm"
+                                       name="arama[id]">
+                            </td>
+                            <td width="20%">
+                                <input type="text"
+                                       class="form-control form-filter input-sm"
+                                       name="arama[name]">
+                            </td>
+                            <td width="20%">
+                                <input type="text"
+                                       class="form-control form-filter input-sm"
+                                       name="arama[mod_name]">
+                            </td>
+                            <td width="20%">
+                                <input type="text"
+                                       class="form-control form-filter input-sm"
+                                       name="arama[mod_key]">
+                            </td>
+                            <td width="20%">
+                                <input type="text"
+                                       class="form-control form-filter input-sm"
+                                       name="arama[mod_value]">
+                            </td>
+                            <td>
+                                <button class="btn yellow filter-submit margin-bottom">
+                                    <i class="fa fa-search"></i> Ara
+                                </button>
+                                <button class="btn red filter-cancel">
+                                    <i class="fa fa-times"></i> Sıfırla
+                                </button>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- End: life time stats -->
+{% endblock %}
+{% block extra %}
+    {{ include(mod ~ '/script.twig') }}
+    <script>
+    /*   console.log(mod_attachment_mod_table_ajax);
+     f=new mod_attachment_mod_table_ajax();
+     f.init();*/
+    mod_attachment_mod_table_ajax.init()
+    </script>
+{% endblock %}

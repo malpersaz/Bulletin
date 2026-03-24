@@ -1,0 +1,93 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/content.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
+{% block content %}
+{% set category_seo = ctx_get('category_seo') %}
+{% set categoryname = ctx_get('categoryname') %}
+{% set kategoriler = ctx_get('categories') %}
+{% set videos = ctx_get('videos') %}
+{% set sayfalama = ctx_get('sayfalama') %}
+{% set sayfa = ctx_get('sayfa') %}
+
+<div class="row mt-4" id="mod_video_embed_list">
+
+    <!-- Sol Sütun: Kategoriler -->
+    <aside class="col-lg-3 order-lg-1 mb-4">
+        <div class="card position-sticky" style="top: 2rem;" aria-labelledby="video-categories-title">
+            <div class="card-header">
+                <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ site.sadres }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">{{ lang.index.all_videos }}</a>
+                {% for kat in kategoriler %}
+                    <a href="{{ site.sadres }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
+                        {{ kat.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sağ Sütun: Videolar -->
+    <div class="col-lg-9 order-lg-2">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ site.sadres }}">{{ lang.index.home }}</a></li>
+                {% if category_seo is not empty and category_seo != 'all' %}
+                    <li class="breadcrumb-item"><a href="{{ site.sadres }}videos">{{ lang.index.mod_video_embed.1 }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ categoryname }}</li>
+                {% else %}
+                    <li class="breadcrumb-item active" aria-current="page">{{ lang.index.mod_video_embed.1 }}</li>
+                {% endif %}
+            </ol>
+        </nav>
+
+                {% if videos is not empty %}
+                    <div class="row">
+                        {% for video in videos %}
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card video-card h-100">
+                                    <a href="{{ video.youtube_url }}" 
+                                       class="video-poster-link"
+                                       data-bs-toggle="lightbox"
+                                       data-gallery="videos"
+                                       data-title="{{ video.name }}">
+                                        <div class="video-poster" style="background-image: url('{{ site.radres }}mod_video_embed/{{ video.image }}');">
+                                            <i class="bi bi-play-circle-fill play-icon"></i>
+                                        </div>
+                                    </a>
+                                    <div class="card-body">
+                                        <p class="card-text fw-bold">
+                                            <a href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|sefurl }}" title="{{ video.name }}">
+                                                {{ video.name }}
+                                            </a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+            {% if sayfalama is not empty %}
+                <nav aria-label="{{ lang.index.mod_video_embed.8 }}" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% for s in sayfalama %}
+                            {% if s == '...' %}
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            {% elseif s == sayfa %}
+                                <li class="page-item active" aria-current="page"><span class="page-link">{{ s }}</span></li>
+                            {% else %}
+                                <li class="page-item"><a class="page-link" href="{{ site.sadres }}videos/{{ category_seo|default('all') }}/{{ s }}">{{ s }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning" role="alert">{{ lang.index.mod_video_embed.4 }}</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

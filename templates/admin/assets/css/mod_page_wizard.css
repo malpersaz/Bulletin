@@ -1,0 +1,22 @@
+.mod-page-wizard-loader {
+    padding: 24px;
+    text-align: center;
+    color: #666;
+}
+
+.mod-page-wizard-spinner {
+    display: inline-block;
+    margin-bottom: 16px;
+}
+
+.mod-page-wizard-editor-wrap {
+    margin-top: 12px;
+}
+
+.mod-page-wizard-icon-lg {
+    font-size: 24px;
+}
+
+.mod-page-wizard-preview-hidden {
+    display: none;
+}

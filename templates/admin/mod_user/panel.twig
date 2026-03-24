@@ -1,0 +1,193 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_user.panel.home_title }} - {{ lang.mod_user.panel.admin_brand }}{% endblock %}
+
+{% block headline %}{{ lang.mod_user.panel.panel_title }}{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <style>
+        /* Modern Panel Variables */
+        :root {
+            --panel-card-bg: rgba(var(--md-sys-color-surface-container-rgb, 243, 237, 247), 0.7);
+            --panel-card-border: rgba(var(--md-sys-color-outline-variant-rgb, 202, 196, 208), 0.5);
+            --panel-hover-shadow: 0 8px 24px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.15);
+        }
+
+        [data-theme="dark"] {
+            --panel-card-bg: rgba(var(--md-sys-color-surface-container-rgb, 33, 31, 38), 0.6);
+            --panel-card-border: rgba(var(--md-sys-color-outline-variant-rgb, 73, 69, 79), 0.5);
+            --panel-hover-shadow: 0 8px 24px rgba(var(--md-sys-color-primary-rgb, 208, 188, 255), 0.15);
+        }
+
+        .panel-container {
+            padding: 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Minimal Greeting */
+        .minimal-greeting {
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: -4px;
+        }
+        
+        .minimal-greeting strong {
+            color: var(--md-sys-color-primary);
+            font-weight: 600;
+        }
+
+        /* Modern Grid Action Cards */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .modern-action-card {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            background: var(--panel-card-bg);
+            border: 1px solid var(--panel-card-border);
+            border-radius: 20px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .modern-action-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: var(--panel-hover-shadow);
+            border-color: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.3);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .modern-action-card:focus-visible {
+            outline: 2px solid var(--md-sys-color-primary);
+            outline-offset: 2px;
+        }
+
+        .modern-action-card:active {
+            transform: scale(0.98);
+        }
+
+        /* Interactive pulse effect on icon background */
+        .modern-action-card:hover .action-icon-wrap {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            transform: scale(1.1);
+        }
+
+        .action-icon-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
+            color: var(--md-sys-color-primary);
+            font-size: 1.5rem;
+            margin-right: 16px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .action-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .action-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .action-meta {
+            font-size: 0.85rem;
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .action-arrow {
+            color: var(--md-sys-color-outline);
+            transition: transform 0.3s ease;
+            font-size: 1.2rem;
+            margin-left: 12px;
+        }
+
+        .modern-action-card:hover .action-arrow {
+            transform: translateX(4px);
+            color: var(--md-sys-color-primary);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .panel-container {
+                padding: 16px;
+            }
+
+            .panel-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="panel-container">
+    <!-- Minimal Greeting -->
+    <div class="minimal-greeting">
+        👋 <span>{{ lang.mod_user.panel.welcome_main }} <strong>{{ session.full_name }}</strong></span>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="panel-grid">
+        {% for action in panel_actions %}
+        <a class="modern-action-card" href="{{ action.href }}">
+            <div class="action-icon-wrap">
+                <i class="{{ action.icon }}"></i>
+            </div>
+            <div class="action-content">
+                <div class="action-title">{{ action.title }}</div>
+                <div class="action-meta">{{ action.meta }}</div>
+            </div>
+            <i class="bi bi-chevron-right action-arrow"></i>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var wrapper = document.querySelector('.mobile-wrapper');
+            if(wrapper) {
+                wrapper.classList.add('mesh-bg');
+            }
+        });
+    </script>
+{% endblock %}

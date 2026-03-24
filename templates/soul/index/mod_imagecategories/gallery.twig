@@ -1,0 +1,97 @@
+{{ macro resimkategori(rkat, parent_id, ss) %}
+{% for rk in rkat[parent_id] %}
+    {% set parent_id = rk.id %}
+    {% if rk.lang == site.lang %}
+        {% set ss = 1 %}
+        {% if rk.root == 'y' %}
+            <!--
+                {{ rk.name }}
+                -->
+        {% else %}
+            {% if keto == rk.id %}
+                <p class="list-group-item active">
+                    <a href="{{ site.sadres }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
+                </p>
+            {% else %}
+                {% if rk.seo == '#' %}
+                    <!--
+                        <b class="list-group-item">{{ rk.name }}</b>
+                        -->
+                {% else %}
+                    <p class="list-group-item">
+                        <a href="{{ site.sadres }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
+                    </p>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    {% if rkat[parent_id] is not empty %}
+        {% if ss == '1' %}{% endif %}
+        {{ _self.resimkategori(rkat, parent_id) }}
+        {% if ss == '1' %}{% endif %}
+    {% endif %}
+    {% if rk.lang == site.lang %}{% endif %}
+{% endfor %}
+{% endmacro %}
+
+{% extends "layouts/base.twig" %}
+
+{% set d = ctx_get('d') %}
+{% set rkat = ctx_get('rkat') %}
+{% set keto = ctx_get('keto') %}
+{% set res = ctx_get('res') %}
+
+{% block content %}
+<div class="row" id="mod_imagecategories">
+    <div class="card">
+        <div class="card-header">
+            <ol class="breadcrumb panel-title">
+                <li>
+                    <a href="{{ site.sadres }}">{{ lang.index.homepage }}</a>
+                </li>
+                {% if d.name is not empty %}
+                    <li>
+                    </li>
+                    <li class="active">{{ d.name }}</li>
+                {% else %}
+                {% endif %}
+            </ol>
+        </div>
+        <div class="card-body">
+            <div class="col-md-4">
+                <div id="gallery_kat" class="list-group">{{ _self.resimkategori(rkat, 0) }}</div>
+            </div>
+            <div class="col-md-8">
+                {{ include("index/paylas.twig") }}
+                {% if d.name is not empty %}
+                    {% if res is not empty %}
+                        <div id="gallery_resim">
+                            <!--
+                       <h3 class="text-center">{{ d.name }}</h3>
+                       -->
+                            <ul>
+                                {% for image in res %}
+                                    <li class="col-md-4">
+                                        <div class="thumbnail">
+                                            <a href="{{ site.radres }}mod_gallery/mod_imagecategories/original/{{ image.url }}"
+                                               title="{{ image.name }}"
+                                               data-bs-toggle="lightbox"
+                                               data-gallery="multiimages"
+                                               data-title="{{ image.name }}"
+                                               data-parent="#gallery_resim">
+                                                <img src="{{ site.radres }}mod_gallery/mod_imagecategories/thumb/{{ image.url }}"
+                                                     parent_id="{{ image.name }}">
+                                            </a>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% else %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

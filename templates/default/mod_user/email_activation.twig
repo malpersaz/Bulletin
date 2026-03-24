@@ -1,0 +1,16 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+{{ ctx_get('name') }}
+{{ ctx_get('last_name') }}
+{{ ctx_get('code') }}
+
+Merhabalar Sayın <b>{{ name }} {{ last_name }}</b>
+<br />
+{{ site.adres }} Adresine Yaptığınız Üyelik Başvurunuzu Tamamlaya Bilmemiz İçin
+<br />
+Lütfen <a href="{{ site.adres }}activation/{{ code }}">Buraya</a> Tıklayınız.
+Eğer Bağlantıya Tıklayamıyorsanız Aşağıdaki Linki Kopyalayıp Tarayıcınıza Yapıştırınız.
+<br />
+"{{ site.adres }}activation/{{ code }}"
+{% endblock %}

@@ -1,0 +1,7 @@
+<!-- START: partials/slider.twig -->
+{% if slider is defined and slider == 'y' %}
+    {{ run({"mod": "index", "method": "_slider"}) }}
+{% else %}
+    {% set blokdetay = {"icon": "1"} %}
+{% endif %}
+<!-- END: partials/slider.twig -->

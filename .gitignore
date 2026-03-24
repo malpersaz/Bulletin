@@ -1,0 +1,23 @@
+# Composer
+/vendor/
+
+# Node.js
+/node_modules/
+
+# Cache and Logs
+/cache/*
+!/cache/.htaccess
+/log/*.txt
+/logs/*.log
+/templates_c/*
+
+# Docker
+/docker/mysql/data/
+db_data/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Project configs (optional: hide secrets if needed)
+# config/db.config.php

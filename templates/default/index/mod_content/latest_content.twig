@@ -1,0 +1,53 @@
+{{ run({"mod": "index", "method": "_latest_content", "extra": ["5", "image,name,seo,keywords,summary"]}) }}
+{% set latest_content = ctx_get('latest_content') %}
+{% if latest_content is not empty %}
+    <section class="container my-4" aria-labelledby="latest-content-heading">
+        <header>
+            <h2 id="latest-content-heading" class="mb-4">{{ lang.index.mod_content.latest_content.1 }}</h2>
+        </header>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for content in latest_content %}
+                <article class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-img-wrapper">
+                            <a href="{{ site.sadres }}article/{{ content.seo }}" title="{{ content.name }}" aria-label="{{ content.name }}">
+                                {% if content.image is not empty %}
+                                    <img src="{{ site.radres }}mod_content/{{ content.image }}"
+                                         class="card-img-top"
+                                         parent_id="{{ content.name }}"
+                                         loading="lazy">
+                                {% else %}
+                                    <img src="{{ site.radres }}mod_settings/logo.png"
+                                         class="card-img-top p-4 bg-light"
+                                         parent_id="{{ content.name }}"
+                                         loading="lazy"
+                                         style="object-fit: contain;">
+                                {% endif %}
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title h5">
+                                <a href="{{ site.sadres }}article/{{ content.seo }}"
+                                   class="text-decoration-none text-dark"
+                                   title="{{ content.name }}"
+                                   aria-label="{{ content.name }}">{{ content.name }}</a>
+                            </h3>
+                            <p class="card-text">
+                                {% if content.summary != '' %}
+                                    {{ content.summary|raw|striptags|length > 150 ? content.summary|raw|striptags|slice(0, 150) ~ '...' : content.summary|raw|striptags }}
+                                {% else %}
+                                    {{ content.name }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        <footer class="text-center mt-4">
+            <a href="{{ site.sadres }}category"
+               class="btn btn-primary"
+               aria-label="{{ lang.index.mod_content.latest_content.2 }}">{{ lang.index.mod_content.latest_content.2 }}</a>
+        </footer>
+    </section>
+{% endif %}

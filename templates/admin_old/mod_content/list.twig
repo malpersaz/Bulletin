@@ -1,0 +1,153 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}{{ lang.mod_content.list }} - Rojname Admin{% endblock %}
+{% block headline %}{{ lang.mod_content.list }}{% endblock %}
+{% block css %}
+	<style>
+		@media (max-width: 767px) {
+			.portlet.light .portlet-body {
+				padding-top: 0px !important;
+				padding-left: 5px !important;
+				padding-right: 5px !important;
+			}
+			.action-column {
+				width: 1% !important;
+				white-space: nowrap;
+			}
+			.title-column {
+				width: auto !important;
+			}
+		}
+		@media (min-width: 768px) {
+			.action-column {
+				width: 25%;
+			}
+			.title-column {
+				width: 50%;
+			}
+		}
+	</style>
+{% endblock %}
+{% block body %}
+	<!-- Begin: life time stats -->
+	<div class="portlet light">
+		<div class="portlet-title">
+			<div class="caption">
+				<i class="fa fa-gift font-green-sharp"></i>
+				<span class="caption-subject font-green-sharp bold uppercase">{{ lang.mod_content.list }}</span>
+				<span class="caption-helper">{{ lang.mod_content.ui.kayit_yonetimi }}</span>
+			</div>
+			<div class="actions">
+				<a href="{{ site.sadres }}mod_content/add" class="btn green">
+					<i class="icon-plus"></i>
+					{{ lang.mod_content.add }}
+				</a>
+			</div>
+		</div>
+		<div class="portlet-body">
+			<div class="table-container table-responsive">
+				<div class="table-actions-wrapper">
+					<span></span>
+					<select class="table-group-action-input form-control input-inline input-xsmall input-sm">
+						<option value="">{{ lang.mod_content.ui.islem }}</option>
+						{% if session.permissions.mod_content.gallery is defined %}
+							<option value="{{ lang.mod_content.button.gallery }}">{{ lang.mod_content.button.gallery }}</option>
+						{% endif %}
+						{% if session.permissions.mod_content.file is defined %}
+							<option value="{{ lang.mod_content.button.file }}">{{ lang.mod_content.button.file }}</option>
+						{% endif %}
+						{% if session.permissions.mod_content.sil is defined %}
+							<option value="{{ lang.mod_content.button.sil }}">{{ lang.mod_content.button.sil }}</option>
+						{% endif %}
+						{% if session.permissions.mod_content.approval is defined %}
+							<option value="{{ lang.mod_content.grid.approve.key }}">{{ lang.mod_content.grid.approve.key }}</option>
+						{% endif %}
+						{% if session.permissions.mod_content.approval is defined %}
+							<option value="{{ lang.mod_content.grid.unapprove.key }}">{{ lang.mod_content.grid.unapprove.key }}</option>
+						{% endif %}
+					</select>
+					<button class="btn btn-xs yellow table-group-action-submit">
+						<i class="fa fa-check"></i>
+						<span class="hidden-xs">{{ lang.mod_content.ui.uygula }}</span>
+					</button>
+				</div>
+				<table class="table table-striped table-bordered table-hover" id="mod_content_datatable">
+					<thead>
+						<tr role="row" class="heading">
+							<th width="2%">
+								<input type="checkbox" class="group-checkable">
+							</th>
+							<th width="5%" class="hidden-xs">{{ lang.mod_content.admin.columns.id }}&nbsp;</th>
+							<th class="title-column">{{ lang.mod_content.admin.columns.name }}&nbsp;</th>
+							<th width="10%">{{ lang.mod_content.admin.columns.image }}&nbsp;</th>
+							<th width="5%" class="hidden-xs">{{ lang.mod_content.admin.columns.lang }}&nbsp;</th>
+							<th width="20%" class="hidden-xs">{{ lang.mod_content.admin.columns.created_at }}&nbsp;</th>
+							<th class="action-column hidden-xs">{{ lang.mod_content.ui.islem_column }}</th>
+						</tr>
+						<tr role="row" class="filter">
+							<td></td>
+							<td width="5%" class="hidden-xs">
+								<input type="text" class="form-control form-filter input-sm" name="arama[id]">
+							</td>
+							<td class="title-column">
+								<input type="text" class="form-control form-filter input-sm" name="arama[name]">
+								<div class="visible-xs margin-top-10">
+									<button class="btn yellow filter-submit">
+										<i class="fa fa-search"></i>
+										<span class="hidden-xs">{{ lang.mod_content.ui.ara }}</span>
+									</button>
+									<button class="btn default filter-cancel">
+										<i class="fa fa-undo"></i>
+										<span class="hidden-xs">{{ lang.mod_content.ui.sifirla }}</span>
+									</button>
+								</div>
+							</td>
+							<td width="10%"></td>
+							<td width="5%" class="hidden-xs">
+								<input type="text" class="form-control form-filter input-sm" name="arama[lang]">
+							</td>
+							<td width="20%" class="hidden-xs">
+								<div class="input-group date date-picker margin-bottom-5" data-date-format="yyyy-mm-dd">
+									<input type="text" class="form-control form-filter input-sm" readonly name="arama_tarih[created_at][from]" placeholder="{{ lang.mod_content.ui.burdan }}">
+									<span class="input-group-btn">
+										<button class="btn btn-sm default" type="button">
+											<i class="fa fa-calendar"></i>
+										</button>
+									</span>
+								</div>
+								<div class="input-group date date-picker" data-date-format="yyyy-mm-dd">
+									<input type="text" class="form-control form-filter input-sm" readonly name="arama_tarih[created_at][to]" placeholder="{{ lang.mod_content.ui.buraya }}">
+									<span class="input-group-btn">
+										<button class="btn btn-sm default" type="button">
+											<i class="fa fa-calendar"></i>
+										</button>
+									</span>
+								</div>
+							</td>
+							<td class="action-column hidden-xs">
+								<button class="btn yellow filter-submit margin-bottom">
+									<i class="fa fa-search"></i>
+									<span class="hidden-xs">{{ lang.mod_content.ui.ara }}</span>
+								</button>
+								<button class="btn default filter-cancel">
+									<i class="fa fa-undo"></i>
+									<span class="hidden-xs">{{ lang.mod_content.ui.sifirla }}</span>
+								</button>
+							</td>
+						</tr>
+					</thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<!-- End: life time stats -->
+{% endblock %}
+{% block extra %}
+	{% include mod ~"/script.twig" %}
+	<script>
+		/*   console.log(mod_content_table_ajax);
+     f=new mod_content_table_ajax();
+     f.init();*/
+mod_content_table_ajax.init()
+	</script>
+{% endblock %}

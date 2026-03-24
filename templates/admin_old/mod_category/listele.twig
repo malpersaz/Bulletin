@@ -1,0 +1,94 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}{{ lang.mod_category.list }}{% endblock %}
+{% macro select_nested_mod_category_function(select_nested_mod_category_result, parent_id, level) %}
+    {% for entry in select_nested_mod_category_result[parent_id] %}
+        {% set parent_id = entry.id %}
+        <li id="{{ entry.id }}" class="open" name="{{ entry.name }}">
+            <ins style="display:none">{{ entry.id }}</ins>
+            <span>{{ entry.name }} - ({{ entry.lang }})</span>
+            <div class="btn-group btn-group-xs btn-group-solid">
+                <button data-messageid="23" class="btn blue reply-btn">
+                    <i class="fa fa-arrow-circle-left"></i> {{ lang.mod_category.actions.list }}
+                </button>
+                <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <i class="fa fa-angle-down"></i>
+                </button>
+                <ul class="dropdown-menu pull-right">
+                    {% if session.permissions.mod_category.sil is defined %}
+                        <li>
+                            <a href="javascript:void(0);"
+                               onclick="sil('{{ entry.id }}');"
+                               data-messageid="23"
+                               class="btn btn-sm red">
+                                <i class="fa fa-trash-o"></i>  {{ lang.mod_category.button.sil }} </a>
+                        </li>
+                    {% endif %}
+                    {% if session.permissions.mod_category.edit is defined %}
+                        <li>
+                            <a href="javascript:void(0);"
+                               class="btn btn-xs green"
+                               onclick="duzenle('{{ entry.id }}')">
+                                <i class="fa fa-edit"></i> {{ lang.mod_category.button.edit }} </a>
+                        </li>
+                    {% endif %}
+                    {% if session.permissions.mod_category.gallery is defined %}
+                        <li>
+                            <a href="javascript:void(0);"
+                               onclick="gallery('{{ entry.id }}');"
+                               data-messageid="23"
+                               class="btn btn-sm blue">
+                                <i class="fa fa-photo"></i>  {{ lang.mod_category.button.gallery }} </a>
+                        </li>
+                    {% endif %}
+                    {% if session.permissions.mod_category.file is defined %}
+                        <li>
+                            <a href="javascript:void(0);"
+                               class="btn btn-sm blue"
+                               onclick="dosya('{{ entry.id }}')">
+                                <i class="fa fa-file-archive-o"></i> {{ lang.mod_category.button.file }} </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% if select_nested_mod_category_result[parent_id] is defined and select_nested_mod_category_result[parent_id] is iterable %}
+                <ul>
+                    {{ _self.select_nested_mod_category_function(select_nested_mod_category_result, parent_id, level + 1) }}
+                </ul>
+            {% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+{% block body %}
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="caption">
+                <i class="fa fa-gift"></i>{{ lang.mod_category.list }}
+            </div>
+        </div>
+        <div class="portlet-body form">
+            <div class="alert alert-info">
+                <strong>{{ lang.mod_category.information }}</strong> {{ lang.mod_category.message.information.move }}
+            </div>
+            <a href="{{ site.adres }}mod_category/ekle" class="btn green">{{ lang.mod_category.add }}</a>
+            
+            <!-- Simple Tree -->
+            <div group_id="tree">
+                <ul class="simpleTree">
+                    <li class="root" id='0'>
+                        <span>{{ lang.mod_category.list }}</span>
+                        <ul>
+                            {{ _self.select_nested_mod_category_function(select_nested_mod_category_result, 0, 0) }}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <!-- Simple Tree -->
+        </div>
+    </div>
+{% endblock %}
+{% block extra %}
+    {{ include("extra/simpletree.twig") }}
+    {{ include("mod_category/script.twig") }}
+
+
+{% endblock %}

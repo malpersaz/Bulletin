@@ -1,0 +1,500 @@
+{% extends "management/admin-layout.twig" %}
+
+{% block title %}
+	{{ lang.mod_settings.settings.title }}
+{% endblock %}
+
+{% block body %}
+	{% if hata is defined %}
+		<div class="alert alert-danger">
+			<strong>{{ lang.mod_settings.error }}</strong>
+			{{ mesaj }}
+		</div>
+	{% else %}
+		<div class="portlet box blue">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-globe"></i>
+					{{ lang.mod_settings.settings.title }}
+				</div>
+				<div class="actions">
+					<a href="{{ site.sadres }}mod_settings/list" class="btn btn-default">
+						<i class="fa fa-list"></i>
+						{{ lang.mod_settings.list }}
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body form">
+				{% if oke %}
+					<div class="alert alert-success">
+						<strong>{{ lang.mod_settings.messages.success.updated }}</strong>
+						{{ mesaj }}
+					</div>
+				{% endif %}
+				{% if hatalar is defined %}
+					{% for hata in hatalar %}
+						<div class="alert alert-danger">
+							<strong>{{ lang.mod_settings.error }}!</strong>
+							{{ hata }}
+						</div>
+					{% endfor %}
+				{% endif %}
+
+				<form
+					method="POST" action="{{ site.sadres }}mod_settings/edit/{{ selected_lang }}" id="settingsForm" class="form-horizontal" enctype="multipart/form-data">
+					<!-- Language Selection -->
+					<div class="form-group">
+						<label class="col-md-3 control-label">{{ lang.mod_settings.select_language }}</label>
+						<div class="col-md-4">
+							<select name="selected_lang" class="form-control" onchange="window.location.href='{{ site.sadres }}mod_settings/edit/' + this.value">
+								{% for lang in langs %}
+									<option value="{{ lang.seo }}" {% if lang.seo == selected_lang %} selected {% endif %}>{{ lang.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+
+					<hr>
+
+					<!-- Settings for Selected Language -->
+					{% if setting is defined %}
+
+						<div
+							class="form-body">
+							<!-- title Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.title }}</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" name="title" value="{{ setting.title }}">
+								</div>
+							</div>
+
+							<!-- description Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.description }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="description" rows="3">{{ setting.description }}</textarea>
+								</div>
+							</div>
+
+							<!-- owner_name Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.owner_name }}</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" name="owner_name" value="{{ setting.owner_name }}">
+								</div>
+							</div>
+
+							<!-- established_year Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.established_year }}</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" name="established_year" value="{{ setting.established_year }}">
+								</div>
+							</div>
+
+							<!-- phone Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.phone }}</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" name="phone" value="{{ setting.phone }}">
+								</div>
+							</div>
+
+							<!-- whatsapp Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.whatsapp }}</label>
+								<div class="col-md-9">
+									<input type="text" class="form-control" name="whatsapp" value="{{ setting.whatsapp }}">
+								</div>
+							</div>
+
+							<!-- email Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.email }}</label>
+								<div class="col-md-9">
+									<input type="email" class="form-control" name="email" value="{{ setting.email }}">
+								</div>
+							</div>
+
+							<!-- office_address Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.office_address }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="office_address" rows="3">{{ setting.office_address }}</textarea>
+								</div>
+							</div>
+
+							<!-- work_address Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.work_address }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="work_address" rows="3">{{ setting.work_address }}</textarea>
+								</div>
+							</div>
+
+							<!-- map_embed_code Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.map_embed_code }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="map_embed_code" rows="5">{{ setting.map_embed_code }}</textarea>
+								</div>
+							</div>
+
+							<!-- google_search_console Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.google_search_console }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="google_search_console" rows="3">{{ setting.google_search_console }}</textarea>
+								</div>
+							</div>
+
+							<!-- google_analytics Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.google_analytics }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="google_analytics" rows="5">{{ setting.google_analytics }}</textarea>
+								</div>
+							</div>
+
+							<!-- meta_tags Input -->
+							<div class="form-group">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.meta_tags }}</label>
+								<div class="col-md-9">
+									<textarea class="form-control" name="meta_tags" rows="3">{{ setting.meta_tags }}</textarea>
+								</div>
+							</div>
+
+							<!-- logo_path Input -->
+							<div class="form-group" id="logo-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.logo_path }}</label>
+								<div class="col-md-9">
+									{% if setting.logo_path %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.logo_path }}" class="img-thumbnail" style="max-width: 80px; max-height: 40px;" alt="Logo">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="logo_path" value="{{ setting.logo_path }}" readonly>
+												<small class="help-block">{{ lang.mod_settings.current_logo }}
+													{{ setting.logo_path }}</small>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'logo_path', '#logo-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="logo_path" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.logo_not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="logo_{{ setting.lang }}" style="display: none;" accept="image/*" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.logo_help_text }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- favicon_path Input -->
+							<div class="form-group" id="favicon-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.favicon_path }}</label>
+								<div class="col-md-9">
+									{% if setting.favicon_path is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.favicon_path }}" class="img-thumbnail" style="max-width: 32px; max-height: 32px;" alt="Favicon">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="favicon_path" value="{{ setting.favicon_path }}" readonly>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'favicon_path', '#favicon-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="favicon_path" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.favicon_not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+														<input type="file" name="favicon_{{ setting.lang }}" style="display: none;" accept="image/vnd.microsoft.icon,image/png,image/x-icon" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.favicon_help_text }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- favicon_96 Input -->
+							<div class="form-group" id="favicon_96-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.favicon_96 }}</label>
+								<div class="col-md-9">
+									{% if setting.favicon_96 is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.favicon_96 }}" class="img-thumbnail" style="max-width: 96px; max-height: 96px;" alt="Favicon 96">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="favicon_96" value="{{ setting.favicon_96 }}" readonly>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'favicon_96', '#favicon_96-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="favicon_96" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="favicon_96_{{ setting.lang }}" style="display: none;" accept="image/png" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.png_96_help }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<!-- apple_touch_icon Input -->
+							<div class="form-group" id="apple_touch_icon-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.apple_touch_icon }}</label>
+								<div class="col-md-9">
+									{% if setting.apple_touch_icon is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.apple_touch_icon }}" class="img-thumbnail" style="max-width: 90px; max-height: 90px;" alt="Apple Icon">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="apple_touch_icon" value="{{ setting.apple_touch_icon }}" readonly>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'apple_touch_icon', '#apple_touch_icon-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="apple_touch_icon" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="apple_touch_icon_{{ setting.lang }}" style="display: none;" accept="image/png" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.png_180_help }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- site_webmanifest Input -->
+							<div class="form-group" id="site_webmanifest-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.web_manifest }}</label>
+								<div class="col-md-9">
+									{% if setting.site_webmanifest is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-10">
+												<div class="input-group">
+													<span class="input-group-addon">
+														<i class="fa fa-file-code-o"></i>
+													</span>
+													<input type="text" class="form-control" name="site_webmanifest" value="{{ setting.site_webmanifest }}" readonly>
+												</div>
+												<small class="help-block">
+													<a href="static/mod_settings/{{ setting.site_webmanifest }}" target="_blank">{{ lang.mod_settings.view_file }}</a>
+												</small>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'site_webmanifest', '#site_webmanifest-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="site_webmanifest" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="site_webmanifest_{{ setting.lang }}" style="display: none;" accept=".webmanifest,.json" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.webmanifest_help }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- manifest_192 Input -->
+							<div class="form-group" id="manifest_192-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.manifest_icon_192 }}</label>
+								<div class="col-md-9">
+									{% if setting.manifest_192 is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.manifest_192 }}" class="img-thumbnail" style="max-width: 96px; max-height: 96px;" alt="Manifest 192">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="manifest_192" value="{{ setting.manifest_192 }}" readonly>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'manifest_192', '#manifest_192-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="manifest_192" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="manifest_192_{{ setting.lang }}" style="display: none;" accept="image/png" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.png_192_help }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- manifest_512 Input -->
+							<div class="form-group" id="manifest_512-container-{{ setting.lang }}">
+								<label class="col-md-3 control-label">{{ lang.mod_settings.manifest_icon_512 }}</label>
+								<div class="col-md-9">
+									{% if setting.manifest_512 is not empty %}
+										<div class="row" style="margin-bottom: 10px;">
+											<div class="col-md-2">
+												<img src="static/mod_settings/{{ setting.manifest_512 }}" class="img-thumbnail" style="max-width: 96px; max-height: 96px;" alt="Manifest 512">
+											</div>
+											<div class="col-md-8">
+												<input type="text" class="form-control" name="manifest_512" value="{{ setting.manifest_512 }}" readonly>
+											</div>
+											<div class="col-md-2">
+												<button type="button" class="btn btn-danger btn-sm" onclick="image_remove_image('{{ setting.lang }}', 'manifest_512', '#manifest_512-container-{{ setting.lang }} .col-md-9')">
+													<i class="fa fa-trash"></i>
+													{{ lang.mod_settings.delete }}
+												</button>
+											</div>
+										</div>
+									{% else %}
+										<input type="text" class="form-control" name="manifest_512" value="" readonly>
+										<small class="help-block">{{ lang.mod_settings.not_uploaded }}</small>
+									{% endif %}
+									<div class="row" style="margin-top: 10px;">
+										<div class="col-md-12">
+											<div class="file-input-wrapper">
+												<label class="btn btn-default btn-file">
+													{{ lang.mod_settings.choose_file }}
+													<input type="file" name="manifest_512_{{ setting.lang }}" style="display: none;" accept="image/png" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : '{{ lang.mod_settings.no_file_selected }}');">
+												</label>
+												<span class="file-info" style="margin-left: 10px;">{{ lang.mod_settings.no_file_selected }}</span>
+											</div>
+											<small class="help-block">{{ lang.mod_settings.png_512_help }}</small>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<input type="hidden" name="lang" value="{{ setting.lang }}">
+					{% endif %}
+
+					<div class="form-actions">
+						<div class="row">
+							<div class="col-md-offset-3 col-md-9">
+								<button type="submit" class="btn green" name="edit" value="1">
+									<i class="fa fa-check"></i>
+									{{ lang.mod_settings.save }}
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	{% endif %}
+
+	<script>
+		$(document).ready(function () { // Auto-submit form when language is changed
+$('select[name="selected_lang"]').on('change', function () {
+var url = '{{ site.sadres }}mod_settings/edit/' + $(this).val();
+window.location.href = url;
+});
+});
+
+function image_remove_image(lang, field, containerId) {
+if (confirm('{{ lang.mod_settings.confirm_delete }}')) {
+$.ajax({
+url: '{{ site.sadres }}mod_settings/image_remove_image',
+type: 'POST',
+data: {
+lang: lang,
+field: field
+},
+success: function (response) {
+if (response.trim() === 'Oke') { // Replicate the simple logic from mod_content
+var inputName = field.replace('_path', '');
+var html = '<div class="file-input-wrapper">';
+html += '<label class="btn btn-default btn-file">';
+html += '{{ lang.mod_settings.choose_file }}';
+html += '<input type="file" name="' + inputName + '_' + lang + '" style="display: none;" onchange="$(this).parent().next().text(this.files.length > 0 ? this.files[0].name : \'   {{ lang.mod_settings.no_file_selected }}\');">';
+html += '</label>';
+html += '<span class="file-info" style="margin-left: 10px;">   {{ lang.mod_settings.no_file_selected }}</span>';
+html += '</div>';
+$(containerId).html(html);
+} else {
+alert('{{ lang.mod_settings.delete_error }}' + response);
+}
+},
+error: function () {
+alert('{{ lang.mod_settings.generic_error }}');
+}
+});
+}
+}
+	</script>
+{% endblock %}

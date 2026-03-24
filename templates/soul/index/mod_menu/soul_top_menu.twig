@@ -1,0 +1,270 @@
+{% from "macros/menu.twig" import renderMenu %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+<header class="soul-site-header" id="soulMainHeader">
+    <div class="container soul-header-frame position-relative">
+        <a class="soul-brand-panel {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}has-image-logo{% endif %}" href="{{ site.sadres }}" title="{{ site.title }}" aria-label="{{ site.title }}" style="text-decoration: none;">
+            {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}
+                <img src="{{ site.radres }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" class="soul-logo-image" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background-color: #ffffff;">
+            {% else %}
+                {% if site.show_logo|default('y') == 'y' %}
+                    <span class="soul-brand-mark" style="font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; text-decoration: none; letter-spacing: 0.5px;">{{ site.title|slice(0, 1) }}</span>
+                {% endif %}
+                <span class="soul-brand-lockup">
+                    <span class="soul-brand-name" style="font-family: 'Playfair Display', serif; font-weight: 900; font-style: italic; text-decoration: none; white-space: nowrap; letter-spacing: 0.5px; line-height: 1.2;">{{ site.title }}</span>
+                </span>
+            {% endif %}
+        </a>
+
+        <nav class="soul-menu-panel d-none d-lg-flex" aria-label="{{ lang.index.toggle_menu }}">
+            <ul class="soul-nav-links">
+                {% if menu is defined and menu is not empty %}
+                    {{ renderMenu(menu, 0, 0) }}
+                {% endif %}
+            </ul>
+        </nav>
+
+        <div class="soul-utility-panel">
+            <form class="soul-search d-none d-md-flex" method="get" action="{{ site.sadres }}index/search/">
+                <button class="soul-search-btn" type="submit" aria-label="{{ lang.index.search.search }}">
+                    <i class="bi bi-search"></i>
+                </button>
+                <input type="search" name="kelime" class="soul-search-input" placeholder="{{ lang.index.search.search }}..." autocomplete="off">
+            </form>
+
+            <div class="dropdown d-none d-lg-block">
+                <button class="soul-chip soul-utility-btn dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{ site.lang|upper }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end soul-dropdown-menu" aria-labelledby="languageDropdown">
+                    <li><h6 class="dropdown-header">{{ lang.index.language }}</h6></li>
+                    {% if site.available_languages is defined %}
+                        {% for l in site.available_languages %}
+                            <li><a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.adres }}{{ l.code }}">{{ l.name }}</a></li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            </div>
+
+            <button class="soul-chip soul-utility-btn d-none d-lg-inline-flex" id="darkModeToggle" type="button" aria-label="{{ lang.index.dark_mode }}">
+                <i class="bi bi-moon-stars"></i>
+            </button>
+
+            {% if session.username is defined %}
+                <div class="dropdown">
+                    <button class="soul-profile-btn" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="soul-profile-avatar">
+                            {{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}
+                        </span>
+                        <span class="d-none d-md-inline">{{ session.full_name|default(session.username) }}</span>
+                        <i class="bi bi-chevron-down small d-none d-md-inline"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end soul-dropdown-menu soul-profile-dropdown" aria-labelledby="userDropdown">
+                        <li class="soul-dropdown-user-info">
+                            <div class="d-flex align-items-center px-3 py-2 border-bottom mb-2">
+                                <span class="soul-profile-avatar me-3" style="width: 42px; height: 42px; font-size: 1.1rem; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                    {{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}
+                                </span>
+                                <div class="d-flex flex-column overflow-hidden">
+                                    <span class="fw-bold text-truncate" style="color: var(--soul-text);">{{ session.full_name|default(session.username) }}</span>
+                                    <span class="small text-muted text-truncate" style="font-size: 0.8rem;">@{{ session.username }}</span>
+                                </div>
+                            </div>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ site.sadres }}mod_user/panel/{{ session.sid }}"><i class="bi bi-person-circle fs-5 me-2 text-muted"></i><span class="flex-grow-1">{{ lang.index.my_account }}</span></a></li>
+                        <li><a class="dropdown-item" href="{{ site.sadres }}mod_user_pm/inbox"><i class="bi bi-envelope fs-5 me-2 text-muted"></i><span class="flex-grow-1">{{ lang.index.messages }}</span>{% if session.okunmamis is defined and session.okunmamis > 0 %}<span class="badge bg-danger rounded-pill ms-2">{{ session.okunmamis }}</span>{% endif %}</a></li>
+                        <li><a class="dropdown-item" href="{{ site.sadres }}mod_content/add"><i class="bi bi-plus-circle fs-5 me-2 text-muted"></i><span class="flex-grow-1">{{ lang.index.add_content }}</span></a></li>
+                        <li><hr class="dropdown-divider my-2"></li>
+
+                        <li><a class="dropdown-item text-danger" href="{{ site.sadres }}logout"><i class="bi bi-box-arrow-right fs-5 me-2"></i><span class="flex-grow-1">{{ lang.index.logout }}</span></a></li>
+                    </ul>
+                </div>
+            {% else %}
+                <div class="auth-buttons">
+                    <button class="soul-login-btn" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        {{ lang.index.login }}
+                    </button>
+                </div>
+            {% endif %}
+
+            <button class="soul-mobile-toggle navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#soulMobileMenu" aria-controls="soulMobileMenu" aria-expanded="false" aria-label="{{ lang.index.toggle_menu }}">
+                <i class="bi bi-list"></i>
+            </button>
+        </div>
+
+        <div class="collapse soul-mobile-panel d-lg-none" id="soulMobileMenu">
+            <div class="soul-mobile-card">
+                <form class="soul-search soul-search-mobile" method="get" action="{{ site.sadres }}index/search/">
+                    <button class="soul-search-btn" type="submit" aria-label="{{ lang.index.search.search }}">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    <input type="search" name="kelime" class="soul-search-input" placeholder="{{ lang.index.search.search }}..." autocomplete="off">
+                </form>
+
+                <ul class="soul-mobile-nav navbar-nav">
+                    {% if menu is defined and menu is not empty %}
+                        {{ renderMenu(menu, 0, 0) }}
+                    {% endif %}
+                </ul>
+
+                {% if session.username is not defined %}
+                    <div class="soul-menu-divider"></div>
+                    <div class="mobile-auth-row mb-3">
+                        <button class="soul-mobile-control w-100" style="font-weight: 500; border-color: rgba(242, 193, 78, 0.4);" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            {{ lang.index.login }}
+                        </button>
+                    </div>
+                {% else %}
+                    <div class="soul-menu-divider"></div>
+                    <div class="mobile-auth-row mb-3">
+                        <div class="soul-mobile-user-card">
+                            <div class="soul-mobile-user-info">
+                                <span class="soul-profile-avatar">
+                                    {{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}
+                                </span>
+                                <div class="soul-mobile-user-details">
+                                    <span class="soul-mobile-user-name">{{ session.full_name|default(session.username) }}</span>
+                                    <span class="soul-mobile-username">@{{ session.username }}</span>
+                                </div>
+                            </div>
+                            <div class="soul-mobile-user-actions">
+                                <a href="{{ site.sadres }}mod_user/panel/{{ session.sid }}" class="soul-mobile-action-link">
+                                    <i class="bi bi-person-circle"></i>{{ lang.index.my_account }}
+                                </a>
+                                <div class="soul-mobile-action-divider"></div>
+                                <a href="{{ site.sadres }}mod_user_pm/inbox" class="soul-mobile-action-link">
+                                    <i class="bi bi-envelope"></i>{{ lang.index.messages }}
+                                    {% if session.okunmamis is defined and session.okunmamis > 0 %}<span class="badge bg-danger rounded-pill ms-auto">{{ session.okunmamis }}</span>{% endif %}
+                                </a>
+                                <div class="soul-mobile-action-divider"></div>
+                                <a href="{{ site.sadres }}mod_content/add" class="soul-mobile-action-link">
+                                    <i class="bi bi-plus-circle"></i>{{ lang.index.add_content }}
+                                </a>
+                                <div class="soul-mobile-action-divider"></div>
+                                <a href="{{ site.sadres }}logout" class="soul-mobile-action-link soul-action-logout">
+                                    <i class="bi bi-box-arrow-right"></i>{{ lang.index.logout }}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="soul-menu-divider mb-4 mt-0"></div>
+                {% endif %}
+
+                <div class="mobile-controls-row">
+                    <div class="language-selector flex-grow-1">
+                        <div class="dropdown">
+                            <button class="soul-mobile-control dropdown-toggle" type="button" id="languageDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                                {{ site.lang|upper }}
+                            </button>
+                            <ul class="dropdown-menu soul-dropdown-menu" aria-labelledby="languageDropdownMobile">
+                                <li><h6 class="dropdown-header">{{ lang.index.language }}</h6></li>
+                                {% if site.available_languages is defined %}
+                                    {% for l in site.available_languages %}
+                                        <li><a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.adres }}{{ l.code }}">{{ l.name }}</a></li>
+                                    {% endfor %}
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    <button class="soul-mobile-control soul-dark-toggle" id="darkModeToggleMobile" type="button" aria-label="{{ lang.index.dark_mode }}">
+                        <i class="bi bi-moon-stars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="mobile-overlay"></div>
+
+{% if session.username is not defined %}
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header border-0">
+					<h5 class="modal-title" id="loginModalLabel">
+						<i class="bi bi-box-arrow-in-right me-2"></i>
+						{{ lang.index.login }}
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.index.modal.close }}"></button>
+				</div>
+				<div class="modal-body">
+					<form action="{{ site.sadres }}login" method="post" id="loginForm">
+						<div id="loginStep1" class="login-step">
+							<div class="mb-3">
+								<label for="loginUsername" class="form-label">{{ lang.index.modal.username_label }}</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input type="text" class="form-control" id="loginUsername" name="username" required autocomplete="username">
+								</div>
+							</div>
+							<button type="button" class="btn btn-primary w-100" id="btnNextStep">
+								{{ lang.index.modal.next }}
+								<i class="bi bi-arrow-right ms-2"></i>
+							</button>
+						</div>
+
+						<div id="loginStep2" class="login-step d-none">
+							<div class="d-flex align-items-center mb-2">
+								<button type="button" class="btn btn-link p-0 text-decoration-none me-2" id="btnBackToStep1">
+									<i class="bi bi-arrow-left"></i>
+								</button>
+								<span id="displayUsername" class="fw-bold text-primary"></span>
+							</div>
+
+							<div class="mb-3">
+								<label for="loginPassword" class="form-label">{{ lang.index.modal.password_label }}</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-lock"></i></span>
+									<input type="password" class="form-control" id="loginPassword" name="password" required autocomplete="current-password">
+									<button class="btn btn-outline-secondary" type="button" id="togglePassword">
+										<i class="bi bi-eye" id="togglePasswordIcon"></i>
+									</button>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+									<label class="form-check-label" for="rememberMe">{{ lang.index.modal.remember_me }}</label>
+								</div>
+								<a href="{{ site.sadres }}forgot-password" class="text-decoration-none">{{ lang.index.modal.forgot_password }}</a>
+							</div>
+							<button type="submit" class="btn btn-primary w-100" name="login">
+								<i class="bi bi-box-arrow-in-right me-2"></i>
+								{{ lang.index.login }}
+							</button>
+						</div>
+					</form>
+					<div class="text-center mt-3">
+						<span class="text-muted">{{ lang.index.modal.no_account_question }}</span>
+						<a href="{{ site.sadres }}register" class="text-decoration-none">{{ lang.index.modal.register_link_text }}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version|default('1') }}">
+<script src="{{ site.tadres }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1') }}"></script>
+<script>
+	window.loginModalMessages = {
+		signingIn: '{{ lang.index.modal.signing_in }}',
+		loginSuccess: '{{ lang.index.modal.login_success }}',
+		loginFailed: '{{ lang.index.modal.login_failed }}',
+		connectionError: '{{ lang.index.modal.connection_error }}',
+		networkError: '{{ lang.index.modal.network_error }}',
+		timeoutError: '{{ lang.index.modal.timeout_error }}',
+		serverError: '{{ lang.index.modal.server_error }}',
+		pleaseFillAll: '{{ lang.index.modal.please_fill_all }}',
+		redirecting: '{{ lang.index.modal.redirecting }}',
+		alternativeOptions: '{{ lang.index.modal.alternative_options }}',
+		showPassword: '{{ lang.index.modal.show_password }}',
+		hidePassword: '{{ lang.index.modal.hide_password }}',
+		checkUserUrl: '{{ site.sadres }}mod_user/checkUserExistence'
+	};
+</script>
+<script src="{{ site.tadres }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1') }}"></script>

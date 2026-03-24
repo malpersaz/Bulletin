@@ -1,0 +1,33 @@
+CREATE OR REPLACE VIEW contents AS SELECT
+  mod_content.id,
+    mod_content.name,
+    mod_content.created_at,
+    mod_content.status,
+    mod_content.content,
+    mod_content.summary,
+    mod_content.seo,
+    mod_content.title,
+    mod_content.keywords,
+    mod_content.description,
+    mod_content.gallery_id AS gallery_id,
+    mod_content.acl_id AS acl_id,
+    mod_content.deck,
+    mod_content.image,
+    mod_content.hit,
+    mod_content.lang,
+    mod_category.name AS categoryname,
+    mod_category.seo AS category_seo,
+    mod_category.id AS category_id,
+    mod_user.username,
+    mod_user.id AS user_id,
+    mod_user.name AS u_name,
+    mod_user.last_name AS u_last_name,
+    mod_user_group.name AS groupad,
+    ( SELECT count(mod_gallery.id) AS count
+           FROM mod_gallery
+          WHERE mod_content.id = mod_gallery.vid
+          AND mod_gallery.mod_name='mod_content') AS rcount
+   FROM mod_content
+   LEFT JOIN mod_user ON mod_content.user_id = mod_user.id
+   LEFT JOIN mod_user_group ON mod_user.group_id = mod_user_group.group_id
+   LEFT JOIN mod_category ON mod_content.category_id = mod_category.id;

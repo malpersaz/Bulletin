@@ -1,0 +1,18 @@
+{% extends "management/admin-layout.twig" %}
+{% block title %}
+	{{ lang.management.admin_panel }}
+{% endblock %}
+{% block body %}
+    {% if hata %}
+        <div class="empty-state">
+            <div class="empty-icon" style="background:#ffebee; color:#c62828;">
+                <i class="bi bi-exclamation-octagon"></i>
+            </div>
+            <h3>{{ lang.mod_user.hata.32 }}</h3>
+            <p>{{ mesaj }}</p>
+        </div>
+    {% else %}
+        <!-- Normal Index Content (Login or Dashboard redirect usually handled by controller) -->
+        <script>window.location.href = "{{ site.sadres }}mod_user/panel";</script>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,4 @@
+{{ css({"url": "base_static/js/validator/css/validationEngine.jquery.css", "v": 1}) }}
+{% set sitelang = site.lang %}
+{{ js({url: 'base_static/js/validator/js/jquery.validationEngine-' ~ sitelang ~ '.js', v: 1}) }}
+{{ js({"url": "base_static/js/validator/js/jquery.validationEngine.js", "v": 1}) }}

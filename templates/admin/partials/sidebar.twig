@@ -1,0 +1,173 @@
+<!-- NAVIGATION DRAWER (SIDEBAR) -->
+<div class="drawer-scrim" id="drawerScrim" onclick="toggleDrawer()"></div>
+<aside class="nav-drawer" id="navDrawer">
+    <div class="drawer-header">
+        <div class="drawer-title">{{ site.title }}</div>
+        <div class="drawer-subtitle">v4.0.0 (M3)</div>
+    </div>
+    <div class="drawer-content">
+        <!-- Dashboard -->
+        <!-- Site Home (Malper) -->
+        <a href="{{ site.sadres }}" target="_blank" class="nav-item">
+            <i class="bi bi-house-door-fill nav-item-icon"></i>
+            <span class="nav-item-label">{{ lang.management.anasayfa|default('Malper') }}</span>
+        </a>
+
+        <!-- Admin Dashboard -->
+        <a href="{{ site.sadres }}mod_user/panel" class="nav-item {% if mod == 'mod_user' and (act is not defined or act == 'panel') %}active{% endif %}">
+            <i class="bi bi-speedometer2 nav-item-icon"></i>
+            <span class="nav-item-label">{{ lang.management.dashboard|default('Panel') }}</span>
+        </a>
+
+        <div class="nav-divider"></div>
+
+        <!-- 1. Group: Üyelik (Membership) -->
+        {% if session.permissions.mod_user.list is defined %}
+        <div class="nav-group {% if (mod == 'mod_user' and act is defined and act != 'panel') or mod == 'mod_user_group' or mod == 'mod_acl' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' or mod == 'mod_settings' %}expanded{% endif %}">
+            <div class="nav-group-header" onclick="toggleGroup(this)">
+                <i class="bi bi-people-fill nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.uyelik|default('Üyelik Yönetimi') }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </div>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_user.list is defined %}
+                <a href="{{ site.sadres }}mod_user/list" class="nav-item {% if mod == 'mod_user' and act == 'list' %}active{% endif %}">
+                    <i class="bi bi-person nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uyeler }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_user.setting is defined %}
+                <a href="{{ site.sadres }}mod_user/settings" class="nav-item {% if mod == 'mod_user' and act == 'settings' %}active{% endif %}">
+                    <i class="bi bi-gear nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.membership_setting }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_user_group.list is defined %}
+                <a href="{{ site.sadres }}mod_user_group/list" class="nav-item {% if mod == 'mod_user_group' %}active{% endif %}">
+                    <i class="bi bi-people nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uye_gruplari }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_user.acl is defined %}
+                <a href="{{ site.sadres }}mod_user/acl" class="nav-item {% if mod == 'mod_user' and act == 'acl' %}active{% endif %}">
+                    <i class="bi bi-shield-lock nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uye_permissions_yonetimi_acl }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_acl.list is defined %}
+                <a href="{{ site.sadres }}mod_acl/list" class="nav-item {% if mod == 'mod_acl' %}active{% endif %}">
+                    <i class="bi bi-database-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.acl }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_settings.list is defined %}
+                <a href="{{ site.sadres }}mod_settings/list" class="nav-item {% if mod == 'mod_settings' %}active{% endif %}">
+                    <i class="bi bi-globe nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.locale_management }}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 2. Group: Content & Page -->
+        <div class="nav-group {% if mod == 'mod_category' or mod == 'mod_content' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}expanded{% endif %}">
+            <div class="nav-group-header" onclick="toggleGroup(this)">
+                <i class="bi bi-rocket-takeoff-fill nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.content_and_page|default('İçerik ve Sayfa') }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </div>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_category.list is defined %}
+                <a href="{{ site.sadres }}mod_category/list" class="nav-item {% if mod == 'mod_category' %}active{% endif %}">
+                    <i class="bi bi-tags-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.content_categories }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_content.list is defined %}
+                <a href="{{ site.sadres }}mod_content/list" class="nav-item {% if mod == 'mod_content' %}active{% endif %}">
+                    <i class="bi bi-file-text-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.content_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_menu.list is defined %}
+                <a href="{{ site.sadres }}mod_menu/list" class="nav-item {% if mod == 'mod_menu' %}active{% endif %}">
+                    <i class="bi bi-list nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.menu_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_page.list is defined %}
+                <a href="{{ site.sadres }}mod_page/list" class="nav-item {% if mod == 'mod_page' %}active{% endif %}">
+                    <i class="bi bi-file-richtext nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.page_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_document.list is defined %}
+                <a href="{{ site.sadres }}mod_document/list" class="nav-item {% if mod == 'mod_document' %}active{% endif %}">
+                    <i class="bi bi-folder-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.file_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_service_guide.list is defined %}
+                <a href="{{ site.sadres }}mod_service_guide/list" class="nav-item {% if mod == 'mod_service_guide' %}active{% endif %}">
+                    <i class="bi bi-bank nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.service_guide }}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 3. Group: Video & Images -->
+        <div class="nav-group {% if mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' %}expanded{% endif %}">
+            <div class="nav-group-header" onclick="toggleGroup(this)">
+                <i class="bi bi-camera-video-fill nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.video_and_images|default('Video ve Galeri') }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </div>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_video.list is defined %}
+                <a href="{{ site.sadres }}mod_video/list" class="nav-item {% if mod == 'mod_video' %}active{% endif %}">
+                    <i class="bi bi-camera-reels-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.videos }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_video_embed.list is defined %}
+                <a href="{{ site.sadres }}mod_video_embed/list" class="nav-item {% if mod == 'mod_video_embed' %}active{% endif %}">
+                    <i class="bi bi-youtube nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.remote_videos }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_video_embed_category.list is defined %}
+                <a href="{{ site.sadres }}mod_video_embed_category/list" class="nav-item {% if mod == 'mod_video_embed_category' %}active{% endif %}">
+                    <i class="bi bi-collection-play-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uzak_video_kategorisi }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_slider.list is defined %}
+                <a href="{{ site.sadres }}mod_slider/list" class="nav-item {% if mod == 'mod_slider' %}active{% endif %}">
+                    <i class="bi bi-card-image nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.manset_yonetimi }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_headline.list is defined %}
+                <a href="{{ site.sadres }}mod_headline/list" class="nav-item {% if mod == 'mod_headline' %}active{% endif %}">
+                    <i class="bi bi-newspaper nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.full_manset_yonetimi }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_imagecategories.list is defined %}
+                <a href="{{ site.sadres }}mod_imagecategories/list" class="nav-item {% if mod == 'mod_imagecategories' %}active{% endif %}">
+                    <i class="bi bi-images nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.image_gallery }}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 4. Group: Announcements -->
+        <div class="nav-group {% if mod == 'mod_announcements' or mod == 'mod_popup' %}expanded{% endif %}">
+            <div class="nav-group-header" onclick="toggleGroup(this)">
+                <i class="bi bi-megaphone-fill nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.announcement_management|default('Announcement Yönetimi') }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </div>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_announcements.list is defined %}
+                <a href="{{ site.sadres }}mod_announcements/list" class="nav-item {% if mod == 'mod_announcements' %}active{% endif %}">
+                    <i class="bi bi-volume-up-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.announcement_management }}</span>
+                </a>
+                {% endif %}
+                {% if session.permissions.mod_popup.list is defined %}
+                <a href="{{ site.sadres }}mod_popup/list" class="nav-item {% if mod == 'mod_popup' %}active{% endif %}">
+                    <i class="bi bi-layout-wtf nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.popup_announcements }}</span>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="nav-divider"></div>
+        
+    </div>
+</aside>

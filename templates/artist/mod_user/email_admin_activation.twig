@@ -1,0 +1,10 @@
+{% extends "layout.twig" %}
+
+{% block content %}
+{{ ctx_get('name') }}
+{{ ctx_get('last_name') }}
+
+{{ lang.mod_user.admin.aktif.1|format(name, surname) }}
+<br />
+{{ lang.mod_user.admin.aktif.2|format(site.adres) }}
+{% endblock %}

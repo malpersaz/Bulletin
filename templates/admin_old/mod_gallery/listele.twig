@@ -1,0 +1,357 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+	<style>
+		ul.pictures {
+			margin: 0 auto;
+			width: 500px;
+			position: relative;
+		}
+
+		ul.pictures li {
+			background-color: #F9F9F9;
+			border: 1px solid #EEEEEE;
+			list-style: none;
+			margin: 6px;
+			padding: 6px 9px;
+			position: relative;
+			cursor: n-resize;
+
+			text-shadow: 1px 1px 0 white;
+			-moz-border-radius: 6px;
+			-webkit-border-radius: 6px;
+			border-radius: 6px;
+		}
+
+		ul.pictures li:hover {
+			border-color: #9be0f9; /* CSS3 glow effect: */
+			-moz-box-shadow: 0 0 5px #A6E5FD;
+			-webkit-box-shadow: 0 0 5px #A6E5FD;
+			box-shadow: 0 0 5px #A6E5FD;
+		}
+
+		ul.pictures li img {
+			max-width: 100px;
+			max-height: 100px;
+		}
+
+		.image .text {
+			color: #777777;
+			font-size: 1.4em;
+		}
+
+		/* The edit and delete buttons */
+		.image .actions {
+			position: absolute;
+			right: 7px;
+			top: 6px;
+		}
+
+		.image .actions a {
+			display: block;
+			width: 16px;
+			height: 16px;
+			overflow: hidden;
+			float: left;
+			text-indent: -9999px;
+			margin: 3px;
+		}
+
+		.image .actions a.edit,
+		.image .actions a.delete,
+		.image .actions a.tamboy {
+			background: none;
+			text-indent: 0;
+			text-align: center;
+			font-size: 14px;
+		}
+
+		.image input {
+			border: 1px solid #CCCCCC;
+			color: #666666;
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 0.725em;
+			padding: 3px 4px;
+			width: 300px;
+			background-color: #ffffd3;
+		}
+
+		.editresim {
+			display: inline;
+			font-size: 0.6em;
+			padding-left: 9px;
+		}
+
+		.editresim a {
+			font-weight: bold;
+		}
+
+		a.discardChanges {
+			color: #C00 !important;
+		}
+
+		a.saveChanges {
+			color: #4DB209 !important;
+		}
+
+		.ui-button,
+		.ui-dialog-titlebar {
+			font-size: 0.72em !important;
+		}
+
+		#dialog-confirm {
+			display: none;
+			font-size: 0.9em;
+			padding: 1em 1em 0;
+		}
+
+		a.green-button,
+		a.green-button:visited {
+			color: black;
+			display: block;
+			font-size: 10px;
+			font-weight: bold;
+			height: 15px;
+			padding: 6px 5px 4px;
+			text-align: center;
+			width: 60px;
+			text-shadow: 1px 1px 1px #DDDDDD;
+			background: url('data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAEYAAAAyCAMAAADWQ11hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAArJQTFRFst9Crts9sd1AmNAJm9MOr9w+mdEKsd5BntYRmtIMrdo7ndUQn9cTteFFrdk6lM0ErNk5qtg4l88HoNgVteFGo9oYs+BEotkWlc4Gqdc2qdY1k8wDpNsZtuJHtuNIk8sCqdU1pNwapdwbt+NJkssBqNU0l9MBqdsppt0cuORJqNFDsfMHptA9uNdsruoUregXyNyVrOUZreYZqdwqutdwz9+n5efgwNqArOUa4ubYru4QtdZkvtl8sfUEqdwpqt4m0N+pzN6fqNcwq+IfsPEJsPQDqNosxduNvtl6vNh2sdRasPMHu9hyrNJLqdwoq9JJsPIHqdsru9h0q+Eir9RVtNViruwRqtJHttZmyt2bsvMKq+Igx9yTvdh4sPQFsfQEqNku2OK9resTrekVp9UzstVcptQ0rNNN0eCrp9Yy0eCt4+bcqdFF5ufir9NTrtNSr + 8Nqt8lr/AMwdqDsPMFru0Qw9uIwtqGrusSqNcxs9VfxtyQqNksuddut9dq1+K8qt4ltOcyntcPs+I/m9YCsfQFs/AYr907mtcBm9QLpuEQrOIgmtYBmtMHteY5nNUNnNYGmtMJodoUrfADn9wFrdk5oNkSreQirOIht+g6n90CsPIGmtMKs/AXsPMDrOIltesrsd89rd4vru4LsuA+ntwCsvAVq+wDtOgurO8Dru4KrO4DqOIWndoDsd48pd4Ypt8XteU/rdw4qOITrdwzuORHp+MPn9gQsvMLsPAMuORIoeACp+EUrOYasfQJsPAKq90oqOIXrOMfqOIVs+M6tec1su4Zrt06rds2od4Ftuc4q+cSr+4OsPIFsfMFo9wSrOUbouACrOAltessqNUzq9wqq+cRpt4bmdQCqdc1p+EWtuc7re4Jn9wDtug5tuVCrOwKs9Vdr+4PpdA7sfUD6OjoB5VAKwAAAOZ0Uk5T/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////wBcbqUSAAAB50lEQVR42mJ4CgLZDuZVOo9JBjqhxRlmYAMYQER5urGhle0TkkFcqUVgvjvUGMvawkeLTx/UIB1cX3NtVZifiRnYGBPn2beUyAaHS4J9QMaU2Z9dr0gB2FBiXP2UwdLfao8MRWBzRV4ug4HdA1EKwR03RwZdvS5xCsE2fU+G8IBJwhSC80UhDI+f8FAKpmlrAY3hoBRsBxvDTSloAhvDQinoBxvDSSnoBBvDRimYAzRGx5aZUjDRO4fB16VXiEIwocCLIUh/igSF4KShOYNjwnJ+CsHqSgeGp6nJa6UpAneNrIHlTWTNvBvyFIAWVydTUOkXa++6VIVsMMvVzgZSpHs4Ga3c3aNGBui4ONki0wZWM5hapzgnPSID6EWnRWTBK5inT+tj6h6SAXQNEp8i6qnBVt21XZ65S5NksPXegrlI1d2O28pkg1NRsOou6r4cBWDjPmh11ydLETgKqe6OiVAIloGru0ZeCsEKcHXXLEYhOAKu7hgoBUvARTo7pWAh2BgmSsE6sDGslIJ2sDGMlILjYGO4KAWbwNXdVD4KwQlwdbdFgEKwCFzdzRekEEwHV3dnJCkDN3dCqrtLUhSBGdDq7txVBQrAgXhYddfarUouuHIoHqm623+hQZ0M0LDXZTBWdwABBgBizkL9lyHGnwAAAABJRU5ErkJggg%3D%3D') no-repeat left top;
+		}
+
+		a.green-button:hover {
+			text-decoration: none;
+			background-position: left bottom;
+		}
+
+		a,
+		a:visited {
+			color: #0196e3;
+			text-decoration: none;
+			outline: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+
+		a img {
+			border: none;
+		}
+
+		#pagination-flickr li {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			font-size: 11px;
+			list-style: none;
+		}
+
+		#pagination-flickr a {
+			border: solid 1px #DDDDDD;
+			margin-right: 2px;
+		}
+
+		#pagination-flickr .previous-off,
+		#pagination-flickr .next-off {
+			color: #666666;
+			display: block;
+			float: left;
+			font-weight: bold;
+			padding: 3px 4px;
+		}
+
+		#pagination-flickr .next a,
+		#pagination-flickr .previous a {
+			font-weight: bold;
+			border: solid 1px #FFFFFF;
+		}
+
+		#pagination-flickr .active {
+			color: #ff0084;
+			font-weight: bold;
+			display: block;
+			float: left;
+			padding: 4px 6px;
+		}
+
+		#pagination-flickr a:link,
+		#pagination-flickr a:visited {
+			color: #0063e3;
+			display: block;
+			float: left;
+			padding: 3px 6px;
+			text-decoration: none;
+		}
+
+		#pagination-flickr a:hover {
+			border: solid 1px #666666;
+		}
+	</style>
+	<script type="text/javascript">
+		$(document).ready(function () { // Facebox
+$('a[rel*=facebox]').colorbox();
+
+var currentresim;
+
+// Resim Silici
+function sil() {
+$.prompt('{{ lang.mod_gallery.admin.18 }}<br />      {{ lang.mod_gallery.admin.17 }}', {
+buttons: [
+{
+title: '{{ lang.mod_gallery.admin.19 }}',
+value: true
+}, {
+title: '{{ lang.mod_gallery.admin.20 }}',
+value: false
+}
+],
+submit: function (v, m, f) {
+if (v === true) {
+
+$.post("mod_gallery/delete", {
+"id": currentresim.data('id'),
+"vid": "{{ vid }}",
+"mod_name": "{{ mod_name }}"
+}, function (data) {
+if (data == 'Oke') {
+
+currentresim.fadeOut('slow');
+
+$.achtung({className: 'achtungSuccess', message: '{{ lang.mod_gallery.admin.36 }}', timeout: 5});
+
+} else {
+$.achtung({className: 'achtungFail', message: data, timeout: 5});
+}
+})
+}
+}
+});
+}
+
+$('.image').live('dblclick', function () {
+$(this).find('a.edit').click();
+});
+$('.image a').live('click', function (e) {
+
+currentresim = $(this).closest('.image');
+currentresim.data('id', currentresim.attr('id').replace('image-', ''));
+
+e.preventDefault();
+});
+
+$('.image a.delete').live('click', function () {
+return sil();
+});
+
+$('.image a.edit').live('click', function () {
+
+var container = currentresim.find('.text');
+
+if (! currentresim.data('origText')) {
+currentresim.data('origText', container.text());
+} else {
+return false;
+}
+
+$('<input type="text">').val(container.text()).appendTo(container.empty());
+
+container.append('<div class="editresim">' + '<a class="saveChanges" href="#">      {{ lang.mod_gallery.admin.21 }}</a> | <a class="discardChanges" href="#">      {{ lang.mod_gallery.admin.20 }}</a>' + '</div>');
+
+});
+
+$('.image a.discardChanges').live('click', function () {
+currentresim.find('.text').text(currentresim.data('origText')).end().removeData('origText');
+});
+
+$('.image a.saveChanges').live('click', function () {
+var text = currentresim.find("input[type=text]").val();
+// var orjinal = currentresim.find('.text').text().val();
+
+$.post("mod_gallery/addegis", {
+'id': currentresim.data('id'),
+'name': text,
+"vid": "{{ vid }}",
+"mod_name": "{{ mod_name }}"
+}, function (data) {
+if (data == 'Oke') {
+currentresim.removeData('origText').find(".text").text(text);
+
+$.achtung({className: 'achtungSuccess', message: '{{ lang.mod_gallery.admin.39 }}', timeout: 5});
+
+} else {
+$.achtung({className: 'achtungFail', message: data, timeout: 5});
+
+currentresim.find('.text').text(currentresim.data('origText')).end().removeData('origText');
+}
+});
+
+});
+});
+	</script>
+{% endblock %}
+{% block title %}
+	{{ lang.mod_gallery.admin.37|format(d[value]) |e }}
+{% endblock %}
+{% block body %}
+	<div class="portlet box green">
+		<div class="portlet-title">
+			<div class="caption">
+				<a href="{{ site.sadres }}{{ mod_name }}/list" class="btn red">
+					<i class="fa fa-backward"></i>
+					{{ lang.mod_gallery.admin.12 }}</a>
+			</div>
+		</div>
+		<div
+			class="portlet-body">
+			<!-- Eğer Seçili Kategoride Hiç Resim Yoksa -->
+			<form method="POST" action="{{ site.sadres }}mod_gallery/yukle" id="add" class="form-horizontal">
+				<div
+					class="form-body">
+					<!--[if !IE]>Ekle Buton<![endif]-->
+					<p>
+						<button class="btn green" name="add" value="ekle">
+							<span>{{ lang.mod_gallery.admin.38 }}</span>
+						</button>
+					</p>
+					<input type="hidden" name="vid" value="{{ d[key] }}">
+					<input type="hidden" name="name" value="{{ d[value] }}">
+					<input type="hidden" name="mod_name" value="{{ mod_name }}">
+				</form>
+				<!-- Eğer Seçili Kategoride Hiç Resim Yoksa -->
+				{% if pictures is defined %}
+					<div class="alert alert-info">
+						<strong>{{ lang.mod_gallery.help }}</strong>
+						{{ lang.mod_gallery.admin.24 }}
+					</div>
+					<ul class="pictures">
+						{% for picture in pictures %}
+							<li id="image-{{ picture.id }}" class="image">
+								<div>
+									<img src="{{ site.adres }}static/mod_gallery/{{ mod_name }}/thumb/{{ picture.url }}">
+									<p>
+										<div class="text">{{ picture.name }}</div>
+									</p>
+								</div>
+								<div class="actions">
+									<a href="#" class="edit" title="{{ lang.mod_gallery.admin.30 }}">
+										<i class="bi bi-pencil"></i>
+									</a>
+									<a href="#" class="delete" title="{{ lang.mod_gallery.admin.31 }}">
+										<i class="bi bi-trash"></i>
+									</a>
+									<a class="tamboy" href="{{ site.adres }}static/mod_gallery/{{ mod_name }}/original/{{ picture.url }}" rel="facebox" title="{{ picture.name }}">
+										<i class="bi bi-arrows-fullscreen"></i>
+									</a>
+								</div>
+							</li>
+						{% endfor %}
+					</ul>
+				{% else %}
+					<div class="alert alert-danger">
+						<strong>{{ lang.mod_gallery.warning }}</strong>
+						{{ lang.mod_gallery.admin.27 }}
+					</div>
+				{% endif %}
+			</div>
+		</div>
+	{% endblock %}

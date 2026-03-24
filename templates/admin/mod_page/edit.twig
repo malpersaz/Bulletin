@@ -1,0 +1,348 @@
+{% set hide_navbar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}
+	{{ lang.mod_page.edit|default('Biguhere') }}
+{% endblock %}
+
+{% block headline %}
+	{{ lang.mod_page.edit|default('Biguhere') }}
+{% endblock %}
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_page.css?v=1">
+{% endblock %}
+
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0) %}
+    {% if select_nested_parent_id_result[parent_id] is defined %}
+        {% for entry in select_nested_parent_id_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            {% if entry.id != self_id %}
+                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+                </option>
+                {% if select_nested_parent_id_result[parent_id_loop] is defined and select_nested_parent_id_result[parent_id_loop] is iterable %}
+                    {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id_loop, selected_id, self_id, level + 1) }}
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro select_nested_category_id_function(select_nested_category_id_result, parent_id, selected_id, level = 0) %}
+    {% if select_nested_category_id_result[parent_id] is defined %}
+        {% for entry in select_nested_category_id_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+                <optgroup label="{{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
+            {% else %}
+                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                    {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+                </option>
+            {% endif %}
+            
+            {% if select_nested_category_id_result[parent_id_loop] is defined and select_nested_category_id_result[parent_id_loop] is iterable %}
+                {{ _self.select_nested_category_id_function(select_nested_category_id_result, parent_id_loop, selected_id, level + 1) }}
+            {% endif %}
+            
+            {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+                </optgroup>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro select_nested_menu_function(select_nested_menu_result, parent_id, selected_id, level = 0) %}
+    {% if select_nested_menu_result[parent_id] is defined %}
+        {% for entry in select_nested_menu_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+            </option>
+            {% if select_nested_menu_result[parent_id_loop] is defined and select_nested_menu_result[parent_id_loop] is iterable %}
+                {{ _self.select_nested_menu_function(select_nested_menu_result, parent_id_loop, selected_id, level + 1) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+	<form id="editForm" method="POST" action="{{ site.sadres }}mod_page/edit/{{ d.id }}" enctype="multipart/form-data">
+		<input type="hidden" name="id" value="{{ d.id }}">
+		<input type="hidden" name="edit" value="{{ lang.mod_page.button.edit }}">
+
+		<div class="edit-container">
+            {% if oke is defined %}
+                <div class="banner-m3 banner-success-soft mb-4">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ mesaj }}</span>
+                </div>
+            {% endif %}
+
+			{# Card 1: Basics #}
+			<div class="edit-card">
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="lang" id="lang" required>
+                            {% for item in lang_lang %}
+                                <option value="{{ item.seo }}" {% if d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                            {% endfor %}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.language }}</label>
+                    </div>
+				</div>
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<input type="text" class="m3-input-lg" name="name" id="name" placeholder=" " autocomplete="off" value="{{ d.name }}" required>
+						<label class="m3-floating-label">{{ lang.mod_page.admin.columns.name }}</label>
+					</div>
+				</div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="parent_id" id="parent_id">
+                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.mod_page.choose_wish }}</option>
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, d.parent_id, d.id) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.parent_id }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="category_id" id="category_id">
+                            <option value="0" {% if d.category_id == 0 %} selected {% endif %}>{{ lang.mod_page.choose_wish }}</option>
+                            {{ _self.select_nested_category_id_function(select_nested_category_id_result, 0, d.category_id) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.category_id }}</label>
+                    </div>
+                </div>
+			</div>
+
+			{# Card 2: Main Content #}
+			<div class="edit-card">
+
+				<div class="form-row">
+					<div class="m3-input-wrapper">
+						<textarea class="m3-input-lg" name="summary" id="summary" rows="3" placeholder=" " maxlength="280" oninput="updateCharCounter(this, 'introCounter', 280)">{{ d.summary|striptags|raw }}</textarea>
+						<label class="m3-floating-label">{{ lang.mod_page.admin.columns.summary }}</label>
+					</div>
+					<div class="char-counter mod-page-counter" id="introCounter">{{ d.summary|length }} / 280</div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.deck }}</label>
+					<input type="hidden" name="deck" value="{{ d.deck|default('n') }}" id="deckHidden">
+					<div class="selection-grid">
+						<div class="selection-card compact {% if d.deck == 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'y')">
+							<div class="selection-label">{{ lang.mod_page.admin.radio.deck_yes }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
+						<div class="selection-card compact {% if d.deck != 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'n')">
+							<div class="selection-label">{{ lang.mod_page.admin.radio.deck_no }}</div>
+							<i class="bi bi-check-circle-fill check-icon"></i>
+						</div>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label mod-page-section-label">{{ lang.mod_page.admin.columns.content }}</label>
+                    <div class="mod-page-content-wrap">
+					    <textarea name="content" id="contentTextarea">{{ d.content|raw }}</textarea>
+                    </div>
+				</div>
+			</div>
+
+			{# Card 3: Media & Settings #}
+			<div class="edit-card">
+
+				<div class="form-row">
+					<label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.image }}</label>
+					<div id="image-container-edit">
+                        <label for="editImgInput" class="image-upload-area interactive">
+                            {% if d.image %}
+                                <img id="editImgPreview" src="{{ site.radres }}mod_page/thumb/{{ d.image }}" class="mod-page-image-preview">
+                                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
+                            {% else %}
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <p>{{ lang.mod_page.button.upload|default(lang.mod_content.wizard.label.upload_text)|default('Wêne Hilbijêre') }}</p>
+                            {% endif %}
+                        </label>
+                        <input type="file" name="image" id="editImgInput" class="mod-page-hidden-input" onchange="previewImage(this)">
+                    </div>
+				</div>
+
+                <div class="form-row">
+                    <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.root }}</label>
+                    <input type="hidden" name="root" value="{{ d.root }}" id="rootHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.root == 'y' %} active {% endif %}" onclick="selectRootStatus(this, 'y')">
+                            <i class="bi bi-house-door mod-page-icon-lg"></i>
+                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_e|default('Erê') }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.root == 'n' %} active {% endif %}" onclick="selectRootStatus(this, 'n')">
+                            <i class="bi bi-file-earmark mod-page-icon-lg"></i>
+                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_h|default('Na') }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="menu" id="menu">
+                            <option value="0" {% if d.menu == 0 %} selected {% endif %}>{{ lang.mod_page.choose_wish }}</option>
+                            {{ _self.select_nested_menu_function(select_nested_menu_result, 0, d.menu) }}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu }}</label>
+                    </div>
+                </div>
+
+
+                <div class="form-row">
+                    <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.gallery_id|raw }}</label>
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="gallery_id" id="gallery_id">
+                            <option value="0" {% if d.gallery_id == 0 %}selected{% endif %}>{{ lang.mod_page.choose_wish }}</option>
+                            {% for item in mod_page_gallery_id %}
+                                <option value="{{ item.id }}" {% if d.gallery_id == item.id %}selected{% endif %}>{{ item.name }}{% if item.lang is defined %} ({{ item.lang|upper }}){% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.file_id|raw }}</label>
+                    <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="file_id" id="file_id">
+                            <option value="0" {% if d.file_id == 0 %}selected{% endif %}>{{ lang.mod_page.choose_wish }}</option>
+                            {% for item in mod_page_file_id %}
+                                <option value="{{ item.id }}" {% if d.file_id == item.id %}selected{% endif %}>{{ item.name }}{% if item.lang is defined %} ({{ item.lang|upper }}){% endif %}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.acl_id|raw }}</label>
+                    <div class="mod-page-acl-row">
+                        <select class="m3-input-lg mod-page-acl-select" name="acl_id" id="acl_id">
+                            <option value="0" {% if d.acl_id == 0 %}selected{% endif %}>-- {{ lang.mod_page.choose_wish }} --</option>
+                            {% for item in mod_acl_acl_id %}
+                                <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <a href="{{ site.sadres }}mod_acl/list" class="mod-page-acl-link small" title="Mîhengên Destûrê (ACL)">
+                            <i class="bi bi-gear mod-page-icon-md"></i>
+                        </a>
+                    </div>
+                </div>
+
+				<div class="advanced-toggle" onclick="toggleAdvanced()">
+					<span>{{ lang.mod_content.button.yenile|default('Têkiliyên Pêşketî') }} ({{ lang.mod_page.seo_meta|default('SEO, Meta') }})</span>
+					<i class="bi bi-chevron-down" id="advancedIcon"></i>
+				</div>
+
+                <div class="advanced-content" id="advancedContent">
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.seo|default('SEO URL') }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="title" id="title" value="{{ d.title }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.title }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="keywords" id="keywords" value="{{ d.keywords }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.keywords }}</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="m3-input-wrapper">
+                            <input type="text" class="m3-input-lg" name="description" id="description" value="{{ d.description }}" placeholder=" ">
+                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.description }}</label>
+                        </div>
+                    </div>
+                </div>
+			</div>
+
+            {# Card 4: Publishing Decision #}
+            <div class="edit-card">
+                <div class="mod-page-publish-label">{{ lang.mod_page.admin.columns.publish_desc }}</div>
+                <input type="hidden" name="status" value="{{ d.status }}" id="publishHidden">
+                
+                <div class="selection-grid">
+                    <div class="selection-card {% if d.status == 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'y')">
+                        <i class="bi bi-cloud-check mod-page-icon-lg"></i>
+                        <div class="selection-label">{{ lang.mod_page.admin.radio.publish_yes }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    <div class="selection-card {% if d.status != 'y' %} active {% endif %}" onclick="selectPublishStatus(this, 'n')">
+                        <i class="bi bi-pencil-square mod-page-icon-lg"></i>
+                        <div class="selection-label">{{ lang.mod_page.admin.radio.publish_no }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<div class="mod-page-final-bar">
+		<button type="button" class="mod-page-final-btn secondary" onclick="window.location.href='{{ site.sadres }}mod_page/list'">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_page.button.vazgec }}
+		</button>
+		<button type="button" class="mod-page-final-btn primary" onclick="submitEditForm('editForm')">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_page.button.edit }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.MOD_PAGE_FORM = {
+        mode: 'edit',
+        tinyMceSelector: '#contentTextarea',
+        tomSelectIds: ['parent_id', 'category_id', 'menu', 'acl_id', 'gallery_id', 'file_id'],
+        resetSelectIds: ['parent_id', 'category_id', 'menu', 'gallery_id', 'file_id'],
+        alerts: {
+            errorMessage: {{ mesaj|default('')|json_encode|raw }},
+            errors: {{ hatalar|default([])|json_encode|raw }},
+            okText: {{ lang.mod_page.button.tamam|default('Tamam')|json_encode|raw }}
+        },
+        removeImage: {
+            pageId: {{ d.id|json_encode|raw }},
+            url: {{ (site.sadres ~ 'mod_page/image_remove_image')|json_encode|raw }},
+            title: {{ lang.mod_page.remove_image|json_encode|raw }},
+            confirmText: {{ lang.mod_page.button.evet|json_encode|raw }},
+            cancelText: {{ lang.mod_page.button.hayir|json_encode|raw }},
+            successTitle: {{ lang.mod_page.oke|json_encode|raw }},
+            successMessage: {{ lang.mod_page.remove_image_oke|json_encode|raw }},
+            errorTitle: {{ lang.mod_page.hata|json_encode|raw }},
+            uploadText: {{ lang.mod_page.button.upload|default(lang.mod_content.wizard.label.upload_text)|default('Wêne Hilbijêre')|json_encode|raw }},
+            inputId: 'editImgInput'
+        },
+        successRedirect: {% if oke is defined %}{
+            url: {{ (site.sadres ~ 'mod_page/list')|json_encode|raw }},
+            delayMs: 2000
+        }{% else %}null{% endif %}
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_page.js?v=2"></script>
+{% endblock %}

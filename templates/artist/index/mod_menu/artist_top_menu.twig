@@ -1,0 +1,246 @@
+{% from "macros/menu.twig" import renderMenu %}
+
+<!-- Artist Top Menu: New Modern Floating Bar -->
+<header class="artist-top-nav-container" id="artistMainHeader">
+    <div class="container">
+        <div class="artist-navbar-floating-bar">
+            
+            <!-- Left: Brand -->
+            <a class="navbar-brand d-flex align-items-center {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}has-image-logo{% endif %}" href="{{ site.sadres }}" title="{{ site.title }}">
+                {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}
+                    <img src="{{ site.radres }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" class="me-2 d-inline-block align-text-top logo-image" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #ffffff;">
+                {% else %}
+                    {% if site.show_logo|default('y') == 'y' %}
+                        <span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">{{ site.title|slice(0, 1) }}</span>
+                    {% endif %}
+                    <span class="brand-text fw-bold">{{ site.title }}</span>
+                {% endif %}
+            </a>
+
+            <!-- Center: Main Navigation -->
+            <nav class="d-none d-lg-block">
+                <ul class="artist-nav-links">
+                    {% if menu is defined and menu is not empty %}
+                        {{ renderMenu(menu, 0, 0) }}
+                    {% endif %}
+                </ul>
+            </nav>
+
+            <!-- Right: Action Center -->
+            <div class="artist-nav-actions">
+                
+                <!-- Search (Desktop) -->
+                <form class="artist-search-bar d-none d-md-flex" method="get" action="{{ site.sadres }}index/search/">
+                    <i class="bi bi-search artist-search-icon"></i>
+                    <input type="search" name="kelime" class="artist-search-input" placeholder="{{ lang.index.search.search }}..." autocomplete="off">
+                </form>
+
+                <!-- Language Selector -->
+                <div class="dropdown">
+                    <button class="btn btn-link link-light p-0 text-decoration-none small opacity-75" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="badge rounded-pill bg-secondary px-2 py-1">{{ site.lang|upper }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end artist-glass-dropdown">
+                        <li><h6 class="dropdown-header">{{ lang.index.language }}</h6></li>
+                        {% if site.available_languages is defined %}
+                            {% for l in site.available_languages %}
+                                <li><a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.adres }}{{ l.code }}">{{ l.name }} {% if site.lang == l.code %}<i class="bi bi-check2 float-end"></i>{% endif %}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button class="btn btn-link text-muted p-0 border-0 bg-transparent" id="artistDarkModeToggle" type="button" title="{{ lang.index.dark_mode }}">
+                    <i class="bi bi-moon-stars fs-5"></i>
+                </button>
+
+                <!-- User Profile / Auth -->
+                {% if session.username is defined %}
+                    <div class="dropdown">
+                        <a href="javascript:void(0);" class="artist-profile-box dropdown-toggle no-caret" data-bs-toggle="dropdown">
+                            {% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
+                                <img src="{{ site.adres }}static/mod_user/{{ session.image }}" alt="{{ session.username }}" class="artist-avatar" style="object-fit: cover;">
+                            {% else %}
+                                <div class="artist-avatar d-inline-flex align-items-center justify-content-center bg-primary text-white fw-bold" style="font-size: 14px;">
+                                    {{ session.full_name|default(session.username)|slice(0, 1)|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="d-none d-sm-inline small ms-1">{{ session.full_name|default(session.username) }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end artist-glass-dropdown">
+                            <li><a class="dropdown-item" href="{{ site.sadres }}mod_user/panel/{{ session.sid }}"><i class="bi bi-person-circle me-2"></i> {{ lang.index.my_account }}</a></li>
+                            <li><a class="dropdown-item" href="{{ site.sadres }}mod_user_pm/inbox"><i class="bi bi-envelope me-2"></i> {{ lang.index.messages }}{% if session.okunmamis is defined and session.okunmamis > 0 %} <span class="badge bg-danger">{{ session.okunmamis }}</span>{% endif %}</a></li>
+                            <li><a class="dropdown-item" href="{{ site.sadres }}mod_content/add"><i class="bi bi-plus-circle me-2"></i> {{ lang.index.add_content }}</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{{ site.sadres }}logout"><i class="bi bi-box-arrow-right me-2"></i> {{ lang.index.logout }}</a></li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="auth-buttons small d-flex gap-2">
+                        <button class="btn btn-outline-primary btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            {{ lang.index.login }}
+                        </button>
+                    </div>
+                {% endif %}
+
+                <!-- Mobile Toggler -->
+                <button class="artist-mobile-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#artistMobileMenu">
+                    <i class="bi bi-list"></i>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu Collapse (Minimalist) -->
+    <div class="collapse d-lg-none" id="artistMobileMenu">
+        <div class="container mt-2">
+            <div class="bg-glass rounded-4 p-3 shadow-lg" style="background: var(--artist-glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--artist-glass-border);">
+                <ul class="nav flex-column gap-2">
+                    {% if menu is defined and menu is not empty %}
+                        {{ renderMenu(menu, 0, 0) }}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Login Modal -->
+{% if session.username is not defined %}
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content artist-glass-dropdown overflow-hidden border-0">
+				<div class="modal-header border-0">
+					<h5 class="modal-title" id="loginModalLabel">
+						<i class="bi bi-box-arrow-in-right me-2"></i>
+						{{ lang.index.login }}
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.index.modal.close }}"></button>
+				</div>
+				<div class="modal-body p-4">
+					<form action="{{ site.sadres }}login" method="post" id="loginForm">
+						<div id="loginStep1" class="login-step">
+							<div class="mb-4">
+								<label for="loginUsername" class="form-label text-muted small fw-bold">{{ lang.index.modal.username_label|upper }}</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input type="text" class="form-control px-3" id="loginUsername" name="username" required autocomplete="username">
+								</div>
+							</div>
+							<button type="button" class="btn btn-primary w-100" id="btnNextStep">
+								{{ lang.index.modal.next }}
+								<i class="bi bi-arrow-right ms-2"></i>
+							</button>
+						</div>
+
+						<div id="loginStep2" class="login-step d-none">
+							<div class="d-flex align-items-center mb-3">
+								<button type="button" class="btn btn-link p-0 text-decoration-none me-2" id="btnBackToStep1">
+									<i class="bi bi-arrow-left"></i>
+								</button>
+								<span id="displayUsername" class="fw-bold text-primary"></span>
+							</div>
+
+							<div class="mb-4">
+								<label for="loginPassword" class="form-label text-muted small fw-bold">{{ lang.index.modal.password_label|upper }}</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-lock"></i></span>
+									<input type="password" class="form-control px-3" id="loginPassword" name="password" required autocomplete="current-password">
+									<button class="btn btn-outline-secondary" type="button" id="togglePassword">
+										<i class="bi bi-eye" id="togglePasswordIcon"></i>
+									</button>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center mb-4">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+									<label class="form-check-label text-muted small" for="rememberMe">{{ lang.index.modal.remember_me }}</label>
+								</div>
+								<a href="{{ site.sadres }}forgot-password" class="text-decoration-none text-muted small">{{ lang.index.modal.forgot_password }}</a>
+							</div>
+							<button type="submit" class="btn btn-primary w-100" name="login">
+								<i class="bi bi-box-arrow-in-right me-2"></i>
+								{{ lang.index.login }}
+							</button>
+						</div>
+					</form>
+					<div class="text-center mt-4">
+						<span class="text-muted small">{{ lang.index.modal.no_account_question }}</span>
+						<a href="{{ site.sadres }}register" class="text-decoration-none small fw-bold ms-1">{{ lang.index.modal.register_link_text }}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+
+<!-- Login Modal CSS -->
+<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version|default('1') }}">
+
+<!-- New Top Menu CSS -->
+<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/artist-top-menu.css?v={{ "now"|date("U") }}">
+
+<!-- Scripts -->
+<script src="{{ site.tadres }}{{ site.app_template }}/static/js/login-modal.js?v=4"></script>
+<script>
+	window.loginModalMessages = {
+        signingIn: '{{ lang.index.modal.signing_in }}',
+        loginSuccess: '{{ lang.index.modal.login_success }}',
+        loginFailed: '{{ lang.index.modal.login_failed }}',
+        connectionError: '{{ lang.index.modal.connection_error }}',
+        networkError: '{{ lang.index.modal.network_error }}',
+        timeoutError: '{{ lang.index.modal.timeout_error }}',
+        serverError: '{{ lang.index.modal.server_error }}',
+        pleaseFillAll: '{{ lang.index.modal.please_fill_all }}',
+        redirecting: '{{ lang.index.modal.redirecting }}',
+        alternativeOptions: '{{ lang.index.modal.alternative_options }}'
+    };
+document.addEventListener('DOMContentLoaded', function() {
+    const header = document.getElementById('artistMainHeader');
+    const darkModeBtn = document.getElementById('artistDarkModeToggle');
+    const html = document.documentElement;
+
+    // Scroll Effect
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    // Dark Mode Sync with persistence
+    function updateIcon() {
+        const icon = darkModeBtn.querySelector('i');
+        const isDark = html.getAttribute('data-bs-theme') === 'dark';
+        if (isDark) {
+            icon.classList.replace('bi-moon-stars', 'bi-sun');
+        } else {
+            icon.classList.replace('bi-sun', 'bi-moon-stars');
+        }
+    }
+
+    if (darkModeBtn) {
+        darkModeBtn.addEventListener('click', function() {
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // Apply to UI
+            html.setAttribute('data-bs-theme', newTheme);
+            
+            // Persist to localStorage
+            localStorage.setItem('theme', newTheme);
+            
+            // Persist to Cookie (for framework sync and server-side)
+            const expires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toUTCString();
+            document.cookie = `color_mode=${newTheme}; expires=${expires}; path=/`;
+            
+
+        });
+        updateIcon();
+    }
+
+});
+</script>

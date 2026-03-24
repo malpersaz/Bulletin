@@ -1,0 +1,433 @@
+{% set hide_fab = true %}
+{% set hide_search = true %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_video_embed.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_video_embed.edit }}{% endblock %}
+
+{% macro select_nested_category_id_function(parent_id, level, d) %}
+    {% for entry in attribute(select_nested_category_id_result, parent_id) %}
+        {% set parent_id = entry.id %}
+        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+            <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
+        {% else %}
+            <option value="{{ entry.id }}" {% if d is defined and d.category_id is defined and d.category_id == entry.id %} selected {% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+            </option>
+        {% endif %}
+        {% if attribute(select_nested_category_id_result, parent_id) is not empty and attribute(select_nested_category_id_result, parent_id) is iterable %}
+            {{ _self.select_nested_category_id_function(parent_id, level + 1, d) }}
+        {% endif %}
+        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+            </optgroup>
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+<div class="form-container">
+    {% if error is defined %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'warning',
+                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            });
+        </script>
+    {% endif %}
+    {% if oke is defined %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({
+                    icon: 'success',
+                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
+                    confirmButtonText: '{{ lang.mod_video_embed.list }}',
+                    confirmButtonColor: '#2e7d32'
+                }).then(function(result) {
+                    window.location.href = '{{ site.sadres }}mod_video_embed/list';
+                });
+            });
+        </script>
+    {% endif %}
+    {% if hatalar is defined %}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                let errorHtml = '<div style="text-align: left;">';
+                {% for hata in hatalar %}
+                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                {% endfor %}
+                errorHtml += '</div>';
+                Swal.fire({
+                    icon: 'warning',
+                    html: errorHtml,
+                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            });
+        </script>
+    {% endif %}
+
+    <form method="POST" action="" id="videoEditForm" enctype="multipart/form-data">
+
+        {# Card 1: Embed Code + Preview #}
+        <div class="m3-card">
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.embed }}</label>
+                <textarea name="embed" id="embedInput" rows="3" class="form-input" style="resize:vertical; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13px;">{{ d.embed|default('') }}</textarea>
+            </div>
+            <div id="embedPreview" class="embed-preview {% if d.embed is defined and d.embed != '' %}has-content{% endif %}">
+                {% if d.embed is defined and d.embed != '' %}
+                    {{ d.embed|raw }}
+                {% else %}
+                    <div class="embed-placeholder">
+                        <i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i>
+                        <span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Card 2: Agahiyên Bingehîn #}
+        <div class="m3-card">
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
+                <input type="text" name="name" id="nameInput" value="{{ d.name|default('') }}" class="form-input" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.original }}</label>
+                <input type="text" name="original" value="{{ d.original|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.original }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.sure }}</label>
+                <input type="text" name="sure" value="{{ d.duration|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.sure }}" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.tarih }}</label>
+                <input type="datetime-local" name="created_at" id="tarihInput" value="{{ d.created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
+            </div>
+        </div>
+
+        {# Card 3: Mîheng #}
+        <div class="m3-card">
+            <div class="form-group" style="display:flex; gap: 16px;">
+                <div style="flex: 1;">
+                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.language }}</label>
+                    <div class="select-wrapper">
+                        <select name="lang" id="langSelect" class="form-select" required>
+                            {% for item in lang_lang %}
+                                <option value="{{ item.seo }}" {% if d.lang is defined and d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div style="flex: 1;">
+                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.status }}</label>
+                    <div class="select-wrapper">
+                        <select name="status" class="form-select">
+                            <option value="y" {% if d.status is defined and d.status == 'y' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_yes }}</option>
+                            <option value="n" {% if d.status is defined and d.status == 'n' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_no }}</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
+                <div class="select-wrapper">
+                    <select name="category_id" id="categorySelect" class="form-select">
+                        <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
+                        {{ _self.select_nested_category_id_function(0, 0, d|default({})) }}
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="select-wrapper" style="flex: 1;">
+                        <select name="acl_id" id="aclSelect" class="form-select">
+                            <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
+                            {% for item in mod_acl_acl_id %}
+                                <option value="{{ item.id }}" {% if d is defined and d.acl_id is defined and d.acl_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <a href="{{ site.sadres }}mod_acl/list" class="acl-settings-btn" title="ACL">
+                        <i class="bi bi-gear" style="font-size: 20px;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {# Card 4: Naverok + Wêne #}
+        <div class="m3-card">
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.content }}</label>
+                <textarea name="content" id="videoContent" rows="5" class="form-input" style="min-height: 120px;">{{ d.content|default('')|raw }}</textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.image }}</label>
+                <label class="image-upload-area" id="imageUploadArea" onclick="handleImageUpdate()">
+                    {% if d is defined and d.image is defined and d.image != '' %}
+                        <img id="editImgPreview" src="{{ site.radres }}mod_video_embed/thumb/{{ d.image }}" class="current-image">
+                        <button type="button" class="remove-img-btn" onclick="event.preventDefault(); event.stopPropagation(); removeExistingImage('{{ d.id }}')"><i class="bi bi-trash"></i></button>
+                    {% else %}
+                        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+                    {% endif %}
+                </label>
+                <input type="file" name="image" id="resimInput" accept="image/*" style="display: none;" onchange="previewEditImage(this)">
+            </div>
+        </div>
+
+        {# Card 5: SEO #}
+        <div class="m3-card">
+            <div class="card-title">
+                <i class="bi bi-search"></i> {{ lang.mod_video_embed.seo_title }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
+                <input type="text" name="title" id="titleInput" value="{{ d.title|default('') }}" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
+                <input type="text" name="keywords" id="keywordsInput" value="{{ d.keywords|default('') }}" class="form-input" required>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.aciklama }}</label>
+                <input type="text" name="description" id="aciklamaInput" value="{{ d.description|default('') }}" class="form-input" required>
+            </div>
+        </div>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item active" onclick="window.location.href='{{ site.sadres }}mod_video_embed/list'">
+            <i class="bi bi-x-lg"></i>
+            <span>{{ lang.mod_video_embed.button.cancel }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="document.getElementById('videoEditForm').submit()">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <button class="toolbar-item active" onclick="document.getElementById('videoEditForm').submit()">
+            <i class="bi bi-floppy-fill"></i>
+            <span>{{ lang.mod_video_embed.button.save }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const STORAGE_KEY = 'videoEmbedEditForm_{{ d.id|default(0) }}';
+    const form = document.getElementById('videoEditForm');
+
+    // -- localStorage: Daneyên formê tomar bike --
+    function saveFormData() {
+        if (!form) return;
+        const data = {};
+        const fields = form.querySelectorAll('input[name], select[name], textarea[name]');
+        fields.forEach(function(el) {
+            if (el.type === 'file' || el.type === 'hidden') return;
+            data[el.name] = el.value;
+        });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    // -- localStorage: Daneyên parastî bar bike --
+    function restoreFormData() {
+        if (!form) return;
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        try {
+            const data = JSON.parse(saved);
+            Object.keys(data).forEach(function(name) {
+                const el = form.querySelector('[name="' + name + '"]');
+                if (!el || el.type === 'file' || el.type === 'hidden') return;
+                el.value = data[name];
+            });
+            updateEmbedPreview();
+        } catch(e) {}
+    }
+
+    // -- localStorage: Piştî şandina serketî paqij bike --
+    {% if oke is defined %}
+        localStorage.removeItem(STORAGE_KEY);
+    {% endif %}
+
+    {% if oke is not defined %}
+        restoreFormData();
+    {% endif %}
+
+    // Her guheztinê de tomar bike
+    if (form) {
+        form.addEventListener('input', saveFormData);
+        form.addEventListener('change', saveFormData);
+    }
+
+    // -- Embed Preview --
+    const embedInput = document.getElementById('embedInput');
+    const embedPreview = document.getElementById('embedPreview');
+
+    function updateEmbedPreview() {
+        if (!embedInput || !embedPreview) return;
+        if (embedInput.value.trim()) {
+            embedPreview.innerHTML = embedInput.value;
+            embedPreview.classList.add('has-content');
+        } else {
+            embedPreview.innerHTML = '<div class="embed-placeholder"><i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i><span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span></div>';
+            embedPreview.classList.remove('has-content');
+        }
+    }
+
+    if (embedInput) {
+        embedInput.addEventListener('input', function() {
+            updateEmbedPreview();
+        });
+    }
+
+    // -- Name -> SEO alanlarini otomatik doldur --
+    const nameInput = document.getElementById('nameInput');
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            const val = this.value;
+            const titleInput = document.getElementById('titleInput');
+            const keywordsInput = document.getElementById('keywordsInput');
+            const aciklamaInput = document.getElementById('aciklamaInput');
+
+            if (titleInput && (!titleInput.value || titleInput.dataset.autofilled !== 'false')) {
+                titleInput.value = (typeof temizle === 'function') ? temizle(val) : val;
+                titleInput.dataset.autofilled = 'true';
+            }
+            if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.autofilled !== 'false')) {
+                keywordsInput.value = (typeof makeKeywordsValue === 'function') ? makeKeywordsValue(val) : val.toLowerCase().replace(/\s+/g, ',');
+                keywordsInput.dataset.autofilled = 'true';
+            }
+            if (aciklamaInput && (!aciklamaInput.value || aciklamaInput.dataset.autofilled !== 'false')) {
+                aciklamaInput.value = (typeof temizle === 'function') ? temizle(val) : val;
+                aciklamaInput.dataset.autofilled = 'true';
+            }
+            saveFormData();
+        });
+    }
+
+    // Manual edit trackers for SEO fields
+    ['titleInput', 'keywordsInput', 'aciklamaInput'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', () => {
+                el.dataset.autofilled = 'false';
+                saveFormData();
+            });
+        }
+    });
+
+    // -- Hidden submit button --
+    if (form) {
+        const hiddenBtn = document.createElement('input');
+        hiddenBtn.type = 'hidden';
+        hiddenBtn.name = 'edit';
+        hiddenBtn.value = '{{ lang.mod_video_embed.button.edit }}';
+        form.appendChild(hiddenBtn);
+    }
+});
+</script>
+
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_video_embed.css">
+<script>
+// Image Preview and Remove Functions
+async function handleImageUpdate() {
+    const hasImage = {% if d is defined and d.image is defined and d.image != '' %}true{% else %}false{% endif %};
+    const resimInput = document.getElementById('resimInput');
+
+    if (hasImage) {
+        const result = await Swal.fire({
+            title: '{{ lang.mod_video_embed.information }}',
+            text: '{{ lang.mod_video_embed.image_update_confirm }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ba1a1a',
+            cancelButtonColor: '#6e7881',
+            confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
+            cancelButtonText: '{{ lang.mod_video_embed.button.cancel }}'
+        });
+
+        if (result.isConfirmed) {
+            resimInput.click();
+        }
+    } else {
+        resimInput.click();
+    }
+}
+
+function previewEditImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const area = document.getElementById('imageUploadArea');
+            area.innerHTML = `
+                <img id="editImgPreview" src="${e.target.result}" class="current-image">
+                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); clearSelectedImage()"><i class="bi bi-x-lg"></i></button>
+            `;
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function clearSelectedImage() {
+    const input = document.getElementById('resimInput');
+    input.value = '';
+    const area = document.getElementById('imageUploadArea');
+    area.innerHTML = `
+        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+    `;
+}
+
+function removeExistingImage(id) {
+    Swal.fire({
+        title: '{{ lang.mod_video_embed.remove_image }}',
+        text: '{{ lang.mod_video_embed.context_menu.delete_confirm }}',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ba1a1a',
+        cancelButtonColor: '#6e7881',
+        confirmButtonText: '{{ lang.mod_video_embed.button.evet }}',
+        cancelButtonText: '{{ lang.mod_video_embed.button.hayir }}'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new URLSearchParams();
+            formData.append('id', id);
+
+            fetch('{{ site.sadres }}mod_video_embed/image_remove_image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            })
+            .then(r => r.text())
+            .then(data => {
+                if (data.trim() === 'Oke') {
+                    Swal.fire('{{ lang.mod_video_embed.oke }}', '{{ lang.mod_video_embed.remove_image_oke }}', 'success');
+                    clearSelectedImage();
+                } else {
+                    Swal.fire('{{ lang.mod_video_embed.hata }}', data, 'error');
+                }
+            });
+        }
+    });
+}
+</script>
+{% endblock %}

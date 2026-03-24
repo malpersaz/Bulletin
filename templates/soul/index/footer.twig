@@ -1,0 +1,59 @@
+<footer class="soul-site-footer mt-auto">
+    <div class="container soul-footer-frame">
+        <div class="soul-footer-meta dropdown">
+            <button class="soul-copyright-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Copyright" aria-label="Copyright">
+                <i class="bi bi-c-circle"></i>
+            </button>
+            <ul class="dropdown-menu soul-dropdown-menu soul-footer-dropdown p-3">
+                <li>
+                    <span class="dropdown-item-text text-wrap">
+                        &copy; {{ site.established_year }} - {{ "now"|date("Y") }} <strong>{{ site.owner_name|default(site.title) }}</strong>. {{ lang.index.copyright }}
+                    </span>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><span class="dropdown-item-text small opacity-75">{{ lang.index.developer|raw }}</span></li>
+            </ul>
+        </div>
+
+        <div class="soul-footer-dock">
+            {% if site.social_links is not empty %}
+                <div class="soul-footer-social">
+                    {% for link in site.social_links %}
+                        {% if link.url|trim is not empty %}
+                            <a href="{{ link.url }}" class="soul-social-link" target="_blank" rel="noopener" title="{{ link.platform|capitalize }}">
+                                <i class="{{ link.icon_class }}"></i>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="dropdown">
+                <button class="soul-footer-contact" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ lang.index.contact|default('Contact') }}">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end soul-dropdown-menu soul-footer-dropdown">
+                    {% if site.phone is not empty %}
+                        <li><a class="dropdown-item" href="tel:{{ site.phone }}"><i class="bi bi-phone me-2"></i>{{ site.phone }}</a></li>
+                    {% endif %}
+                    {% if site.whatsapp is not empty %}
+                        <li><a class="dropdown-item" href="https://wa.me/{{ site.whatsapp }}"><i class="bi bi-whatsapp me-2"></i>{{ site.whatsapp }}</a></li>
+                    {% endif %}
+                    {% if site.mail is not empty %}
+                        <li><a class="dropdown-item" href="mailto:{{ site.mail }}"><i class="bi bi-envelope me-2"></i>{{ site.mail }}</a></li>
+                    {% endif %}
+                    {% if site.office_address is not empty %}
+                        <li><span class="dropdown-item-text small"><i class="bi bi-building me-2"></i>{{ site.office_address|raw }}</span></li>
+                    {% endif %}
+                    {% if site.work_address is not empty %}
+                        <li><span class="dropdown-item-text small"><i class="bi bi-geo-alt me-2"></i>{{ site.work_address|raw }}</span></li>
+                    {% endif %}
+                    {% if site.description is not empty %}
+                        <li><hr class="dropdown-divider"></li>
+                        <li><span class="dropdown-item-text small">{{ site.description }}</span></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</footer>

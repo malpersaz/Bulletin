@@ -1,0 +1,352 @@
+<script>
+
+var mod_announcements_table_ajax = mod_announcements_table_ajax || {};
+
+mod_announcements_table_ajax.grid={};
+
+mod_announcements_table_ajax.akm = {
+    {% if session.permissions.mod_announcements.gallery is defined %}
+    processGallery: function (id) {
+        window.location = '{{ site.adres }}mod_gallery/list/mod_announcements/' + id;
+    },
+    {% endif %}
+    {% if session.permissions.mod_announcements.file is defined %}
+    processFile: function (id) {
+        window.location = '{{ site.adres }}mod_attachment/list/mod_announcements/' + id;
+    },
+    {% endif %}
+    {% if session.permissions.mod_announcements.sil is defined %}
+    processDelete: function (id) {
+        bootbox.dialog({
+            message: "{{ lang.mod_announcements.remove_record }}",
+            title: "Confirmation",
+            buttons: {
+                success: {
+                    label: "{{ lang.mod_announcements.button.evet }}",
+                    className: "green",
+                    callback: function() {
+                        var deteleString = '';
+
+                        if( typeof id === 'string' ) {
+                            deteleString += 'sil[]=' + id;
+                        }else{
+                            id.forEach(function (entry) {
+                                deteleString += '&sil[]=' + entry;
+                            });
+                        }
+                        // Send Request
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ site.adres }}mod_announcements/delete",
+                            data: deteleString,
+                            success: function (msg) {
+                                if (msg == 'Oke') {
+                                    oke_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_announcements.oke }}');
+                                    mod_announcements_table_ajax.gridAction.reloadGrid();
+                                } else {
+                                    error_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), msg);
+                                }
+                            }
+                        });
+                    }
+                },
+                danger: {
+                    label: "{{ lang.mod_announcements.button.hayir }}",
+                    className: "red",
+                    callback: function() {
+                    }
+                }
+            }
+        });
+    },
+    {% endif %}
+
+
+    
+
+        {% if session.permissions.mod_announcements.edit is defined %}
+
+    processpublish: function (id) {
+
+        bootbox.dialog({
+            message: "{{ lang.mod_announcements.grid.publish.value }}",
+            title: "Confirmation",
+            buttons: {
+                success: {
+                    label: "{{ lang.mod_announcements.button.evet }}",
+                    className: "green",
+                    callback: function() {
+                        var deteleString = '';
+
+                        if( typeof id === 'string' ) {
+                            deteleString += 'query[]=' + id;
+                        }else{
+                            id.forEach(function (entry) {
+                                deteleString += '&query[]=' + entry;
+                            });
+                        }
+                        // Send Request
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ site.adres }}mod_announcements/publish",
+                            data: deteleString,
+                            success: function (msg) {
+                                if (msg == 'Oke') {
+                                    oke_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_announcements.oke }}');
+                                    mod_announcements_table_ajax.gridAction.reloadGrid();
+                                } else {
+                                    error_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), msg);
+                                }
+                            }
+                        });
+                    }
+                },
+                danger: {
+                    label: "{{ lang.mod_announcements.button.hayir }}",
+                    className: "red",
+                    callback: function() {
+                    }
+                }
+            }
+        });
+
+    },
+
+    {% endif %}
+        {% if session.permissions.mod_announcements.edit is defined %}
+
+    processunpublish: function (id) {
+
+        bootbox.dialog({
+            message: "{{ lang.mod_announcements.grid.unpublish.value }}",
+            title: "Confirmation",
+            buttons: {
+                success: {
+                    label: "{{ lang.mod_announcements.button.evet }}",
+                    className: "green",
+                    callback: function() {
+                        var deteleString = '';
+
+                        if( typeof id === 'string' ) {
+                            deteleString += 'query[]=' + id;
+                        }else{
+                            id.forEach(function (entry) {
+                                deteleString += '&query[]=' + entry;
+                            });
+                        }
+                        // Send Request
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ site.adres }}mod_announcements/unpublish",
+                            data: deteleString,
+                            success: function (msg) {
+                                if (msg == 'Oke') {
+                                    oke_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_announcements.oke }}');
+                                    mod_announcements_table_ajax.gridAction.reloadGrid();
+                                } else {
+                                    error_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), msg);
+                                }
+                            }
+                        });
+                    }
+                },
+                danger: {
+                    label: "{{ lang.mod_announcements.button.hayir }}",
+                    className: "red",
+                    callback: function() {
+                    }
+                }
+            }
+        });
+
+    },
+
+    {% endif %}
+    
+
+    
+
+    {% if session.permissions.mod_announcements.edit is defined %}
+    processEdit: function (id) {
+        window.location = '{{ site.adres }}mod_announcements/edit/' + id;
+    },
+    {% endif %}
+
+    akm:function(){
+
+    }
+
+};
+mod_announcements_table_ajax.gridAction = {
+    initPickers: function () {
+//init date pickers
+        $('.date-picker').datepicker({
+            rtl: Metronic.isRTL(),
+            autoclose: true
+        });
+    },
+    setGrid: function (grid) {
+        mod_announcements_table_ajax.grid = grid;
+    },
+    getGrid: function () {
+        return mod_announcements_table_ajax.grid
+    },
+    reloadGrid: function () {
+        mod_announcements_table_ajax.gridAction.getGrid().getDataTable().ajax.reload();
+    },
+    handleRecords: function () {
+
+
+        var grid = new Datatable();
+
+        mod_announcements_table_ajax.gridAction.setGrid(grid);
+
+        grid.init({
+            src: $("#mod_announcements_datatable"),
+            onSuccess: function (grid) {
+// execute some code after table records loaded
+            },
+            onError: function (grid) {
+// execute some code on network or other general error
+            },
+            onDataLoad: function (grid) {
+// execute some code on ajax data load
+            },
+            loadingMessage: 'İşleniyor...',
+            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
+
+// Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
+// setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/scripts/datatable.js).
+// So when dropdowns used the scrollable div should be removed.
+                "dom": "<'row'<'col-md-10 col-sm-12'pli><'col-md-2 col-sm-12'<'table-group-actions pull-right'>>r>t<'row'<'col-md-8 col-sm-12'pli>T<'col-md-4 col-sm-12'>>", //                    "dom": 'T<"clear">lfrtip',
+
+                "language": {
+                    "aria": {
+                        "sortAscending": ": sütun artan olarak sıralamak için",
+                        "sortDescending": ": sütun azalan olarak sıralamak için"
+                    },
+                    "emptyTable": "Kayıt Bulunamadı",
+                    "info": "<span class='seperator'>|</span> <b>_TOTAL_</b> Kayıttan <b>_START_</b> - <b>_END_</b> Arası Kayıtlar Gösteriliyor",
+                    "infoEmpty": "Kayıt Yok",
+                    "infoFiltered": "( _MAX_ Kayıt İçerisinden Bulunan)",
+                    "lengthMenu": "<span class='seperator'>|</span> Sayfada _MENU_ Kayıt Göster",
+                    "search": "Bul:",
+                    "zeroRecords": "Eşleşen Kayıt Bulunmadı",
+                    "infoPostFix": "",
+                    "thousands": ",",
+                    "loadingRecords": "Yükleniyor...",
+                    "processing": "İşleniyor...",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    },
+                    "metronicGroupActions": "_TOTAL_ kayıt seçildi:  ",
+                    "metronicAjaxRequestGeneralError": "İşlem gerçekleştirilemedi.Lütfen internet bağlantınızı kontrol edin."
+
+                    // data tables spesific
+
+                },
+
+                "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
+
+                "lengthMenu": [
+                    [10, 20, 50, 100, 150, -1],
+                    [10, 20, 50, 100, 150, "All"] // change per page values here
+                ],
+                "pageLength": 10, // default record count per page
+                "ajax": {
+                    "url": "{{ site.adres }}mod_announcements/datatable_json" // ajax source
+                },
+                "order": [
+                    [1, "desc"]
+                ],// set first column as a default sort by asc
+                "tableTools": {
+                    "sSwfPath": "{{ site.tadres }}/admin/management/assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [{
+                        "sExtends": "pdf",
+                        "sButtonText": "PDF"
+                    }, {
+                        "sExtends": "csv",
+                        "sButtonText": "CSV"
+                    }, {
+                        "sExtends": "xls",
+                        "sButtonText": "Excel"
+                    }, {
+                        "sExtends": "print",
+                        "sButtonText": "Yazdır",
+                        "sInfo": 'Lütfen Yazdırmak İçin "CTRL+P" tuşlarına basınız çıkmak içinde "ESC" tuşuna.',
+                        "sMessage": "Developer AKMSoftware"
+                    }, {
+                        "sExtends": "copy",
+                        "sButtonText": "Kopyala"
+                    }]
+                }
+            }
+        });
+
+// handle group actionsubmit button click
+        grid.getTableWrapper().on('click', '.table-group-action-submit', function (e) {
+            e.preventDefault();
+            var action = $(".table-group-action-input", grid.getTableWrapper());
+            if (action.val() != "" && grid.getSelectedRowsCount() > 0) {
+                /*grid.setAjaxParam("customActionType", "group_action");
+                 grid.setAjaxParam("customActionName", action.val());
+                 grid.setAjaxParam("id", grid.getSelectedRows());
+                 */
+
+                {% if session.permissions.mod_announcements.gallery is defined %}
+                if (action.val() == '{{ lang.mod_announcements.button.gallery }}') {
+                    if (grid.getSelectedRowsCount() != 1) {
+                        return error_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_announcements.grid.8 }}');
+                    }
+                    mod_announcements_table_ajax.akm.processGallery(grid.getSelectedRows());
+                }
+                {% endif %}
+
+                {% if session.permissions.mod_announcements.file is defined %}
+                if (action.val() == '{{ lang.mod_announcements.button.file }}') {
+                    if (grid.getSelectedRowsCount() != 1) {
+                        return error_message(mod_announcements_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_announcements.grid.8 }}');
+                    }
+                    mod_announcements_table_ajax.akm.processFile(grid.getSelectedRows());
+                }
+                {% endif %}
+                {% if session.permissions.mod_announcements.sil is defined %}
+                if (action.val() == '{{ lang.mod_announcements.button.sil }}') {
+                    mod_announcements_table_ajax.akm.processDelete(grid.getSelectedRows());
+                }
+                {% endif %}
+
+
+                
+                                {% if session.permissions.mod_announcements.edit is defined %}
+                if (action.val() == '{{ lang.mod_announcements.grid.publish.key }}') {
+                    mod_announcements_table_ajax.akm.processpublish(grid.getSelectedRows());
+                }
+                {% endif %}
+                                {% if session.permissions.mod_announcements.edit is defined %}
+                if (action.val() == '{{ lang.mod_announcements.grid.unpublish.key }}') {
+                    mod_announcements_table_ajax.akm.processunpublish(grid.getSelectedRows());
+                }
+                {% endif %}
+                
+                
+                //grid.getDataTable().ajax.reload();
+                //grid.clearAjaxParams();
+            } else if (action.val() == "") {
+                error_message(grid.getTableWrapper(), 'Lütfen Bir İşlem Seçin');
+            } else if (grid.getSelectedRowsCount() === 0) {
+                error_message(grid.getTableWrapper(), '{{ lang.mod_announcements.grid.7 }}');
+            }
+        });
+    }
+};
+
+
+mod_announcements_table_ajax.init = function () {
+    mod_announcements_table_ajax.gridAction.initPickers();
+    mod_announcements_table_ajax.gridAction.handleRecords();
+};
+</script>

@@ -1,0 +1,131 @@
+{% extends "management/admin-layout.twig" %}
+{% block extra %}
+    <script>
+        function sendbox_sil(id) {
+
+
+            // Sor Bakalım Kabul Ediyormu ( Confirm)
+            $.prompt('{{ lang.mod_user_pm.confirm_delete_msg }}', {
+                buttons: [
+                    {
+                        title: '{{ lang.mod_user_pm.confirm_delete_yes }}',
+                        value: true
+                    },
+                    {
+                        title: '{{ lang.mod_user_pm.cancel }}',
+                        value: false
+                    }
+                ],
+                submit: function (v, m, f) {
+                    // Eğer Kabul Ederse
+                    if (v === true) {
+                        $.ajax({
+                            type: "POST",
+                            url: "{{ site.adres }}mod_user_pm/sendbox_sil",
+                            data: {id: id},
+                            success: function (msg) {
+                                if (msg == 'Oke') {
+                                    $.achtung({
+                                        className: 'achtungSuccess',
+                                        message: '{{ lang.mod_user_pm.message_deleted_success }}',
+                                        timeout: 5
+                                    });
+
+
+                                    $("#alan_" + id).hide();
+
+
+                                } else {
+                                    $.achtung({
+                                        className: 'achtungFail',
+                                        message: msg,
+                                        timeout: 5
+                                    });
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+
+
+        }
+    </script>
+{% endblock %}
+{% block title %}Mesajlaşma{% endblock %}
+{% block body %}
+    <div class="portlet light">
+        <div class="portlet-body">
+            <div class="row inbox">
+                <div class="col-md-2">
+                    <ul class="inbox-nav margin-bottom-10">
+                        {% if session.permissions.mod_user_pm.send is defined %}
+                            <li class="compose-btn">
+                                <a href="mod_user_pm/send" data-title="Compose" class="btn green">
+                                    <i class="fa fa-edit"></i> {{ lang.mod_user.profile_menu.new_message }} </a>
+                            </li>
+                        {% endif %}
+                        <li class="inbox">
+                            <a class="btn" href="mod_user_pm/inbox" data-title="Gelen Kutusu">
+                                Gelen Kutusu(
+                                {% if session.okunmamis is defined %}
+                                    {{ session.okunmamis }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            ) </a>
+                            <b></b>
+                        </li>
+                        <li class="sent active">
+                            <a class="btn" href="mod_user_pm/sendbox" data-title="Giden Kutusu">Giden Kutusu</a>
+                            <b></b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-10" id="alan_{{ veri.id }}">
+                    <div class="inbox-header"></div>
+                    <div class="inbox-content">
+                        <div class="inbox-header inbox-view-header">
+                            <h1 class="pull-left">
+                                {{ lang.mod_user_pm.subject_label }}: {{ veri.subject }}
+                                <a href="mod_user_pm/sendbox">Giden Kutusu</a>
+                            </h1>
+                            <div class="pull-right">
+                                <i class="fa fa-print"></i>
+                            </div>
+                        </div>
+                        <div class="inbox-view-info">
+                            <div class="row">
+                                <div class="col-md-7">{{ lang.mod_user_pm.message_info_sent|format(veri.username, veri.created_at) }}</div>
+                                <div class="col-md-5 inbox-info-btn">
+                                    <div class="btn-group">
+                                        <button data-messageid="23" class="btn blue reply-btn">
+                                            <i class="fa fa-reply"></i> İşlem
+                                        </button>
+                                        <button class="btn blue dropdown-toggle" data-toggle="dropdown">
+                                            <i class="fa fa-angle-down"></i>
+                                        </button>
+                                        <ul class="dropdown-menu pull-right">
+                                            <li>
+                                                <a href="mod_user_pm/send/{{ veri.username }}/{{ veri.subject }}"
+                                                   data-messageid="23"
+                                                   class="reply-btn">
+                                                    <i class="fa fa-reply"></i>  {{ lang.mod_user_pm.reply_action_alt }} </a>
+                                            </li>
+                                            <li>
+                                                <a href="javascript:void(0);" onclick="sendbox_sil('{{ veri.id }}')">
+                                                    <i class="fa fa-trash-o"></i> {{ lang.mod_user_pm.delete_action }} </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="inbox-view">{{ veri.message|nl2br }}</div>
+                        <hr>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

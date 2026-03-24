@@ -1,0 +1,26 @@
+{% extends 'admin/layout.twig' %}
+
+{# 
+    Adapter Layout:
+    Legacy modules try to extend "management/admin-layout.twig".
+    We map their blocks to Modern Layout blocks.
+#}
+
+{% block title %}
+    {% block page_title %}{{ site.title }}{% endblock %}
+{% endblock %}
+
+{% block headline %}
+    {# Legacy modules don't have a headline block, using title or generic #}
+    {{ lang.management.admin_panel|default('Yönetim Paneli') }}
+{% endblock %}
+
+{% block content %}
+    {# Legacy body block -> Modern content block #}
+    {% block body %}{% endblock %}
+{% endblock %}
+
+{% block scripts %}
+    {# Legacy extra block -> Modern scripts block #}
+    {% block extra %}{% endblock %}
+{% endblock %}

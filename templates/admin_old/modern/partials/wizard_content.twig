@@ -1,0 +1,163 @@
+<div id="contentWizard" class="wizard-overlay">
+    <!-- Wizard Header -->
+    <header class="wizard-header">
+        <button class="icon-btn" onclick="closeWizard()"><i class="bi bi-x-lg"></i></button>
+        <div class="wizard-title">
+            <span id="wizardStepTitle">Dil Seçimi</span>
+            <span id="wizardStepCounter">1/8</span>
+        </div>
+        <button class="m3-btn-text" onclick="alert('Taslak Kaydedildi')">Kaydet</button>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="wizard-progress-bar">
+        <div class="wizard-progress-fill" id="wizardProgressFill" style="width: 12.5%;"></div>
+    </div>
+
+    <!-- Wizard Content Scrollable -->
+    <div class="wizard-content">
+
+        <!-- Step 1: Language -->
+        <div class="wizard-step active" id="wizardStep1">
+            <h2 class="step-headline">İçerik Dili</h2>
+            <p class="step-subhead">İçeriğin yayınlanacağı ana dili seçiniz.</p>
+            <div class="selection-grid">
+                <div class="selection-card active" onclick="selectWizardLang(this, 'TR')">
+                    <div class="selection-icon">TR</div>
+                    <div class="selection-label">Türkçe</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card" onclick="selectWizardLang(this, 'EN')">
+                    <div class="selection-icon">EN</div>
+                    <div class="selection-label">English</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card" onclick="selectWizardLang(this, 'KU')">
+                    <div class="selection-icon">KU</div>
+                    <div class="selection-label">Kurdî</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+                <div class="selection-card" onclick="selectWizardLang(this, 'AR')">
+                    <div class="selection-icon">AR</div>
+                    <div class="selection-label">العربية</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Category -->
+        <div class="wizard-step" id="wizardStep2">
+            <h2 class="step-headline">Kategori</h2>
+            <p class="step-subhead">İçeriğin ekleneceği kategoriyi belirleyin.</p>
+
+            <div class="m3-input-wrapper">
+                <div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
+                    <span id="wizardSelectedCategory">Kategori Seçiniz...</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: Title -->
+        <div class="wizard-step" id="wizardStep3">
+            <h2 class="step-headline">Başlık</h2>
+            <p class="step-subhead">İlgi çekici bir başlık girin. (Min: 2, Max: 40)</p>
+
+            <div class="input-wrapper-lg">
+                <input type="text" class="m3-input-lg" id="wizardTitleInput" placeholder=" " autocomplete="off">
+                <label class="m3-floating-label">İçerik Başlığı</label>
+            </div>
+            <div class="char-counter" id="titleCharCounter">0 / 40</div>
+            <div class="validation-msg" id="titleValidationMsg">Başlık çok kısa.</div>
+        </div>
+
+        <!-- Step 4: Date -->
+        <div class="wizard-step" id="wizardStep4">
+            <h2 class="step-headline">Yayın Tarihi</h2>
+            <p class="step-subhead">İçeriğin yayınlanacağı created_at ve saat.</p>
+
+            <div class="input-wrapper-lg">
+                <input type="datetime-local" class="m3-input-lg" id="wizardDateInput">
+            </div>
+        </div>
+
+        <!-- Step 5: Intro (Deck) -->
+        <div class="wizard-step" id="wizardStep5">
+            <h2 class="step-headline">Giriş Metni (Deck)</h2>
+            <p class="step-subhead">Kısa ve öz bir özet yazın. (110 - 280 Karakter)</p>
+
+            <div class="input-wrapper-lg">
+                <textarea class="m3-input-lg" id="wizardIntroInput" rows="5" placeholder=" "></textarea>
+                <label class="m3-floating-label">Giriş Metni</label>
+            </div>
+            <div class="char-counter" id="introCharCounter">0 / 280</div>
+        </div>
+
+        <!-- Step 6: Content -->
+        <div class="wizard-step" id="wizardStep6">
+            <h2 class="step-headline">İçerik Detayı</h2>
+            <p class="step-subhead">Zengin metin editörü.</p>
+
+            <div class="rich-editor-toolbar">
+                <button><i class="bi bi-type-bold"></i></button>
+                <button><i class="bi bi-type-italic"></i></button>
+                <button><i class="bi bi-link"></i></button>
+                <button><i class="bi bi-list-ul"></i></button>
+            </div>
+            <div class="rich-editor-content" contenteditable="true" id="wizardContentInput">
+                <p>İçeriğinizi buraya yazmaya başlayın...</p>
+            </div>
+        </div>
+
+        <!-- Step 7: Image -->
+        <div class="wizard-step" id="wizardStep7">
+            <h2 class="step-headline">Görsel Seçimi</h2>
+            <p class="step-subhead">Kapak görseli yükleyin.</p>
+
+            <div class="image-upload-area" onclick="document.getElementById('wizardImgInput').click()">
+                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                <p>Görsel Yüklemek İçin Dokunun</p>
+                <input type="file" id="wizardImgInput" hidden onchange="previewWizardImage(this)">
+            </div>
+            <img id="wizardImgPreview" class="wizard-img-preview" style="display:none;">
+        </div>
+
+        <!-- Step 8: Publish -->
+        <div class="wizard-step" id="wizardStep8">
+            <h2 class="step-headline">Tamamla</h2>
+            <p class="step-subhead">Son kontroller ve yayınlama.</p>
+
+            <div class="publish-card">
+                <div class="publish-option">
+                    <div class="publish-label">
+                        <span>Yayında</span>
+                        <small>İçerik siteye eklendiği an herkes tarafından görülebilecek.</small>
+                    </div>
+                    <label class="m3-switch">
+                        <input type="checkbox" checked id="wizardPublishSwitch">
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="wizard-summary">
+                <h3>Özet</h3>
+                <div class="summary-item">
+                    <i class="bi bi-translate"></i> <span id="summaryLang">TR</span>
+                </div>
+                <div class="summary-item">
+                    <i class="bi bi-folder"></i> <span id="summaryCategory">Seçilmedi</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Wizard Footer -->
+    <div class="wizard-footer">
+        <button class="m3-btn-outlined" id="btnWizardPrev" onclick="prevWizardStep()" disabled>Geri</button>
+        <button class="m3-btn-filled" id="btnWizardNext" onclick="nextWizardStep()">Devam Et</button>
+        <button class="m3-btn-filled success" id="btnWizardFinish" onclick="finishWizard()"
+            style="display:none;">Kaydet ve Bitir</button>
+    </div>
+</div>

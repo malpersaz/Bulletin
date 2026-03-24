@@ -1,0 +1,38 @@
+{# Menu Fonksiyonu #}
+{{ run({"mod": "index", "method": "_menu"}) }}
+{% set menu = ctx_get('menu') %}
+
+{# Avatar Helper Function #}
+
+{% function get_avatar_url(image) %}
+    {{ site.radres }}mod_user/{{ image }}
+{% endfunction %}
+{% macro menu(menu, parent_id, ss) %}
+    {% if menu[parent_id] is defined %}
+        {% for m in menu[parent_id] %}
+            {% set parent_id = m.id %}
+            {% if m.file != '' %}
+                {# Blok system removed - file include disabled: {{ m.file }} #}
+            {% else %}
+                {% if m.lang == site.lang and m.status == 'y' %}
+                    {% set ss = 1 %}
+                    <li {% if menu[parent_id] is defined and menu[parent_id] is iterable %}class="dropdown-short"{% endif %}>
+                        <a {% if m.url == '' or m.url == '#' %} href="javascript:void(0);" {% else %} href="{{ m.url }}"{% if m.target == 'y' %} target="_blank"{% endif %}
+                           {% endif %}
+                           {% if menu[parent_id] is defined and menu[parent_id] is iterable %}  data-bs-toggle="collapse" data-target="#menu{{ m.id }}" class="collapsed" {% endif %}
+                           title="{{ m.name }}">
+                            {% if m.icon is defined and m.icon != '' %}<i class="{{ m.icon }}"></i>{% endif %}
+                        {{ m.name }}</a>
+                    {% endif %}
+                    {% if menu[parent_id] is defined and menu[parent_id] is iterable %}
+                        {% if ss == '1' %}<ul class="dropdown-menu collapse" id="menu{{ m.id }}">{% endif %}
+                            {{ _self.menu(menu, parent_id) }}
+                            {% if ss == '1' %}</ul>{% endif %}
+                    {% endif %}
+                    {% if m.lang == site.lang and m.status == 'y' %}</li>{% endif %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+

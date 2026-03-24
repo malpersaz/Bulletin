@@ -1,0 +1,674 @@
+<?php
+
+/**
+ * Koberz Bilişim İçerik Yönetim Sistemi
+ * Web: www.koberz.com
+ * E-Mail: info@koberz.com
+ * Kullanıcı: Kobim
+ * Zaman: 08.04.2011 - 18:55
+ */
+if (defined('lib_dir') === false) {
+    exit(':)');
+}
+
+class Database
+{
+    public $_db;
+    public $_query_count = 0;
+    public $_adapter;
+    public $_sql_text;
+
+    public $_for_update = false;
+    public static $_sql_querys = [];
+
+    private static $_instances = [];
+    private static $database;
+
+    public $_first_next = 0;
+
+    // SQL Builder
+    public $_table;
+    public $_coloms;
+    public $_limit;
+    public $_order;
+    public $_where;
+    public $_from;
+
+    public $_query_result;
+    public $_cache_result;
+    public $_db_result;
+    // Caching
+    public $_cache = false;
+    public $_result = null;
+
+    public function __construct($database = null)
+    {
+        return $this->connect($database);
+    }
+
+
+    public function connect($database = null)
+    {
+        if (is_array($database)) {
+            $dbconfig = array_merge($database, Kayit::getir('db_config'));
+            Kayit::yenile('db_config', $dbconfig);
+            $r = array_keys($database);
+            $database = $r[0];
+        }
+        // Eğer Parametre İle Gönderilen $database NULL değilse
+        self::$database = $database != null ? $database : Kayit::getir('database');
+
+        // Eğer bu database daha önce çağrılmışsa.
+        if (array_key_exists(self::$database, self::$_instances)) {
+            $this->_db[self::$database] = self::$_instances[self::$database];
+            return true;
+        }
+
+        // Adapteri instance et config'teki adapter varmı bak
+        try {
+            $_adapter = Adapter::getInstance();
+        } catch (AdapterException $e) {
+            $e->show();
+            exit();
+        }
+        // Adapteri getir
+        try {
+            $this->_db[self::$database] = $_adapter->getAdapter(self::$database);
+        } catch (AdapterException $e) {
+            $e->show();
+            exit();
+        }
+        // _instances nesnesine ekle
+        self::$_instances[self::$database] = $this->_db[self::$database];
+
+        // symbol
+        Dbuilder::$symbol = $this->_db[self::$database]->symbol;
+        return true;
+    }
+
+
+    /*
+    * Check Database Exists İn Db_Config
+    * @access public
+    * @return mixed
+    */
+    public function query($sql = null)
+    {
+        $this->_sql_text = $sql;
+
+        if ($this->_cache === true && isset($this->_query_result[self::$database][$this->_sql_text]) === true) {
+            return $this->_query_result[self::$database][$this->_sql_text];
+        }
+        try {
+            $this->_query();
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return $this->_query_result[self::$database][$this->_sql_text];
+    }
+
+    /*
+    * Check Database Exists İn Db_Config
+    * @access private
+    * @return bool
+    */
+    private function _query()
+    {
+        $this->_query_count++;
+        try {
+            // Log'a ekleyelim
+            self::$_sql_querys[] = [
+                'time' => time(),
+                'sql' => $this->_sql_text
+            ];
+
+            $this->_query_result[self::$database][$this->_sql_text] = $this->_db[self::$database]->query($this->_sql_text);
+        } catch (DatabaseException $e) {
+            $e->show();
+            exit();
+        }
+        return true;
+    }
+
+    public function _fetch_array()
+    {
+        try {
+            return $this->_db[self::$database]->fetch_assoc($this->_query_result[self::$database][$this->_sql_text]);
+        } catch (DatabaseException $e) {
+            $e->show();
+        }
+    }
+
+    public function fetch_array($sql_text = null)
+    {
+        if ($sql_text !== null) {
+            $this->_sql_text = $sql_text;
+        }
+
+
+        try {
+            if ($this->_sql_text === null) {
+                throw new DatabaseException('SQL String NOT NULL');
+            }
+        } catch (DatabaseException $e) {
+            $e->show();
+            exit();
+        }
+        // IF exists Cache Result In Object return cache
+        if ($this->_cache && isset($this->_cache_result[self::$database]['array'][$this->_sql_text])) {
+            return $this->_cache_result[self::$database]['array'][$this->_sql_text];
+        }
+
+
+        // Query
+        $this->query($this->_sql_text);
+
+
+        // UNSET OLD RESULT
+        unset($this->_db_result[self::$database]);
+        unset($this->_result);
+        $this->_result = null;
+        $this->_db_result[self::$database] = null;
+
+
+        if ($this->_cache) {
+            unset($this->_cache_result[self::$database]['array'][$this->_sql_text]);
+        }
+
+        while ($source = $this->_fetch_array()) {
+            // Cache is On? add result cache
+            if ($this->_cache) {
+                $this->_cache_result[self::$database]['array'][$this->_sql_text][] = $source;
+            }
+            $this->_db_result[self::$database][] = $source;
+        }
+
+        if (is_array($this->_db_result[self::$database])) {
+            $this->_result = $this->_db_result[self::$database];
+        }
+        $this->_query_count++;
+        // Cache is Off unset and free_result
+        if (!$this->_cache) {
+            $this->_free_result($this->_query_result[self::$database][$this->_sql_text]);
+            unset($this->_query_result[self::$database][$this->_sql_text]);
+            unset($this->_cache_result[self::$database]['array'][$this->_sql_text]);
+        }
+        return $this;
+    }
+
+    public function _free_result($resource)
+    {
+        $this->_query_count++;
+        try {
+            $this->_db[self::$database]->free_result($resource);
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return true;
+    }
+
+    public function start_transaction()
+    {
+        $this->query("SET AUTOCOMMIT=0");
+        $this->query("START TRANSACTION");
+    }
+
+    public function setForUpdate($u = true)
+    {
+        $this->_for_update = $u;
+    }
+
+    public function commit()
+    {
+        $this->setForUpdate(false);
+        try {
+            $this->query("COMMIT");
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return true;
+    }
+
+    public function rollback()
+    {
+        $this->setForUpdate(false);
+        try {
+            $this->query("ROLLBACK");
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return true;
+    }
+
+    public function truncate($table)
+    {
+        $this->query("TRUNCATE TABLE `" . $table . "`");
+    }
+
+    /*
+    * Make SQL insert
+    * Sql insert Fonksiyonu
+    * @param string $table
+    * @param array $array
+    * @param bool $bool
+    * @return bool
+    */
+    public function db_insert($table, $array, $replace = false)
+    {
+        $this->_sql_text = Dbuilder::create_insert($table, $array, $replace);
+        try {
+            $this->query($this->_sql_text);
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return true;
+    }
+
+    public function db_update($table, $array, $where)
+    {
+        $this->_sql_text = Dbuilder::create_update($table, $array, $where);
+        try {
+            $this->query($this->_sql_text);
+        } catch (DatabaseException $e) {
+            $e->show();
+            return false;
+        }
+        return true;
+    }
+
+    public function getResult($build = false, $fetch = false)
+    {
+        if ($build) {
+            $this->build();
+        }
+        if ($fetch) {
+            $this->fetch_array();
+        }
+        $this->_result = isset($this->_db_result[self::$database]) ? $this->_db_result[self::$database] : null;
+        return $this;
+    }
+
+    public function getLimit($limit, $offset = 0)
+    {
+        // Temp Bir Dizi  Oluşturalım
+        $temp_result = [];
+        // Result Kaç Tane Ona Bakalım
+        // var_dump($this->_result);
+        $size = $this->_result == NULL ? 0 : count($this->_result);
+        // temp bir değer oluşturalım
+        $count = 0;
+
+        // Eğer Offset dizi değeri yoksa resultu nulle
+        if (!isset($this->_result[$offset])) {
+            $this->_result = null;
+            return $this;
+        }
+        // For döngüsü Yapalım $i değişkenine offset değerini verelim.
+        for ($i = $offset; $i <= $size; $i++) {
+            // Eğer temp_result'a İstenilen limit kadar veri eklenmişse  break
+            if ($count == $limit) {
+                break;
+            }
+            // Eğer _resulttta belirtilen index varsa temp_result'a Ekle
+            if (isset($this->_result[$i])) {
+                $temp_result[] = $this->_result[$i];
+                $count++;
+                continue;
+            }
+            // yoksa break
+            break;
+        }
+        $this->_result = $temp_result;
+        unset($temp_result);
+        unset($count);
+        unset($size);
+        unset($i);
+        return $this;
+    }
+
+    public function getResultOne($build = false, $fetch = false)
+    {
+        if ($build) {
+            $this->build();
+        }
+        if ($fetch) {
+            $this->fetch_array();
+        }
+        $this->_result = isset($this->_db_result[self::$database][0]) ? $this->_db_result[self::$database][0] : null;
+        return $this;
+    }
+
+    public function gR()
+    {
+        $this->build();
+        $this->fetch_array();
+        $this->_result = isset($this->_db_result[self::$database]) ? $this->_db_result[self::$database] : null;
+        return $this;
+    }
+
+    public function gRo()
+    {
+        $this->build();
+        $this->fetch_array();
+        $this->_result = isset($this->_db_result[self::$database][0]) ? $this->_db_result[self::$database][0] : null;
+        return $this;
+    }
+
+    public function getSql()
+    {
+        return $this->_sql_text;
+    }
+
+    public function getSize()
+    {
+        return $this->_result !== null ? count($this->_result) : 0;
+    }
+
+    public function getCount()
+    {
+        $this->build();
+        $this->query($this->_sql_text);
+        return $this->_db[self::$database]->num_rows($this->_query_result[self::$database][$this->_sql_text]);
+    }
+
+    public function error()
+    {
+        return $this->_db[self::$database]->error();
+    }
+
+    public function first()
+    {
+        $this->_result = current($this->_db_result[self::$database]) !== false
+            ? current($this->_db_result[self::$database]) : null;
+        return $this;
+    }
+
+    public function next()
+    {
+        $this->_first_next++;
+
+        $this->_result = isset($this->_db_result[self::$database][$this->_first_next])
+            ? $this->_db_result[self::$database][$this->_first_next] : false;
+        return $this;
+    }
+
+    public function prev()
+    {
+        $this->_first_next--;
+        $this->_result = isset($this->_db_result[self::$database][$this->_first_next])
+            ? $this->_db_result[self::$database][$this->_first_next] : false;
+        return $this;
+    }
+
+    public function last()
+    {
+        $this->_result = end($this->_db_result[self::$database]) !== false ? end($this->_db_result[self::$database])
+            : null;
+        return $this;
+    }
+
+    public function allResult()
+    {
+        $this->_result = $this->_db_result;
+        return $this;
+    }
+
+    public function run($sql = null)
+    {
+        if ($sql != null) {
+            $this->_sql_text = $sql;
+        }
+        try {
+            $this->query($this->_sql_text);
+            return true;
+        } catch (DatabaseException $e) {
+            $e->show();
+        }
+        return false;
+    }
+
+    /*
+    * Change Database Connect
+    * @access public
+    * @return connect function
+    */
+    public function renew($database)
+    {
+        return $this->connect($database);
+    }
+
+
+    public function make_delete($table = null, $where = null)
+    {
+        try {
+            $this->_sql_text = Dbuilder::create_delete($table, $where);
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+        return $this;
+    }
+
+    public function delete()
+    {
+        try {
+            $this->_sql_text = "DELETE FROM " . $this->_from;
+            $this->_sql_text .= isset($this->_where) ? " WHERE " . $this->_where : '';
+            $this->query($this->_sql_text);
+            return $this;
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+    }
+
+    public function table($arg)
+    {
+        try {
+            $this->_from = Dbuilder::table($arg);
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+        return $this;
+    }
+
+    public function table_join($conf)
+    {
+        try {
+            $res = Dbuilder::table_join($conf);
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+        $this->_from = $res['table'];
+        $this->_coloms = implode(',', $res['select']);
+        return $this;
+    }
+
+    public function coloms($arg)
+    {
+        try {
+            $this->_coloms = Dbuilder::coloms($arg);
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+        return $this;
+    }
+
+    public function select($arg)
+    {
+        try {
+            $this->_coloms = Dbuilder::coloms($arg);
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit();
+        }
+        return $this;
+    }
+
+    public function limit($limit, $offset = null)
+    {
+        try {
+            $this->_limit = Dbuilder::limit($limit, $offset);
+        } catch (DbuilderException $e) {
+            $e->show();
+        }
+        return $this;
+    }
+
+    public function order($colom, $type)
+    {
+        try {
+            $this->_order = Dbuilder::order($colom, $type);
+        } catch (DbuilderException $e) {
+            $e->show();
+        }
+        return $this;
+    }
+
+    public function where($arg)
+    {
+        try {
+            $this->_where = Dbuilder::where($arg);
+        } catch (DbuilderException $e) {
+            $e->show();
+        }
+        return $this;
+    }
+
+    public function addWhere($arg, $condition = 'AND')
+    {
+        try {
+            if ($this->_where == null || $this->_where == '') {
+                $this->_where = Dbuilder::where($arg);
+            } else {
+                $this->_where = $this->_where . " " . $condition . " " . Dbuilder::where($arg);
+            }
+        } catch (DbuilderException $e) {
+            $e->show();
+            exit;
+        }
+        return $this;
+    }
+
+
+    public function build()
+    {
+        $this->_coloms = empty($this->_coloms) ? "*" : $this->_coloms;
+        $this->_sql_text = "SELECT " . $this->_coloms . " FROM " . $this->_from;
+        $this->_sql_text .= isset($this->_where) ? " WHERE " . $this->_where : '';
+        $this->_sql_text .= $this->_order . " " . $this->_limit;
+        if ($this->_for_update === true) {
+            $this->_sql_text .= " FOR UPDATE";
+        }
+        return $this;
+    }
+
+    public function setWhere($where)
+    {
+        $this->_where = $where;
+        return $this;
+    }
+
+    public function setColoms($coloms)
+    {
+        $this->_coloms = $coloms;
+        return $this;
+    }
+
+    public function setSqlText($text)
+    {
+        $this->_sql_text = $text;
+        return $this;
+    }
+
+    public function getDB()
+    {
+        return $this->_db[self::$database];
+    }
+
+    public function getAdapterType()
+    {
+        if (isset($this->_db[self::$database])) {
+            $adapterClass = get_class($this->_db[self::$database]);
+            return $adapterClass;
+        }
+        return null;
+    }
+
+    /*
+    * mysql_insert_id or pg_insert_id
+    * @return int
+    */
+    public function insert_id()
+    {
+        try {
+            return $this->_db[self::$database]->insert_id($this->_query_result[self::$database][$this->_sql_text]);
+        } catch (DatabaseException $e) {
+            $e->show();
+            return null;
+        }
+    }
+
+    public function flush()
+    {
+        $this->_coloms = null;
+        $this->_where = null;
+        $this->_sql_text = null;
+        $this->_limit = null;
+        $this->_order = null;
+        $this->_table = null;
+    }
+
+    /*
+    *  Converter
+    *  Dönüştürücüler
+    */
+    public function toObject()
+    {
+        if ($this->_result === null) {
+            return null;
+        }
+        try {
+            return Dconvert::toObject($this->_result);
+        } catch (DconvertException $e) {
+            $e->show();
+        }
+    }
+
+    public function toArray()
+    {
+        if ($this->_result === null) {
+            return null;
+        }
+        try {
+            return Dconvert::toArray($this->_result);
+        } catch (DconvertException $e) {
+            $e->show();
+            exit();
+        }
+    }
+
+    public function toJson()
+    {
+        if ($this->_result === null) {
+            return null;
+        }
+        return Dconvert::toJson($this->_result);
+    }
+
+    public function toSerialize()
+    {
+        if ($this->_result === null) {
+            return null;
+        }
+        return Dconvert::toSerialize($this->_result);
+    }
+}

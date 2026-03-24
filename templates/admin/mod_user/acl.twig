@@ -1,0 +1,251 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set hide_search = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_user.admin.9 }}{% endblock %}
+{% block headline %}{{ lang.mod_user.admin.9 }}{% endblock %}
+
+{% block content %}
+<style>
+    .acl-container {
+        padding: 16px 16px 100px 16px;
+        background: var(--md-sys-color-surface, #fdfbff);
+    }
+    .acl-module-card {
+        background: var(--md-sys-color-surface-container, #f3edf7);
+        border-radius: 28px;
+        padding: 0;
+        margin-bottom: 24px;
+        border: none;
+        overflow: hidden;
+    }
+    .acl-module-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 20px 24px;
+        cursor: pointer;
+        transition: background 0.2s;
+        user-select: none;
+    }
+    .acl-module-header:active {
+        background: rgba(0,0,0,0.03);
+    }
+    .acl-module-header i.header-icon {
+        font-size: 22px;
+        color: var(--md-sys-color-primary);
+    }
+    .acl-module-header .header-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--md-sys-color-primary);
+        flex: 1;
+    }
+    .acl-module-header .chevron {
+        font-size: 18px;
+        color: var(--md-sys-color-on-surface-variant);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .acl-module-header .chevron.open {
+        transform: rotate(180deg);
+    }
+    .acl-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .acl-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .acl-table th {
+        background: var(--md-sys-color-surface-variant);
+        color: var(--md-sys-color-on-surface-variant);
+        text-align: center;
+        padding: 12px 16px;
+        font-weight: 500;
+        font-size: 13px;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        white-space: nowrap;
+    }
+    .acl-table th:first-child {
+        text-align: left;
+        padding-left: 24px;
+        min-width: 140px;
+    }
+    .acl-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        vertical-align: middle;
+        color: var(--md-sys-color-on-surface);
+        font-size: 14px;
+        text-align: center;
+    }
+    .acl-table td:first-child {
+        text-align: left;
+        padding-left: 24px;
+        font-weight: 500;
+    }
+    .acl-table tr:last-child td {
+        border-bottom: none;
+    }
+    .acl-table tr:hover {
+        background: rgba(0,0,0,0.02);
+    }
+    .acl-checkbox {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--md-sys-color-primary);
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    .acl-group-toggle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+    }
+    .acl-group-name {
+        font-size: 12px;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+{% if oke is defined %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj|default(lang.mod_user.admin.12) }}</b>',
+                confirmButtonText: '{{ lang.mod_user.button.evet }}',
+                confirmButtonColor: '#2e7d32'
+            });
+        });
+    </script>
+{% endif %}
+{% if error %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'warning',
+                html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ error }}</b>',
+                confirmButtonText: '{{ lang.mod_user.button.evet }}',
+                confirmButtonColor: '#ba1a1a'
+            });
+        });
+    </script>
+{% endif %}
+
+<form action="" method="POST" id="aclForm">
+    <div class="acl-container">
+        {% for m in modlar %}
+            {% set mod_name = m.mod_name %}
+            {% set mod_id = m.mod_id %}
+            <div class="acl-module-card">
+                <div class="acl-module-header" onclick="toggleAclModule(this)">
+                    <i class="bi bi-shield-lock-fill header-icon"></i>
+                    <span class="header-title">
+                        {{ attribute(lang, m.mod_name).roll.roles | default(attribute(lang, m.mod_name).roll.name) | default(m.mod_name) }}
+                    </span>
+                    <i class="bi bi-chevron-down chevron"></i>
+                </div>
+                <div class="acl-table-wrapper" style="display: none;">
+                    <table class="acl-table">
+                        <thead>
+                            <tr>
+                                <th>{{ lang.mod_user.admin.user_group }}</th>
+                                {% for grup in gruplar %}
+                                    <th>
+                                        <div class="acl-group-toggle">
+                                            <input type="checkbox" class="acl-checkbox" onchange="toggleGroup(this, '{{ m.mod_id }}', '{{ grup.group_id }}')">
+                                            <span class="acl-group-name">{{ lang.mod_user.groups[grup.name] | default(grup.name) }}</span>
+                                        </div>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for roll in attribute(roller, mod_id) %}
+                                <tr>
+                                    {% set roll_name = roll.roll_name %}
+                                    <td>{{ attribute(attribute(lang, mod_name).roll, roll.roll_name) | default(roll.roll_name) }}</td>
+                                    {% for grup in gruplar %}
+                                        <td>
+                                            <input type="checkbox"
+                                                   class="acl-checkbox g-{{ m.mod_id }}-{{ grup.group_id }}"
+                                                   name="list[{{ grup.group_id }}][{{ m.mod_id }}][{{ roll.roll_id }}]"
+                                                   {% for p in permler %}
+                                                       {% if grup.group_id == p.group_id and m.mod_id == p.mod_id and roll.roll_id == p.roll_id %}
+                                                           checked="checked"
+                                                       {% endif %}
+                                                   {% endfor %}>
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item active" onclick="window.history.back()">
+            <i class="bi bi-x-lg"></i>
+            <span>{{ lang.mod_user.button.vazgec }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="document.getElementById('aclForm').submit()">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <button class="toolbar-item active" onclick="document.getElementById('aclForm').submit()">
+            <i class="bi bi-floppy-fill"></i>
+            <span>{{ lang.mod_user.admin.refresh_permissions }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Toggle module accordion
+    function toggleAclModule(header) {
+        var wrapper = header.nextElementSibling;
+        var chevron = header.querySelector('.chevron');
+        if (wrapper.style.display === 'none') {
+            wrapper.style.display = 'block';
+            chevron.classList.add('open');
+        } else {
+            wrapper.style.display = 'none';
+            chevron.classList.remove('open');
+        }
+    }
+
+    // Toggle all checkboxes in a group column
+    function toggleGroup(el, modId, groupId) {
+        var checked = el.checked;
+        var cells = document.querySelectorAll('.g-' + modId + '-' + groupId);
+        cells.forEach(function(cb) {
+            cb.checked = checked;
+        });
+    }
+
+    // Hidden submit button
+    (function() {
+        var form = document.getElementById('aclForm');
+        if (form) {
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'gonder';
+            hidden.value = '{{ lang.mod_user.admin.refresh_permissions }}';
+            form.appendChild(hidden);
+        }
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+{% set oke = ctx_get('oke') %}
+{% set mesaj = ctx_get('mesaj') %}
+{% set errors = ctx_get('errors') %}
+{% set email = ctx_get('email') %}
+{% set captcha_image = ctx_get('captcha_image') %}
+<div class="sayfa">
+    <div class="sayfa_ust">
+        <h2>{{ lang.mod_user.re_activation.activation_code }}</h2>
+    </div>
+    <div class="sayfa_icerik">
+        {% if oke is defined %}
+            <!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+            <p class="mesaj oke">{{ mesaj }}</p>
+            <!--[if !IE]>Oke Mesajı Varsa<![endif]-->
+        {% else %}
+            <p class="mesaj bilgi">{{ lang.mod_user.re_activation.write_email }}</p>
+            {% if errors is defined %}
+                <!--[if !IE]>Hata Mesajı Varsa<![endif]-->
+                {% for error in errors %}
+                    <p class="mesaj error">
+                        <strong>{{ error }}</strong>
+                    </p>
+                {% endfor %}
+                <!--[if !IE]>Hata Mesajı Varsa<![endif]-->
+            {% endif %}
+            <form method="post" action="" id="re_activation">
+                <!-- İnputlar Kısım Başlar-->
+                <div class="inputlar">
+                    <p>
+                        <label for="email">{{ lang.mod_user.re_activation.email }}:</label>
+                        <input class="validate[required,custom[email]]"
+                               type="text"
+                               name="email"
+                               id="email"
+                               value="{{ email }}" />
+                    </p>
+                    <p>
+                        <label for="captcha">{{ lang.mod_user.re_activation.security_code }}:</label>
+                        <input class="validate[required]"
+                               type="text"
+                               name="captcha"
+                               id="captcha"
+                               parent_id="captcha" />
+                    </p>
+                    <p>
+                        <label for="re_activation">
+                            <img src="{{ captcha_image }}">
+                        </label>
+                        <input name="re_activation"
+                               type="submit"
+                               value="{{ lang.mod_user.re_activation.send_button }}">
+                    </p>
+                </div>
+                <!-- İnputlar Kısmı Biter -->
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

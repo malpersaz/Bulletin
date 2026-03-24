@@ -1,0 +1,201 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+{% set d = ctx_get('d') %}
+{% set list_root = ctx_get('list_root') %}
+{% set parent_id_list = ctx_get('parent_id_list') %}
+{% set list = ctx_get('list') %}
+{% set parent_id_list_root = ctx_get('parent_id_list_root') %}
+{% set res = ctx_get('res') %}
+{% set dosya = ctx_get('file') %}
+{% set altsayfalar = ctx_get('altsayfalar') %}
+{% set contents = ctx_get('contents') %}
+<div class="row" id="mod_page">
+    <div class="card">
+        <div class="card-header">
+            <ol class="breadcrumb panel-title">
+                <li>
+                    <a href="{{ site.sadres }}">{{ lang.index.home }}</a>
+                </li>
+                <li class="active">{{ d.name }}</li>
+            </ol>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% if list_root is not empty or parent_id_list is not empty %}
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="col-md-12 col-md-12 col-12">
+                                {% for l in list %}
+                                    {% if list_root == l.id %}
+                                        <p class="root">
+                                            <i class="fa fa-gear"></i> {{ l.name }}
+                                        </p>
+                                    {% else %}
+                                        {% if l.lang == site.lang %}
+                                            <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
+                                                <a href="{{ site.sadres }}s/{{ l.seo }}">{{ l.name }}</a>
+                                            </p>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if parent_id_list is not empty %}
+                                    {% for l in parent_id_list %}
+                                        {% if parent_id_list_root == l.id %}
+                                            <p class="root">
+                                                <i class="fa fa-gear"></i> {{ l.name }}
+                                            </p>
+                                        {% else %}
+                                            {% if l.lang == site.lang %}
+                                                <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
+                                                    <a href="{{ site.sadres }}s/{{ l.seo }}">{{ l.name }}</a>
+                                                </p>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                    {% else %}
+                        <div class="col-md-12">
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-md-6 col-md-6 col-12">{% include "default/partials/share.twig" %}</div>
+                            <div class="col-md-6 col-md-6 col-12">
+                                <div class="akm_tools">
+                                    <a href="{{ site.sadres }}tools/saveHtml/mod_page/{{ d.id }}"
+                                       class="saveHtml"
+                                       data-bs-toggle="tooltip"
+                                       data-placement="top"
+                                       title="{{ lang.index.mod_gallery.1 }}"></a>
+                                    <a href="{{ site.sadres }}tools/saveText/mod_page/{{ d.id }}"
+                                       class="saveText"
+                                       data-bs-toggle="tooltip"
+                                       data-placement="top"
+                                       title="{{ lang.index.mod_gallery.2 }}"></a>
+                                    {% if res is not empty %}
+                                        <a href="{{ site.sadres }}tools/saveAll/mod_page/{{ d.id }}"
+                                           class="saveAll"
+                                           data-bs-toggle="tooltip"
+                                           data-placement="top"
+                                           title="{{ lang.index.mod_gallery.3 }}"></a>
+                                    {% endif %}
+                                    <a href="javascript:void(0)"
+                                       onclick="$('#akm_icerik').printThis({ pageTitle: '{{ d.name }}' });"
+                                       class="print tooltipster"
+                                       title="{{ lang.index.mod_gallery.4 }}"
+                                       data-bs-toggle="tooltip"
+                                       data-placement="top"></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="akm_icerik">
+                            <div class="page-header">
+                                <h1>{{ d.name }}</h1>
+                            </div>
+                            {% if d.deck is defined and d.deck == 'y' %}
+                                <blockquote>
+                                    {{ d.summary }}
+                                </blockquote>
+                            {% endif %}
+                            {% if d.image != '' %}
+                                <div class="thumbnail">
+                                    <img src="{{ site.radres }}mod_page/{{ d.image }}"
+                                         parent_id="{{ d.name }},{{ d.keywords }}">
+                                </div>
+                            {% endif %}
+                            {{ d.content|raw }}
+                        </div>
+                        <hr>
+                        <div class="row">
+                            {% if res is not empty %}
+                                <div class="col-md-12 col-md-12 col-12" id="mod_gallery">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="panel-title">Resimler</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            {% set mod_gallery = "e" %}
+                                            <div class="owl-carousel">
+                                                {% for r in res %}
+                                                    <div class="item">
+                                                        <a href="{{ site.radres }}mod_gallery/mod_page/original/{{ r.url }}"
+                                                           data-bs-toggle="lightbox"
+                                                           data-gallery="multiimages"
+                                                           data-title="{{ r.name }}"
+                                                           data-parent="#mod_gallery">
+                                                            <img src="{{ site.radres }}mod_gallery/mod_page/thumb/{{ r.url }}"
+                                                                 parent_id="{{ r.name }}">
+                                                        </a>
+                                                        <a href="{{ site.adres }}tools/gallery_image_save/mod_page/{{ d.id }}/{{ r.id }}"
+                                                           class="dll"
+                                                           title="{{ lang.index.mod_gallery.5 }}"></a>
+                                                        <a href="{{ site.radres }}mod_gallery/mod_page/original/{{ r.url }}"
+                                                           class="tdll"
+                                                           data-bs-toggle="lightbox"
+                                                           data-gallery="multiimages"
+                                                           data-title="{{ r.name }}"
+                                                           data-parent="#mod_gallery"
+                                                           title="{{ lang.index.mod_gallery.6 }}"></a>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if dosya is not empty %}
+                                <div class="col-md-6 col-md-6 col-12">
+                                    <p class="root">
+                                        <span class="glyphicon glyphicon-download" aria-hidden="true"></span> {{ lang.index.mod_page.1 }}
+                                    </p>
+                                    {% for do in dosya %}
+                                        <p class="list-group-item">
+                                            <a href="{{ site.adres }}tools/saveFile/mod_page/{{ d.id }}/{{ do.id }}">{{ do.name }}</a>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if altsayfalar is not empty %}
+                                <!-- Alt Sayfalar -->
+                                <div class="col-md-6 col-md-6 col-12">
+                                    <p class="root">
+                                        <span class="fa fa-file-o" aria-hidden="true"></span> {{ lang.index.mod_page.3 }}
+                                    </p>
+                                    {% for sayfa in altsayfalar %}
+                                        <p class="list-group-item">
+                                            <a href="{{ site.sadres }}s/{{ sayfa.seo }}"
+                                               title="{% if sayfa.summary != '' %}{{ sayfa.summary }}{% else %}{{ sayfa.name }}{% endif %}"
+                                               data-bs-toggle="tooltip">{{ sayfa.name }}</a>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                                <!-- Alt Sayfalar -->
+                            {% endif %}
+                            {% if contents is not empty %}
+                                <!-- İlişkli İçerikler -->
+                                <div class="col-md-6 col-md-6 col-12">
+                                    <p class="root">
+                                        <span class="fa fa-file-o" aria-hidden="true"></span> {{ lang.index.mod_page.2 }}
+                                    </p>
+                                    {% for content in contents %}
+                                        <p class="list-group-item">
+                                            <a href="{{ site.sadres }}article/{{ content.seo }}"
+                                               title="{% if content.summary == '' %}{{ content.summary }}{% else %}{{ content.name }}{% endif %}"
+                                               target="_blank"
+                                               data-bs-toggle="tooltip">{{ content.name }}</a>
+                                        </p>
+                                    {% endfor %}
+                                </div>
+                                <!-- İlişkili İçerikler -->
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

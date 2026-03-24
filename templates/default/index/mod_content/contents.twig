@@ -1,0 +1,175 @@
+{% extends "layouts/base.twig" %}
+
+{% set kategoriler = ctx_get('categories') %}
+{% set category_seo = ctx_get('category_seo') %}
+{% set categoryname = ctx_get('categoryname') %}
+{% set contents = ctx_get('contents') %}
+{% set sayfalama = ctx_get('sayfalama') %}
+{% set sayfa = ctx_get('sayfa') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.sadres }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
+{% endblock %}
+
+{% block title %}
+    <title>
+        {% if category_seo is not empty and category_seo != 'all' %}
+            {{ categoryname }} - {{ lang.index.mod_content.2 }} - {{ site.title }}
+        {% else %}
+            {{ lang.index.mod_content.2 }} - {{ site.title }}
+        {% endif %}
+    </title>
+{% endblock %}
+
+{% block content %}
+<div class="row mt-4" id="mod_content_list">
+
+    <!-- Kategori Sidebar -->
+    <div class="col-lg-3 col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-folder me-2"></i>{{ lang.index.mod_content.2 }}
+                </h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{{ site.sadres }}category"
+                   class="list-group-item list-group-item-action{% if category_seo == 'all' or category_seo is empty %} active{% endif %}">
+                    <i class="bi bi-grid me-2"></i>{{ lang.index.mod_content.2 }}
+                </a>
+                {% for kat in kategoriler %}
+                    {% if kat.content_count > 0 %}
+                    <a href="{{ site.sadres }}category/{{ kat.seo }}"
+                       class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
+                        <i class="bi bi-folder2-open me-2"></i>{{ kat.name }}
+                        <span class="badge bg-secondary rounded-pill float-end">{{ kat.content_count }}</span>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9 col-md-8">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-4" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" href="{{ site.sadres }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                {% if category_seo is not empty and category_seo != 'all' %}
+                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                        <a itemprop="item" href="{{ site.sadres }}category"><span itemprop="name">{{ lang.index.mod_content.2 }}</span></a>
+                        <meta itemprop="position" content="2" />
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                        <span itemprop="name">{{ categoryname }}</span>
+                        <meta itemprop="position" content="3" />
+                    </li>
+                {% else %}
+                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                        <span itemprop="name">{{ lang.index.mod_content.2 }}</span>
+                        <meta itemprop="position" content="2" />
+                    </li>
+                {% endif %}
+            </ol>
+        </nav>
+
+        <!-- Page Header -->
+        {% if category_seo is not empty and category_seo != 'all' %}
+            <div class="card mb-4 border-0 bg-light">
+                <div class="card-body text-center">
+                    <h1 class="h2 mb-2">{{ categoryname }}</h1>
+                    <p class="text-muted mb-0">{{ lang.index.mod_content.1|format(categoryname) }}</p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Content Grid -->
+        {% if contents is not empty %}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for content in contents %}
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <a href="{{ site.sadres }}article/{{ content.seo }}" title="{{ content.name }}" class="text-decoration-none">
+                                {% if content.image is not empty %}
+                                    <img src="{{ site.radres }}mod_content/thumb/{{ content.image }}"
+                                         class="card-img-top"
+                                         style="height: 200px; object-fit: cover;"
+                                         parent_id="{{ content.name }}"
+                                         loading="lazy">
+                                {% else %}
+                                    <img src="{{ site.radres }}mod_settings/logo.png"
+                                         class="card-img-top p-4 bg-light"
+                                         style="height: 200px; object-fit: contain;"
+                                         parent_id="{{ content.name }}"
+                                         loading="lazy">
+                                {% endif %}
+                            </a>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">
+                                    <a href="{{ site.sadres }}article/{{ content.seo }}"
+                                       title="{{ content.name }}"
+                                       class="text-decoration-none text-dark">
+                                        {{ content.name }}
+                                    </a>
+                                </h5>
+                                <p class="card-text text-muted flex-grow-1">
+                                    {{ content.summary|striptags|slice(0, 150) }}{% if content.summary|length > 150 %}...{% endif %}
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <small class="text-muted">
+                                        <i class="bi bi-calendar3 me-1"></i>
+                                        {{ content.created_at|date('d.m.Y') }}
+                                    </small>
+                                    {% if content.categoryname is defined %}
+                                        <span class="badge bg-primary text-decoration-none">
+                                            {{ content.categoryname }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if sayfalama is not empty %}
+                <nav aria-label="{{ lang.index.mod_content.17 }}" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% for s in sayfalama %}
+                            {% if s == '...' %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% elseif s == sayfa %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ s }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                       href="{{ site.sadres }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}/{% if s != 1 %}{{ s }}{% endif %}"
+                                       title="{{ lang.index.mod_content.16|format(s) }}">{{ s }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h4 class="text-muted">{{ lang.index.mod_content.4 }}</h4>
+                    <p class="text-muted">{{ lang.index.mod_content.18 }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

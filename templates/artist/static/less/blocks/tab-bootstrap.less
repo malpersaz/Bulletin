@@ -1,0 +1,72 @@
+#tab-bootstrap {
+  cursor: pointer;
+  position: relative;
+  margin-bottom: 15px;
+  padding: 5px;
+  border-radius: 5px;
+  background: @beyaz;
+
+  .thumbnail {
+    height: 180px !important;
+    overflow: hidden;
+    padding: 2px 5px;
+    margin: 0 2px;
+    border: none;
+    a {
+      width: 100%;
+      line-height: 18px;
+      max-height: 36px;
+      padding: 0 4px;
+      //margin-bottom: 6px;
+      font-family: 'korolev', Arial, Helvetica, sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      color: @bottapyazi;
+      //text-align: center;
+    //  opacity: 0.8;
+      display: inline-block;
+      img {
+        border-radius: 5px;
+        border: 2px solid @clouds;
+        height: 120px;
+        min-width: 220px;
+        &:hover {
+          //          opacity: 1;
+        }
+      }
+      &:hover {
+    //    opacity: 1;
+        color: #000;
+      }
+    }
+    &:hover{
+      background: #E4F1FB ;
+    }
+  }
+  .owlGuncelControl, .owlFotoControl, .owlVideoControl {
+    .tabcontrol(@bottabowlbg,@bottabowlclor); // blocks/tab.less
+  }
+
+  .nav-tabs {
+    .tabnav(@bottab,@bottaphover,@boottapactive,#787878); // blocks/tab.less
+  }
+
+  #owlVideo {
+    .thumbnail {
+      a {
+        &:before {
+          content: "\f144";
+          font-family: "FontAwesome";
+          /*font-style: normal;
+          font-weight: normal;*/
+          text-decoration: inherit;
+          color: #E9E8E5;
+          font-size: 40px;
+          position: absolute;
+          top: 30%;
+          left: 40%;
+        }
+      }
+    }
+  }
+}

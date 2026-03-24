@@ -1,0 +1,244 @@
+<!-- START: @templates/admin/management/shared/js/base.twig -->
+<!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
+<!-- BEGIN CORE PLUGINS -->
+<!--[if lt IE 9]>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/respond.min.js"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/excanvas.min.js"></script>
+<![endif]--><script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery.min.js" type="text/javascript"> </script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery-migrate.min.js" type="text/javascript"></script>
+<!-- IMPORTANT! Load jquery-ui-1.10.3.custom.min.js before bootstrap.min.js to fix bootstrap tooltip conflict with jquery ui tooltip -->
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery-ui/jquery-ui.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/bootstrap-hover-dropdown/bootstrap-hover-dropdown.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery-slimscroll/jquery.slimscroll.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery.blockui.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/jquery.cokie.min.js" type="text/javascript"></script>
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/uniform/jquery.uniform.min.js" type="text/javascript"></script>
+<!-- END CORE PLUGINS -->
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/scripts/metronic.js" type="text/javascript"></script>
+
+<!-- BEGIN PAGE LEVEL PLUGINS -->
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/select2/select2.min.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/datatables/media/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/bootstrap-toastr/toastr.min.js"></script>
+<script type="text/javascript" src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/plugins/bootbox/bootbox.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tokeninput/1.6.1/jquery.tokeninput.min.js"></script>
+<!-- END PAGE LEVEL PLUGINS -->
+<script src="{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/global/scripts/datatable.js"></script>
+
+<!-- Quill.js Rich Text Editor -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
+{# Common initialization and utility functions #}
+<script>
+Metronic.setAssetsPath('{{ site.tadres }}admin/metronic_v3.6.2/theme/assets/');
+	$(document).ready(function () {
+
+Metronic.init();
+Layout.init();
+
+// Toastr config
+toastr.options = {
+"closeButton": true,
+"debug": false,
+"positionClass": "toast-top-right",
+"onclick": null,
+"showDuration": "1000",
+"hideDuration": "1000",
+"timeOut": "5000",
+"extendedTimeOut": "1000",
+"showEasing": "swing",
+"hideEasing": "linear",
+"showMethod": "fadeIn",
+"hideMethod": "fadeOut"
+};
+$('.form-body select').select2({placeholder: "Select an option", allowClear: true});{% if cookie.okunmamis is defined %}toastr.success('{{ lang.mod_user.unread_messages_count|format(cookie.okunmamis) }}');{% endif %}
+});
+
+// Utility functions
+function oke_message(container, message) {
+toastr.success(message);
+}
+function error_message(container, message) {
+toastr.error(message);
+}
+
+function setTema(tema) {
+$.cookie('admin_template', tema, {
+expires: 7,
+path: '/'
+});
+window.location.reload();
+}
+
+
+// do not forget to change extra/rich_editor.twig for switch between quill and froala
+function rich_editor(selector, options = {}) {
+
+
+rich_editor_quill(selector, options)
+
+// rich_editor_froala(selector,options)
+
+}
+
+
+function rich_editor_froala(selector) {
+var editor = new FroalaEditor(selector);
+}
+// Shared Rich Editor Function using Quill.js
+function rich_editor_quill(selector, options = {}) { // Default configuration
+const defaultConfig = {
+theme: 'snow',
+modules: {
+toolbar: {
+container: [
+[
+{
+'header': [
+1,
+2,
+3,
+4,
+5,
+6,
+false
+]
+}
+],
+[
+'bold', 'italic', 'underline', 'strike'
+],
+[
+{
+'color': []
+}, {
+'background': []
+}
+],
+[
+{
+'font': []
+}
+],
+[
+{
+'align': []
+}
+],
+[
+{
+'list': 'ordered'
+}, {
+'list': 'bullet'
+}
+],
+[
+{
+'indent': '-1'
+}, {
+'indent': '+1'
+}
+],
+[
+'blockquote', 'code-block'
+],
+[
+'link', 'image', 'video'
+],
+['clean'],
+['showHtml']
+],
+handlers: {
+'showHtml': function () {
+const txtAreaId = selector.replace(/[#.]/g, '') + '-html-source';
+const txtArea = document.getElementById(txtAreaId);
+
+if (txtArea) { // Switch back to Rich Text
+const html = txtArea.value;
+quill.clipboard.dangerouslyPasteHTML(html);
+txtArea.remove();
+} else { // Switch to HTML mode
+let html = quill.root.innerHTML;
+// Clean up trailing empty paragraphs
+html = html.replace(/<p><br><\/p>$/, '');
+html = html.replace(/<p><br\/><\/p>$/, '');
+
+const editorContainer = quill.container;
+const newTxtArea = document.createElement('textarea');
+newTxtArea.id = txtAreaId;
+newTxtArea.style.cssText = "width: 100%; height: 100%; border: none; padding: 12px; font-family: monospace; resize: none; position: absolute; top: 0; left: 0; background: white; z-index: 1000;";
+newTxtArea.value = html;
+editorContainer.appendChild(newTxtArea);
+}
+}
+}
+}
+}
+};
+
+// Merge with custom options
+const config = Object.assign({}, defaultConfig, options);
+
+// Initialize Quill editor
+const quill = new Quill(selector, config);
+
+// Add icon for the custom button
+const toolbar = quill.getModule('toolbar');
+if (toolbar) {
+const showHtmlBtn = toolbar.container.querySelector('.ql-showHtml');
+if (showHtmlBtn) {
+showHtmlBtn.innerHTML = '<span style="font-weight:bold; font-size:12px; width:auto; padding:0 5px;">HTML</span>';
+showHtmlBtn.style.width = 'auto';
+}
+}
+
+// Helper to clean content
+function cleanContent(html) {
+return html.replace(/<p><br><\/p>$/, '').replace(/<p><br\/><\/p>$/, '');
+}
+
+// Handle form submission - copy Quill content to hidden textarea
+const element = document.querySelector(selector);
+if (element) { // Create or find associated textarea/input for form submission
+const parentForm = element.closest('form');
+if (parentForm) {
+let hiddenInput = element.parentNode.querySelector('input[type="hidden"]');
+if (! hiddenInput) {
+hiddenInput = document.createElement('input');
+hiddenInput.type = 'hidden';
+hiddenInput.name = element.id || 'content';
+element.parentNode.appendChild(hiddenInput);
+}
+
+// Update hidden input on content change
+quill.on('text-change', function () {
+hiddenInput.value = cleanContent(quill.root.innerHTML);
+});
+
+// Ensure hidden input is updated before submit (especially if in HTML view)
+parentForm.addEventListener('submit', function () {
+const txtAreaId = selector.replace(/[#.]/g, '') + '-html-source';
+const txtArea = document.getElementById(txtAreaId);
+if (txtArea) {
+hiddenInput.value = txtArea.value; // User sees what they typed, trust it
+} else {
+hiddenInput.value = cleanContent(quill.root.innerHTML);
+}
+});
+
+// Set initial value
+hiddenInput.value = cleanContent(quill.root.innerHTML);
+}
+}
+
+return quill;
+}
+</script>
+<!-- END: @templates/admin/management/shared/js/base.twig -->
+<!-- END: @templates/admin/management/shared/js/base.twig -->

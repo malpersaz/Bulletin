@@ -1,0 +1,112 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_page.list }}{% endblock %}
+{% block headline %}{{ lang.mod_page.list }}{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% macro render_tree(items, parent_id, level) %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.name|lower }}">
+                <div class="m3-list-card" onclick="selectMenu('{{ entry.id }}', this)">
+                    <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
+                    
+                    {% if items[entry.id] is defined %}
+                        <button class="toggle-btn" onclick="toggleMenu(this, event)">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% else %}
+                        <div style="width:24px; margin-right:4px;"></div> <!-- Spacer -->
+                    {% endif %}
+
+                    <div class="card-thumb">
+                        {% if entry.image %}
+                            <img src="{{ site.radres }}mod_page/thumb/{{ entry.image }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                        {% else %}
+                            <i class="bi bi-file-text"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-title">{{ entry.name }}</div>
+                        <div class="card-meta">
+                            <span class="meta-badge">{{ entry.lang|upper }}</span>
+                            <span class="meta-id">#{{ entry.id }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if items[entry.id] is defined %}
+                    <div class="list-children">
+                        {{ _self.render_tree(items, entry.id, level + 1) }}
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="content-list" id="menuRootList">
+    
+    <!-- Reorder Toggle Bar -->
+    <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+        <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
+            <i class="bi bi-lock-fill" id="reorderIcon"></i>
+            <span id="reorderText">{{ lang.mod_page.actions.unlock_reorder }}</span>
+        </button>
+    </div>
+
+    {% if select_nested_mod_page_result[0] is defined %}
+        {{ _self.render_tree(select_nested_mod_page_result, 0, 0) }}
+    {% else %}
+        <div class="empty-state-container">
+            <div class="empty-icon-box">
+                 <i class="bi bi-file-text"></i>
+            </div>
+            <h2 style="font-weight: 800;">{{ lang.mod_page.empty.no_pages }}</h2>
+            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_page/add'">
+                <i class="bi bi-plus-lg"></i>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_page.button.edit|default('Biguhere') }}</span>
+        </button>
+
+        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_page/add'">
+            <i class="bi bi-plus-lg"></i>
+        </div>
+
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_page.button.delete|default('Jê bibe') }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    {% include 'mod_page/script.twig' %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var wrapper = document.querySelector('.mobile-wrapper');
+            if(wrapper) {
+                wrapper.classList.add('mesh-bg');
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,34 @@
+{{ run({"mod": "index", "method": "_slider", "extra": [1]}) }}
+{% set slider = ctx_get('slider') %}
+{% if slider %}
+<section class="soul-hero">
+    <div id="mainSlider" class="soul-slider">
+        <div class="soul-inner">
+            {% set slide = slider|first %}
+                <div class="soul-item active">
+                    {% if slide.url is not empty %}
+                        <!-- Kodê url yê resen wek data-original-href hat parastin -->
+                        <a href="javascript:void(0);" data-original-href="{{ slide.url }}" onclick="return false;" class="soul-slide-link" title="" {% if slide.target != 'y' %}target="_blank"{% endif %} style="cursor: default;">
+                    {% endif %}
+                        <picture>
+                            {% if slide.image_mobile %}
+                            <source media="(max-width: 767px)" srcset="{{ site.radres }}mod_slider/{{ slide.image_mobile }}">
+                            {% endif %}
+                            <img src="{{ site.radres }}mod_slider/{{ slide.image }}" class="d-block w-100 soul-slide-image" alt="" loading="lazy">
+                        </picture>
+                        <div class="soul-slide-overlay"></div>
+                    {% if slide.url is not empty %}
+                        </a>
+                    {% endif %}
+                </div>
+        </div>
+    </div>
+</section>
+{% else %}
+<section class="soul-hero soul-hero-fallback">
+    <div class="soul-fallback-media">
+        <img src="{{ site.tadres }}{{ site.app_template }}/static/img/bg.jpg" class="soul-slide-image" alt="{{ site.title }}" loading="lazy">
+        <div class="soul-slide-overlay"></div>
+    </div>
+</section>
+{% endif %}
