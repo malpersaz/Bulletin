@@ -271,3 +271,16 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'Alla publikationer';
+$lang['index']['mod_publication']['3'] = 'publikation,tidskrift,nummer';
+$lang['index']['mod_publication']['4'] = 'Inga publikationer hittades i denna kategori!';
+$lang['index']['mod_publication']['5'] = '%s Publikationsarkiv - Sida %s';
+$lang['index']['mod_publication']['7'] = 'Denna publikation publicerades den %s i kategorin <a href="%s" title="%s">%s</a>';
+$lang['index']['mod_publication']['18'] = 'Det finns inga publikationer i denna kategori.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'Våra publikationer',
+    '2' => 'Alla publikationer',
+    '3' => 'No published content is available yet.',
+];

@@ -108,6 +108,28 @@ class index_mod extends indexBase
         unset($news);
     }
 
+    public function publication($seo = null)
+    {
+        Load::lib("Session");
+        $publication = Load::helper("index.mod_publication");
+        $publication->publication($seo);
+        unset($publication);
+    }
+
+    public function publications($category = null, $sayfa = 1)
+    {
+        $publication = Load::helper("index.mod_publication");
+        $publication->publications($category, $sayfa);
+        unset($publication);
+    }
+
+    public function publication_archive()
+    {
+        $publication = Load::helper('index.mod_publication');
+        $publication->archive();
+        unset($publication);
+    }
+
     public function announcement($id = null)
     {
         $announcement = Load::helper("index.mod_announcements");
@@ -220,6 +242,36 @@ class index_mod extends indexBase
         $result = $helper->_latest_content($limit, $select);
         $t->ctx_set('latest_news', $result);
         unset($helper);
+    }
+
+    public function _latest_publications($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_publication');
+        $result = $helper->_latest_publications($limit, $select);
+        $t->ctx_set('latest_publications', $result);
+        unset($helper);
+    }
+
+    public function _latest_authors($t, $limit)
+    {
+        $helper = Load::helper('index.mod_publication');
+        $result = $helper->_latest_authors($limit);
+        $t->ctx_set('latest_authors', $result);
+        unset($helper);
+    }
+
+    public function authors($limit = 10)
+    {
+        $publication = Load::helper("index.mod_publication");
+        $publication->authors($limit);
+        unset($publication);
+    }
+
+    public function author($username = null, $sayfa = 1)
+    {
+        $publication = Load::helper("index.mod_publication");
+        $publication->author($username, $sayfa);
+        unset($publication);
     }
 
     public function categorySitemap($sayfa = 1)

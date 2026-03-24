@@ -1,0 +1,22 @@
+{{ run({"mod": "index", "method": "_latest_authors", "extra": [5]}) }}
+{% set latest_authors = ctx_get('latest_authors') %}
+
+{% if latest_authors %}
+<div class="author-main fit-main">
+    <ul class="owl-carousel clearfix">
+        {% for key, author in latest_authors %}
+        <li class="{% if key is odd %}r{% else %}l{% endif %} clearfix">
+            <a class="c" href="{{ site.sadres }}publication/{{ author.seo }}">
+                <span>{{ author.u_name }} {{ author.u_last_name }}</span>{{ author.name }}
+            </a>
+            <a class="i" href="{{ site.sadres }}publication/{{ author.seo }}">
+                {% if author.user_image is defined and author.user_image is not empty %}
+                <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
+                {% endif %}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <div class="sub"><a href="{{ site.sadres }}authors">» <h2>{{ lang.index.mod_publication.authors|default('Authors') }}</h2></a></div>
+</div>
+{% endif %}

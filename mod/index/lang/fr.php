@@ -152,3 +152,16 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'Toutes les publications';
+$lang['index']['mod_publication']['3'] = 'publication,journal,numéro';
+$lang['index']['mod_publication']['4'] = 'Aucune publication trouvée dans cette catégorie !';
+$lang['index']['mod_publication']['5'] = 'Archives des publications %s - Page %s';
+$lang['index']['mod_publication']['7'] = 'Cette publication a été publiée le %s dans la catégorie <a href="%s" title="%s">%s</a>';
+$lang['index']['mod_publication']['18'] = 'Aucune publication disponible dans cette catégorie.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'Nos publications',
+    '2' => 'Toutes les publications',
+    '3' => 'No published content is available yet.',
+];

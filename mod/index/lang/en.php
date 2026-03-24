@@ -79,6 +79,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'Our Content',
     '2' => 'All Content',
+    '3' => 'No published news is available yet.',
 ];
 
 
@@ -266,3 +267,15 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'All Publications';
+$lang['index']['mod_publication']['3'] = 'publication,journal,issue';
+$lang['index']['mod_publication']['4'] = 'No publications found in this category!';
+$lang['index']['mod_publication']['5'] = '%s Publication Archive - Page %s';
+$lang['index']['mod_publication']['7'] = 'This publication was published on %s in <a href="%s" title="%s">%s</a> category';
+$lang['index']['mod_publication']['18'] = 'No publications available in this category.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'Our Publications',
+    '2' => 'All Publications',
+    '3' => 'No published content is available yet.',
+];

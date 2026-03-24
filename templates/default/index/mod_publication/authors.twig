@@ -1,0 +1,37 @@
+{% extends "layouts/base.twig" %}
+
+{% set authors = ctx_get('authors') %}
+
+{% block content %}
+<div class="page-title">
+    <div class="container">
+        <ol>
+            <li>
+                <h1>{{ lang.index.mod_publication.authors|default('Authors') }}</h1>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="page-full">
+    <div class="container">
+        {% if authors %}
+        <div class="author">
+            <div class="row ms-row-fit">
+                {% for author in authors %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                    <section class="item">
+                        {% if author.user_image is defined and author.user_image is not empty %}
+                        <img class="center-block" src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}"/>
+                        {% endif %}
+                        <h2><a href="{{ site.sadres }}author/{{ author.username }}">{{ author.u_name }} {{ author.u_last_name }}</a></h2>
+                        <h3><a href="{{ site.sadres }}publication/{{ author.seo }}">{{ author.name }}</a></h3>
+                        <span class="date">{{ author.created_at|date('d.m.Y H:i') }}</span>
+                    </section>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

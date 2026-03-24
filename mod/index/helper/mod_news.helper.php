@@ -163,6 +163,8 @@ class mod_news_helper extends indexBase
         if ($m->getSize() !== 0) {
             return $m->toArray();
         }
+
+        return [];
     }
 
     public function arsiv()

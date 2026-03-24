@@ -1,0 +1,70 @@
+{% extends "layouts/base.twig" %}
+
+{% set author = ctx_get('author') %}
+{% set publications = ctx_get('publications') %}
+{% set sayfalama = ctx_get('sayfalama') %}
+{% set sayfa = ctx_get('sayfa') %}
+{% set username = ctx_get('username') %}
+
+{% block content %}
+<div class="page-title">
+    <div class="container">
+        <ol itemscope itemtype="http://schema.org/BreadcrumbList">
+            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
+                <a itemprop="item" href="{{ site.sadres }}authors">
+                    <h1 itemprop="name">{{ lang.index.mod_publication.authors|default('Authors') }}</h1>
+                </a>
+            </li>
+            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
+                <h2 itemprop="name">{{ author.u_name }} {{ author.u_last_name }}</h2>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="page-inner">
+    <div class="container clearfix">
+        <div class="page-content">
+            <div class="author-info" itemscope itemtype="http://schema.org/Person">
+                {% if author.user_image is defined and author.user_image is not empty %}
+                <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
+                {% endif %}
+                <div class="info">
+                    <h1 class="name" itemprop="name">{{ author.u_name }} {{ author.u_last_name }}</h1>
+                    {% if author.email is defined and author.email is not empty %}
+                    <span class="email">Email: {{ author.email }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <ul class="author-article">
+                {% for publication in publications %}
+                <li>
+                    <a href="{{ site.sadres }}publication/{{ publication.seo }}"><h3>{{ publication.name }}</h3></a>
+                    <span class="date">{{ publication.created_at|date('d.m.Y H:i') }}</span>
+                    {% if publication.category_seo is defined and publication.category_name is defined %}
+                    <span class="a"><a href="{{ site.lang }}/publications/{{ publication.category_seo }}">{{ publication.category_name }}</a></span>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+            <div class="clear"></div>
+            {% if sayfalama %}
+            <div class="paging_3">
+                <div class="holder">
+                    {% for s in sayfalama %}
+                        {% if s == '...' %}
+                        <span class="seperator">&nbsp;...</span>
+                        {% elseif s == sayfa %}
+                        <a class="number" href="{{ site.sadres }}author/{{ username }}/{{ s }}" rel="page">{{ s }}</a>
+                        {% else %}
+                        <span class="seperator">&nbsp;</span>
+                        <a class="number" href="{{ site.sadres }}author/{{ username }}/{{ s }}" rel="page">{{ s }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {{ include("index/mod_publication/other_authors.twig") }}
+    </div>
+</div>
+{% endblock %}

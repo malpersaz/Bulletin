@@ -1,0 +1,25 @@
+{% set authors = ctx_get('authors') %}
+
+<aside class="base-side clearfix">
+    {{ include("index/karereklam.twig") }}
+    <div class="side-content author-side-list">
+        <div class="side-caption-2">
+            <span>{{ lang.index.mod_publication.other_authors|default('Other Authors') }}</span>
+        </div>
+        <div class="row ms-row-fit">
+            {% if authors %}
+                {% for author in authors %}
+                <div class="item col-xs-12 col-ms-6 col-sm-6 col-md-12">
+                    <a href="{{ site.sadres }}author/{{ author.username }}">
+                        <span class="n">{{ author.u_name }} <span>{{ author.u_last_name }}</span></span>
+                        {% if author.user_image is defined and author.user_image is not empty %}
+                        <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
+                        {% endif %}
+                        <span class="t">{{ author.name }}</span>
+                    </a>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</aside>

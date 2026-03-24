@@ -50,4 +50,11 @@
                aria-label="{{ lang.index.mod_news.latest_content.2 }}">{{ lang.index.mod_news.latest_content.2 }}</a>
         </footer>
     </section>
+{% else %}
+    <section class="container my-4" aria-labelledby="latest-content-heading">
+        <header>
+            <h2 id="latest-content-heading" class="mb-4">{{ lang.index.mod_news.latest_content.1 }}</h2>
+        </header>
+        <div class="alert alert-info mb-0">{{ lang.index.mod_news.latest_content.3 }}</div>
+    </section>
 {% endif %}

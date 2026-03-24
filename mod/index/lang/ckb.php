@@ -251,3 +251,16 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'هەموو بڵاوکراوەکان';
+$lang['index']['mod_publication']['3'] = 'بڵاوکراوە,گۆڤار,ژمارە';
+$lang['index']['mod_publication']['4'] = 'لەو پۆلەدا هیچ بڵاوکراوەیەک نەدۆزرایەوە!';
+$lang['index']['mod_publication']['5'] = 'ئەرشیفی بڵاوکراوەکانی %s - لاپەڕەی %s';
+$lang['index']['mod_publication']['7'] = 'ئەم بڵاوکراوەیە لە %s لە پۆلی <a href="%s" title="%s">%s</a> بڵاو کراوەتەوە';
+$lang['index']['mod_publication']['18'] = 'لەو پۆلەدا هیچ بڵاوکراوەیەکی بەردەست نییە.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'بڵاوکراوەکانمان',
+    '2' => 'هەموو بڵاوکراوەکان',
+    '3' => 'No published content is available yet.',
+];

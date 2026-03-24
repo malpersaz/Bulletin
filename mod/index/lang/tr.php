@@ -78,6 +78,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'İçeriklerimiz',
     '2' => 'Tüm İçerikler',
+    '3' => 'Halen yayinlanmis bir haber bulunamadi.',
 ];
 
 $lang['index']['mod_video'] = [
@@ -255,3 +256,15 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'Tüm Yayınlar';
+$lang['index']['mod_publication']['3'] = 'yayın,dergi,sayı';
+$lang['index']['mod_publication']['4'] = 'Bu kategoride yayın bulunamadı!';
+$lang['index']['mod_publication']['5'] = '%s Yayın Arşivi - Sayfa %s';
+$lang['index']['mod_publication']['7'] = 'Bu yayın %s tarihinde <a href="%s" title="%s">%s</a> kategorisinde yayınlanmıştır';
+$lang['index']['mod_publication']['18'] = 'Bu kategoride kullanılabilir yayın bulunmuyor.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'Yayınlarımız',
+    '2' => 'Tüm Yayınlar',
+    '3' => 'Halen yayinlanmis bir icerik bulunamadi.',
+];

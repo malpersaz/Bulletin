@@ -1,0 +1,63 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+{% set d = ctx_get('d') %}
+{% set archive_categories = ctx_get('archive_categories') %}
+{% set category_id = ctx_get('category_id') %}
+{% set arsiv_yil = ctx_get('arsiv_yil') %}
+{% set yil = ctx_get('yil') %}
+{% set ay = ctx_get('ay') %}
+{% set bulunamadi = ctx_get('bulunamadi') %}
+{% set publications = ctx_get('publications') %}
+
+<div class="row mt-4">
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" action="">
+                    <fieldset>
+                        <legend>{{ d.name }}</legend>
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">{{ lang.index.mod_publication.12 }}</label>
+                            <select id="category_id" name="category_id" class="form-select">
+                                <option value="*"{% if category_id == '*' %} selected{% endif %}>*</option>
+                                {% for kat in archive_categories %}
+                                    <option value="{{ kat.id }}"{% if category_id == kat.id %} selected{% endif %}>{{ kat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="yil" class="form-label">{{ lang.index.mod_publication.13 }}</label>
+                            <select id="yil" name="yil" class="form-select">
+                                <option value="*"{% if yil == '*' %} selected{% endif %}>*</option>
+                                {% for year in range(arsiv_yil.min_yil, arsiv_yil.max_yil) %}
+                                    <option value="{{ year }}"{% if yil == year %} selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="ay" class="form-label">{{ lang.index.mod_publication.14 }}</label>
+                            <select id="ay" name="ay" class="form-select">
+                                <option value="*"{% if ay == '*' %} selected{% endif %}>*</option>
+                                {% for ayKey, ayValue in lang.index.mod_publication.aylar %}
+                                    <option value="{{ ayKey + 1 }}"{% if ay == (ayKey + 1) %} selected{% endif %}>{{ ayValue }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button id="ara" name="ara" class="btn btn-success">{{ lang.index.mod_publication.15 }}</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        {% if bulunamadi is not empty %}<h5 class="alert alert-info">{{ lang.index.mod_publication.10 }}</h5>{% endif %}
+        {% if publications is not empty %}
+            <h4 class="alert alert-success">{{ lang.index.mod_publication.11 }}</h4>
+            {% for publication in publications %}
+                <p>{{ publication.created_at|date("Y-m-d") }} - <a href="{{ site.sadres }}publication/{{ publication.seo }}" title="{{ publication.summary != '' ? publication.summary : publication.name }}">{{ publication.name }}</a></p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -270,3 +270,16 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'Hemû Weşan';
+$lang['index']['mod_publication']['3'] = 'weşan,kovar,hejmar';
+$lang['index']['mod_publication']['4'] = 'Di vê kategoriyê de weşan nehatin dîtin!';
+$lang['index']['mod_publication']['5'] = 'Arşîva Weşanan %s - Rûpel %s';
+$lang['index']['mod_publication']['7'] = 'Ev weşan di %s de li kategoriyê <a href="%s" title="%s">%s</a> hate weşandin';
+$lang['index']['mod_publication']['18'] = 'Di vê kategoriyê de weşanek tune.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'Weşanên Me',
+    '2' => 'Hemû Weşan',
+    '3' => 'No published content is available yet.',
+];

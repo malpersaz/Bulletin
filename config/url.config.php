@@ -59,6 +59,18 @@ $url['newses/(:any)']='index/newses/$1';
 $url['newses/(:any)/(:num)']='index/newses/$1/$2';
 $url['news-archive']='index/news_archive';
 
+// Publications and Publication Category
+$url['publication/(:any)']='index/publication/$1';
+$url['publications']='index/publications';
+$url['publications/']='index/publications';
+$url['publications/(:any)']='index/publications/$1';
+$url['publications/(:any)/(:num)']='index/publications/$1/$2';
+$url['publication-archive']='index/publication_archive';
+$url['authors']='index/authors';
+$url['authors/(:num)']='index/authors/$1';
+$url['author/(:any)']='index/author/$1';
+$url['author/(:any)/(:num)']='index/author/$1/$2';
+
 // File
 $url['download/(:num)']='mod_attachment/indir/$1';
 

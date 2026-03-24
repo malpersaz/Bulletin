@@ -93,6 +93,21 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_news", "arsiv");
     }
 
+    public function publication($seo = null)
+    {
+        return $this->_loadHelper("index.mod_publication", "publication", [$seo]);
+    }
+
+    public function publications($category = null, $sayfa = 1)
+    {
+        return $this->_loadHelper("index.mod_publication", "publications", [$category, $sayfa]);
+    }
+
+    public function publication_archive()
+    {
+        return $this->_loadHelper("index.mod_publication", "archive");
+    }
+
     // Mod Announcements
     public function announcement($id = null)
     {
@@ -113,6 +128,26 @@ class index_mod extends indexBase
     public function _latest_news($limit, $select)
     {
         return $this->_loadHelper("index.mod_news", "_latest_content", [$limit, $select]);
+    }
+
+    public function _latest_publications($limit, $select)
+    {
+        return $this->_loadHelper("index.mod_publication", "_latest_publications", [$limit, $select]);
+    }
+
+    public function _latest_authors($limit)
+    {
+        return $this->_loadHelper("index.mod_publication", "_latest_authors", [$limit]);
+    }
+
+    public function authors($limit = 10)
+    {
+        return $this->_loadHelper("index.mod_publication", "authors", [$limit]);
+    }
+
+    public function author($username = null, $sayfa = 1)
+    {
+        return $this->_loadHelper("index.mod_publication", "author", [$username, $sayfa]);
     }
 
     // Latest Announcements

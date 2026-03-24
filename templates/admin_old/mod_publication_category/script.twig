@@ -1,0 +1,117 @@
+<script type="text/javascript">
+    // Response codes from language file
+    var RESPONSE_SUCCESS = '{{ lang.mod_publication_category.responses.success }}';
+    var RESPONSE_ERROR = '{{ lang.mod_publication_category.responses.error }}';
+    var RESPONSE_FATAL_ERROR = '{{ lang.mod_publication_category.responses.fatal_error }}';
+
+    function yenile() {
+        window.location.reload();
+    }
+    var simpleTreeCollection;
+    $(document).ready(function() {
+        simpleTreeCollection = $('.simpleTree').simpleTree({
+            autoclose: false,
+
+
+            afterClick:function(node) {
+            },
+            afterDblClick:function(node) {
+            },
+            afterMove:function(destination, source, pos) {
+                return moveCategory(destination.attr('id'), source.attr('id'));
+            },
+            //	afterAjax:function()
+            //	{
+            //alert('Loaded');
+            //},
+            animate:true
+            ,docToFolderConvert:true
+        });
+
+    });
+    function deleteCategory(id) {
+        $.prompt('{{ lang.mod_publication_category.remove_record }}',
+        {
+            buttons:[
+                {title: '{{ lang.mod_publication_category.button.evet }}',value:true},
+                {title: '{{ lang.mod_publication_category.button.hayir }}',value:false}
+            ],
+            submit: function(v, m, f) {
+                if (v === true) {
+                    deleteRecord(id);
+                }
+            }
+        });
+    }
+
+    function deleteRecord(id) {
+
+        $.post('{{ site.adres }}mod_publication_category/delete', { delete: id},
+                function(data) {
+                    //  console.log(data);
+                    if (data == RESPONSE_SUCCESS) {
+                        $.achtung({
+                            className: 'achtungSuccess',
+                            message: '{{ lang.mod_publication_category.oke }}',
+                            timeout:5
+                        });
+                        yenile();
+                    } else {
+                        $.achtung({
+                            className: 'achtungFail',
+                            message: data,
+                            timeout:5
+                        });
+                    }
+                });
+        return false;
+    }
+
+    function editCategory(id) {
+        window.location = '{{ site.adres }}mod_publication_category/edit/' + id;
+        return false;
+    }
+
+    {% if session.permissions.mod_publication_category.gallery is defined %}
+        function gallery(id){
+            window.location = '{{ site.adres }}mod_gallery/list/mod_publication_category/' + id;
+            return false;
+        }
+    {% endif %}
+
+    {% if session.permissions.mod_publication_category.file is defined %}
+        function dosya(id){
+            window.location = '{{ site.adres }}mod_attachment/list/mod_publication_category/' + id;
+            return false;
+        }
+    {% endif %}
+
+    function moveCategory(parent_id, id) {
+
+        var sira = new Array();
+        $(".root li").each(function() {
+            var rez = $(this).attr("id");
+            if (rez != "") {
+                sira.push(rez);
+                //sira += "&sira[]=" + rez;
+            }
+        });
+        $.post('{{ site.adres }}mod_publication_category/move', { id:  id, parent_id: parent_id, sira:sira },
+                function(data) {
+                    if (data == RESPONSE_SUCCESS) {
+                        $.achtung({
+                            className: 'achtungSuccess',
+                            message: '{{ lang.mod_publication_category.oke }}',
+                            timeout:5
+                        });
+                    } else {
+                        $.prompt(data, {
+                            submit : yenile,
+                            buttons: { Ok:true }
+                        });
+                    }
+                });
+
+    }
+
+</script>

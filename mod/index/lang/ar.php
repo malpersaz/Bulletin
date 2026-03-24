@@ -152,3 +152,16 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_publication'] = $lang['index']['mod_content'];
+$lang['index']['mod_publication']['2'] = 'جميع المنشورات';
+$lang['index']['mod_publication']['3'] = 'منشور,مجلة,عدد';
+$lang['index']['mod_publication']['4'] = 'لم يتم العثور على منشورات في هذا التصنيف!';
+$lang['index']['mod_publication']['5'] = 'أرشيف المنشورات %s - الصفحة %s';
+$lang['index']['mod_publication']['7'] = 'تم نشر هذا الإصدار في %s ضمن تصنيف <a href="%s" title="%s">%s</a>';
+$lang['index']['mod_publication']['18'] = 'لا توجد منشورات متاحة في هذا التصنيف.';
+$lang['index']['mod_publication']['latest_publications'] = [
+    '1' => 'منشوراتنا',
+    '2' => 'جميع المنشورات',
+    '3' => 'No published content is available yet.',
+];
