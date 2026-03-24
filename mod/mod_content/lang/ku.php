@@ -2,7 +2,7 @@
 /**
  * Content Management Module - Kurdish Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_content
  * @version 1.0.0
  * @author  AKM Software

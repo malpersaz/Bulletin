@@ -60,8 +60,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '10',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.',
-                'content' => '<p>AKM Business CMS, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.</p>
+                'summary' => 'Rojname, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.',
+                'content' => '<p>Rojname, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.</p>
                 <p><strong>Öne Çıkan Özellikler:</strong></p>
                     <ul>
                         <li>Çoklu dil desteği</li>
@@ -70,11 +70,11 @@ class mod_content extends installerbase implements installerbaseinterface
                         <li>Güvenli altyapı</li>
                         <li>Mobil uyumlu tasarım</li>
                     </ul>
-                <p>AKM Business CMS sizi web dünyasında hakettiniz yere taşımak için var. Profesyonel çözümlerimizle işletmenizi dijital dünyada öne çıkarın.</p>',
+                <p>Rojname sizi web dünyasında hakettiniz yere taşımak için var. Profesyonel çözümlerimizle işletmenizi dijital dünyada öne çıkarın.</p>',
                 'seo' => 'ornek-icerik',
-                'title' => 'Örnek İçerik - AKM Business CMS',
+                'title' => 'Örnek İçerik - Rojname',
                 'keywords' => 'örnek içerik, akm business cms, web sitesi, içerik yönetimi',
-                'description' => 'AKM Business CMS sizi web dünyasında hakettiniz yere taşımak için var.',
+                'description' => 'Rojname sizi web dünyasında hakettiniz yere taşımak için var.',
                 'user_id' => '1'
             ),
             // English Content
@@ -84,8 +84,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '11',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.',
-                'content' => '<p>AKM Business CMS is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.</p>
+                'summary' => 'Rojname is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.',
+                'content' => '<p>Rojname is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.</p>
 <p><strong>Featured Features:</strong></p>
 <ul>
 <li>Multi-language support</li>
@@ -94,11 +94,11 @@ class mod_content extends installerbase implements installerbaseinterface
 <li>Secure infrastructure</li>
 <li>Mobile-responsive design</li>
 </ul>
-<p>AKM Business CMS exists to take you to your deserved place in the web world. Stand out in the digital world with our professional solutions.</p>',
+<p>Rojname exists to take you to your deserved place in the web world. Stand out in the digital world with our professional solutions.</p>',
                 'seo' => 'sample-content',
-                'title' => 'Sample Content - AKM Business CMS',
+                'title' => 'Sample Content - Rojname',
                 'keywords' => 'sample content, akm business cms, website, content management',
-                'description' => 'AKM Business CMS exists to take you to your deserved place in the web world.',
+                'description' => 'Rojname exists to take you to your deserved place in the web world.',
                 'user_id' => '1'
             ),
             // Arabic content
@@ -108,8 +108,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '12',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.',
-                'content' => '<p>AKM Business CMS هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.</p>
+                'summary' => 'Rojname هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.',
+                'content' => '<p>Rojname هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.</p>
 <p><strong>الميزات البارزة:</strong></p>
 <ul>
 <li>دعم متعدد اللغات</li>
@@ -118,11 +118,11 @@ class mod_content extends installerbase implements installerbaseinterface
 <li>بنية تحتية آمنة</li>
 <li>تصميم متجاوب مع الجوال</li>
 </ul>
-<p>AKM Business CMS موجود لنقلك إلى مكانك المستحق في عالم الويب. تميز في العالم الرقمي بحلولنا الاحترافية.</p>',
+<p>Rojname موجود لنقلك إلى مكانك المستحق في عالم الويب. تميز في العالم الرقمي بحلولنا الاحترافية.</p>',
                 'seo' => 'محتوى-نموذجي',
-                'title' => 'محتوى نموذجي - AKM Business CMS',
+                'title' => 'محتوى نموذجي - Rojname',
                 'keywords' => 'محتوى نموذجي، akm business cms، موقع ويب، إدارة المحتوى',
-                'description' => 'AKM Business CMS موجود لنقلك إلى مكانك المستحق في عالم الويب.',
+                'description' => 'Rojname موجود لنقلك إلى مكانك المستحق في عالم الويب.',
                 'user_id' => '1'
             ),
             // German Content
@@ -132,8 +132,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '13',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.',
-                'content' => '<p>AKM Business CMS ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.</p>
+                'summary' => 'Rojname ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.',
+                'content' => '<p>Rojname ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.</p>
 <p><strong>Hervorgehobene Funktionen:</strong></p>
 <ul>
 <li>Mehrsprachige Unterstützung</li>
@@ -142,11 +142,11 @@ class mod_content extends installerbase implements installerbaseinterface
 <li>Sichere Infrastruktur</li>
 <li>Mobiles responsives Design</li>
 </ul>
-<p>AKM Business CMS existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen. Heben Sie sich in der digitalen Welt mit unseren professionellen Lösungen hervor.</p>',
+<p>Rojname existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen. Heben Sie sich in der digitalen Welt mit unseren professionellen Lösungen hervor.</p>',
                 'seo' => 'beispielinhalt',
-                'title' => 'Beispielinhalt - AKM Business CMS',
+                'title' => 'Beispielinhalt - Rojname',
                 'keywords' => 'Beispielinhalt, akm business cms, Website, Content-Management',
-                'description' => 'AKM Business CMS existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen.',
+                'description' => 'Rojname existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen.',
                 'user_id' => '1'
             ),
             // French Content
@@ -156,8 +156,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '14',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.',
-                'content' => '<p>AKM Business CMS est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.</p>
+                'summary' => 'Rojname est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.',
+                'content' => '<p>Rojname est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.</p>
                 <p><strong>Fonctionnalités en vedette :</strong></p>
                     <ul>
                         <li>Support multilingue</li>
@@ -166,11 +166,11 @@ class mod_content extends installerbase implements installerbaseinterface
                         <li>Infrastructure sécurisée</li>
                         <li>Design responsive mobile</li>
                     </ul>
-                <p>AKM Business CMS existe pour vous amener à votre place méritée dans le monde du web. Mettez-vous en avant dans le monde numérique avec nos solutions professionnelles.</p>',
+                <p>Rojname existe pour vous amener à votre place méritée dans le monde du web. Mettez-vous en avant dans le monde numérique avec nos solutions professionnelles.</p>',
                 'seo' => 'contenu-exemple',
-                'title' => 'Contenu d\'exemple - AKM Business CMS',
+                'title' => 'Contenu d\'exemple - Rojname',
                 'keywords' => 'contenu d\'exemple, akm business cms, site web, gestion de contenu',
-                'description' => 'AKM Business CMS existe pour vous amener à votre place méritée dans le monde du web.',
+                'description' => 'Rojname existe pour vous amener à votre place méritée dans le monde du web.',
                 'user_id' => '1'
             ),
             // Kurdish Kurmancî Content
@@ -180,8 +180,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '15',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.',
-                'content' => '<p>AKM Business CMS pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.</p>
+                'summary' => 'Rojname pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.',
+                'content' => '<p>Rojname pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.</p>
                 <p><strong>Xwediyên balkêş:</strong></p>
                     <ul>
                         <li>Piştgiriya zimanên pirjimar</li>
@@ -190,11 +190,11 @@ class mod_content extends installerbase implements installerbaseinterface
                         <li>Altyapî ya ewle</li>
                         <li>Dîzayna mobîl-a bersivdar</li>
                     </ul>
-                <p>AKM Business CMS heye ku tu bigihîjî cihê xwe yê li cîhana webê. Bi çareseriya profesyonelên me xwe di cîhana dîjîtal de deynin pêş.</p>',
+                <p>Rojname heye ku tu bigihîjî cihê xwe yê li cîhana webê. Bi çareseriya profesyonelên me xwe di cîhana dîjîtal de deynin pêş.</p>',
                 'seo' => 'naveroka-mînak',
-                'title' => 'Naveroka Mînak - AKM Business CMS',
+                'title' => 'Naveroka Mînak - Rojname',
                 'keywords' => 'naveroka mînak, akm business cms, malper, rêveberiya naverokê',
-                'description' => 'AKM Business CMS heye ku tu bigihîjî cihê xwe yê li cîhana webê.',
+                'description' => 'Rojname heye ku tu bigihîjî cihê xwe yê li cîhana webê.',
                 'user_id' => '1'
             ),
             // Kurdish Soranî Content
@@ -204,8 +204,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '16',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.',
-                'content' => '<p>AKM Business CMS سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.</p>
+                'summary' => 'Rojname سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.',
+                'content' => '<p>Rojname سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.</p>
 <p><strong>تایبەتمەندیە سەرنجڕاکێشەکان:</strong></p>
 <ul>
 <li>پشتگیری فرەزمانی</li>
@@ -214,11 +214,11 @@ class mod_content extends installerbase implements installerbaseinterface
 <li>ژێرخانی پارێزراو</li>
 <li>دیزاینی وەڵامدەرەوەی مۆبایل</li>
 </ul>
-<p>AKM Business CMS بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا. لە جیهانی دیجیتاڵدا بە چارەسەرە پیشەیییەکانمان جیاوازبە.</p>',
+<p>Rojname بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا. لە جیهانی دیجیتاڵدا بە چارەسەرە پیشەیییەکانمان جیاوازبە.</p>',
                 'seo' => 'ناوەڕۆکی-نموونە',
-                'title' => 'ناوەڕۆکی نموونە - AKM Business CMS',
+                'title' => 'ناوەڕۆکی نموونە - Rojname',
                 'keywords' => 'ناوەڕۆکی نموونە، akm business cms، ماڵپەڕ، بەڕێوەبردنی ناوەڕۆک',
-                'description' => 'AKM Business CMS بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا.',
+                'description' => 'Rojname بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا.',
                 'user_id' => '1'
             ),
             // Swedish Content
@@ -228,8 +228,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '17',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.',
-                'content' => '<p>AKM Business CMS är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.</p>
+                'summary' => 'Rojname är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.',
+                'content' => '<p>Rojname är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.</p>
 <p><strong>Utmärkta funktioner:</strong></p>
 <ul>
 <li>Flerspråkigt stöd</li>
@@ -238,11 +238,11 @@ class mod_content extends installerbase implements installerbaseinterface
 <li>Säker infrastruktur</li>
 <li>Mobilanpassad design</li>
 </ul>
-<p>AKM Business CMS finns för att ta dig till din förtjänta plats i webbvärlden. Stå ut i den digitala världen med våra professionella lösningar.</p>',
+<p>Rojname finns för att ta dig till din förtjänta plats i webbvärlden. Stå ut i den digitala världen med våra professionella lösningar.</p>',
                 'seo' => 'exempelinnehall',
-                'title' => 'Exempelinnehåll - AKM Business CMS',
+                'title' => 'Exempelinnehåll - Rojname',
                 'keywords' => 'exempelinnehåll, akm business cms, webbplats, innehållshantering',
-                'description' => 'AKM Business CMS finns för att ta dig till din förtjänta plats i webbvärlden.',
+                'description' => 'Rojname finns för att ta dig till din förtjänta plats i webbvärlden.',
                 'user_id' => '1'
             ),
             // Zazaki Content
@@ -252,8 +252,8 @@ class mod_content extends installerbase implements installerbaseinterface
                 'category_id' => '18',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.',
-                'content' => '<p>AKM Business CMS, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.</p>
+                'summary' => 'Rojname, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.',
+                'content' => '<p>Rojname, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.</p>
                 <p><strong>Taybetmendiyê ke Vejênê Pêş:</strong></p>
                     <ul>
                         <li>Paştdayışê zaf-ziwanî</li>
@@ -262,11 +262,11 @@ class mod_content extends installerbase implements installerbaseinterface
                         <li>Altyapiyo ewle</li>
                         <li>Dîzayno ke mobîlî rê munasib o</li>
                     </ul>
-                <p>AKM Business CMS esta ke şima dınyaya webî de berê cayê şima yo heqkerde. Bi çareseriyanê ma yê profesyonelan dınyaya dîjîtale de karsaziya xo vejên pêş.</p>',
+                <p>Rojname esta ke şima dınyaya webî de berê cayê şima yo heqkerde. Bi çareseriyanê ma yê profesyonelan dınyaya dîjîtale de karsaziya xo vejên pêş.</p>',
                 'seo' => 'zerreyo-nimune',
-                'title' => 'Zerreyo Nimûne - AKM Business CMS',
+                'title' => 'Zerreyo Nimûne - Rojname',
                 'keywords' => 'zerreyo nimûne, akm business cms, malper, idarekarda zerreyî',
-                'description' => 'AKM Business CMS esta ke şima dınyaya webî de berê cayê şima yo heqkerde.',
+                'description' => 'Rojname esta ke şima dınyaya webî de berê cayê şima yo heqkerde.',
                 'user_id' => '1'
             )
         );

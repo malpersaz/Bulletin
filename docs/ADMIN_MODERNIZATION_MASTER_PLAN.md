@@ -1,6 +1,6 @@
 # Admin Modernization Master Plan
 
-This document is the single source of truth for the admin panel modernization and the global Turkish-to-English refactoring effort in AKMBusiness.
+This document is the single source of truth for the admin panel modernization and the global Turkish-to-English refactoring effort in Rojname.
 
 Last updated: 2026-03-13
 Current target version: v1.0.45

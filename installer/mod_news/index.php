@@ -60,8 +60,8 @@ class mod_news extends installerbase implements installerbaseinterface
                 'category_id' => '10',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => 'AKM Business CMS altyapısında yayınlanan bu örnek haber, haber modülünün listeleme, detay ve vitrin alanlarını hızlıca doğrulamak için hazırlanmıştır.',
-                'content' => '<p>Bu örnek haber, AKM Business CMS kurulumundan hemen sonra haber akışının doğru çalıştığını göstermek için otomatik olarak oluşturulur.</p>
+                'summary' => 'Rojname altyapısında yayınlanan bu örnek haber, haber modülünün listeleme, detay ve vitrin alanlarını hızlıca doğrulamak için hazırlanmıştır.',
+                'content' => '<p>Bu örnek haber, Rojname kurulumundan hemen sonra haber akışının doğru çalıştığını göstermek için otomatik olarak oluşturulur.</p>
                 <p><strong>Bu örnek haber ile test edebilecekleriniz:</strong></p>
                     <ul>
                         <li>Anasayfa vitrin gösterimi</li>
@@ -72,7 +72,7 @@ class mod_news extends installerbase implements installerbaseinterface
                     </ul>
                 <p>Kurulum sonrasında bu haberi düzenleyebilir, silebilir ya da kendi gerçek haber içeriklerinizle değiştirebilirsiniz.</p>',
                 'seo' => 'ornek-haber',
-                'title' => 'Örnek Haber - AKM Business CMS',
+                'title' => 'Örnek Haber - Rojname',
                 'keywords' => 'örnek haber, haber modülü, akm business cms, haber yönetimi',
                 'description' => 'Haber modülünün kurulumla gelen örnek haberi.',
                 'user_id' => '1'
@@ -96,7 +96,7 @@ class mod_news extends installerbase implements installerbaseinterface
 </ul>
 <p>After setup, you can edit or remove this record and replace it with your own newsroom content.</p>',
                 'seo' => 'sample-news',
-                'title' => 'Sample News - AKM Business CMS',
+                'title' => 'Sample News - Rojname',
                 'keywords' => 'sample news, news module, akm business cms, news management',
                 'description' => 'The sample news entry installed with the news module.',
                 'user_id' => '1'
@@ -120,7 +120,7 @@ class mod_news extends installerbase implements installerbaseinterface
 </ul>
 <p>بعد الإعداد، يمكنك تعديل هذا السجل أو حذفه واستبداله بأخبارك الفعلية.</p>',
                 'seo' => 'خبر-نموذجي',
-                'title' => 'خبر نموذجي - AKM Business CMS',
+                'title' => 'خبر نموذجي - Rojname',
                 'keywords' => 'خبر نموذجي، وحدة الأخبار، akm business cms، إدارة الأخبار',
                 'description' => 'الخبر النموذجي المثبت مع وحدة الأخبار.',
                 'user_id' => '1'
@@ -144,7 +144,7 @@ class mod_news extends installerbase implements installerbaseinterface
 </ul>
 <p>Nach dem Setup koennen Sie diesen Datensatz bearbeiten, loeschen oder durch Ihre eigenen Nachrichten ersetzen.</p>',
                 'seo' => 'beispielnachricht',
-                'title' => 'Beispielnachricht - AKM Business CMS',
+                'title' => 'Beispielnachricht - Rojname',
                 'keywords' => 'Beispielnachricht, News-Modul, akm business cms, Nachrichtenverwaltung',
                 'description' => 'Die Beispielnachricht des News-Moduls.',
                 'user_id' => '1'
@@ -168,7 +168,7 @@ class mod_news extends installerbase implements installerbaseinterface
                     </ul>
                 <p>Apres l\'installation, vous pouvez modifier cette entree, la supprimer ou la remplacer par vos propres actualites.</p>',
                 'seo' => 'actualite-exemple',
-                'title' => 'Actualite d\'exemple - AKM Business CMS',
+                'title' => 'Actualite d\'exemple - Rojname',
                 'keywords' => 'actualite d\'exemple, module news, akm business cms, gestion des actualites',
                 'description' => 'L\'actualite d\'exemple installee avec le module news.',
                 'user_id' => '1'
@@ -192,7 +192,7 @@ class mod_news extends installerbase implements installerbaseinterface
                     </ul>
                 <p>Piştî sazkirinê tu dikarî vê qeydkirinê biguherînî, jê bibî an jî bi nûçeyên xwe yên rastîn bide guhertin.</p>',
                 'seo' => 'nuceya-minak',
-                'title' => 'Nuceya Mînak - AKM Business CMS',
+                'title' => 'Nuceya Mînak - Rojname',
                 'keywords' => 'nuceya mînak, modula nûçeyan, akm business cms, rêveberiya nûçeyan',
                 'description' => 'Nuceya mînak a ku bi modula nûçeyan re tê sazkirin.',
                 'user_id' => '1'
@@ -216,7 +216,7 @@ class mod_news extends installerbase implements installerbaseinterface
 </ul>
 <p>دوای دامەزراندن دەتوانیت ئەم تۆمارە بگۆڕیت، بیسڕیتەوە یان بە هەواڵە ڕاستەقینەکانی خۆت بیگۆڕیت.</p>',
                 'seo' => 'هەواڵی-نموونە',
-                'title' => 'هەواڵی نموونە - AKM Business CMS',
+                'title' => 'هەواڵی نموونە - Rojname',
                 'keywords' => 'هەواڵی نموونە، مۆدیولی هەواڵ، akm business cms، بەڕێوەبردنی هەواڵ',
                 'description' => 'هەواڵی نموونەی دامەزراو لەگەڵ مۆدیولی هەواڵ.',
                 'user_id' => '1'
@@ -240,7 +240,7 @@ class mod_news extends installerbase implements installerbaseinterface
 </ul>
 <p>Efter installationen kan du redigera posten, ta bort den eller ersatta den med dina egna nyheter.</p>',
                 'seo' => 'exempelnyhet',
-                'title' => 'Exempelnyhet - AKM Business CMS',
+                'title' => 'Exempelnyhet - Rojname',
                 'keywords' => 'exempelnyhet, nyhetsmodul, akm business cms, nyhetshantering',
                 'description' => 'Exempelnyheten som installeras med nyhetsmodulen.',
                 'user_id' => '1'
@@ -264,7 +264,7 @@ class mod_news extends installerbase implements installerbaseinterface
                     </ul>
                 <p>Piştî sazkirışi şıma şert o ke nê qeyd biguherênê, bıwazênê ya zi heberanê xo ra bıvurnê.</p>',
                 'seo' => 'hebere-nimune',
-                'title' => 'Heberê Nimûne - AKM Business CMS',
+                'title' => 'Heberê Nimûne - Rojname',
                 'keywords' => 'heberê nimûne, modulê heberan, akm business cms, idarekerdışê heberan',
                 'description' => 'Heberê nimûne ke bi modulê heberan ra tê sazkirış.',
                 'user_id' => '1'

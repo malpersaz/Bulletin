@@ -1,5 +1,5 @@
 /**
- * AKM Business Custom JavaScript
+ * Rojname Custom JavaScript
  * Bootstrap 5.3 Uyumlu Modern JavaScript Fonksiyonları
  */
 
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeAKM() {
     if (AKM.initialized) return;
 
-    console.log('AKM Business initializing...');
+    console.log('Rojname initializing...');
 
     // Bootstrap 5.3.8 ile auto-initialize edilen bileşenler:
     // - Tooltips (data-bs-toggle="tooltip")
@@ -40,7 +40,7 @@ function initializeAKM() {
     initializeOtherFeatures();
 
     AKM.initialized = true;
-    console.log('AKM Business initialized successfully!');
+    console.log('Rojname initialized successfully!');
 }
 
 /* BOOTSTRAP 5.3.8 NOTU:
@@ -341,7 +341,7 @@ function initializeGoogleMaps() {
         const marker = new google.maps.Marker({
             position: { lat: 41.0082, lng: 28.9784 },
             map: map,
-            title: 'AKM Business'
+            title: 'Rojname'
         });
 
         return map;

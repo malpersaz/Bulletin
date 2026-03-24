@@ -2,7 +2,7 @@
 /**
  * Video Category Management - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_video_embed_category
  * @version 1.0.0
  * @author  AKM Software

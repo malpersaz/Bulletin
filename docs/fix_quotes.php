@@ -1,6 +1,6 @@
 <?php
 /**
- * AKMbusiness - Ji bo guhastina nîşaneyên wek &#039; ber bi ' de
+ * Rojname - Ji bo guhastina nîşaneyên wek &#039; ber bi ' de
  * Tenê carekê li ser gerokê bixebitîne daku nûçeyên te safî bibin.
  */
 

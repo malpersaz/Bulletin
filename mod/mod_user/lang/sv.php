@@ -2,7 +2,7 @@
 /**
  * User Module - Swedish Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software

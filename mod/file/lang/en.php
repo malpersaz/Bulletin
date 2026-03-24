@@ -2,7 +2,7 @@
 /**
  * File Management Module - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  dosya
  * @version 1.0.0
  * @author  AKM Software

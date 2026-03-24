@@ -1,6 +1,6 @@
 <?php
 /**
- * AKMbusiness - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_content)
+ * Rojname - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_content)
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  */
 

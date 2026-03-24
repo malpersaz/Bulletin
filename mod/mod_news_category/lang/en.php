@@ -2,7 +2,7 @@
 /**
  * Category Module - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_news_category
  * @version 1.0.0
  * @author  AKM Software

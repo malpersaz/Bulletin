@@ -2,7 +2,7 @@
 /**
  * Image Category Management - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_imagecategories
  * @version 1.0.0
  * @author  AKM Software

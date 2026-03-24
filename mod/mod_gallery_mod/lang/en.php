@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software

@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Software İçerik Yönetim Sistemi
+ * Rojname İçerik Yönetim Sistemi
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
  * Kullanıcı: a.k.mutlu

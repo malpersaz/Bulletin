@@ -257,7 +257,7 @@ $lang['index']['avatar_modal'] = [
 ];
 
 $lang['index']['copyright'] = '© Alla rättigheter förbehållna.';
-$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKMBusiness v1.0.49</a>';
+$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.49</a>';
 # template.php
 $lang['index']['template'] = [
     'title' => 'Temagalleri',

@@ -2,7 +2,7 @@
 /**
  * Dateimodul-Integration - Deutsche Sprachdatei
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_attachment_mod
  * @version 1.0.0
  * @author  AKM Software

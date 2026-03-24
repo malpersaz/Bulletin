@@ -17,9 +17,9 @@ The target pattern is:
 
 The current product reference for this interaction is:
 
-- [`templates/admin/mod_content/add.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_content/add.twig)
-- [`templates/admin/partials/wizard_content.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/partials/wizard_content.twig)
-- [`templates/admin/assets/js/script.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/script.js)
+- [`templates/admin/mod_content/add.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_content/add.twig)
+- [`templates/admin/partials/wizard_content.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/partials/wizard_content.twig)
+- [`templates/admin/assets/js/script.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/script.js)
 
 `mod_page` should follow the same architectural idea, not necessarily the exact same steps.
 
@@ -160,8 +160,8 @@ Fields:
 
 The wizard must submit the same POST field names already expected by:
 
-- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/index.php)
-- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/validator/add.validator.php)
+- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/index.php)
+- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/validator/add.validator.php)
 
 That means the wizard is a UI-layer refactor, not a backend contract rewrite.
 
@@ -191,7 +191,7 @@ Keep it lightweight:
 
 Authoritative validation remains in:
 
-- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/validator/add.validator.php)
+- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/validator/add.validator.php)
 
 ## Future Expansion
 
@@ -205,7 +205,7 @@ The wizard skeleton intentionally leaves room for later work:
 
 ## Implemented Skeleton Files
 
-- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/add.twig)
-- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/partials/wizard_page.twig)
-- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/mod_page_wizard.js)
-- [`templates/admin/assets/css/mod_page_wizard.css`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/css/mod_page_wizard.css)
+- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/add.twig)
+- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/partials/wizard_page.twig)
+- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/mod_page_wizard.js)
+- [`templates/admin/assets/css/mod_page_wizard.css`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/css/mod_page_wizard.css)

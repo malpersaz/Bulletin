@@ -4,16 +4,16 @@ This document tracks only the `mod_page` work that is still open after the recen
 
 Reviewed area:
 
-- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/add.twig)
-- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/partials/wizard_page.twig)
-- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/mod_page_wizard.js)
-- [`templates/admin/mod_page/edit.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/edit.twig)
-- [`templates/admin/assets/js/mod_page.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/mod_page.js)
-- [`templates/admin/assets/css/mod_page.css`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/css/mod_page.css)
-- [`templates/admin/mod_page/script.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/script.twig)
-- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/index.php)
-- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/validator/add.validator.php)
-- [`mod/mod_page/validator/edit.validator.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/validator/edit.validator.php)
+- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/add.twig)
+- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/partials/wizard_page.twig)
+- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/mod_page_wizard.js)
+- [`templates/admin/mod_page/edit.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/edit.twig)
+- [`templates/admin/assets/js/mod_page.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/mod_page.js)
+- [`templates/admin/assets/css/mod_page.css`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/css/mod_page.css)
+- [`templates/admin/mod_page/script.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/script.twig)
+- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/index.php)
+- [`mod/mod_page/validator/add.validator.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/validator/add.validator.php)
+- [`mod/mod_page/validator/edit.validator.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/validator/edit.validator.php)
 
 ## Remaining Findings
 
@@ -23,9 +23,9 @@ Reviewed area:
 
 References:
 
-- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/add.twig)
-- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/partials/wizard_page.twig)
-- [`templates/admin/mod_page/edit.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/mod_page/edit.twig)
+- [`templates/admin/mod_page/add.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/add.twig)
+- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/partials/wizard_page.twig)
+- [`templates/admin/mod_page/edit.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/mod_page/edit.twig)
 
 Risk:
 
@@ -38,7 +38,7 @@ The add and edit flows still map request values into `mod_page_model` separately
 
 References:
 
-- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/index.php)
+- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/index.php)
 
 Risk:
 
@@ -57,7 +57,7 @@ Risk:
 
 Reference:
 
-- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/index.php)
+- [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/index.php)
 
 Risk:
 
@@ -70,8 +70,8 @@ Risk:
 
 References:
 
-- [`templates/admin/layout.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/layout.twig)
-- [`templates/admin/assets/js/mod_page.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/mod_page.js)
+- [`templates/admin/layout.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/layout.twig)
+- [`templates/admin/assets/js/mod_page.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/mod_page.js)
 
 Risk:
 
@@ -84,8 +84,8 @@ The wizard now works end-to-end, but it is still a first-generation implementati
 
 References:
 
-- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/partials/wizard_page.twig)
-- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/admin/assets/js/mod_page_wizard.js)
+- [`templates/admin/partials/wizard_page.twig`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/partials/wizard_page.twig)
+- [`templates/admin/assets/js/mod_page_wizard.js`](/home/malpersaz/Desktop/projects/htdocs/Rojname/templates/admin/assets/js/mod_page_wizard.js)
 
 Open points:
 
@@ -125,7 +125,7 @@ Stabilize the new add wizard with language-file cleanup and browser-level smoke 
 
 ### Step 2
 
-Extract shared request-to-model hydration in [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/AKMbusiness/mod/mod_page/index.php).
+Extract shared request-to-model hydration in [`mod/mod_page/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_page/index.php).
 
 ### Step 3
 

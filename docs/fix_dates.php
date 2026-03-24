@@ -1,6 +1,6 @@
 <?php
 /**
- * AKMbusiness - Ji bo serastkirina dîrokên nûçeyan
+ * Rojname - Ji bo serastkirina dîrokên nûçeyan
  * Tenê carekê li ser gerokê bixebitîne daku created_at û updated_at paşvegerin rastiya xwe.
  */
 

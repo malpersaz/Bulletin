@@ -9,7 +9,7 @@
   - Üst menü ve alt bileşenlerin dahil edilmesi
   - Özelleştirilebilir CSS ve JavaScript blokları
 
-  Dosya /home/malpersaz/Desktop/projects/htdocs/AKMbusiness/templates/defaul
+  Dosya /home/malpersaz/Desktop/projects/htdocs/Rojname/templates/defaul
   t/layouts/base.twig:1 konumunda bulunuyor ve ana düzen (layout) dosyası
   olarak işlev görüyor.
 

@@ -2,7 +2,7 @@
 /**
  * Advanced File Manager Module - Turkish Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_document
  * @version 1.0.0
  * @author  AKM Software

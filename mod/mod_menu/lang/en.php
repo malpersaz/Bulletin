@@ -2,7 +2,7 @@
 /**
  * Menu Module - English Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software

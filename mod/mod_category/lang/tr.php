@@ -2,7 +2,7 @@
 /**
  * Category Module - Turkish Language File
  *
- * @package AKM Business CMS
+ * @package Rojname
  * @module  mod_category
  * @version 1.0.0
  * @author  AKM Software
