@@ -11,7 +11,7 @@ class mod_news extends installerbase implements installerbaseinterface
         $this->mod = 'mod_news';
         $this->tablolar = array(
             'mod_news',
-            'mod_news_contents'
+            'newses'
         );
         $this->rolls = array(
             'add', 'edit',  'delete', 'list','gallery','file','edit_status','change_status','approval', 'moderate_edit','moderate_delete','video_download'

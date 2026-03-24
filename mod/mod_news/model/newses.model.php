@@ -1,7 +1,7 @@
 <?php
-class contents_model extends ORM
+class newses_model extends ORM
 {
-    public $_table = "mod_news_contents";
+    public $_table = "newses";
     public $_pk = "id";
     public $id;
     public $name;

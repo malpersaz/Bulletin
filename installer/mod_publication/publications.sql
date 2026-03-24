@@ -1,4 +1,4 @@
-CREATE VIEW mod_publication_contents AS
+CREATE VIEW publications AS
 SELECT
   mod_publication.id,
   mod_publication.name,

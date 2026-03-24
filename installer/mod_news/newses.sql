@@ -1,4 +1,4 @@
-CREATE  VIEW mod_news_contents AS SELECT
+CREATE VIEW newses AS SELECT
   mod_news.id,
     mod_news.name,
     mod_news.created_at,

@@ -11,7 +11,7 @@ class mod_publication extends installerbase implements installerbaseinterface
         $this->mod = 'mod_publication';
         $this->tablolar = array(
             'mod_publication',
-            'mod_publication_contents'
+            'publications'
         );
         $this->rolls = array(
             'add', 'edit', 'delete', 'list', 'gallery', 'file', 'edit_status', 'change_status', 'approval', 'moderate_edit', 'moderate_delete', 'video_download'

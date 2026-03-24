@@ -14,7 +14,7 @@ class mod_news_helper extends indexBase
         $mod_news_category_nested->order('order', 'ASC')->gR();
         
         $categories = $mod_news_category_nested->toArray();
-        $content_model = Load::model('mod_news.contents');
+        $content_model = Load::model('mod_news.newses');
         
         if (is_array($categories)) {
             foreach ($categories as &$kat) {
@@ -29,7 +29,7 @@ class mod_news_helper extends indexBase
     {
         $this->_categories();
         $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
-        $content = Load::model('mod_news.contents');
+        $content = Load::model('mod_news.newses');
         $content->where_seo_and_status_and_lang($seo, 'y', $this->site['lang']);
         $content->limit(1);
         $content->gRo();
@@ -81,7 +81,7 @@ class mod_news_helper extends indexBase
         $sayfa = intval($sayfa); // Geçerli Sayfa
 
 
-        $content = Load::model('mod_news.contents');
+        $content = Load::model('mod_news.newses');
         $category_model = Load::model('mod_news_category');
 
         if ($category == NULL or $category == 'all') {
