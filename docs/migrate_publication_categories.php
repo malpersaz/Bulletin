@@ -17,18 +17,7 @@ $new_db   = 'new_database';
 $new_user = 'new_user';
 $new_pass = '******';
 
-/**
- * Heke li DB'ya nû kategoriya root ya ziman tune be, ev navan têne bikaranîn.
- */
-$rootNames = [
-    'en'  => '#ENGLISH',
-    'ku'  => '#KURDI',
-    'ckb' => '#سۆرانی',
-    'de'  => '#DEUTSCH',
-    'fr'  => '#FRANCAIS',
-    'sv'  => '#SVENSKA',
-    'zza' => '#ZAZAKI',
-];
+$fixedParentId = 4;
 
 try {
     $pdoOld = new PDO("mysql:host=$old_host;dbname=$old_db;charset=utf8", $old_user, $old_pass);
@@ -50,14 +39,6 @@ try {
 
     $pdoNew->beginTransaction();
 
-    $existingRoots = [];
-    $rootStmt = $pdoNew->query("SELECT id, lang FROM mod_publication_category WHERE root = 'y' ORDER BY id ASC");
-    foreach ($rootStmt->fetchAll(PDO::FETCH_ASSOC) as $rootRow) {
-        if (!isset($existingRoots[$rootRow['lang']])) {
-            $existingRoots[$rootRow['lang']] = (int) $rootRow['id'];
-        }
-    }
-
     $insertSql = "INSERT INTO mod_publication_category (
         lang, name, parent_id, `order`, root, seo, title, keywords, description, image, menu, acl_id, user_id
     ) VALUES (
@@ -65,37 +46,9 @@ try {
     )";
     $insertStmt = $pdoNew->prepare($insertSql);
 
-    $ensureRootCategory = function ($lang) use ($pdoNew, &$existingRoots, $rootNames, $insertStmt) {
-        if (isset($existingRoots[$lang])) {
-            return $existingRoots[$lang];
-        }
-
-        $rootName = isset($rootNames[$lang]) ? $rootNames[$lang] : ('#' . strtoupper($lang));
-
-        $insertStmt->execute([
-            ':lang'        => $lang,
-            ':name'        => $rootName,
-            ':parent_id'   => 0,
-            ':order'       => 1,
-            ':root'        => 'y',
-            ':seo'         => '#',
-            ':title'       => '#',
-            ':keywords'    => '#',
-            ':description' => '#',
-            ':image'       => null,
-            ':menu'        => 0,
-            ':acl_id'      => 0,
-            ':user_id'     => 1,
-        ]);
-
-        $existingRoots[$lang] = (int) $pdoNew->lastInsertId();
-        return $existingRoots[$lang];
-    };
-
     $idMap = [];
     $remaining = $categories;
     $insertedCount = 0;
-    $createdRootCount = 0;
 
     while (count($remaining) > 0) {
         $insertedInThisPass = false;
@@ -110,16 +63,9 @@ try {
             $newParentId = 0;
             $newRootValue = $isRoot ? 'y' : 'n';
 
-            if ($isRoot) {
+            if ($oldParentId === 0 || $isRoot) {
                 $canInsert = true;
-                $newParentId = 0;
-            } elseif ($oldParentId === 0) {
-                $canInsert = true;
-                $newParentId = $ensureRootCategory($lang);
-                if (!isset($idMap['__root__' . $lang])) {
-                    $createdRootCount++;
-                    $idMap['__root__' . $lang] = $newParentId;
-                }
+                $newParentId = $fixedParentId;
             } elseif (isset($idMap[$oldParentId])) {
                 $canInsert = true;
                 $newParentId = $idMap[$oldParentId];
@@ -134,7 +80,7 @@ try {
                 ':name'        => $cat['ad'],
                 ':parent_id'   => $newParentId,
                 ':order'       => (int) $cat['sira'],
-                ':root'        => $newRootValue,
+                ':root'        => 'n',
                 ':seo'         => $cat['seo'] ?? '',
                 ':title'       => $cat['title'] ?? '',
                 ':keywords'    => $cat['keywords'] ?? '',
@@ -157,20 +103,13 @@ try {
 
         foreach ($remaining as $key => $cat) {
             $lang = trim((string) $cat['lang']);
-            $isRoot = ($cat['root'] === 'e');
-            $fallbackParentId = $isRoot ? 0 : $ensureRootCategory($lang);
-
-            if (!$isRoot && !isset($idMap['__root__' . $lang])) {
-                $createdRootCount++;
-                $idMap['__root__' . $lang] = $fallbackParentId;
-            }
 
             $insertStmt->execute([
                 ':lang'        => $lang,
                 ':name'        => $cat['ad'],
-                ':parent_id'   => $fallbackParentId,
+                ':parent_id'   => $fixedParentId,
                 ':order'       => (int) $cat['sira'],
-                ':root'        => $isRoot ? 'y' : 'n',
+                ':root'        => 'n',
                 ':seo'         => $cat['seo'] ?? '',
                 ':title'       => $cat['title'] ?? '',
                 ':keywords'    => $cat['keywords'] ?? '',
@@ -193,10 +132,7 @@ try {
 
     echo '<h3>Serkeftî</h3>';
     echo '<p>Toplam ' . $insertedCount . ' kayıt mod_publication_category tablosuna taşındı.</p>';
-    echo '<p>İhtiyaç halinde ' . count($existingRoots) . ' dil için root kategori kullanıldı/oluşturuldu.</p>';
-    if ($createdRootCount > 0) {
-        echo '<p>Migration sırasında otomatik root kategori oluşturulan dil sayısı: ' . $createdRootCount . '</p>';
-    }
+    echo '<p>Tüm ana kategoriler sabit olarak parent_id=' . $fixedParentId . ' altına bağlandı.</p>';
 } catch (PDOException $e) {
     if (isset($pdoNew) && $pdoNew instanceof PDO && $pdoNew->inTransaction()) {
         $pdoNew->rollBack();

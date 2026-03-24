@@ -17,15 +17,7 @@ $new_db   = 'new_database';
 $new_user = 'new_user';
 $new_pass = '******';
 
-$rootNames = [
-    'en'  => '#ENGLISH',
-    'ku'  => '#KURDI',
-    'ckb' => '#سۆرانی',
-    'de'  => '#DEUTSCH',
-    'fr'  => '#FRANCAIS',
-    'sv'  => '#SVENSKA',
-    'zza' => '#ZAZAKI',
-];
+$fixedParentId = 4;
 
 try {
     $pdoOld = new PDO("mysql:host=$old_host;dbname=$old_db;charset=utf8", $old_user, $old_pass);
@@ -45,42 +37,9 @@ try {
         exit;
     }
 
-    $existingRoots = [];
-    $rootStmt = $pdoNew->query("SELECT id, lang, name FROM mod_publication_category WHERE root = 'y' ORDER BY id ASC");
-    foreach ($rootStmt->fetchAll(PDO::FETCH_ASSOC) as $rootRow) {
-        if (!isset($existingRoots[$rootRow['lang']])) {
-            $existingRoots[$rootRow['lang']] = [
-                'id' => (int) $rootRow['id'],
-                'name' => $rootRow['name'],
-                'existing' => true,
-            ];
-        }
-    }
-
-    $virtualRootSeed = -1;
-    $plannedRoots = [];
     $plannedRows = [];
     $idMap = [];
     $remaining = $categories;
-
-    $ensureRootCategory = function ($lang) use (&$existingRoots, &$plannedRoots, &$virtualRootSeed, $rootNames) {
-        if (isset($existingRoots[$lang])) {
-            return $existingRoots[$lang]['id'];
-        }
-
-        if (isset($plannedRoots[$lang])) {
-            return $plannedRoots[$lang]['id'];
-        }
-
-        $plannedRoots[$lang] = [
-            'id' => $virtualRootSeed--,
-            'lang' => $lang,
-            'name' => isset($rootNames[$lang]) ? $rootNames[$lang] : ('#' . strtoupper($lang)),
-            'existing' => false,
-        ];
-
-        return $plannedRoots[$lang]['id'];
-    };
 
     while (count($remaining) > 0) {
         $plannedInThisPass = false;
@@ -95,14 +54,10 @@ try {
             $newParentId = 0;
             $strategy = 'direct-root';
 
-            if ($isRoot) {
+            if ($oldParentId === 0 || $isRoot) {
                 $canPlan = true;
-                $newParentId = 0;
-                $strategy = 'root-record';
-            } elseif ($oldParentId === 0) {
-                $canPlan = true;
-                $newParentId = $ensureRootCategory($lang);
-                $strategy = 'under-language-root';
+                $newParentId = $fixedParentId;
+                $strategy = 'under-fixed-parent';
             } elseif (isset($idMap[$oldParentId])) {
                 $canPlan = true;
                 $newParentId = $idMap[$oldParentId];
@@ -123,7 +78,7 @@ try {
                 'old_parent_id' => $oldParentId,
                 'new_parent_id' => $newParentId,
                 'order' => (int) $cat['sira'],
-                'root' => $isRoot ? 'y' : 'n',
+                'root' => 'n',
                 'strategy' => $strategy,
                 'seo' => $cat['seo'] ?? '',
             ];
@@ -137,8 +92,6 @@ try {
 
         foreach ($remaining as $key => $cat) {
             $lang = trim((string) $cat['lang']);
-            $isRoot = ($cat['root'] === 'e');
-            $fallbackParentId = $isRoot ? 0 : $ensureRootCategory($lang);
             $virtualId = 100000 + count($plannedRows) + 1;
 
             $idMap[(int) $cat['id']] = $virtualId;
@@ -148,10 +101,10 @@ try {
                 'lang' => $lang,
                 'name' => $cat['ad'],
                 'old_parent_id' => (int) $cat['alt'],
-                'new_parent_id' => $fallbackParentId,
+                'new_parent_id' => $fixedParentId,
                 'order' => (int) $cat['sira'],
-                'root' => $isRoot ? 'y' : 'n',
-                'strategy' => $isRoot ? 'fallback-root-record' : 'orphan-to-language-root',
+                'root' => 'n',
+                'strategy' => 'orphan-to-fixed-parent',
                 'seo' => $cat['seo'] ?? '',
             ];
             unset($remaining[$key]);
@@ -164,21 +117,7 @@ try {
     echo '<p>Bu dosya veritabanına yazmaz. Sadece planlanan taşıma işlemini gösterir.</p>';
     echo '<p>Toplam kaynak kayıt: ' . count($categories) . '</p>';
     echo '<p>Planlanan taşınacak kayıt: ' . count($plannedRows) . '</p>';
-    echo '<p>Yeni oluşturulacak root kategori sayısı: ' . count($plannedRoots) . '</p>';
-
-    if (!empty($plannedRoots)) {
-        echo '<h3>Oluşturulacak Root Kategoriler</h3>';
-        echo '<table border="1" cellpadding="6" cellspacing="0">';
-        echo '<tr><th>Virtual ID</th><th>Lang</th><th>Name</th></tr>';
-        foreach ($plannedRoots as $root) {
-            echo '<tr>';
-            echo '<td>' . htmlspecialchars((string) $root['id'], ENT_QUOTES, 'UTF-8') . '</td>';
-            echo '<td>' . htmlspecialchars($root['lang'], ENT_QUOTES, 'UTF-8') . '</td>';
-            echo '<td>' . htmlspecialchars($root['name'], ENT_QUOTES, 'UTF-8') . '</td>';
-            echo '</tr>';
-        }
-        echo '</table>';
-    }
+    echo '<p>Tüm ana kategoriler sabit olarak parent_id=' . $fixedParentId . ' altına planlandı.</p>';
 
     echo '<h3>Planlanan Kayıtlar</h3>';
     echo '<table border="1" cellpadding="6" cellspacing="0">';
