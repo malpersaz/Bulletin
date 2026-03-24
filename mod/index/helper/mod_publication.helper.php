@@ -78,8 +78,8 @@ class mod_publication_helper extends indexBase
         }
 
         $page = intval($page);
-        $page_limit = 80;
-        $pager_limit = 4;
+        $page_limit = 12;
+        $pager_limit = 5;
         $offset = ($page - 1) * $page_limit;
 
         $publication = Load::model('mod_publication.publications');
