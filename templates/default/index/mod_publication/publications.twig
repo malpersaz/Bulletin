@@ -30,7 +30,11 @@
                             {% if k is odd %}
                                 <div class="col-xs-12 col-ms-6 col-md-4">
                                     <a class="c" href="{{ site.sadres }}publication/{{ publication.seo }}">
-                                        <img class="img-responsive" src="{{ site.radres }}mod_user/{{ publication.user_image }}" alt="{{ publication.name }}" />
+                                        {% if publication.image is not empty %}
+                                            <img class="img-responsive" src="{{ site.radres }}mod_publication/{{ publication.image }}" alt="{{ publication.name }}" />
+                                        {% else %}
+                                            <img class="img-responsive" src="{{ site.radres }}mod_settings/logo.png" alt="{{ publication.name }}" />
+                                        {% endif %}
                                         <span class="t">{{ publication.name }}</span>
                                         <span class="sc">{{ publication.u_name }} {{ publication.u_last_name }}, {{ publication.category_name }}</span>
                                     </a>
@@ -38,7 +42,11 @@
                             {% else %}
                                 <div class="col-xs-12 col-ms-6 col-md-4">
                                     <a class="f" href="{{ site.sadres }}publication/{{ publication.seo }}">
-                                        <img class="img-fit" src="{{ site.radres }}mod_user/{{ publication.user_image }}" alt="{{ publication.name }}" />
+                                        {% if publication.image is not empty %}
+                                            <img class="img-fit" src="{{ site.radres }}mod_publication/{{ publication.image }}" alt="{{ publication.name }}" />
+                                        {% else %}
+                                            <img class="img-fit" src="{{ site.radres }}mod_settings/logo.png" alt="{{ publication.name }}" />
+                                        {% endif %}
                                         <span class="t">{{ publication.name }} {{ publication.u_name }} {{ publication.u_last_name }}, {{ publication.category_name }}</span>
                                     </a>
                                 </div>
