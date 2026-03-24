@@ -34,14 +34,12 @@ class lang extends installerbase implements installerbaseinterface
     {
         $model = Load::model('lang');
         $languages = [
-            ['name' => 'عربي', 'seo' => 'ar'],
             ['name' => 'Deutsch', 'seo' => 'de'],
             ['name' => 'English', 'seo' => 'en'],
             ['name' => 'Français', 'seo' => 'fr'],
             ['name' => 'Kurmancî', 'seo' => 'ku'],
             ['name' => 'Soranî', 'seo' => 'ckb'],
             ['name' => 'Svenska', 'seo' => 'sv'],
-            ['name' => 'Türkçe', 'seo' => 'tr'],
             ['name' => 'Zazakî', 'seo' => 'zza']
         ];
 
