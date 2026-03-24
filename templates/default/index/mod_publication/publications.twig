@@ -127,14 +127,6 @@
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
         }
 
-        #mod_publication_list .publication-author-role {
-            display: block;
-            font-size: 0.78rem;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-
         #mod_publication_list .publication-card-title {
             line-height: 1.35;
             display: -webkit-box;
@@ -264,7 +256,6 @@
                                             {% endif %}
                                         </div>
                                         <div class="publication-author-meta">
-                                            <span class="publication-author-role">Yazar</span>
                                             <span class="publication-author-name">{{ publication.u_name }} {{ publication.u_last_name }}</span>
                                         </div>
                                     </div>
@@ -294,9 +285,7 @@
                                     {% endif %}
                                 </p>
                                 <div class="mt-3 d-flex justify-content-between align-items-center">
-                                    <span class="small text-muted">
-                                        <i class="bi bi-arrow-up-right me-1"></i>{{ publication.seo }}
-                                    </span>
+                                    <span></span>
                                     <a href="{{ site.sadres }}publication/{{ publication.seo }}" class="btn btn-sm btn-outline-dark">
                                         <i class="bi bi-eye me-1"></i>Oku
                                     </a>

@@ -1,8 +1,14 @@
 {% extends "layouts/base.twig" %}
 
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/content.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/gallery.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
 {% set d = ctx_get('d') %}
 {% set res = ctx_get('res') %}
 {% set dosya = ctx_get('file') %}
+{% set video = ctx_get('video') %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ site.sadres }}publication/{{ d.seo }}"/>
@@ -20,150 +26,321 @@
     <meta name="keywords" content="{{ d.keywords }}">
 {% endblock %}
 
+{% block meta_tags %}
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site.sadres }}publication/{{ d.seo }}">
+    <meta property="og:title" content="{{ d.name }}">
+    <meta property="og:description" content="{{ d.description }}">
+    {% if d.image is not empty %}
+        <meta property="og:image" content="{{ site.radres }}mod_publication/{{ d.image }}">
+    {% else %}
+        <meta property="og:image" content="{{ site.radres }}mod_settings/logo.png">
+    {% endif %}
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta property="og:locale" content="{{ site.lang }}_{{ site.lang|upper }}">
+    <meta property="article:published_time" content="{{ d.created_at|date('Y-m-d') }}">
+    {% if d.category_name is defined and d.category_name is not empty %}
+        <meta property="article:section" content="{{ d.category_name }}">
+    {% endif %}
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site.sadres }}publication/{{ d.seo }}">
+    <meta name="twitter:title" content="{{ d.name }}">
+    <meta name="twitter:description" content="{{ d.description }}">
+    {% if d.image is not empty %}
+        <meta name="twitter:image" content="{{ site.radres }}mod_publication/{{ d.image }}">
+    {% else %}
+        <meta name="twitter:image" content="{{ site.radres }}mod_settings/logo.png">
+    {% endif %}
+{% endblock %}
+
+{% block schema %}
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          "headline": "{{ d.name }}",
+          "image": "{% if d.image is not empty %}{{ site.radres }}mod_publication/{{ d.image }}{% else %}{{ site.radres }}mod_settings/logo.png{% endif %}",
+          "author": {
+            "@type": "Person",
+            "name": "{{ (d.u_name|default('') ~ ' ' ~ d.u_last_name|default(''))|trim }}"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "{{ site.title }}",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "{{ site.radres }}mod_settings/logo.png"
+            }
+          },
+          "datePublished": "{{ d.created_at|date('Y-m-d') }}",
+          "dateModified": "{{ d.updated_at|default(d.created_at)|date('Y-m-d') }}",
+          "description": "{{ d.description }}"
+        }
+    </script>
+{% endblock %}
+
 {% block content %}
-<div class="page-title">
-    <div class="container">
-        <ol itemscope itemtype="http://schema.org/BreadcrumbList">
-            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                <a itemprop="item" href="{{ site.sadres }}publications/all">
-                    <h1 itemprop="name">{{ lang.index.mod_publication.2 }}</h1>
-                </a>
-            </li>
-            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                <a itemprop="item" href="{{ site.sadres }}publications/{{ d.category_seo }}">
-                    <h2 itemprop="name">
-                        {% if d.category_name is defined and d.category_name is not empty %}
-                            <a itemprop="item" href="{{ site.sadres }}publications/{{ d.category_seo }}">{{ d.category_name }}</a>
-                        {% else %}
-                            <a itemprop="item" href="{{ site.sadres }}publication-archive">{{ lang.index.mod_publication.6 }}</a>
-                        {% endif %}
-                    </h2>
-                </a>
-            </li>
-            {% if d.username is defined %}
-                <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                    <a itemprop="item" href="{{ site.sadres }}blog/{{ d.username }}">{{ d.u_name }} {{ d.u_last_name }}</a>
-                </li>
-            {% endif %}
-            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                <span itemprop="name">{{ d.name }}</span>
-            </li>
-        </ol>
-    </div>
-</div>
-<div class="page-inner">
-    <div class="container clearfix">
-        <div class="page-content">
-            <div data-order="1" data-id="{{ d.seo }}" data-title="{{ d.name }}" data-url="{{ d.seo }}">
-                <div class="imgc image">
-                    {% if d.image is not empty %}
-                        <img src="{{ site.radres }}mod_publication/{{ d.image }}" alt="{{ d.name }},{{ d.keywords }}" />
-                    {% else %}
-                        <img src="{{ site.tadres }}templates/{{ site.app_template }}/static/img/logo.png" alt="{{ d.name }},{{ d.keywords }}" />
-                    {% endif %}
+    <div class="row mt-4" id="mod_publication_detail">
+        <div class="col-lg-8 offset-lg-2">
+            <article class="card shadow-sm border-0 overflow-hidden">
+                <div class="card-header bg-body-tertiary border-0">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0" itemscope itemtype="https://schema.org/BreadcrumbList">
+                            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                                <a itemprop="item" href="{{ site.sadres }}">
+                                    <span itemprop="name">{{ lang.index.home }}</span>
+                                </a>
+                                <meta itemprop="position" content="1"/>
+                            </li>
+                            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                                <a itemprop="item" href="{{ site.sadres }}publications">
+                                    <span itemprop="name">{{ lang.index.mod_publication.2 }}</span>
+                                </a>
+                                <meta itemprop="position" content="2"/>
+                            </li>
+                            {% if d.category_name is defined and d.category_name is not empty %}
+                                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                                    <a itemprop="item" href="{{ site.sadres }}publications/{{ d.category_seo }}">
+                                        <span itemprop="name">{{ d.category_name }}</span>
+                                    </a>
+                                    <meta itemprop="position" content="3"/>
+                                </li>
+                            {% endif %}
+                            <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                                <span itemprop="name">{{ d.name }}</span>
+                                <meta itemprop="position" content="{% if d.category_name is defined and d.category_name is not empty %}4{% else %}3{% endif %}"/>
+                            </li>
+                        </ol>
+                    </nav>
                 </div>
-                <aside class="article-side clearfix">
-                    <div class="content-date" itemprop="datePublished" content="{{ d.created_at|date('Y-m-d\\TH:iP') }}">
-                        <span class="p1">{{ d.created_at|date('H:i') }}</span>
-                        <span class="p2">{{ d.created_at|date('d.m.Y') }}</span>
-                    </div>
-                    <div class="content-tools bookmark-block" data-type="1">
-                        <a class="icon-folder" href="{{ site.adres }}tools/saveText/mod_publication/{{ d.id }}" title="{{ lang.index.mod_gallery.2 }}"></a>
-                        {% if dosya %}
-                            {% for do in dosya %}
-                                <a class="icon-doc" href="{{ site.adres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" title="{{ lang.index.mod_attachment.1 }}: {{ do.name }}"></a>
-                            {% endfor %}
+
+                <div class="card-body p-4 p-md-5">
+                    <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                        {% if d.category_name is defined and d.category_name is not empty %}
+                            <a href="{{ site.sadres }}publications/{{ d.category_seo }}" class="badge bg-primary text-white text-decoration-none">
+                                {{ d.category_name }}
+                            </a>
                         {% endif %}
-                        <a class="icon-print" rel="nofollow" href="javascript:void(0)" onclick="window.print();" title="Print"></a>
+                        {% set readingTime = (d.content|striptags|length / 1100)|round(0, 'ceil') %}
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis border">
+                            <i class="bi bi-clock me-1"></i>{{ readingTime }} {{ lang.index.min_read|default('dk') }}
+                        </span>
                     </div>
 
-                    {% if d.username is defined %}
-                        <div class="content-source">
-                            <a href="{{ site.sadres }}blog/{{ d.username }}">
-                                <span class="c">{{ d.u_name }} {{ d.u_last_name }}</span>
-                                {% if d.user_image is defined and d.user_image is not empty %}
-                                    <img src="{{ site.radres }}mod_user/thumb/{{ d.user_image }}" align="absmiddle" alt="{{ d.u_name }} {{ d.u_last_name }}" width="110" />
-                                {% endif %}
-                            </a>
-                            <span class="c"></span>
-                        </div>
-                    {% endif %}
-                </aside>
-                <article class="news-detail clearfix">
-                    <div class="content-heading">
-                        <h1 class="content-title" itemprop="name">{{ d.name }}</h1>
-                        <h2 class="content-description" itemprop="description">
-                            <summary>
-                                {% if d.summary is not empty %}
-                                    {{ d.summary }}
-                                {% endif %}
-                            </summary>
-                        </h2>
-                        <div class="text-size">
-                            <span onclick="changeFontSize('.text-content', 'u');" title="Increase text size">A+</span>
-                            <span onclick="changeFontSize('.text-content', 'd');" title="Decrease text size">A-</span>
-                        </div>
-                    </div>
-                    <div class="advert">
-                        <div class="holder">
-                            <div class="nav-mini pull-left">
-                                {% if dosya %}
-                                    {{ lang.index.mod_attachment.2 }}
-                                    {% for do in dosya %}
-                                        <a href="{{ site.adres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" style="width:100%; background:none; border:none; color:darkblue;">
-                                            <img src="{{ site.tadres }}templates/{{ site.app_template }}/static/img/document.png" alt="{{ do.name }}">
-                                            {{ do.name }}
+                    <h1 class="display-5 fw-bold mb-4">{{ d.name }}</h1>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-top border-bottom py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            {% if d.user_image is defined and d.user_image is not empty %}
+                                <img src="{{ site.radres }}mod_user/thumb/{{ d.user_image }}"
+                                     alt="{{ d.u_name }} {{ d.u_last_name }}"
+                                     class="rounded-circle shadow-sm"
+                                     width="56"
+                                     height="56"
+                                     style="object-fit: cover;">
+                            {% else %}
+                                <div class="rounded-circle d-flex align-items-center justify-content-center bg-dark text-white shadow-sm"
+                                     style="width: 56px; height: 56px; font-weight: 700;">
+                                    {{ (d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper }}
+                                </div>
+                            {% endif %}
+                            <div class="small text-muted">
+                                {% if d.username is defined and d.username is not empty %}
+                                    <div class="fw-semibold text-dark">
+                                        <a href="{{ site.sadres }}author/{{ d.username }}" class="text-decoration-none text-dark">
+                                            {{ d.u_name }} {{ d.u_last_name }}
                                         </a>
-                                    {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="fw-semibold text-dark">{{ d.u_name }} {{ d.u_last_name }}</div>
                                 {% endif %}
+                                <div>
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time>
+                                    {% if d.updated_at is not empty and d.updated_at != d.created_at %}
+                                        <span class="ms-2">
+                                            <i class="bi bi-pencil-square me-1"></i>{{ d.updated_at|date('d.m.Y') }}
+                                        </span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
+
+                        <div class="btn-group" role="group" aria-label="Publication Tools">
+                            <a href="{{ site.sadres }}tools/saveText/mod_publication/{{ d.id }}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery.2 }}">
+                                <i class="bi bi-file-text"></i>
+                            </a>
+                            {% if dosya %}
+                                {% for do in dosya %}
+                                    <a href="{{ site.sadres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_attachment.1 }}: {{ do.name }}">
+                                        <i class="bi bi-download"></i>
+                                    </a>
+                                {% endfor %}
+                            {% endif %}
+                            <a href="javascript:void(0)" onclick="window.print();" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="Print">
+                                <i class="bi bi-printer"></i>
+                            </a>
+                        </div>
                     </div>
 
-                    <div itemprop="articleBody" class="text-content">
-                        <p>{{ d.content|raw }}<br /></p>
-                        {% if res %}
-                            <div class="gallery-list">
-                                {% for r in res %}
-                                    <div data-order="1">
-                                        <figure>
-                                            <div class="i">
-                                                <img src="{{ site.radres }}mod_gallery/mod_publication/thumb/{{ r.url }}" title="{{ r.name }}" itemprop="image">
-                                                <span class="c">
-                                                    <span>1</span>
-                                                    <span>{{ loop.length }}</span>
-                                                </span>
+                    {% include 'partials/share.twig' %}
+
+                    {% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
+                        <div class="lead-text mb-5">
+                            <p class="fs-4 fw-normal text-dark-emphasis border-start border-4 border-primary ps-4 py-1" style="line-height: 1.6;">
+                                {{ d.summary }}
+                            </p>
+                        </div>
+                    {% elseif d.summary is not empty %}
+                        <div class="lead-text mb-5">
+                            <p class="fs-5 text-dark-emphasis border-start border-4 border-secondary-subtle ps-4 py-1" style="line-height: 1.7;">
+                                {{ d.summary }}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    {% if d.image is not empty %}
+                        <div class="mb-5">
+                            <a href="{{ site.radres }}mod_publication/{{ d.image }}" data-bs-toggle="lightbox" data-gallery="publication-main-image">
+                                <img src="{{ site.radres }}mod_publication/{{ d.image }}"
+                                     fetchpriority="high"
+                                     class="img-fluid rounded mb-3 w-100 shadow-sm"
+                                     alt="{{ d.name }}"
+                                     title="{{ d.name }}"
+                                     style="aspect-ratio: 16/9; object-fit: cover;">
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="mb-5 text-center bg-light rounded p-4">
+                            <img src="{{ site.radres }}mod_settings/logo.png"
+                                 class="img-fluid"
+                                 alt="{{ d.name }}"
+                                 title="{{ d.name }}"
+                                 style="max-height: 300px; object-fit: contain;">
+                        </div>
+                    {% endif %}
+
+                    <div itemprop="articleBody" class="content-body fs-5 text-dark" style="line-height: 1.85;">
+                        {{ d.content|raw }}
+                    </div>
+
+                    {% if video is not empty %}
+                        <section class="mt-5 pt-5 border-top" id="mod_video" aria-labelledby="video-title">
+                            <h2 id="video-title" class="h4 mb-4 fw-bold"><i class="bi bi-play-btn me-2 text-primary"></i>{{ lang.index.mod_video_embed[1] }}</h2>
+                            <div class="row">
+                                {% for v in video %}
+                                    <div class="col-12 mb-4">
+                                        {% if v.embed is defined and v.embed is not empty %}
+                                            <div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
+                                                {{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
                                             </div>
-                                            <figcaption class="clearfix">
-                                                <span class="s">
-                                                    <span class="sh fb"><i class="icon-facebook"></i></span>
-                                                    <span class="sh twit"><i class="icon-twitter"></i></span>
-                                                    <span class="sh gplus"><i class="icon-gplus"></i></span>
-                                                    <span class="sh pin"><i class="icon-pinterest"></i></span>
-                                                    <span class="resize"><i class="icon-resize-full"></i></span>
-                                                    <span class="send"><i class="icon-mail-alt"></i></span>
-                                                </span>
-                                                <span class="text-content">
-                                                    <p>{{ r.name }}</p>
-                                                    <p> </p>
-                                                </span>
-                                            </figcaption>
-                                        </figure>
+                                        {% else %}
+                                            <a href="{{ site.sadres }}tools/videoFlv/mod_publication/{{ d.id }}/{{ v.id }}/show.mp4" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
+                                                <div class="rounded shadow-sm bg-dark d-flex align-items-center justify-content-center" style="aspect-ratio: 16/9;">
+                                                    <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
+                                                </div>
+                                            </a>
+                                        {% endif %}
+                                        <p class="fw-bold mt-3 text-center">{{ v.name }}</p>
                                     </div>
                                 {% endfor %}
                             </div>
-                        {% endif %}
-                    </div>
+                        </section>
+                    {% endif %}
 
-                    <div class="news-label">
-                        <i class="icon-tag"></i>
-                        <span>Keywords :</span>
-                        <a href="{{ d.seo }}" title="{{ d.name }}" rel="tag">{{ d.keywords }}</a>
+                    {% if res is not empty %}
+                        <section class="mt-5 pt-5 border-top" id="mod_gallery" aria-labelledby="gallery-title">
+                            <h2 id="gallery-title" class="h4 mb-4 fw-bold"><i class="bi bi-images me-2 text-primary"></i>{{ lang.index.mod_pictures[1] }}</h2>
+                            <div class="row g-3" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
+                                {% for r in res %}
+                                    <div class="col-6 col-md-4 mb-3">
+                                        <div class="card h-100 border-0 shadow-sm overflow-hidden">
+                                            <a href="{{ site.radres }}mod_gallery/mod_publication/original/{{ r.url }}" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ r.name }}">
+                                                <img src="{{ site.radres }}mod_gallery/mod_publication/thumb/{{ r.url }}" class="card-img-top" alt="{{ r.name }}" style="aspect-ratio: 1/1; object-fit: cover;">
+                                            </a>
+                                            {% if r.name %}
+                                                <div class="card-body p-2 text-center">
+                                                    <p class="card-text small text-muted text-truncate">{{ r.name }}</p>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    {% if dosya is not empty %}
+                        <section class="mt-5 pt-5 border-top" aria-labelledby="files-title">
+                            <h2 id="files-title" class="h4 mb-4 fw-bold"><i class="bi bi-cloud-download me-2 text-primary"></i>{{ lang.index.mod_attachment[1] }}</h2>
+                            <div class="list-group shadow-sm rounded-3 overflow-hidden">
+                                {% for do in dosya %}
+                                    {% set extension = do.orijinalname|split('.')|last|lower %}
+                                    {% set file_icon = 'bi-file-earmark-arrow-down' %}
+                                    {% set badge_color = 'bg-secondary' %}
+
+                                    {% if extension == 'pdf' %}{% set file_icon = 'bi-file-earmark-pdf' %}{% set badge_color = 'bg-danger' %}
+                                    {% elseif extension == 'zip' or extension == 'rar' %}{% set file_icon = 'bi-file-earmark-zip' %}{% set badge_color = 'bg-warning text-dark' %}
+                                    {% elseif extension == 'doc' or extension == 'docx' or extension == 'odt' %}{% set file_icon = 'bi-file-earmark-word' %}{% set badge_color = 'bg-primary' %}
+                                    {% elseif extension == 'xls' or extension == 'xlsx' %}{% set file_icon = 'bi-file-earmark-excel' %}{% set badge_color = 'bg-success' %}
+                                    {% elseif extension == 'ppt' or extension == 'pptx' %}{% set file_icon = 'bi-file-earmark-ppt' %}{% set badge_color = 'bg-info text-dark' %}
+                                    {% elseif extension == 'jpg' or extension == 'jpeg' or extension == 'png' or extension == 'gif' %}{% set file_icon = 'bi-file-earmark-image' %}{% set badge_color = 'bg-info' %}
+                                    {% elseif extension == 'epub' %}{% set file_icon = 'bi-book' %}{% set badge_color = 'bg-success' %}
+                                    {% endif %}
+
+                                    <a href="{{ site.sadres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3 border-start-0 border-end-0">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3 fs-2 text-secondary">
+                                                <i class="bi {{ file_icon }}"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-bold">{{ do.orijinalname }}</h6>
+                                                <span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <span class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+                                                <i class="bi bi-download me-1"></i>{{ lang.index.download|default('Download') }}
+                                            </span>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </section>
+                    {% endif %}
+
+                    <div class="news-label mt-5 pt-4 border-top">
+                        <i class="bi bi-tags me-2"></i>
+                        <span class="fw-semibold me-2">Keywords:</span>
+                        <span class="text-muted">{{ d.keywords }}</span>
                     </div>
-                </article>
-            </div>
+                </div>
+            </article>
         </div>
-        <aside class="base-side clearfix"></aside>
     </div>
-</div>
+{% endblock %}
+
+{% block js_custom %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const lightbox = GLightbox({selector: '[data-bs-toggle="lightbox"]'});
+
+            const grid = document.querySelector('.row[data-masonry]');
+            if (grid) {
+                imagesLoaded(grid, function () {
+                    const msnry = new Masonry(grid, {
+                        percentPosition: true,
+                        itemSelector: '.col-6'
+                    });
+                    msnry.layout();
+                });
+            }
+
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
 {% endblock %}
