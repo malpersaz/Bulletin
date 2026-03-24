@@ -68,6 +68,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'ناوەڕۆکی ئێمە',
     '2' => 'هەموو ناوەڕۆک',
+    '3' => 'هێشتا هیچ ناوەڕۆکی بڵاوکراوەیەک بەردەست نییە.',
 ];
 
 
@@ -251,7 +252,7 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_news']['latest_content']['3'] = 'هێشتا هیچ هەواڵێکی بڵاوکراوە بەردەست نییە.';
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'هەموو بڵاوکراوەکان';
 $lang['index']['mod_publication']['3'] = 'بڵاوکراوە,گۆڤار,ژمارە';
@@ -262,5 +263,5 @@ $lang['index']['mod_publication']['18'] = 'لەو پۆلەدا هیچ بڵاوک
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'بڵاوکراوەکانمان',
     '2' => 'هەموو بڵاوکراوەکان',
-    '3' => 'No published content is available yet.',
+    '3' => 'هێشتا هیچ بڵاوکراوەیەکی بڵاوکراوە بەردەست نییە.',
 ];

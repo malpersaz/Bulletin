@@ -78,6 +78,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'Naverok',
     '2' => 'Hemûyan Bibîne',
+    '3' => 'Hêj tu naverokê weşandî tune.',
 ];
 
 
@@ -270,7 +271,7 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_news']['latest_content']['3'] = 'Hêj tu nûçeya weşandî tune.';
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'Hemû Weşan';
 $lang['index']['mod_publication']['3'] = 'weşan,kovar,hejmar';
@@ -281,5 +282,5 @@ $lang['index']['mod_publication']['18'] = 'Di vê kategoriyê de weşanek tune.'
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Weşanên Me',
     '2' => 'Hemû Weşan',
-    '3' => 'No published content is available yet.',
+    '3' => 'Hêj tu weşana weşandî tune.',
 ];
