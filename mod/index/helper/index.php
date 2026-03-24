@@ -38,9 +38,9 @@ class index_mod extends indexBase
 
 
     // Mod Page
-    public function sayfa($seo = null)
+    public function page($seo = null)
     {
-        return $this->_loadHelper("index.mod_page", "sayfa", [$seo]);
+        return $this->_loadHelper("index.mod_page", "page", [$seo]);
     }
 
     // Mod Vid

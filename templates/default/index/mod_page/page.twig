@@ -34,7 +34,7 @@
                                     {% else %}
                                         {% if l.lang == site.lang %}
                                             <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
-                                                <a href="{{ site.sadres }}s/{{ l.seo }}">{{ l.name }}</a>
+                                                <a href="{{ site.sadres }}page/{{ l.seo }}">{{ l.name }}</a>
                                             </p>
                                         {% endif %}
                                     {% endif %}
@@ -48,7 +48,7 @@
                                         {% else %}
                                             {% if l.lang == site.lang %}
                                                 <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
-                                                    <a href="{{ site.sadres }}s/{{ l.seo }}">{{ l.name }}</a>
+                                                    <a href="{{ site.sadres }}page/{{ l.seo }}">{{ l.name }}</a>
                                                 </p>
                                             {% endif %}
                                         {% endif %}
@@ -166,7 +166,7 @@
                                     </p>
                                     {% for sayfa in altsayfalar %}
                                         <p class="list-group-item">
-                                            <a href="{{ site.sadres }}s/{{ sayfa.seo }}"
+                                            <a href="{{ site.sadres }}page/{{ sayfa.seo }}"
                                                title="{% if sayfa.summary != '' %}{{ sayfa.summary }}{% else %}{{ sayfa.name }}{% endif %}"
                                                data-bs-toggle="tooltip">{{ sayfa.name }}</a>
                                         </p>

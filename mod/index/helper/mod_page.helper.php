@@ -7,7 +7,7 @@ class mod_page_helper extends indexBase
         parent::__construct();
     }
 
-    public function sayfa($seo)
+    public function page($seo)
     {
         $seo = Req::Url_Clear($seo);
         $sayfa = Load::model('mod_page');

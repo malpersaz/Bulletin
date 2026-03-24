@@ -24,11 +24,11 @@ class index_mod extends indexBase
 
 
     # mod_page
-    public function sayfa($seo = null)
+    public function page($seo = null)
     {
-        $sayfa = Load::helper("index.mod_page");
-        $sayfa->sayfa($seo);
-        unset($sayfa);
+        $page = Load::helper("index.mod_page");
+        $page->page($seo);
+        unset($page);
     }
 
     # mod_video_embed
@@ -276,19 +276,19 @@ class index_mod extends indexBase
         echo '</urlset>';
     }
 
-    public function sayfaSitemap($sayfa = 1)
+    public function pageSitemap($page = 1)
     {
         header("content-type: text/xml");
-        $sayfa_limit = 50000;
-        if (intval($sayfa) === 0) {
-            $sayfa = 1;
+        $pageLimit = 50000;
+        if (intval($page) === 0) {
+            $page = 1;
         }
-        $offset = ($sayfa - 1) * $sayfa_limit;
+        $offset = ($page - 1) * $pageLimit;
         $oyun = Load::model('mod_page');
         $oyun->where_status('y');
         //$oyun->order('date', 'DESC');
         $oyun->select(['seo', 'lang']);
-        $oyun->limit($sayfa_limit, $offset);
+        $oyun->limit($pageLimit, $offset);
         $oyun->gR();
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
@@ -309,7 +309,7 @@ class index_mod extends indexBase
         if ($oyun->getSize() != 0) {
             foreach ($oyun->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/s/' . $o['seo'] . '</loc>
+                          <loc>' . $this->site['adres'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
                           <priority>0.700</priority>
                     </url>';
             }

@@ -154,7 +154,7 @@ class mod_page_mod extends indexMain
         $mod_menu_model->lang = $this->mod_page_model->lang;
         $mod_menu_model->status = $this->mod_page_model->status;
         $mod_menu_model->acl_id = $this->mod_page_model->acl_id;
-        $mod_menu_model->url = $this->mod_page_model->lang . '/s/' . $this->mod_page_model->seo;
+        $mod_menu_model->url = $this->mod_page_model->lang . '/page/' . $this->mod_page_model->seo;
 
         if ($menuExists) {
             return $mod_menu_model->update();
@@ -490,7 +490,7 @@ class mod_page_mod extends indexMain
             // Bu İçerik Daha Önce Menüye Gönderilmişse Güncelleyelim
             $new_mod_page = new mod_page_model();
             $new_mod_page->where_id($id)->gRo()->sync();
-            $url = $new_mod_page->lang . '/s/' . $new_mod_page->seo;
+            $url = $new_mod_page->lang . '/page/' . $new_mod_page->seo;
 
             if (isset($this->mod_page_model->user_id)) {
                 unset($this->mod_page_model->user_id);

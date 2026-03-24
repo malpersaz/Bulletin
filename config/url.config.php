@@ -11,8 +11,8 @@ $url['forgot-password']='mod_user/forgot_password';
 $url['reset-password']='mod_user/password_reset';
 
 // Static pages
-$url['about']='index/sayfa/hakkimizda';
-$url['contact']='index/sayfa/iletisim';
+$url['about']='index/page/about';
+$url['contact']='index/page/contact';
 $url['reset-password/']='mod_user/password_reset';
 $url['reset-password/(:any)']='mod_user/password_reset/$1';
 
@@ -30,7 +30,7 @@ $url['announcements/']='index/announcements';
 $url['announcements/(:any)']='index/announcements/$1';
 
 //Page
-$url['page/(:any)']='index/sayfa/$1';
+$url['page/(:any)']='index/page/$1';
 
 
 
@@ -45,11 +45,19 @@ $url['videos/(:any)']='index/videos/$1';
 $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
 // Content and Category
-$url['article/(:any)']='index/content/$1';
-$url['category']='index/contents';
-$url['category/']='index/contents';
-$url['category/(:any)']='index/contents/$1';
-$url['category/(:any)/(:num)']='index/contents/$1/$2';
+$url['article/(:any)']='index/news/$1';
+$url['category']='index/newses';
+$url['category/']='index/newses';
+$url['category/(:any)']='index/newses/$1';
+$url['category/(:any)/(:num)']='index/newses/$1/$2';
+
+// News and News Category
+$url['news/(:any)']='index/news/$1';
+$url['newses']='index/newses';
+$url['newses/']='index/newses';
+$url['newses/(:any)']='index/newses/$1';
+$url['newses/(:any)/(:num)']='index/newses/$1/$2';
+$url['news-archive']='index/news_archive';
 
 // File
 $url['download/(:num)']='mod_attachment/indir/$1';
