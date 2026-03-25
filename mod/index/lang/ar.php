@@ -161,6 +161,7 @@ $lang['index']['mod_publication']['5'] = 'أرشيف المنشورات %s - ا�
 $lang['index']['mod_publication']['7'] = 'تم نشر هذا الإصدار في %s ضمن تصنيف <a href="%s" title="%s">%s</a>';
 $lang['index']['mod_publication']['18'] = 'لا توجد منشورات متاحة في هذا التصنيف.';
 $lang['index']['mod_publication']['authors'] = 'الكتاب';
+$lang['index']['mod_publication']['other_authors'] = 'كتاب آخرون';
 $lang['index']['mod_publication']['authors_latest_label'] = 'أحدث منشور';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'لا توجد سجلات كتاب متاحة للعرض حتى الآن.';
 $lang['index']['mod_publication']['latest_publications'] = [

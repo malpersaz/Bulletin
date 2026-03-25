@@ -1,10 +1,9 @@
 {% set authors = ctx_get('authors') %}
 
 <aside class="base-side clearfix">
-    {{ include("index/karereklam.twig") }}
     <div class="side-content author-side-list">
         <div class="side-caption-2">
-            <span>{{ lang.index.mod_publication.other_authors|default('Other Authors') }}</span>
+            <span>{{ lang.index.mod_publication.other_authors }}</span>
         </div>
         <div class="row ms-row-fit">
             {% if authors %}

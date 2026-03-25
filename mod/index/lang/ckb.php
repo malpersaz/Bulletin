@@ -261,6 +261,7 @@ $lang['index']['mod_publication']['5'] = 'ئەرشیفی بڵاوکراوەکا�
 $lang['index']['mod_publication']['7'] = 'ئەم بڵاوکراوەیە لە %s لە پۆلی <a href="%s" title="%s">%s</a> بڵاو کراوەتەوە';
 $lang['index']['mod_publication']['18'] = 'لەو پۆلەدا هیچ بڵاوکراوەیەکی بەردەست نییە.';
 $lang['index']['mod_publication']['authors'] = 'نووسەرەکان';
+$lang['index']['mod_publication']['other_authors'] = 'نووسەرانی تر';
 $lang['index']['mod_publication']['authors_latest_label'] = 'دوایین بڵاوکراوە';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'هێشتا هیچ تۆمارێکی نووسەر بۆ پیشاندان نییە.';
 $lang['index']['mod_publication']['latest_publications'] = [

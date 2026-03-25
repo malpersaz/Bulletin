@@ -161,6 +161,7 @@ $lang['index']['mod_publication']['5'] = 'Archives des publications %s - Page %s
 $lang['index']['mod_publication']['7'] = 'Cette publication a été publiée le %s dans la catégorie <a href="%s" title="%s">%s</a>';
 $lang['index']['mod_publication']['18'] = 'Aucune publication disponible dans cette catégorie.';
 $lang['index']['mod_publication']['authors'] = 'Auteurs';
+$lang['index']['mod_publication']['other_authors'] = 'Autres auteurs';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Derniere publication';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Aucun auteur n est encore disponible a l affichage.';
 $lang['index']['mod_publication']['latest_publications'] = [

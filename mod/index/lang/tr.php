@@ -264,6 +264,7 @@ $lang['index']['mod_publication']['5'] = '%s Yayın Arşivi - Sayfa %s';
 $lang['index']['mod_publication']['7'] = 'Bu yayın %s tarihinde <a href="%s" title="%s">%s</a> kategorisinde yayınlanmıştır';
 $lang['index']['mod_publication']['18'] = 'Bu kategoride kullanılabilir yayın bulunmuyor.';
 $lang['index']['mod_publication']['authors'] = 'Yazarlar';
+$lang['index']['mod_publication']['other_authors'] = 'Diğer Yazarlar';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Son yayin';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Henuz goruntulenecek yazar kaydi bulunmuyor.';
 $lang['index']['mod_publication']['latest_publications'] = [

@@ -279,6 +279,7 @@ $lang['index']['mod_publication']['5'] = 'Arşîva Weşanan %s - Pela %s';
 $lang['index']['mod_publication']['7'] = 'Na weşan %s de kategoriya <a href="%s" title="%s">%s</a> de weşiyayo';
 $lang['index']['mod_publication']['18'] = 'Ena kategoriyê de weşan niyo.';
 $lang['index']['mod_publication']['authors'] = 'Niviskar';
+$lang['index']['mod_publication']['other_authors'] = 'Niviskarê Binan';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Weşana Peyên';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Hêna qeydê niviskaranê bıasnayışi nêno.';
 $lang['index']['mod_publication']['latest_publications'] = [

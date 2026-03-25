@@ -257,6 +257,7 @@ $lang['index']['mod_publication']['5'] = '%s Publikationsarchiv - Seite %s';
 $lang['index']['mod_publication']['7'] = 'Diese Publikation wurde am %s in der Kategorie <a href="%s" title="%s">%s</a> veröffentlicht';
 $lang['index']['mod_publication']['18'] = 'In dieser Kategorie sind keine Publikationen verfügbar.';
 $lang['index']['mod_publication']['authors'] = 'Autoren';
+$lang['index']['mod_publication']['other_authors'] = 'Weitere Autoren';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Neueste Publikation';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Es sind noch keine Autoreneintraege zum Anzeigen vorhanden.';
 $lang['index']['mod_publication']['latest_publications'] = [
