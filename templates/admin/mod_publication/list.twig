@@ -43,8 +43,8 @@
 <!-- EMPTY STATE -->
 <div id="empty-state" class="empty-state" style="display: none;">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_publication.grid[105]|default(lang.mod_publication.datatable.zeroRecords)|default('No Publication Found') }}</h3>
-    <p>{{ lang.mod_publication.grid[4]|default(lang.mod_publication.datatable.emptyTable)|default('No publication matches your filters.') }}</p>
+    <h3>{{ lang.mod_publication.grid[105] }}</h3>
+    <p>{{ lang.mod_publication.grid[4] }}</p>
 </div>
 
 <!-- INFINITE SCROLL LOADER -->
@@ -52,7 +52,7 @@
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_publication.grid[104]|default(lang.mod_publication.datatable.loadingRecords)|default('Loading...') }}</span>
+    <span>{{ lang.mod_publication.grid[104] }}</span>
 </div>
 
 <!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
@@ -78,26 +78,26 @@
     <div class="standard-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_publication.button.edit|default('Biguhere') }}</span>
+            <span>{{ lang.mod_publication.button.edit }}</span>
         </button>
         
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-images"></i>
-            <span>{{ lang.mod_publication.button.gallery|default('Galerî') }}</span>
+            <span>{{ lang.mod_publication.button.gallery }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_publication/add'">
             <i class="bi bi-plus-lg"></i>
         </div>
 
-        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_publication.button.file|default('Dosya') }}</span>
+            <span>{{ lang.mod_publication.button.file }}</span>
         </button>
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_publication.button.delete|default('Jê bibe') }}</span>
+            <span>{{ lang.mod_publication.button.delete }}</span>
         </button>
     </div>
 {% endblock %}
@@ -119,16 +119,16 @@
         draft: "{{ lang.mod_publication.status_badge.draft|e('js') }}",
         general: "{{ lang.mod_publication.status_badge.general|e('js') }}",
         sheet_all: "{{ lang.mod_publication.sheet.all|e('js') }}",
-        confirm_delete: "{{ lang.mod_publication.delete_confirm|default(lang.mod_publication.context_menu.delete_confirm)|e('js') }}",
-        confirm_publish: "{{ lang.mod_publication.quick_publish_confirm|default(lang.mod_publication.context_menu.publish)|e('js') }}",
-        confirm_unpublish: "{{ lang.mod_publication.quick_unpublish_confirm|default(lang.mod_publication.context_menu.unpublish)|e('js') }}",
+        confirm_delete: "{{ lang.mod_publication.delete_confirm|e('js') }}",
+        confirm_publish: "{{ lang.mod_publication.quick_publish_confirm|e('js') }}",
+        confirm_unpublish: "{{ lang.mod_publication.quick_unpublish_confirm|e('js') }}",
         error_general: "{{ lang.mod_publication.hata|e('js') }}",
         error_upload: "{{ lang.mod_publication.message.error.add|e('js') }}",
-        loading: "{{ lang.mod_publication.grid[104]|default(lang.mod_publication.datatable.loadingRecords)|e('js') }}",
+        loading: "{{ lang.mod_publication.grid[104]|e('js') }}",
         grid: {
-            load_more: "{{ lang.mod_publication.grid.load_more|default('Load More')|e('js') }}"
+            load_more: "{{ lang.mod_publication.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_publication.js?v=2.3"></script>
+<script src="/templates/admin/assets/js/mod_publication.js?v=2.4"></script>
 {% endblock %}

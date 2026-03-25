@@ -596,13 +596,6 @@ function openWizard() {
 }
 
 function closeWizard() {
-    const wizardAddPath = '/' + WIZARD_MODULE + '/add';
-    if (window.location.pathname.indexOf(wizardAddPath) !== -1) {
-        const newPath = window.location.pathname.replace(WIZARD_MODULE + '/add', 'mod_user/panel/');
-        window.location.href = newPath;
-        return;
-    }
-
     const wizard = document.getElementById('contentWizard');
     if (wizard) wizard.classList.remove('active');
 
@@ -612,6 +605,8 @@ function closeWizard() {
 
     // Clear saved state
     clearWizardState();
+
+    closeWizardCategorySheet();
 }
 
 
@@ -808,59 +803,70 @@ function selectWizardLang(el, lang) {
 }
 
 // Step 2: Category
+function closeWizardCategorySheet() {
+    const sheet = document.getElementById('wizard-cat-sheet');
+    const overlay = document.getElementById('wizard-cat-overlay');
+    if (!sheet || !overlay) return;
+
+    sheet.classList.remove('active');
+    overlay.classList.remove('active');
+    overlay.style.display = 'none';
+}
+
 function toggleWizardCategorySheet() {
     const sheet = document.getElementById('wizard-cat-sheet');
     const overlay = document.getElementById('wizard-cat-overlay');
-    if (sheet && overlay) {
-        if (sheet.classList.contains('active')) {
-            sheet.classList.remove('active');
-            overlay.style.display = 'none';
-        } else {
-            // Detect which wizard is active
-            let targetLang = adminLang.filter.default_lang;
-            let isVideoWizard = false;
+    if (!sheet || !overlay) return;
 
-            const videoEmbedWizard = document.getElementById('videoEmbedWizard');
-            if (videoEmbedWizard && videoEmbedWizard.classList.contains('active')) {
-                targetLang = (videoEmbedWizardData.lang || adminLang.filter.default_lang).toUpperCase();
-                isVideoWizard = true;
-            } else if (typeof wizardData !== 'undefined' && wizardData.lang) {
-                targetLang = wizardData.lang.toUpperCase();
-            }
-
-            const items = sheet.querySelectorAll('.category-item');
-            let visibleCount = 0;
-
-            items.forEach(item => {
-                const itemLangAttr = item.getAttribute('data-lang');
-                const itemLang = itemLangAttr ? itemLangAttr.toUpperCase() : '';
-
-                const isVideoItem = item.classList.contains('video-cat');
-                const isContentItem = item.classList.contains('content-cat');
-
-                // Filter by Wizard Type
-                let typeMatch = false;
-                if (isVideoWizard && isVideoItem) typeMatch = true;
-                if (!isVideoWizard && isContentItem) typeMatch = true;
-
-                // Show if match or if no lang is defined (fallback)
-                if (typeMatch && (!itemLang || itemLang === targetLang)) {
-                    item.style.display = 'flex';
-                    visibleCount++;
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-
-            // FALLBACK: If no categories found for this language, show ALL
-            if (visibleCount === 0 && items.length > 0) {
-                items.forEach(item => item.style.display = 'flex');
-            }
-
-            sheet.classList.add('active');
-            overlay.style.display = 'block';
-        }
+    if (sheet.classList.contains('active')) {
+        closeWizardCategorySheet();
+        return;
     }
+
+    // Detect which wizard is active
+    let targetLang = adminLang.filter.default_lang;
+    let isVideoWizard = false;
+
+    const videoEmbedWizard = document.getElementById('videoEmbedWizard');
+    if (videoEmbedWizard && videoEmbedWizard.classList.contains('active')) {
+        targetLang = (videoEmbedWizardData.lang || adminLang.filter.default_lang).toUpperCase();
+        isVideoWizard = true;
+    } else if (typeof wizardData !== 'undefined' && wizardData.lang) {
+        targetLang = wizardData.lang.toUpperCase();
+    }
+
+    const items = sheet.querySelectorAll('.category-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const itemLangAttr = item.getAttribute('data-lang');
+        const itemLang = itemLangAttr ? itemLangAttr.toUpperCase() : '';
+
+        const isVideoItem = item.classList.contains('video-cat');
+        const isContentItem = item.classList.contains('content-cat');
+
+        // Filter by Wizard Type
+        let typeMatch = false;
+        if (isVideoWizard && isVideoItem) typeMatch = true;
+        if (!isVideoWizard && isContentItem) typeMatch = true;
+
+        // Show if match or if no lang is defined (fallback)
+        if (typeMatch && (!itemLang || itemLang === targetLang)) {
+            item.style.display = 'flex';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // FALLBACK: If no categories found for this language, show ALL
+    if (visibleCount === 0 && items.length > 0) {
+        items.forEach(item => item.style.display = 'flex');
+    }
+
+    sheet.classList.add('active');
+    overlay.classList.add('active');
+    overlay.style.display = 'block';
 }
 
 function selectWizardCategory(name, id) {

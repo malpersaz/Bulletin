@@ -97,6 +97,7 @@ class mod_publication_mod extends indexMain
         $mod_publication_category = Load::model('mod_publication_category');
         $mod_publication_category->select('id, name, lang');
         $mod_publication_category->addWhere("root = 'n'");
+        $mod_publication_category->order('`order`', 'ASC');
         $mod_publication_category->all();
         $categories = $mod_publication_category->toArray();
         $this->tema->veri('categories', $categories);
@@ -154,6 +155,7 @@ class mod_publication_mod extends indexMain
         $mod_publication_category = Load::model('mod_publication_category');
         $mod_publication_category->select('id, name, lang');
         $mod_publication_category->addWhere("root = 'n'");
+        $mod_publication_category->order('`order`', 'ASC');
         $mod_publication_category->all();
         $categories = $mod_publication_category->toArray();
         $this->tema->veri('categories', $categories);
@@ -184,6 +186,7 @@ class mod_publication_mod extends indexMain
         $mod_publication_category = Load::model('mod_publication_category');
         $mod_publication_category->select('id, name, lang');
         $mod_publication_category->addWhere("root = 'n'");
+        $mod_publication_category->order('`order`', 'ASC');
         $mod_publication_category->all();
         $categories = $mod_publication_category->toArray();
 
