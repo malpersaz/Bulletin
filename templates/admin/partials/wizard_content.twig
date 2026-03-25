@@ -1,3 +1,5 @@
+{% set wizard_lang_key = wizard_module|default('mod_content') %}
+{% set wizard_lang = attribute(lang, wizard_lang_key) %}
 <form id="addForm" method="POST" action="{{ site.sadres }}{{ wizard_module|default('mod_content') }}/add" enctype="multipart/form-data">
 <div id="contentWizard" class="wizard-overlay">
 
@@ -5,10 +7,10 @@
     <header class="wizard-header">
         <button type="button" class="icon-btn" onclick="closeWizard()"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
-            <span id="wizardStepTitle">{{ lang.mod_content.wizard.step.lang }}</span>
+            <span id="wizardStepTitle">{{ wizard_lang.wizard.step.lang|default(wizard_lang.wizard.step.language) }}</span>
             <span id="wizardStepCounter">1/8</span>
         </div>
-        <button type="button" onclick="prepareAndSubmitWizard()" class="m3-btn-text">{{ lang.mod_content.wizard.button.save }}</button>
+        <button type="button" onclick="prepareAndSubmitWizard()" class="m3-btn-text">{{ wizard_lang.wizard.button.save }}</button>
     </header>
 
     <!-- Progress Bar -->
@@ -36,8 +38,8 @@
 
         <!-- Step 1: Language -->
         <div class="wizard-step active" id="wizardStep1">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.lang }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.lang }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.lang|default(wizard_lang.wizard.step.language) }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.lang|default(wizard_lang.wizard.subtitle.language) }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
                 <div class="selection-card{% if item.seo|upper == site.lang|upper %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|upper }}')">
@@ -51,12 +53,12 @@
 
         <!-- Step 2: Category -->
         <div class="wizard-step" id="wizardStep2">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.category }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.category }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.category }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.category }}</p>
 
             <div class="m3-input-wrapper">
                 <div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
-                    <span id="wizardSelectedCategory">{{ lang.mod_content.wizard.label.category_select }}</span>
+                    <span id="wizardSelectedCategory">{{ wizard_lang.wizard.label.category_select }}</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
             </div>
@@ -64,21 +66,21 @@
 
         <!-- Step 3: Title -->
         <div class="wizard-step" id="wizardStep3">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.title }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.title }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.title }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.title }}</p>
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="wizardTitleInput" placeholder=" " autocomplete="off" maxlength="70">
-                <label class="m3-floating-label">{{ lang.mod_content.wizard.label.content_title }}</label>
+                <label class="m3-floating-label">{{ wizard_lang.wizard.label.content_title|default(wizard_lang.wizard.label.publication_title) }}</label>
             </div>
             <div class="char-counter" id="titleCharCounter">0 / 70</div>
-            <div class="validation-msg" id="titleValidationMsg">{{ lang.mod_content.validator.title_length }}</div>
+            <div class="validation-msg" id="titleValidationMsg">{{ wizard_lang.validator.title_length }}</div>
         </div>
 
         <!-- Step 4: Date -->
         <div class="wizard-step" id="wizardStep4">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.date }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.date }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.date }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.date }}</p>
 
             <div class="input-wrapper-lg">
                 <input type="datetime-local" class="m3-input-lg" name="created_at" id="wizardDateInput">
@@ -87,21 +89,21 @@
 
         <!-- Step 5: Intro (Deck) -->
         <div class="wizard-step" id="wizardStep5">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.intro }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.intro }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.intro }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.intro }}</p>
 
             <div class="input-wrapper-lg">
                 <textarea class="m3-input-lg" name="summary" id="wizardIntroInput" rows="5" placeholder=" " maxlength="255"></textarea>
-                <label class="m3-floating-label">{{ lang.mod_content.wizard.label.intro_text }}</label>
+                <label class="m3-floating-label">{{ wizard_lang.wizard.label.intro_text }}</label>
             </div>
             <div class="char-counter" id="introCharCounter">0 / 255</div>
-            <div class="validation-msg" id="introValidationMsg">{{ lang.mod_content.validator.deck_length }}</div>
+            <div class="validation-msg" id="introValidationMsg">{{ wizard_lang.validator.deck_length }}</div>
         </div>
 
         <!-- Step 6: Content -->
         <div class="wizard-step" id="wizardStep6">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.content }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.content }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.content|default(wizard_lang.wizard.step.publication) }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.content|default(wizard_lang.wizard.subtitle.publication) }}</p>
             
             <div style="margin-top: 12px;">
                 <textarea name="content" id="wizardContentTextarea"></textarea>
@@ -110,12 +112,12 @@
 
         <!-- Step 7: Image -->
         <div class="wizard-step" id="wizardStep7">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.image }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.image }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.image }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.image }}</p>
 
             <div class="image-upload-area" onclick="document.getElementById('wizardImgInput').click()">
                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                <p>{{ lang.mod_content.wizard.label.upload_text }}</p>
+                <p>{{ wizard_lang.wizard.label.upload_text }}</p>
                 <input type="file" name="image" id="wizardImgInput" hidden onchange="previewWizardImage(this)">
             </div>
             <img id="wizardImgPreview" class="wizard-img-preview" style="display:none;">
@@ -123,31 +125,31 @@
 
         <!-- Step 8: Publish -->
         <div class="wizard-step" id="wizardStep8">
-            <h2 class="step-headline">{{ lang.mod_content.wizard.step.finish }}</h2>
-            <p class="step-subhead">{{ lang.mod_content.wizard.subtitle.finish }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.finish }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.finish }}</p>
 
             <input type="hidden" name="status" value="y" id="wizardPublishHidden">
             
             <div class="selection-grid">
                 <div class="selection-card active" onclick="selectWizardPublishStatus(this, 'y')">
                     <i class="bi bi-cloud-check selection-icon" style="font-size:24px;"></i>
-                    <div class="selection-label">{{ lang.mod_content.context_menu.publish }}</div>
+                    <div class="selection-label">{{ wizard_lang.context_menu.publish }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
                 </div>
                 <div class="selection-card" onclick="selectWizardPublishStatus(this, 'n')">
                     <i class="bi bi-pencil-square selection-icon" style="font-size:24px;"></i>
-                    <div class="selection-label">{{ lang.mod_content.context_menu.unpublish }}</div>
+                    <div class="selection-label">{{ wizard_lang.context_menu.unpublish }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
                 </div>
             </div>
 
             <div class="wizard-summary">
-                <h3>{{ lang.mod_content.wizard.summary.title }}</h3>
+                <h3>{{ wizard_lang.wizard.summary.title }}</h3>
                 <div class="summary-item">
                     <i class="bi bi-translate"></i> <span id="summaryLang">{{ site.lang|upper|default('EN') }}</span>
                 </div>
                 <div class="summary-item">
-                    <i class="bi bi-folder"></i> <span id="summaryCategory">{{ lang.mod_content.wizard.summary.selected_none }}</span>
+                    <i class="bi bi-folder"></i> <span id="summaryCategory">{{ wizard_lang.wizard.summary.selected_none }}</span>
                 </div>
             </div>
         </div>
@@ -156,10 +158,10 @@
 
     <!-- Wizard Footer -->
     <div class="wizard-footer">
-        <button type="button" class="m3-btn-outlined" id="btnWizardPrev" onclick="prevWizardStep(); return false;" disabled>{{ lang.mod_content.wizard.button.prev }}</button>
-        <button type="button" class="m3-btn-filled" id="btnWizardNext" onclick="nextWizardStep(); return false;">{{ lang.mod_content.wizard.button.next }}</button>
+        <button type="button" class="m3-btn-outlined" id="btnWizardPrev" onclick="prevWizardStep(); return false;" disabled>{{ wizard_lang.wizard.button.prev }}</button>
+        <button type="button" class="m3-btn-filled" id="btnWizardNext" onclick="nextWizardStep(); return false;">{{ wizard_lang.wizard.button.next }}</button>
         <button type="button" class="m3-btn-filled success" id="btnWizardFinish"
-            style="display:none;">{{ lang.mod_content.wizard.button.finish }}</button>
+            style="display:none;">{{ wizard_lang.wizard.button.finish }}</button>
     </div>
 </div>
 </form>

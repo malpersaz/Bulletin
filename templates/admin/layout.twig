@@ -73,29 +73,37 @@
     </div>
 
     <!-- CORE SCRIPTS (Absolute Path) -->
+    {% set wizard_lang_key = wizard_module|default('mod_content') %}
+    {% set wizard_lang = attribute(lang, wizard_lang_key) %}
     <script>
         const SITE_URL = '{{ site.sadres }}';
         const WIZARD_MODULE = '{{ wizard_module|default("mod_content") }}';
         const adminLang = {
             wizard: {
                 step: {
-                    language: '{{ lang.mod_content.wizard.step.language|default("Dil")|e("js") }}',
-                    category: '{{ lang.mod_content.wizard.step.category|default("Kategori")|e("js") }}',
-                    title: '{{ lang.mod_content.wizard.step.title|default("Başlık")|e("js") }}',
-                    date: '{{ lang.mod_content.wizard.step.date|default("Tarih")|e("js") }}',
-                    intro: '{{ lang.mod_content.wizard.step.intro|default("Giriş")|e("js") }}',
-                    content: '{{ lang.mod_content.wizard.step.content|default("İçerik")|e("js") }}',
-                    image: '{{ lang.mod_content.wizard.step.image|default("Görsel")|e("js") }}',
-                    finish: '{{ lang.mod_content.wizard.step.finish|default("Bitir")|e("js") }}'
+                    language: '{{ wizard_lang.wizard.step.language|default(wizard_lang.wizard.step.lang)|default("Dil")|e("js") }}',
+                    category: '{{ wizard_lang.wizard.step.category|default("Kategori")|e("js") }}',
+                    title: '{{ wizard_lang.wizard.step.title|default("Başlık")|e("js") }}',
+                    date: '{{ wizard_lang.wizard.step.date|default("Tarih")|e("js") }}',
+                    intro: '{{ wizard_lang.wizard.step.intro|default("Giriş")|e("js") }}',
+                    content: '{{ wizard_lang.wizard.step.content|default(wizard_lang.wizard.step.publication)|default("İçerik")|e("js") }}',
+                    image: '{{ wizard_lang.wizard.step.image|default("Görsel")|e("js") }}',
+                    finish: '{{ wizard_lang.wizard.step.finish|default("Bitir")|e("js") }}'
                 },
                 messages: {
-                    success_sim: '{{ lang.mod_content.messages.success_sim|default("Başarılı")|e("js") }}'
+                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|default("Başarılı")|e("js") }}'
                 },
                 label: {
-                    change_image: '{{ lang.mod_content.wizard.label.change_image|default("Değiştir")|e("js") }}'
+                    change_image: '{{ wizard_lang.wizard.label.change_image|default("Değiştir")|e("js") }}'
                 },
                 summary: {
-                    selected_none: '{{ lang.mod_content.wizard.summary.selected_none|default("Yok")|e("js") }}'
+                    selected_none: '{{ wizard_lang.wizard.summary.selected_none|default("Yok")|e("js") }}'
+                },
+                button: {
+                    save: '{{ wizard_lang.wizard.button.save|default("Kaydet")|e("js") }}',
+                    next: '{{ wizard_lang.wizard.button.next|default("İleri")|e("js") }}',
+                    prev: '{{ wizard_lang.wizard.button.prev|default("Geri")|e("js") }}',
+                    finish: '{{ wizard_lang.wizard.button.finish|default("Bitir")|e("js") }}'
                 }
             },
             video_embed: {
@@ -148,45 +156,45 @@
                 }
             },
             general: {
-                delete_confirm: '{{ lang.mod_content.delete_confirm|default("Silinsin mi?")|e("js") }}',
-                card_click: '{{ lang.mod_content.messages.card_click|default("Kart: %s")|e("js") }}'
+                delete_confirm: '{{ wizard_lang.delete_confirm|default("Silinsin mi?")|e("js") }}',
+                card_click: '{{ wizard_lang.wizard.messages.card_click|default("Kart: %s")|e("js") }}'
             },
             status: {
-                active: '{{ lang.mod_content.status_badge.active|default("Yayında")|e("js") }}',
-                draft: '{{ lang.mod_content.status_badge.draft|default("Taslak")|e("js") }}'
+                active: '{{ wizard_lang.status_badge.active|default("Yayında")|e("js") }}',
+                draft: '{{ wizard_lang.status_badge.draft|default("Taslak")|e("js") }}'
             },
             mock: {
-                titles: {{ lang.mod_content.mock.titles|json_encode|raw }},
-                categories: {{ lang.mod_content.mock.categories|json_encode|raw }},
-                authors: {{ lang.mod_content.mock.authors|json_encode|raw }}
+                titles: {{ wizard_lang.mock.titles|default([])|json_encode|raw }},
+                categories: {{ wizard_lang.mock.categories|default([])|json_encode|raw }},
+                authors: {{ wizard_lang.mock.authors|default([])|json_encode|raw }}
             },
             context_menu: {
-                edit: '{{ lang.mod_content.context_menu.edit|default("Biguhere")|e("js") }}',
-                publish: '{{ lang.mod_content.context_menu.publish|e("js") }}',
-                unpublish: '{{ lang.mod_content.context_menu.unpublish|e("js") }}',
-                published_msg: '{{ lang.mod_content.context_menu.published_msg|e("js") }}',
-                unpublished_msg: '{{ lang.mod_content.context_menu.unpublished_msg|e("js") }}',
-                confirm: '{{ lang.mod_content.context_menu.confirm|default("Erê")|e("js") }}',
-                cancel: '{{ lang.mod_content.context_menu.cancel|default("Betal")|e("js") }}',
-                edit_alert: '{{ lang.mod_content.context_menu.edit_alert|replace({"\n": "\\n"})|e("js") }}',
-                gallery_alert: '{{ lang.mod_content.context_menu.gallery_alert|replace({"\n": "\\n"})|e("js") }}',
-                files_alert: '{{ lang.mod_content.context_menu.files_alert|replace({"\n": "\\n"})|e("js") }}',
-                status_alert: '{{ lang.mod_content.context_menu.status_alert|replace({"\n": "\\n"})|e("js") }}',
-                delete_confirm: '{{ lang.mod_content.context_menu.delete_confirm|e("js") }}',
-                delete_success: '{{ lang.mod_content.context_menu.delete_success|e("js") }}'
+                edit: '{{ wizard_lang.context_menu.edit|default("Biguhere")|e("js") }}',
+                publish: '{{ wizard_lang.context_menu.publish|default("Yayınla")|e("js") }}',
+                unpublish: '{{ wizard_lang.context_menu.unpublish|default("Taslak")|e("js") }}',
+                published_msg: '{{ wizard_lang.context_menu.published_msg|default("Yayınlandı")|e("js") }}',
+                unpublished_msg: '{{ wizard_lang.context_menu.unpublished_msg|default("Yayından kaldırıldı")|e("js") }}',
+                confirm: '{{ wizard_lang.context_menu.confirm|default("Erê")|e("js") }}',
+                cancel: '{{ wizard_lang.context_menu.cancel|default("Betal")|e("js") }}',
+                edit_alert: '{{ wizard_lang.context_menu.edit_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
+                gallery_alert: '{{ wizard_lang.context_menu.gallery_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
+                files_alert: '{{ wizard_lang.context_menu.files_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
+                status_alert: '{{ wizard_lang.context_menu.status_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
+                delete_confirm: '{{ wizard_lang.context_menu.delete_confirm|default("Silinsin mi?")|e("js") }}',
+                delete_success: '{{ wizard_lang.context_menu.delete_success|default("Silindi")|e("js") }}'
             },
             filter: {
-                default_sort: '{{ lang.mod_content.ui.default_sort|e("js") }}',
+                default_sort: '{{ wizard_lang.ui.default_sort|default("")|e("js") }}',
                 default_lang: '{{ site.lang|upper }}'
             },
             ui: {
-                select: '{{ lang.mod_content.ui.select|e("js") }}',
-                all: '{{ lang.mod_content.ui.all|e("js") }}',
-                filter_cleared: '{{ lang.mod_content.ui.filter_cleared|e("js") }}',
-                filter_applied: '{{ lang.mod_content.ui.filter_applied|e("js") }}',
-                sort_label: '{{ lang.mod_content.ui.sort_label|e("js") }}',
-                limit_label: '{{ lang.mod_content.ui.limit_label|e("js") }}',
-                lang_label: '{{ lang.mod_content.ui.lang_label|e("js") }}'
+                select: '{{ wizard_lang.ui.select|default("")|e("js") }}',
+                all: '{{ wizard_lang.ui.all|default("")|e("js") }}',
+                filter_cleared: '{{ wizard_lang.ui.filter_cleared|default("")|e("js") }}',
+                filter_applied: '{{ wizard_lang.ui.filter_applied|default("")|e("js") }}',
+                sort_label: '{{ wizard_lang.ui.sort_label|default("")|e("js") }}',
+                limit_label: '{{ wizard_lang.ui.limit_label|default("")|e("js") }}',
+                lang_label: '{{ wizard_lang.ui.lang_label|default("")|e("js") }}'
             },
             adminCategories: {{ categories|json_encode|raw }},
             video_embed_categories: {{ video_embed_categories|json_encode|raw }},
