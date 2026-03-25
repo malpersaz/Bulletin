@@ -117,6 +117,17 @@
         display: grid;
         gap: 14px;
         padding: 16px;
+        cursor: pointer;
+        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    }
+    .attachment-card.selected {
+        border-color: rgba(31, 78, 121, 0.28);
+        box-shadow: 0 16px 30px rgba(31, 78, 121, 0.14);
+        transform: translateY(-1px);
+    }
+    .attachment-card.is-new {
+        border-color: rgba(11, 107, 92, 0.28);
+        box-shadow: 0 16px 32px rgba(11, 107, 92, 0.14);
     }
     .attachment-card.hidden-by-search {
         display: none;
@@ -137,6 +148,30 @@
         background: linear-gradient(135deg, #d9ecff, #d6f5ea);
         color: #215f57;
         font-size: 22px;
+    }
+    .attachment-icon.type-pdf {
+        background: linear-gradient(135deg, #fde3df, #fff0ec);
+        color: #b3261e;
+    }
+    .attachment-icon.type-image {
+        background: linear-gradient(135deg, #d9ecff, #eef5ff);
+        color: #245ea8;
+    }
+    .attachment-icon.type-archive {
+        background: linear-gradient(135deg, #efe3ff, #f7f0ff);
+        color: #6947b6;
+    }
+    .attachment-icon.type-sheet {
+        background: linear-gradient(135deg, #dcf5e8, #eefcf4);
+        color: #157347;
+    }
+    .attachment-icon.type-doc {
+        background: linear-gradient(135deg, #e2ebff, #f1f5ff);
+        color: #315ea8;
+    }
+    .attachment-icon.type-generic {
+        background: linear-gradient(135deg, #eceff3, #f8fafb);
+        color: #5d6875;
     }
     .attachment-title {
         margin: 0;
@@ -163,6 +198,43 @@
         background: #eff2ff;
         color: #33429a;
         font-weight: 700;
+        text-transform: uppercase;
+    }
+    .attachment-chip.type-pdf {
+        background: #fde8e6;
+        color: #b3261e;
+    }
+    .attachment-chip.type-image {
+        background: #e7f0ff;
+        color: #245ea8;
+    }
+    .attachment-chip.type-archive {
+        background: #efe7ff;
+        color: #6947b6;
+    }
+    .attachment-chip.type-sheet {
+        background: #dff5e8;
+        color: #157347;
+    }
+    .attachment-chip.type-doc {
+        background: #e8efff;
+        color: #315ea8;
+    }
+    .attachment-chip.type-generic {
+        background: #eef2f5;
+        color: #5d6875;
+    }
+    .attachment-fresh-badge {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: #dff5e8;
+        color: #157347;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.02em;
         text-transform: uppercase;
     }
     .attachment-menu {
@@ -225,6 +297,13 @@
         background: #fce8e6;
         color: #b3261e;
     }
+    .attachment-toolbar #toolbarDelete.active {
+        color: #b3261e !important;
+        background: rgba(179, 38, 30, 0.12);
+    }
+    .attachment-toolbar #toolbarDelete.active i {
+        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
+    }
     .attachment-empty {
         display: flex;
         flex-direction: column;
@@ -276,14 +355,33 @@
             {% for dosya in dosyalar %}
                 {% set current_mod_name = dosya.mod_name|default(mod_name) %}
                 {% set current_vid = dosya.vid|default(vid) %}
+                {% set file_ext = dosya.ext|lower %}
+                {% set type_class = 'type-generic' %}
+                {% set type_icon = 'bi-file-earmark' %}
+                {% if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'] %}
+                    {% set type_class = 'type-image' %}
+                    {% set type_icon = 'bi-file-earmark-image' %}
+                {% elseif file_ext in ['pdf'] %}
+                    {% set type_class = 'type-pdf' %}
+                    {% set type_icon = 'bi-file-earmark-pdf' %}
+                {% elseif file_ext in ['zip', 'rar', '7z', 'tar', 'gz'] %}
+                    {% set type_class = 'type-archive' %}
+                    {% set type_icon = 'bi-file-earmark-zip' %}
+                {% elseif file_ext in ['xls', 'xlsx', 'ods', 'csv'] %}
+                    {% set type_class = 'type-sheet' %}
+                    {% set type_icon = 'bi-file-earmark-spreadsheet' %}
+                {% elseif file_ext in ['doc', 'docx', 'odt', 'ppt', 'pptx', 'epub', 'txt'] %}
+                    {% set type_class = 'type-doc' %}
+                    {% set type_icon = 'bi-file-earmark-text' %}
+                {% endif %}
                 {% set search_text = (dosya.filename ~ ' ' ~ dosya.original_name ~ ' ' ~ dosya.ext ~ ' ' ~ dosya.id ~ ' ' ~ current_mod_name ~ ' ' ~ current_vid)|lower %}
-                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-search="{{ search_text }}" data-mod-name="{{ current_mod_name }}" data-vid="{{ current_vid }}">
+                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-search="{{ search_text }}" data-mod-name="{{ current_mod_name }}" data-vid="{{ current_vid }}" data-file-name="{{ dosya.filename|lower }}" data-original-name="{{ dosya.original_name|lower }}" onclick="selectAttachment('{{ dosya.id }}')">
                     <div class="attachment-topline">
-                        <div class="attachment-icon"><i class="bi bi-file-earmark-text"></i></div>
+                        <div class="attachment-icon {{ type_class }}"><i class="bi {{ type_icon }}"></i></div>
                         <div>
                             <h3 class="attachment-title" data-display>{{ dosya.filename }}</h3>
                             <div class="attachment-meta">
-                                <span class="attachment-chip">{{ dosya.ext }}</span>
+                                <span class="attachment-chip {{ type_class }}">{{ dosya.ext }}</span>
                                 <span>#{{ dosya.id }}</span>
                                 {% if is_global_list %}
                                     <span>{{ current_mod_name }}</span>
@@ -294,25 +392,17 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <button class="attachment-menu" type="button" onclick="toggleAttachmentEdit('{{ dosya.id }}')">
+                        <button class="attachment-menu" type="button" onclick="event.stopPropagation(); toggleAttachmentEdit('{{ dosya.id }}')">
                             <i class="bi bi-three-dots-vertical"></i>
                         </button>
                     </div>
 
                     <div class="attachment-inline-edit" id="attachment-edit-{{ dosya.id }}" style="display:none;">
-                        <input class="attachment-input" type="text" id="attachment-input-{{ dosya.id }}" value="{{ dosya.filename }}" ondblclick="event.stopPropagation()">
+                        <input class="attachment-input" type="text" id="attachment-input-{{ dosya.id }}" value="{{ dosya.filename }}" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()">
                         <div class="attachment-actions">
-                            <button type="button" class="attachment-edit" onclick="saveAttachmentName('{{ dosya.id }}')">
+                            <button type="button" class="attachment-edit" onclick="event.stopPropagation(); saveAttachmentName('{{ dosya.id }}')">
                                 <i class="bi bi-check2"></i>
                                 <span>{{ lang.mod_attachment.admin[21] }}</span>
-                            </button>
-                            <a class="attachment-download" href="{{ site.sadres }}tools/saveFile/{{ current_mod_name }}/{{ current_vid }}/{{ dosya.id }}">
-                                <i class="bi bi-download"></i>
-                                <span>{{ lang.mod_attachment.admin[29] }}</span>
-                            </a>
-                            <button type="button" class="attachment-delete" onclick="deleteAttachment('{{ dosya.id }}')">
-                                <i class="bi bi-trash3"></i>
-                                <span>{{ lang.mod_attachment.admin[31] }}</span>
                             </button>
                         </div>
                     </div>
@@ -336,25 +426,45 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="standard-toolbar">
-    <button class="toolbar-item" onclick="history.back()">
-        <i class="bi bi-chevron-left"></i>
-        <span>{{ lang.mod_attachment.admin[12] }}</span>
-    </button>
-
-    <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
-        <i class="bi bi-folder2-open"></i>
-        <span>{{ lang.mod_attachment.admin[14] }}</span>
-    </button>
-
+<div class="standard-toolbar attachment-toolbar">
     {% if not is_global_list %}
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelectedAttachment()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_attachment.admin[18] }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'">
+            <i class="bi bi-speedometer2"></i>
+            <span>{{ lang.mod_attachment.admin[44] }}</span>
+        </button>
+
         <button type="button" class="toolbar-fab" onclick="openAttachmentUpload()">
             <i class="bi bi-plus-lg"></i>
         </button>
 
-        <button class="toolbar-item" onclick="openAttachmentUpload()">
-            <i class="bi bi-upload"></i>
-            <span>{{ lang.mod_attachment.admin[38] }}</span>
+        <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
+            <i class="bi bi-card-list"></i>
+            <span>{{ lang.mod_attachment.admin[14] }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}{{ mod_name }}/list'">
+            <i class="bi bi-chevron-left"></i>
+            <span>{{ lang.mod_attachment.admin[12] }}</span>
+        </button>
+    {% else %}
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'">
+            <i class="bi bi-speedometer2"></i>
+            <span>{{ lang.mod_attachment.admin[44] }}</span>
+        </button>
+
+        <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
+            <i class="bi bi-card-list"></i>
+            <span>{{ lang.mod_attachment.admin[14] }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="history.back()">
+            <i class="bi bi-chevron-left"></i>
+            <span>{{ lang.mod_attachment.admin[12] }}</span>
         </button>
     {% endif %}
 </div>
@@ -362,8 +472,102 @@
 
 {% block scripts %}
 <script>
+    const ATTACHMENT_UPLOAD_STATE_KEY = 'attachmentUploadState';
+    let selectedAttachmentId = null;
+
+    function normalizeAttachmentName(value) {
+        return String(value || '').trim().toLocaleLowerCase('tr-TR');
+    }
+
+    function updateAttachmentToolbar(active) {
+        const deleteBtn = document.getElementById('toolbarDelete');
+        if (!deleteBtn) {
+            return;
+        }
+
+        if (active) {
+            deleteBtn.style.opacity = '1';
+            deleteBtn.style.pointerEvents = 'auto';
+            deleteBtn.classList.add('active');
+        } else {
+            deleteBtn.style.opacity = '0.3';
+            deleteBtn.style.pointerEvents = 'none';
+            deleteBtn.classList.remove('active');
+        }
+    }
+
+    function selectAttachment(id) {
+        const targetCard = document.getElementById('attachment-' + id);
+        if (!targetCard) {
+            return;
+        }
+
+        document.querySelectorAll('.attachment-card.selected').forEach((card) => {
+            if (card !== targetCard) {
+                card.classList.remove('selected');
+            }
+        });
+
+        const alreadySelected = targetCard.classList.contains('selected');
+        targetCard.classList.toggle('selected', !alreadySelected);
+        selectedAttachmentId = alreadySelected ? null : id;
+        updateAttachmentToolbar(Boolean(selectedAttachmentId));
+    }
+
     function openAttachmentUpload() {
         document.getElementById('attachmentInlineInput')?.click();
+    }
+
+    function markFreshAttachments() {
+        const rawState = sessionStorage.getItem(ATTACHMENT_UPLOAD_STATE_KEY);
+        if (!rawState) {
+            return;
+        }
+
+        let state;
+        try {
+            state = JSON.parse(rawState);
+        } catch (error) {
+            sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
+            return;
+        }
+
+        const currentMod = '{{ mod_name|default('') }}';
+        const currentVid = '{{ vid|default('') }}';
+        if (!state || state.mod_name !== currentMod || String(state.vid) !== String(currentVid) || !Array.isArray(state.files) || !state.files.length) {
+            return;
+        }
+
+        const list = document.getElementById('attachment-list');
+        if (!list) {
+            sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
+            return;
+        }
+
+        const wanted = new Set(state.files.map(normalizeAttachmentName));
+        const matchedCards = [];
+
+        Array.from(list.querySelectorAll('.attachment-card')).forEach((card) => {
+            const fileName = normalizeAttachmentName(card.dataset.fileName);
+            const originalName = normalizeAttachmentName(card.dataset.originalName);
+            if (wanted.has(fileName) || wanted.has(originalName)) {
+                matchedCards.push(card);
+            }
+        });
+
+        matchedCards.reverse().forEach((card) => {
+            card.classList.add('is-new');
+            const meta = card.querySelector('.attachment-meta');
+            if (meta && !meta.querySelector('.attachment-fresh-badge')) {
+                const badge = document.createElement('span');
+                badge.className = 'attachment-fresh-badge';
+                badge.textContent = '{{ lang.mod_attachment.admin[43]|e('js') }}';
+                meta.prepend(badge);
+            }
+            list.prepend(card);
+        });
+
+        sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
     }
 
     function uploadAttachmentFiles(files) {
@@ -374,6 +578,12 @@
 
         let completed = 0;
         let hasError = false;
+
+        sessionStorage.setItem(ATTACHMENT_UPLOAD_STATE_KEY, JSON.stringify({
+            mod_name: '{{ mod_name|default('') }}',
+            vid: '{{ vid|default('') }}',
+            files: uploadFiles.map((file) => file.name)
+        }));
 
         uploadFiles.forEach((file) => {
             const formData = new FormData();
@@ -403,6 +613,8 @@
                     completed += 1;
                     if (completed === uploadFiles.length && !hasError) {
                         window.location.reload();
+                    } else if (completed === uploadFiles.length) {
+                        sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
                     }
                 });
         });
@@ -419,6 +631,12 @@
             item.style.display = 'none';
         });
         panel.style.display = nextState;
+    }
+
+    function closeAttachmentMenus() {
+        document.querySelectorAll('.attachment-inline-edit').forEach((item) => {
+            item.style.display = 'none';
+        });
     }
 
     function updateAttachmentEmptyState() {
@@ -522,11 +740,22 @@
                     }
 
                     document.getElementById('attachment-' + id)?.remove();
+                    if (selectedAttachmentId === id) {
+                        selectedAttachmentId = null;
+                        updateAttachmentToolbar(false);
+                    }
                     updateAttachmentEmptyState();
                     showSnackbar('{{ lang.mod_attachment.admin[36]|e('js') }}', 'success');
                 })
                 .catch((error) => showSnackbar(String(error.message || error), 'error'));
         });
+    }
+
+    function deleteSelectedAttachment() {
+        if (!selectedAttachmentId) {
+            return;
+        }
+        deleteAttachment(selectedAttachmentId);
     }
 
     function clearSearch() {
@@ -547,6 +776,14 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (event) {
+            if (!event.target.closest('.attachment-menu') && !event.target.closest('.attachment-inline-edit')) {
+                closeAttachmentMenus();
+            }
+        });
+
+        markFreshAttachments();
+
         const inlineInput = document.getElementById('attachmentInlineInput');
         if (inlineInput) {
             inlineInput.addEventListener('change', function (event) {
