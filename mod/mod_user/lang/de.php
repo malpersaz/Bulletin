@@ -454,9 +454,11 @@ $lang['mod_user']['fab'] = [
     'add_announcement' => 'Ankündigung hinzufügen',
     'add_video' => 'Video hinzufügen',
     'add_content' => 'Inhalt hinzufügen',
+    'add_publication' => 'Veröffentlichung hinzufügen',
     'add_announcement_alert' => 'Ankündigungsformular',
     'add_video_alert' => 'Videoformular',
-    'add_content_alert' => 'Inhaltsassistent'
+    'add_content_alert' => 'Inhaltsassistent',
+    'add_publication_alert' => 'Veröffentlichungsassistent'
 ];
 
 $lang['mod_user']['profile_menu'] = [

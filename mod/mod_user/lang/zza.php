@@ -424,12 +424,14 @@ $lang['mod_user']['panel'] = [
 
 // FAB Menu
 $lang['mod_user']['fab'] = [
-    'add_announcement' => 'Daxwiyaniyek Nû',
+    'add_announcement' => 'Daxwiyaniyekê Lêke',
     'add_video' => 'Vîdeoyek Nû',
     'add_content' => 'Nûçeyekê Lêke',
+    'add_publication' => 'Weşanekê Lêke',
     'add_announcement_alert' => 'Forma Daxwiyaniyê',
     'add_video_alert' => 'Forma Vîdeoyê',
-    'add_content_alert' => 'Sêrbaza Naverokê'
+    'add_content_alert' => 'Sêrbaza Nûçeyan',
+    'add_publication_alert' => 'Sêrbaza Weşanan'
 ];
 
 // === Restriction Errors  ===

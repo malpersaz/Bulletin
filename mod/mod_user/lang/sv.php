@@ -561,9 +561,11 @@ $lang['mod_user']['fab'] = [
     'add_announcement' => 'Add Announcement',
     'add_video' => 'Add Video',
     'add_content' => 'Add Content',
+    'add_publication' => 'Add Publication',
     'add_announcement_alert' => 'Add Announcement Form',
     'add_video_alert' => 'Add Video Form',
-    'add_content_alert' => 'Add Content Wizard'
+    'add_content_alert' => 'Add Content Wizard',
+    'add_publication_alert' => 'Add Publication Wizard'
 ];
 
 // --- Otomatîk Zêdekirin (Senkronîzasyon) ---

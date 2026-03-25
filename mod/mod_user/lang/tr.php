@@ -494,9 +494,11 @@ $lang['mod_user']['fab'] = [
     'add_announcement' => 'Duyuru Ekle',
     'add_video' => 'Video Ekle',
     'add_content' => 'Haber Ekle',
+    'add_publication' => 'Yayın Ekle',
     'add_announcement_alert' => 'Duyuru Ekleme Formu',
     'add_video_alert' => 'Video Ekleme Formu',
-    'add_content_alert' => 'Haber Ekleme Sihirbazı'
+    'add_content_alert' => 'Haber Ekleme Sihirbazı',
+    'add_publication_alert' => 'Yayın Ekleme Sihirbazı'
 ];
 
 // User Profile Menu Items
