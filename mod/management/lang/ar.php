@@ -2,6 +2,7 @@
 $lang['management']=[
     '1'=>'لوحة المستخدم',
     'anasayfa' => 'Home',
+    'dashboard' => 'لوحة التحكم',
     'uyelik' => 'Membership',
     'content_and_page' => 'Content and Pages',
     'video_and_images' => 'Video and Images',
@@ -22,7 +23,9 @@ $lang['management']=[
     'dosya_modulleri' => 'File Modules',
     'locale_management' => 'Locale Management',
     'content_categories' => 'Content Categories',
+    'news_categories' => 'News Categories',
     'content_management' => 'Content Management',
+    'news_management' => 'News Management',
     'menu_management' => 'Menu Management',
     'page_management' => 'Page Management',
     'file_management' => 'File Management',
@@ -33,8 +36,10 @@ $lang['management']=[
     'manset_yonetimi' => 'Headline Management',
     'full_manset_yonetimi' => 'Full Headline Management',
     'resim_gallery' => 'Image Gallery',
+    'image_gallery' => 'Image Gallery',
     'announcement_management' => 'Announcement Management',
     'popup_announcement_management' => 'Popup Announcement Management',
+    'popup_announcements' => 'Popup Announcements',
 
     
 

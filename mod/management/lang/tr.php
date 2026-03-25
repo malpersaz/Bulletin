@@ -4,6 +4,7 @@ $lang['management']=[
 
     // Ana Navigasyon Menüsü
     'anasayfa' => 'Ana Sayfa',
+    'dashboard' => 'Panel',
     'uyelik' => 'Üyelik',
     'content_and_page' => 'İçerik ve Sayfalar',
     'video_and_images' => 'Video ve Resimler',
@@ -30,7 +31,9 @@ $lang['management']=[
 
     // İçerik ve Sayfalar Alt Menüsü
     'content_categories' => 'İçerik Kategorileri',
+    'news_categories' => 'Haber Kategorileri',
     'content_management' => 'İçerik Yönetimi',
+    'news_management' => 'Haber Yönetimi',
     'menu_management' => 'Menü Yönetimi',
     'page_management' => 'Sayfa Yönetimi',
     'file_management' => 'Dosya Yönetimi',
@@ -44,10 +47,12 @@ $lang['management']=[
     'manset_yonetimi' => 'Manşet Yönetimi',
     'full_manset_yonetimi' => 'Full Manşet Yönetimi',
     'resim_gallery' => 'Resim Galerisi',
+    'image_gallery' => 'Resim Galerisi',
 
     // Announcement Yönetimi Alt Menüsü
     'announcement_management' => 'Announcement Yönetimi',
     'popup_announcement_management' => 'Popup Announcement Yönetimi',
+    'popup_announcements' => 'Popup Duyurular',
 
     // Etkinlik ve Başvurular Alt Menüsü
     'etkinlik_ve_basvuru' => 'Etkinlik ve Başvurular',

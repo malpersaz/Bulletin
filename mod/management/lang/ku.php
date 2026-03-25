@@ -4,6 +4,7 @@ $lang['management']=[
 
     // Serekeşa Navîgasyonê
     'anasayfa' => 'Malper',
+    'dashboard' => 'Panel',
     'uyelik' => 'Endamtî',
     'content_and_page' => 'Naverok û Rûpel',
     'video_and_images' => 'Vîdeo û Wêne',
@@ -29,7 +30,9 @@ $lang['management']=[
 
     // Binê pêşeka Naverok û Rûpelan
     'content_categories' => 'Kategoriyên Naverokan',
+    'news_categories' => 'Kategoriyên Nûçeyan',
     'content_management' => 'Rêveberiya Naverokan',
+    'news_management' => 'Rêveberiya Nûçeyan',
     'menu_management' => 'Rêveberiya Menûyê',
     'page_management' => 'Rêveberiya Rûpelan',
     'file_management' => 'Rêveberiya Pelan',
@@ -42,10 +45,12 @@ $lang['management']=[
     'manset_yonetimi' => 'Rêveberiya Slîdirê',
     'full_manset_yonetimi' => 'Rêveberiya Slîdira Jorîn',
     'resim_gallery' => 'Wênedank',
+    'image_gallery' => 'Wênedank',
 
     // Binê pêşêka Rêveberiya Daxuyaniyan
     'announcement_management' => 'Rêveberiya Daxuyaniyan',
     'popup_announcement_management' => 'Rêveberiya Daxuyaniyên Popup',
+    'popup_announcements' => 'Daxuyaniyên Popup',
 
     // Binê pêşêka Kar, Pêşkêşî û Daxuyaniyan
 

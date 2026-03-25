@@ -3,20 +3,20 @@
 <aside class="nav-drawer" id="navDrawer">
     <div class="drawer-header">
         <div class="drawer-title">{{ site.title }}</div>
-        <div class="drawer-subtitle">v4.0.0 (M3)</div>
+        <div class="drawer-subtitle">v{{ site.version }}{% if site.build %} ({{ site.build }}){% endif %}</div>
     </div>
     <div class="drawer-content">
         <!-- Dashboard -->
         <!-- Site Home (Malper) -->
         <a href="{{ site.sadres }}" target="_blank" class="nav-item">
             <i class="bi bi-house-door-fill nav-item-icon"></i>
-            <span class="nav-item-label">{{ lang.management.anasayfa|default('Malper') }}</span>
+            <span class="nav-item-label">{{ lang.management.anasayfa }}</span>
         </a>
 
         <!-- Admin Dashboard -->
         <a href="{{ site.sadres }}mod_user/panel" class="nav-item {% if mod == 'mod_user' and (act is not defined or act == 'panel') %}active{% endif %}">
             <i class="bi bi-speedometer2 nav-item-icon"></i>
-            <span class="nav-item-label">{{ lang.management.dashboard|default('Panel') }}</span>
+            <span class="nav-item-label">{{ lang.management.dashboard }}</span>
         </a>
 
         <div class="nav-divider"></div>
@@ -26,7 +26,7 @@
         <div class="nav-group {% if (mod == 'mod_user' and act is defined and act != 'panel') or mod == 'mod_user_group' or mod == 'mod_acl' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' or mod == 'mod_settings' %}expanded{% endif %}">
             <div class="nav-group-header" onclick="toggleGroup(this)">
                 <i class="bi bi-people-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.uyelik|default('Üyelik Yönetimi') }}</span>
+                <span class="nav-item-label">{{ lang.management.uyelik }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
             </div>
             <div class="nav-group-items">
@@ -68,7 +68,7 @@
         <div class="nav-group {% if mod == 'mod_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}expanded{% endif %}">
             <div class="nav-group-header" onclick="toggleGroup(this)">
                 <i class="bi bi-rocket-takeoff-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.content_and_page|default('İçerik ve Sayfa') }}</span>
+                <span class="nav-item-label">{{ lang.management.content_and_page }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
             </div>
             <div class="nav-group-items">
@@ -79,7 +79,7 @@
                 {% endif %}
                 {% if session.permissions.mod_news_category.list is defined %}
                 <a href="{{ site.sadres }}mod_news_category/list" class="nav-item {% if mod == 'mod_news_category' %}active{% endif %}">
-                    <i class="bi bi-bookmarks-fill nav-item-icon"></i> <span class="nav-item-label">News Categories</span>
+                    <i class="bi bi-bookmarks-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.news_categories }}</span>
                 </a>
                 {% endif %}
                 {% if session.permissions.mod_content.list is defined %}
@@ -89,7 +89,7 @@
                 {% endif %}
                 {% if session.permissions.mod_news.list is defined %}
                 <a href="{{ site.sadres }}mod_news/list" class="nav-item {% if mod == 'mod_news' %}active{% endif %}">
-                    <i class="bi bi-newspaper nav-item-icon"></i> <span class="nav-item-label">News Management</span>
+                    <i class="bi bi-newspaper nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.news_management }}</span>
                 </a>
                 {% endif %}
                 {% if session.permissions.mod_menu.list is defined %}
@@ -119,7 +119,7 @@
         <div class="nav-group {% if mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' %}expanded{% endif %}">
             <div class="nav-group-header" onclick="toggleGroup(this)">
                 <i class="bi bi-camera-video-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.video_and_images|default('Video ve Galeri') }}</span>
+                <span class="nav-item-label">{{ lang.management.video_and_images }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
             </div>
             <div class="nav-group-items">
@@ -160,7 +160,7 @@
         <div class="nav-group {% if mod == 'mod_announcements' or mod == 'mod_popup' %}expanded{% endif %}">
             <div class="nav-group-header" onclick="toggleGroup(this)">
                 <i class="bi bi-megaphone-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.announcement_management|default('Announcement Yönetimi') }}</span>
+                <span class="nav-item-label">{{ lang.management.announcement_management }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
             </div>
             <div class="nav-group-items">

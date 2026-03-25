@@ -764,6 +764,7 @@ class mod_user_mod extends indexMain
     private function _build_panel_actions()
     {
         $management_lang = Load::lang('management');
+        $news_lang = Load::lang('mod_news');
         $video_embed_lang = Load::lang('mod_video_embed');
         $slider_lang = Load::lang('mod_slider');
 
@@ -782,7 +783,7 @@ class mod_user_mod extends indexMain
                 'permission' => 'list',
                 'href' => $this->site['sadres'] . 'mod_news/list',
                 'icon' => 'bi bi-newspaper',
-                'title' => 'News Management',
+                'title' => $news_lang['mod_news']['list'],
                 'meta' => $quick_access,
             ],
             [

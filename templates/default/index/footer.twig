@@ -139,6 +139,9 @@
             </p>
 			<div class="text-md-end opacity-75">
                 {{ lang.index.developer|raw }}
+                {% if site.version is defined and site.version %}
+                    <span class="ms-2">v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}</span>
+                {% endif %}
 			</div>
 		</div>
 	</div>

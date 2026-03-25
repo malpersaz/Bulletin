@@ -36,6 +36,8 @@ $site['lang'] = 'en';
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
+$site['version'] = '1.0.49';
+$site['build'] = 'M3';
 $site['app_template'] = 'default';
 
 

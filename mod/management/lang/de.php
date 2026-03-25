@@ -3,6 +3,7 @@ $lang['management'] = [
     '1' => 'Benutzerpanel',
 
     'anasayfa' => 'Startseite',
+    'dashboard' => 'Dashboard',
     'uyelik' => 'Mitgliedschaft',
     'content_and_page' => 'Inhalte und Seiten',
     'video_and_images' => 'Videos und Bilder',
@@ -26,7 +27,9 @@ $lang['management'] = [
     'locale_management' => 'Sprachverwaltung',
 
     'content_categories' => 'Inhaltskategorien',
+    'news_categories' => 'Nachrichtenkategorien',
     'content_management' => 'Inhaltsverwaltung',
+    'news_management' => 'Nachrichtenverwaltung',
     'menu_management' => 'Menüverwaltung',
     'page_management' => 'Seitenverwaltung',
     'file_management' => 'Dateiverwaltung',
@@ -39,9 +42,11 @@ $lang['management'] = [
     'manset_yonetimi' => 'Schlagzeilenverwaltung',
     'full_manset_yonetimi' => 'Vollständige Schlagzeilenverwaltung',
     'resim_gallery' => 'Bildergalerie',
+    'image_gallery' => 'Bildergalerie',
 
     'announcement_management' => 'Ankündigungsverwaltung',
     'popup_announcement_management' => 'Popup-Ankündigungsverwaltung',
+    'popup_announcements' => 'Popup-Ankündigungen',
 
     'etkinlik_ve_basvuru' => 'Veranstaltungen und Bewerbungen',
     'etkinlik_takvimi' => 'Veranstaltungskalender',

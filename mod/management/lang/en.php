@@ -4,6 +4,7 @@ $lang['management']=[
 
     // Main Navigation Menu
     'anasayfa' => 'Home',
+    'dashboard' => 'Dashboard',
     'uyelik' => 'Membership',
     'content_and_page' => 'Content and Pages',
     'video_and_images' => 'Video and Images',
@@ -30,7 +31,9 @@ $lang['management']=[
 
     // Content and Pages Submenu
     'content_categories' => 'Content Categories',
+    'news_categories' => 'News Categories',
     'content_management' => 'Content Management',
+    'news_management' => 'News Management',
     'menu_management' => 'Menu Management',
     'page_management' => 'Page Management',
     'file_management' => 'File Management',
@@ -44,10 +47,12 @@ $lang['management']=[
     'manset_yonetimi' => 'Headline Management',
     'full_manset_yonetimi' => 'Full Headline Management',
     'resim_gallery' => 'Image Gallery',
+    'image_gallery' => 'Image Gallery',
 
     // Announcement Management Submenu
     'announcement_management' => 'Announcement Management',
     'popup_announcement_management' => 'Popup Announcement Management',
+    'popup_announcements' => 'Popup Announcements',
     // Events and Applications Submenu
     'etkinlik_ve_basvuru' => 'Events and Applications',
     'etkinlik_takvimi' => 'Event Calendar',
