@@ -4,8 +4,8 @@
 {% set categoryname = ctx_get('categoryname') %}
 {% set category_seo = ctx_get('category_seo') %}
 {% set publications = ctx_get('publications') %}
-{% set sayfalama = ctx_get('sayfalama') %}
-{% set sayfa = ctx_get('sayfa') %}
+{% set pagination = ctx_get('pagination') %}
+{% set page = ctx_get('page') %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ site.sadres }}publications{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
@@ -230,21 +230,29 @@
         {% if publications is not empty %}
             <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
                 {% for publication in publications %}
+                    {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                    {% if publication.summary is not empty %}
+                        {% set publication_excerpt = publication.summary|striptags %}
+                    {% elseif publication.description is not empty %}
+                        {% set publication_excerpt = publication.description|striptags %}
+                    {% else %}
+                        {% set publication_excerpt = publication_title|striptags %}
+                    {% endif %}
                     <div class="col">
                         <article class="card h-100 border-0 shadow-sm overflow-hidden">
-                            <a href="{{ site.sadres }}publication/{{ publication.seo }}" title="{{ publication.name }}" class="text-decoration-none">
+                            <a href="{{ site.sadres }}publication/{{ publication.seo }}" title="{{ publication_title }}" class="text-decoration-none">
                                 <div class="publication-media">
                                     {% if publication.image is not empty %}
                                         <img src="{{ site.radres }}mod_publication/{{ publication.image }}"
                                              class="card-img-top"
                                              style="height: 240px; object-fit: cover;"
-                                             alt="{{ publication.name }}"
+                                             alt="{{ publication_title }}"
                                              loading="lazy">
                                     {% else %}
                                         <img src="{{ site.radres }}mod_settings/logo.png"
                                              class="card-img-top p-4 bg-light"
                                              style="height: 240px; object-fit: contain;"
-                                             alt="{{ publication.name }}"
+                                             alt="{{ publication_title }}"
                                              loading="lazy">
                                     {% endif %}
                                     <div class="publication-author-badge">
@@ -272,17 +280,13 @@
                                 </div>
                                 <h2 class="h5 card-title mb-2">
                                     <a href="{{ site.sadres }}publication/{{ publication.seo }}"
-                                       title="{{ publication.name }}"
+                                       title="{{ publication_title }}"
                                        class="text-decoration-none text-dark publication-card-title d-inline-block">
-                                        {{ publication.name }}
+                                        {{ publication_title }}
                                     </a>
                                 </h2>
                                 <p class="card-text text-muted flex-grow-1 publication-summary">
-                                    {% if publication.summary is not empty %}
-                                        {{ publication.summary|striptags|slice(0, 150) }}{% if publication.summary|striptags|length > 150 %}...{% endif %}
-                                    {% else %}
-                                        {{ publication.description|default(publication.name)|striptags|slice(0, 150) }}{% if publication.description|default(publication.name)|striptags|length > 150 %}...{% endif %}
-                                    {% endif %}
+                                    {{ publication_excerpt|slice(0, 150) }}{% if publication_excerpt|length > 150 %}...{% endif %}
                                 </p>
                                 <div class="mt-3 d-flex justify-content-between align-items-center">
                                     <span></span>
@@ -296,15 +300,15 @@
                 {% endfor %}
             </div>
 
-            {% if sayfalama is not empty %}
-                <nav aria-label="{{ lang.index.mod_publication.17|default('Pagination') }}" class="mt-4">
+            {% if pagination is not empty %}
+                <nav aria-label="{{ lang.index.mod_publication.2 }}" class="mt-4">
                     <ul class="pagination justify-content-center">
-                        {% for s in sayfalama %}
+                        {% for s in pagination %}
                             {% if s == '...' %}
                                 <li class="page-item disabled">
                                     <span class="page-link">...</span>
                                 </li>
-                            {% elseif s == sayfa %}
+                            {% elseif s == page %}
                                 <li class="page-item active" aria-current="page">
                                     <span class="page-link">{{ s }}</span>
                                 </li>
