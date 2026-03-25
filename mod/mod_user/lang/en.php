@@ -460,11 +460,7 @@ $lang['mod_user']['password_reset']['error'] = [
 $lang['mod_user']['panel'] = [
     'welcome' => 'Hello Dear %s',
     'description' => 'You can choose what you want to do from the menus. You can change your membership settings from the top right.',
-    'total_content' => 'Total Content',
     'pending_content' => 'Pending',
-    'draft_content' => 'Drafts',
-    'total_publication' => 'Total Publications',
-    'draft_publication' => 'Draft Publications',
     'view_reports' => 'View Detailed Reports',
     'welcome_main' => 'Welcome,',
     'panel_title' => 'Admin Panel',
@@ -479,10 +475,10 @@ $lang['mod_user']['panel'] = [
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Add Announcement',
     'add_video' => 'Add Video',
-    'add_content' => 'Add Content',
+    'add_content' => 'Add News',
     'add_announcement_alert' => 'Add Announcement Form',
     'add_video_alert' => 'Add Video Form',
-    'add_content_alert' => 'Add Content Wizard'
+    'add_content_alert' => 'Add News Wizard'
 ];
 
 // User Profile Menu Items

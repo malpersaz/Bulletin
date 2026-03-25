@@ -32,6 +32,10 @@ $lang['management']=[
     // Content and Pages Submenu
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
+    'total_content' => 'Total Content',
+    'draft_content' => 'Drafts',
+    'total_publication' => 'Total Publications',
+    'draft_publication' => 'Draft Publications',
     'content_management' => 'Content Management',
     'news_management' => 'News Management',
     'publication_management' => 'Publication Management',

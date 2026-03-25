@@ -478,11 +478,7 @@ $lang['mod_user']['ajax'] = [
 $lang['mod_user']['panel'] = [
     'welcome' => 'Hoş geldin Sayın %s',
     'description' => 'Menülerden yapmak istediğinizi seçebilirsiniz. Üyelik ayarlarınızı sağ üstten değiştirebilirsiniz.',
-    'total_content' => 'Toplam İçerik',
     'pending_content' => 'Bekleyen',
-    'draft_content' => 'Taslaklar',
-    'total_publication' => 'Toplam Yayın',
-    'draft_publication' => 'Taslak Yayınlar',
     'view_reports' => 'Detaylı Raporları Gör',
     'welcome_main' => 'Hoşgeldiniz,',
     'panel_title' => 'Yönetim Paneli',
@@ -497,10 +493,10 @@ $lang['mod_user']['panel'] = [
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Duyuru Ekle',
     'add_video' => 'Video Ekle',
-    'add_content' => 'İçerik Ekle',
+    'add_content' => 'Haber Ekle',
     'add_announcement_alert' => 'Duyuru Ekleme Formu',
     'add_video_alert' => 'Video Ekleme Formu',
-    'add_content_alert' => 'İçerik Ekleme Sihirbazı'
+    'add_content_alert' => 'Haber Ekleme Sihirbazı'
 ];
 
 // User Profile Menu Items
