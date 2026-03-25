@@ -253,7 +253,7 @@
 								<div id="image-container" style="display: flex; flex-direction: column; align-items: center;">
 									<img src="{{ site.radres }}mod_user/{{ d.image }}" id="avatarPreview" alt="Avatar">
 									<div style="text-align: center;">
-										<button type="button" class="m3-btn-outlined" onclick="imagedelete('{{ d.id }}')" style="color: var(--md-sys-color-error); border-color: var(--md-sys-color-error); font-size: 18px; padding: 8px; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+										<button type="button" class="m3-btn-outlined" onclick="deleteImage('{{ d.id }}')" style="color: var(--md-sys-color-error); border-color: var(--md-sys-color-error); font-size: 18px; padding: 8px; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
 											<i class="bi bi-trash"></i>
 										</button>
 									</div>
@@ -388,7 +388,7 @@
 			}
 		}
 
-        function imagedelete(id) {
+        function deleteImage(id) {
             Swal.fire({
                 title: '{{ lang.mod_user.admin.confirm_remove_image }}',
                 icon: 'warning',
@@ -402,7 +402,7 @@
                     const formData = new FormData();
                     formData.append('id', id);
 
-                    fetch("{{ site.adres }}mod_user/imagedelete", {
+                    fetch("{{ site.adres }}mod_user/delete_image", {
                         method: "POST",
                         body: formData
                     })

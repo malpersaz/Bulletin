@@ -162,7 +162,7 @@ console.warn('Cookie access check failed:', e);
 credentialsMode = 'omit';
 }
 
-fetch('{{ site.sadres }}mod_user/emailcheck', {
+fetch('{{ site.sadres }}mod_user/check_email', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/x-www-form-urlencoded'

@@ -15,6 +15,8 @@ $lang['index'] = [
     'dark_mode' => 'Mörkt läge',
     'follow_us' => 'Följ oss',
     'contact_us' => 'Kontakta oss',
+    'contact' => 'Kontakt',
+    'info' => 'Info',
     'find_us' => 'Hitta oss',
     'map_available_soon' => 'Karta tillgänglig snart',
     'publish_date' => 'Publiceringsdatum',
@@ -22,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'min läsning',
     'enlarge_image' => 'Förstora bilden',
     'add_content'=>'Lägg till innehåll',
+    'add_news'=>'Lägg till nyhet',
+    'add_publication'=>'Lägg till publikation',
     'share' => 'Dela',
 ];
 
@@ -77,6 +81,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'Vårt innehåll',
     '2' => 'Allt innehåll',
+    '3' => 'Det finns inga publicerade nyheter an.',
 ];
 
 
@@ -215,7 +220,16 @@ $lang['index']['modal'] = [
     'login_success' => 'Inloggning lyckades! Omdirigerar...',
     'login_failed' => 'Inloggning misslyckades. Kontrollera ditt användarnamn och lösenord.',
     'connection_error' => 'Anslutningsfel. Försök igen.',
+    'network_error' => 'Nätverksfel. Kontrollera din anslutning och försök igen.',
+    'timeout_error' => 'Begäran tog för lång tid. Försök igen.',
+    'server_error' => 'Serverfel. Försök igen senare.',
+    'please_fill_all' => 'Fyll i alla obligatoriska fält.',
+    'alternative_options' => 'Om problemet kvarstår kan du också fortsätta från inloggningssidan.',
     'redirecting' => 'Omdirigerar...',
+    'next' => 'Nästa',
+    'back' => 'Tillbaka',
+    'show_password' => 'Visa lösenord',
+    'hide_password' => 'Dölj lösenord',
 ];
 
 # cache management
@@ -271,7 +285,7 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_news']['latest_content']['3'] = 'Det finns inga publicerade nyheter an.';
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'Alla publikationer';
 $lang['index']['mod_publication']['3'] = 'publikation,tidskrift,nummer';
@@ -286,5 +300,5 @@ $lang['index']['mod_publication']['authors_empty_desc'] = 'Det finns inga forfat
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Våra publikationer',
     '2' => 'Alla publikationer',
-    '3' => 'No published content is available yet.',
+    '3' => 'Det finns inget publicerat innehall an.',
 ];

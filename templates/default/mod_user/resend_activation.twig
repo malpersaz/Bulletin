@@ -8,7 +8,7 @@
 {% set captcha_image = ctx_get('captcha_image') %}
 <div class="sayfa">
     <div class="sayfa_ust">
-        <h2>{{ lang.mod_user.re_activation.activation_code }}</h2>
+        <h2>{{ lang.mod_user.resend_activation.activation_code }}</h2>
     </div>
     <div class="sayfa_icerik">
         {% if oke is defined %}
@@ -16,7 +16,7 @@
             <p class="mesaj oke">{{ mesaj }}</p>
             <!--[if !IE]>Oke Mesajı Varsa<![endif]-->
         {% else %}
-            <p class="mesaj bilgi">{{ lang.mod_user.re_activation.write_email }}</p>
+            <p class="mesaj bilgi">{{ lang.mod_user.resend_activation.write_email }}</p>
             {% if errors is defined %}
                 <!--[if !IE]>Hata Mesajı Varsa<![endif]-->
                 {% for error in errors %}
@@ -26,11 +26,11 @@
                 {% endfor %}
                 <!--[if !IE]>Hata Mesajı Varsa<![endif]-->
             {% endif %}
-            <form method="post" action="" id="re_activation">
+            <form method="post" action="" id="resend_activation">
                 <!-- İnputlar Kısım Başlar-->
                 <div class="inputlar">
                     <p>
-                        <label for="email">{{ lang.mod_user.re_activation.email }}:</label>
+                        <label for="email">{{ lang.mod_user.resend_activation.email }}:</label>
                         <input class="validate[required,custom[email]]"
                                type="text"
                                name="email"
@@ -38,7 +38,7 @@
                                value="{{ email }}" />
                     </p>
                     <p>
-                        <label for="captcha">{{ lang.mod_user.re_activation.security_code }}:</label>
+                        <label for="captcha">{{ lang.mod_user.resend_activation.security_code }}:</label>
                         <input class="validate[required]"
                                type="text"
                                name="captcha"
@@ -46,12 +46,12 @@
                                parent_id="captcha" />
                     </p>
                     <p>
-                        <label for="re_activation">
+                        <label for="resend_activation">
                             <img src="{{ captcha_image }}">
                         </label>
-                        <input name="re_activation"
+                        <input name="resend_activation"
                                type="submit"
-                               value="{{ lang.mod_user.re_activation.send_button }}">
+                               value="{{ lang.mod_user.resend_activation.send_button }}">
                     </p>
                 </div>
                 <!-- İnputlar Kısmı Biter -->

@@ -24,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'Min. Lesezeit',
     'enlarge_image' => 'Bild vergrößern',
     'add_content' => 'Inhalt hinzufügen',
+    'add_news' => 'Nachricht hinzufügen',
+    'add_publication' => 'Veröffentlichung hinzufügen',
     'share' => 'Teilen',
 ];
 
@@ -77,6 +79,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'Unsere Inhalte',
     '2' => 'Alle Inhalte',
+    '3' => 'Es sind noch keine veroeffentlichten Nachrichten verfuegbar.',
 ];
 
 $lang['index']['mod_video'] = [
@@ -172,7 +175,20 @@ $lang['index']['colorbox'] = [
     '6' => 'Diashow stoppen',
 ];
 
-$lang['index']['menu'] = [];
+$lang['index']['menu'] = [
+    'home' => 'Startseite',
+    'about' => 'Über uns',
+    'contact' => 'Kontakt',
+    'language' => 'Sprache',
+    'messages' => 'Nachrichten',
+    'my_account' => 'Mein Konto',
+    'change_avatar' => 'Avatar ändern',
+    'logout' => 'Abmelden',
+    'login' => 'Anmelden',
+    'register' => 'Registrieren',
+    'dark_mode' => 'Dunkler Modus',
+    'toggle_menu' => 'Menü umschalten',
+];
 
 $lang['index']['modal'] = [
     'login' => 'Anmelden',
@@ -190,6 +206,11 @@ $lang['index']['modal'] = [
     'login_success' => 'Anmeldung erfolgreich! Weiterleitung...',
     'login_failed' => 'Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihren Benutzernamen und Ihr Passwort.',
     'connection_error' => 'Verbindungsfehler. Bitte versuchen Sie es erneut.',
+    'network_error' => 'Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.',
+    'timeout_error' => 'Zeitüberschreitung bei der Anfrage. Bitte versuchen Sie es erneut.',
+    'server_error' => 'Serverfehler. Bitte versuchen Sie es später erneut.',
+    'please_fill_all' => 'Bitte füllen Sie alle erforderlichen Felder aus.',
+    'alternative_options' => 'Wenn das Problem weiterhin besteht, können Sie auch über die Login-Seite fortfahren.',
     'redirecting' => 'Weiterleitung...',
     'next' => 'Weiter',
     'back' => 'Zurück',
@@ -248,7 +269,7 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_news']['latest_content']['3'] = 'Es sind noch keine veroeffentlichten Nachrichten verfuegbar.';
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'Alle Publikationen';
 $lang['index']['mod_publication']['3'] = 'publikation,journal,ausgabe';
@@ -263,5 +284,5 @@ $lang['index']['mod_publication']['authors_empty_desc'] = 'Es sind noch keine Au
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Unsere Publikationen',
     '2' => 'Alle Publikationen',
-    '3' => 'No published content is available yet.',
+    '3' => 'Es sind noch keine veroeffentlichten Inhalte verfuegbar.',
 ];

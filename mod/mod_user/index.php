@@ -129,124 +129,137 @@ class mod_user_mod extends indexMain
     // Login Page
     public function login()
     {
-        // Detect AJAX requests but allow normal GET access to the login page.
-        $is_ajax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest') || 
-                   (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'));
-
-        // Start buffering immediately to catch any spurious output
         ob_start();
 
         Run::import('index', '_index');
         $d['title'] = $this->lang['mod_user']['admin_panel'];
         $this->apptemplate->veri('d', $d);
-        //$this->apptemplate->veri('site', $this->site);
+        $this->_load_login_errors();
 
-        // Check for stored login errors from previous AJAX attempt
-        $session = Load::lib('Session');
-        if ($session->varmi('login_errors')) {
-            $this->apptemplate->veri('errors', $session->getir('login_errors'));
-            $session->sil('login_errors'); // Clear after use
-        }
-
-        $this->apptemplate->tpl('mod_user/login');
-
-        // Is Logged In?
         if ($this->_check_login()) {
             return;
         }
 
-        // Get Referer
         $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
-        // If ref is empty, redirect to site homepage.
-        $r = $ref != '' ? $ref : $this->site['sadres'];
+        $r = $ref != '' ? $ref : $this->site['sadres'] . 'mod_user/panel';
+
         if (isset($_POST['login']) || Req::is_Post('login')) {
             $username = Req::Post_Safe('username');
             $password = Req::Post_Safe('password');
-
-            // Enhanced AJAX detection
-            $is_ajax = (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-                       strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ||
-                       (!empty($_POST['ajax_request']) && $_POST['ajax_request'] === 'true');
+            $is_ajax = $this->_is_ajax_request();
 
             $this->val = Load::validator('mod_user.login');
-
-            // Validation failed
             if ($this->val->check()) {
-                @file_put_contents(root_dir . 'logs/login_debug.log', "[" . date('Y-m-d H:i:s') . "] Login attempt for: " . Req::Post_Safe('username') . " (AJAX: " . ($is_ajax ? 'Y' : 'N') . ")\n", FILE_APPEND);
+                $this->_log_login_debug("Login attempt for: {$username} (AJAX: " . ($is_ajax ? 'Y' : 'N') . ")");
                 $errors = array_merge($this->val->errors, $this->user->errors ?? []);
 
                 if ($is_ajax) {
-                    while (ob_get_level() > 0) {
-                        ob_end_clean();
-                    }
-                    header('Content-Type: application/json; charset=utf-8');
-                    http_response_code(400);
-                    echo json_encode([
+                    $this->_respond_with_json([
                         'success' => false,
                         'message' => $this->lang['mod_user']['ajax']['validation_error'],
                         'errors' => $errors
-                    ]);
-                    session_write_close();
-                    exit;
-                } else {
-                    // Normal form submission with validation errors
-                    $this->apptemplate->veri('username', $username);
-                    $this->apptemplate->veri('password', $password);
-                    $this->apptemplate->veri('errors', $errors);
-                    $this->apptemplate->tpl('mod_user/login');
-                    return;
+                    ], 400);
                 }
+
+                $this->_bind_login_form($username, $password, $errors);
+                $this->apptemplate->tpl('mod_user/login');
+                return;
             }
 
-            // Attempt login
             if ($this->user->login($username, $password)) {
                 $this->_appmesaj($this->lang['mod_user']['login_success_wait']);
 
                 if ($is_ajax) {
-                    while (ob_get_level() > 0) {
-                        $c = ob_get_clean();
-                        if ($c) @file_put_contents(root_dir . 'logs/login_debug.log', "  Discarded: '" . bin2hex($c) . "'\n", FILE_APPEND);
-                    }
-                    header('Content-Type: application/json; charset=utf-8');
-                    $response = json_encode([
+                    $this->_respond_with_json([
                         'success' => true,
                         'message' => $this->lang['mod_user']['ajax']['login_success'],
                         'redirect' => $r
                     ]);
-                    @file_put_contents(root_dir . 'logs/login_debug.log', "  Success Response: " . $response . "\n", FILE_APPEND);
-                    echo $response;
-                    session_write_close();
-                    exit;
-                } else {
-                    // Normal redirect for regular form submission
-                    Helper::yonlen($r, 3);
                 }
-            } else {
-                // Login failed - collect all errors
-                $errors = $this->user->errors ?? [$this->lang['mod_user']['ajax']['invalid_credentials']];
 
-                if ($is_ajax) {
-                    while (ob_get_level() > 0) {
-                        ob_end_clean();
-                    }
-                    header('Content-Type: application/json; charset=utf-8');
-                    http_response_code(401);
-                    echo json_encode([
-                        'success' => false,
-                        'message' => $this->lang['mod_user']['ajax']['login_error'],
-                        'errors' => $errors
-                    ]);
-                    session_write_close();
-                    exit;
-                } else {
-                    // Normal error handling for regular form submission
-                    $this->apptemplate->veri('username', $username);
-                    $this->apptemplate->veri('password', $password);
-                    $this->apptemplate->veri('errors', $errors);
-                    $this->apptemplate->tpl('mod_user/login');
-                }
+                Helper::yonlen($r, 3);
+                return;
             }
+
+            $errors = $this->user->errors ?? [$this->lang['mod_user']['ajax']['invalid_credentials']];
+            if ($is_ajax) {
+                $this->_respond_with_json([
+                    'success' => false,
+                    'message' => $this->lang['mod_user']['ajax']['login_error'],
+                    'errors' => $errors
+                ], 401);
+            }
+
+            $this->_bind_login_form($username, $password, $errors);
+            $this->apptemplate->tpl('mod_user/login');
+            return;
         }
+
+        $this->apptemplate->tpl('mod_user/login');
+    }
+
+    private function _load_login_errors()
+    {
+        $session = Load::lib('Session');
+        if ($session->varmi('login_errors')) {
+            $this->apptemplate->veri('errors', $session->getir('login_errors'));
+            $session->sil('login_errors');
+        }
+    }
+
+    private function _is_ajax_request()
+    {
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ||
+            (!empty($_POST['ajax_request']) && $_POST['ajax_request'] === 'true');
+    }
+
+    private function _bind_login_form($username, $password, array $errors)
+    {
+        $this->apptemplate->veri('username', $username);
+        $this->apptemplate->veri('password', $password);
+        $this->apptemplate->veri('errors', $errors);
+    }
+
+    private function _respond_with_json(array $payload, $status_code = 200)
+    {
+        $discarded_output = $this->_flush_output_buffers();
+        if ($discarded_output !== '') {
+            $this->_log_login_debug("Discarded output: '" . bin2hex($discarded_output) . "'");
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        http_response_code($status_code);
+
+        $response = json_encode($payload);
+        if ($response !== false) {
+            $this->_log_login_debug("JSON response: " . $response);
+            echo $response;
+        } else {
+            echo '{"success":false,"message":"JSON encoding failed"}';
+        }
+
+        session_write_close();
+        exit;
+    }
+
+    private function _flush_output_buffers()
+    {
+        $discarded_output = '';
+        while (ob_get_level() > 0) {
+            $discarded_output .= (string) ob_get_clean();
+        }
+
+        return $discarded_output;
+    }
+
+    private function _log_login_debug($message)
+    {
+        @file_put_contents(
+            root_dir . 'logs/login_debug.log',
+            "[" . date('Y-m-d H:i:s') . "] " . $message . "\n",
+            FILE_APPEND
+        );
     }
 
     // Logout Page
@@ -268,8 +281,8 @@ class mod_user_mod extends indexMain
             $this->user->logout($session_sid);
         }
 
-        // Always redirect to homepage after logout
-        $r = $this->site['adres'];
+        $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
+        $r = $ref != '' ? $ref : $this->site['adres'];
         
         return Helper::yonlendir($r, 1);
     }
@@ -290,7 +303,7 @@ class mod_user_mod extends indexMain
         if (Req::is_Post('forgot_password')) {
             $this->_forgot_password();
         }
-        $d['title'] = $this->lang['mod_user']['forgot_password']['invalid_email'];
+        $d['title'] = $this->lang['mod_user']['forgot_password']['forgot_password_title'];
         $this->apptemplate->veri('d', $d);
         $this->captcha = Load::lib('Captcha');
         $this->captcha->generate(); // Create new captcha
@@ -422,23 +435,23 @@ class mod_user_mod extends indexMain
     }
 
     // Resends Activation Code
-    public function re_activation()
+    public function resend_activation()
     {
         Run::import('index', '_index');
-        if (Req::is_Post('re_activation')) {
-            $this->_re_activation();
+        if (Req::is_Post('resend_activation')) {
+            $this->_resend_activation();
         }
-        $d['title'] = $this->lang['mod_user']['re_activation']['activation_code_label'];
+        $d['title'] = $this->lang['mod_user']['resend_activation']['activation_code_label'];
         $this->apptemplate->veri('d', $d);
         $this->captcha = Load::lib('Captcha');
         $this->apptemplate->veri('captcha_image', $this->captcha->image());
-        $this->apptemplate->tpl('mod_user/re_activation');
+        $this->apptemplate->tpl('mod_user/resend_activation');
     }
 
     // Resends Activation Code
-    private function _re_activation()
+    private function _resend_activation()
     {
-        $this->val = Load::validator('mod_user.re_activation');
+        $this->val = Load::validator('mod_user.resend_activation');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
                 $this->apptemplate->veri($key, Req::Post_Safe($key));
@@ -448,14 +461,14 @@ class mod_user_mod extends indexMain
             $this->activation = Load::model('mod_user.activation');
             $this->activation->getemail(Req::Post_Safe('email'))->gRo();
             if ($this->activation->getSize() === 0) {
-                $this->_appemesaj($this->lang['mod_user']['re_activation']['error']['no_activation_code_found']);
+                $this->_appemesaj($this->lang['mod_user']['resend_activation']['error']['no_activation_code_found']);
                 return FALSE;
             }
             $this->activation->sync();
             if ($this->_email_at($this->activation->code)) {
-                $this->_appmesaj($this->lang['mod_user']['re_activation']['code_sent']);
+                $this->_appmesaj($this->lang['mod_user']['resend_activation']['code_sent']);
             } else {
-                $this->_appemesaj($this->lang['mod_user']['re_activation']['error']['invalid_captcha']);
+                $this->_appemesaj($this->lang['mod_user']['resend_activation']['error']['invalid_captcha']);
             }
         }
     }
@@ -500,7 +513,7 @@ class mod_user_mod extends indexMain
     }
 
     // Membership Activation
-    public function aktivasyon($code = NULL)
+    public function activation($code = NULL)
     {
         Run::import('index', '_index');
         if ($code != 'NULL' and strlen($code) == 20) {
@@ -542,26 +555,69 @@ class mod_user_mod extends indexMain
     // Membership Registration
     public function register()
     {
-
-        // Is Logged In?
         if ($this->_check_login()) {
             return;
         }
 
         Run::import('index', '_index');
+        $this->_load_register_flash_messages();
+        $d = $this->_load_register_settings();
 
-        // Check for session messages
+        if ($d['status'] == '0') {
+            $this->_appemesaj($this->lang['mod_user']['register']['registration_stopped']);
+            $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
+            return FALSE;
+        }
+
+        $this->_activation = $d['activation'];
+        $this->_group_id = $d['group_id'];
+
+        if (Req::is_Post('register')) {
+            $this->_register();
+        }
+
+        $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
+        $this->apptemplate->veri('d', $d);
+        $this->_prepare_register_view_data();
+        $this->apptemplate->tpl('mod_user/register');
+    }
+
+    private function _load_register_flash_messages()
+    {
         if ($this->session->getir('success_message')) {
             $this->apptemplate->veri('success_message', $this->session->getir('success_message'));
-
         }
+
         if ($this->session->getir('error_message')) {
             $this->apptemplate->veri('error_message', $this->session->getir('error_message'));
+        }
+    }
 
+    private function _load_register_settings()
+    {
+        $this->settings = Load::model('mod_user.mod_user_settings');
+        $this->settings->all();
+
+        $settings = [];
+        foreach ($this->settings->toArray() as $val) {
+            $settings[$val['k']] = $val['v'];
         }
 
-        // Pass language strings to JavaScript with null coalescing for missing language files
-        $js_lang = [
+        return $settings;
+    }
+
+    private function _prepare_register_view_data()
+    {
+        $this->apptemplate->veri('js_lang', json_encode($this->_get_register_js_lang()));
+        $this->apptemplate->veri('country_codes', $this->_get_country_codes());
+
+        $this->captcha = Load::lib('Captcha');
+        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+    }
+
+    private function _get_register_js_lang()
+    {
+        return [
             'checking' => $this->lang['mod_user']['register']['js']['checking'] ?? '⏳ Checking...',
             'username_available' => $this->lang['mod_user']['register']['js']['username_available'] ?? '✅ Username available',
             'username_exists' => $this->lang['mod_user']['register']['js']['username_exists'] ?? '❌ This username is already taken',
@@ -571,7 +627,6 @@ class mod_user_mod extends indexMain
             'check_failed' => $this->lang['mod_user']['register']['js']['check_failed'] ?? '⚠️ Check could not be performed',
             'register_success' => $this->lang['mod_user']['register']['js']['register_success'] ?? 'Your membership has been successfully created! You can log in.',
             'errors_title' => $this->lang['mod_user']['register']['js']['errors_title'] ?? 'Errors:',
-            // Validation messages with null coalescing for missing language files
             'validation_required' => $this->lang['mod_user']['register']['js']['validation_required'] ?? 'This field is required',
             'validation_required_name' => $this->lang['mod_user']['register']['js']['validation_required_name'] ?? 'Please enter your name',
             'validation_required_surname' => $this->lang['mod_user']['register']['js']['validation_required_surname'] ?? 'Please enter your surname',
@@ -587,37 +642,6 @@ class mod_user_mod extends indexMain
             'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'] ?? 'Please enter your phone number',
             'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha'] ?? 'Please enter the security code'
         ];
-        $this->apptemplate->veri('js_lang', json_encode($js_lang));
-
-        // Pass country codes to template
-        $this->apptemplate->veri('country_codes', $this->_get_country_codes());
-
-        $this->apptemplate->tpl('mod_user/register');
-        //echo  date("Y-m-d H:i:s",time());
-        $this->settings = Load::model('mod_user.mod_user_settings');
-        $this->settings->all();
-
-        foreach ($this->settings->toArray() as $val) {
-            $d[$val['k']] = $val['v'];
-        }
-        if ($d['status'] == '0') {
-            $this->_appemesaj($this->lang['mod_user']['register']['registration_stopped']);
-            $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
-            return FALSE;
-        }
-
-        $this->_activation = $d['activation'];
-        $this->_group_id = $d['group_id'];
-
-        if (Req::is_Post('register')) {
-            $this->_register();
-        }
-        //unset ($d);
-        $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
-        //$this->apptemplate->veri('d', $d);
-        $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
-        // $this->apptemplate->tpl('mod_user/kayit');
     }
 
 
@@ -625,67 +649,96 @@ class mod_user_mod extends indexMain
     {
         $this->val = Load::validator('mod_user.register');
         if ($this->val->check()) {
-            // Validation failed - show errors
-            // error_log("VALIDATION FAILED: " . json_encode($this->val->errors));
             foreach ($_POST as $key => $val) {
                 $this->apptemplate->veri($key, Req::Post_Safe($key));
             }
             $this->apptemplate->veri('errors', $this->val->errors);
-        } else {
-            $this->apptemplate->veri('oke', True);
-
-            $this->model = Load::model('mod_user');
-            $this->model->name = Text::title(Req::Post_Safe('name'));
-            $this->model->last_name = Text::title(Req::Post_Safe('last_name'));
-            $this->model->username = Req::Post_Safe('username');
-            $this->model->email = Req::Post_Safe('email');
-            $this->model->password = md5(Req::Post_Safe('password'));
-            $country_code = $_POST['country_code']; // Get raw value to preserve + sign
-            $phone = Req::Post_Safe('phone');
-
-            // Combine country code and phone number (preserve + sign)
-            if ($country_code && $phone) {
-                $this->model->phone = $country_code . ' ' . $phone;
-            } else {
-                $this->model->phone = $phone; // Fallback to just phone number
-            }
-
-            $this->model->ip = $_SERVER['REMOTE_ADDR'];
-            $this->model->group_id = $this->_group_id;
-            if ($this->_activation == 1) {
-                $this->model->status = 'n';
-            } elseif ($this->_activation == 2) {
-                $this->model->status = 'a';
-            } else {
-                $this->model->status = 'y';
-            }
-            $this->model->updated_at = date('Y-m-d H:i:s'); // Auto-set update date
-            $this->model->created_at = date('Y-m-d H:i:s'); // Auto-set registration date
-            $this->model->image = ''; // Default empty string for image
-            $this->model->city = ''; // Default empty string for city (yer)
-            $this->model->blog_name = ''; // Default empty string for blog_name
-            $this->model->about = ''; // Default empty string for about
-            if ($this->model->save()) {
-                if ($this->_activation == 1) {
-                    if ($this->_email_at()) {
-                        $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_activation']);
-                    } else {
-                        $this->session->ac('error_message', $this->lang['mod_user']['register']['error']['activation_email_error']);
-                    }
-                } elseif ($this->_activation == 2) {
-                    $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_admin']);
-                } else {
-                    $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success']);
-                }
-                // Redirect to same page with success parameter
-                Helper::yonlen($this->site['adres'] . 'register?success=1', 0);
-                session_write_close();
-                exit;
-            } else {
-                // exit($this->model->db->sql_error());
-                $this->apptemplate->veri('error_message', 'Database Error: ' . $this->model->db->sql_error());
-            }
+            return;
         }
+
+        $this->apptemplate->veri('oke', True);
+        $this->model = $this->_build_registration_model();
+
+        if (!$this->model->save()) {
+            $this->apptemplate->veri('error_message', 'Database Error: ' . $this->model->db->sql_error());
+            return;
+        }
+
+        $this->_queue_registration_flash_message();
+        $this->_redirect_after_register();
+    }
+
+    private function _build_registration_model()
+    {
+        $model = Load::model('mod_user');
+        $model->name = Text::title(Req::Post_Safe('name'));
+        $model->last_name = Text::title(Req::Post_Safe('last_name'));
+        $model->username = Req::Post_Safe('username');
+        $model->email = Req::Post_Safe('email');
+        $model->password = md5(Req::Post_Safe('password'));
+        $model->phone = $this->_build_registration_phone();
+        $model->ip = $_SERVER['REMOTE_ADDR'];
+        $model->group_id = $this->_group_id;
+        $model->status = $this->_resolve_registration_status();
+        $model->updated_at = date('Y-m-d H:i:s');
+        $model->created_at = date('Y-m-d H:i:s');
+        $model->image = '';
+        $model->city = '';
+        $model->blog_name = '';
+        $model->about = '';
+
+        return $model;
+    }
+
+    private function _build_registration_phone()
+    {
+        $country_code = $_POST['country_code'] ?? '';
+        $phone = Req::Post_Safe('phone');
+
+        if ($country_code && $phone) {
+            return $country_code . ' ' . $phone;
+        }
+
+        return $phone;
+    }
+
+    private function _resolve_registration_status()
+    {
+        if ($this->_activation == 1) {
+            return 'n';
+        }
+
+        if ($this->_activation == 2) {
+            return 'a';
+        }
+
+        return 'y';
+    }
+
+    private function _queue_registration_flash_message()
+    {
+        if ($this->_activation == 1) {
+            if ($this->_email_at()) {
+                $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_activation']);
+            } else {
+                $this->session->ac('error_message', $this->lang['mod_user']['register']['error']['activation_email_error']);
+            }
+            return;
+        }
+
+        if ($this->_activation == 2) {
+            $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_admin']);
+            return;
+        }
+
+        $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success']);
+    }
+
+    private function _redirect_after_register()
+    {
+        Helper::yonlen($this->site['adres'] . 'register?success=1', 0);
+        session_write_close();
+        exit;
     }
 
     public function settings()
@@ -1094,7 +1147,7 @@ class mod_user_mod extends indexMain
         }
     }
 
-    public function imagedelete()
+    public function delete_image()
     {
         // Is Member?
         if ($this->check() === FALSE) {
@@ -1585,7 +1638,7 @@ class mod_user_mod extends indexMain
     {
         // Is Logged In?
         if ($this->user->checklogin() === True) {
-            Helper::yonlendir($this->site['sadres'], 2);
+            Helper::yonlendir($this->site['sadres'] . "mod_user/panel", 2);
             return TRUE;
         }
         return FALSE;
@@ -1595,7 +1648,7 @@ class mod_user_mod extends indexMain
     public function check()
     {
         if ($this->user->checklogin() === False) {
-            Helper::yonlendir($this->site['adres'] . "mod_user/login", 1);
+            Helper::yonlendir($this->site['sadres'] . "login", 1);
             return FALSE;
         }
         return TRUE;
@@ -1628,7 +1681,7 @@ class mod_user_mod extends indexMain
     }
 
     // For Javascript Validator
-    public function uyevarmi()
+    public function check_user_exists()
     {
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');
@@ -1648,7 +1701,7 @@ class mod_user_mod extends indexMain
     }
 
     // For Javascript Validator
-    public function usernamecheck()
+    public function check_username()
     {
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');
@@ -1668,7 +1721,7 @@ class mod_user_mod extends indexMain
     }
 
     // For Javascript Validator
-    public function emailcheck()
+    public function check_email()
     {
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');

@@ -24,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'deqîqe xwendin',
     'enlarge_image' => 'Wêne mezin bike',
     'add_content'=>'Naverokekê Lêke',
+    'add_news'=>'Nûçeyekê Lêke',
+    'add_publication'=>'Weşanekê Lêke',
     'share' => 'Parve bike',
 ];
 
@@ -192,16 +194,19 @@ $lang['index']['menu'] = [
     'my_account' => 'Hesabê min',
     'change_avatar' => 'Rûbergê Biguherîne',
     'logout' => 'Derkeve',
+    'login' => 'Têkevê',
     'register' => 'Tomar Bike',
     'dark_mode' => 'Tarî',
     'toggle_menu' => 'Menu veke/bigire',
 ];
 
 $lang['index']['modal'] = [
+    'login' => 'Têkevê',
     'username_label' => 'Navê Bikarhêner',
     'password_label' => 'Şîfre',
     'remember_me' => 'Bi bîr bîne',
     'forgot_password' => 'Şîfre ji bîr kir',
+    'login_button' => 'Têkevê',
     'no_account' => 'Ma hesabê te tune? ',
     'register_link' => 'Tomar bike',
     'close' => 'Bigire',
@@ -211,6 +216,11 @@ $lang['index']['modal'] = [
     'login_success' => 'Têketin serkeftî! Derbas dibe...',
     'login_failed' => 'Têketin serkeftî nebe. Navê bikarhêner û şîfreya xwe kontrol bike.',
     'connection_error' => 'Çewtiya girêdanê. Ji kerema xwe dîsa biceribîne.',
+    'network_error' => 'Çewtiya torê. Ji kerema xwe girêdana xwe kontrol bike û dîsa biceribîne.',
+    'timeout_error' => 'Dema daxwazê derbas bû. Ji kerema xwe dîsa biceribîne.',
+    'server_error' => 'Çewtiya serverê. Ji kerema xwe paşê dîsa biceribîne.',
+    'please_fill_all' => 'Ji kerema xwe hemû qadên pêwîst dagire.',
+    'alternative_options' => 'Heke pirsgirêk berdewam bike, tu dikarî ji rûpela têketinê jî berdewam bikî.',
     'redirecting' => 'Derbas dibe...',
     'next' => 'Pêş de',
     'back' => 'Paş ve',

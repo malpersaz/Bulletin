@@ -6,7 +6,7 @@ $url['register']='mod_user/register';
 $url['activation']='mod_user/activation';
 $url['activation/']='mod_user/activation';
 $url['activation/(:any)']='mod_user/activation/$1';
-$url['resend-activation']='mod_user/re_activation';
+$url['resend-activation']='mod_user/resend_activation';
 $url['forgot-password']='mod_user/forgot_password';
 $url['reset-password']='mod_user/password_reset';
 

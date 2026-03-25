@@ -24,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'dakika okuma',
     'enlarge_image' => 'Resmi büyüt',
     'add_content'=>'İçerik Ekle',
+    'add_news'=>'Haber Ekle',
+    'add_publication'=>'Yayın Ekle',
     'share' => 'Paylaş',
 ];
 
@@ -176,7 +178,18 @@ $lang['index']['colorbox'] = [
 
 # menu
 $lang['index']['menu'] = [
-
+    'home' => 'Anasayfa',
+    'about' => 'Hakkımızda',
+    'contact' => 'İletişim',
+    'language' => 'Dil',
+    'messages' => 'Mesajlar',
+    'my_account' => 'Hesabım',
+    'change_avatar' => 'Avatar Değiştir',
+    'logout' => 'Çıkış',
+    'login' => 'Giriş',
+    'register' => 'Kayıt',
+    'dark_mode' => 'Karanlık Mod',
+    'toggle_menu' => 'Menüyü aç/kapat',
 ];
 
 # login modal
@@ -196,6 +209,11 @@ $lang['index']['modal'] = [
     'login_success' => 'Giriş başarılı! Yönlendiriliyorsunuz...',
     'login_failed' => 'Giriş başarısız. Kullanıcı adı ve şifrenizi kontrol edin.',
     'connection_error' => 'Bağlantı hatası. Lütfen tekrar deneyin.',
+    'network_error' => 'Ağ hatası. Lütfen bağlantınızı kontrol edip tekrar deneyin.',
+    'timeout_error' => 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.',
+    'server_error' => 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
+    'please_fill_all' => 'Lütfen tüm gerekli alanları doldurun.',
+    'alternative_options' => 'Sorun devam ederse giriş sayfasından da devam edebilirsiniz.',
     'redirecting' => 'Yönlendiriliyorsunuz...',
     'next' => 'İleri',
     'back' => 'Geri',

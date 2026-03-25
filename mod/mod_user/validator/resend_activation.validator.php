@@ -1,5 +1,5 @@
 <?php
-class re_activation_validator
+class resend_activation_validator
 {
 	public $valid;
     public $lang;
@@ -18,7 +18,7 @@ class re_activation_validator
 
 
 		if ($this->captcha->check(Req::Post_Safe('captcha'))) {
-			$this->errors[] = $this->lang['mod_user']['re_activation']['error']['email_required'];
+			$this->errors[] = $this->lang['mod_user']['resend_activation']['error']['email_required'];
 		}
 
 		if ($this->_check() === True) {
@@ -31,7 +31,7 @@ class re_activation_validator
 				'name' => 'email',
 				'func' => 'required',
 				'arg' => '',
-				'message' => $this->lang['mod_user']['re_activation']['error']['invalid_code']
+				'message' => $this->lang['mod_user']['resend_activation']['error']['invalid_code']
 			]
 		);
 		if ($this->_check() === True) {
@@ -43,7 +43,7 @@ class re_activation_validator
 				'name' => 'email',
 				'func' => 'email',
 				'arg' => '',
-				'message' => $this->lang['mod_user']['re_activation']['error']['invalid_email_format']
+				'message' => $this->lang['mod_user']['resend_activation']['error']['invalid_email_format']
 			]
 		);
 
@@ -56,7 +56,7 @@ class re_activation_validator
 		$u->Getemail(Req::Post_Safe('email'))->gro();
 
 		if ($u->getSize() === 0) {
-			$this->errors[] = $this->lang['mod_user']['re_activation']['error']['email_not_registered'];
+			$this->errors[] = $this->lang['mod_user']['resend_activation']['error']['email_not_registered'];
 		}
 
 		if ($this->_check() === True) {
@@ -67,11 +67,11 @@ class re_activation_validator
 
 
 		if ($u->status == 'y') {
-			$this->errors[] = $this->lang['mod_user']['re_activation']['error']['account_already_active'];
+			$this->errors[] = $this->lang['mod_user']['resend_activation']['error']['account_already_active'];
 		}
 
 		if ($u->status == 'a') {
-			$this->errors[] = $this->lang['mod_user']['re_activation']['error']['admin_activation_required'];
+			$this->errors[] = $this->lang['mod_user']['resend_activation']['error']['admin_activation_required'];
 		}
 
 

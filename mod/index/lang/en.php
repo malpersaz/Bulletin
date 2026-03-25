@@ -24,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'min read',
     'enlarge_image' => 'Enlarge image',
     'add_content'=>'Add Content',
+    'add_news'=>'Add News',
+    'add_publication'=>'Add Publication',
     'share' => 'Share',
 ];
 
@@ -187,7 +189,18 @@ $lang['index']['colorbox'] = [
 
 # menu
 $lang['index']['menu'] = [
- 
+    'home' => 'Homepage',
+    'about' => 'About',
+    'contact' => 'Contact',
+    'language' => 'Language',
+    'messages' => 'Messages',
+    'my_account' => 'My Account',
+    'change_avatar' => 'Change Avatar',
+    'logout' => 'Logout',
+    'login' => 'Login',
+    'register' => 'Register',
+    'dark_mode' => 'Dark Mode',
+    'toggle_menu' => 'Toggle menu',
 ];
 
 # login modal
@@ -207,6 +220,11 @@ $lang['index']['modal'] = [
     'login_success' => 'Login successful! Redirecting...',
     'login_failed' => 'Login failed. Please check your username and password.',
     'connection_error' => 'Connection error. Please try again.',
+    'network_error' => 'Network error. Please check your connection and try again.',
+    'timeout_error' => 'Request timed out. Please try again.',
+    'server_error' => 'Server error. Please try again later.',
+    'please_fill_all' => 'Please fill in all required fields.',
+    'alternative_options' => 'You can also continue from the login page if the problem persists.',
     'redirecting' => 'Redirecting...',
     'next' => 'Next',
     'back' => 'Back',

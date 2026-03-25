@@ -141,21 +141,21 @@
 					"alertTextLoad": "* Yükleniyor.."
 				},
 				"usernamecheck": {
-					"file": "mod_user/usernamecheck",
+					"file": "mod_user/check_username",
 					"alertText": "* Yazdığınız Kullanıcı Adı Kayıtlı<br>Lütfen Başka bir Kullanıcı Adı Belirleyin",
 					"alertTextOk": "* Kullanılabilinir",
 					"extraData": "",
 					"alertTextLoad": "* Yükleniyor.."
 				},
 				"uyevarmi": {
-					"file": "mod_user/uyevarmi",
+					"file": "mod_user/check_user_exists",
 					"alertText": "* Belirttiğiniz Kullanıcı Adı Bulunmuyor!",
 					"alertTextOk": "* Oke",
 					"extraData": "",
 					"alertTextLoad": "* Yükleniyor.."
 				},
 				"emailcheck": {
-					"file": "mod_user/emailcheck",
+					"file": "mod_user/check_email",
 					"alertText": "* Yazdığınız E-Posta Adı Kayıtlı<br>Lütfen Başka bir E-Posta Belirleyin",
 					"alertTextOk": "* Kullanılabilinir",
 					"extraData": "",

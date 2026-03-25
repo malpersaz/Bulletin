@@ -24,6 +24,8 @@ $lang['index'] = [
     'min_read' => 'deqîqa wendene',
     'enlarge_image' => 'Resim pîl bike',
     'add_content'=>'Naverokêke de kî',
+    'add_news'=>'Nûçeyekê Lêke',
+    'add_publication'=>'Weşanekê Lêke',
     'share' => 'Pare bike',
 ];
 
@@ -78,6 +80,7 @@ $lang['index']['mod_content']['aylar'] = [
 $lang['index']['mod_content']['latest_content'] = [
     '1' => 'Naverok',
     '2' => 'Hemûyan Bibîne',
+    '3' => 'Hêna nûçe weşiyaye amade niyo.',
 ];
 
 
@@ -191,16 +194,19 @@ $lang['index']['menu'] = [
     'my_account' => 'Hesabê min',
     'change_avatar' => 'Rûbergê Biguherîne',
     'logout' => 'Derkeve',
+    'login' => 'Kuwe cî',
     'register' => 'Tomar Bike',
     'dark_mode' => 'Tarî',
     'toggle_menu' => 'Menu veke/bigire',
 ];
 
 $lang['index']['modal'] = [
+    'login' => 'Kuwe cî',
     'username_label' => 'Navê Bikarhêner',
     'password_label' => 'Şîfre',
     'remember_me' => 'Bi bîr bîne',
     'forgot_password' => 'Şîfre ji bîr kir',
+    'login_button' => 'Kuwe cî',
     'no_account' => 'Ma hesabê te tune? ',
     'register_link' => 'Tomar bike',
     'close' => 'Bigire',
@@ -210,6 +216,11 @@ $lang['index']['modal'] = [
     'login_success' => 'Têketin serkeftî! Derbas dibe...',
     'login_failed' => 'Têketin serkeftî nebe. Navê bikarhêner û şîfreya xwe kontrol bike.',
     'connection_error' => 'Çewtiya girêdanê. Ji kerema xwe dîsa biceribîne.',
+    'network_error' => 'Çewtiya torê. Ji kerema xwe girêdana xo kontrol kerê û dîsa biceribînê.',
+    'timeout_error' => 'Dema daxwazî derbas bû. Ji kerema xwe dîsa biceribînê.',
+    'server_error' => 'Çewtiya serverî. Ji kerema xwe paşo dîsa biceribînê.',
+    'please_fill_all' => 'Ji kerema xwe hemû qadê pêwîst dagirê.',
+    'alternative_options' => 'Heke pirsgirêk berdewam bikerê, tu şena rûpelê têketışî ra zî berdewam bikerê.',
     'redirecting' => 'Derbas dibe...',
     'next' => 'Pêş de',
     'back' => 'Paş ve',
@@ -270,7 +281,7 @@ $lang['index']['template'] = [
 ];
 
 $lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'No published news is available yet.';
+$lang['index']['mod_news']['latest_content']['3'] = 'Hêna nûçe weşiyaye amade niyo.';
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'Pêro Weşan';
 $lang['index']['mod_publication']['3'] = 'weşan,dergi,hejmara';
@@ -285,5 +296,5 @@ $lang['index']['mod_publication']['authors_empty_desc'] = 'Hêna qeydê niviskar
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Weşanê Me',
     '2' => 'Pêro Weşan',
-    '3' => 'No published content is available yet.',
+    '3' => 'Hêna naverokê weşiyaye amade niyo.',
 ];

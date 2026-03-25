@@ -420,7 +420,7 @@
                     const formData = new FormData();
                     formData.append('id', id);
 
-                    fetch("{{ site.adres }}mod_user/imagedelete", {
+                    fetch("{{ site.adres }}mod_user/delete_image", {
                         method: "POST",
                         body: formData
                     })

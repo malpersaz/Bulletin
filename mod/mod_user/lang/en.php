@@ -388,9 +388,9 @@ $lang['mod_user']['activation'] = [
     'security_code' => 'Security Code',
     'activate_button' => 'Activate',
     'lost_code' => 'If you have lost your activation code
-	<a href="re_activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
     'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="mod_user/login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login" style="color:#000">Click here</a> to log in to your account.',
     'membership_activation' => 'Membership Activation'
 ];
 $lang['mod_user']['activation']['error'] = [
@@ -401,7 +401,7 @@ $lang['mod_user']['activation']['error'] = [
 		Please check and try again.'
 ];
 
-$lang['mod_user']['re_activation'] = [
+$lang['mod_user']['resend_activation'] = [
     'code_sent' => 'Your activation code has been sent. Please check your e-mail to activate your account',
     'write_email' => 'So that we can send you an activation code.<br/> Write the e-mail address associated with your account in the field below.',
     'activation_code' => 'Activation Code',
@@ -410,7 +410,7 @@ $lang['mod_user']['re_activation'] = [
     'send_button' => 'Send',
     'activation_code_label' => 'Activation Code'
 ];
-$lang['mod_user']['re_activation']['error'] = [
+$lang['mod_user']['resend_activation']['error'] = [
     'activation_send_error' => 'Error occurred while sending activation code. Please contact the system administrator.',
     'invalid_captcha' => 'You entered the security code incorrectly, please check and try again.',
     'email_required' => 'Please write the e-mail address associated with your account.',
@@ -733,30 +733,30 @@ $lang['mod_user']['activation']['3'] = 'Aktivasyon Kodu';
 $lang['mod_user']['activation']['4'] = 'Güvenlik Kodu';
 $lang['mod_user']['activation']['5'] = 'Aktifleştir';
 $lang['mod_user']['activation']['6'] = 'Eğer Aktifleştme Kodunuzu Kaybettiyseniz
-	<a href="re_activation" style="color:#000">Buradan</a> Tekrar Aktivasyon Kodu Talep Edebilirsiniz.';
+	<a href="resend-activation" style="color:#000">Buradan</a> Tekrar Aktivasyon Kodu Talep Edebilirsiniz.';
 $lang['mod_user']['activation']['7'] = 'Hesabınız Başarıyla Aktifleştirildi Dilerseniz
-	<a href="mod_user/login" style="color:#000">Buradan</a> Hesabınıza Giriş Yapabilirsiniz.';
+	<a href="login" style="color:#000">Buradan</a> Hesabınıza Giriş Yapabilirsiniz.';
 $lang['mod_user']['activation']['8'] = 'Üyelik Aktivasyonu';
 $lang['mod_user']['activation']['error']['1'] = 'Güvenlik Kodunu Hatalı Girdiniz, Lütfen Aktivasyon Kodunuzu
 		Kontrol Ederek Tekrar Deneyiniz.';
 $lang['mod_user']['activation']['error']['2'] = 'Lütfen Aktivasyon Kodunuzu Yazın.';
 $lang['mod_user']['activation']['error']['3'] = 'Belirttiğiniz Aktivasyon Kodu Geçersiz,
 		Lütfen Kontrol Ederek Tekrar Deneyiniz.';
-$lang['mod_user']['re_activation']['1'] = 'Aktivasyon Kodunuz Gönderildi Lütfen E-Posta\'nızı Kontrol Ederek Hesabınızı Aktifleştirin';
-$lang['mod_user']['re_activation']['2'] = 'Size Aktivasyon Kodu Göndere Bilmemiz İçin.<br/> Aşağıdaki Alana Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın.';
-$lang['mod_user']['re_activation']['3'] = 'Aktivasyon Kodu';
-$lang['mod_user']['re_activation']['4'] = 'E-Posta';
-$lang['mod_user']['re_activation']['5'] = 'Güvelik Kodu';
-$lang['mod_user']['re_activation']['6'] = 'Gönder';
-$lang['mod_user']['re_activation']['7'] = 'Aktivasyon Kodu';
-$lang['mod_user']['re_activation']['error']['1'] = 'Aktivasyon Kodu Gönderilirken Hata Oluştu Lütfen Sistem Yöneticisi İle İrtibata Geçin.';
-$lang['mod_user']['re_activation']['error']['2'] = 'Güvenlik Kodunu Hatalı Girdiniz, Lütfen Kontrol Ederek Tekrar Deneyiniz.';
-$lang['mod_user']['re_activation']['error']['3'] = 'Lütfen Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın';
-$lang['mod_user']['re_activation']['error']['4'] = 'Geçersiz Bir E-Posta Adresi Yazdınız.';
-$lang['mod_user']['re_activation']['error']['5'] = 'Belirtmiş Olduğunuz E-Posta Adresi Herhangi Bir Hesaba Kayıtlı Değil.';
-$lang['mod_user']['re_activation']['error']['6'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Zaten Aktif Durumda!';
-$lang['mod_user']['re_activation']['error']['7'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Sadece Yönetici Tarafından Aktifleştirilebilinir.';
-$lang['mod_user']['re_activation']['error']['8'] = 'Yazmış Olduğunuz E-Posta Adresine Ait Aktivasyon Kodu Bulunmuyor!';
+$lang['mod_user']['resend_activation']['1'] = 'Aktivasyon Kodunuz Gönderildi Lütfen E-Posta\'nızı Kontrol Ederek Hesabınızı Aktifleştirin';
+$lang['mod_user']['resend_activation']['2'] = 'Size Aktivasyon Kodu Göndere Bilmemiz İçin.<br/> Aşağıdaki Alana Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın.';
+$lang['mod_user']['resend_activation']['3'] = 'Aktivasyon Kodu';
+$lang['mod_user']['resend_activation']['4'] = 'E-Posta';
+$lang['mod_user']['resend_activation']['5'] = 'Güvelik Kodu';
+$lang['mod_user']['resend_activation']['6'] = 'Gönder';
+$lang['mod_user']['resend_activation']['7'] = 'Aktivasyon Kodu';
+$lang['mod_user']['resend_activation']['error']['1'] = 'Aktivasyon Kodu Gönderilirken Hata Oluştu Lütfen Sistem Yöneticisi İle İrtibata Geçin.';
+$lang['mod_user']['resend_activation']['error']['2'] = 'Güvenlik Kodunu Hatalı Girdiniz, Lütfen Kontrol Ederek Tekrar Deneyiniz.';
+$lang['mod_user']['resend_activation']['error']['3'] = 'Lütfen Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın';
+$lang['mod_user']['resend_activation']['error']['4'] = 'Geçersiz Bir E-Posta Adresi Yazdınız.';
+$lang['mod_user']['resend_activation']['error']['5'] = 'Belirtmiş Olduğunuz E-Posta Adresi Herhangi Bir Hesaba Kayıtlı Değil.';
+$lang['mod_user']['resend_activation']['error']['6'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Zaten Aktif Durumda!';
+$lang['mod_user']['resend_activation']['error']['7'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Sadece Yönetici Tarafından Aktifleştirilebilinir.';
+$lang['mod_user']['resend_activation']['error']['8'] = 'Yazmış Olduğunuz E-Posta Adresine Ait Aktivasyon Kodu Bulunmuyor!';
 $lang['mod_user']['password_reset']['1'] = 'Şifre Sıfırlama';
 $lang['mod_user']['password_reset']['2'] = 'Yeni Şifrenizi Üretebilmemiz İçin,Lütfen Aşağıdaki Alana Şifre Sıfırlama Aktivasyon Kodunuzu Yazınız.';
 $lang['mod_user']['password_reset']['3'] = 'Aktivasyon Kodu';
