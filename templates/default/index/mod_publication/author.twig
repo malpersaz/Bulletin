@@ -5,66 +5,618 @@
 {% set pagination = ctx_get('pagination') %}
 {% set page = ctx_get('page') %}
 {% set username = ctx_get('username') %}
+{% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+{% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.sadres }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
+{% endblock %}
+
+{% block title %}
+    <title>{{ author_name }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <style>
+        #publication-author-page {
+            --author-ink: #152033;
+            --author-muted: #667085;
+            --author-line: rgba(21, 32, 51, 0.10);
+            --author-surface: #ffffff;
+            --author-surface-soft: linear-gradient(180deg, #f8f5ef 0%, #eef5f7 100%);
+            --author-shadow: 0 18px 48px rgba(21, 32, 51, 0.10);
+        }
+
+        #publication-author-page .author-shell {
+            padding: 1.25rem 0 3rem;
+        }
+
+        #publication-author-page .author-breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem;
+            color: var(--author-muted);
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        #publication-author-page .author-breadcrumb a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #publication-author-page .author-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
+        }
+
+        #publication-author-page .author-main {
+            min-width: 0;
+        }
+
+        #publication-author-page .author-identity {
+            background: var(--author-surface-soft);
+            border: 1px solid var(--author-line);
+            border-radius: 1.5rem;
+            padding: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        #publication-author-page .author-identity-inner {
+            display: flex;
+            align-items: center;
+            gap: 0.95rem;
+        }
+
+        #publication-author-page .author-avatar {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 999px;
+            overflow: hidden;
+            flex: 0 0 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f59e0b, #0f766e);
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border: 3px solid rgba(255, 255, 255, 0.92);
+            box-shadow: 0 10px 28px rgba(21, 32, 51, 0.16);
+        }
+
+        #publication-author-page .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #publication-author-page .author-title {
+            margin: 0;
+            color: var(--author-ink);
+            font-size: clamp(1.45rem, 4vw, 2.4rem);
+            line-height: 1.02;
+            font-weight: 800;
+        }
+
+        #publication-author-page .author-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem 1rem;
+            margin-top: 0.4rem;
+            color: var(--author-muted);
+            font-size: 0.92rem;
+        }
+
+        #publication-author-page .author-meta a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #publication-author-page .author-handle,
+        #publication-author-page .author-email {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        #publication-author-page .author-stream {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        #publication-author-page .publication-card {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            background: var(--author-surface);
+            border: 1px solid var(--author-line);
+            border-radius: 1.4rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(21, 32, 51, 0.08);
+            transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+        }
+
+        #publication-author-page .publication-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 22px 44px rgba(21, 32, 51, 0.14);
+            border-color: rgba(180, 83, 9, 0.18);
+        }
+
+        #publication-author-page .publication-media {
+            position: relative;
+            min-height: 13rem;
+            background: linear-gradient(180deg, #eef2f6 0%, #dbe7ee 100%);
+        }
+
+        #publication-author-page .publication-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #publication-author-page .publication-body {
+            padding: 1.05rem 1.05rem 1.15rem;
+        }
+
+        #publication-author-page .publication-topline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.55rem;
+            margin-bottom: 0.75rem;
+        }
+
+        #publication-author-page .publication-category {
+            display: inline-flex;
+            align-items: center;
+            max-width: 100%;
+            padding: 0.42rem 0.72rem;
+            border-radius: 999px;
+            background: rgba(15, 118, 110, 0.10);
+            color: #0f766e;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        #publication-author-page .publication-date {
+            color: var(--author-muted);
+            font-size: 0.84rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        #publication-author-page .publication-title {
+            margin: 0 0 0.65rem;
+            font-size: 1.18rem;
+            line-height: 1.32;
+            font-weight: 800;
+        }
+
+        #publication-author-page .publication-title a {
+            color: var(--author-ink);
+            text-decoration: none;
+        }
+
+        #publication-author-page .publication-summary {
+            margin: 0;
+            color: var(--author-muted);
+            line-height: 1.7;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        #publication-author-page .author-sidebar {
+            min-width: 0;
+        }
+
+        #publication-author-page .author-side-card {
+            background: var(--author-surface);
+            border: 1px solid var(--author-line);
+            border-radius: 1.35rem;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(21, 32, 51, 0.08);
+        }
+
+        #publication-author-page .author-side-title {
+            color: var(--author-ink);
+            font-size: 0.94rem;
+            font-weight: 800;
+            margin-bottom: 0.9rem;
+        }
+
+        #publication-author-page .author-side-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        #publication-author-page .author-side-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            text-decoration: none;
+            color: inherit;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #publication-author-page .author-side-item:hover {
+            background: rgba(21, 32, 51, 0.05);
+            transform: translateX(2px);
+        }
+
+        #publication-author-page .author-side-avatar {
+            width: 2.8rem;
+            height: 2.8rem;
+            border-radius: 999px;
+            overflow: hidden;
+            flex: 0 0 2.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f59e0b, #0f766e);
+            color: #fff;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        #publication-author-page .author-side-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #publication-author-page .author-side-copy {
+            min-width: 0;
+            display: grid;
+            gap: 0.16rem;
+        }
+
+        #publication-author-page .author-side-name {
+            color: var(--author-ink);
+            font-size: 0.92rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        #publication-author-page .author-side-publication {
+            color: var(--author-muted);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        #publication-author-page .pagination-wrap {
+            margin-top: 1.75rem;
+        }
+
+        #publication-author-page .pagination {
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        #publication-author-page .page-link {
+            min-width: 2.7rem;
+            min-height: 2.7rem;
+            border-radius: 0.9rem;
+            border: 1px solid var(--author-line);
+            background: #fff;
+            color: var(--author-ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            padding: 0.65rem 0.9rem;
+        }
+
+        #publication-author-page .page-item.disabled .page-link {
+            background: #fff;
+            color: var(--author-muted);
+            border-color: var(--author-line);
+        }
+
+        #publication-author-page .page-item.active .page-link {
+            background: var(--author-ink);
+            border-color: var(--author-ink);
+            color: #fff;
+        }
+
+        #publication-author-page .page-link:hover {
+            background: rgba(21, 32, 51, 0.05);
+            color: var(--author-ink);
+        }
+
+        @media (min-width: 768px) {
+            #publication-author-page .publication-card {
+                grid-template-columns: minmax(15rem, 18rem) 1fr;
+            }
+
+            #publication-author-page .publication-media {
+                min-height: 100%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            #publication-author-page .author-layout {
+                grid-template-columns: minmax(0, 1fr) 20rem;
+                align-items: start;
+            }
+
+            #publication-author-page .author-sidebar {
+                position: sticky;
+                top: 1.5rem;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+            #publication-author-page {
+                --author-ink: #f8fafc;
+                --author-muted: #94a3b8;
+                --author-line: rgba(148, 163, 184, 0.18);
+                --author-surface: #101826;
+                --author-surface-soft: linear-gradient(180deg, #162033 0%, #101826 100%);
+            }
+
+            #publication-author-page .publication-card {
+                box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+            }
+
+            #publication-author-page .publication-card:hover {
+                border-color: rgba(245, 158, 11, 0.28);
+                box-shadow: 0 24px 48px rgba(2, 6, 23, 0.46);
+            }
+
+            #publication-author-page .author-side-card {
+                box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+            }
+
+            #publication-author-page .author-avatar {
+                border-color: rgba(15, 23, 42, 0.92);
+            }
+
+            #publication-author-page .publication-media {
+                background: linear-gradient(180deg, #172033 0%, #0f172a 100%);
+            }
+
+            #publication-author-page .page-link {
+                background: #101826;
+                color: #f8fafc;
+                border-color: rgba(226, 232, 240, 0.2);
+            }
+
+            #publication-author-page .page-link:hover {
+                background: #182235;
+                color: #ffffff;
+            }
+
+            #publication-author-page .page-item.disabled .page-link {
+                background: #101826;
+                color: #94a3b8;
+                border-color: rgba(226, 232, 240, 0.14);
+            }
+
+            #publication-author-page .page-item.active .page-link {
+                background: #f8fafc;
+                color: #0f172a;
+                border-color: #f8fafc;
+            }
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page,
+        body.dark #publication-author-page,
+        body.dark-mode #publication-author-page {
+            --author-ink: #f8fafc;
+            --author-muted: #94a3b8;
+            --author-line: rgba(148, 163, 184, 0.18);
+            --author-surface: #101826;
+            --author-surface-soft: linear-gradient(180deg, #162033 0%, #101826 100%);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .publication-card,
+        body.dark #publication-author-page .publication-card,
+        body.dark-mode #publication-author-page .publication-card {
+            box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .publication-card:hover,
+        body.dark #publication-author-page .publication-card:hover,
+        body.dark-mode #publication-author-page .publication-card:hover {
+            border-color: rgba(245, 158, 11, 0.28);
+            box-shadow: 0 24px 48px rgba(2, 6, 23, 0.46);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .author-side-card,
+        body.dark #publication-author-page .author-side-card,
+        body.dark-mode #publication-author-page .author-side-card {
+            box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .author-avatar,
+        body.dark #publication-author-page .author-avatar,
+        body.dark-mode #publication-author-page .author-avatar {
+            border-color: rgba(15, 23, 42, 0.92);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .author-side-item:hover,
+        body.dark #publication-author-page .author-side-item:hover,
+        body.dark-mode #publication-author-page .author-side-item:hover {
+            background: rgba(148, 163, 184, 0.10);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .publication-media,
+        body.dark #publication-author-page .publication-media,
+        body.dark-mode #publication-author-page .publication-media {
+            background: linear-gradient(180deg, #172033 0%, #0f172a 100%);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .page-link,
+        body.dark #publication-author-page .page-link,
+        body.dark-mode #publication-author-page .page-link {
+            background: #101826;
+            color: #f8fafc;
+            border-color: rgba(226, 232, 240, 0.2);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .page-link:hover,
+        body.dark #publication-author-page .page-link:hover,
+        body.dark-mode #publication-author-page .page-link:hover {
+            background: #182235;
+            color: #ffffff;
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .page-item.disabled .page-link,
+        body.dark #publication-author-page .page-item.disabled .page-link,
+        body.dark-mode #publication-author-page .page-item.disabled .page-link {
+            background: #101826;
+            color: #94a3b8;
+            border-color: rgba(226, 232, 240, 0.14);
+        }
+
+        html[data-bs-theme="dark"] #publication-author-page .page-item.active .page-link,
+        body.dark #publication-author-page .page-item.active .page-link,
+        body.dark-mode #publication-author-page .page-item.active .page-link {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #f8fafc;
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<div class="page-title">
-    <div class="container">
-        <ol itemscope itemtype="http://schema.org/BreadcrumbList">
-            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                <a itemprop="item" href="{{ site.sadres }}authors">
-                    <h1 itemprop="name">{{ lang.index.mod_publication.authors }}</h1>
-                </a>
+<section id="publication-author-page">
+    <div class="container author-shell">
+        <ol class="author-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.sadres }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                <meta itemprop="position" content="1" />
             </li>
-            <li itemscope itemtype="http://schema.org/ListItem" itemprop="itemListElement">
-                <h2 itemprop="name">{{ author.u_name }} {{ author.u_last_name }}</h2>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.sadres }}authors"><span itemprop="name">{{ lang.index.mod_publication.authors }}</span></a>
+                <meta itemprop="position" content="2" />
+            </li>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <span itemprop="name">{{ author_name }}</span>
+                <meta itemprop="position" content="3" />
             </li>
         </ol>
-    </div>
-</div>
-<div class="page-inner">
-    <div class="container clearfix">
-        <div class="page-content">
-            <div class="author-info" itemscope itemtype="http://schema.org/Person">
-                {% if author.user_image is defined and author.user_image is not empty %}
-                <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
+
+        <div class="author-layout">
+            <main class="author-main">
+                <section class="author-identity" itemscope itemtype="https://schema.org/Person">
+                    <div class="author-identity-inner">
+                        <div class="author-avatar">
+                            {% if author.user_image is defined and author.user_image is not empty %}
+                                <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author_name }}" loading="lazy">
+                            {% else %}
+                                <span>{{ author_initials }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="author-copy">
+                            <h1 class="author-title" itemprop="name">{{ author_name }}</h1>
+                            <div class="author-meta">
+                                <span class="author-handle">
+                                    <i class="bi bi-at"></i>{{ username }}
+                                </span>
+                                {% if author.email is defined and author.email is not empty %}
+                                    <a class="author-email" href="mailto:{{ author.email }}">
+                                        <i class="bi bi-envelope"></i>{{ author.email }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {% if publications %}
+                    <div class="author-stream">
+                        {% for publication in publications %}
+                            {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                            {% if publication.summary is not empty %}
+                                {% set publication_excerpt = publication.summary|striptags %}
+                            {% elseif publication.description is defined and publication.description is not empty %}
+                                {% set publication_excerpt = publication.description|striptags %}
+                            {% else %}
+                                {% set publication_excerpt = publication_title|striptags %}
+                            {% endif %}
+                            <article class="publication-card">
+                                <a class="publication-media" href="{{ site.sadres }}publication/{{ publication.seo }}" aria-label="{{ publication_title }}">
+                                    {% if publication.image is defined and publication.image is not empty %}
+                                        <img src="{{ site.radres }}mod_publication/{{ publication.image }}" alt="{{ publication_title }}" loading="lazy">
+                                    {% else %}
+                                        <img src="{{ site.radres }}mod_settings/logo.png" alt="{{ publication_title }}" loading="lazy" style="object-fit: contain; padding: 1.5rem;">
+                                    {% endif %}
+                                </a>
+                                <div class="publication-body">
+                                    <div class="publication-topline">
+                                        {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty %}
+                                            <a class="publication-category" href="{{ site.sadres }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
+                                        {% endif %}
+                                        <span class="publication-date">
+                                            <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                        </span>
+                                    </div>
+                                    <h2 class="publication-title">
+                                        <a href="{{ site.sadres }}publication/{{ publication.seo }}">{{ publication_title }}</a>
+                                    </h2>
+                                    <p class="publication-summary">
+                                        {{ publication_excerpt|slice(0, 220) }}{% if publication_excerpt|length > 220 %}...{% endif %}
+                                    </p>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                    {% if pagination %}
+                        <div class="pagination-wrap">
+                            <nav aria-label="{{ author_name }}">
+                                <ul class="pagination justify-content-center">
+                                    {% for s in pagination %}
+                                        {% if s == '...' %}
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        {% elseif s == page %}
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link">{{ s }}</span>
+                                            </li>
+                                        {% elseif s == 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ site.sadres }}author/{{ username }}">{{ s }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ site.sadres }}author/{{ username }}/{{ s }}">{{ s }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
                 {% endif %}
-                <div class="info">
-                    <h1 class="name" itemprop="name">{{ author.u_name }} {{ author.u_last_name }}</h1>
-                    {% if author.email is defined and author.email is not empty %}
-                    <span class="email">Email: {{ author.email }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            <ul class="author-article">
-                {% for publication in publications %}
-                <li>
-                    <a href="{{ site.sadres }}publication/{{ publication.seo }}"><h3>{{ publication.name }}</h3></a>
-                    <span class="date">{{ publication.created_at|date('d.m.Y H:i') }}</span>
-                    {% if publication.category_seo is defined and publication.category_name is defined %}
-                    <span class="a"><a href="{{ site.lang }}/publications/{{ publication.category_seo }}">{{ publication.category_name }}</a></span>
-                    {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
-            <div class="clear"></div>
-            {% if pagination %}
-            <div class="paging_3">
-                <div class="holder">
-                    {% for s in pagination %}
-                        {% if s == '...' %}
-                        <span class="seperator">&nbsp;...</span>
-                        {% elseif s == page %}
-                        <a class="number" href="{{ site.sadres }}author/{{ username }}/{{ s }}" rel="page">{{ s }}</a>
-                        {% else %}
-                        <span class="seperator">&nbsp;</span>
-                        <a class="number" href="{{ site.sadres }}author/{{ username }}/{{ s }}" rel="page">{{ s }}</a>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
+            </main>
+
+            <aside class="author-sidebar">
+                {{ include("index/mod_publication/other_authors.twig") }}
+            </aside>
         </div>
-        {{ include("index/mod_publication/other_authors.twig") }}
     </div>
-</div>
+</section>
 {% endblock %}

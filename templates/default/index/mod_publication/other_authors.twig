@@ -1,24 +1,27 @@
 {% set authors = ctx_get('authors') %}
 
-<aside class="base-side clearfix">
-    <div class="side-content author-side-list">
-        <div class="side-caption-2">
-            <span>{{ lang.index.mod_publication.other_authors }}</span>
-        </div>
-        <div class="row ms-row-fit">
-            {% if authors %}
-                {% for author in authors %}
-                <div class="item col-xs-12 col-ms-6 col-sm-6 col-md-12">
-                    <a href="{{ site.sadres }}author/{{ author.username }}">
-                        <span class="n">{{ author.u_name }} <span>{{ author.u_last_name }}</span></span>
+<div class="author-side-card">
+    <div class="author-side-title">{{ lang.index.mod_publication.other_authors }}</div>
+    {% if authors %}
+        <div class="author-side-list">
+            {% for author in authors %}
+                {% set side_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+                {% set side_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+                {% set side_publication_title = author.title is defined and author.title is not empty ? author.title : author.name %}
+                <a class="author-side-item" href="{{ site.sadres }}author/{{ author.username }}">
+                    <span class="author-side-avatar">
                         {% if author.user_image is defined and author.user_image is not empty %}
-                        <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
+                            <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ side_author_name }}" loading="lazy">
+                        {% else %}
+                            <span>{{ side_author_initials }}</span>
                         {% endif %}
-                        <span class="t">{{ author.name }}</span>
-                    </a>
-                </div>
-                {% endfor %}
-            {% endif %}
+                    </span>
+                    <span class="author-side-copy">
+                        <span class="author-side-name">{{ side_author_name }}</span>
+                        <span class="author-side-publication">{{ side_publication_title }}</span>
+                    </span>
+                </a>
+            {% endfor %}
         </div>
-    </div>
-</aside>
+    {% endif %}
+</div>
