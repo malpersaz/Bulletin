@@ -26,6 +26,7 @@ $lang['management']=[
     'news_categories' => 'News Categories',
     'content_management' => 'Content Management',
     'news_management' => 'News Management',
+    'publication_management' => 'Publication Management',
     'menu_management' => 'Menu Management',
     'page_management' => 'Page Management',
     'file_management' => 'File Management',

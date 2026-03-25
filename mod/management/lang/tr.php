@@ -34,6 +34,7 @@ $lang['management']=[
     'news_categories' => 'Haber Kategorileri',
     'content_management' => 'İçerik Yönetimi',
     'news_management' => 'Haber Yönetimi',
+    'publication_management' => 'Yayın Yönetimi',
     'menu_management' => 'Menü Yönetimi',
     'page_management' => 'Sayfa Yönetimi',
     'file_management' => 'Dosya Yönetimi',

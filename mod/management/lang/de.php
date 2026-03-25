@@ -30,6 +30,7 @@ $lang['management'] = [
     'news_categories' => 'Nachrichtenkategorien',
     'content_management' => 'Inhaltsverwaltung',
     'news_management' => 'Nachrichtenverwaltung',
+    'publication_management' => 'Veröffentlichungsverwaltung',
     'menu_management' => 'Menüverwaltung',
     'page_management' => 'Seitenverwaltung',
     'file_management' => 'Dateiverwaltung',

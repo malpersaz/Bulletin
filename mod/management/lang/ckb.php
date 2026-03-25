@@ -25,6 +25,7 @@ $lang['management']=[
     'news_categories' => 'کاتگۆرییەکانی هەواڵ',
     'content_management' => 'بەڕێوەبردنی ناوەرۆک',
     'news_management' => 'بەڕێوەبردنی هەواڵ',
+    'publication_management' => 'بەڕێوەبردنی بڵاوکراوەکان',
     'menu_management' => 'بەڕێوەبردنی مێنو',
     'page_management' => 'بەڕێوەبردنی لاپەڕەکان',
     'file_management' => 'بەڕێوەبردنی فایلەکان',

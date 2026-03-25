@@ -33,6 +33,7 @@ $lang['management']=[
     'news_categories' => 'Kategoriyên Nûçeyan',
     'content_management' => 'Rêveberiya Naverokan',
     'news_management' => 'Rêveberiya Nûçeyan',
+    'publication_management' => 'Rêveberiya Weşanan',
     'menu_management' => 'Rêveberiya Menûyê',
     'page_management' => 'Rêveberiya Rûpelan',
     'file_management' => 'Rêveberiya Pelan',
