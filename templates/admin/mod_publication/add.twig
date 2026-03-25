@@ -14,6 +14,17 @@
     -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const fabContainer = document.getElementById('fabContainer');
+            const fabOverlay = document.getElementById('fabOverlay');
+            if (fabContainer) {
+                fabContainer.classList.remove('active');
+                fabContainer.style.display = 'none';
+            }
+            if (fabOverlay) {
+                fabOverlay.classList.remove('active');
+                fabOverlay.style.display = 'none';
+            }
+
             // Auto open wizard if we are on the 'add' page
             // But we need the wizard HTML to be present. 
             // It is included in layout.twig block 'wizards' -> 'wizard_content.twig'
