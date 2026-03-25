@@ -239,12 +239,19 @@
             min-height: 2.75rem;
             border-radius: 0.9rem;
             border: 1px solid var(--authors-line);
+            background: #fff;
             color: var(--authors-ink);
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             padding: 0.65rem 0.9rem;
+        }
+
+        #publication-authors-page .page-item.disabled .page-link {
+            background: #fff;
+            color: var(--authors-muted);
+            border-color: var(--authors-line);
         }
 
         #publication-authors-page .page-item.active .page-link {
@@ -256,6 +263,62 @@
         #publication-authors-page .page-link:hover {
             color: var(--authors-ink);
             background: rgba(21, 32, 51, 0.05);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            #publication-authors-page .page-link {
+                background: #101826;
+                color: #f8fafc;
+                border-color: rgba(226, 232, 240, 0.2);
+            }
+
+            #publication-authors-page .page-link:hover {
+                background: #182235;
+                color: #ffffff;
+            }
+
+            #publication-authors-page .page-item.disabled .page-link {
+                background: #101826;
+                color: #94a3b8;
+                border-color: rgba(226, 232, 240, 0.14);
+            }
+
+            #publication-authors-page .page-item.active .page-link {
+                background: #f8fafc;
+                color: #0f172a;
+                border-color: #f8fafc;
+            }
+        }
+
+        html[data-bs-theme="dark"] #publication-authors-page .page-link,
+        body.dark #publication-authors-page .page-link,
+        body.dark-mode #publication-authors-page .page-link {
+            background: #101826;
+            color: #f8fafc;
+            border-color: rgba(226, 232, 240, 0.2);
+        }
+
+        html[data-bs-theme="dark"] #publication-authors-page .page-link:hover,
+        body.dark #publication-authors-page .page-link:hover,
+        body.dark-mode #publication-authors-page .page-link:hover {
+            background: #182235;
+            color: #ffffff;
+        }
+
+        html[data-bs-theme="dark"] #publication-authors-page .page-item.disabled .page-link,
+        body.dark #publication-authors-page .page-item.disabled .page-link,
+        body.dark-mode #publication-authors-page .page-item.disabled .page-link {
+            background: #101826;
+            color: #94a3b8;
+            border-color: rgba(226, 232, 240, 0.14);
+        }
+
+        html[data-bs-theme="dark"] #publication-authors-page .page-item.active .page-link,
+        body.dark #publication-authors-page .page-item.active .page-link,
+        body.dark-mode #publication-authors-page .page-item.active .page-link {
+            background: #f8fafc;
+            color: #0f172a;
+            border-color: #f8fafc;
         }
 
         @media (min-width: 576px) {
