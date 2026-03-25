@@ -54,7 +54,7 @@ $lang['mod_attachment_mod'] = array (
   array (
     'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
     'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'display_field' => '%s nikare qada têkiliyê be. name an title wekî qada nîşandanê bikar bîne.',
+    'display_field' => '%s nikare qada teknîkî an têkiliyê be. Li şûna id an file_id, name an title wekî qada nîşandanê bikar bîne.',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
     'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',

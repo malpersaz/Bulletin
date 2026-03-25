@@ -199,16 +199,22 @@
 
 {% block content %}
 <div class="attachment-shell">
-    <form id="attachmentUploadForm" method="POST" action="{{ site.sadres }}mod_attachment/add" hidden>
-        <input type="hidden" name="vid" value="{{ vid }}">
-        <input type="hidden" name="mod_name" value="{{ mod_name }}">
-    </form>
+    {% if not is_global_list %}
+        <form id="attachmentUploadForm" method="POST" action="{{ site.sadres }}mod_attachment/add" hidden>
+            <input type="hidden" name="vid" value="{{ vid }}">
+            <input type="hidden" name="mod_name" value="{{ mod_name }}">
+        </form>
+    {% endif %}
 
     <section class="attachment-banner">
         <h2>{{ lang.mod_attachment.admin[42] }}</h2>
         <div class="attachment-banner-meta">
-            <span><i class="bi bi-collection"></i>{{ mod_name }}</span>
-            <span><i class="bi bi-hash"></i>{{ vid }}</span>
+            {% if is_global_list %}
+                <span><i class="bi bi-collection"></i>{{ lang.mod_attachment.admin[26] }}</span>
+            {% else %}
+                <span><i class="bi bi-collection"></i>{{ mod_name }}</span>
+                <span><i class="bi bi-hash"></i>{{ vid }}</span>
+            {% endif %}
             <span><i class="bi bi-paperclip"></i><strong id="attachmentCount">{{ dosyalar is defined ? dosyalar|length : 0 }}</strong></span>
         </div>
     </section>
@@ -216,8 +222,10 @@
     <div id="attachment-list" class="attachment-grid">
         {% if dosyalar is defined and dosyalar is not empty %}
             {% for dosya in dosyalar %}
-                {% set search_text = (dosya.filename ~ ' ' ~ dosya.original_name ~ ' ' ~ dosya.ext ~ ' ' ~ dosya.id)|lower %}
-                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-search="{{ search_text }}">
+                {% set current_mod_name = dosya.mod_name|default(mod_name) %}
+                {% set current_vid = dosya.vid|default(vid) %}
+                {% set search_text = (dosya.filename ~ ' ' ~ dosya.original_name ~ ' ' ~ dosya.ext ~ ' ' ~ dosya.id ~ ' ' ~ current_mod_name ~ ' ' ~ current_vid)|lower %}
+                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-search="{{ search_text }}" data-mod-name="{{ current_mod_name }}" data-vid="{{ current_vid }}">
                     <div class="attachment-topline">
                         <div class="attachment-icon"><i class="bi bi-file-earmark-text"></i></div>
                         <div>
@@ -225,6 +233,10 @@
                             <div class="attachment-meta">
                                 <span class="attachment-chip">{{ dosya.ext }}</span>
                                 <span>#{{ dosya.id }}</span>
+                                {% if is_global_list %}
+                                    <span>{{ current_mod_name }}</span>
+                                    <span>#{{ current_vid }}</span>
+                                {% endif %}
                                 {% if dosya.original_name %}
                                     <span>{{ dosya.original_name }}</span>
                                 {% endif %}
@@ -242,7 +254,7 @@
                                 <i class="bi bi-check2"></i>
                                 <span>{{ lang.mod_attachment.admin[21] }}</span>
                             </button>
-                            <a class="attachment-download" href="{{ site.sadres }}tools/saveFile/{{ mod_name }}/{{ dosya.vid }}/{{ dosya.id }}">
+                            <a class="attachment-download" href="{{ site.sadres }}tools/saveFile/{{ current_mod_name }}/{{ current_vid }}/{{ dosya.id }}">
                                 <i class="bi bi-download"></i>
                                 <span>{{ lang.mod_attachment.admin[29] }}</span>
                             </a>
@@ -278,19 +290,21 @@
         <span>{{ lang.mod_attachment.admin[12] }}</span>
     </button>
 
-    <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
+    <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
         <i class="bi bi-folder2-open"></i>
         <span>{{ lang.mod_attachment.admin[14] }}</span>
     </button>
 
-    <button type="button" class="toolbar-fab" onclick="openAttachmentUpload()">
-        <i class="bi bi-plus-lg"></i>
-    </button>
+    {% if not is_global_list %}
+        <button type="button" class="toolbar-fab" onclick="openAttachmentUpload()">
+            <i class="bi bi-plus-lg"></i>
+        </button>
 
-    <button class="toolbar-item" onclick="openAttachmentUpload()">
-        <i class="bi bi-upload"></i>
-        <span>{{ lang.mod_attachment.admin[38] }}</span>
-    </button>
+        <button class="toolbar-item" onclick="openAttachmentUpload()">
+            <i class="bi bi-upload"></i>
+            <span>{{ lang.mod_attachment.admin[38] }}</span>
+        </button>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -348,11 +362,14 @@
             return;
         }
 
+        const card = document.getElementById('attachment-' + id);
+        const modName = card?.dataset.modName || '{{ mod_name|default('') }}';
+        const recordId = card?.dataset.vid || '{{ vid|default('') }}';
         const body = new URLSearchParams();
         body.set('id', id);
         body.set('name', value);
-        body.set('vid', '{{ vid }}');
-        body.set('mod_name', '{{ mod_name }}');
+        body.set('vid', recordId);
+        body.set('mod_name', modName);
 
         fetch('{{ site.sadres }}mod_attachment/edit', {
             method: 'POST',
@@ -379,6 +396,9 @@
     }
 
     function deleteAttachment(id) {
+        const card = document.getElementById('attachment-' + id);
+        const modName = card?.dataset.modName || '{{ mod_name|default('') }}';
+        const recordId = card?.dataset.vid || '{{ vid|default('') }}';
         Swal.fire({
             icon: 'warning',
             title: '{{ lang.mod_attachment.admin[18]|e('js') }}',
@@ -393,8 +413,8 @@
 
             const body = new URLSearchParams();
             body.set('id', id);
-            body.set('vid', '{{ vid }}');
-            body.set('mod_name', '{{ mod_name }}');
+            body.set('vid', recordId);
+            body.set('mod_name', modName);
 
             fetch('{{ site.sadres }}mod_attachment/delete', {
                 method: 'POST',

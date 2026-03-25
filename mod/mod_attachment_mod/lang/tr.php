@@ -55,7 +55,7 @@ $lang['mod_attachment_mod'] = [
    [
     'required' => 'Lütfen %s Alanını Boş Bırakmayın',
     'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'display_field' => '%s alanı ilişki kolonu olamaz. name veya title gibi gösterim alanı kullanın.',
+    'display_field' => '%s alanı teknik veya ilişki kolonu olamaz. id, file_id yerine name veya title gibi gösterim alanı kullanın.',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',

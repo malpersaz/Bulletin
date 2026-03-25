@@ -121,7 +121,7 @@ class add_validator
     private function _check_display_field()
     {
         $mod_value = trim((string) Req::Post_Safe('mod_value'));
-        if ($mod_value !== '' && substr($mod_value, -3) === '_id') {
+        if ($mod_value !== '' && ($mod_value === 'id' || substr($mod_value, -3) === '_id')) {
             $this->hatalar[] = sprintf($this->lang['mod_attachment_mod']['validator']['display_field'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value']);
             return True;
         }

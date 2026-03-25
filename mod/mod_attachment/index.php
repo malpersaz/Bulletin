@@ -51,8 +51,8 @@ class mod_attachment_mod extends indexMain
             return FALSE;
         }
 
-        // The configured display field must not point to a relation column.
-        if (substr($configuredValue, -3) === '_id') {
+        // The configured display field must not point to a technical or relation column.
+        if ($configuredValue === 'id' || substr($configuredValue, -3) === '_id') {
             return FALSE;
         }
 
@@ -131,6 +131,34 @@ class mod_attachment_mod extends indexMain
         $mod = Req::Url_Clear($mod);
         $vid = Req::Url_Clear($vid);
 
+        if ($mod === '') {
+            $mod = NULL;
+        }
+        if ($vid === '') {
+            $vid = NULL;
+        }
+
+        if ($mod === NULL && $vid === NULL) {
+            if ($this->user->hasPermission('mod_attachment', 'list', $this->lang['mod_attachment']['role_errors']['list']) === False) {
+                return False;
+            }
+
+            Run::import('management', '_index');
+            $this->site['title'] = $this->lang['mod_attachment']['admin']['14'];
+            $this->tema->veri('site', $this->site);
+            $this->tema->veri('is_global_list', TRUE);
+
+            $this->mod_attachment_model = Load::model('mod_attachment');
+            $this->mod_attachment_model->select('id,filename,url,ext,original_name,type,created_at,mod_name,vid,user_id')->gR();
+
+            if ($this->mod_attachment_model->getSize() !== 0) {
+                $this->tema->veri('dosyalar', $this->mod_attachment_model->toArray());
+            }
+
+            $this->tema->tpl('mod_attachment/list');
+            return TRUE;
+        }
+
         if ($this->_check_mod($mod, $vid) === FALSE) {
             return FALSE;
         }
@@ -138,6 +166,7 @@ class mod_attachment_mod extends indexMain
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_attachment']['admin']['14'];
         $this->tema->veri('site', $this->site);
+        $this->tema->veri('is_global_list', FALSE);
 
 
         if ($this->mod_attachment_model->getSize() !== 0) {
