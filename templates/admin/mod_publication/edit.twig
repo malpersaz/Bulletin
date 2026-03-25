@@ -286,7 +286,7 @@
 				<div class="form-row">
 					<div class="m3-input-wrapper">
 						<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" oninput="updateMetaFields()">
-						<label class="m3-floating-label">{{ lang.mod_publication.wizard.label.content_title }}</label>
+						<label class="m3-floating-label">{{ lang.mod_publication.wizard.label.content_title|default(lang.mod_publication.wizard.label.publication_title) }}</label>
 					</div>
 				</div>
                 
@@ -309,7 +309,7 @@
 			<div class="edit-card">
 				<div class="card-header-edit">
 					<i class="bi bi-file-earmark-text"></i>
-					<h3>{{ lang.mod_publication.wizard.step.intro }} & {{ lang.mod_publication.wizard.step.content }}</h3>
+					<h3>{{ lang.mod_publication.wizard.step.intro }} & {{ lang.mod_publication.wizard.step.content|default(lang.mod_publication.wizard.step.publication) }}</h3>
 				</div>
 
 				<div class="form-row">
@@ -337,7 +337,7 @@
 				</div>
 
 				<div class="form-row">
-					<label class="filter-group-label">{{ lang.mod_publication.wizard.step.content }}</label>
+					<label class="filter-group-label">{{ lang.mod_publication.wizard.step.content|default(lang.mod_publication.wizard.step.publication) }}</label>
                     <div style="margin-top: 8px;">
 					    <textarea name="content" id="editContentTextarea">{{ d.content|raw }}</textarea>
                     </div>

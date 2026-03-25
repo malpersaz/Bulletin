@@ -495,7 +495,7 @@ class mod_publication_mod extends indexMain
                 }
                 
                 $this->_oke_message($this->lang['mod_publication']['message']['oke']['add']);
-                Helper::yonlendir($this->site['sadres'] . 'mod_publication/list', 1);
+                $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -631,7 +631,7 @@ class mod_publication_mod extends indexMain
                 }
 
                 $this->_oke_message($this->lang['mod_publication']['message']['oke']['edit']);
-                Helper::yonlendir($this->site['sadres'] . 'mod_publication/list', 1);
+                $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -1129,5 +1129,16 @@ class mod_publication_mod extends indexMain
             !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
         );
+    }
+
+    private function _redirect_now($url)
+    {
+        if (!headers_sent()) {
+            header('Location: ' . $url);
+        } else {
+            echo '<script>window.location.href=' . json_encode($url) . ';</script>';
+            echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" /></noscript>';
+        }
+        exit();
     }
 }
