@@ -164,7 +164,7 @@
                 {% set latest_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
                 {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
                 {% set latest_publication_title = author.title is defined and author.title is not empty ? author.title : author.name %}
-                <a class="latest-authors-item" href="{{ site.sadres }}author/{{ author.username }}">
+                <a class="latest-authors-item" href="{{ site.sadres }}publication/{{ author.seo }}">
                     <span class="latest-authors-avatar">
                         {% if author.user_image is defined and author.user_image is not empty %}
                             <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" loading="lazy">

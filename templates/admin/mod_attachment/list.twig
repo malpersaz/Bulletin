@@ -237,7 +237,7 @@
         letter-spacing: 0.02em;
         text-transform: uppercase;
     }
-    .attachment-menu {
+    .attachment-rename-btn {
         width: 40px;
         height: 40px;
         border: 1px solid rgba(0, 0, 0, 0.08);
@@ -392,8 +392,8 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <button class="attachment-menu" type="button" onclick="event.stopPropagation(); toggleAttachmentEdit('{{ dosya.id }}')">
-                            <i class="bi bi-three-dots-vertical"></i>
+                        <button class="attachment-rename-btn" type="button" onclick="event.stopPropagation(); toggleAttachmentEdit('{{ dosya.id }}')">
+                            <i class="bi bi-pencil"></i>
                         </button>
                     </div>
 
@@ -472,7 +472,6 @@
 
 {% block scripts %}
 <script>
-    const ATTACHMENT_UPLOAD_STATE_KEY = 'attachmentUploadState';
     let selectedAttachmentId = null;
 
     function normalizeAttachmentName(value) {
@@ -518,33 +517,17 @@
         document.getElementById('attachmentInlineInput')?.click();
     }
 
-    function markFreshAttachments() {
-        const rawState = sessionStorage.getItem(ATTACHMENT_UPLOAD_STATE_KEY);
-        if (!rawState) {
-            return;
-        }
-
-        let state;
-        try {
-            state = JSON.parse(rawState);
-        } catch (error) {
-            sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
-            return;
-        }
-
-        const currentMod = '{{ mod_name|default('') }}';
-        const currentVid = '{{ vid|default('') }}';
-        if (!state || state.mod_name !== currentMod || String(state.vid) !== String(currentVid) || !Array.isArray(state.files) || !state.files.length) {
+    function markFreshAttachments(fileNames) {
+        if (!Array.isArray(fileNames) || !fileNames.length) {
             return;
         }
 
         const list = document.getElementById('attachment-list');
         if (!list) {
-            sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
             return;
         }
 
-        const wanted = new Set(state.files.map(normalizeAttachmentName));
+        const wanted = new Set(fileNames.map(normalizeAttachmentName));
         const matchedCards = [];
 
         Array.from(list.querySelectorAll('.attachment-card')).forEach((card) => {
@@ -566,8 +549,47 @@
             }
             list.prepend(card);
         });
+        updateAttachmentEmptyState();
+    }
 
-        sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
+    function refreshAttachmentList(onDone, freshFiles = []) {
+        fetch(window.location.href, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then((response) => response.text())
+            .then((html) => {
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const nextList = doc.getElementById('attachment-list');
+                const nextEmpty = doc.getElementById('attachment-empty');
+                const nextSearchEmpty = doc.getElementById('search-empty');
+                const currentList = document.getElementById('attachment-list');
+                const currentEmpty = document.getElementById('attachment-empty');
+                const currentSearchEmpty = document.getElementById('search-empty');
+
+                if (nextList && currentList) {
+                    currentList.innerHTML = nextList.innerHTML;
+                }
+                if (nextEmpty && currentEmpty) {
+                    currentEmpty.outerHTML = nextEmpty.outerHTML;
+                }
+                if (nextSearchEmpty && currentSearchEmpty) {
+                    currentSearchEmpty.outerHTML = nextSearchEmpty.outerHTML;
+                }
+
+                selectedAttachmentId = null;
+                updateAttachmentToolbar(false);
+                markFreshAttachments(freshFiles);
+                filterAttachments(document.getElementById('searchInput')?.value || '');
+                if (typeof onDone === 'function') {
+                    onDone();
+                }
+            })
+            .catch((error) => {
+                showSnackbar(String(error.message || error), 'error');
+                if (typeof onDone === 'function') {
+                    onDone(error);
+                }
+            });
     }
 
     function uploadAttachmentFiles(files) {
@@ -578,12 +600,7 @@
 
         let completed = 0;
         let hasError = false;
-
-        sessionStorage.setItem(ATTACHMENT_UPLOAD_STATE_KEY, JSON.stringify({
-            mod_name: '{{ mod_name|default('') }}',
-            vid: '{{ vid|default('') }}',
-            files: uploadFiles.map((file) => file.name)
-        }));
+        const uploadedNames = uploadFiles.map((file) => file.name);
 
         uploadFiles.forEach((file) => {
             const formData = new FormData();
@@ -612,9 +629,7 @@
                 .finally(() => {
                     completed += 1;
                     if (completed === uploadFiles.length && !hasError) {
-                        window.location.reload();
-                    } else if (completed === uploadFiles.length) {
-                        sessionStorage.removeItem(ATTACHMENT_UPLOAD_STATE_KEY);
+                        refreshAttachmentList(null, uploadedNames);
                     }
                 });
         });
@@ -777,12 +792,10 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('click', function (event) {
-            if (!event.target.closest('.attachment-menu') && !event.target.closest('.attachment-inline-edit')) {
+            if (!event.target.closest('.attachment-rename-btn') && !event.target.closest('.attachment-inline-edit')) {
                 closeAttachmentMenus();
             }
         });
-
-        markFreshAttachments();
 
         const inlineInput = document.getElementById('attachmentInlineInput');
         if (inlineInput) {
