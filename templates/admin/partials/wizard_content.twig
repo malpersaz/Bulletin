@@ -1,13 +1,22 @@
-{% set wizard_lang_key = wizard_module|default('mod_content') %}
+{% set wizard_lang_key = wizard_module is defined ? wizard_module : 'mod_content' %}
 {% set wizard_lang = attribute(lang, wizard_lang_key) %}
-<form id="addForm" method="POST" action="{{ site.sadres }}{{ wizard_module|default('mod_content') }}/add" enctype="multipart/form-data">
+{% set wizard_title_key = 'content_title' %}
+{% set wizard_body_key = 'content' %}
+{% if wizard_lang_key == 'mod_news' %}
+    {% set wizard_title_key = 'news_title' %}
+    {% set wizard_body_key = 'news' %}
+{% elseif wizard_lang_key == 'mod_publication' %}
+    {% set wizard_title_key = 'publication_title' %}
+    {% set wizard_body_key = 'publication' %}
+{% endif %}
+<form id="addForm" method="POST" action="{{ site.sadres }}{{ wizard_lang_key }}/add" enctype="multipart/form-data">
 <div id="contentWizard" class="wizard-overlay">
 
     <!-- Wizard Header -->
     <header class="wizard-header">
         <button type="button" class="icon-btn" onclick="closeWizard()"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
-            <span id="wizardStepTitle">{{ wizard_lang.wizard.step.lang|default(wizard_lang.wizard.step.language) }}</span>
+            <span id="wizardStepTitle">{{ wizard_lang.wizard.step.language }}</span>
             <span id="wizardStepCounter">1/8</span>
         </div>
         <button type="button" onclick="prepareAndSubmitWizard()" class="m3-btn-text">{{ wizard_lang.wizard.button.save }}</button>
@@ -33,13 +42,13 @@
         <input type="hidden" name="title" id="title" value="">
         <input type="hidden" name="keywords" id="keywords" value="">
         <input type="hidden" name="description" id="description" value="">
-        <input type="hidden" name="lang" id="wizardHiddenLang" value="{{ site.lang|upper|default(lang_lang[0].seo|upper) }}">
+        <input type="hidden" name="lang" id="wizardHiddenLang" value="{{ site.lang|upper }}">
         <input type="hidden" name="category_id" id="wizardHiddenCategory" value="0">
 
         <!-- Step 1: Language -->
         <div class="wizard-step active" id="wizardStep1">
-            <h2 class="step-headline">{{ wizard_lang.wizard.step.lang|default(wizard_lang.wizard.step.language) }}</h2>
-            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.lang|default(wizard_lang.wizard.subtitle.language) }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.language }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
                 <div class="selection-card{% if item.seo|upper == site.lang|upper %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|upper }}')">
@@ -71,7 +80,7 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="wizardTitleInput" placeholder=" " autocomplete="off" maxlength="70">
-                <label class="m3-floating-label">{{ wizard_lang.wizard.label.news_title|default(wizard_lang.wizard.label.content_title)|default(wizard_lang.wizard.label.publication_title) }}</label>
+                <label class="m3-floating-label">{{ attribute(wizard_lang.wizard.label, wizard_title_key) }}</label>
             </div>
             <div class="char-counter" id="titleCharCounter">0 / 70</div>
             <div class="validation-msg" id="titleValidationMsg">{{ wizard_lang.validator.title_length }}</div>
@@ -102,8 +111,8 @@
 
         <!-- Step 6: Content -->
         <div class="wizard-step" id="wizardStep6">
-            <h2 class="step-headline">{{ wizard_lang.wizard.step.news|default(wizard_lang.wizard.step.content)|default(wizard_lang.wizard.step.publication) }}</h2>
-            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.news|default(wizard_lang.wizard.subtitle.content)|default(wizard_lang.wizard.subtitle.publication) }}</p>
+            <h2 class="step-headline">{{ attribute(wizard_lang.wizard.step, wizard_body_key) }}</h2>
+            <p class="step-subhead">{{ attribute(wizard_lang.wizard.subtitle, wizard_body_key) }}</p>
             
             <div style="margin-top: 12px;">
                 <textarea name="content" id="wizardContentTextarea"></textarea>
@@ -146,7 +155,7 @@
             <div class="wizard-summary">
                 <h3>{{ wizard_lang.wizard.summary.title }}</h3>
                 <div class="summary-item">
-                    <i class="bi bi-translate"></i> <span id="summaryLang">{{ site.lang|upper|default('EN') }}</span>
+                    <i class="bi bi-translate"></i> <span id="summaryLang">{{ site.lang|upper }}</span>
                 </div>
                 <div class="summary-item">
                     <i class="bi bi-folder"></i> <span id="summaryCategory">{{ wizard_lang.wizard.summary.selected_none }}</span>

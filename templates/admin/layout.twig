@@ -73,42 +73,51 @@
     </div>
 
     <!-- CORE SCRIPTS (Absolute Path) -->
-    {% set wizard_lang_key = wizard_module|default('mod_content') %}
+    {% set wizard_lang_key = wizard_module is defined ? wizard_module : 'mod_content' %}
     {% set wizard_lang = attribute(lang, wizard_lang_key) %}
+    {% set wizard_title_key = 'content_title' %}
+    {% set wizard_body_key = 'content' %}
+    {% if wizard_lang_key == 'mod_news' %}
+        {% set wizard_title_key = 'news_title' %}
+        {% set wizard_body_key = 'news' %}
+    {% elseif wizard_lang_key == 'mod_publication' %}
+        {% set wizard_title_key = 'publication_title' %}
+        {% set wizard_body_key = 'publication' %}
+    {% endif %}
     <script>
         const SITE_URL = '{{ site.sadres }}';
-        const WIZARD_MODULE = '{{ wizard_module|default("mod_content") }}';
+        const WIZARD_MODULE = '{{ wizard_lang_key }}';
         const adminLang = {
             wizard: {
                 step: {
-                    language: '{{ wizard_lang.wizard.step.language|default(wizard_lang.wizard.step.lang)|default("Dil")|e("js") }}',
-                    category: '{{ wizard_lang.wizard.step.category|default("Kategori")|e("js") }}',
-                    title: '{{ wizard_lang.wizard.step.title|default("Başlık")|e("js") }}',
-                    date: '{{ wizard_lang.wizard.step.date|default("Tarih")|e("js") }}',
-                    intro: '{{ wizard_lang.wizard.step.intro|default("Giriş")|e("js") }}',
-                    content: '{{ wizard_lang.wizard.step.news|default(wizard_lang.wizard.step.content)|default(wizard_lang.wizard.step.publication)|default("İçerik")|e("js") }}',
-                    image: '{{ wizard_lang.wizard.step.image|default("Görsel")|e("js") }}',
-                    finish: '{{ wizard_lang.wizard.step.finish|default("Bitir")|e("js") }}'
+                    language: '{{ wizard_lang.wizard.step.language|e("js") }}',
+                    category: '{{ wizard_lang.wizard.step.category|e("js") }}',
+                    title: '{{ wizard_lang.wizard.step.title|e("js") }}',
+                    date: '{{ wizard_lang.wizard.step.date|e("js") }}',
+                    intro: '{{ wizard_lang.wizard.step.intro|e("js") }}',
+                    content: '{{ attribute(wizard_lang.wizard.step, wizard_body_key)|e("js") }}',
+                    image: '{{ wizard_lang.wizard.step.image|e("js") }}',
+                    finish: '{{ wizard_lang.wizard.step.finish|e("js") }}'
                 },
                 messages: {
-                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|default("Başarılı")|e("js") }}'
+                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|e("js") }}'
                 },
                 label: {
-                    change_image: '{{ wizard_lang.wizard.label.change_image|default("Değiştir")|e("js") }}'
+                    change_image: '{{ wizard_lang.wizard.label.change_image|e("js") }}'
                 },
                 summary: {
-                    selected_none: '{{ wizard_lang.wizard.summary.selected_none|default("Yok")|e("js") }}'
+                    selected_none: '{{ wizard_lang.wizard.summary.selected_none|e("js") }}'
                 },
                 button: {
-                    save: '{{ wizard_lang.wizard.button.save|default("Kaydet")|e("js") }}',
-                    next: '{{ wizard_lang.wizard.button.next|default("İleri")|e("js") }}',
-                    prev: '{{ wizard_lang.wizard.button.prev|default("Geri")|e("js") }}',
-                    finish: '{{ wizard_lang.wizard.button.finish|default("Bitir")|e("js") }}'
+                    save: '{{ wizard_lang.wizard.button.save|e("js") }}',
+                    next: '{{ wizard_lang.wizard.button.next|e("js") }}',
+                    prev: '{{ wizard_lang.wizard.button.prev|e("js") }}',
+                    finish: '{{ wizard_lang.wizard.button.finish|e("js") }}'
                 }
             },
             video_embed: {
                 messages: {
-                    success: '{{ lang.mod_video_embed.message.oke.add|default("Vîdeo hat lêkirin")|e("js") }}',
+                    success: '{{ lang.mod_video_embed.message.oke.add|e("js") }}',
                     embed_error: '{{ lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.namemin.columns.embed})|e("js") }}',
                     title_error: '{{ lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.namemin.columns.name, "%s": 3, "%s": 255})|e("js") }}'
                 },
@@ -156,49 +165,49 @@
                 }
             },
             general: {
-                delete_confirm: '{{ wizard_lang.delete_confirm|default("Silinsin mi?")|e("js") }}',
-                card_click: '{{ wizard_lang.wizard.messages.card_click|default("Kart: %s")|e("js") }}'
+                delete_confirm: '{{ wizard_lang.delete_confirm|e("js") }}',
+                card_click: '{{ wizard_lang.wizard.messages.card_click|e("js") }}'
             },
             status: {
-                active: '{{ wizard_lang.status_badge.active|default("Yayında")|e("js") }}',
-                draft: '{{ wizard_lang.status_badge.draft|default("Taslak")|e("js") }}'
+                active: '{{ wizard_lang.status_badge.active|e("js") }}',
+                draft: '{{ wizard_lang.status_badge.draft|e("js") }}'
             },
             mock: {
-                titles: {{ wizard_lang.mock.titles|default([])|json_encode|raw }},
-                categories: {{ wizard_lang.mock.categories|default([])|json_encode|raw }},
-                authors: {{ wizard_lang.mock.authors|default([])|json_encode|raw }}
+                titles: {{ wizard_lang.mock.titles|json_encode|raw }},
+                categories: {{ wizard_lang.mock.categories|json_encode|raw }},
+                authors: {{ wizard_lang.mock.authors|json_encode|raw }}
             },
             context_menu: {
-                edit: '{{ wizard_lang.context_menu.edit|default("Biguhere")|e("js") }}',
-                publish: '{{ wizard_lang.context_menu.publish|default("Yayınla")|e("js") }}',
-                unpublish: '{{ wizard_lang.context_menu.unpublish|default("Taslak")|e("js") }}',
-                published_msg: '{{ wizard_lang.context_menu.published_msg|default("Yayınlandı")|e("js") }}',
-                unpublished_msg: '{{ wizard_lang.context_menu.unpublished_msg|default("Yayından kaldırıldı")|e("js") }}',
-                confirm: '{{ wizard_lang.context_menu.confirm|default("Erê")|e("js") }}',
-                cancel: '{{ wizard_lang.context_menu.cancel|default("Betal")|e("js") }}',
-                edit_alert: '{{ wizard_lang.context_menu.edit_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
-                gallery_alert: '{{ wizard_lang.context_menu.gallery_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
-                files_alert: '{{ wizard_lang.context_menu.files_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
-                status_alert: '{{ wizard_lang.context_menu.status_alert|default("")|replace({"\n": "\\n"})|e("js") }}',
-                delete_confirm: '{{ wizard_lang.context_menu.delete_confirm|default("Silinsin mi?")|e("js") }}',
-                delete_success: '{{ wizard_lang.context_menu.delete_success|default("Silindi")|e("js") }}'
+                edit: '{{ wizard_lang.context_menu.edit|e("js") }}',
+                publish: '{{ wizard_lang.context_menu.publish|e("js") }}',
+                unpublish: '{{ wizard_lang.context_menu.unpublish|e("js") }}',
+                published_msg: '{{ wizard_lang.context_menu.published_msg|e("js") }}',
+                unpublished_msg: '{{ wizard_lang.context_menu.unpublished_msg|e("js") }}',
+                confirm: '{{ wizard_lang.context_menu.confirm|e("js") }}',
+                cancel: '{{ wizard_lang.context_menu.cancel|e("js") }}',
+                edit_alert: '{{ wizard_lang.context_menu.edit_alert|replace({"\n": "\\n"})|e("js") }}',
+                gallery_alert: '{{ wizard_lang.context_menu.gallery_alert|replace({"\n": "\\n"})|e("js") }}',
+                files_alert: '{{ wizard_lang.context_menu.files_alert|replace({"\n": "\\n"})|e("js") }}',
+                status_alert: '{{ wizard_lang.context_menu.status_alert|replace({"\n": "\\n"})|e("js") }}',
+                delete_confirm: '{{ wizard_lang.context_menu.delete_confirm|e("js") }}',
+                delete_success: '{{ wizard_lang.context_menu.delete_success|e("js") }}'
             },
             filter: {
-                default_sort: '{{ wizard_lang.ui.default_sort|default("")|e("js") }}',
+                default_sort: '{{ wizard_lang.ui.default_sort|e("js") }}',
                 default_lang: '{{ site.lang|upper }}'
             },
             ui: {
-                select: '{{ wizard_lang.ui.select|default("")|e("js") }}',
-                all: '{{ wizard_lang.ui.all|default("")|e("js") }}',
-                filter_cleared: '{{ wizard_lang.ui.filter_cleared|default("")|e("js") }}',
-                filter_applied: '{{ wizard_lang.ui.filter_applied|default("")|e("js") }}',
-                sort_label: '{{ wizard_lang.ui.sort_label|default("")|e("js") }}',
-                limit_label: '{{ wizard_lang.ui.limit_label|default("")|e("js") }}',
-                lang_label: '{{ wizard_lang.ui.lang_label|default("")|e("js") }}'
+                select: '{{ wizard_lang.ui.select|e("js") }}',
+                all: '{{ wizard_lang.ui.all|e("js") }}',
+                filter_cleared: '{{ wizard_lang.ui.filter_cleared|e("js") }}',
+                filter_applied: '{{ wizard_lang.ui.filter_applied|e("js") }}',
+                sort_label: '{{ wizard_lang.ui.sort_label|e("js") }}',
+                limit_label: '{{ wizard_lang.ui.limit_label|e("js") }}',
+                lang_label: '{{ wizard_lang.ui.lang_label|e("js") }}'
             },
             adminCategories: {{ categories|json_encode|raw }},
             video_embed_categories: {{ video_embed_categories|json_encode|raw }},
-            date_locale: '{{ site.lang|default("en") }}',
+            date_locale: '{{ site.lang }}',
             languages: [
                 {% if lang_lang is defined and lang_lang is not empty %}
                     {% for l in lang_lang %}

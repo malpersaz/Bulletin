@@ -389,5 +389,6 @@ $lang['mod_publication'] = [
             "Rojname Mobile App Updated"
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
+        'authors' => [],
     ],
 ];

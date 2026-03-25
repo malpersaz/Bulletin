@@ -31,8 +31,10 @@ $lang['mod_news'] = [
     'remove_image_oke' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
+    'delete_confirm' => 'Are you sure you want to delete this news item?',
     'quick_unpublish_confirm' => 'Are you sure you want to unpublish this news item?',
     'quick_publish_confirm' => 'Are you sure you want to publish this news item?',
+    'wizard_loading' => 'Wizard is loading...',
     'resim_ekle' => 'Add Image',
     'resim_yukle_degistir' => 'Upload/Change Image',
     'lokal' => 'Local',
@@ -91,6 +93,7 @@ $lang['mod_news'] = [
         'file' => 'File Manager',
         'vazgec' => 'Cancel',
         'kaldir' => 'Remove',
+        'tamam' => 'OK',
         'evet' => 'Yes',
         'hayir' => 'No',
     ],
@@ -106,6 +109,8 @@ $lang['mod_news'] = [
         6 => 'Search',
         7 => 'Please select at least one row',
         8 => 'Please select only one row',
+        104 => 'Loading...',
+        105 => 'No News Found',
         'approve' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this news item?',
@@ -379,5 +384,6 @@ $lang['mod_news'] = [
             "Rojname Mobile App Updated"
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
+        'authors' => [],
     ],
 ];

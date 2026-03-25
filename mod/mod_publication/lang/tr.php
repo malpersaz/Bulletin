@@ -389,5 +389,6 @@ $lang['mod_publication'] = [
             "Rojname Mobil Uygulaması Güncellendi"
         ],
         'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
+        'authors' => [],
     ],
 ];

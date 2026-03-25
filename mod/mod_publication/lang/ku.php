@@ -390,5 +390,6 @@ $lang['mod_publication'] = [
             "Serlêdana Mobîl a Rojname hat nûkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
+        'authors' => [],
     ],
 ];

@@ -6,11 +6,11 @@
 {% set hide_navbar = true %}
 
 {% block title %}
-	{{ lang.mod_news.edit|default('Biguhere') }}
+	{{ lang.mod_news.edit }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_news.edit|default('Biguhere') }}
+	{{ lang.mod_news.edit }}
 {% endblock %}
 
 {% block content %}
@@ -223,7 +223,7 @@
                         Swal.fire({
                             icon: 'warning',
                             html: errorHtml,
-                            confirmButtonText: '{{ lang.mod_news.button.tamam|default("Tamam") }}',
+                            confirmButtonText: '{{ lang.mod_news.button.tamam }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -276,7 +276,7 @@
 										{% endif %}
 									{% endfor %}
 								{% endif %}
-								{{ current_cat_name|default(lang.mod_news.choose_wish) }}
+								{{ current_cat_name ? current_cat_name : lang.mod_news.choose_wish }}
 							</span>
 							<i class="bi bi-chevron-down"></i>
 						</div>
@@ -286,7 +286,7 @@
 				<div class="form-row">
 					<div class="m3-input-wrapper">
 						<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" oninput="updateMetaFields()">
-						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title|default(lang.mod_news.wizard.label.content_title) }}</label>
+						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title }}</label>
 					</div>
 				</div>
                 
@@ -309,7 +309,7 @@
 			<div class="edit-card">
 				<div class="card-header-edit">
 					<i class="bi bi-file-earmark-text"></i>
-					<h3>{{ lang.mod_news.wizard.step.intro }} & {{ lang.mod_news.wizard.step.news|default(lang.mod_news.wizard.step.content) }}</h3>
+					<h3>{{ lang.mod_news.wizard.step.intro }} & {{ lang.mod_news.wizard.step.news }}</h3>
 				</div>
 
 				<div class="form-row">
@@ -324,7 +324,7 @@
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_news.admin.columns.deck }}</label>
 					<div class="selection-grid" style="grid-template-columns: 1fr 1fr; margin-top:8px;">
-						<input type="hidden" name="deck" id="deckHidden" value="{{ d.deck|default('n') }}">
+						<input type="hidden" name="deck" id="deckHidden" value="{{ d.deck == 'y' ? 'y' : 'n' }}">
 						<div class="selection-card {% if d.deck == 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'y')" style="padding:12px;">
 							<div class="selection-label">{{ lang.mod_news.admin.radio.deck_yes }}</div>
 							<i class="bi bi-check-circle-fill check-icon"></i>
@@ -337,7 +337,7 @@
 				</div>
 
 				<div class="form-row">
-					<label class="filter-group-label">{{ lang.mod_news.wizard.step.news|default(lang.mod_news.wizard.step.content) }}</label>
+					<label class="filter-group-label">{{ lang.mod_news.wizard.step.news }}</label>
                     <div style="margin-top: 8px;">
 					    <textarea name="content" id="editContentTextarea">{{ d.content|raw }}</textarea>
                     </div>
@@ -417,7 +417,7 @@
 				</div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_news.button.yenile|default('Têkiliyên Pêşketî') }} (SEO, Meta)</span>
+					<span>{{ lang.mod_news.button.yenile }} (SEO, Meta)</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 

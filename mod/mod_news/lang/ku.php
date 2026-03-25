@@ -31,8 +31,10 @@ $lang['mod_news'] = [
     'remove_image_oke' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
+    'delete_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
     'quick_unpublish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
+    'wizard_loading' => 'Sêrbaz tê barkirin...',
     'resim_ekle' => 'Wêne lê zêde bike',
     'resim_yukle_degistir' => 'Wêne Lê Bar Bike/Biguherîne',
     'lokal' => 'Lokal',
@@ -94,6 +96,7 @@ $lang['mod_news'] = [
         'file' => 'Rêveberê Pelan',
         'vazgec' => 'Betal',
         'kaldir' => 'Rake',
+        'tamam' => 'Temam',
         'evet' => 'Erê',
         'hayir' => 'Na',
     ],
@@ -109,13 +112,15 @@ $lang['mod_news'] = [
         6 => 'Lêgerîn',
         7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
         8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        104 => 'Tê barkirin...',
+        105 => 'Tu nûçe nehat dîtin',
         'approve' => [
             'key' => 'Weşandin',
-            'value' => 'Ma tu bawer î, ku dixwazî vê naverokê ji weşanê rakî?',
+            'value' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
         ],
         'unapprove' => [
             'key' => 'Ji Weşandinê Bikişîne',
-            'value' => 'Ma tu bawer î, ku dixwazî vê naverokê ji weşanê rakî?',
+            'value' => 'Ma tu bawer î ku dixwazî vê nûçeyê ji weşanê rakî?',
         ],
         'load_more' => 'Pirtir Nîşan Bide',
     ],
@@ -369,5 +374,6 @@ $lang['mod_news'] = [
             "Serlêdana Mobîl a Rojname hat nûkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
+        'authors' => [],
     ],
 ];

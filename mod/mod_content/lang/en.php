@@ -31,6 +31,7 @@ $lang['mod_content'] = [
     'remove_image_oke' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
+    'delete_confirm' => 'Are you sure you want to delete this content?',
     'quick_unpublish_confirm' => 'Are you sure you want to unpublish this content?',
     'quick_publish_confirm' => 'Are you sure you want to publish this content?',
     'resim_ekle' => 'Add Image',
@@ -379,5 +380,6 @@ $lang['mod_content'] = [
             "Rojname Mobile App Updated"
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
+        'authors' => [],
     ],
 ];

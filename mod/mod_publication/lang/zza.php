@@ -31,6 +31,7 @@ $lang['mod_publication'] = [
     'remove_image_oke' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î ku dixwazî vî weşanî jê bibî?',
+    'delete_confirm' => 'Ma tu bawer î ku dixwazî vî weşanî jê bibî?',
     'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vî weşanî ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vî weşanî biweşînî?',
     'resim_ekle' => 'Wêne lê zêde bike',
@@ -369,5 +370,6 @@ $lang['mod_publication'] = [
             "Serlêdana Mobîl a Rojname hat nûkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
+        'authors' => [],
     ],
 ];

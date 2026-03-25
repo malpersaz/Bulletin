@@ -34,6 +34,7 @@ $lang['mod_news'] = [
     'delete_confirm' => 'Bu haberi silmek istediğinize emin misiniz?',
     'quick_unpublish_confirm' => 'Bu haberi yayından kaldırmak istediğinizden emin misiniz?',
     'quick_publish_confirm' => 'Bu haberi yayınlamak istediğinizden emin misiniz?',
+    'wizard_loading' => 'Sihirbaz yükleniyor...',
     'resim_ekle' => 'Resim Ekle',
     'resim_yukle_degistir' => 'Resim Yükle/Değiştir',
     'lokal' => 'Lokal',
@@ -92,6 +93,7 @@ $lang['mod_news'] = [
         'file' => 'Dosya Yöneticisi',
         'vazgec' => 'Vazgeç',
         'kaldir' => 'Kaldır',
+        'tamam' => 'Tamam',
         'evet' => 'Evet',
         'hayir' => 'Hayır',
     ],
@@ -107,6 +109,8 @@ $lang['mod_news'] = [
         6 => 'Arama',
         7 => 'Lütfen en az bir satır seçin',
         8 => 'Lütfen sadece bir satır seçin',
+        104 => 'Yükleniyor...',
+        105 => 'Haber bulunamadı',
         'approve' => [
             'key' => 'Yayınla',
             'value' => 'Bu haberi yayınlamak istediğinize emin misiniz?',
@@ -378,5 +382,6 @@ $lang['mod_news'] = [
             "Rojname Mobil Uygulaması Güncellendi"
         ],
         'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
+        'authors' => [],
     ],
 ];
