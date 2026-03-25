@@ -1,10 +1,11 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
 {% set show_search = true %}
+{% set wizard_module = 'mod_publication' %}
 {% extends 'admin/layout.twig' %}
-{% block title %}{{ lang.mod_publication.list|default('Publication Management') }}{% endblock %}
+{% block title %}{{ lang.mod_publication.list }}{% endblock %}
 
-{% block headline %}{{ lang.mod_publication.list|default('Publication List') }}{% endblock %}
+{% block headline %}{{ lang.mod_publication.list }}{% endblock %}
 
 {% block content %}
 <!-- Quick Stats & Actions -->
@@ -129,5 +130,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_publication.js?v=2.2"></script>
+<script src="/templates/admin/assets/js/mod_publication.js?v=2.3"></script>
 {% endblock %}
