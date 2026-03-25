@@ -66,6 +66,49 @@
         font-size: 12px;
         font-weight: 700;
     }
+    .attachment-entry-card {
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(31, 78, 121, 0.10), rgba(11, 107, 92, 0.12));
+        border: 1px solid rgba(31, 78, 121, 0.10);
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+    }
+    .attachment-entry-copy {
+        min-width: 0;
+    }
+    .attachment-entry-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        color: var(--md-sys-color-on-surface);
+    }
+    .attachment-browse-btn {
+        min-height: 44px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #1f4e79, #0b6b5c);
+        color: #fff;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 10px 24px rgba(31, 78, 121, 0.20);
+    }
+    @media (max-width: 640px) {
+        .attachment-entry-card {
+            align-items: stretch;
+            flex-direction: column;
+        }
+        .attachment-browse-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
     .attachment-grid {
         display: grid;
         gap: 12px;
@@ -218,6 +261,18 @@
             <span><i class="bi bi-paperclip"></i><strong id="attachmentCount">{{ dosyalar is defined ? dosyalar|length : 0 }}</strong></span>
         </div>
     </section>
+
+    {% if not is_global_list %}
+        <section class="attachment-entry-card">
+            <div class="attachment-entry-copy">
+                <h3 class="attachment-entry-title">{{ lang.mod_attachment.admin[38] }}</h3>
+            </div>
+            <button type="button" class="attachment-browse-btn" onclick="openAttachmentUpload()">
+                <i class="bi bi-folder2-open"></i>
+                <span>{{ lang.mod_attachment.admin[11] }}</span>
+            </button>
+        </section>
+    {% endif %}
 
     <div id="attachment-list" class="attachment-grid">
         {% if dosyalar is defined and dosyalar is not empty %}
