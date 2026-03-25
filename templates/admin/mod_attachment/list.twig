@@ -243,10 +243,7 @@
 {% block content %}
 <div class="attachment-shell">
     {% if not is_global_list %}
-        <form id="attachmentUploadForm" method="POST" action="{{ site.sadres }}mod_attachment/add" hidden>
-            <input type="hidden" name="vid" value="{{ vid }}">
-            <input type="hidden" name="mod_name" value="{{ mod_name }}">
-        </form>
+        <input id="attachmentInlineInput" type="file" multiple hidden>
     {% endif %}
 
     <section class="attachment-banner">
@@ -366,7 +363,49 @@
 {% block scripts %}
 <script>
     function openAttachmentUpload() {
-        document.getElementById('attachmentUploadForm')?.submit();
+        document.getElementById('attachmentInlineInput')?.click();
+    }
+
+    function uploadAttachmentFiles(files) {
+        const uploadFiles = Array.from(files || []);
+        if (!uploadFiles.length) {
+            return;
+        }
+
+        let completed = 0;
+        let hasError = false;
+
+        uploadFiles.forEach((file) => {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('vid', '{{ vid|default('') }}');
+            formData.append('isim', 'file');
+            formData.append('sid', '{{ session.sid|default('') }}');
+            formData.append('mod_name', '{{ mod_name|default('') }}');
+
+            fetch('{{ site.sadres }}mod_attachment/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then((response) => response.text())
+                .then((text) => {
+                    const result = String(text || '').trim();
+                    if (!result || result === 'ERROR') {
+                        throw new Error('{{ lang.mod_attachment.admin[41]|e('js') }}');
+                    }
+                    showSnackbar(result, 'success');
+                })
+                .catch((error) => {
+                    hasError = true;
+                    showSnackbar(String(error.message || error), 'error');
+                })
+                .finally(() => {
+                    completed += 1;
+                    if (completed === uploadFiles.length && !hasError) {
+                        window.location.reload();
+                    }
+                });
+        });
     }
 
     function toggleAttachmentEdit(id) {
@@ -508,6 +547,16 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        const inlineInput = document.getElementById('attachmentInlineInput');
+        if (inlineInput) {
+            inlineInput.addEventListener('change', function (event) {
+                if (event.target.files?.length) {
+                    uploadAttachmentFiles(event.target.files);
+                    event.target.value = '';
+                }
+            });
+        }
+
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('input', (event) => filterAttachments(event.target.value));
