@@ -20,9 +20,9 @@ if (!defined('AKM_LOADED')) {
 $lang['mod_publication'] = [
 
     // === Basic Actions ===
-    'add' => 'Add publication',
-    'edit' => 'Edit publication',
-    'list' => 'publication List',
+    'add' => 'Add Publication',
+    'edit' => 'Edit Publication',
+    'list' => 'Publication List',
     'information' => 'Information!',
     'oke' => 'Operation Successful!',
     'hata' => 'Error Occurred!',
@@ -69,12 +69,12 @@ $lang['mod_publication'] = [
     // === Messages ===
     'message' => [
         'oke' => [
-            'add' => 'publication Added!',
-            'edit' => 'publication Updated!',
+            'add' => 'Publication Added!',
+            'edit' => 'Publication Updated!',
         ],
         'error' => [
-            'add' => 'publication Could Not Be Added!',
-            'edit' => 'publication Could Not Be Updated!',
+            'add' => 'Publication Could Not Be Added!',
+            'edit' => 'Publication Could Not Be Updated!',
         ],
     ],
 
@@ -138,30 +138,30 @@ $lang['mod_publication'] = [
     // === Permission Roles ===
     'roll' => [
         'ad' => 'Publication Management Roles',
-        'name' => 'publication Management Roles',
-        'add' => 'Can Add publication',
-        'edit' => 'Can Edit publication',
-        'delete' => 'Can Delete publication',
-        'list' => 'Can View publication Management',
-        'publish' => 'Can Publish publication',
-        'unpublish' => 'Can Unpublish publication',
+        'name' => 'Publication Management Roles',
+        'add' => 'Can Add Publications',
+        'edit' => 'Can Edit Publications',
+        'delete' => 'Can Delete Publications',
+        'list' => 'Can View Publication Management',
+        'publish' => 'Can Publish Publications',
+        'unpublish' => 'Can Unpublish Publications',
         'change_status' => 'Can Change Publish Status',
         'edit_status' => 'Can Change Detailed Publish Status',
-        'moderate_edit' => 'Can Edit Others publication',
-        'moderate_delete' => 'Can Delete Others publication',
+        'moderate_edit' => 'Can Edit Others Publications',
+        'moderate_delete' => 'Can Delete Others Publications',
         'gallery' => 'Can Manage Gallery',
         'file' => 'Can Manage Files',
-        'approval' => 'Can Approve publication',
+        'approval' => 'Can Approve Publications',
         'video_download' => 'Can Download Video',
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'You do not have permission to add publication',
-        'edit' => 'You do not have permission to edit publication',
+        'add' => 'You do not have permission to add publications',
+        'edit' => 'You do not have permission to edit publications',
         'list' => 'You do not have permission to view publication management',
-        'delete' => 'You do not have permission to delete publication',
-        'approval' => 'You do not have permission to approve publication',
+        'delete' => 'You do not have permission to delete publications',
+        'approval' => 'You do not have permission to approve publications',
         'moderate_edit' => 'You cannot edit publication records of others',
         'moderate_delete' => 'You cannot delete publication records of others',
         'gallery' => 'You do not have permission to manage gallery',
@@ -177,7 +177,7 @@ $lang['mod_publication'] = [
             'category_id' => 'Category',
             'created_at' => 'Date',
             'updated_at' => 'Edit Date',
-            'publication' => 'publication',
+            'publication' => 'Publication',
             'summary' => 'Introduction',
             'seo' => 'SEO URL',
             'title' => 'Page Title',
@@ -191,7 +191,7 @@ $lang['mod_publication'] = [
             'acl_id' => 'Access Control',
             'menu' => 'Add to Menu',
             'video' => 'Video Gallery',
-            'video_help' => 'Search for the video name you want to display in the publication',
+            'video_help' => 'Search for the video you want to display in the publication',
         ],
         'radio' => [
             'publish_yes' => 'Published',
@@ -306,13 +306,13 @@ $lang['mod_publication'] = [
             'title' => 'Title',
             'date' => 'Publish Date',
             'intro' => 'Intro Text (Deck)',
-            'publication' => 'publication Details',
+            'publication' => 'Publication Details',
             'image' => 'Image Selection',
             'finish' => 'Complete',
         ],
         'subtitle' => [
             'language' => 'Select the main language for the publication.',
-            'category' => 'Determine the category to add publication to.',
+            'category' => 'Select the category this publication belongs to.',
             'title' => 'Enter an engaging title. (Min: 1, Max: 70)',
             'date' => 'Date and time for publication.',
             'intro' => 'Write a short and concise summary. (110 - 280 Characters)',
@@ -321,17 +321,17 @@ $lang['mod_publication'] = [
             'finish' => 'Final checks and publishing.',
         ],
         'label' => [
-            'publication_title' => 'publication Title',
+            'publication_title' => 'Publication Title',
             'intro_text' => 'Intro Text',
             'upload_text' => 'Tap to Upload Image',
             'published' => 'Published',
-            'published_desc' => 'publication will be visible to everyone once added.',
+            'published_desc' => 'The publication will be visible to everyone once it is added.',
             'category_select' => 'Select Category...',
             'change_image' => 'Change Image',
             'editor_placeholder' => 'Start writing your publication here...',
         ],
         'messages' => [
-            'success_sim' => 'publication successfully created! (Simulation)',
+            'success_sim' => 'Publication successfully created! (Simulation)',
             'video_success_sim' => 'Video successfully added! (Simulation)',
             'video_embed_error' => 'Please enter a valid embed code (iframe).',
             'video_title_error' => 'Video title must be at least 3 characters.',
@@ -351,7 +351,7 @@ $lang['mod_publication'] = [
 
     // === Context Menu ===
     'context_menu' => [
-        'title' => 'publication Actions',
+        'title' => 'Publication Actions',
         'edit' => 'Edit',
         'gallery' => 'Gallery Actions',
         'files' => 'File Actions',
@@ -372,7 +372,7 @@ $lang['mod_publication'] = [
         'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for publication.",
         'status_alert' => "STATUS UPDATED:\n%s",
         'delete_confirm' => 'Yes, Delete!',
-        'delete_success' => 'publication deleted!',
+        'delete_success' => 'Publication deleted!',
     ],
 
     'mock' => [

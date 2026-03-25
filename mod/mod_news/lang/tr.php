@@ -1,6 +1,6 @@
 <?php
 /**
- * Content Management Module - Turkish Language File
+ * News Management Module - Turkish Language File
  *
  * @package Rojname
  * @module  mod_news
@@ -15,14 +15,14 @@ if (!defined('AKM_LOADED')) {
 }
 
 /**
- * Content Management Module Language Translations
+ * News Management Module Language Translations
  */
 $lang['mod_news'] = [
 
     // === Basic Actions ===
-    'add' => 'İçerik Ekle',
-    'edit' => 'İçeriği Düzenle',
-    'list' => 'İçerik Listesi',
+    'add' => 'Haber Ekle',
+    'edit' => 'Haberi Düzenle',
+    'list' => 'Haber Listesi',
     'information' => 'Bilgi!',
     'oke' => 'İşlem Başarılı!',
     'hata' => 'Hata Oluştu!',
@@ -31,9 +31,9 @@ $lang['mod_news'] = [
     'remove_image_oke' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
     'remove_record' => 'Bu Kaydı Silmek İstediğinize emin misiniz?',
-    'delete_confirm' => 'Bu içeriği silmek istediğinize emin misiniz?',
-    'quick_unpublish_confirm' => 'Bu içeriği yayından kaldırmak istediğinizden emin misiniz?',
-    'quick_publish_confirm' => 'Bu içeriği yayınlamak istediğinizden emin misiniz?',
+    'delete_confirm' => 'Bu haberi silmek istediğinize emin misiniz?',
+    'quick_unpublish_confirm' => 'Bu haberi yayından kaldırmak istediğinizden emin misiniz?',
+    'quick_publish_confirm' => 'Bu haberi yayınlamak istediğinizden emin misiniz?',
     'resim_ekle' => 'Resim Ekle',
     'resim_yukle_degistir' => 'Resim Yükle/Değiştir',
     'lokal' => 'Lokal',
@@ -65,12 +65,12 @@ $lang['mod_news'] = [
     // === Messages ===
     'message' => [
         'oke' => [
-            'add' => 'İçerik Eklendi!',
-            'edit' => 'İçerik Düzenlendi!',
+            'add' => 'Haber Eklendi!',
+            'edit' => 'Haber Düzenlendi!',
         ],
         'error' => [
-            'add' => 'İçerik Eklenemedi!',
-            'edit' => 'İçerik Düzenlenemedi!',
+            'add' => 'Haber Eklenemedi!',
+            'edit' => 'Haber Düzenlenemedi!',
         ],
     ],
 
@@ -109,11 +109,11 @@ $lang['mod_news'] = [
         8 => 'Lütfen sadece bir satır seçin',
         'approve' => [
             'key' => 'Yayınla',
-            'value' => 'Bu içeriği yayınlamak istediğinize emin misiniz?',
+            'value' => 'Bu haberi yayınlamak istediğinize emin misiniz?',
         ],
         'unapprove' => [
             'key' => 'Yayından Kaldır',
-            'value' => 'Bu içeriği yayından kaldırmak istediğinize emin misiniz?',
+            'value' => 'Bu haberi yayından kaldırmak istediğinize emin misiniz?',
         ],
         'load_more' => 'Daha Fazla Yükle',
     ],
@@ -133,32 +133,32 @@ $lang['mod_news'] = [
 
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'İçerik Yönetim Rolleri',
-        'add' => 'İçerik Ekleyebilir',
-        'edit' => 'İçerik Düzenleyebilir',
-        'delete' => 'İçerik Silebilir',
-        'list' => 'İçerik Yönetimini Görüntüleyebilir',
-        'publish' => 'İçerik Yayınlayabilir',
-        'unpublish' => 'İçeriği Yayından Kaldırabilir',
+        'ad' => 'Haber Yönetim Rolleri',
+        'add' => 'Haber Ekleyebilir',
+        'edit' => 'Haber Düzenleyebilir',
+        'delete' => 'Haber Silebilir',
+        'list' => 'Haber Yönetimini Görüntüleyebilir',
+        'publish' => 'Haber Yayınlayabilir',
+        'unpublish' => 'Haberi Yayından Kaldırabilir',
         'change_status' => 'Yayın Durumu Değiştirebilir',
         'edit_status' => 'Detaylı Yayın Durumu Değiştirebilir',
-        'moderate_edit' => 'Başkalarının İçeriğini Düzenleyebilir',
-        'moderate_delete' => 'Başkalarının İçeriğini Silebilir',
+        'moderate_edit' => 'Başkalarının Haberlerini Düzenleyebilir',
+        'moderate_delete' => 'Başkalarının Haberlerini Silebilir',
         'gallery' => 'Galeri Yönetebilir',
         'file' => 'Dosya Yönetebilir',
-        'approval' => 'İçerik Onaylayabilir',
+        'approval' => 'Haber Onaylayabilir',
         'video_download' => 'Video İndirebilir',
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'İçerik eklemeye permissionniz yok',
-        'edit' => 'İçerik düzenlemeye permissionniz yok',
-        'list' => 'İçerik yönetimini görüntülemeye permissionniz yok',
-        'delete' => 'İçerik silmeye permissionniz yok',
-        'approval' => 'İçerik approvema permissionniz yok',
-        'moderate_edit' => 'Başkalarına ait içerik kayıtlarını düzenleyemezsiniz',
-        'moderate_delete' => 'Başkalarına ait içerik kayıtlarını silemezsiniz',
+        'add' => 'Haber ekleme yetkiniz yok',
+        'edit' => 'Haber düzenleme yetkiniz yok',
+        'list' => 'Haber yönetimini görüntüleme yetkiniz yok',
+        'delete' => 'Haber silme yetkiniz yok',
+        'approval' => 'Haber onaylama yetkiniz yok',
+        'moderate_edit' => 'Başkalarına ait haber kayıtlarını düzenleyemezsiniz',
+        'moderate_delete' => 'Başkalarına ait haber kayıtlarını silemezsiniz',
         'gallery' => 'Galeri yönetme permissionniz yok',
         'file' => 'Dosya yönetme permissionniz yok',
     ],
@@ -172,7 +172,7 @@ $lang['mod_news'] = [
             'category_id' => 'Kategori',
             'created_at' => 'Tarih',
             'updated_at' => 'Düzenleme Tarihi',
-            'content' => 'İçerik',
+            'news' => 'Haber',
             'summary' => 'Giriş',
             'seo' => 'SEO URL',
             'title' => 'Sayfa Başlığı',
@@ -186,7 +186,7 @@ $lang['mod_news'] = [
             'acl_id' => 'Erişim Kontrolü',
             'menu' => 'Menüye Ekle',
             'video' => 'Video Seç',
-            'video_help' => 'İçerikte görünmesini istediğiniz videonun adını arayın',
+            'video_help' => 'Haberde görünmesini istediğiniz videonun adını arayın',
         ],
         'radio' => [
             'publish_yes' => 'Yayınla',
@@ -299,32 +299,32 @@ $lang['mod_news'] = [
             'title' => 'Başlık',
             'date' => 'Yayın Tarihi',
             'intro' => 'Giriş Metni (Deck)',
-            'content' => 'İçerik Detayı',
+            'news' => 'Haber Detayı',
             'image' => 'Görsel Seçimi',
             'finish' => 'Tamamla',
         ],
         'subtitle' => [
-            'language' => 'İçeriğin yayınlanacağı ana dili seçiniz.',
-            'category' => 'İçeriğin ekleneceği kategoriyi belirleyin.',
+            'language' => 'Haberin yayınlanacağı ana dili seçiniz.',
+            'category' => 'Haberin ekleneceği kategoriyi belirleyin.',
             'title' => 'İlgi çekici bir başlık girin. (Min: 1, Max: 70)',
-            'date' => 'İçeriğin yayınlanacağı tarih ve saat.',
+            'date' => 'Haberin yayınlanacağı tarih ve saat.',
             'intro' => 'Kısa ve öz bir özet yazın. (110 - 280 Karakter)',
-            'content' => 'Zengin metin editörü.',
+            'news' => 'Zengin metin editörü.',
             'image' => 'Kapak görseli yükleyin.',
             'finish' => 'Son kontroller ve yayınlama.',
         ],
         'label' => [
-            'content_title' => 'İçerik Başlığı',
+            'news_title' => 'Haber Başlığı',
             'intro_text' => 'Giriş Metni',
             'upload_text' => 'Görsel Yüklemek İçin Dokunun',
             'published' => 'Yayında',
-            'published_desc' => 'İçerik siteye eklendiği an herkes tarafından görülebilecek.',
-            'editor_placeholder' => 'İçeriğinizi buraya yazmaya başlayın...',
+            'published_desc' => 'Haber siteye eklendiği an herkes tarafından görülebilecek.',
+            'editor_placeholder' => 'Haberinizi buraya yazmaya başlayın...',
             'category_select' => 'Kategori Seçiniz...',
             'change_image' => 'Görsel Değiştir',
         ],
         'messages' => [
-            'success_sim' => 'İçerik başarıyla oluşturuldu! (Simülasyon)',
+            'success_sim' => 'Haber başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
             'video_embed_error' => 'Lütfen geçerli bir embed kodu giriniz (iframe).',
             'video_title_error' => 'Video başlığı en az 3 karakter olmalıdır.',
@@ -344,7 +344,7 @@ $lang['mod_news'] = [
 
     // === Context Menu ===
     'context_menu' => [
-        'title' => 'İçerik İşlemleri',
+        'title' => 'Haber İşlemleri',
         'edit' => 'Düzenle',
         'gallery' => 'Galeri İşlemleri',
         'files' => 'Dosya İşlemleri',
@@ -357,11 +357,11 @@ $lang['mod_news'] = [
         'confirm' => 'Evet',
         'cancel' => 'Vazgeç',
         'edit_alert' => "DÜZENLEME MODU:\nID: %s\nBaşlık: %s",
-        'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nİçerik için resim galerisi açılıyor.",
-        'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nİçerik için dosya yükleme ekranı açılıyor.",
+        'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nHaber için resim galerisi açılıyor.",
+        'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nHaber için dosya yükleme ekranı açılıyor.",
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
         'delete_confirm' => 'Evet, Sil!',
-        'delete_success' => 'İçerik silindi!',
+        'delete_success' => 'Haber silindi!',
     ],
 
     'mock' => [

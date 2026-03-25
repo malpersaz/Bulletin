@@ -71,7 +71,7 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="wizardTitleInput" placeholder=" " autocomplete="off" maxlength="70">
-                <label class="m3-floating-label">{{ wizard_lang.wizard.label.content_title|default(wizard_lang.wizard.label.publication_title) }}</label>
+                <label class="m3-floating-label">{{ wizard_lang.wizard.label.news_title|default(wizard_lang.wizard.label.content_title)|default(wizard_lang.wizard.label.publication_title) }}</label>
             </div>
             <div class="char-counter" id="titleCharCounter">0 / 70</div>
             <div class="validation-msg" id="titleValidationMsg">{{ wizard_lang.validator.title_length }}</div>
@@ -102,8 +102,8 @@
 
         <!-- Step 6: Content -->
         <div class="wizard-step" id="wizardStep6">
-            <h2 class="step-headline">{{ wizard_lang.wizard.step.content|default(wizard_lang.wizard.step.publication) }}</h2>
-            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.content|default(wizard_lang.wizard.subtitle.publication) }}</p>
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.news|default(wizard_lang.wizard.step.content)|default(wizard_lang.wizard.step.publication) }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.news|default(wizard_lang.wizard.subtitle.content)|default(wizard_lang.wizard.subtitle.publication) }}</p>
             
             <div style="margin-top: 12px;">
                 <textarea name="content" id="wizardContentTextarea"></textarea>

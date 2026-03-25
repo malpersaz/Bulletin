@@ -86,7 +86,7 @@
                     title: '{{ wizard_lang.wizard.step.title|default("Başlık")|e("js") }}',
                     date: '{{ wizard_lang.wizard.step.date|default("Tarih")|e("js") }}',
                     intro: '{{ wizard_lang.wizard.step.intro|default("Giriş")|e("js") }}',
-                    content: '{{ wizard_lang.wizard.step.content|default(wizard_lang.wizard.step.publication)|default("İçerik")|e("js") }}',
+                    content: '{{ wizard_lang.wizard.step.news|default(wizard_lang.wizard.step.content)|default(wizard_lang.wizard.step.publication)|default("İçerik")|e("js") }}',
                     image: '{{ wizard_lang.wizard.step.image|default("Görsel")|e("js") }}',
                     finish: '{{ wizard_lang.wizard.step.finish|default("Bitir")|e("js") }}'
                 },

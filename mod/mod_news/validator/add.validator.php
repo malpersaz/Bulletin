@@ -64,13 +64,13 @@ class add_validator
         if ($this->_check() === True) {
             return True;
         }
-        // content Required
+        // news body Required
         $this->valid->ekle(
             [
                 'name' => 'content',
                 'fonk' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_news']['validator']['required'], $this->lang['mod_news']['admin']['columns']['content'])
+                'mesaj' => sprintf($this->lang['mod_news']['validator']['required'], $this->lang['mod_news']['admin']['columns']['news'])
             ]
         );
         if ($this->_check() === True) {

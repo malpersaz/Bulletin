@@ -49,7 +49,7 @@ $lang['mod_content'] = [
         'title_za' => 'Sernav (Z-A)',
         'view_count' => 'Hejmara Jixwendinê',
         'limit_label' => 'Hejmara Nîşandayînê',
-        'lang_label' => 'Hilbijartina Ziman',
+        'lang_label' => 'Zimanekî Hilbijêre',
         'selected_lang' => 'Zimanê Hilbijartî',
         'date_label' => 'Rêjeya Dîrokê',
         'start_date' => 'Destpêk',
@@ -275,7 +275,7 @@ $lang['mod_content'] = [
 
     // === Sheet Labels ===
     'sheet' => [
-        'lang_title' => 'Hilbijartina Ziman',
+        'lang_title' => 'Zimanekî Hilbijêre',
         'ok' => 'Temam',
         'search_placeholder' => 'Zimanekî bigere (mînak: Îngilîzî, JP)...',
         'category_title' => 'Kategorî Hilbijêre',
@@ -285,7 +285,7 @@ $lang['mod_content'] = [
     // === Wizard ===
     'wizard' => [
         'step' => [
-            'language' => 'Hilbijartina Ziman',
+            'language' => 'Zimanekî Hilbijêre',
             'category' => 'Kategorî',
             'title' => 'Sernav',
             'date' => 'Dîroka Weşanê',

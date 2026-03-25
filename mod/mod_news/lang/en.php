@@ -1,6 +1,6 @@
 <?php
 /**
- * Content Management Module - English Language File
+ * News Management Module - English Language File
  *
  * @package Rojname
  * @module  mod_news
@@ -15,14 +15,14 @@ if (!defined('AKM_LOADED')) {
 }
 
 /**
- * Content Management Module Language Translations
+ * News Management Module Language Translations
  */
 $lang['mod_news'] = [
 
     // === Basic Actions ===
-    'add' => 'Add Content',
-    'edit' => 'Edit Content',
-    'list' => 'Content List',
+    'add' => 'Add News',
+    'edit' => 'Edit News',
+    'list' => 'News List',
     'information' => 'Information!',
     'oke' => 'Operation Successful!',
     'hata' => 'Error Occurred!',
@@ -31,8 +31,8 @@ $lang['mod_news'] = [
     'remove_image_oke' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
-    'quick_unpublish_confirm' => 'Are you sure you want to unpublish this content?',
-    'quick_publish_confirm' => 'Are you sure you want to publish this content?',
+    'quick_unpublish_confirm' => 'Are you sure you want to unpublish this news item?',
+    'quick_publish_confirm' => 'Are you sure you want to publish this news item?',
     'resim_ekle' => 'Add Image',
     'resim_yukle_degistir' => 'Upload/Change Image',
     'lokal' => 'Local',
@@ -64,12 +64,12 @@ $lang['mod_news'] = [
     // === Messages ===
     'message' => [
         'oke' => [
-            'add' => 'Content Added!',
-            'edit' => 'Content Updated!',
+            'add' => 'News Added!',
+            'edit' => 'News Updated!',
         ],
         'error' => [
-            'add' => 'Content Could Not Be Added!',
-            'edit' => 'Content Could Not Be Updated!',
+            'add' => 'News Could Not Be Added!',
+            'edit' => 'News Could Not Be Updated!',
         ],
     ],
 
@@ -108,11 +108,11 @@ $lang['mod_news'] = [
         8 => 'Please select only one row',
         'approve' => [
             'key' => 'Publish',
-            'value' => 'Are you sure you want to publish this content?',
+            'value' => 'Are you sure you want to publish this news item?',
         ],
         'unapprove' => [
             'key' => 'Unpublish',
-            'value' => 'Are you sure you want to unpublish this content?',
+            'value' => 'Are you sure you want to unpublish this news item?',
         ],
         'load_more' => 'Load More',
     ],
@@ -132,32 +132,32 @@ $lang['mod_news'] = [
 
     // === Permission Roles ===
     'roll' => [
-        'name' => 'Content Management Roles',
-        'add' => 'Can Add Content',
-        'edit' => 'Can Edit Content',
-        'delete' => 'Can Delete Content',
-        'list' => 'Can View Content Management',
-        'publish' => 'Can Publish Content',
-        'unpublish' => 'Can Unpublish Content',
+        'name' => 'News Management Roles',
+        'add' => 'Can Add News',
+        'edit' => 'Can Edit News',
+        'delete' => 'Can Delete News',
+        'list' => 'Can View News Management',
+        'publish' => 'Can Publish News',
+        'unpublish' => 'Can Unpublish News',
         'change_status' => 'Can Change Publish Status',
         'edit_status' => 'Can Change Detailed Publish Status',
-        'moderate_edit' => 'Can Edit Others Content',
-        'moderate_delete' => 'Can Delete Others Content',
+        'moderate_edit' => 'Can Edit Others News',
+        'moderate_delete' => 'Can Delete Others News',
         'gallery' => 'Can Manage Gallery',
         'file' => 'Can Manage Files',
-        'approval' => 'Can Approve Content',
+        'approval' => 'Can Approve News',
         'video_download' => 'Can Download Video',
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'You do not have permission to add content',
-        'edit' => 'You do not have permission to edit content',
-        'list' => 'You do not have permission to view content management',
-        'delete' => 'You do not have permission to delete content',
-        'approval' => 'You do not have permission to approve content',
-        'moderate_edit' => 'You cannot edit content records of others',
-        'moderate_delete' => 'You cannot delete content records of others',
+        'add' => 'You do not have permission to add news',
+        'edit' => 'You do not have permission to edit news',
+        'list' => 'You do not have permission to view news management',
+        'delete' => 'You do not have permission to delete news',
+        'approval' => 'You do not have permission to approve news',
+        'moderate_edit' => 'You cannot edit news records of others',
+        'moderate_delete' => 'You cannot delete news records of others',
         'gallery' => 'You do not have permission to manage gallery',
         'file' => 'You do not have permission to manage files',
     ],
@@ -171,7 +171,7 @@ $lang['mod_news'] = [
             'category_id' => 'Category',
             'created_at' => 'Date',
             'updated_at' => 'Edit Date',
-            'content' => 'Content',
+            'news' => 'News',
             'summary' => 'Introduction',
             'seo' => 'SEO URL',
             'title' => 'Page Title',
@@ -296,32 +296,32 @@ $lang['mod_news'] = [
             'title' => 'Title',
             'date' => 'Publish Date',
             'intro' => 'Intro Text (Deck)',
-            'content' => 'Content Details',
+            'news' => 'News Details',
             'image' => 'Image Selection',
             'finish' => 'Complete',
         ],
         'subtitle' => [
-            'language' => 'Select the main language for the content.',
-            'category' => 'Determine the category to add content to.',
+            'language' => 'Select the main language for the news item.',
+            'category' => 'Determine the category to add the news item to.',
             'title' => 'Enter an engaging title. (Min: 1, Max: 70)',
             'date' => 'Date and time for publication.',
             'intro' => 'Write a short and concise summary. (110 - 280 Characters)',
-            'content' => 'Rich text editor.',
+            'news' => 'Rich text editor.',
             'image' => 'Upload a cover image.',
             'finish' => 'Final checks and publishing.',
         ],
         'label' => [
-            'content_title' => 'Content Title',
+            'news_title' => 'News Title',
             'intro_text' => 'Intro Text',
             'upload_text' => 'Tap to Upload Image',
             'published' => 'Published',
-            'published_desc' => 'Content will be visible to everyone once added.',
+            'published_desc' => 'News will be visible to everyone once added.',
             'category_select' => 'Select Category...',
             'change_image' => 'Change Image',
-            'editor_placeholder' => 'Start writing your content here...',
+            'editor_placeholder' => 'Start writing your news here...',
         ],
         'messages' => [
-            'success_sim' => 'Content successfully created! (Simulation)',
+            'success_sim' => 'News successfully created! (Simulation)',
             'video_success_sim' => 'Video successfully added! (Simulation)',
             'video_embed_error' => 'Please enter a valid embed code (iframe).',
             'video_title_error' => 'Video title must be at least 3 characters.',
@@ -341,7 +341,7 @@ $lang['mod_news'] = [
 
     // === Context Menu ===
     'context_menu' => [
-        'title' => 'Content Actions',
+        'title' => 'News Actions',
         'edit' => 'Edit',
         'gallery' => 'Gallery Actions',
         'files' => 'File Actions',
@@ -358,11 +358,11 @@ $lang['mod_news'] = [
         'confirm' => 'Yes',
         'cancel' => 'Cancel',
         'edit_alert' => "EDIT MODE:\nID: %s\nTitle: %s",
-        'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for content.",
-        'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for content.",
+        'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for news.",
+        'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for news.",
         'status_alert' => "STATUS UPDATED:\n%s",
         'delete_confirm' => 'Yes, Delete!',
-        'delete_success' => 'Content deleted!',
+        'delete_success' => 'News deleted!',
     ],
 
     'mock' => [

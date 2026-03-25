@@ -1,6 +1,6 @@
 <?php
 /**
- * Content Management Module - Kurdish Language File
+ * News Management Module - Kurdish Language File
  *
  * @package Rojname
  * @module  mod_news
@@ -15,14 +15,14 @@ if (!defined('AKM_LOADED')) {
 }
 
 /**
- * Content Management Module Language Translations
+ * News Management Module Language Translations
  */
 $lang['mod_news'] = [
 
     // === Basic Actions ===
-    'add' => 'Lê Zêde Bike',
-    'edit' => 'Biguhere',
-    'list' => 'Naverok',
+    'add' => 'Nûçe Lê Zêde Bike',
+    'edit' => 'Nûçeyê Biguherîne',
+    'list' => 'Nûçe',
     'information' => 'Agahî!',
     'oke' => 'Çêbû!',
     'hata' => 'Çewtî Çêbû!',
@@ -30,9 +30,9 @@ $lang['mod_news'] = [
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_oke' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
-    'remove_record' => 'Ma tu bawer î, ku dixwazî vê naverokê jêbibî?',
-    'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vê naverokê ji weşanê rakî?',
-    'quick_publish_confirm' => 'Ma tu bawer î, ku dixwazî vê naverokê biweşînî?',
+    'remove_record' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
+    'quick_unpublish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê ji weşanê rakî?',
+    'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
     'resim_ekle' => 'Wêne lê zêde bike',
     'resim_yukle_degistir' => 'Wêne Lê Bar Bike/Biguherîne',
     'lokal' => 'Lokal',
@@ -49,7 +49,7 @@ $lang['mod_news'] = [
         'title_za' => 'Sernav (Z-A)',
         'view_count' => 'Hejmara Jixwendinê',
         'limit_label' => 'Hejmara Nîşandayînê',
-        'lang_label' => 'Hilbijartina Ziman',
+        'lang_label' => 'Zimanekî Hilbijêre',
         'selected_lang' => 'Zimanê Hilbijartî',
         'date_label' => 'Rêjeya Dîrokê',
         'start_date' => 'Destpêk',
@@ -68,12 +68,12 @@ $lang['mod_news'] = [
     // === Messages ===
     'message' => [
         'oke' => [
-            'add' => 'Naverok Hate Zêdekirin!',
-            'edit' => 'Naverok Hate Sererastkirin!',
+            'add' => 'Nûçe Hate Zêdekirin!',
+            'edit' => 'Nûçe Hate Sererastkirin!',
         ],
         'error' => [
-            'add' => 'Naverok Nehat Zêdekirin!',
-            'edit' => 'Naverok Nehat Sererastkirin!',
+            'add' => 'Nûçe Nehat Zêdekirin!',
+            'edit' => 'Nûçe Nehat Sererastkirin!',
         ],
     ],
 
@@ -122,7 +122,7 @@ $lang['mod_news'] = [
 
     // === Validation Messages ===
     'validator' => [
-        'required' => 'Naverok bê %s nayê şandin!',
+        'required' => 'Nûçe bê %s nayê şandin!',
         'length' => '%s dikare herî kurt %s û herî dirêj %s tîpan be',
         'email' => 'Ji kerema xwe navekî e-postayê yê derbasdar li qada %s binivîsin.',
         'unique' => '%s ku te nivîsî di pergalê de qeydkirî ye. Ji kerema xwe %s-ekê din destnîşan bikin!',
@@ -136,24 +136,24 @@ $lang['mod_news'] = [
     // === Permission Roles ===
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Rolenên Rêveberiya Naverokê',
-        'add' => 'Dikare naverokan lê zêde bike',
-        'edit' => 'Dikare naverokan biguhere',
-        'delete' => 'Dikare naverokan rake',
-        'list' => 'Dikare rêveberiya naverokê bibîne',
-        'publish' => 'Dikare naverokan weşîne',
-        'unpublish' => 'Dikare naverokan ji weşanê rake',
+        'ad' => 'Rolenên Rêveberiya Nûçeyan',
+        'add' => 'Dikare nûçeyan lê zêde bike',
+        'edit' => 'Dikare nûçeyan biguhere',
+        'delete' => 'Dikare nûçeyan rake',
+        'list' => 'Dikare rêveberiya nûçeyan bibîne',
+        'publish' => 'Dikare nûçeyan weşîne',
+        'unpublish' => 'Dikare nûçeyan ji weşanê rake',
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'Ji bo zêdekirina naverokê destûra te tune',
-        'edit' => 'Ji bo sererastkirina naverokê destûra te tune',
-        'list' => 'Ji bo dîtina rêveberiya naverokê destûra te tune',
-        'delete' => 'Ji bo rakirana naverokê destûra te tune',
-        'approval' => 'Ji bo pejirandina naverokê destûra te tune',
-        'moderate_edit' => 'Tu nikarî tomarên naverokê yên ku yên te ne sererast bikî',
-        'moderate_delete' => 'Tu nikarî tomarên naverokê yên ku yên te ne rakî',
+        'add' => 'Ji bo zêdekirina nûçeyê destûra te tune',
+        'edit' => 'Ji bo sererastkirina nûçeyê destûra te tune',
+        'list' => 'Ji bo dîtina rêveberiya nûçeyan destûra te tune',
+        'delete' => 'Ji bo rakirana nûçeyê destûra te tune',
+        'approval' => 'Ji bo pejirandina nûçeyê destûra te tune',
+        'moderate_edit' => 'Tu nikarî tomarên nûçeyan yên ku yên te ne sererast bikî',
+        'moderate_delete' => 'Tu nikarî tomarên nûçeyan yên ku yên te ne rakî',
         'gallery' => 'Ji bo rêveberiya galeriyê destûra te tune',
         'file' => 'Ji bo rêveberiya pelan destûra te tune',
     ],
@@ -167,7 +167,7 @@ $lang['mod_news'] = [
             'category_id' => 'Kategorî',
             'created_at' => 'Dîrok',
             'updated_at' => 'Dîroka Sererastkirinê',
-            'content' => 'Naverok',
+            'news' => 'Nûçe',
             'summary' => 'Destpêk',
             'seo' => 'SEO URL',
             'title' => 'Sernavê Rûpelê',
@@ -275,7 +275,7 @@ $lang['mod_news'] = [
 
     // === Sheet Labels ===
     'sheet' => [
-        'lang_title' => 'Hilbijartina Ziman',
+        'lang_title' => 'Zimanekî Hilbijêre',
         'ok' => 'Temam',
         'search_placeholder' => 'Zimanekî bigere (mînak: Îngilîzî, JP)...',
         'category_title' => 'Kategorî Hilbijêre',
@@ -285,37 +285,37 @@ $lang['mod_news'] = [
     // === Wizard ===
     'wizard' => [
         'step' => [
-            'language' => 'Hilbijartina Ziman',
+            'language' => 'Zimanekî Hilbijêre',
             'category' => 'Kategorî',
             'title' => 'Sernav',
             'date' => 'Dîroka Weşanê',
-            'intro' => 'Destpêka naverokê',
-            'content' => 'Firehiya naverokê',
+            'intro' => 'Destpêka nûçeyê',
+            'news' => 'Firehiya nûçeyê',
             'image' => 'Lêbarkirina Wêne',
             'finish' => 'Dawî',
         ],
         'subtitle' => [
-            'language' => 'Zimanê naverokê hilbijêre.',
-            'category' => 'Beşa naverokê lê were weşandin hilbijêre.',
+            'language' => 'Zimanê nûçeyê hilbijêre.',
+            'category' => 'Beşa nûçeyê lê were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
             'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
-            'content' => 'Edîtorê nivîsa dewlemend.',
+            'news' => 'Edîtorê nivîsa dewlemend.',
             'image' => 'Tu dikarî wêneyekî tenê hilbijêrî.',
             'finish' => 'Saxtîkirina dawî û şandin.',
         ],
         'label' => [
-            'content_title' => 'Sernavê naverokê',
-            'intro_text' => 'Destpêka naverokê',
+            'news_title' => 'Sernavê nûçeyê',
+            'intro_text' => 'Destpêka nûçeyê',
             'upload_text' => 'Ji bo barkirina wêne vir bitikîne',
             'published' => 'Tê Şandin!',
-            'published_desc' => 'Dema gerînende naverokê biweşîne dê ji aliyê her kesî ve were dîtin.',
-            'category_select' => 'Beşa Naverokê...',
+            'published_desc' => 'Dema gerînende nûçeyê biweşîne dê ji aliyê her kesî ve were dîtin.',
+            'category_select' => 'Beşa Nûçeyê...',
             'change_image' => 'Wêne biguherîne',
-            'editor_placeholder' => 'Dest bi nivîsandina naveroka xwe bikin...',
+            'editor_placeholder' => 'Dest bi nivîsandina nûçeya xwe bikin...',
         ],
         'messages' => [
-            'success_sim' => 'Naverok bi serketî hat afirandin! (Simulasyon)',
+            'success_sim' => 'Nûçe bi serketî hat afirandin! (Simulasyon)',
             'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
             'video_embed_error' => 'Ji kerema xwe kodek embedê ya derbasdar binivîsin (iframe).',
             'video_title_error' => 'Divê sernavê vîdeoyê kêmzêde 3 tîp be.',
@@ -335,7 +335,7 @@ $lang['mod_news'] = [
 
     // === Context Menu ===
     'context_menu' => [
-        'title' => 'Operasyonên Naverokê',
+        'title' => 'Operasyonên Nûçeyan',
         'edit' => 'Biguhere',
         'gallery' => 'Operasyonên Galeriyê',
         'files' => 'Operasyonên Pelan',
@@ -352,7 +352,7 @@ $lang['mod_news'] = [
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
-        'delete_success' => 'Naverok hat jêbirin!',
+        'delete_success' => 'Nûçe hat jêbirin!',
     ],
 
     'mock' => [

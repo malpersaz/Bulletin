@@ -22,7 +22,7 @@ $lang['mod_publication'] = [
     // === Basic Actions ===
     'add' => 'Lê Zêde Bike',
     'edit' => 'Biguhere',
-    'list' => 'Naverok',
+    'list' => 'Lîsteya Weşanan',
     'information' => 'Agahî!',
     'oke' => 'Çêbû!',
     'hata' => 'Çewtî Çêbû!',
@@ -30,9 +30,9 @@ $lang['mod_publication'] = [
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_oke' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
-    'remove_record' => 'Ma tu bawer î, ku dixwazî vê naverokê jêbibî?',
-    'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vê naverokê ji weşanê rakî?',
-    'quick_publish_confirm' => 'Ma tu bawer î, ku dixwazî vê naverokê biweşînî?',
+    'remove_record' => 'Ma tu bawer î ku dixwazî vî weşanî jê bibî?',
+    'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vî weşanî ji weşanê rakî?',
+    'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vî weşanî biweşînî?',
     'resim_ekle' => 'Wêne lê zêde bike',
     'resim_yukle_degistir' => 'Wêne Lê Bar Bike/Biguherîne',
     'lokal' => 'Lokal',
@@ -49,7 +49,7 @@ $lang['mod_publication'] = [
         'title_za' => 'Sernav (Z-A)',
         'view_count' => 'Hejmara Jixwendinê',
         'limit_label' => 'Hejmara Nîşandayînê',
-        'lang_label' => 'Hilbijartina Ziman',
+        'lang_label' => 'Zimanekî Hilbijêre',
         'selected_lang' => 'Zimanê Hilbijartî',
         'date_label' => 'Rêjeya Dîrokê',
         'start_date' => 'Destpêk',
@@ -68,12 +68,12 @@ $lang['mod_publication'] = [
     // === Messages ===
     'message' => [
         'oke' => [
-            'add' => 'Naverok Hate Zêdekirin!',
-            'edit' => 'Naverok Hate Sererastkirin!',
+            'add' => 'Weşan Hat Zêdekirin!',
+            'edit' => 'Weşan Hat Sererastkirin!',
         ],
         'error' => [
-            'add' => 'Naverok Nehat Zêdekirin!',
-            'edit' => 'Naverok Nehat Sererastkirin!',
+            'add' => 'Weşan Nehat Zêdekirin!',
+            'edit' => 'Weşan Nehat Sererastkirin!',
         ],
     ],
 
@@ -111,18 +111,18 @@ $lang['mod_publication'] = [
         8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
         'approve' => [
             'key' => 'Weşandin',
-            'value' => 'Ma tu bawer î, ku dixwazî vê naverokê ji weşanê rakî?',
+            'value' => 'Ma tu bawer î ku dixwazî vî weşanî biweşînî?',
         ],
         'unapprove' => [
             'key' => 'Ji Weşandinê Bikişîne',
-            'value' => 'Ma tu bawer î, ku dixwazî vê naverokê ji weşanê rakî?',
+            'value' => 'Ma tu bawer î ku dixwazî vî weşanî ji weşanê rakî?',
         ],
         'load_more' => 'Pirtir Nîşan Bide',
     ],
 
     // === Validation Messages ===
     'validator' => [
-        'required' => 'Naverok bê %s nayê şandin!',
+        'required' => 'Ji kerema xwe qada %s vala nehêlin!',
         'length' => '%s dikare herî kurt %s û herî dirêj %s tîpan be',
         'email' => 'Ji kerema xwe navekî e-postayê yê derbasdar li qada %s binivîsin.',
         'unique' => '%s ku te nivîsî di pergalê de qeydkirî ye. Ji kerema xwe %s-ekê din destnîşan bikin!',
@@ -136,24 +136,24 @@ $lang['mod_publication'] = [
     // === Permission Roles ===
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Rolenên Rêveberiya Naverokê',
-        'add' => 'Dikare naverokan lê zêde bike',
-        'edit' => 'Dikare naverokan biguhere',
-        'delete' => 'Dikare naverokan rake',
-        'list' => 'Dikare rêveberiya naverokê bibîne',
-        'publish' => 'Dikare naverokan weşîne',
-        'unpublish' => 'Dikare naverokan ji weşanê rake',
+        'ad' => 'Rolenên Rêveberiya Weşanan',
+        'add' => 'Dikare weşanan lê zêde bike',
+        'edit' => 'Dikare weşanan biguhere',
+        'delete' => 'Dikare weşanan rake',
+        'list' => 'Dikare rêveberiya weşanan bibîne',
+        'publish' => 'Dikare weşanan weşîne',
+        'unpublish' => 'Dikare weşanan ji weşanê rake',
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'Ji bo zêdekirina naverokê destûra te tune',
-        'edit' => 'Ji bo sererastkirina naverokê destûra te tune',
-        'list' => 'Ji bo dîtina rêveberiya naverokê destûra te tune',
-        'delete' => 'Ji bo rakirana naverokê destûra te tune',
-        'approval' => 'Ji bo pejirandina naverokê destûra te tune',
-        'moderate_edit' => 'Tu nikarî tomarên naverokê yên ku yên te ne sererast bikî',
-        'moderate_delete' => 'Tu nikarî tomarên naverokê yên ku yên te ne rakî',
+        'add' => 'Ji bo zêdekirina weşanê destûra te tune',
+        'edit' => 'Ji bo sererastkirina weşanê destûra te tune',
+        'list' => 'Ji bo dîtina rêveberiya weşanan destûra te tune',
+        'delete' => 'Ji bo rakirana weşanê destûra te tune',
+        'approval' => 'Ji bo pejirandina weşanê destûra te tune',
+        'moderate_edit' => 'Tu nikarî tomarên weşanê yên ku yên te ne sererast bikî',
+        'moderate_delete' => 'Tu nikarî tomarên weşanê yên ku yên te ne rakî',
         'gallery' => 'Ji bo rêveberiya galeriyê destûra te tune',
         'file' => 'Ji bo rêveberiya pelan destûra te tune',
     ],
@@ -167,7 +167,7 @@ $lang['mod_publication'] = [
             'category_id' => 'Kategorî',
             'created_at' => 'Dîrok',
             'updated_at' => 'Dîroka Sererastkirinê',
-            'publication' => 'Naverok',
+            'publication' => 'Weşan',
             'summary' => 'Destpêk',
             'seo' => 'SEO URL',
             'title' => 'Sernavê Rûpelê',
@@ -275,7 +275,7 @@ $lang['mod_publication'] = [
 
     // === Sheet Labels ===
     'sheet' => [
-        'lang_title' => 'Hilbijartina Ziman',
+        'lang_title' => 'Zimanekî Hilbijêre',
         'ok' => 'Temam',
         'search_placeholder' => 'Zimanekî bigere (mînak: Îngilîzî, JP)...',
         'category_title' => 'Kategorî Hilbijêre',
@@ -285,18 +285,18 @@ $lang['mod_publication'] = [
     // === Wizard ===
     'wizard' => [
         'step' => [
-            'language' => 'Hilbijartina Ziman',
+            'language' => 'Zimanekî Hilbijêre',
             'category' => 'Kategorî',
             'title' => 'Sernav',
             'date' => 'Dîroka Weşanê',
-            'intro' => 'Destpêka naverokê',
-            'publication' => 'Firehiya naverokê',
+            'intro' => 'Destpêka weşanê',
+            'publication' => 'Naveroka weşanê',
             'image' => 'Lêbarkirina Wêne',
             'finish' => 'Dawî',
         ],
         'subtitle' => [
-            'language' => 'Zimanê naverokê hilbijêre.',
-            'category' => 'Beşa naverokê lê were weşandin hilbijêre.',
+            'language' => 'Zimanê weşanê hilbijêre.',
+            'category' => 'Beşa ku ev weşan tê de were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
             'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
@@ -305,17 +305,17 @@ $lang['mod_publication'] = [
             'finish' => 'Saxtîkirina dawî û şandin.',
         ],
         'label' => [
-            'publication_title' => 'Sernavê naverokê',
-            'intro_text' => 'Destpêka naverokê',
+            'publication_title' => 'Sernavê weşanê',
+            'intro_text' => 'Destpêka weşanê',
             'upload_text' => 'Ji bo barkirina wêne vir bitikîne',
             'published' => 'Tê Şandin!',
-            'published_desc' => 'Dema gerînende naverokê biweşîne dê ji aliyê her kesî ve were dîtin.',
-            'category_select' => 'Beşa Naverokê...',
+            'published_desc' => 'Dema ku weşan were zêdekirin, wê ji aliyê her kesî ve were dîtin.',
+            'category_select' => 'Beşa Weşanê...',
             'change_image' => 'Wêne biguherîne',
-            'editor_placeholder' => 'Dest bi nivîsandina naveroka xwe bikin...',
+            'editor_placeholder' => 'Dest bi nivîsandina weşana xwe bikin...',
         ],
         'messages' => [
-            'success_sim' => 'Naverok bi serketî hat afirandin! (Simulasyon)',
+            'success_sim' => 'Weşan bi serketî hat afirandin! (Simulasyon)',
             'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
             'video_embed_error' => 'Ji kerema xwe kodek embedê ya derbasdar binivîsin (iframe).',
             'video_title_error' => 'Divê sernavê vîdeoyê kêmzêde 3 tîp be.',
@@ -335,7 +335,7 @@ $lang['mod_publication'] = [
 
     // === Context Menu ===
     'context_menu' => [
-        'title' => 'Operasyonên Naverokê',
+        'title' => 'Operasyonên Weşanan',
         'edit' => 'Biguhere',
         'gallery' => 'Operasyonên Galeriyê',
         'files' => 'Operasyonên Pelan',
@@ -352,7 +352,7 @@ $lang['mod_publication'] = [
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
-        'delete_success' => 'Naverok hat jêbirin!',
+        'delete_success' => 'Weşan hat jêbirin!',
     ],
 
     'mock' => [

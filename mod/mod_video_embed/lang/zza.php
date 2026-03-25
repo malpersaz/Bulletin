@@ -173,7 +173,7 @@ $lang['mod_video_embed'] = [
     ],
     'wizard' => [
         'step' => [
-            'language' => 'Hilbijartina Ziman',
+            'language' => 'Zimanekî Hilbijêre',
             'category' => 'Kategorî',
             'embed' => 'Agahiyên Embed',
             'details' => 'Agahiyên Vîdyoyê',

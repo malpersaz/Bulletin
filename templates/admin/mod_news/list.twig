@@ -2,9 +2,9 @@
 {% set hide_fab = true %}
 {% set show_search = true %}
 {% extends 'admin/layout.twig' %}
-{% block title %}{{ lang.mod_news.list|default('Content Management') }}{% endblock %}
+{% block title %}{{ lang.mod_news.list|default('News Management') }}{% endblock %}
 
-{% block headline %}{{ lang.mod_news.list|default('Content List') }}{% endblock %}
+{% block headline %}{{ lang.mod_news.list|default('News List') }}{% endblock %}
 
 {% block content %}
 <!-- Quick Stats & Actions -->
@@ -16,11 +16,11 @@
     <div style="display: flex; gap: 12px;">
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
             <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_content }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.total_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.total_news|default(lang.management.total_content) }}</div>
         </div>
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
             <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_content }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.draft_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.draft_news|default(lang.management.draft_content) }}</div>
         </div>
     </div>
 
@@ -42,8 +42,8 @@
 <!-- EMPTY STATE -->
 <div id="empty-state" class="empty-state" style="display: none;">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_news.grid[105]|default(lang.mod_news.datatable.zeroRecords)|default('No Content Found') }}</h3>
-    <p>{{ lang.mod_news.grid[4]|default(lang.mod_news.datatable.emptyTable)|default('No content matches your filters.') }}</p>
+    <h3>{{ lang.mod_news.grid[105]|default(lang.mod_news.datatable.zeroRecords)|default('No News Found') }}</h3>
+    <p>{{ lang.mod_news.grid[4]|default(lang.mod_news.datatable.emptyTable)|default('No news matches your filters.') }}</p>
 </div>
 
 <!-- INFINITE SCROLL LOADER -->
