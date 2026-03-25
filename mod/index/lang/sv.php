@@ -280,9 +280,6 @@ $lang['index']['mod_publication']['5'] = '%s Publikationsarkiv - Sida %s';
 $lang['index']['mod_publication']['7'] = 'Denna publikation publicerades den %s i kategorin <a href="%s" title="%s">%s</a>';
 $lang['index']['mod_publication']['18'] = 'Det finns inga publikationer i denna kategori.';
 $lang['index']['mod_publication']['authors'] = 'Forfattare';
-$lang['index']['mod_publication']['authors_intro'] = 'Utforska alla medverkande tillsammans med deras senaste publikation i en mobilforst layout.';
-$lang['index']['mod_publication']['authors_page_label'] = 'Sida';
-$lang['index']['mod_publication']['authors_visible_label'] = 'Visas';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Senaste publikation';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Det finns inga forfattarposter att visa an.';
 $lang['index']['mod_publication']['latest_publications'] = [
