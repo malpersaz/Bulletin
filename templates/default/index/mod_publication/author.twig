@@ -100,6 +100,7 @@
             font-size: clamp(1.15rem, 3vw, 1.7rem);
             line-height: 1.1;
             font-weight: 800;
+            opacity: 1;
         }
 
         #publication-author-page .author-meta {
@@ -174,10 +175,25 @@
         #publication-author-page .publication-title a {
             color: var(--author-ink);
             text-decoration: none;
+            opacity: 1;
         }
 
         #publication-author-page .publication-title a:hover {
             color: #0f766e;
+        }
+
+        #publication-author-page .author-title,
+        #publication-author-page .author-title *,
+        #publication-author-page .publication-title,
+        #publication-author-page .publication-title *,
+        #publication-author-page .publication-title a,
+        #publication-author-page .publication-title a:visited {
+            color: var(--author-ink) !important;
+        }
+
+        #publication-author-page .publication-title a:hover,
+        #publication-author-page .publication-title a:focus {
+            color: #0f766e !important;
         }
 
         #publication-author-page .author-sidebar {
