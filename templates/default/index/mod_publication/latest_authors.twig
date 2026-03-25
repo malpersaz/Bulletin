@@ -2,21 +2,167 @@
 {% set latest_authors = ctx_get('latest_authors') %}
 
 {% if latest_authors %}
-<div class="author-main fit-main">
-    <ul class="owl-carousel clearfix">
-        {% for key, author in latest_authors %}
-        <li class="{% if key is odd %}r{% else %}l{% endif %} clearfix">
-            <a class="c" href="{{ site.sadres }}publication/{{ author.seo }}">
-                <span>{{ author.u_name }} {{ author.u_last_name }}</span>{{ author.name }}
-            </a>
-            <a class="i" href="{{ site.sadres }}publication/{{ author.seo }}">
-                {% if author.user_image is defined and author.user_image is not empty %}
-                <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}" />
-                {% endif %}
-            </a>
-        </li>
-        {% endfor %}
-    </ul>
-    <div class="sub"><a href="{{ site.sadres }}authors">» <h2>{{ lang.index.mod_publication.authors }}</h2></a></div>
-</div>
+<section id="latest-publication-authors" class="py-4">
+    <style>
+        #latest-publication-authors {
+            --latest-authors-ink: #152033;
+            --latest-authors-muted: #667085;
+            --latest-authors-line: rgba(21, 32, 51, 0.10);
+            --latest-authors-surface: #ffffff;
+        }
+
+        #latest-publication-authors .latest-authors-card {
+            background: var(--latest-authors-surface);
+            border: 1px solid var(--latest-authors-line);
+            border-radius: 1.4rem;
+            padding: 1rem;
+            box-shadow: 0 14px 34px rgba(21, 32, 51, 0.08);
+        }
+
+        #latest-publication-authors .latest-authors-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.9rem;
+        }
+
+        #latest-publication-authors .latest-authors-title {
+            margin: 0;
+            color: var(--latest-authors-ink);
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        #latest-publication-authors .latest-authors-link {
+            color: var(--latest-authors-muted);
+            font-size: 0.84rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        #latest-publication-authors .latest-authors-list {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        #latest-publication-authors .latest-authors-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.75rem;
+            border-radius: 1rem;
+            text-decoration: none;
+            color: inherit;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        #latest-publication-authors .latest-authors-item:hover {
+            background: rgba(21, 32, 51, 0.05);
+            transform: translateX(2px);
+        }
+
+        #latest-publication-authors .latest-authors-avatar {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 999px;
+            overflow: hidden;
+            flex: 0 0 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f59e0b, #0f766e);
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 800;
+            border: 2px solid rgba(255, 255, 255, 0.92);
+            box-shadow: 0 8px 20px rgba(21, 32, 51, 0.14);
+        }
+
+        #latest-publication-authors .latest-authors-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #latest-publication-authors .latest-authors-copy {
+            min-width: 0;
+            display: grid;
+            gap: 0.15rem;
+        }
+
+        #latest-publication-authors .latest-authors-name {
+            color: var(--latest-authors-ink);
+            font-size: 0.95rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        #latest-publication-authors .latest-authors-publication {
+            color: var(--latest-authors-muted);
+            font-size: 0.82rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        html[data-bs-theme="dark"] #latest-publication-authors,
+        body.dark #latest-publication-authors,
+        body.dark-mode #latest-publication-authors {
+            --latest-authors-ink: #f8fafc;
+            --latest-authors-muted: #94a3b8;
+            --latest-authors-line: rgba(148, 163, 184, 0.18);
+            --latest-authors-surface: #101826;
+        }
+
+        html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-card,
+        body.dark #latest-publication-authors .latest-authors-card,
+        body.dark-mode #latest-publication-authors .latest-authors-card {
+            box-shadow: 0 18px 42px rgba(2, 6, 23, 0.34);
+        }
+
+        html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-item:hover,
+        body.dark #latest-publication-authors .latest-authors-item:hover,
+        body.dark-mode #latest-publication-authors .latest-authors-item:hover {
+            background: rgba(148, 163, 184, 0.10);
+        }
+
+        html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-avatar,
+        body.dark #latest-publication-authors .latest-authors-avatar,
+        body.dark-mode #latest-publication-authors .latest-authors-avatar {
+            border-color: rgba(15, 23, 42, 0.92);
+        }
+    </style>
+
+    <div class="latest-authors-card">
+        <div class="latest-authors-head">
+            <h2 class="latest-authors-title">{{ lang.index.mod_publication.authors }}</h2>
+            <a class="latest-authors-link" href="{{ site.sadres }}authors">{{ lang.index.mod_publication.authors }}</a>
+        </div>
+
+        <div class="latest-authors-list">
+            {% for author in latest_authors %}
+                {% set latest_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+                {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+                {% set latest_publication_title = author.title is defined and author.title is not empty ? author.title : author.name %}
+                <a class="latest-authors-item" href="{{ site.sadres }}author/{{ author.username }}">
+                    <span class="latest-authors-avatar">
+                        {% if author.user_image is defined and author.user_image is not empty %}
+                            <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" loading="lazy">
+                        {% else %}
+                            <span>{{ latest_author_initials }}</span>
+                        {% endif %}
+                    </span>
+                    <span class="latest-authors-copy">
+                        <span class="latest-authors-name">{{ latest_author_name }}</span>
+                        <span class="latest-authors-publication">{{ latest_publication_title }}</span>
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 {% endif %}
