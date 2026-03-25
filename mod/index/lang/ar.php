@@ -160,6 +160,12 @@ $lang['index']['mod_publication']['4'] = 'لم يتم العثور على منش
 $lang['index']['mod_publication']['5'] = 'أرشيف المنشورات %s - الصفحة %s';
 $lang['index']['mod_publication']['7'] = 'تم نشر هذا الإصدار في %s ضمن تصنيف <a href="%s" title="%s">%s</a>';
 $lang['index']['mod_publication']['18'] = 'لا توجد منشورات متاحة في هذا التصنيف.';
+$lang['index']['mod_publication']['authors'] = 'الكتاب';
+$lang['index']['mod_publication']['authors_intro'] = 'تصفح جميع المساهمين مع أحدث منشور لكل منهم ضمن تصميم يركز على الهواتف المحمولة.';
+$lang['index']['mod_publication']['authors_page_label'] = 'الصفحة';
+$lang['index']['mod_publication']['authors_visible_label'] = 'المعروض';
+$lang['index']['mod_publication']['authors_latest_label'] = 'أحدث منشور';
+$lang['index']['mod_publication']['authors_empty_desc'] = 'لا توجد سجلات كتاب متاحة للعرض حتى الآن.';
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'منشوراتنا',
     '2' => 'جميع المنشورات',

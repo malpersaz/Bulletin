@@ -128,7 +128,7 @@ class mod_publication_helper extends indexBase
         }
 
         if ($pager->Result() !== FALSE) {
-            $this->tema->ctx_set('sayfalama', $pager->Result());
+            $this->tema->ctx_set('pagination', $pager->Result());
         }
 
         if ($page != '1') {
@@ -149,7 +149,7 @@ class mod_publication_helper extends indexBase
         $this->tema->ctx_set('d', $d);
         $this->tema->ctx_set('categoryname', $category_name);
         $this->tema->ctx_set('category_seo', $category_seo);
-        $this->tema->ctx_set('sayfa', $page);
+        $this->tema->ctx_set('page', $page);
         $this->tema->tpl('index/mod_publication/publications');
         $this->_index();
     }
@@ -199,9 +199,41 @@ class mod_publication_helper extends indexBase
         return [];
     }
 
-    public function authors($limit = 10)
+    public function authors($page = 1, $page_limit = 12)
     {
+        if ($page == '' || $page == null) {
+            $page = 1;
+        }
+
+        $page = intval($page);
+        $page_limit = intval($page_limit);
+        $pager_limit = 5;
+        $offset = ($page - 1) * $page_limit;
+
         $authors = Load::model('mod_publication.publications');
+        $count_sql = "SELECT COUNT(*) AS total_count
+            FROM (
+                SELECT latest_publications.user_id
+                FROM publications AS latest_publications
+                INNER JOIN (
+                    SELECT mod_publication.user_id, MAX(mod_publication.created_at) AS latest_created_at
+                    FROM mod_publication
+                    LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
+                    WHERE mod_publication.status = 'y'
+                      AND mod_publication.lang = '" . $this->site['lang'] . "'
+                      AND mod_user.group_id = '4'
+                    GROUP BY mod_publication.user_id
+                ) author_latest
+                    ON latest_publications.user_id = author_latest.user_id
+                   AND latest_publications.created_at = author_latest.latest_created_at
+                WHERE latest_publications.status = 'y'
+                  AND latest_publications.lang = '" . $this->site['lang'] . "'
+            ) AS paged_authors";
+        $authors->fetch_array($count_sql);
+        $count_rows = $authors->toArray();
+        $total_item = isset($count_rows[0]['total_count']) ? intval($count_rows[0]['total_count']) : 0;
+
+        $authors->flush();
         $sql = "SELECT latest_publications.*
             FROM publications AS latest_publications
             INNER JOIN (
@@ -218,18 +250,33 @@ class mod_publication_helper extends indexBase
             WHERE latest_publications.status = 'y'
               AND latest_publications.lang = '" . $this->site['lang'] . "'
             ORDER BY latest_publications.created_at DESC
-            LIMIT " . intval($limit);
+            LIMIT " . $page_limit . " OFFSET " . $offset;
         $authors->fetch_array($sql);
 
         if ($authors->getSize() !== 0) {
             $this->tema->ctx_set('authors', $authors->toArray());
         }
 
-        $d['name'] = $this->lang['index']['mod_publication']['authors'] ?? 'Authors';
+        $pager = Load::lib('Pager');
+        $pager->total_item = $total_item;
+        $pager->page_limit = $page_limit;
+        $pager->pager_limit = $pager_limit;
+        $pager->page = $page;
+
+        if ($pager->check() === FALSE) {
+            return $this->_404();
+        }
+
+        if ($pager->Result() !== FALSE) {
+            $this->tema->ctx_set('pagination', $pager->Result());
+        }
+
+        $d['name'] = $this->lang['index']['mod_publication']['authors'];
         $d['title'] = $d['name'];
         $d['keywords'] = $d['name'];
         $d['description'] = $d['name'];
         $this->tema->ctx_set('d', $d);
+        $this->tema->ctx_set('page', $page);
 
         $this->tema->tpl('index/mod_publication/authors');
         $this->_index();
@@ -302,10 +349,10 @@ class mod_publication_helper extends indexBase
         }
 
         if ($pager->Result() !== FALSE) {
-            $this->tema->ctx_set('sayfalama', $pager->Result());
+            $this->tema->ctx_set('pagination', $pager->Result());
         }
 
-        $this->tema->ctx_set('sayfa', $page);
+        $this->tema->ctx_set('page', $page);
 
         $d['name'] = trim(($author_data['u_name'] ?? '') . ' ' . ($author_data['u_last_name'] ?? ''));
         $d['title'] = $d['name'];

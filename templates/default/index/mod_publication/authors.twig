@@ -1,37 +1,459 @@
 {% extends "layouts/base.twig" %}
 
 {% set authors = ctx_get('authors') %}
+{% set pagination = ctx_get('pagination') %}
+{% set page = ctx_get('page') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.sadres }}authors{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
+{% endblock %}
+
+{% block title %}
+    <title>{{ lang.index.mod_publication.authors }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <style>
+        #publication-authors-page {
+            --authors-ink: #152033;
+            --authors-muted: #5b6472;
+            --authors-line: rgba(21, 32, 51, 0.10);
+            --authors-surface: #ffffff;
+            --authors-surface-soft: linear-gradient(180deg, #f7f4ee 0%, #edf4f7 100%);
+            --authors-accent: #b45309;
+            --authors-accent-2: #0f766e;
+            --authors-shadow: 0 24px 60px rgba(21, 32, 51, 0.12);
+        }
+
+        #publication-authors-page .authors-shell {
+            padding: 1.25rem 0 3rem;
+        }
+
+        #publication-authors-page .authors-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1.75rem;
+            background:
+                radial-gradient(circle at top right, rgba(180, 83, 9, 0.18), transparent 28%),
+                radial-gradient(circle at left bottom, rgba(15, 118, 110, 0.18), transparent 24%),
+                var(--authors-surface-soft);
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.65);
+            box-shadow: var(--authors-shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        #publication-authors-page .authors-breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1rem;
+            color: var(--authors-muted);
+            font-size: 0.82rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        #publication-authors-page .authors-breadcrumb a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #publication-authors-page .authors-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--authors-accent-2);
+            margin-bottom: 0.9rem;
+        }
+
+        #publication-authors-page .authors-title {
+            margin: 0;
+            color: var(--authors-ink);
+            font-size: clamp(2rem, 5vw, 3.6rem);
+            line-height: 0.96;
+            font-weight: 800;
+            max-width: 12ch;
+        }
+
+        #publication-authors-page .authors-summary {
+            margin: 1rem 0 0;
+            color: var(--authors-muted);
+            font-size: 1rem;
+            line-height: 1.8;
+            max-width: 56ch;
+        }
+
+        #publication-authors-page .authors-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.85rem;
+            margin-top: 1.4rem;
+        }
+
+        #publication-authors-page .authors-meta-card {
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 1.15rem;
+            padding: 0.9rem 1rem;
+            backdrop-filter: blur(12px);
+        }
+
+        #publication-authors-page .authors-meta-label {
+            display: block;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--authors-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        #publication-authors-page .authors-meta-value {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--authors-ink);
+        }
+
+        #publication-authors-page .authors-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        #publication-authors-page .author-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+            background: var(--authors-surface);
+            border: 1px solid var(--authors-line);
+            border-radius: 1.5rem;
+            padding: 1rem;
+            box-shadow: 0 12px 30px rgba(21, 32, 51, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        #publication-authors-page .author-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 44px rgba(21, 32, 51, 0.14);
+            border-color: rgba(180, 83, 9, 0.18);
+        }
+
+        #publication-authors-page .author-head {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            min-width: 0;
+        }
+
+        #publication-authors-page .author-avatar {
+            width: 4.25rem;
+            height: 4.25rem;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f59e0b, #0f766e);
+            flex: 0 0 4.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+        }
+
+        #publication-authors-page .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #publication-authors-page .author-name {
+            margin: 0;
+            font-size: 1.1rem;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        #publication-authors-page .author-name a {
+            color: var(--authors-ink);
+            text-decoration: none;
+        }
+
+        #publication-authors-page .author-handle {
+            margin-top: 0.35rem;
+            color: var(--authors-muted);
+            font-size: 0.88rem;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+
+        #publication-authors-page .author-featured {
+            position: relative;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            min-height: 16rem;
+            background: linear-gradient(180deg, #f2f4f7 0%, #dde7ea 100%);
+        }
+
+        #publication-authors-page .author-featured img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #publication-authors-page .author-featured::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(21, 32, 51, 0.84), rgba(21, 32, 51, 0.08) 55%, transparent 78%);
+        }
+
+        #publication-authors-page .author-publication {
+            position: absolute;
+            left: 1rem;
+            right: 1rem;
+            bottom: 1rem;
+            z-index: 2;
+            color: #fff;
+        }
+
+        #publication-authors-page .author-publication-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(10px);
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.7rem;
+        }
+
+        #publication-authors-page .author-publication-title {
+            margin: 0;
+            font-size: 1.15rem;
+            line-height: 1.35;
+            font-weight: 800;
+        }
+
+        #publication-authors-page .author-publication-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #publication-authors-page .author-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            margin-top: 0.85rem;
+            color: var(--authors-muted);
+            font-size: 0.88rem;
+        }
+
+        #publication-authors-page .authors-empty {
+            padding: 2rem 1.25rem;
+            text-align: center;
+            background: #fff;
+            border: 1px dashed var(--authors-line);
+            border-radius: 1.5rem;
+            color: var(--authors-muted);
+        }
+
+        #publication-authors-page .pagination-wrap {
+            margin-top: 2rem;
+        }
+
+        #publication-authors-page .pagination {
+            gap: 0.35rem;
+            flex-wrap: wrap;
+        }
+
+        #publication-authors-page .page-link {
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            border-radius: 0.9rem;
+            border: 1px solid var(--authors-line);
+            color: var(--authors-ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            padding: 0.65rem 0.9rem;
+        }
+
+        #publication-authors-page .page-item.active .page-link {
+            background: var(--authors-ink);
+            border-color: var(--authors-ink);
+            color: #fff;
+        }
+
+        #publication-authors-page .page-link:hover {
+            color: var(--authors-ink);
+            background: rgba(21, 32, 51, 0.05);
+        }
+
+        @media (min-width: 576px) {
+            #publication-authors-page .authors-shell {
+                padding-top: 1.75rem;
+            }
+
+            #publication-authors-page .authors-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (min-width: 992px) {
+            #publication-authors-page .authors-hero {
+                padding: 2rem;
+                margin-bottom: 2rem;
+            }
+
+            #publication-authors-page .authors-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 1.25rem;
+            }
+
+            #publication-authors-page .author-card {
+                padding: 1.15rem;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #publication-authors-page .authors-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block content %}
-<div class="page-title">
-    <div class="container">
-        <ol>
-            <li>
-                <h1>{{ lang.index.mod_publication.authors|default('Authors') }}</h1>
-            </li>
-        </ol>
-    </div>
-</div>
-<div class="page-full">
-    <div class="container">
-        {% if authors %}
-        <div class="author">
-            <div class="row ms-row-fit">
-                {% for author in authors %}
-                <div class="col-xs-6 col-sm-4 col-md-3">
-                    <section class="item">
-                        {% if author.user_image is defined and author.user_image is not empty %}
-                        <img class="center-block" src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ author.u_name }} {{ author.u_last_name }}"/>
-                        {% endif %}
-                        <h2><a href="{{ site.sadres }}author/{{ author.username }}">{{ author.u_name }} {{ author.u_last_name }}</a></h2>
-                        <h3><a href="{{ site.sadres }}publication/{{ author.seo }}">{{ author.name }}</a></h3>
-                        <span class="date">{{ author.created_at|date('d.m.Y H:i') }}</span>
-                    </section>
+<section id="publication-authors-page">
+    <div class="container authors-shell">
+        <div class="authors-hero">
+            <ol class="authors-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" href="{{ site.sadres }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ lang.index.mod_publication.authors }}</span>
+                    <meta itemprop="position" content="2" />
+                </li>
+            </ol>
+
+            <span class="authors-kicker">
+                <i class="bi bi-pen"></i>
+                {{ lang.index.mod_publication.authors }}
+            </span>
+            <h1 class="authors-title">{{ lang.index.mod_publication.authors }}</h1>
+            <p class="authors-summary">{{ lang.index.mod_publication.authors_intro }}</p>
+
+            <div class="authors-meta">
+                <div class="authors-meta-card">
+                    <span class="authors-meta-label">{{ lang.index.mod_publication.authors_page_label }}</span>
+                    <span class="authors-meta-value">{{ page }}</span>
                 </div>
-                {% endfor %}
+                <div class="authors-meta-card">
+                    <span class="authors-meta-label">{{ lang.index.mod_publication.authors_visible_label }}</span>
+                    <span class="authors-meta-value">{{ authors is not empty ? authors|length : 0 }}</span>
+                </div>
             </div>
         </div>
+
+        {% if authors is not empty %}
+            <div class="authors-grid">
+                {% for author in authors %}
+                    {% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+                    {% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+                    <article class="author-card" itemscope itemtype="https://schema.org/Person">
+                        <div class="author-head">
+                            <div class="author-avatar">
+                                {% if author.user_image is defined and author.user_image is not empty %}
+                                    <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ author_name }}" loading="lazy">
+                                {% else %}
+                                    <span>{{ author_initials }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="author-ident">
+                                <h2 class="author-name" itemprop="name">
+                                    <a href="{{ site.sadres }}author/{{ author.username }}">{{ author_name }}</a>
+                                </h2>
+                                <div class="author-handle">@{{ author.username }}</div>
+                            </div>
+                        </div>
+
+                        <div class="author-featured">
+                            {% if author.image is not empty %}
+                                <img src="{{ site.radres }}mod_publication/{{ author.image }}" alt="{{ author.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{{ site.radres }}mod_settings/logo.png" alt="{{ author.name }}" loading="lazy" style="object-fit: contain; padding: 1.5rem;">
+                            {% endif %}
+
+                            <div class="author-publication">
+                                <span class="author-publication-label">
+                                    <i class="bi bi-journal-richtext"></i>
+                                    {{ lang.index.mod_publication.authors_latest_label }}
+                                </span>
+                                <h3 class="author-publication-title">
+                                    <a href="{{ site.sadres }}publication/{{ author.seo }}">{{ author.name }}</a>
+                                </h3>
+                            </div>
+                        </div>
+
+                        <span class="author-date">
+                            <i class="bi bi-clock-history"></i>
+                            {{ author.created_at|date('d.m.Y H:i') }}
+                        </span>
+                    </article>
+                {% endfor %}
+            </div>
+
+            {% if pagination is not empty %}
+                <div class="pagination-wrap">
+                    <nav aria-label="{{ lang.index.mod_publication.authors }}">
+                        <ul class="pagination justify-content-center">
+                            {% for s in pagination %}
+                                {% if s == '...' %}
+                                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                                {% elseif s == page %}
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">{{ s }}</span>
+                                    </li>
+                                {% elseif s == 1 %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ site.sadres }}authors">{{ s }}</a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ site.sadres }}authors/{{ s }}">{{ s }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="authors-empty">
+                <h2>{{ lang.index.mod_publication.authors }}</h2>
+                <p>{{ lang.index.mod_publication.authors_empty_desc }}</p>
+            </div>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

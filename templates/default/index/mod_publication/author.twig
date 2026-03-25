@@ -2,8 +2,8 @@
 
 {% set author = ctx_get('author') %}
 {% set publications = ctx_get('publications') %}
-{% set sayfalama = ctx_get('sayfalama') %}
-{% set sayfa = ctx_get('sayfa') %}
+{% set pagination = ctx_get('pagination') %}
+{% set page = ctx_get('page') %}
 {% set username = ctx_get('username') %}
 
 {% block content %}
@@ -47,13 +47,13 @@
                 {% endfor %}
             </ul>
             <div class="clear"></div>
-            {% if sayfalama %}
+            {% if pagination %}
             <div class="paging_3">
                 <div class="holder">
-                    {% for s in sayfalama %}
+                    {% for s in pagination %}
                         {% if s == '...' %}
                         <span class="seperator">&nbsp;...</span>
-                        {% elseif s == sayfa %}
+                        {% elseif s == page %}
                         <a class="number" href="{{ site.sadres }}author/{{ username }}/{{ s }}" rel="page">{{ s }}</a>
                         {% else %}
                         <span class="seperator">&nbsp;</span>

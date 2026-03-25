@@ -260,6 +260,12 @@ $lang['index']['mod_publication']['4'] = 'لەو پۆلەدا هیچ بڵاوک�
 $lang['index']['mod_publication']['5'] = 'ئەرشیفی بڵاوکراوەکانی %s - لاپەڕەی %s';
 $lang['index']['mod_publication']['7'] = 'ئەم بڵاوکراوەیە لە %s لە پۆلی <a href="%s" title="%s">%s</a> بڵاو کراوەتەوە';
 $lang['index']['mod_publication']['18'] = 'لەو پۆلەدا هیچ بڵاوکراوەیەکی بەردەست نییە.';
+$lang['index']['mod_publication']['authors'] = 'نووسەرەکان';
+$lang['index']['mod_publication']['authors_intro'] = 'هەموو بەشداربووان ببینە لەگەڵ دوا بڵاوکراوەی هەر یەکێکیان لە دیزاینێکی مۆبایل-سەرەکی.';
+$lang['index']['mod_publication']['authors_page_label'] = 'لاپەڕە';
+$lang['index']['mod_publication']['authors_visible_label'] = 'پیشاندراو';
+$lang['index']['mod_publication']['authors_latest_label'] = 'دوایین بڵاوکراوە';
+$lang['index']['mod_publication']['authors_empty_desc'] = 'هێشتا هیچ تۆمارێکی نووسەر بۆ پیشاندان نییە.';
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'بڵاوکراوەکانمان',
     '2' => 'هەموو بڵاوکراوەکان',

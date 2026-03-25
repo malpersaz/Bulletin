@@ -160,6 +160,12 @@ $lang['index']['mod_publication']['4'] = 'Aucune publication trouvée dans cette
 $lang['index']['mod_publication']['5'] = 'Archives des publications %s - Page %s';
 $lang['index']['mod_publication']['7'] = 'Cette publication a été publiée le %s dans la catégorie <a href="%s" title="%s">%s</a>';
 $lang['index']['mod_publication']['18'] = 'Aucune publication disponible dans cette catégorie.';
+$lang['index']['mod_publication']['authors'] = 'Auteurs';
+$lang['index']['mod_publication']['authors_intro'] = 'Parcourez tous les contributeurs avec leur publication la plus recente dans une mise en page pensee pour le mobile.';
+$lang['index']['mod_publication']['authors_page_label'] = 'Page';
+$lang['index']['mod_publication']['authors_visible_label'] = 'Affiches';
+$lang['index']['mod_publication']['authors_latest_label'] = 'Derniere publication';
+$lang['index']['mod_publication']['authors_empty_desc'] = 'Aucun auteur n est encore disponible a l affichage.';
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Nos publications',
     '2' => 'Toutes les publications',

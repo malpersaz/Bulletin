@@ -256,6 +256,12 @@ $lang['index']['mod_publication']['4'] = 'In dieser Kategorie wurden keine Publi
 $lang['index']['mod_publication']['5'] = '%s Publikationsarchiv - Seite %s';
 $lang['index']['mod_publication']['7'] = 'Diese Publikation wurde am %s in der Kategorie <a href="%s" title="%s">%s</a> veröffentlicht';
 $lang['index']['mod_publication']['18'] = 'In dieser Kategorie sind keine Publikationen verfügbar.';
+$lang['index']['mod_publication']['authors'] = 'Autoren';
+$lang['index']['mod_publication']['authors_intro'] = 'Entdecken Sie alle Mitwirkenden zusammen mit ihrer neuesten Publikation in einem mobilorientierten Layout.';
+$lang['index']['mod_publication']['authors_page_label'] = 'Seite';
+$lang['index']['mod_publication']['authors_visible_label'] = 'Sichtbar';
+$lang['index']['mod_publication']['authors_latest_label'] = 'Neueste Publikation';
+$lang['index']['mod_publication']['authors_empty_desc'] = 'Es sind noch keine Autoreneintraege zum Anzeigen vorhanden.';
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Unsere Publikationen',
     '2' => 'Alle Publikationen',

@@ -279,6 +279,12 @@ $lang['index']['mod_publication']['4'] = 'Di vê kategoriyê de weşan nehatin d
 $lang['index']['mod_publication']['5'] = 'Arşîva Weşanan %s - Rûpel %s';
 $lang['index']['mod_publication']['7'] = 'Ev weşan di %s de li kategoriyê <a href="%s" title="%s">%s</a> hate weşandin';
 $lang['index']['mod_publication']['18'] = 'Di vê kategoriyê de weşanek tune.';
+$lang['index']['mod_publication']['authors'] = 'Niviskar';
+$lang['index']['mod_publication']['authors_intro'] = 'Bi avakirina mobîl-berê, beşdarên hemû weşanan tevî weşana wan a dawî bigere.';
+$lang['index']['mod_publication']['authors_page_label'] = 'Rûpel';
+$lang['index']['mod_publication']['authors_visible_label'] = 'Tê Nîşandan';
+$lang['index']['mod_publication']['authors_latest_label'] = 'Weşana Dawî';
+$lang['index']['mod_publication']['authors_empty_desc'] = 'Hêj ji bo nîşandanê tomara nivîskaran tune.';
 $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Weşanên Me',
     '2' => 'Hemû Weşan',

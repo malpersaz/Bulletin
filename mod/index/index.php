@@ -260,10 +260,10 @@ class index_mod extends indexBase
         unset($helper);
     }
 
-    public function authors($limit = 10)
+    public function authors($page = 1)
     {
         $publication = Load::helper("index.mod_publication");
-        $publication->authors($limit);
+        $publication->authors($page);
         unset($publication);
     }
 
