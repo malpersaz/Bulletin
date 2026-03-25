@@ -60,6 +60,11 @@
                     <i class="bi bi-globe nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.locale_management }}</span>
                 </a>
                 {% endif %}
+                {% if session.permissions.mod_attachment_mod.list is defined %}
+                <a href="{{ site.sadres }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}">
+                    <i class="bi bi-paperclip nav-item-icon"></i> <span class="nav-item-label">{{ lang.mod_attachment_mod.list|default('Dosya Mod Listesi') }}</span>
+                </a>
+                {% endif %}
             </div>
         </div>
         {% endif %}

@@ -1,10 +1,31 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
 {% set show_search = true %}
+{% set wizard_module = 'mod_news' %}
 {% extends 'admin/layout.twig' %}
 {% block title %}{{ lang.mod_news.list }}{% endblock %}
 
 {% block headline %}{{ lang.mod_news.list }}{% endblock %}
+
+{% block styles %}
+<style>
+    .news-toolbar .toolbar-item {
+        gap: 0;
+        min-width: 44px;
+        padding: 8px 4px;
+    }
+    .news-toolbar .toolbar-item span {
+        display: none;
+    }
+    .news-toolbar #toolbarDelete.active {
+        color: #b3261e !important;
+        background: rgba(179, 38, 30, 0.12);
+    }
+    .news-toolbar #toolbarDelete.active i {
+        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- Quick Stats & Actions -->
@@ -74,29 +95,25 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_news.button.edit }}</span>
+    <div class="standard-toolbar news-toolbar">
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
         </button>
         
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-images"></i>
-            <span>{{ lang.mod_news.button.gallery }}</span>
+            <i class="bi bi-image"></i>
         </button>
 
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_news/add'">
             <i class="bi bi-plus-lg"></i>
         </div>
 
-        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_news.button.file }}</span>
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-paperclip"></i>
         </button>
 
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_news.button.delete }}</span>
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
         </button>
     </div>
 {% endblock %}

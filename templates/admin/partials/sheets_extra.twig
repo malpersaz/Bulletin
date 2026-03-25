@@ -61,7 +61,7 @@
     </div>
 
     <div style="padding: 4px 0;">
-        <div class="context-action-item" onclick="handleContextAction('edit')">
+        <div class="context-action-item" id="contextActionEdit" onclick="handleContextAction('edit')">
             <div class="context-icon icon-edit">
                 <i class="bi bi-pencil"></i>
             </div>
@@ -95,7 +95,7 @@
             <span class="context-action-label nav-item-label">{{ lang.mod_content.context_menu.status }}</span>
         </div>
 
-        <div class="context-action-item action-danger" onclick="handleContextAction('delete')">
+        <div class="context-action-item action-danger" id="contextActionDelete" onclick="handleContextAction('delete')">
             <div class="context-icon icon-delete">
                 <i class="bi bi-trash3"></i>
             </div>

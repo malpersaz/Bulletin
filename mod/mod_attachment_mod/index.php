@@ -41,7 +41,7 @@ class mod_attachment_mod_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_attachment_mod']['add'];
-        $this->tema->tpl('mod_attachment_mod/ekle');
+        $this->tema->tpl('mod_attachment_mod/add');
         $this->tema->veri('site', $this->site);
     }
 
@@ -57,7 +57,7 @@ class mod_attachment_mod_mod extends indexMain
         if ($this->mod_attachment_mod_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_attachment_mod']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_attachment_mod/duzenle');
+            $this->tema->tpl('mod_attachment_mod/edit');
             return;
         }
 
@@ -77,7 +77,7 @@ class mod_attachment_mod_mod extends indexMain
         $this->site['title'] = $this->lang['mod_attachment_mod']['edit'];
         $this->tema->veri('site', $this->site);
         $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_attachment_mod/duzenle');
+        $this->tema->tpl('mod_attachment_mod/edit');
     }
 
     // Listeleme Sayfası
@@ -97,12 +97,12 @@ class mod_attachment_mod_mod extends indexMain
     // Ekleme Fonksiyonu
     private function _add()
     {
-        $this->val = Load::validator('mod_attachment_mod.ekle');
+        $this->val = Load::validator('mod_attachment_mod.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('errors', $this->val->hatalar);
         } else {
             $this->mod_attachment_mod_model = Load::model('mod_attachment_mod');
 
@@ -134,12 +134,12 @@ class mod_attachment_mod_mod extends indexMain
     // Düzenleme Fonksiyonu
     private function _edit($id = NULL)
     {
-        $this->val = Load::validator('mod_attachment_mod.duzenle');
+        $this->val = Load::validator('mod_attachment_mod.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('errors', $this->val->hatalar);
         } else {
             $this->mod_attachment_mod_model = Load::model('mod_attachment_mod');
 
@@ -171,7 +171,7 @@ class mod_attachment_mod_mod extends indexMain
         }
     }
 
-    function sil()
+    public function delete()
     {
         // Listeleme Permissionsi varmı?
         if ($this->user->hasPermission('mod_attachment_mod',  'delete', $this->lang['mod_attachment_mod']['role_errors'][ 'delete']) === False) {
@@ -186,6 +186,11 @@ class mod_attachment_mod_mod extends indexMain
         } else {
             exit($this->lang['mod_attachment_mod']['errors']['record']);
         }
+    }
+
+    public function sil()
+    {
+        return $this->delete();
     }
 
     public function _delete($sil)
@@ -371,8 +376,8 @@ class mod_attachment_mod_mod extends indexMain
     // Hata Mesaj
     private function _error_message($mesaj)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->tema->veri('error', True);
+        $this->tema->veri('errors', [$mesaj]);
     }
 
     // Error Mesaj

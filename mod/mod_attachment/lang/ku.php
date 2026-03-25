@@ -23,7 +23,6 @@ $lang['mod_attachment']['admin']=[
 	'21'=>'Tomarke',
 	'22'=>'Ji bo Nûçeya %s Cihê Lêbarkirina Wêne',
 	'23'=>'Navê Wêne',
-	'24'=>'Ji Bo Guhertina Nav Li Wêneyekî Cot Bitikîne.',
 	'25'=>'Qet Wêne Nehate Dîtin!',
 	'26'=>'---Hemû Wêne---',
 	'27'=>'Tu Wêneyên Tomarkirî Nehatin Dîtin!',
@@ -37,6 +36,8 @@ $lang['mod_attachment']['admin']=[
 	'38'=>'Wêne Lê Zêde Bike',
 	'39'=>'Wêne Hate Serastkirin',
 	'40'=>'Navê Wêneyê "+original+" Bi "+text+" re Hate Guhertin"',
+	'41'=>'Barkirina pelê neserket.',
+	'42'=>'Amar',
 	'warning'=>'Hişyarî!',
 	'info'=>'Agahî!',
 	'message'=>'Peyam!',
@@ -50,6 +51,16 @@ $lang['mod_attachment']['hata']=[
 '4'=>'Tênê cureyên pelên png,jpg,jpeg,gif,png,bmp dikare wekî çap bên hilberîn',
 '5'=>'Wêne Nehate Çêkirin',
 '6'=>'Çapa Wêne Çênebû'
+];
+
+$lang['mod_attachment']['errors'] = [
+    'missing_module_name' => 'Ji bo operasyona pelan agahiya modulê kêm e.',
+    'missing_record_id' => 'Ji bo operasyona pelan agahiya tomarê kêm e.',
+    'invalid_module' => 'Ji bo vê tomarê modula pelan nehatiye nasîn.',
+    'module_file_permission_missing' => 'Ji bo vê modulê destûra pelan nehatiye diyarkirin.',
+    'invalid_record' => 'Tomara têkildar nehat dîtin.',
+    'invalid_file' => 'Tomara pelê ya têkildar nehat dîtin.',
+    'invalid_record_title_field' => 'Ji bo vê modulê qada mod_value ne derbasdar e. Qada nîşandanê bi destan serast bike.',
 ];
 
 // Roles

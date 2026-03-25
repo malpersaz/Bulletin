@@ -19,15 +19,15 @@ class mod_news_category extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Tabloları Oluşturalım
+        // Create tables
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Modülü Ekleyelim
+        // Register module
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Roller ve Permleri Ekleyelim
+        // Register roles and permissions
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }

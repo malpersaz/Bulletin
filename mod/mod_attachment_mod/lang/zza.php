@@ -14,6 +14,7 @@ $lang['mod_attachment_mod'] = array (
     array (
       'add' => 'Dosya Modu Zêde Bikendi!',
       'edit' => 'Dosya Modu Biguherendi!',
+      'delete' => 'Dosya Modu Hate Jêbirin!',
     ),
     'error' => 
     array (
@@ -31,6 +32,7 @@ $lang['mod_attachment_mod'] = array (
     'edit' => 'Biguhere',
     'yenile' => 'Nû Bike',
     'delete' => 'Jê Bibe',
+    'file' => 'Pel',
     'vazgec' => 'Betal',
     'kaldir' => 'Kaldır',
     'evet' => 'Erê',
@@ -52,6 +54,7 @@ $lang['mod_attachment_mod'] = array (
   array (
     'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
     'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
+    'display_field' => '%s nikare qada têkiliyê be. name an title wekî qada nîşandanê bikar bîne.',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
     'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',
@@ -77,13 +80,27 @@ $lang['mod_attachment_mod'] = array (
   ),
   'admin' => 
   array (
+    'intro_add' => 'Ji bo girêdana modulê naverokê bi rêveberiya pelan re, navê xuya, navê modulê armanc û qadên anahtar ên tên xwendin binasînin.',
+    'intro_edit' => 'Li vir dikarin vê tomarê bi kîjan modulê ve girêdayî ye û agahiya sernavê ji kîjan qadan tê xwendin nû bikin.',
+    'empty_description' => 'Modulên pelan rê didin ku rêveberiya pelan bi modulên naverokê yên cuda re were girêdan.',
+    'hints' =>
+    array (
+      'name' => 'Sernavê ku di panela rêveberiyê de tê xuyakirin.',
+      'mod_name' => 'Mînak: mod_news, mod_page, mod_attachment_mod',
+      'mod_key' => 'Navê qada ku ji bo dîtina sernavê tomarê tê xwendin. Bi gelemperî id an qada têkiliyê ye.',
+      'mod_value' => 'Qada ku wekî sernav tê nîşandan. Bi gelemperî name, title an kolonêkî wekî wê ye.',
+      'mod_name_edit' => 'Navê teknîkî yê modulê pergala girêdayî.',
+      'mod_key_edit' => 'Qada ku ji bo dîtina tomara sernavê tê xwendin.',
+      'mod_value_edit' => 'Qada ku di lîsteyê de wekî sernavê naverokê tê nîşandan.',
+    ),
     'columns' => 
     array (
       'id' => 'ID',
+      'name' => 'Pel Mod İsmi',
       'ad' => 'Pel Mod İsmi',
       'mod_name' => 'Pel mod_name',
       'mod_key' => 'Pel mod_key (id)',
-      'mod_value' => 'Pel mod_value (ad)',
+      'mod_value' => 'Qada Nîşandanê',
     ),
   ),
 );

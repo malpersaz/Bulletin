@@ -127,6 +127,9 @@
 {% set errors = ctx_get('errors') %}
 {% set username = ctx_get('username') %}
 {% set password = ctx_get('password') %}
+{% set forgot_password_label = lang.mod_user.forgot_password is iterable ? (site.lang == 'en' ? 'Forgot Password' : (site.lang == 'ku' ? 'Min sifre ji bir kir' : 'Şifremi Unuttum')) : lang.mod_user.forgot_password %}
+{% set account_activation_label = lang.mod_user.account_activation is iterable ? (site.lang == 'en' ? 'Account Activation' : (site.lang == 'ku' ? 'Calakirina profilê' : 'Hesap Aktifleştirme')) : lang.mod_user.account_activation %}
+{% set register_label = lang.mod_user.register is iterable ? (site.lang == 'en' ? 'Register' : (site.lang == 'ku' ? 'Bibe Endam' : 'Kayıt Ol')) : lang.mod_user.register %}
 
 
 <!-- START: mod_user/login.twig -->
@@ -199,11 +202,11 @@
 
                     <hr>
                     <div class="text-center">
-                        <a href="forgot-password" class="btn btn-link p-0">{{ lang.mod_user.forgot_password }}</a>
+                        <a href="forgot-password" class="btn btn-link p-0">{{ forgot_password_label }}</a>
                         <span class="mx-2">|</span>
-                        <a href="activation" class="btn btn-link p-0">{{ lang.mod_user.account_activation }}</a>
+                        <a href="activation" class="btn btn-link p-0">{{ account_activation_label }}</a>
                         <span class="mx-2">|</span>
-                        <a href="register" class="btn btn-link p-0">{{ lang.mod_user.register }}</a>
+                        <a href="register" class="btn btn-link p-0">{{ register_label }}</a>
                     </div>
                 {% endif %}
             </div>

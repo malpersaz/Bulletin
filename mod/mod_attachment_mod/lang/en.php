@@ -34,6 +34,7 @@ $lang['mod_attachment_mod'] = [
         'oke' => [
             'add' => 'File Module successfully added!',
             'edit' => 'File Module successfully updated!',
+            'delete' => 'File Module deleted successfully!',
         ],
         'error' => [
             'add' => 'Failed to add File Module!',
@@ -61,6 +62,7 @@ $lang['mod_attachment_mod'] = [
         'edit' => 'Edit',
         'yenile' => 'Refresh',
         'delete' => 'Delete',
+        'file' => 'Files',
         'vazgec' => 'Cancel',
         'kaldir' => 'Remove',
         'evet' => 'Yes',
@@ -82,6 +84,7 @@ $lang['mod_attachment_mod'] = [
     'validator' => [
         'required' => 'Please do not leave the %s field empty',
         'length' => '%s must be between %s and %s characters',
+        'display_field' => '%s cannot be a relation column. Use a display field such as name or title.',
         'email' => 'Please enter a valid email address in the %s field',
         'unique' => 'The %s you entered is already registered in the system. Please specify a different %s!',
         'inarray' => '%s field can only accept \' %s \' values',
@@ -107,12 +110,25 @@ $lang['mod_attachment_mod'] = [
     ],
 
     'admin' => [
+        'intro_add' => 'Define the visible name, target module name, and source fields used to connect a content module to file management.',
+        'intro_edit' => 'Update which module this record is connected to and which fields provide the title information.',
+        'empty_description' => 'File modules let you connect file management to different content modules.',
+        'hints' => [
+            'name' => 'Title shown in the admin interface.',
+            'mod_name' => 'Example: mod_news, mod_page, mod_attachment_mod',
+            'mod_key' => 'Field name used to locate the record title. Usually id or a relation key.',
+            'mod_value' => 'Field used as the displayed title. Usually name, title, or a similar column.',
+            'mod_name_edit' => 'Technical name of the linked system module.',
+            'mod_key_edit' => 'Field used to locate the title record.',
+            'mod_value_edit' => 'Field shown as the content title in the list.',
+        ],
         'columns' => [
             'id' => 'ID',
+            'name' => 'File Module Name',
             'ad' => 'File Module Name',
             'mod_name' => 'Module Name',
             'mod_key' => 'Module Key (ID)',
-            'mod_value' => 'Module Value (Name)',
+            'mod_value' => 'Display Field',
         ],
     ],
 

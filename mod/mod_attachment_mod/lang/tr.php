@@ -1,5 +1,5 @@
 <?php
-                $lang['mod_attachment_mod']= [
+$lang['mod_attachment_mod'] = [
   'add' => 'Dosya Modu Ekle',
   'edit' => 'Dosya Modunu Düzenle',
   'list' => 'Dosya Mod Listesi',
@@ -14,6 +14,7 @@
      [
       'add' => 'Dosya Modu Eklendi!',
       'edit' => 'Dosya Modu Düzenlendi!',
+      'delete' => 'Dosya Modu Silindi!',
     ],
     'error' => 
      [
@@ -31,6 +32,8 @@
     'edit' => 'Düzenle',
     'yenile' => 'Yenile',
     'delete' => 'Sil',
+    'file' => 'Dosyalar',
+    'gallery' => 'Galeri',
     'vazgec' => 'Vazgeç',
     'kaldir' => 'Kaldır',
     'evet' => 'Evet',
@@ -52,6 +55,7 @@
    [
     'required' => 'Lütfen %s Alanını Boş Bırakmayın',
     'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
+    'display_field' => '%s alanı ilişki kolonu olamaz. name veya title gibi gösterim alanı kullanın.',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
@@ -77,13 +81,27 @@
   ],
   'admin' => 
    [
+    'intro_add' => 'Bir içerik modülünü dosya yöneticisine bağlamak için görünen adı, hedef modül adını ve o modülden okunacak anahtar alanları tanımlayın.',
+    'intro_edit' => 'Bu kaydın hangi modüle bağlandığını ve başlık bilgisinin hangi alanlardan okunacağını buradan güncelleyebilirsiniz.',
+    'empty_description' => 'Dosya modları, farklı içerik modüllerine dosya yönetimi bağlamanızı sağlar.',
+    'hints' =>
+     [
+      'name' => 'Yönetim ekranında görünecek başlık.',
+      'mod_name' => 'Örnek: mod_news, mod_page, mod_attachment_mod',
+      'mod_key' => 'Kayıt başlığını bulmak için okunacak alan adı. Genelde id veya ilişki alanı.',
+      'mod_value' => 'Başlıkta gösterilecek veri alanı. Genelde name, title veya benzeri bir kolon.',
+      'mod_name_edit' => 'Bağlı olduğu sistem modülünün teknik adı.',
+      'mod_key_edit' => 'Başlık kaydını bulmak için okunacak alan.',
+      'mod_value_edit' => 'Listede içerik başlığı olarak gösterilecek alan.',
+    ],
     'columns' => 
      [
       'id' => 'ID',
+      'name' => 'Dosya Mod İsmi',
       'ad' => 'Dosya Mod İsmi',
       'mod_name' => 'Dosya mod_name',
       'mod_key' => 'Dosya mod_key (id)',
-      'mod_value' => 'Dosya mod_value (ad)',
+      'mod_value' => 'Gösterim Alanı',
     ],
   ],
 ];

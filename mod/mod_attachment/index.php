@@ -36,23 +36,46 @@ class mod_attachment_mod extends indexMain
         echo 'Dosya Modülü';
     }
 
+    private function _resolve_record_title($record, $configuredValue = NULL)
+    {
+        if (!is_array($record) || empty($record) || $configuredValue === NULL || $configuredValue === '') {
+            return FALSE;
+        }
+
+        if (!array_key_exists($configuredValue, $record)) {
+            return FALSE;
+        }
+
+        $value = trim((string) $record[$configuredValue]);
+        if ($value === '') {
+            return FALSE;
+        }
+
+        // The configured display field must not point to a relation column.
+        if (substr($configuredValue, -3) === '_id') {
+            return FALSE;
+        }
+
+        return $value;
+    }
+
 
     public function _check_mod($mod, $vid)
     {
         if ($mod === NULL) {
-            print(":");
+            exit($this->lang['mod_attachment']['errors']['missing_module_name']);
             return FALSE;
         }
 
 
         if ($vid === NULL) {
-            print("::");
+            exit($this->lang['mod_attachment']['errors']['missing_record_id']);
             return FALSE;
         }
         // Modül varmı ve dosya Ekleniyormu
         $this->mod = Load::model('mod_attachment_mod');
         if ($this->mod->exists_mod_name($mod) === FALSE) {
-            print(":::");
+            exit($this->lang['mod_attachment']['errors']['invalid_module']);
             return FALSE;
         }
 
@@ -65,18 +88,19 @@ class mod_attachment_mod extends indexMain
         $this->mlang = Load::lang($mod);
         // Dil Dosyası Varmı
         if (empty($this->mlang[$mod]['role_errors']['file'])) {
-            exit("..");
+            exit($this->lang['mod_attachment']['errors']['module_file_permission_missing']);
         }
 
         // dosya Ekleme Permissionsi varmı?
         if ($this->user->hasPermission($mod, 'file', $this->mlang[$mod]['role_errors']['file']) === False) {
+            exit($this->mlang[$mod]['role_errors']['file']);
             return False;
         }
 
         $this->model = Load::model($mod);
         if ($this->model->exists_id($vid) === FALSE) {
             Helper::yonlendir($this->site['adres'] . $mod . '/list', 1);
-            print("::::");
+            print($this->lang['mod_attachment']['errors']['invalid_record']);
             return FALSE;
         }
         $this->model->getResultOne();
@@ -90,7 +114,14 @@ class mod_attachment_mod extends indexMain
         $this->mod_attachment_model = Load::model('mod_attachment');
         $this->mod_attachment_model->where_vid_and_mod_name($vid, $mod)->gR();
 
-        $this->tema->veri('d', $this->model->toArray());
+        $record = $this->model->toArray();
+        $record_title = $this->_resolve_record_title($record, $value);
+        if ($record_title === FALSE) {
+            exit($this->lang['mod_attachment']['errors']['invalid_record_title_field']);
+        }
+
+        $this->tema->veri('d', $record);
+        $this->tema->veri('record_title', $record_title);
         $this->tema->veri('vid', $vid);
     }
 
@@ -101,7 +132,7 @@ class mod_attachment_mod extends indexMain
         $vid = Req::Url_Clear($vid);
 
         if ($this->_check_mod($mod, $vid) === FALSE) {
-            exit(".");
+            return FALSE;
         }
 
         Run::import('management', '_index');
@@ -117,12 +148,12 @@ class mod_attachment_mod extends indexMain
         $this->tema->tpl('mod_attachment/list');
     }
 
-    public function addegis()
+    public function edit()
     {
         $vid = Req::Post_Safe('vid');
         $mod = Req::Post_Safe('mod_name');
         if ($this->_check_mod($mod, $vid) === FALSE) {
-            exit(".");
+            return FALSE;
         }
 
         $this->r = Load::model('mod_attachment');
@@ -130,7 +161,7 @@ class mod_attachment_mod extends indexMain
         $id = Req::Post_Safe('id');
         $this->r->where_id($id)->gRo();
         if ($this->r->getSize() === 0) {
-            exit("..");
+            exit($this->lang['mod_attachment']['errors']['invalid_file']);
         }
         $this->r->id = $id;
         $this->r->filename = Req::Post_Safe('name');
@@ -138,20 +169,25 @@ class mod_attachment_mod extends indexMain
         echo 'Oke';
     }
 
-    public function sil()
+    public function addegis()
+    {
+        return $this->edit();
+    }
+
+    public function delete()
     {
 
         $vid = Req::Post_Safe('vid');
         $mod = Req::Post_Safe('mod_name');
         if ($this->_check_mod($mod, $vid) === FALSE) {
-            exit(".");
+            return FALSE;
         }
 
         $file_model = Load::model('mod_attachment');
         $id = Req::Post_Safe('id');
         $file_model->where_id_and_vid_and_mod_name($id, $vid, $mod)->limit(1)->gRo();
         if ($file_model->getSize() === 0) {
-            exit("....");
+            exit($this->lang['mod_attachment']['errors']['invalid_file']);
         }
 
         $file_model->sync();
@@ -168,12 +204,17 @@ class mod_attachment_mod extends indexMain
         }
     }
 
-    public function yukle()
+    public function sil()
+    {
+        return $this->delete();
+    }
+
+    public function add()
     {
         $vid = Req::Post_Safe('vid');
         $mod = Req::Post_Safe('mod_name');
         if ($this->_check_mod($mod, $vid) === FALSE) {
-            exit(".");
+            return FALSE;
         }
 
         Run::import('management', '_index');
@@ -182,11 +223,16 @@ class mod_attachment_mod extends indexMain
 
         $this->tema->veri('site', $this->site);
         $this->tema->veri('vid', $vid);
-        $this->tema->tpl('mod_attachment/yukle');
+        $this->tema->tpl('mod_attachment/add');
     }
 
 
-    public function up()
+    public function yukle()
+    {
+        return $this->add();
+    }
+
+    public function upload()
     {
         $isim = Req::Post_Safe('isim');
 
@@ -200,7 +246,7 @@ class mod_attachment_mod extends indexMain
 
 
         if ($this->_check_mod($mod, $vid) === FALSE) {
-            exit(".");
+            return FALSE;
         }
 
 
@@ -246,6 +292,11 @@ class mod_attachment_mod extends indexMain
         }
     }
 
+    public function up()
+    {
+        return $this->upload();
+    }
+
     // Valid Mesajı
     private function _mesaj($mesaj)
     {
@@ -256,7 +307,7 @@ class mod_attachment_mod extends indexMain
     // Hata Mesajı
     private function _emesaj($mesaj)
     {
-        $this->tema->veri('hata', True);
+        $this->tema->veri('error', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 

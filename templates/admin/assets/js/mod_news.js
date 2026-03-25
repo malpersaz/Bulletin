@@ -194,7 +194,7 @@ class ContentManager {
                     <div class="card-thumbnail" 
                          onclick="event.stopPropagation(); window.contentManager.processImageUpload('${id}')"
                          style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
-                        ${!imgSrc ? '<i class="bi bi-image" style="font-size: 24px;"></i>' : ''}
+                        ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
                     <div class="card-body-col">

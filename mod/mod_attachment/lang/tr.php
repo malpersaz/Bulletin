@@ -23,7 +23,6 @@ $lang['mod_attachment']['admin']=[
 	'21'=>'Kaydet',
 	'22'=>'%s İçeriği İçin Dosya Yükleme Alanı',
 	'23'=>'Dosya İsmi',
-	'24'=>'İsmini Değiştirmek İstediğiniz Dosyae Çift Tıklayın.',
 	'25'=>'Hiç Bir Dosya Bulunamadı!',
 	'26'=>'---Bütün Dosyaler---',
 	'27'=>'Kayıtlı Hiç Bir Dosya Bulunamadı!',
@@ -37,6 +36,8 @@ $lang['mod_attachment']['admin']=[
 	'38'=>'Dosya Ekleyin',
 	'39'=>'Dosya Düzenlendi',
 	'40'=>'"+original+" Adlı Dosyanın İsmi "+text+" Olarak Değiştirildi"',
+	'41'=>'Dosya yüklenemedi.',
+	'42'=>'İstatistik',
 	'warning'=>'Uyarı!',
 	'info'=>'Bilgi!',
 	'message'=>'Mesaj!',
@@ -50,6 +51,16 @@ $lang['mod_attachment']['hata']=[
 '4'=>'Sadece png,jpg,jpeg,gif,png,bmp Dosyaları çıktı olarak üretilebilinir',
 '5'=>'Dosya Oluşturulamadı',
 '6'=>'Dosya Çıktı Oluşturulamadı'
+];
+
+$lang['mod_attachment']['errors'] = [
+    'missing_module_name' => 'Dosya işlemi için modül bilgisi eksik.',
+    'missing_record_id' => 'Dosya işlemi için kayıt bilgisi eksik.',
+    'invalid_module' => 'Bu kayıt için dosya modülü tanımlı değil.',
+    'module_file_permission_missing' => 'Bu modül için dosya yetkisi tanımlanmamış.',
+    'invalid_record' => 'İlgili kayıt bulunamadı.',
+    'invalid_file' => 'İlgili dosya kaydı bulunamadı.',
+    'invalid_record_title_field' => 'Bu modül için mod_value alanı geçersiz. Gösterim alanını manuel olarak düzeltin.',
 ];
 
 // Roles

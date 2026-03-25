@@ -19,15 +19,15 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Tabloları Oluşturalım
+        // Create tables
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Modülü Ekleyelim
+        // Register module
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Roller ve Permleri Ekleyelim
+        // Register roles and permissions
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }
@@ -43,35 +43,35 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
     {
         $veri = array(
             array(
-                'name' => 'İçerik Galerileri',
+                'name' => 'Content Galleries',
                 'mod_name' => 'mod_content',
                 'mod_key' => 'id',
                 'mod_value' => 'gallery_id',
                 'user_id' => 1
             ),
             array(
-                'name' => 'Sayfa Galerileri',
+                'name' => 'Page Galleries',
                 'mod_name' => 'mod_page',
                 'mod_key' => 'id',
                 'mod_value' => 'gallery_id',
                 'user_id' => 1
             ),
             array(
-                'name' => 'Announcement Galerileri',
+                'name' => 'Announcement Galleries',
                 'mod_name' => 'mod_announcements',
                 'mod_key' => 'id',
                 'mod_value' => 'gallery_id',
                 'user_id' => 1
             ),
             array(
-                'name' => 'Proje Galerileri',
+                'name' => 'Project Galleries',
                 'mod_name' => 'mod_proje',
                 'mod_key' => 'id',
                 'mod_value' => 'gallery_id',
                 'user_id' => 1
             ),
                         array(
-                'name' => 'Video Galerileri',
+                'name' => 'Video Galleries',
                 'mod_name' => 'mod_video_embed',
                 'mod_key' => 'id',
                 'mod_value' => 'gallery_id',
@@ -82,19 +82,19 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
         $this->model = Load::model('mod_gallery_mod');
         foreach ($veri AS $key => $value) {
             if ($this->model->exists_mod_name($value['mod_name']) === FALSE) {
-                $this->oke(" -----<b>" . $value['name']."</b> için galeri modu eklendi");
+                $this->oke(" -----<b>" . $value['name']."</b> gallery module registered");
                 $keys = array_keys($value);
                 foreach ($keys AS $k) {
                     $this->model->$k = $value[$k];
                 }
                 if($this->model->save()===FALSE){
-                    $this->error(" -----<b>" . $value['name']."</b> için galeri modu eklenirken hata oluştu".print_r($this->model,TRUE));
+                    $this->error(" -----Failed to register gallery module for <b>" . $value['name']."</b>".print_r($this->model,TRUE));
                     return FALSE;
                 }
                 continue;
 
             }else{
-                $this->warning(" -----<b>" . $value['name']."</b> için galeri modu daha önce eklenmiş");
+                $this->warning(" -----Gallery module for <b>" . $value['name']."</b> already exists");
             }
         }
         return TRUE;

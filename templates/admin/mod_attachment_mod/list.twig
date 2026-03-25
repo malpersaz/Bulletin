@@ -1,32 +1,51 @@
-{% set hide_navbar = true %}
-{% set hide_fab = true %}
+{% set show_navbar = false %}
+{% set show_fab = false %}
 {% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set show_sidebar = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
 {% extends 'admin/layout.twig' %}
 
-{% block title %}{{ lang.mod_attachment_mod.list|default('File Module List') }}{% endblock %}
-{% block headline %}{{ lang.mod_attachment_mod.list|default('File Module List') }}{% endblock %}
+{% block title %}{{ lang.mod_attachment_mod.list }}{% endblock %}
+{% block headline %}{{ lang.mod_attachment_mod.list }}{% endblock %}
 
-{% block content %}
+{% block styles %}
 <style>
     .attachment-mod-shell {
         padding: 12px 16px 16px;
         display: grid;
         gap: 14px;
         padding-bottom: 120px;
+        background:
+            radial-gradient(circle at top left, rgba(182, 64, 19, 0.10), transparent 24%),
+            radial-gradient(circle at bottom right, rgba(18, 90, 142, 0.10), transparent 26%),
+            linear-gradient(180deg, #fbf4ed 0%, #eef5fb 100%);
+    }
+    .attachment-mod-list {
+        display: grid;
+        gap: 12px;
+    }
+    .attachment-mod-card,
+    .attachment-mod-empty {
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 12px 30px rgba(22, 30, 52, 0.06);
     }
     .attachment-mod-card {
         display: grid;
-        gap: 12px;
+        gap: 14px;
         padding: 16px;
-        border-radius: 20px;
-        background: rgba(255,255,255,0.92);
-        border: 1px solid rgba(0,0,0,0.08);
-        box-shadow: 0 12px 40px rgba(35, 47, 33, 0.06);
         cursor: pointer;
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
     }
     .attachment-mod-card.selected {
-        border-color: var(--md-sys-color-primary);
-        background: var(--md-sys-color-primary-container);
+        border-color: #b64013;
+        box-shadow: 0 18px 36px rgba(182, 64, 19, 0.15);
+        transform: translateY(-1px);
     }
     .attachment-mod-top {
         display: grid;
@@ -35,21 +54,21 @@
         align-items: center;
     }
     .attachment-mod-icon {
-        width: 46px;
-        height: 46px;
-        border-radius: 14px;
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: linear-gradient(135deg, #e8def8, #d0f0ea);
-        color: #356859;
-        font-size: 20px;
+        background: linear-gradient(135deg, #ffe0cf, #d9ebff);
+        color: #7f3217;
+        font-size: 21px;
     }
     .attachment-mod-title {
         margin: 0;
         font-size: 15px;
-        font-weight: 750;
-        line-height: 1.35;
+        font-weight: 800;
+        line-height: 1.4;
         word-break: break-word;
     }
     .attachment-mod-meta {
@@ -67,8 +86,8 @@
         min-height: 24px;
         padding: 0 10px;
         border-radius: 999px;
-        background: #eef2ff;
-        color: #32408f;
+        background: #fff1e9;
+        color: #8b3e1f;
         font-weight: 700;
     }
     .attachment-mod-grid {
@@ -77,18 +96,18 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .attachment-mod-field {
-        border-radius: 14px;
+        border-radius: 16px;
         padding: 12px;
-        background: rgba(0,0,0,0.03);
+        background: rgba(0, 0, 0, 0.03);
     }
     .attachment-mod-field label {
         display: block;
+        margin-bottom: 6px;
         font-size: 11px;
         font-weight: 700;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-bottom: 6px;
         text-transform: uppercase;
         letter-spacing: 0.08em;
+        color: var(--md-sys-color-on-surface-variant);
     }
     .attachment-mod-field div {
         word-break: break-word;
@@ -101,22 +120,27 @@
         align-items: center;
         gap: 12px;
         padding: 56px 28px;
-        border-radius: 26px;
-        border: 1px dashed rgba(48,59,47,0.18);
-        background: rgba(255,255,255,0.88);
         text-align: center;
     }
+    .attachment-mod-empty p {
+        margin: 0;
+        color: var(--md-sys-color-on-surface-variant);
+    }
     @media (max-width: 767px) {
-        .attachment-mod-grid { grid-template-columns: 1fr; }
+        .attachment-mod-grid {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
+{% endblock %}
 
+{% block content %}
 <div class="attachment-mod-shell">
-    <div id="attachmentModList"></div>
+    <div id="attachmentModList" class="attachment-mod-list"></div>
     <section id="attachmentModEmpty" class="attachment-mod-empty" style="display:none;">
         <div class="empty-icon-box"><i class="bi bi-link-45deg"></i></div>
-        <h3>{{ lang.mod_attachment_mod.grid.no_data|default(lang.mod_attachment_mod.grid[4])|default('No data found') }}</h3>
-        <p>{{ lang.mod_attachment_mod.messages.info.module_intro|default('File modules allow integration of file management capabilities into other system components') }}</p>
+        <h3>{{ lang.mod_attachment_mod.grid[4] }}</h3>
+        <p>{{ lang.mod_attachment_mod.admin.empty_description }}</p>
     </section>
 </div>
 {% endblock %}
@@ -125,7 +149,7 @@
 <div class="standard-toolbar">
     <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
         <i class="bi bi-pencil-fill"></i>
-        <span>{{ lang.mod_attachment_mod.button.edit|default('Edit') }}</span>
+        <span>{{ lang.mod_attachment_mod.button.edit }}</span>
     </button>
 
     <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_attachment_mod/add'">
@@ -134,12 +158,12 @@
 
     <button id="toolbarAttachment" class="toolbar-item" onclick="openFilesSelected()" style="opacity:0.3; pointer-events:none;">
         <i class="bi bi-paperclip"></i>
-        <span>{{ lang.mod_attachment_mod.button.file|default('Files') }}</span>
+        <span>{{ lang.mod_attachment_mod.button.file }}</span>
     </button>
 
     <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
         <i class="bi bi-trash3-fill"></i>
-        <span>{{ lang.mod_attachment_mod.button.delete|default('Delete') }}</span>
+        <span>{{ lang.mod_attachment_mod.button.delete }}</span>
     </button>
 </div>
 {% endblock %}
@@ -150,9 +174,15 @@
     let attachmentModRecords = [];
 
     function renderAttachmentModCard(row) {
-        const [checkbox, id, name, modName, modKey, modValue] = row;
+        const id = row[1];
+        const name = row[2];
+        const modName = row[3];
+        const modKey = row[4];
+        const modValue = row[5];
+        const searchText = [id, name, modName, modKey, modValue].join(' ').toLowerCase();
+
         return `
-            <article class="attachment-mod-card" id="attachment-mod-${id}" data-id="${id}" data-name="${String(name).toLowerCase()}" onclick="selectAttachmentMod('${id}')">
+            <article class="attachment-mod-card" id="attachment-mod-${id}" data-id="${id}" data-search="${searchText}" onclick="selectAttachmentMod('${id}')">
                 <div class="attachment-mod-top">
                     <div class="attachment-mod-icon"><i class="bi bi-diagram-3"></i></div>
                     <div>
@@ -165,19 +195,19 @@
                 </div>
                 <div class="attachment-mod-grid">
                     <div class="attachment-mod-field">
-                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_name|default('Module Name')|e('js') }}</label>
+                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_name|e('js') }}</label>
                         <div>${modName}</div>
                     </div>
                     <div class="attachment-mod-field">
-                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_key|default('Module Key')|e('js') }}</label>
+                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_key|e('js') }}</label>
                         <div>${modKey}</div>
                     </div>
                     <div class="attachment-mod-field">
-                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_value|default('Module Value')|e('js') }}</label>
+                        <label>{{ lang.mod_attachment_mod.admin.columns.mod_value|e('js') }}</label>
                         <div>${modValue}</div>
                     </div>
                     <div class="attachment-mod-field">
-                        <label>{{ lang.mod_attachment_mod.admin.columns.name|default(lang.mod_attachment_mod.admin.columns.ad)|default('File Module Name')|e('js') }}</label>
+                        <label>{{ lang.mod_attachment_mod.admin.columns.ad|e('js') }}</label>
                         <div>${name}</div>
                     </div>
                 </div>
@@ -185,18 +215,29 @@
         `;
     }
 
+    function updateAttachmentModToolbar(active) {
+        ['toolbarEdit', 'toolbarAttachment', 'toolbarDelete'].forEach((id) => {
+            const button = document.getElementById(id);
+            if (!button) {
+                return;
+            }
+            button.style.pointerEvents = active ? 'auto' : 'none';
+            button.style.opacity = active ? '1' : '0.3';
+            button.classList.toggle('active', active);
+        });
+    }
+
     async function loadAttachmentModRecords() {
         const list = document.getElementById('attachmentModList');
         const empty = document.getElementById('attachmentModEmpty');
-        if (!list) return;
+        if (!list || !empty) {
+            return;
+        }
 
         const body = new URLSearchParams();
         body.set('start', '0');
         body.set('length', '100');
         body.set('draw', '1');
-
-        const search = document.getElementById('searchInput')?.value?.trim();
-        if (search) body.set('arama[name]', search);
 
         try {
             const response = await fetch('{{ site.sadres }}mod_attachment_mod/datatable_json', {
@@ -204,8 +245,11 @@
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
             });
+
             const payload = await response.json();
             attachmentModRecords = payload.data || [];
+            attachmentModSelectedId = null;
+            updateAttachmentModToolbar(false);
 
             if (!attachmentModRecords.length) {
                 list.innerHTML = '';
@@ -215,88 +259,122 @@
 
             empty.style.display = 'none';
             list.innerHTML = attachmentModRecords.map(renderAttachmentModCard).join('');
+            filterAttachmentModCards(document.getElementById('searchInput')?.value || '');
         } catch (error) {
             showSnackbar(String(error.message || error), 'error');
         }
     }
 
     function selectAttachmentMod(id) {
-        document.querySelectorAll('.attachment-mod-card.selected').forEach(el => el.classList.remove('selected'));
+        document.querySelectorAll('.attachment-mod-card.selected').forEach((element) => {
+            element.classList.remove('selected');
+        });
+
         if (attachmentModSelectedId === id) {
             attachmentModSelectedId = null;
             updateAttachmentModToolbar(false);
             return;
         }
+
         attachmentModSelectedId = id;
         document.getElementById('attachment-mod-' + id)?.classList.add('selected');
         updateAttachmentModToolbar(true);
     }
 
-    function updateAttachmentModToolbar(active) {
-        ['toolbarEdit', 'toolbarAttachment', 'toolbarDelete'].forEach(id => {
-            const btn = document.getElementById(id);
-            if (!btn) return;
-            btn.style.pointerEvents = active ? 'auto' : 'none';
-            btn.style.opacity = active ? '1' : '0.3';
-            btn.classList.toggle('active', active);
-        });
-    }
-
     function editSelected() {
-        if (!attachmentModSelectedId) return;
+        if (!attachmentModSelectedId) {
+            return;
+        }
         location.href = '{{ site.sadres }}mod_attachment_mod/edit/' + attachmentModSelectedId;
     }
 
     function openFilesSelected() {
-        if (!attachmentModSelectedId) return;
+        if (!attachmentModSelectedId) {
+            return;
+        }
         location.href = '{{ site.sadres }}mod_attachment/list/mod_attachment_mod/' + attachmentModSelectedId;
     }
 
     function deleteSelected() {
-        if (!attachmentModSelectedId) return;
+        if (!attachmentModSelectedId) {
+            return;
+        }
+
         Swal.fire({
             icon: 'warning',
             text: '{{ lang.mod_attachment_mod.remove_record|e('js') }}',
             showCancelButton: true,
-            confirmButtonText: '{{ lang.mod_attachment_mod.button.evet|default(lang.mod_attachment_mod.button.yes)|e('js') }}',
-            cancelButtonText: '{{ lang.mod_attachment_mod.button.hayir|default(lang.mod_attachment_mod.button.no)|e('js') }}'
-        }).then(result => {
-            if (!result.isConfirmed) return;
+            confirmButtonText: '{{ lang.mod_attachment_mod.button.evet|e('js') }}',
+            cancelButtonText: '{{ lang.mod_attachment_mod.button.hayir|e('js') }}'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
 
             const body = new URLSearchParams();
             body.append('delete[]', attachmentModSelectedId);
 
-            fetch('{{ site.sadres }}mod_attachment_mod/sil', {
+            fetch('{{ site.sadres }}mod_attachment_mod/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
             })
-            .then(response => response.text())
-            .then(text => {
-                if (text.trim() !== 'Oke') throw new Error(text);
-                showSnackbar('{{ lang.mod_attachment_mod.messages.success.deleted|default('Deleted')|e('js') }}', 'success');
-                attachmentModSelectedId = null;
-                updateAttachmentModToolbar(false);
-                loadAttachmentModRecords();
-            })
-            .catch(error => showSnackbar(String(error.message || error), 'error'));
+                .then((response) => response.text())
+                .then((text) => {
+                    if (text.trim() !== 'Oke') {
+                        throw new Error(text);
+                    }
+
+                    showSnackbar('{{ lang.mod_attachment_mod.message.oke.delete|e('js') }}', 'success');
+                    loadAttachmentModRecords();
+                })
+                .catch((error) => showSnackbar(String(error.message || error), 'error'));
         });
     }
 
     function clearSearch() {
         const input = document.getElementById('searchInput');
-        if (input) input.value = '';
-        loadAttachmentModRecords();
+        if (input) {
+            input.value = '';
+        }
+        filterAttachmentModCards('');
+    }
+
+    function filterAttachmentModCards(value) {
+        const term = String(value || '').toLowerCase().trim();
+        const cards = document.querySelectorAll('.attachment-mod-card');
+        let visible = 0;
+
+        cards.forEach((card) => {
+            const matched = !term || (card.dataset.search || '').includes(term);
+            card.style.display = matched ? 'grid' : 'none';
+            if (matched) {
+                visible += 1;
+            }
+        });
+
+        const empty = document.getElementById('attachmentModEmpty');
+        if (empty) {
+            empty.style.display = visible === 0 ? 'flex' : 'none';
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         loadAttachmentModRecords();
+
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             let timer;
             searchInput.addEventListener('input', function () {
                 clearTimeout(timer);
-                timer = setTimeout(loadAttachmentModRecords, 250);
+                const value = this.value;
+                timer = setTimeout(function () {
+                    if (attachmentModRecords.length) {
+                        filterAttachmentModCards(value);
+                    } else {
+                        loadAttachmentModRecords();
+                    }
+                }, 180);
             });
         }
     });

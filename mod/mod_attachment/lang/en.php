@@ -41,7 +41,6 @@ $lang['mod_attachment']['admin'] = [
     21 => 'Save',
     22 => 'File Upload Area for %s Content',
     23 => 'File Name',
-    24 => 'Double-click the file you want to rename.',
     25 => 'No files found!',
     26 => '--- All Files ---',
     27 => 'No registered files found!',
@@ -55,6 +54,8 @@ $lang['mod_attachment']['admin'] = [
     38 => 'Add File',
     39 => 'File Edited',
     40 => 'File name "+original+" has been changed to "+text+"',
+    41 => 'File upload failed.',
+    42 => 'Statistics',
     'warning' => 'Warning!',
     'info' => 'Info!',
     'message' => 'Message!',
@@ -69,6 +70,16 @@ $lang['mod_attachment']['hata'] = [
     4 => 'Only png, jpg, jpeg, gif, png, bmp files can be generated as output',
     5 => 'File could not be created',
     6 => 'File output could not be generated'
+];
+
+$lang['mod_attachment']['errors'] = [
+    'missing_module_name' => 'Module information is missing for the file operation.',
+    'missing_record_id' => 'Record information is missing for the file operation.',
+    'invalid_module' => 'No file module is defined for this record.',
+    'module_file_permission_missing' => 'No file permission is defined for this module.',
+    'invalid_record' => 'The related record could not be found.',
+    'invalid_file' => 'The related file record could not be found.',
+    'invalid_record_title_field' => 'The mod_value field for this module is invalid. Correct the display field manually.',
 ];
 
 // === Role Permissions ===

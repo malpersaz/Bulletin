@@ -289,8 +289,16 @@ function openContextMenu(id, title, isPublished, hiddenActions = []) {
     const overlay = document.getElementById('context-menu-overlay');
     const titleEl = document.getElementById('contextMenuTitle');
     const statusAction = document.getElementById('contextActionStatus');
+    const editActionLabel = document.querySelector('#contextActionEdit .context-action-label');
+    const galleryActionLabel = document.querySelector('#contextActionGallery .context-action-label');
+    const filesActionLabel = document.querySelector('#contextActionFiles .context-action-label');
+    const deleteActionLabel = document.querySelector('#contextActionDelete .context-action-label');
 
     if (titleEl) titleEl.innerText = title;
+    if (editActionLabel && adminLang?.context_menu?.edit) editActionLabel.innerText = adminLang.context_menu.edit;
+    if (galleryActionLabel && adminLang?.context_menu?.gallery) galleryActionLabel.innerText = adminLang.context_menu.gallery;
+    if (filesActionLabel && adminLang?.context_menu?.files) filesActionLabel.innerText = adminLang.context_menu.files;
+    if (deleteActionLabel && adminLang?.context_menu?.delete) deleteActionLabel.innerText = adminLang.context_menu.delete;
 
     // Handle hidden actions
     const galleryAction = document.getElementById('contextActionGallery');
