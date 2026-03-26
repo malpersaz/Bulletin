@@ -254,7 +254,7 @@ $lang['index']['avatar_modal'] = [
 ];
 
 $lang['index']['copyright'] = '© Alle Rechte vorbehalten.';
-$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.49</a>';
+$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>';
 
 # template.php
 $lang['index']['template'] = [
