@@ -22,9 +22,9 @@
     color: var(--authors-ink);
     font-family: var(--bs-font-sans-serif);
     font-size: 0.9rem;
-    font-weight: 850; /* More authoritative weight */
+    font-weight: 850;
     text-transform: uppercase;
-    letter-spacing: 0.2em; /* Elegant expansion */
+    letter-spacing: 0.2em;
     opacity: 0.95;
 }
 
@@ -36,10 +36,10 @@
 
 #latest-publication-authors .latest-authors-item {
     display: flex;
-    justify-content: space-between; /* Anchor headlines left, avatars right for vertical columns */
-    align-items: flex-start; /* Precise horizontal baseline for author names */
+    justify-content: space-between;
+    align-items: flex-start;
     gap: 1.5rem;
-    padding: 1.5rem 0;
+    padding: 1.25rem 0;
     border-bottom: 1px solid var(--authors-line);
     text-decoration: none;
     color: var(--authors-ink);
@@ -57,8 +57,8 @@
 #latest-publication-authors .latest-authors-copy {
     display: flex;
     flex-direction: column;
-    gap: 0.6rem; /* Enhanced vertical breathing between name and headline */
-    flex: 1; /* Take all available space to push avatar to the right boundary of the column */
+    gap: 0.6rem;
+    flex: 1;
     min-width: 0;
 }
 
@@ -68,7 +68,7 @@
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em; /* Distinguished spacing */
+    letter-spacing: 0.1em;
     line-height: 1.2;
 }
 
@@ -87,7 +87,7 @@
 }
 
 #latest-publication-authors .latest-authors-avatar {
-    width: 48px; /* Slightly refined for baseline proportionality */
+    width: 48px;
     height: 48px;
     border-radius: 50%;
     overflow: hidden;
@@ -97,7 +97,7 @@
     background: #f1f5f9;
     flex-shrink: 0;
     order: 2;
-    margin-top: 0.25rem; /* Optical alignment with the first line of the name block */
+    margin-top: 0.25rem;
 }
 
 #latest-publication-authors .latest-authors-avatar img {
@@ -110,7 +110,7 @@
 @media (min-width: 992px) {
     #latest-publication-authors .latest-authors-list {
         grid-template-columns: repeat(4, 1fr);
-        column-gap: 5rem; /* Prestigious spaciousness */
+        column-gap: 5rem;
     }
     
     #latest-publication-authors .latest-authors-item {
