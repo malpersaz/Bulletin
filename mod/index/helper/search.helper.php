@@ -37,21 +37,39 @@ class search_helper extends indexBase
         Cache::$sure = 60 * 60;
 
 
-        # mod_content arama
-        if (Cache::exists_cache($kelime . "-arama-contents")) {
+        # mod_news arama
+        if (Cache::exists_cache($kelime . "-arama-mod_news")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
-                $this->tema->veri('contents', $cached_data);
+                $this->tema->veri('news', $cached_data);
             }
         } else {
-            $content = Load::model('index.contents');
-            $content->select('summary,name,seo');
-            $content->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
-            $content->gR();
-            if ($content->getSize() !== 0) {
-                $this->tema->veri('contents', $content->toArray());
+            $news = Load::model('mod_news');
+            $news->select('summary,name,seo');
+            $news->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
+            $news->gR();
+            if ($news->getSize() !== 0) {
+                $this->tema->veri('news', $news->toArray());
             }
-            Cache::set($content->toArray(), $kelime . "-arama-contents");
+            Cache::set($news->toArray(), $kelime . "-arama-mod_news");
+        }
+
+
+        # mod_publication arama
+        if (Cache::exists_cache($kelime . "-arama-mod_publication")) {
+            $cached_data = Cache::get_cache();
+            if ($cached_data !== FALSE) {
+                $this->tema->veri('publications', $cached_data);
+            }
+        } else {
+            $publication = Load::model('mod_publication');
+            $publication->select('summary,name,seo');
+            $publication->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
+            $publication->gR();
+            if ($publication->getSize() !== 0) {
+                $this->tema->veri('publications', $publication->toArray());
+            }
+            Cache::set($publication->toArray(), $kelime . "-arama-mod_publication");
         }
 
 
