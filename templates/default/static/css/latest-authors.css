@@ -3,9 +3,10 @@
     --authors-muted: #64748b;
     --authors-line: rgba(17, 24, 39, 0.08);
     --authors-surface: #ffffff;
-    padding: 0;
+    padding-top: 1rem;
+    padding-bottom: 0;
     margin-bottom: 2rem;
-    border-top: 1px solid #000; /* Minimalist top line */
+    border-top: 1px solid #000; /* Minimalist top line matching news */
 }
 
 #latest-publication-authors .latest-authors-card {
@@ -15,16 +16,18 @@
 
 #latest-publication-authors .latest-authors-head {
     margin-bottom: 1.5rem;
-    padding-top: 0.75rem;
+    padding-top: 0;
+    margin-top: 0;
     border-bottom: 1px solid #eee;
 }
 
 #latest-publication-authors .latest-authors-title {
     margin: 0;
+    margin-top: 0;
     padding-bottom: 0.5rem;
     color: var(--authors-ink);
     font-family: 'Pirata One', cursive;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }

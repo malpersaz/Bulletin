@@ -3,8 +3,8 @@
     --authors-muted: #64748b;
     --authors-line: rgba(17, 24, 39, 0.08);
     --authors-surface: #ffffff;
-    padding: 3.5rem 0;
-    border-top: 4px solid var(--authors-ink);
+    padding: 1rem 0;
+    border-top: 1px solid #000;
 }
 
 #latest-publication-authors .latest-authors-card {
@@ -13,19 +13,19 @@
 }
 
 #latest-publication-authors .latest-authors-head {
-    margin-bottom: 3rem;
-    padding-top: 1rem;
+    margin-bottom: 1.5rem;
+    padding-top: 0;
 }
 
 #latest-publication-authors .latest-authors-title {
     margin: 0;
     color: var(--authors-ink);
-    font-family: var(--bs-font-sans-serif);
-    font-size: 0.9rem;
-    font-weight: 850;
+    font-family: 'Pirata One', cursive;
+    font-size: 1.5rem;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    opacity: 0.95;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
 }
 
 #latest-publication-authors .latest-authors-list {
