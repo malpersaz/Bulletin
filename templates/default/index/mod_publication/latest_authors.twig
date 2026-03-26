@@ -2,8 +2,8 @@
 {% set latest_authors = ctx_get('latest_authors') %}
 
 {% if latest_authors %}
-<link rel="stylesheet" href="{{ site.radres }}templates/{{ site.temaSes }}/static/css/latest-authors.css?v={{ site.vrsn }}">
-<section id="latest-publication-authors">
+<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/latest-authors.css?v={{ "now"|date("U") }}">
+<section id="latest-publication-authors" class="py-4">
 
     <div class="latest-authors-card">
         <div class="latest-authors-head">
