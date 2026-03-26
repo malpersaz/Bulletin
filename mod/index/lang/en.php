@@ -27,6 +27,8 @@ $lang['index'] = [
     'add_news'=>'Add News',
     'add_publication'=>'Add Publication',
     'share' => 'Share',
+    'copy_link' => 'Copy Link',
+    'link_copied' => 'Link Copied!',
 ];
 
 # Search

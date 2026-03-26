@@ -115,7 +115,11 @@
                     </nav>
                 </div>
 
-                <div class="card-body p-4 p-md-5">
+                <div class="card-body p-4 p-md-5 position-relative">
+                    {# Sticky Share for Desktop #}
+                    {% include 'partials/share.twig' with {
+                        'share_wrap_class': 'share-sticky-sidebar d-none d-lg-block'
+                    } %}
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         {% if d.category_name is defined and d.category_name is not empty %}
                             <a href="{{ site.sadres }}publications/{{ d.category_seo }}" class="badge bg-primary text-white text-decoration-none">
@@ -184,7 +188,11 @@
                         </div>
                     </div>
 
-                    {% include 'partials/share.twig' %}
+                    {# Mobile Share Block (inline) placed under the title/date #}
+                    {% include 'partials/share.twig' with {
+                        'share_wrap_class': 'd-block d-lg-none mb-4',
+                        'share_container_class': 'justify-content-center'
+                    } %}
 
                     {% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
                         <div class="lead-text mb-5">
@@ -224,6 +232,11 @@
                     <div itemprop="articleBody" class="content-body fs-5 text-dark" style="line-height: 1.85;">
                         {{ d.content|raw }}
                     </div>
+
+                    {# Bottom Share block #}
+                    {% include 'partials/share.twig' with {
+                        'share_wrap_class': 'share-inline d-flex justify-content-center'
+                    } %}
 
                     {% if video is not empty %}
                         <section class="mt-5 pt-5 border-top" id="mod_video" aria-labelledby="video-title">

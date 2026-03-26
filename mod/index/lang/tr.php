@@ -27,6 +27,8 @@ $lang['index'] = [
     'add_news'=>'Haber Ekle',
     'add_publication'=>'Yayın Ekle',
     'share' => 'Paylaş',
+    'copy_link' => 'Bağlantıyı Kopyala',
+    'link_copied' => 'Bağlantı Kopyalandı!',
 ];
 
 # Search

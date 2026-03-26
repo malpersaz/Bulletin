@@ -158,7 +158,11 @@
 						</ol>
 					</nav>
 				</div>
-				<div class="card-body p-4 p-md-5">
+				<div class="card-body p-4 p-md-5 position-relative">
+                    {# Sticky Share for Desktop #}
+                    {% include 'partials/share.twig' with {
+                        'share_wrap_class': 'share-sticky-sidebar d-none d-lg-block'
+                    } %}
 					<div class="d-flex align-items-center gap-2 mb-3">
                         <a href="{{ site.sadres }}newses/{{ d.category_seo }}" class="badge bg-primary text-white text-decoration-none">{{ d.categoryname }}</a>
                         {% set readingTime = (d.content|striptags|length / 1000)|round(0, 'ceil') %}
@@ -197,7 +201,11 @@
 						</div>
 					</div>
 
-                    {% include 'partials/share.twig' %}
+                    {# Mobile Share Block (inline) placed under the title/date #}
+                    {% include 'partials/share.twig' with {
+                        'share_wrap_class': 'd-block d-lg-none mb-4',
+                        'share_container_class': 'justify-content-center'
+                    } %}
 
 					<div class="clearfix">
                         {# Deck / Lead Text #}
@@ -226,6 +234,11 @@
 						<div class="content-body fs-5 text-dark" style="line-height: 1.8;">
 							{{ d.content|raw }}
 						</div>
+
+                        {# Bottom Share block #}
+                        {% include 'partials/share.twig' with {
+                            'share_wrap_class': 'share-inline d-flex justify-content-center'
+                        } %}
 
                         {# Videos Section #}
                         {% if video is not empty %}

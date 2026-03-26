@@ -27,6 +27,8 @@ $lang['index'] = [
     'add_news'=>'Nûçeyekê Lêke',
     'add_publication'=>'Weşanekê Lêke',
     'share' => 'Parve bike',
+    'copy_link' => 'Lînkê jiber bigire',
+    'link_copied' => 'Lînk hat jibergirtin!',
 ];
 
 # Search

@@ -7,93 +7,111 @@
         align-items: center;
         justify-content: center;
         border-radius: 50%;
-        transition: transform 0.2s ease, background-color 0.2s ease;
-        border: 1px solid transparent;
-        color: #fff;
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        border: 1px solid #dee2e6;
+        color: #6c757d;
+        background-color: #fff;
+        text-decoration: none;
     }
     .social-share-btn:hover {
         transform: translateY(-2px);
         color: #fff;
+        border-color: transparent;
     }
-    .btn-facebook { background-color: #1877f2; }
-    .btn-facebook:hover { background-color: #166fe5; }
     
-    .btn-twitter { background-color: #000000; }
-    .btn-twitter:hover { background-color: #333333; }
+    .btn-native-share { display: none; }
+    .btn-native-share:hover { background-color: #0d6efd; color: #fff; }
+
+    .btn-facebook:hover { background-color: #1877f2; }
+    .btn-twitter:hover { background-color: #000000; border-color: #000000; }
+    .btn-whatsapp:hover { background-color: #25d366; }
+    .btn-linkedin:hover { background-color: #0a66c2; }
+    .btn-email:hover { background-color: #ea4335; }
+    .btn-copy:hover { background-color: #495057; }
+
+    /* Desktop Sticky Sidebar */
+    @media (min-width: 992px) {
+        .share-sticky-sidebar {
+            position: absolute;
+            left: -65px; /* Push neatly outside the card */
+            top: 0;
+            height: calc(100% - 100px); /* stop before footer bounds usually */
+            pointer-events: none;
+            z-index: 10;
+        }
+        .share-sticky-sidebar .share-container {
+            position: sticky;
+            top: 100px;
+            pointer-events: auto;
+            flex-direction: column !important;
+        }
+        .share-sticky-sidebar .share-buttons-list {
+            flex-direction: column !important;
+        }
+        .share-sticky-sidebar .share-text {
+            display: none !important;
+        }
+    }
     
-    .btn-whatsapp { background-color: #25d366; }
-    .btn-whatsapp:hover { background-color: #22bf5b; }
-    
-    .btn-linkedin { background-color: #0a66c2; }
-    .btn-linkedin:hover { background-color: #0958a8; }
-    
-    .btn-email { background-color: #6c757d; }
-    .btn-email:hover { background-color: #5c636a; }
-    
-    .btn-copy { background-color: #e9ecef; color: #495057; }
-    .btn-copy:hover { background-color: #dee2e6; color: #212529; }
+    .share-inline {
+        padding-top: 1.5rem;
+    }
 </style>
 
-<div class="social-share d-print-none my-3">
-    <div class="d-flex align-items-center gap-2">
-        <span class="text-muted small fw-bold text-uppercase me-1">{{ lang.index.share|default('Parve bike') }}:</span>
+<div class="social-share d-print-none {{ share_wrap_class|default('my-3') }}">
+    <div class="share-container d-flex align-items-center gap-2 {{ share_container_class|default('') }}">
+        {% if show_share_text|default(true) %}
+        <span class="share-text text-muted fw-bold text-uppercase d-none d-sm-inline-block mr-1" style="font-size: 0.70rem; letter-spacing: 0.5px;">{{ lang.index.share|default('Parve bike') }}:</span>
+        {% endif %}
         
-        {# Facebook #}
-        <a href="https://www.facebook.com/sharer/sharer.php?u={{ site.sadres }}article/{{ d.seo }}" 
-           target="_blank" 
-           class="social-share-btn btn-facebook" 
-           data-bs-toggle="tooltip" 
-           data-bs-placement="top"
-           title="Facebook">
-            <i class="bi bi-facebook"></i>
-        </a>
-
-        {# X (Twitter) #}
-        <a href="https://twitter.com/intent/tweet?text={{ d.name|url_encode }}&url={{ site.sadres }}article/{{ d.seo }}" 
-           target="_blank" 
-           class="social-share-btn btn-twitter" 
-           data-bs-toggle="tooltip"
-           data-bs-placement="top" 
-           title="X (Twitter)">
-            <i class="bi bi-twitter-x"></i>
-        </a>
-
-        {# WhatsApp #}
-        <a href="https://api.whatsapp.com/send?text={{ d.name|url_encode }}%20{{ site.sadres }}article/{{ d.seo }}" 
-           target="_blank" 
-           class="social-share-btn btn-whatsapp" 
-           data-bs-toggle="tooltip"
-           data-bs-placement="top" 
-           title="WhatsApp">
-            <i class="bi bi-whatsapp"></i>
-        </a>
-
-        {# LinkedIn #}
-        <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site.sadres }}article/{{ d.seo }}&title={{ d.name|url_encode }}" 
-           target="_blank" 
-           class="social-share-btn btn-linkedin" 
-           data-bs-toggle="tooltip"
-           data-bs-placement="top" 
-           title="LinkedIn">
-            <i class="bi bi-linkedin"></i>
-        </a>
-
-        {# Email #}
-        <a href="mailto:?subject={{ d.name|url_encode }}&body={{ site.sadres }}article/{{ d.seo }}" 
-           class="social-share-btn btn-email" 
-           data-bs-toggle="tooltip"
-           data-bs-placement="top" 
-           title="Email">
-            <i class="bi bi-envelope"></i>
-        </a>
-        
-         {# Copy Link #}
-        <button onclick="navigator.clipboard.writeText('{{ site.sadres }}article/{{ d.seo }}').then(() => { var tooltip = bootstrap.Tooltip.getInstance(this); tooltip.setContent({'.tooltip-inner': 'Kopylandı!'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': 'Linki Kopyala'}); }, 2000); })" 
-           class="social-share-btn btn-copy border-0" 
-           data-bs-toggle="tooltip"
-           data-bs-placement="top" 
-           title="Linki Kopyala">
-            <i class="bi bi-link-45deg fs-5"></i>
+        <button class="social-share-btn btn-native-share" title="{{ lang.index.share }}" aria-label="{{ lang.index.share }}">
+            <i class="bi bi-share"></i>
         </button>
+
+        <div class="share-buttons-list d-flex gap-2 flex-wrap {{ share_inner_class|default('') }}">
+            {# Facebook #}
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-facebook" aria-label="Facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
+            
+            {# X (Twitter) #}
+            <a href="https://twitter.com/intent/tweet?text={{ d.name|url_encode }}&url={{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
+            
+            {# WhatsApp #}
+            <a href="https://api.whatsapp.com/send?text={{ d.name|url_encode }}%0A{{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            
+            {# LinkedIn #}
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site.sadres }}article/{{ d.seo }}&title={{ d.name|url_encode }}" target="_blank" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            
+            {# Email #}
+            <a href="mailto:?subject={{ d.name|url_encode }}&body={{ site.sadres }}article/{{ d.seo }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email"><i class="bi bi-envelope"></i></a>
+            
+            {# Copy Link #}
+            <button onclick="navigator.clipboard.writeText('{{ site.sadres }}article/{{ d.seo }}').then(() => { var tooltip = bootstrap.Tooltip.getInstance(this); tooltip.setContent({'.tooltip-inner': '{{ lang.index.link_copied|escape('js') }}'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': '{{ lang.index.copy_link|escape('js') }}'}); }, 2000); })" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link }}">
+                <i class="bi bi-link-45deg fs-5"></i>
+            </button>
+        </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (navigator.share && window.innerWidth < 992) {
+        document.querySelectorAll('.btn-native-share').forEach(function(btn) {
+            btn.style.display = 'inline-flex';
+            var list = btn.nextElementSibling;
+            if (list && list.classList.contains('share-buttons-list')) {
+                list.style.display = 'none';
+            }
+            if(btn.previousElementSibling && btn.previousElementSibling.classList.contains('share-text')){
+                btn.previousElementSibling.style.display = 'none';
+            }
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                navigator.share({
+                    title: '{{ d.name|escape('js') }}',
+                    url: window.location.href
+                }).catch(console.error);
+            });
+        });
+    }
+});
+</script>
