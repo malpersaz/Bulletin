@@ -49,7 +49,7 @@ class mod_publication_mod extends indexMain
                 }
             } catch (Exception $e) {
                 // Log the exception for diagnostics.
-                $logFile = ROOT . 'logs/ajax_errors.log';
+                $logFile = root_dir . 'logs/ajax_errors.log';
                 $logMessage = '[' . date('Y-m-d H:i:s') . '] AJAX Error in mod_publication/add: ' . $e->getMessage() . "\n";
                 $logMessage .= '  File: ' . $e->getFile() . ':' . $e->getLine() . "\n";
                 $logMessage .= '  Trace: ' . $e->getTraceAsString() . "\n";
@@ -61,7 +61,7 @@ class mod_publication_mod extends indexMain
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'error',
-                        'message' => 'Database error: ' . $e->getMessage(),
+                        'message' => 'Error: ' . $e->getMessage(),
                         'debug' => [
                             'file' => basename($e->getFile()),
                             'line' => $e->getLine()

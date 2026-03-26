@@ -48,13 +48,13 @@ $lang['mod_user_group']['buttons'] = [
 ];
 
 $lang['mod_user_group']['roll']=[
-	'ad'=>'Benutzergruppen-Rollen',
+	'name'=>'Benutzergruppen-Rollen',
 	'add' =>'Kann Benutzergruppe Hinzufügen.',
 	'edit' =>'Kann Hinzugefügte Benutzergruppe Bearbeiten.',
-	'sil'=>'Kann Hinzugefügte Benutzergruppe Löschen.',
+	'delete'=>'Kann Hinzugefügte Benutzergruppe Löschen.',
 	'list' =>'Kann Benutzergruppen-Verwaltung Anzeigen.',
 	'moderate'=>'Kann Von anderen Hinzugefügte Benutzergruppen Verwalten.',
-	'tasi'=>'Kann Benutzergruppen-Reihenfolge Ändern'
+	'move'=>'Kann Benutzergruppen-Reihenfolge Ändern'
 ];
 
 // === AJAX Response Messages ===
@@ -66,9 +66,9 @@ $lang['mod_user_group']['ajax'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'Sie haben keine Berechtigung, Benutzergruppen anderer zu bearbeiten.',
 	'2'=>'Sie haben keine Berechtigung, Benutzergruppen anderer zu löschen.',
-	'tasi'=>'Sie haben keine Berechtigung, die Reihenfolge der Benutzergruppen zu ändern.',
+	'move'=>'Sie haben keine Berechtigung, die Reihenfolge der Benutzergruppen zu ändern.',
 	'add' =>'Sie haben keine Berechtigung, Benutzergruppen hinzuzufügen.',
-	'sil'=>'Sie haben keine Berechtigung, Benutzergruppen zu löschen.',
+	'delete'=>'Sie haben keine Berechtigung, Benutzergruppen zu löschen.',
 	'edit' =>'Sie haben keine Berechtigung, Benutzergruppen zu bearbeiten.',
 	'list' =>'Sie haben keine Berechtigung, die Benutzergruppen-Verwaltung anzuzeigen.'
 ];

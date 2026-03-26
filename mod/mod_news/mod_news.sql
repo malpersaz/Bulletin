@@ -15,7 +15,7 @@ CREATE TABLE  `mod_news` (
 `description` VARCHAR(255)  NOT NULL ,
 `gallery_id` INT(11) DEFAULT 0 ,
 `file_id` INT(11) DEFAULT 0 ,
-`image` VARCHAR(20),
+`image` VARCHAR(255) DEFAULT NULL,
 `acl_id` INT(11) DEFAULT 0 ,
 `video` VARCHAR(255)  DEFAULT NULL ,
 `user_id` INT(11) NOT NULL

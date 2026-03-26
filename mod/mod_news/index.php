@@ -50,7 +50,7 @@ class mod_news_mod extends indexMain
                 }
             } catch (Exception $e) {
                 // Log the error
-                $logFile = ROOT . 'logs/ajax_errors.log';
+                $logFile = root_dir . 'logs/ajax_errors.log';
                 $logMessage = '[' . date('Y-m-d H:i:s') . '] AJAX Error in mod_news/add: ' . $e->getMessage() . "\n";
                 $logMessage .= '  File: ' . $e->getFile() . ':' . $e->getLine() . "\n";
                 $logMessage .= '  Trace: ' . $e->getTraceAsString() . "\n";
@@ -62,7 +62,7 @@ class mod_news_mod extends indexMain
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'error',
-                        'message' => 'Xeletiya Database: ' . $e->getMessage(),
+                        'message' => 'Error: ' . $e->getMessage(),
                         'debug' => [
                             'file' => basename($e->getFile()),
                             'line' => $e->getLine()
@@ -175,11 +175,11 @@ class mod_news_mod extends indexMain
         // Stats
         $mod_news = Load::model('mod_news');
         $mod_news->flush();
-        $total_content = $mod_news->getCount();
+        $total_news = $mod_news->getCount();
         
         $mod_news->flush();
         $mod_news->where(['status' => 'n']);
-        $draft_content = $mod_news->getCount();
+        $draft_news = $mod_news->getCount();
 
         // Get All Categories for ID -> Name mapping in JS
         $mod_news_category = Load::model('mod_news_category');
@@ -188,8 +188,8 @@ class mod_news_mod extends indexMain
         $mod_news_category->all();
         $categories = $mod_news_category->toArray();
 
-        $this->tema->veri('total_content', $total_content);
-        $this->tema->veri('draft_content', $draft_content);
+        $this->tema->veri('total_news', $total_news);
+        $this->tema->veri('draft_news', $draft_news);
         $this->tema->veri('categories', $categories);
         $this->tema->veri('site', $this->site);
 

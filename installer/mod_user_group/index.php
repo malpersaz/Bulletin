@@ -8,13 +8,13 @@ class mod_user_group extends installerbase implements installerbaseinterface
     public function __construct()
     {
         parent::__construct();
-        // Modül ismi
+        // Module Name
         $this->mod = 'mod_user_group';
-        // Roller
+        // Roles
         $this->rolls = array(
-            'add', 'edit',  'delete', 'list', 'tasi', 'moderate'
+            'add', 'edit',  'delete', 'list', 'move', 'moderate'
         );
-        // tablolar
+        // Tables
         $this->tablolar=array(
             'mod_user_group'
         );
@@ -34,7 +34,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }
-        // Üye Gruplarını Ekleyelim
+        // Add User Groups
         if ($this->addgroups() === FALSE) {
             return FALSE;
         }
@@ -83,13 +83,13 @@ class mod_user_group extends installerbase implements installerbaseinterface
 
             if ($model->getSize() === 0) {
                 if ($model->save()) {
-                    $this->oke("-----<b>" . $model->name . "</b> - Üye Grubu Veritabanına Eklendi!");
+                    $this->oke("-----<b>" . $model->name . "</b> - User Group Added to Database!");
                 } else {
-                    $this->error(" ÜYE GRUPLARI EKLENIRKEN HATA OLUŞTU" . print_r($model, TRUE));
+                    $this->error(" ERROR OCCURRED WHILE ADDING USER GROUPS" . print_r($model, TRUE));
                     return FALSE;
                 }
             } else {
-                $this->warning("-----<b>" . $model->name . "</b> - Üye Grubu Veritabanında Kayıtlı");
+                $this->warning("-----<b>" . $model->name . "</b> - User Group Already Exists in Database");
             }
 
         }

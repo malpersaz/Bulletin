@@ -31,7 +31,7 @@ class DatabaseException extends Exception
         );
         
         // Log şaşiyê
-        $logFile = (defined('ROOT') ? ROOT : '') . 'logs/ajax_errors.log';
+        $logFile = (defined('root_dir') ? root_dir : '') . 'logs/ajax_errors.log';
         $logMessage = '[' . date('Y-m-d H:i:s') . '] DatabaseException: ' . $this->message . "\n";
         if (isset($this->sql)) {
             $logMessage .= '  SQL: ' . $this->sql . "\n";
@@ -51,7 +51,7 @@ class DatabaseException extends Exception
             }
             echo json_encode([
                 'status' => 'error',
-                'message' => 'Xeletiya Database: ' . $this->message,
+                'message' => 'Database Error: ' . $this->message,
                 'debug' => [
                     'sql' => isset($this->sql) ? $this->sql : null,
                     'db_error' => isset($this->_error) ? $this->_error : null,

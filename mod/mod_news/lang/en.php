@@ -370,6 +370,13 @@ $lang['mod_news'] = [
         'delete_success' => 'News deleted!',
     ],
 
+    // === Latest News ===
+    'latest_news' => [
+        1 => 'Latest News',
+        2 => 'View All News',
+        3 => 'No news published yet.',
+    ],
+
     'mock' => [
         'titles' => [
             "New Era Begins in Kurdish Press",

@@ -49,7 +49,7 @@ class mod_user_group_mod extends indexMain
 
 
 		$this->site['title'] = $this->lang['mod_user_group']['admin']['1'];
-		$this->tema->tpl('mod_user_group/ekle');
+		$this->tema->tpl('mod_user_group/add');
 		$this->tema->veri('site', $this->site);
 
 		$grup = Load::model('mod_user_group');
@@ -88,7 +88,7 @@ class mod_user_group_mod extends indexMain
 		$this->site['title'] = $this->lang['mod_user_group']['admin']['2'];
 		$this->tema->veri('site', $this->site);
 		$this->tema->veri('d', $d);
-		$this->tema->tpl('mod_user_group/duzenle');
+		$this->tema->tpl('mod_user_group/edit');
 
 		$grup->flush();
 		$grup->order('order', 'ASC')->all();
@@ -119,10 +119,10 @@ class mod_user_group_mod extends indexMain
 		$this->tema->tpl('mod_user_group/list');
 	}
 	// user_group Sıra
-	public function sira()
+	public function order()
 	{
 		// Taşıma Permissionsi varmı?
-		if ($this->user->hasPermission('mod_user_group', 'tasi', $this->lang['mod_user_group']['role_errors']['tasi']) === False) {
+		if ($this->user->hasPermission('mod_user_group', 'move', $this->lang['mod_user_group']['role_errors']['move']) === False) {
 			return False;
 		}
 		$b = Req::Post_Safe('order');
@@ -142,10 +142,10 @@ class mod_user_group_mod extends indexMain
 
 
 	// user_group Taşıma
-	public function tasi()
+	public function move()
 	{
 		// Taşıma Permissionsi varmı?
-		if ($this->user->hasPermission('mod_user_group', 'tasi', $this->lang['mod_user_group']['role_errors']['tasi']) === False) {
+		if ($this->user->hasPermission('mod_user_group', 'move', $this->lang['mod_user_group']['role_errors']['move']) === False) {
 			return False;
 		}
 		$this->user_group = Load::model('mod_user_group');
@@ -164,12 +164,12 @@ class mod_user_group_mod extends indexMain
 	// Ekleme Fonksiyonu
 	private function _add()
 	{
-		$this->val = Load::validator('mod_user_group.ekle');
+		$this->val = Load::validator('mod_user_group.add');
 		if ($this->val->check()) {
 			foreach ($_POST as $key => $val) {
 				$this->tema->veri($key, Req::Post_Safe($key));
 			}
-			$this->tema->veri('hatalar', $this->val->hatalar);
+			$this->tema->veri('errors', $this->val->errors);
 		} else {
 			$this->model = Load::model('mod_user_group');
 			foreach ($_POST as $key => $val) {
@@ -182,25 +182,30 @@ class mod_user_group_mod extends indexMain
                 $this->model->rolls = '{}';
             }
 
+            // Rêza (order) wekî 0 pênase bike eger nehatibe şandin
+            if (empty($this->model->order)) {
+                $this->model->order = 0;
+            }
+
 			// ACL
 			//$this->model->acl=serialize(Req::Post_Safe('group_id'));
 
 			if ($this->model->save()) {
-				$this->_mesaj($this->lang['mod_user_group']['admin']['12']);
+				$this->_success($this->lang['mod_user_group']['admin']['12']);
 			} else {
-				$this->tema->veri('hata', $this->model->db->sql_error());
+				$this->tema->veri('error', $this->model->db->sql_error());
 			}
 		}
 	}
 	// Düzenleme Fonksiyonu
 	private function _edit($id = NULL)
 	{
-		$this->val = Load::validator('mod_user_group.duzenle');
+		$this->val = Load::validator('mod_user_group.edit');
 		if ($this->val->check($id)) {
 			foreach ($_POST as $key => $val) {
 				$this->tema->veri($key, Req::Post_Safe($key));
 			}
-			$this->tema->veri('hatalar', $this->val->hatalar);
+			$this->tema->veri('errors', $this->val->errors);
 		} else {
 			$this->model = Load::model('mod_user_group');
 
@@ -216,15 +221,15 @@ class mod_user_group_mod extends indexMain
 			//$this->model->acl=serialize(Req::Post_Safe('group_id'));
 
 			if ($this->model->update('group_id')) {
-				$this->_mesaj($this->lang['mod_user_group']['admin']['13']);
+				$this->_success($this->lang['mod_user_group']['admin']['13']);
 			} else {
-				$this->tema->veri('hata', $this->model->db->sql_error());
+				$this->tema->veri('error', $this->model->db->sql_error());
 			}
 		}
 	}
 
 	// Silme Fonksiyonu
-	public function sil()
+	public function delete()
 	{
 		// Silme Permissionsi varmı?
 		if ($this->user->hasPermission('mod_user_group',  'delete', $this->lang['mod_user_group']['role_errors'][ 'delete']) === False) {
@@ -268,15 +273,15 @@ class mod_user_group_mod extends indexMain
 		return TRUE;
 	}
 	// Valid Mesaj
-	private function _mesaj($mesaj)
+	private function _success($message)
 	{
-		$this->tema->veri('oke', True);
-		$this->tema->veri('mesaj', $mesaj);
+		$this->tema->veri('success', True);
+		$this->tema->veri('message', $message);
 	}
 	// Hata Mesaj
-	private function _emesaj($mesaj)
+	private function _error($message)
 	{
-		$this->tema->veri('hata', True);
-		$this->tema->veri('mesaj', $mesaj);
+		$this->tema->veri('error', True);
+		$this->tema->veri('message', $message);
 	}
 }

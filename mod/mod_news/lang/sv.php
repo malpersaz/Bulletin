@@ -370,6 +370,13 @@ $lang['mod_news'] = [
         'delete_success' => 'Nyhet raderad!',
     ],
 
+    // === Latest News ===
+    'latest_news' => [
+        1 => 'Senaste Nytt',
+        2 => 'Visa Alla Nyheter',
+        3 => 'Inga nyheter publicerade ännu.',
+    ],
+
     'mock' => [
         'titles' => [
             "Ny era börjar i kurdisk press",

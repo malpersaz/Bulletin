@@ -9,13 +9,13 @@
 {% set yil = ctx_get('yil') %}
 {% set ay = ctx_get('ay') %}
 {% set bulunamadi = ctx_get('bulunamadi') %}
-{% set contents = ctx_get('contents') %}
+{% set newses = ctx_get('newses') %}
 <div class="row" id="mod_news_list">
     <div class="card">
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.homepage }}</a>
+                    <a href="{{ site.sadres }}">{{ lang.index.home }}</a>
                 </li>
                 <li class="active">{{ lang.index.mod_news.6 }}</li>
             </ol>
@@ -82,13 +82,13 @@
                 <div class="col-md-8">
                     <hr>
                     {% if bulunamadi is not empty %}<h5 class="alert alert-info">{{ lang.index.mod_news.10 }}</h5>{% endif %}
-                    {% if contents is not empty %}
+                    {% if newses is not empty %}
                         <h4 class="alert alert-success">{{ lang.index.mod_news.11 }}</h4>
-                        {% for content in contents %}
+                        {% for news in newses %}
                             <p>
-                                {{ content.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
-    href="{{ site.sadres }}news/{{ content.seo }}"
-    title="{% if content.summary != '' %}{{ content.summary }}{% else %}{{ content.name }}{% endif %}">{{ content.name }}</a>
+                                {{ news.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
+    href="{{ site.sadres }}news/{{ news.seo }}"
+    title="{% if news.summary != '' %}{{ news.summary }}{% else %}{{ news.name }}{% endif %}">{{ news.name }}</a>
                             </p>
                         {% endfor %}
                     {% endif %}

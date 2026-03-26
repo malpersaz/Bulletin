@@ -90,14 +90,14 @@ class index_mod extends indexBase
     {
         Load::lib("Session");
         $news = Load::helper("index.mod_news");
-        $news->content($seo);
+        $news->news($seo);
         unset($news);
     }
 
     public function newses($category = null, $sayfa = 1)
     {
         $news = Load::helper("index.mod_news");
-        $news->contents($category, $sayfa);
+        $news->newses($category, $sayfa);
         unset($news);
     }
 
@@ -239,7 +239,7 @@ class index_mod extends indexBase
     public function _latest_news($t, $limit, $select)
     {
         $helper = Load::helper('index.mod_news');
-        $result = $helper->_latest_content($limit, $select);
+        $result = $helper->_latest_news($limit, $select);
         $t->ctx_set('latest_news', $result);
         unset($helper);
     }

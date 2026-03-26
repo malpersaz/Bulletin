@@ -1138,8 +1138,12 @@ function prepareAndSubmitWizard() {
 
                 // Redirect after delay
                 setTimeout(() => {
-                    if (typeof refreshContentList === 'function') {
+                    if (typeof refreshContent === 'function') {
+                        refreshContent();
+                    } else if (typeof refreshContentList === 'function') {
                         refreshContentList();
+                    } else if (result.redirect) {
+                        window.location.href = result.redirect;
                     } else {
                         window.location.reload();
                     }

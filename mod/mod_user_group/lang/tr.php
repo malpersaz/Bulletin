@@ -40,13 +40,13 @@ $lang['mod_user_group']['hata']=[
 ];
 
 $lang['mod_user_group']['roll']=[
-	'ad'=>'Üye Grup Rolleri',
+	'name'=>'Üye Grup Rolleri',
 	'add' =>'Üye Grup Ekleyebilir',
 	'edit' =>'Eklediği Üye Grubu Düzenleyebilir.',
-	'sil'=>'Eklediği Üye Grubu Silebilir.',
+	'delete'=>'Eklediği Üye Grubu Silebilir.',
 	'list' =>'Üye Grup Yönetimini Görüntüleyebilir.',
 	'moderate'=>'Başkasının Eklediği Üye Grubu Yönetebilir.',
-	'tasi'=>'Üye Grup Sırasını Değiştirebilir'
+	'move'=>'Üye Grup Sırasını Değiştirebilir'
 ];
 
 // Modern language keys (not numbered)
@@ -61,9 +61,9 @@ $lang['mod_user_group']['buttons'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'Bir Başkasınına Ait Üye Grubu Düzenlemeye Permissionniz Bulunmuyor.',
 	'2'=>'Bir Başkasınına Ait Üye Grubu Silmeye Permissionniz Yok.',
-	'tasi'=>'Üye Grup Sırasını Değiştirmeye Permissionniz Yok.',
+	'move'=>'Üye Grup Sırasını Değiştirmeye Permissionniz Yok.',
 	'add' =>'Üye Grup Eklemeye Permissionniz Yok.',
-	'sil'=>'Üye Grup Silmeye Permissionniz Yok.',
+	'delete'=>'Üye Grup Silmeye Permissionniz Yok.',
 	'edit' =>'Üye Grup Düzenlemeye Permissionniz Yok.',
 	'list' =>'Üye Grup Yönetimini Görüntülemeye Permissionniz Yok.'
 ];

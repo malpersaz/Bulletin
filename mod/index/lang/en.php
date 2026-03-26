@@ -288,7 +288,35 @@ $lang['index']['template'] = [
     'in_use' => 'Currently In Use'
 ];
 
-$lang['index']['mod_news'] = $lang['index']['mod_content'];
+$lang['index']['mod_news'] = [
+    '1' => '%s ',
+    '2' => 'All News',
+    '3' => 'news,information,latest news',
+    '4' => 'No news found in this category!',
+    '5' => '%s Archive - Page %s',
+    '6' => 'News Archive',
+    '7' => 'This news item was published on %s in <a href="%s" title="%s">%s</a> category',
+    '8' => 'Files',
+    '9' => 'Select the Year and Month you want to view and click the View button.',
+    '10' => 'No data found for the specified Date and Category!',
+    '11' => 'Search results',
+    '12' => 'Category',
+    '13' => 'Year',
+    '14' => 'Month',
+    '15' => 'View',
+    '16' => 'Go to page %s',
+    '17' => 'Pagination',
+    '18' => 'No news available in this category.',
+    'aylar' => [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ],
+    'latest_news' => [
+        '1' => 'News',
+        '2' => 'View All',
+        '3' => 'No published news is available yet.',
+    ]
+];
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'All Publications';
 $lang['index']['mod_publication']['3'] = 'publication,journal,issue';

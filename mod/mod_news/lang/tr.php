@@ -368,6 +368,13 @@ $lang['mod_news'] = [
         'delete_success' => 'Haber silindi!',
     ],
 
+    // === Latest News ===
+    'latest_news' => [
+        1 => 'Son Haberler',
+        2 => 'Tüm Haberleri Gör',
+        3 => 'Henüz haber yayınlanmadı.',
+    ],
+
     'mock' => [
         'titles' => [
             "Kürt Basınında Yeni Dönem Başlıyor",

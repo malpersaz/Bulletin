@@ -48,13 +48,13 @@ $lang['mod_user_group']['buttons'] = [
 ];
 
 $lang['mod_user_group']['roll']=[
-	'ad'=>'Användargruppsroller',
+	'name'=>'Användargruppsroller',
 	'add' =>'Kan Lägga till Användargrupp.',
 	'edit' =>'Kan Redigera Tillagd Användargrupp.',
-	'sil'=>'Kan Ta Bort Tillagd Användargrupp.',
+	'delete'=>'Kan Ta Bort Tillagd Användargrupp.',
 	'list' =>'Kan Visa Användargrupps-hantering.',
 	'moderate'=>'Kan Hantera Användargrupper Tillagda av Andra.',
-	'tasi'=>'Kan Ändra Användargruppsordning'
+	'move'=>'Kan Ändra Användargruppsordning'
 ];
 
 // === AJAX Response Messages ===
@@ -66,9 +66,9 @@ $lang['mod_user_group']['ajax'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'Du har inte behörighet att redigera användargrupper som tillhör andra.',
 	'2'=>'Du har inte behörighet att ta bort användargrupper som tillhör andra.',
-	'tasi'=>'Du har inte behörighet att ändra användargruppsordning.',
+	'move'=>'Du har inte behörighet att ändra användargruppsordning.',
 	'add' =>'Du har inte behörighet att lägga till användargrupper.',
-	'sil'=>'Du har inte behörighet att ta bort användargrupper.',
+	'delete'=>'Du har inte behörighet att ta bort användargrupper.',
 	'edit' =>'Du har inte behörighet att redigera användargrupper.',
 	'list' =>'Du har inte behörighet att visa användargrupps-hantering.'
 ];

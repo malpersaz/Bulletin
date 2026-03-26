@@ -284,8 +284,35 @@ $lang['index']['template'] = [
     'in_use' => 'Vê Gavê Tê Bikaranîn'
 ];
 
-$lang['index']['mod_news'] = $lang['index']['mod_content'];
-$lang['index']['mod_news']['latest_content']['3'] = 'Hêj tu nûçeya weşandî tune.';
+$lang['index']['mod_news'] = [
+    '1' => '%s ',
+    '2' => 'Hemû Nûçe',
+    '3' => 'nûçe,agahî,nûçeyên dawî',
+    '4' => 'Di vê kategoriyê de nûçe nehat dîtin!',
+    '5' => '%s Arşîv - Rûpel %s',
+    '6' => 'Arşîva Nûçeyan',
+    '7' => 'Ev nûçe di roja %s de di kategoriya <a href="%s" title="%s">%s</a> de hate weşandin',
+    '8' => 'Pel',
+    '9' => 'Sal û meha ku dixwazin nîşan bidin hilbijêrin û li ser bişkoja Nîşan Bide bitikînin.',
+    '10' => 'Ji bo dîroka û kategoriya ku hatîye danasîn danek nehat dîtin!',
+    '11' => 'Encamên lêgerînê',
+    '12' => 'Beş',
+    '13' => 'Sal',
+    '14' => 'Meh',
+    '15' => 'Nîşan bide',
+    '16' => 'Biçe rûpela %s',
+    '17' => 'Rûpelkirin',
+    '18' => 'Di vê kategoriyê de nûçeyên amade nîne.',
+    'aylar' => [
+        "Rêbendan", "Reşemî", "Adar", "Avrêl", "Gulan", "Pûşper",
+        "Tîrmeh", "Gelawêj", "Rezber", "Kewçêr", "Sermawez", "Berfanbar"
+    ],
+    'latest_news' => [
+        '1' => 'Nûçe',
+        '2' => 'Hemûyan Bibîne',
+        '3' => 'Hêj tu nûçeya weşandî tune.',
+    ]
+];
 $lang['index']['mod_publication'] = $lang['index']['mod_content'];
 $lang['index']['mod_publication']['2'] = 'Hemû Weşan';
 $lang['index']['mod_publication']['3'] = 'weşan,kovar,hejmar';

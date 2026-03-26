@@ -47,7 +47,7 @@ nav.navbar {
 
 /* Global Newspaper Standard - Gothic Logo */
 .brand-text-gothic {
-    font-family: 'UnifrakturMaguntia', cursive !important;
+    font-family: 'Pirata One', system-ui !important;
     font-size: 2.1rem !important; /* Elegant & Balanced Size (Standard: 2rem - 2.2rem) */
     line-height: 1.1 !important;
     margin-bottom: 0;

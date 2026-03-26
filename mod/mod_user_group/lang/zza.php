@@ -48,13 +48,13 @@ $lang['mod_user_group']['buttons'] = [
 ];
 
 $lang['mod_user_group']['roll']=[
-	'ad'=>'Rênîşanên Komela Bikarhêner',
+	'name'=>'Rênîşanên Komela Bikarhêner',
 	'add' =>'Dikare Komela Bikarhêner Lê Zêde Bike:',
 	'edit' =>'Dikare Komela Bikarhênerê ku Xwe Lê Zêde Kirine Biguherîne.',
-	'sil'=>'Dikare Komela Bikarhênerê ku Xwe Lê Zêde Kirine Jêbibe.',
+	'delete'=>'Dikare Komela Bikarhênerê ku Xwe Lê Zêde Kirine Jêbibe.',
 	'list' =>'Dikare Rêveberiya Komela Bikarhêner Bibîne.',
 	'moderate'=>'Dikare Komelên Bikarhênerên yên Ji Aliyê Dinan Hatine Zêdekirin Bixeberîne.',
-	'tasi'=>'Dikare Rêza Komelên Bikarhêner Biguherîne'
+	'move'=>'Dikare Rêza Komelên Bikarhêner Biguherîne'
 ];
 
 // === AJAX Response Messages ===
@@ -66,9 +66,9 @@ $lang['mod_user_group']['ajax'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'Tu Destûra Guherandina Komelên Bikarhênerên yên Giştî Nîne.',
 	'2'=>'Tu Destûra Jêbirina Komelên Bikarhênerên yên Giştî Nîne.',
-	'tasi'=>'Tu Destûra Guherandina Rêza Komelên Bikarhêner Nîne.',
+	'move'=>'Tu Destûra Guherandina Rêza Komelên Bikarhêner Nîne.',
 	'add' =>'Tu Destûra Zêdekirina Komelên Bikarhêner Nîne.',
-	'sil'=>'Tu Destûra Jêbirina Komelên Bikarhêner Nîne.',
+	'delete'=>'Tu Destûra Jêbirina Komelên Bikarhêner Nîne.',
 	'edit' =>'Tu Destûra Guherandina Komelên Bikarhêner Nîne.',
 	'list' =>'Tu Destûra Dîtina Rêveberiya Komelên Bikarhêner Nîne.'
 ];

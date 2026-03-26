@@ -48,13 +48,13 @@ $lang['mod_user_group']['buttons'] = [
 ];
 
 $lang['mod_user_group']['roll']=[
-	'ad'=>'Rôles des Groupes d\'Utilisateurs',
+	'name'=>'Rôles des Groupes d\'Utilisateurs',
 	'add' =>'Peut Ajouter un Groupe d\'Utilisateurs',
 	'edit' =>'Peut Modifier le Groupe d\'Utilisateurs Ajouté.',
-	'sil'=>'Peut Supprimer le Groupe d\'Utilisateurs Ajouté.',
+	'delete'=>'Peut Supprimer le Groupe d\'Utilisateurs Ajouté.',
 	'list' =>'Peut Voir la Gestion des Groupes d\'Utilisateurs.',
 	'moderate'=>'Peut Gérer les Groupes d\'Utilisateurs Ajoutés par d\'Autres.',
-	'tasi'=>'Peut Changer l\'Ordre des Groupes d\'Utilisateurs'
+	'move'=>'Peut Changer l\'Ordre des Groupes d\'Utilisateurs'
 ];
 
 // === AJAX Response Messages ===
@@ -66,9 +66,9 @@ $lang['mod_user_group']['ajax'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'Vous n\'avez pas la permission de modifier les groupes d\'utilisateurs appartenant aux autres.',
 	'2'=>'Vous n\'avez pas la permission de supprimer les groupes d\'utilisateurs appartenant aux autres.',
-	'tasi'=>'Vous n\'avez pas la permission de changer l\'ordre des groupes d\'utilisateurs.',
+	'move'=>'Vous n\'avez pas la permission de changer l\'ordre des groupes d\'utilisateurs.',
 	'add' =>'Vous n\'avez pas la permission d\'ajouter des groupes d\'utilisateurs.',
-	'sil'=>'Vous n\'avez pas la permission de supprimer des groupes d\'utilisateurs.',
+	'delete'=>'Vous n\'avez pas la permission de supprimer des groupes d\'utilisateurs.',
 	'edit' =>'Vous n\'avez pas la permission de modifier des groupes d\'utilisateurs.',
 	'list' =>'Vous n\'avez pas la permission de voir la gestion des groupes d\'utilisateurs.'
 ];

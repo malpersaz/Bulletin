@@ -4,19 +4,20 @@
 {% set hide_fab = true %}
 {% set hide_navbar = true %}
 
-{% macro select(parent_id, level, selected_id, items) %}
+{% macro select(parent_id, level, current_id, selected_id, items, disable) %}
     {% if items[parent_id] is defined %}
         {% for entry in items[parent_id] %}
-            <option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected{% endif %}>
+            {% set next_disable = disable or entry.group_id == current_id %}
+            <option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected{% endif %} {% if entry.group_id == current_id or disable %}disabled{% endif %}>
                 {{ '-'|repeat(level * 2) ~ entry.name }}
             </option>
-            {{ _self.select(entry.group_id, level + 1, selected_id, items) }}
+            {{ _self.select(entry.group_id, level + 1, current_id, selected_id, items, next_disable) }}
         {% endfor %}
     {% endif %}
 {% endmacro %}
 
-{% block title %}{{ lang.mod_user_group.admin.1|default('Add User Group') }}{% endblock %}
-{% block headline %}{{ lang.mod_user_group.admin.1|default('Add User Group') }}{% endblock %}
+{% block title %}{{ lang.mod_user_group.admin.2|default('Edit User Group') }}{% endblock %}
+{% block headline %}{{ lang.mod_user_group.admin.2|default('Edit User Group') }}{% endblock %}
 
 {% block content %}
 <style>
@@ -37,30 +38,30 @@
 </style>
 
 <div class="user-group-form-shell">
-    {% if oke is defined %}
-        <div class="form-status success">{{ mesaj }}</div>
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
     {% endif %}
-    {% if hata is defined %}
-        <div class="form-status error">{{ hata }}</div>
+    {% if error is defined %}
+        <div class="form-status error">{{ error }}</div>
     {% endif %}
-    {% if hatalar is defined %}
+    {% if errors is defined %}
         <div class="form-status error">
-            {% for message in hatalar %}
-                <div>{{ message }}</div>
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
             {% endfor %}
         </div>
     {% endif %}
 
-    <form method="POST" action="" id="addUserGroupForm" class="user-group-form-card">
+    <form method="POST" action="" id="editUserGroupForm" class="user-group-form-card">
         <div class="m3-input-wrapper">
-            <input class="m3-input-lg" name="name" value="{{ name|default('') }}" type="text" id="name" placeholder=" ">
+            <input class="m3-input-lg" name="name" value="{{ d.name|default(name|default('')) }}" type="text" id="name" placeholder=" ">
             <label class="m3-floating-label">{{ lang.mod_user_group.admin.7|default('User Group Name') }}</label>
         </div>
 
         <div class="m3-input-wrapper">
             <select class="m3-input-lg" name="parent_id" id="parent_id">
-                <option value="0">{{ lang.mod_user_group[5]|default('Please Select') }}</option>
-                {{ _self.select(0, 0, parent_id|default(0), user_groupm) }}
+                <option value="0" {% if d.parent_id == '0' or d.parent_id == 0 %}selected{% endif %}>{{ lang.mod_user_group[5]|default('Please Select') }}</option>
+                {{ _self.select(0, 0, d.group_id, d.parent_id, user_groupm, false) }}
             </select>
             <label class="m3-floating-label">{{ lang.mod_user_group.admin.22|default('Sub User Group') }}</label>
         </div>
@@ -69,15 +70,15 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-{% if oke is not defined %}
+{% if success is not defined %}
     <div class="user-group-bottom-bar">
         <a href="{{ site.sadres }}mod_user_group/list" class="cancel-btn">
             <i class="bi bi-arrow-left"></i>
             <span>{{ lang.mod_user_group.buttons.cancel|default('Cancel') }}</span>
         </a>
-        <button type="submit" form="addUserGroupForm" name="add" value="1" class="save-btn">
+        <button type="submit" form="editUserGroupForm" name="edit" value="1" class="save-btn">
             <i class="bi bi-check2-circle"></i>
-            <span>{{ lang.mod_user_group.buttons.add|default('Add') }}</span>
+            <span>{{ lang.mod_user_group.buttons.save|default('Save') }}</span>
         </button>
     </div>
 {% endif %}

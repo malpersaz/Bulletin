@@ -1,9 +1,9 @@
 <?php
-class ekle_validator
+class edit_validator
 {
 	public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
 	function __construct()
 	{
 		// Validator Kütüphanesini Yükleyelim
@@ -11,18 +11,17 @@ class ekle_validator
 		// Dil Dosyası.
 		$this->lang = Load::lang('mod_user_group');
 	}
-	public function check()
+	public function check($id)
 	{
 		// AD.
-		$this->valid->ekle(
+		$this->valid->add(
 			[
 				'name' => 'name',
-				'fonk' => 'required',
+				'func' => 'required',
 				'arg' => '',
-				'mesaj' => $this->lang['mod_user_group']['hata']['1']
+				'message' => $this->lang['mod_user_group']['hata']['1']
 			]
 		);
-
 
 		if ($this->_check() === True) {
 			return True;
@@ -35,10 +34,10 @@ class ekle_validator
 	{
 
 		if ($this->valid->check()) {
-			$this->hatalar = $this->valid->list_errors();
+			$this->errors = $this->valid->list_errors();
 		}
 
-		if (count($this->hatalar) > 0) {
+		if (count($this->errors) > 0) {
 			return True;
 		}
 		return False;

@@ -36,13 +36,13 @@ $lang['mod_user_group']['hata']=[
 	'3'=>'Please specify another User Group Link <br/>Because the specified User Group Link is registered'
 ];
 $lang['mod_user_group']['roll']=[
-	'ad'=>'User Group Roles',
+	'name'=>'User Group Roles',
 	'add' =>'Can Add User Group',
 	'edit' =>'Can Edit Added User Group.',
-	'sil'=>'Can Delete Added User Group.',
+	'delete'=>'Can Delete Added User Group.',
 	'list' =>'Can View User Group Management.',
 	'moderate'=>'Can Manage User Groups Added by Others.',
-	'tasi'=>'Can Change User Group Order'
+	'move'=>'Can Change User Group Order'
 ];
 
 // Modern language keys (not numbered)
@@ -63,9 +63,9 @@ $lang['mod_user_group']['ajax'] = [
 $lang['mod_user_group']['role_errors']=[
 	'1'=>'You do not have permission to edit User Groups belonging to others.',
 	'2'=>'You do not have permission to delete User Groups belonging to others.',
-	'tasi'=>'You do not have permission to change User Group Order.',
+	'move'=>'You do not have permission to change User Group Order.',
 	'add' =>'You do not have permission to add User Groups.',
-	'sil'=>'You do not have permission to delete User Groups.',
+	'delete'=>'You do not have permission to delete User Groups.',
 	'edit' =>'You do not have permission to edit User Groups.',
 	'list' =>'You do not have permission to view User Group Management.'
 ];

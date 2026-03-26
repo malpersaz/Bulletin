@@ -360,6 +360,13 @@ $lang['mod_news'] = [
         'delete_success' => 'Nûçe hat jêbirin!',
     ],
 
+    // === Latest News ===
+    'latest_news' => [
+        1 => 'Nûçeyên Dawî (ZZA)',
+        2 => 'Hemû Nûçeyan Bibîne (ZZA)',
+        3 => 'Hîna tu nûçe nehatine weşandin. (ZZA)',
+    ],
+
     'mock' => [
         'titles' => [
             "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",

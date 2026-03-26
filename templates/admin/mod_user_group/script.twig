@@ -109,7 +109,7 @@
             formData.append('group_id', groupId);
             formData.append('parent_id', parentId);
             
-            fetch('{{ site.sadres }}mod_user_group/tasi', {
+            fetch('{{ site.sadres }}mod_user_group/move', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
@@ -120,7 +120,7 @@
                     const orderData = new URLSearchParams();
                     allIds.forEach(sid => orderData.append('order[]', sid));
                     
-                    return fetch('{{ site.sadres }}mod_user_group/sira', {
+                    return fetch('{{ site.sadres }}mod_user_group/order', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: orderData
@@ -254,7 +254,7 @@
             customClass: { popup: 'premium-swal-popup' }
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('{{ site.sadres }}mod_user_group/sil', {
+                fetch('{{ site.sadres }}mod_user_group/delete', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({ group_id: selectedUserGroupId }).toString()

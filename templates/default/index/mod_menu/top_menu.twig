@@ -12,7 +12,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=UnifrakturMaguntia&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
 
 <nav class="navbar navbar-expand-lg sticky-top shadow-sm" role="navigation" aria-label="Ana navigasyon" id="defaultMainHeader">
 	<div
@@ -23,7 +23,7 @@
 				<img src="{{ site.radres }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" class="me-2 d-inline-block align-text-top logo-image" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #ffffff;">
 			{% else %}
 				{% if site.show_logo|default('y') == 'y' %}
-					<span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">{{ site.title|slice(0, 1) }}</span>
+					<span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="width: 40px; height: 40px; font-family: 'Pirata One', system-ui; font-weight: bold; font-size: 1.2rem;">{{ site.title|slice(0, 1) }}</span>
 				{% endif %}
                 <span class="brand-text brand-text-gothic">{{ site.title }}</span>
 			{% endif %}
