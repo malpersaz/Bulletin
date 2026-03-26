@@ -1830,6 +1830,3 @@ class mod_user_mod extends indexMain
         exit; // Prevent HTML output
     }
 }
-t; // Prevent HTML output
-    }
-}

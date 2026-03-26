@@ -138,7 +138,9 @@
                 {{ lang.index.copyright }}
             </p>
 			<div class="text-md-end opacity-75">
-                {{ lang.index.developer|raw }}
+                {% if site.developer is defined and site.developer %}
+                    <a href="https://akmsoftware.co.uk/" target="_blank" class="text-decoration-none text-reset">{{ site.developer }}</a>
+                {% endif %}
                 {% if site.version is defined and site.version %}
                     <span class="ms-2">v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}</span>
                 {% endif %}
