@@ -24,6 +24,7 @@ $lang['management']=[
     'locale_management' => 'Locale Management',
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
+    'publication_categories' => 'Publikationskategorier',
     'total_content' => 'Totalt innehåll',
     'draft_content' => 'Utkast',
     'total_news' => 'Totalt antal nyheter',

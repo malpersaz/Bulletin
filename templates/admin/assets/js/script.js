@@ -859,9 +859,20 @@ function toggleWizardCategorySheet() {
         }
     });
 
-    // FALLBACK: If no categories found for this language, show ALL
+    // FALLBACK: If no categories found for this language, show ALL from the same category type
     if (visibleCount === 0 && items.length > 0) {
-        items.forEach(item => item.style.display = 'flex');
+        items.forEach(item => {
+            const isVideoItem = item.classList.contains('video-cat');
+            const isContentItem = item.classList.contains('content-cat');
+            
+            let typeMatch = false;
+            if (isVideoWizard && isVideoItem) typeMatch = true;
+            if (!isVideoWizard && isContentItem) typeMatch = true;
+            
+            if (typeMatch) {
+                item.style.display = 'flex';
+            }
+        });
     }
 
     sheet.classList.add('active');

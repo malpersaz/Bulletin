@@ -32,6 +32,7 @@ $lang['management']=[
     // İçerik ve Sayfalar Alt Menüsü
     'content_categories' => 'İçerik Kategorileri',
     'news_categories' => 'Haber Kategorileri',
+    'publication_categories' => 'Yayın Kategorileri',
     'total_content' => 'Toplam İçerik',
     'draft_content' => 'Taslaklar',
     'total_news' => 'Toplam Haber',

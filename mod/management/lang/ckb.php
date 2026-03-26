@@ -23,6 +23,7 @@ $lang['management']=[
     'dosya_modulleri' => 'مۆدیوڵەکانی فایل',
     'content_categories' => 'کاتگۆرییەکانی ناوەرۆک',
     'news_categories' => 'کاتگۆرییەکانی هەواڵ',
+    'publication_categories' => 'پۆلەکانی بڵاوکراوە',
     'total_content' => 'کۆی ناوەرۆک',
     'draft_content' => 'ناوەرۆکی ڕەشنووس',
     'total_news' => 'کۆی هەواڵ',

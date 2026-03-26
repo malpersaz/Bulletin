@@ -28,6 +28,7 @@ $lang['management'] = [
 
     'content_categories' => 'Inhaltskategorien',
     'news_categories' => 'Nachrichtenkategorien',
+    'publication_categories' => 'Publikationskategorien',
     'total_content' => 'Gesamter Inhalt',
     'draft_content' => 'Entwürfe',
     'total_news' => 'Gesamte Nachrichten',

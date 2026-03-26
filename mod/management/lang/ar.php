@@ -24,6 +24,7 @@ $lang['management']=[
     'locale_management' => 'Locale Management',
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
+    'publication_categories' => 'فئات النشر',
     'total_content' => 'إجمالي المحتوى',
     'draft_content' => 'المسودات',
     'total_news' => 'إجمالي الأخبار',

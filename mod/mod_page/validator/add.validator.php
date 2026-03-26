@@ -298,7 +298,7 @@ class add_validator
         }
 
         $this->validateReferenceExists('mod_page', $parentId, $this->lang['mod_page']['admin']['columns']['parent_id'], $lang);
-        $this->validateReferenceExists('mod_category', $categoryId, $this->lang['mod_page']['admin']['columns']['category_id'], $lang);
+        $this->validateReferenceExists('mod_news_category', $categoryId, $this->lang['mod_page']['admin']['columns']['category_id'], $lang);
         $this->validateReferenceExists('mod_menu', $menuId, $this->lang['mod_page']['admin']['columns']['menu'], $lang);
         $this->validateReferenceExists('mod_acl', $aclId, $this->lang['mod_page']['admin']['columns']['acl_id']);
         $this->validateReferenceExists('mod_page', $galleryId, $this->lang['mod_page']['admin']['columns']['gallery_id'], $lang);

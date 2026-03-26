@@ -79,13 +79,13 @@ class mod_page_mod extends indexMain
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
 
-        $mod_category_nested = Load::model('mod_category');
-        $mod_category_nested->flush();
+        $mod_news_category_nested = Load::model('mod_news_category');
+        $mod_news_category_nested->flush();
         if ($selectedLang !== '') {
-            $mod_category_nested->where_lang($selectedLang);
+            $mod_news_category_nested->where_lang($selectedLang);
         }
-        $mod_category_nested->order('order', 'ASC')->all();
-        $this->tema->veri('select_nested_category_id_result', Helper::nested($mod_category_nested->toArray(), 'parent_id', 'id'));
+        $mod_news_category_nested->order('order', 'ASC')->all();
+        $this->tema->veri('select_nested_category_id_result', Helper::nested($mod_news_category_nested->toArray(), 'parent_id', 'id'));
 
         $mod_menu_nested = Load::model('mod_menu');
         $mod_menu_nested->flush();

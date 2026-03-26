@@ -14,7 +14,7 @@
 
     <!-- Wizard Header -->
     <header class="wizard-header">
-        <button type="button" class="icon-btn" onclick="closeWizard()"><i class="bi bi-x-lg"></i></button>
+        <button type="button" class="icon-btn" onclick="if(window.location.pathname.endsWith('/add')) { window.location.href='{{ site.sadres }}{{ wizard_lang_key }}/list'; } else { closeWizard(); }"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
             <span id="wizardStepTitle">{{ wizard_lang.wizard.step.language }}</span>
             <span id="wizardStepCounter">1/8</span>

@@ -47,7 +47,7 @@
                 {% endif %}
                 {% if session.permissions.mod_user.acl is defined %}
                 <a href="{{ site.sadres }}mod_user/acl" class="nav-item {% if mod == 'mod_user' and act == 'acl' %}active{% endif %}">
-                    <i class="bi bi-shield-lock nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uye_permissions_yonetimi_acl }}</span>
+                    <i class="bi bi-shield-lock nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.uye_permission_yonetimi_acl }}</span>
                 </a>
                 {% endif %}
                 {% if session.permissions.mod_acl.list is defined %}
@@ -55,14 +55,9 @@
                     <i class="bi bi-database-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.acl }}</span>
                 </a>
                 {% endif %}
-                {% if session.permissions.mod_settings.list is defined %}
-                <a href="{{ site.sadres }}mod_settings/list" class="nav-item {% if mod == 'mod_settings' %}active{% endif %}">
-                    <i class="bi bi-globe nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.locale_management }}</span>
-                </a>
-                {% endif %}
                 {% if session.permissions.mod_attachment_mod.list is defined %}
                 <a href="{{ site.sadres }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}">
-                    <i class="bi bi-paperclip nav-item-icon"></i> <span class="nav-item-label">{{ lang.mod_attachment_mod.list|default('Dosya Mod Listesi') }}</span>
+                    <i class="bi bi-paperclip nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.dosya_modulleri }}</span>
                 </a>
                 {% endif %}
             </div>
@@ -92,9 +87,9 @@
                     <i class="bi bi-file-text-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.content_management }}</span>
                 </a>
                 {% endif %}
-                {% if session.permissions.mod_news.list is defined %}
-                <a href="{{ site.sadres }}mod_news/list" class="nav-item {% if mod == 'mod_news' %}active{% endif %}">
-                    <i class="bi bi-newspaper nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.news_management }}</span>
+                {% if session.permissions.mod_publication_category.list is defined %}
+                <a href="{{ site.sadres }}mod_publication_category/list" class="nav-item {% if mod == 'mod_publication_category' %}active{% endif %}">
+                    <i class="bi bi-bookmarks-fill nav-item-icon"></i> <span class="nav-item-label">{{ lang.management.publication_categories }}</span>
                 </a>
                 {% endif %}
                 {% if session.permissions.mod_menu.list is defined %}

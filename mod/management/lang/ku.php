@@ -27,10 +27,12 @@ $lang['management']=[
     'acl' => 'ACL',
     'gallery_modulleri' => 'Modûlên Galeriyê',
     'dosya_modulleri' => 'Modûlên Pelan',
+    'locale_management' => 'Mîhengên Malperê',
 
     // Binê pêşeka Naverok û Rûpelan
     'content_categories' => 'Kategoriyên Naverokan',
     'news_categories' => 'Kategoriyên Nûçeyan',
+    'publication_categories' => 'Kategoriyên Weşanan',
     'total_content' => 'Hemû Naverok',
     'draft_content' => 'Pêşnûmeya Naverokan',
     'total_news' => 'Hemû Nûçe',

@@ -31,6 +31,7 @@ $lang['management']=[
     // Binê pêşeka Naverok û Rûpelan
     'content_categories' => 'Kategoriyên Naverokan',
     'news_categories' => 'Kategoriyên Nûçeyan',
+    'publication_categories' => 'Kategoriyê Weşan',
     'total_content' => 'Hemû Naverok',
     'draft_content' => 'Pêşnûmeya Naverokan',
     'total_news' => 'Hemû Nûçe',

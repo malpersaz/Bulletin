@@ -24,6 +24,7 @@ $lang['management']=[
     'locale_management' => 'Locale Management',
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
+    'publication_categories' => 'Catégories de Publication',
     'total_content' => 'Contenu total',
     'draft_content' => 'Brouillons',
     'total_news' => 'Total des actualités',
