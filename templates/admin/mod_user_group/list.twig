@@ -12,7 +12,7 @@
 {% macro render_tree(items, parent_id, level) %}
     {% if items[parent_id] is defined %}
         {% for entry in items[parent_id] %}
-            <div class="user-group-node" data-id="{{ entry.group_id }}" data-parent="{{ entry.parent_id }}" data-name="{{ entry.name|lower }}">
+            <div class="category-node" data-id="{{ entry.group_id }}" data-parent="{{ entry.parent_id }}" data-name="{{ entry.name|lower }}">
                 <div class="m3-list-card" onclick="selectUserGroup('{{ entry.group_id }}', this)">
                     <div class="drag-handle" onclick="event.stopPropagation()"><i class="bi bi-grip-vertical"></i></div>
 
@@ -97,4 +97,12 @@
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     {{ include("mod_user_group/script.twig") }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var wrapper = document.querySelector('.mobile-wrapper');
+            if(wrapper) {
+                wrapper.classList.add('mesh-bg');
+            }
+        });
+    </script>
 {% endblock %}
