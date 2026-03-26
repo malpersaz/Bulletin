@@ -36,10 +36,10 @@
 
 #latest-publication-authors .latest-authors-item {
     display: flex;
-    justify-content: flex-start; /* Corrected from space-between for editorial proximity */
-    align-items: center;
-    gap: 1.25rem; /* Tight professional grouping */
-    padding: 1.25rem 0;
+    justify-content: space-between; /* Anchor headlines left, avatars right for vertical columns */
+    align-items: flex-start; /* Precise horizontal baseline for author names */
+    gap: 1.5rem;
+    padding: 1.5rem 0;
     border-bottom: 1px solid var(--authors-line);
     text-decoration: none;
     color: var(--authors-ink);
@@ -57,27 +57,27 @@
 #latest-publication-authors .latest-authors-copy {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem; /* Better vertical breathing for hierarchy */
-    flex: 1;
+    gap: 0.6rem; /* Enhanced vertical breathing between name and headline */
+    flex: 1; /* Take all available space to push avatar to the right boundary of the column */
     min-width: 0;
 }
 
 #latest-publication-authors .latest-authors-name {
     color: var(--authors-muted);
     font-family: var(--bs-font-sans-serif);
-    font-size: 0.725rem;
+    font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    line-height: 1;
+    letter-spacing: 0.1em; /* Distinguished spacing */
+    line-height: 1.2;
 }
 
 #latest-publication-authors .latest-authors-publication {
     color: var(--authors-ink);
     font-family: 'Literata', serif;
     font-size: 1rem;
-    font-weight: 800;
-    line-height: 1.25;
+    font-weight: 850;
+    line-height: 1.35;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     line-clamp: 2;
@@ -87,8 +87,8 @@
 }
 
 #latest-publication-authors .latest-authors-avatar {
-    width: 50px; /* Perfectly balanced for 1rem headlines */
-    height: 50px;
+    width: 48px; /* Slightly refined for baseline proportionality */
+    height: 48px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -97,6 +97,7 @@
     background: #f1f5f9;
     flex-shrink: 0;
     order: 2;
+    margin-top: 0.25rem; /* Optical alignment with the first line of the name block */
 }
 
 #latest-publication-authors .latest-authors-avatar img {
@@ -109,7 +110,7 @@
 @media (min-width: 992px) {
     #latest-publication-authors .latest-authors-list {
         grid-template-columns: repeat(4, 1fr);
-        column-gap: 4.5rem;
+        column-gap: 5rem; /* Prestigious spaciousness */
     }
     
     #latest-publication-authors .latest-authors-item {
