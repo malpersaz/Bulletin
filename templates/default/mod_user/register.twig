@@ -23,7 +23,7 @@ alertDiv.className = 'alert alert-success alert-dismissible fade show';
 alertDiv.setAttribute('role', 'alert');
 alertDiv.innerHTML = `
                     ${
-LANG.register_basarili
+LANG.register_success
 }
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 `;
@@ -67,7 +67,7 @@ clearTimeout(debounceTimer);
 // Show loading state
 if (username.length >= 2) {
 usernameFeedback.innerHTML = `<small class="text-muted">${
-LANG.kontrol_ediliyor
+LANG.checking
 }</small>`;
 } else {
 usernameFeedback.innerHTML = '';
@@ -106,19 +106,19 @@ if (data.available) {
 usernameInput.classList.remove('is-invalid');
 usernameInput.classList.add('is-valid');
 usernameFeedback.innerHTML = `<small class="text-success">${
-LANG.username_kullanilabilir
+LANG.username_available
 }</small>`;
 } else {
 usernameInput.classList.remove('is-valid');
 usernameInput.classList.add('is-invalid');
 usernameFeedback.innerHTML = `<small class="text-danger">${
-LANG.username_mevcut
+LANG.username_exists
 }</small>`;
 }
 }).catch(error => {
 console.error('Username check error:', error);
 usernameFeedback.innerHTML = `<small class="text-warning">${
-LANG.kontrol_yapilamadi
+LANG.check_failed
 }</small>`;
 });
 }
@@ -139,7 +139,7 @@ if (email.length > 0 && email.includes('@')) {
 clearTimeout(debounceTimer);
 
 emailFeedback.innerHTML = `<small class="text-muted">${
-LANG.kontrol_ediliyor
+LANG.checking
 }</small>`;
 
 debounceTimer = setTimeout(() => {
@@ -168,26 +168,26 @@ headers: {
 'Content-Type': 'application/x-www-form-urlencoded'
 },
 credentials: credentialsMode,
-body: 'validateValue=' + encodeURIComponent(email) + '&validateId=email&validateError=' + encodeURIComponent(LANG.email_mevcut)
+body: 'validateValue=' + encodeURIComponent(email) + '&validateId=email&validateError=' + encodeURIComponent(LANG.email_exists)
 }).then(response => response.json()).then(data => {
 console.log('Email check response:', data);
 if (data.jsonValidateReturn && data.jsonValidateReturn[2] === "true") {
 emailInput.classList.remove('is-invalid');
 emailInput.classList.add('is-valid');
 emailFeedback.innerHTML = `<small class="text-success">${
-LANG.email_kullanilabilir
+LANG.email_available
 }</small>`;
 } else {
 emailInput.classList.remove('is-valid');
 emailInput.classList.add('is-invalid');
 emailFeedback.innerHTML = `<small class="text-danger">${
-LANG.email_mevcut
+LANG.email_exists
 }</small>`;
 }
 }).catch(error => {
 console.error('Email check error:', error);
 emailFeedback.innerHTML = `<small class="text-warning">${
-LANG.kontrol_yapilamadi
+LANG.check_failed
 }</small>`;
 });
 }
@@ -364,7 +364,7 @@ message = LANG.validation_required_surname || 'Please enter your surname';
 if (input.validity.valueMissing) {
 message = LANG.validation_required_username || 'Please enter a username';
 } else if (input.validity.tooShort) {
-message = LANG.validation_username_short || LANG.username_kisa || 'Username must be at least 2 characters';
+message = LANG.validation_username_short || 'Username must be at least 2 characters';
 } else if (input.validity.tooLong) {
 message = LANG.validation_username_long || 'Username must not exceed 20 characters';
 }

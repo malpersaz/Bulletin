@@ -111,7 +111,6 @@ class mod_user_mod extends indexMain
     // Function that sends mail when account is activated
     private function _management_akfilestime_email_at()
     {
-        $key = Helper::randomkey(20);
         $email = Load::lib('Email');
         $email->html = True;
         $email->kime = [$this->model->email => $this->model->name . " " . $this->model->last_name];
@@ -282,7 +281,7 @@ class mod_user_mod extends indexMain
         }
 
         $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
-        $r = $ref != '' ? $ref : $this->site['adres'];
+        $r = $ref != '' ? $ref : $this->site['sadres'] . 'mod_user/login';
         
         return Helper::yonlendir($r, 1);
     }
@@ -1054,7 +1053,7 @@ class mod_user_mod extends indexMain
                 $this->session->ac('password', md5(Req::Post_Safe('new_password')));
                 $this->_mesaj($this->lang['mod_user']['password_changed_success']);
             } else {
-                $this->tema->veri('errors', print_r($u, TRUE));
+                $this->tema->veri('errors', ['Database Error: ' . $u->db->sql_error()]);
             }
         }
     }
@@ -1341,7 +1340,7 @@ class mod_user_mod extends indexMain
                         $content['id'],
                         $content['username'],
                         $content['email'],
-                        $content['name'], // Corrected from 'name' to 'name'
+                        $content['name'],
                         $content['last_name'],
                         $status_html,
                         $content['group_id'],
@@ -1648,7 +1647,7 @@ class mod_user_mod extends indexMain
     public function check()
     {
         if ($this->user->checklogin() === False) {
-            Helper::yonlendir($this->site['sadres'] . "login", 1);
+            Helper::yonlendir($this->site['sadres'] . "mod_user/login", 1);
             return FALSE;
         }
         return TRUE;
@@ -1829,5 +1828,8 @@ class mod_user_mod extends indexMain
             die('Captcha error: ' . $e->getMessage());
         }
         exit; // Prevent HTML output
+    }
+}
+t; // Prevent HTML output
     }
 }

@@ -1,6 +1,7 @@
 <?php
 $url=array();
 $url['logout']='mod_user/logout';
+$url['logout/(:any)']='mod_user/logout/$1';
 $url['login']='mod_user/login';
 $url['register']='mod_user/register';
 $url['activation']='mod_user/activation';
