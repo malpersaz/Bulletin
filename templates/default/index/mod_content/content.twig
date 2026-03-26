@@ -281,7 +281,7 @@
                                 <h2 id="files-title" class="h4 mb-4 fw-bold"><i class="bi bi-cloud-download me-2 text-primary"></i>{{ lang.index.mod_attachment[1] }}</h2>
                                 <div class="list-group shadow-sm rounded-3 overflow-hidden">
                                     {% for do in dosya %}
-                                        {% set extension = do.orijinalname|split('.')|last|lower %}
+                                        {% set extension = do.original_name|split('.')|last|lower %}
                                         {% set file_icon = 'bi-file-earmark-arrow-down' %}
                                         {% set badge_color = 'bg-secondary' %}
                                         
@@ -300,7 +300,7 @@
                                                     <i class="bi {{ file_icon }}"></i>
                                                 </div>
                                                 <div>
-                                                    <h6 class="mb-0 fw-bold">{{ do.orijinalname }}</h6>
+                                                    <h6 class="mb-0 fw-bold">{{ do.original_name }}</h6>
                                                     <span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
                                                 </div>
                                             </div>

@@ -173,7 +173,7 @@
                             </a>
                             {% if dosya %}
                                 {% for do in dosya %}
-                                    <a href="{{ site.sadres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_attachment.1 }}: {{ do.name }}">
+                                    <a href="{{ site.sadres }}tools/saveFile/mod_publication/{{ d.id }}/{{ do.id }}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_attachment.1 }}: {{ do.original_name }}">
                                         <i class="bi bi-download"></i>
                                     </a>
                                 {% endfor %}
@@ -284,7 +284,7 @@
 
                                 <div class="list-group rounded-4 overflow-hidden">
                                 {% for do in dosya %}
-                                    {% set extension = do.orijinalname|split('.')|last|lower %}
+                                    {% set extension = do.original_name|split('.')|last|lower %}
                                     {% set file_icon = 'bi-file-earmark-arrow-down' %}
                                     {% set badge_color = 'bg-secondary' %}
 
@@ -303,7 +303,7 @@
                                                 <i class="bi {{ file_icon }}"></i>
                                             </div>
                                             <div>
-                                                <h6 class="mb-0 fw-bold">{{ do.orijinalname }}</h6>
+                                                <h6 class="mb-0 fw-bold">{{ do.original_name }}</h6>
                                                 <span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
                                             </div>
                                         </div>
