@@ -176,6 +176,11 @@ class mod_user_group_mod extends indexMain
 				$this->model->$key = Req::Post_Safe($key);
 			}
 			$this->model->user_id = $this->session->getir('id');
+            
+            // Nirxê rolls eger vala be, wekî JSON-a vala pênase bike
+            if (empty($this->model->rolls)) {
+                $this->model->rolls = '{}';
+            }
 
 			// ACL
 			//$this->model->acl=serialize(Req::Post_Safe('group_id'));

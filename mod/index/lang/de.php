@@ -279,7 +279,8 @@ $lang['index']['mod_publication']['4'] = 'In dieser Kategorie wurden keine Publi
 $lang['index']['mod_publication']['5'] = '%s Publikationsarchiv - Seite %s';
 $lang['index']['mod_publication']['7'] = 'Diese Publikation wurde am %s in der Kategorie <a href="%s" title="%s">%s</a> veröffentlicht';
 $lang['index']['mod_publication']['18'] = 'In dieser Kategorie sind keine Publikationen verfügbar.';
-$lang['index']['mod_publication']['authors'] = 'Autoren';
+$lang['index']['mod_publication']['authors'] = 'Unsere Autoren';
+$lang['index']['mod_publication']['author'] = 'Autor';
 $lang['index']['mod_publication']['other_authors'] = 'Weitere Autoren';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Neueste Publikation';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Es sind noch keine Autoreneintraege zum Anzeigen vorhanden.';
@@ -287,4 +288,7 @@ $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Unsere Publikationen',
     '2' => 'Alle Publikationen',
     '3' => 'Es sind noch keine veroeffentlichten Inhalte verfuegbar.',
+];
+$lang['index']['mod_user_pm'] = [
+    'send_message' => 'Nachricht senden',
 ];

@@ -477,7 +477,7 @@
                             </div>
                             {% endif %}
                             <div class="author-meta">
-                                <span class="author-role">{{ lang.index.mod_publication.author|default('Nivîskar') }}</span>
+                                <span class="author-role">{{ lang.index.mod_publication.author }}</span>
                                 <span class="meta-divider">·</span>
                                 <span class="author-handle">
                                     <i class="bi bi-at"></i>{{ username }}
@@ -485,13 +485,13 @@
                                 {% if username is not empty %}
                                     <span class="meta-divider">·</span>
                                     <a class="author-social-link author-pm" href="{{ site.sadres }}mod_user_pm/send/{{ username }}">
-                                        <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message|default('Peyam Bişîne') }}</span>
+                                        <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message }}</span>
                                     </a>
                                 {% endif %}
                                 {% if author.twitter is defined and author.twitter is not empty %}
                                     <span class="meta-divider">·</span>
                                     <a class="author-social-link author-twitter" href="{{ author.twitter }}" target="_blank" rel="noopener">
-                                        <i class="bi bi-twitter-x"></i><span>X / Twitter</span>
+                                        <i class="bi bi-twitter-x"></i><span>X / X</span>
                                     </a>
                                 {% endif %}
                                 {% if author.facebook is defined and author.facebook is not empty %}

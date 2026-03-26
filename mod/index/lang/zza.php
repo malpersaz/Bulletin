@@ -291,7 +291,8 @@ $lang['index']['mod_publication']['4'] = 'Ena kategoriyê de weşan nêvine!';
 $lang['index']['mod_publication']['5'] = 'Arşîva Weşanan %s - Pela %s';
 $lang['index']['mod_publication']['7'] = 'Na weşan %s de kategoriya <a href="%s" title="%s">%s</a> de weşiyayo';
 $lang['index']['mod_publication']['18'] = 'Ena kategoriyê de weşan niyo.';
-$lang['index']['mod_publication']['authors'] = 'Niviskar';
+$lang['index']['mod_publication']['authors'] = 'Nivîskaranê Me';
+$lang['index']['mod_publication']['author'] = 'Nivîskar';
 $lang['index']['mod_publication']['other_authors'] = 'Niviskarê Binan';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Weşana Peyên';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'Hêna qeydê niviskaranê bıasnayışi nêno.';
@@ -299,4 +300,7 @@ $lang['index']['mod_publication']['latest_publications'] = [
     '1' => 'Weşanê Me',
     '2' => 'Pêro Weşan',
     '3' => 'Hêna naverokê weşiyaye amade niyo.',
+];
+$lang['index']['mod_user_pm'] = [
+    'send_message' => 'Peyam Bişîne',
 ];
