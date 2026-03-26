@@ -2,12 +2,11 @@
 
 function temizle(text) {
     if (!text) return "";
-    let clean = text.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890 ]+/g, " ");
+    // Allow any legal Unicode Letter (\p{L}), any Numeric digit (\p{N}), and Whitespace (\s)
+    let clean = text.replace(/[^\p{L}\p{N}\s]+/gu, " ");
     clean = clean.trim();
-    for (let i = 0; i < 10; i++) {
-        clean = clean.replace(/\s\s/g, " ");
-    }
-    return clean;
+    // Replace multiple spaces with a single space
+    return clean.replace(/\s+/g, " ");
 }
 
 /**
