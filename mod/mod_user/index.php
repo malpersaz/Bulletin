@@ -1627,8 +1627,42 @@ class mod_user_mod extends indexMain
         // If there is no problem, Commit and Apply
         $db->commit();
         // Update administrator Roles
-        $this->user->_roll($this->session->getir('group_id'));
+        $this->user->_loadPermissions($this->session->getir('group_id'));
         $this->_mesaj($this->lang['mod_user']['admin']['permissions_updated']);
+    }
+
+    public function acl_ajax()
+    {
+        if ($this->user->hasPermission('mod_user', 'acl', $this->lang['mod_user']['role_errors']['acl'], 1) === False) {
+            header('Content-Type: application/json');
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+
+        $group_id = (int)$_POST['group_id'];
+        $mod_id   = (int)$_POST['mod_id'];
+        $roll_id  = (int)$_POST['roll_id'];
+        $checked  = $_POST['checked'];
+
+        $db = new Database();
+        
+        if ($checked === 'true') {
+            // Delete first to avoid duplicates
+            $db->query("DELETE FROM mod_user_perm WHERE group_id=$group_id AND mod_id=$mod_id AND roll_id=$roll_id");
+            // Then insert
+            $db->query("INSERT INTO mod_user_perm (group_id, mod_id, roll_id) VALUES ($group_id, $mod_id, $roll_id)");
+        } else {
+            $db->query("DELETE FROM mod_user_perm WHERE group_id=$group_id AND mod_id=$mod_id AND roll_id=$roll_id");
+        }
+
+        // Update session permissions if current user is in this group
+        if ($this->session->getir('group_id') == $group_id) {
+            $this->user->_loadPermissions($group_id);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(['status' => 'success', 'saved' => $checked]);
+        exit;
     }
 
 

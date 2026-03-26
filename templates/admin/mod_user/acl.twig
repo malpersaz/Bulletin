@@ -53,13 +53,16 @@
     .acl-table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        border-radius: 0 0 28px 28px;
     }
     .acl-table {
-        width: 100%;
-        border-collapse: collapse;
+        width: max-content;
+        min-width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
     }
     .acl-table th {
-        background: var(--md-sys-color-surface-variant);
+        background: var(--md-sys-color-surface-variant, #e7e0eb);
         color: var(--md-sys-color-on-surface-variant);
         text-align: center;
         padding: 12px 16px;
@@ -67,11 +70,21 @@
         font-size: 13px;
         border-bottom: 1px solid var(--md-sys-color-outline-variant);
         white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
     .acl-table th:first-child {
         text-align: left;
-        padding-left: 24px;
+        padding-left: 20px;
+        width: 140px;
         min-width: 140px;
+        position: sticky;
+        left: 0;
+        z-index: 30;
+        background: #e7e0eb !important;
+        box-shadow: 4px 0 8px rgba(0,0,0,0.1);
+        white-space: normal;
     }
     .acl-table td {
         padding: 12px 16px;
@@ -80,51 +93,44 @@
         color: var(--md-sys-color-on-surface);
         font-size: 14px;
         text-align: center;
+        background: #f3edf7;
     }
     .acl-table td:first-child {
         text-align: left;
-        padding-left: 24px;
-        font-weight: 500;
+        padding-left: 20px;
+        width: 140px;
+        min-width: 140px;
+        position: sticky;
+        left: 0;
+        z-index: 20;
+        background: #f3edf7 !important;
+        font-weight: 600;
+        box-shadow: 4px 0 8px rgba(0,0,0,0.1);
+        white-space: normal;
+        border-right: 1px solid rgba(0,0,0,0.05);
     }
-    .acl-table tr:last-child td {
-        border-bottom: none;
-    }
-    .acl-table tr:hover {
-        background: rgba(0,0,0,0.02);
+    .acl-table tr:hover td {
+        background: #eeeef2;
     }
     .acl-checkbox {
-        width: 20px;
-        height: 20px;
+        width: 22px;
+        height: 22px;
         accent-color: var(--md-sys-color-primary);
         cursor: pointer;
-        border-radius: 4px;
+        border-radius: 6px;
     }
     .acl-group-toggle {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
     }
     .acl-group-name {
         font-size: 12px;
-        max-width: 100px;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        font-weight: 600;
     }
 </style>
 
-{% if oke is defined %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: 'success',
-                html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj|default(lang.mod_user.admin.12) }}</b>',
-                confirmButtonText: '{{ lang.mod_user.button.evet }}',
-                confirmButtonColor: '#2e7d32'
-            });
-        });
-    </script>
-{% endif %}
 {% if error %}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -138,7 +144,7 @@
     </script>
 {% endif %}
 
-<form action="" method="POST" id="aclForm">
+<form action="" method="POST" id="aclForm" onsubmit="return false;">
     <div class="acl-container">
         {% for m in modlar %}
             {% set mod_name = m.mod_name %}
@@ -157,7 +163,7 @@
                             <tr>
                                 <th>{{ lang.mod_user.admin.user_group }}</th>
                                 {% for grup in gruplar %}
-                                    <th>
+                                    <th style="min-width: 120px; border-left: 1px solid rgba(0,0,0,0.05);">
                                         <div class="acl-group-toggle">
                                             <input type="checkbox" class="acl-checkbox" onchange="toggleGroup(this, '{{ m.mod_id }}', '{{ grup.group_id }}')">
                                             <span class="acl-group-name">{{ lang.mod_user.groups[grup.name] | default(grup.name) }}</span>
@@ -170,12 +176,13 @@
                             {% for roll in attribute(roller, mod_id) %}
                                 <tr>
                                     {% set roll_name = roll.roll_name %}
-                                    <td>{{ attribute(attribute(lang, mod_name).roll, roll.roll_name) | default(roll.roll_name) }}</td>
+                                    <td class="sticky-col">{{ attribute(attribute(lang, mod_name).roll, roll.roll_name) | default(roll.roll_name) }}</td>
                                     {% for grup in gruplar %}
-                                        <td>
+                                        <td style="border-left: 1px solid rgba(0,0,0,0.05);">
                                             <input type="checkbox"
                                                    class="acl-checkbox g-{{ m.mod_id }}-{{ grup.group_id }}"
                                                    name="list[{{ grup.group_id }}][{{ m.mod_id }}][{{ roll.roll_id }}]"
+                                                   onchange="updatePermission(this, '{{ grup.group_id }}', '{{ m.mod_id }}', '{{ roll.roll_id }}')"
                                                    {% for p in permler %}
                                                        {% if grup.group_id == p.group_id and m.mod_id == p.mod_id and roll.roll_id == p.roll_id %}
                                                            checked="checked"
@@ -192,6 +199,8 @@
         {% endfor %}
     </div>
 </form>
+
+<div id="saveStatus" style="position: fixed; top: 120px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 50px; background: #6750A4; color: white; font-size: 15px; font-weight: 600; display: none; z-index: 999999; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 2px solid white; pointer-events: none;"></div>
 {% endblock %}
 
 {% block fixed_bottom %}
@@ -201,13 +210,13 @@
             <span>{{ lang.mod_user.button.vazgec }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="document.getElementById('aclForm').submit()">
-            <i class="bi bi-check-lg"></i>
+        <div class="toolbar-fab" onclick="window.location.reload()">
+            <i class="bi bi-arrow-clockwise"></i>
         </div>
 
-        <button class="toolbar-item active" onclick="document.getElementById('aclForm').submit()">
-            <i class="bi bi-floppy-fill"></i>
-            <span>{{ lang.mod_user.admin.refresh_permissions }}</span>
+        <button class="toolbar-item active" onclick="window.location.reload()">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span>{{ lang.mod_user.admin.refresh_permissions | default('Rojanekirin') }}</span>
         </button>
     </div>
 {% endblock %}
@@ -227,25 +236,57 @@
         }
     }
 
-    // Toggle all checkboxes in a group column
-    function toggleGroup(el, modId, groupId) {
-        var checked = el.checked;
-        var cells = document.querySelectorAll('.g-' + modId + '-' + groupId);
-        cells.forEach(function(cb) {
-            cb.checked = checked;
+    // AJAX function to update single permission
+    function updatePermission(el, groupId, modId, rollId) {
+        var status = document.getElementById('saveStatus');
+        status.style.display = 'block';
+        status.innerHTML = '<i class="bi bi-hourglass-split"></i> {{ lang.mod_user.admin.permissions_updated | default('Tê tomarkirin...') }}';
+        
+        var formData = new FormData();
+        formData.append('group_id', groupId);
+        formData.append('mod_id', modId);
+        formData.append('roll_id', rollId);
+        formData.append('checked', el.checked);
+
+        // Robust URL detection (e.g., /ku/mod_user/acl -> /ku/mod_user/acl_ajax)
+        var url = window.location.href.split('?')[0].replace(/\/acl$/, '/acl_ajax');
+
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            status.innerHTML = '<i class="bi bi-check2-circle"></i> {{ lang.mod_user.admin.permissions_updated | default('Hate tomarkirin') }}';
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 1200);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            status.style.background = '#ba1a1a';
+            status.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Şaşî derket!';
+            setTimeout(() => {
+                status.style.display = 'none';
+                status.style.background = '#6750A4';
+            }, 3000);
         });
     }
 
-    // Hidden submit button
-    (function() {
-        var form = document.getElementById('aclForm');
-        if (form) {
-            var hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = 'gonder';
-            hidden.value = '{{ lang.mod_user.admin.refresh_permissions }}';
-            form.appendChild(hidden);
-        }
-    })();
+    // Toggle all checkboxes in a group column and update via AJAX
+    function toggleGroup(el, modId, groupId) {
+        var checked = el.checked;
+        var cells = document.querySelectorAll('.g-' + modId + '-' + groupId);
+        
+        cells.forEach(function(cb) {
+            if (cb.checked !== checked) {
+                cb.checked = checked;
+                var nameParts = cb.name.match(/\[(\d+)\]$/);
+                if (nameParts && nameParts[1]) {
+                    updatePermission(cb, groupId, modId, nameParts[1]);
+                }
+            }
+        });
+    }
 </script>
 {% endblock %}
