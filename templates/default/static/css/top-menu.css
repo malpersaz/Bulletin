@@ -40,6 +40,34 @@ nav.navbar {
     opacity: 0.8;
 }
 
+/* Global Newspaper Standard - Gothic Logo */
+.brand-text-gothic {
+    font-family: 'UnifrakturMaguntia', cursive !important;
+    font-size: 2.1rem !important; /* Elegant & Balanced Size (Standard: 2rem - 2.2rem) */
+    line-height: 1.1 !important;
+    margin-bottom: 0;
+    vertical-align: middle;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    background: none !important;
+    background-clip: unset !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.2px !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+/* Dark Mode Support for Logo */
+[data-bs-theme="dark"] .brand-text-gothic {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+.navbar-brand:hover .brand-text-gothic {
+    opacity: 0.8;
+}
+
 /* Navigation Links */
 .navbar-nav .nav-link {
     font-weight: 500;
@@ -165,6 +193,9 @@ nav.navbar {
 .navbar-nav .nav-link {
     position: relative;
     font-weight: 500;
+    text-transform: uppercase; /* Global Newspaper Standard */
+    letter-spacing: 0.05em; /* Premium Spacing (Standard: 0.5px - 1px) */
+    font-size: 0.85rem !important; /* Elegant Small Caps */
 }
 
 .navbar-nav .nav-link::after {

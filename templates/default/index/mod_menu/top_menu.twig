@@ -10,6 +10,10 @@
 	: (session.name is defined and session.name is not empty ? session.name : session_username) %}
 {% set session_logout_sid = session.sid is defined and session.sid is not empty ? session.sid : null %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&display=swap" rel="stylesheet">
+
 <nav class="navbar navbar-expand-lg sticky-top shadow-sm" role="navigation" aria-label="Ana navigasyon" id="defaultMainHeader">
 	<div
 		class="container">
@@ -21,7 +25,7 @@
 				{% if site.show_logo|default('y') == 'y' %}
 					<span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="width: 40px; height: 40px; font-weight: bold; font-size: 1.2rem;">{{ site.title|slice(0, 1) }}</span>
 				{% endif %}
-			    <span class="brand-text fw-bold">{{ site.title }}</span>
+                <span class="brand-text brand-text-gothic">{{ site.title }}</span>
 			{% endif %}
 		</a>
 
