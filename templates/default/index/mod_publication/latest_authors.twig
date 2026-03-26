@@ -41,52 +41,71 @@
         #latest-publication-authors .latest-authors-list {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 1.5rem;
+            gap: 0; /* List style, not card style */
         }
 
         #latest-publication-authors .latest-authors-item {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            gap: 1rem;
-            padding: 1.25rem;
-            border: 1px solid transparent;
-            border-radius: 4px;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--latest-authors-line);
             text-decoration: none;
             color: inherit;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s ease;
         }
 
         #latest-publication-authors .latest-authors-item:hover {
-            background: rgba(16, 34, 77, 0.02);
-            border-color: var(--latest-authors-line);
-            transform: translateY(-4px);
+            background: rgba(16, 34, 77, 0.01);
+        }
+
+        #latest-publication-authors .latest-authors-copy {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            flex: 1;
+        }
+
+        #latest-publication-authors .latest-authors-name {
+            color: #64748b; /* Slate color like NYT */
+            font-family: var(--bs-font-sans-serif);
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        #latest-publication-authors .latest-authors-publication {
+            color: #000; /* Dominant Headline */
+            font-family: 'Literata', serif;
+            font-size: 1.35rem; /* Larger, high-impact headline */
+            font-weight: 800;
+            line-height: 1.25;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         #latest-publication-authors .latest-authors-avatar {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #f8fafc;
-            border: 1px solid var(--latest-authors-line);
-            transition: transform 0.3s ease;
-        }
-
-        #latest-publication-authors .latest-authors-item:hover .latest-authors-avatar {
-            transform: scale(1.05);
-            border-color: var(--latest-authors-ink);
+            background: #f1f5f9;
+            flex-shrink: 0;
+            order: 2; /* Move to the right */
         }
 
         #latest-publication-authors .latest-authors-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: grayscale(100%); /* High-end newspaper feel */
+            filter: grayscale(100%);
             transition: filter 0.3s ease;
         }
 
@@ -94,50 +113,21 @@
             filter: grayscale(0%);
         }
 
-        #latest-publication-authors .latest-authors-copy {
-            display: flex;
-            flex-direction: column;
-            gap: 0.6rem;
-        }
-
-        #latest-publication-authors .latest-authors-publication {
-            color: var(--latest-authors-ink); /* Headline is dominant */
-            font-family: 'Literata', serif;
-            font-size: 1.1rem; /* Prominent headline size */
-            font-weight: 700;
-            line-height: 1.35;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-bottom: 0.2rem;
-        }
-
-        #latest-publication-authors .latest-authors-name {
-            color: var(--latest-authors-muted); /* Author is secondary support */
-            font-family: 'Literata', serif;
-            font-size: 0.9rem; /* Smaller author name */
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.02em;
-        }
-
-        @media (min-width: 768px) {
+        @media (min-width: 992px) {
             #latest-publication-authors .latest-authors-list {
-                grid-template-columns: repeat(3, 1fr);
-            }
-        }
-
-        @media (min-width: 1200px) {
-            #latest-publication-authors .latest-authors-list {
-                grid-template-columns: repeat(5, 1fr);
+                grid-template-columns: repeat(2, 1fr); /* Two columns for desktop like a newspaper spreads */
+                column-gap: 4rem;
             }
         }
 
         html[data-bs-theme="dark"] #latest-publication-authors {
             --latest-authors-ink: #f8fafc;
-            --latest-authors-muted: #94a3b8;
+            --latest-authors-line: rgba(255, 255, 255, 0.1);
             --latest-authors-surface: #0f172a;
+        }
+        
+        html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-publication {
+            color: #fff;
         }
 
         html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-card,
@@ -179,8 +169,8 @@
                         {% endif %}
                     </span>
                     <span class="latest-authors-copy">
-                        <span class="latest-authors-publication">{{ latest_publication_title }}</span>
                         <span class="latest-authors-name">{{ latest_author_name }}</span>
+                        <span class="latest-authors-publication">{{ latest_publication_title }}</span>
                     </span>
                 </a>
             {% endfor %}
