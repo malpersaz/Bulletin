@@ -482,10 +482,10 @@
                                 <span class="author-handle">
                                     <i class="bi bi-at"></i>{{ username }}
                                 </span>
-                                {% if author.email is defined and author.email is not empty %}
+                                {% if username is not empty %}
                                     <span class="meta-divider">·</span>
-                                    <a class="author-social-link author-email" href="mailto:{{ author.email }}">
-                                        <i class="bi bi-envelope"></i><span>{{ author.email }}</span>
+                                    <a class="author-social-link author-pm" href="{{ site.sadres }}mod_user_pm/send/{{ username }}">
+                                        <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message|default('Peyam Bişîne') }}</span>
                                     </a>
                                 {% endif %}
                                 {% if author.twitter is defined and author.twitter is not empty %}
