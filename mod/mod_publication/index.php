@@ -647,33 +647,57 @@ class mod_publication_mod extends indexMain
 
     function delete()
     {
-        // Check List Permission
-        if ($this->user->hasPermission('mod_publication',  'delete', $this->lang['mod_publication']['role_errors'][ 'delete']) === False) {
+        $isAjax = $this->_isAjaxRequest();
+        $nasil = $isAjax ? 3 : 1;
+
+        // Check Delete Permission
+        if ($this->user->hasPermission('mod_publication', 'delete', $this->lang['mod_publication']['role_errors']['delete'], $nasil) === False) {
             return False;
         }
-        if (Req::is_Post( 'delete')) {
-            if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
+
+        if (Req::is_Post('delete')) {
+            if ($this->_delete(Req::Post_Safe('delete'))) {
+                if ($isAjax) {
+                    echo 'Oke';
+                } else {
+                    $this->_oke_message($this->lang['mod_publication']['context_menu']['delete_success']);
+                    $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
+                }
             } else {
-                echo 'HATA';
+                if ($isAjax) {
+                    echo $this->lang['mod_publication']['filter']['delete_error'];
+                } else {
+                    $this->_error_message($this->lang['mod_publication']['filter']['delete_error']);
+                }
             }
         } else {
-            exit($this->lang['mod_publication']['errors']['record']);
+            if ($isAjax) {
+                echo json_encode(['error' => true, 'mesaj' => $this->lang['mod_publication']['errors']['record']]);
+            } else {
+                exit($this->lang['mod_publication']['errors']['record']);
+            }
         }
     }
 
     public function _delete($delete)
     {
         $this->mod_publication_model = Load::model('mod_publication');
+        $isAjax = $this->_isAjaxRequest();
+        $nasil = $isAjax ? 3 : 1;
+
+        if (!is_array($delete)) {
+            $delete = [$delete];
+        }
+
         foreach ($delete as $s) {
             $this->mod_publication_model->flush();
             $this->mod_publication_model->where_id($s)->gRo();
             if ($this->mod_publication_model->getSize() === 0) {
-                exit($this->lang['mod_publication']['errors']['record']);
+                continue;
             }
             $this->mod_publication_model->sync();
             // Check Moderate Permission if content belongs to another user
-            if ($this->user->checkPermission('mod_publication', 'moderate_delete', $this->mod_publication_model->user_id, $this->lang['mod_publication']['role_errors']['moderate_delete']) === False) {
+            if ($this->user->checkPermission('mod_publication', 'moderate_delete', $this->mod_publication_model->user_id, $this->lang['mod_publication']['role_errors']['moderate_delete'], $nasil) === False) {
                 return False;
             }
 

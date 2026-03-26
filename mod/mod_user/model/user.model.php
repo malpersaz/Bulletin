@@ -263,7 +263,7 @@ class user_model extends ORM
         } elseif ($nasil == '3') {
             echo json_encode(['error' => true, 'mesaj' => $this->error]);
         } else {
-            echo "<h4>" . $this->lang['mod_user']['error']['permission_error'] . "</h4><br/>" . $this->hata;
+            echo "<h4>" . $this->lang['mod_user']['error']['permission_error'] . "</h4><br/>" . $this->error;
         }
     }
 
