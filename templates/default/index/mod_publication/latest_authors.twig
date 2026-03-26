@@ -97,27 +97,29 @@
         #latest-publication-authors .latest-authors-copy {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        #latest-publication-authors .latest-authors-name {
-            color: var(--latest-authors-ink);
-            font-family: 'Literata', serif;
-            font-size: 1.15rem;
-            font-weight: 700;
-            line-height: 1.2;
+            gap: 0.6rem;
         }
 
         #latest-publication-authors .latest-authors-publication {
-            color: var(--latest-authors-muted);
+            color: var(--latest-authors-ink); /* Headline is dominant */
             font-family: 'Literata', serif;
-            font-size: 0.85rem;
-            font-style: italic;
-            line-height: 1.5;
+            font-size: 1.1rem; /* Prominent headline size */
+            font-weight: 700;
+            line-height: 1.35;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin-bottom: 0.2rem;
+        }
+
+        #latest-publication-authors .latest-authors-name {
+            color: var(--latest-authors-muted); /* Author is secondary support */
+            font-family: 'Literata', serif;
+            font-size: 0.9rem; /* Smaller author name */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
 
         @media (min-width: 768px) {
@@ -177,8 +179,8 @@
                         {% endif %}
                     </span>
                     <span class="latest-authors-copy">
-                        <span class="latest-authors-name">{{ latest_author_name }}</span>
                         <span class="latest-authors-publication">{{ latest_publication_title }}</span>
+                        <span class="latest-authors-name">{{ latest_author_name }}</span>
                     </span>
                 </a>
             {% endfor %}
