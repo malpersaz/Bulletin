@@ -1,9 +1,13 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
-{% extends 'admin/layout.twig' %}
+{% extends "admin/layout.twig" %}
 
-{% block title %}{{ lang.mod_user_group[17]|default('User Group List') }}{% endblock %}
-{% block headline %}{{ lang.mod_user_group[17]|default('User Group List') }}{% endblock %}
+{% block title %}{{ lang.mod_user_group[17]|default('Lîsteya Koman') }}{% endblock %}
+{% block headline %}{{ lang.mod_user_group[17]|default('Lîsteya Koman') }}{% endblock %}
+
+{% block styles %}
+    {# Styles moved to global admin/assets/css/style.css #}
+{% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
     {% if items[parent_id] is defined %}
@@ -44,251 +48,53 @@
 {% endmacro %}
 
 {% block content %}
-<div class="content-list" id="userGroupRootList">
-    <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
-        <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
-            <i class="bi bi-lock-fill" id="reorderIcon"></i>
-            <span id="reorderText">{{ lang.mod_user_group[19]|default('Reorder user groups') }}</span>
-        </button>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {% if user_groupm[0] is defined %}
-        {{ _self.render_tree(user_groupm, 0, 0) }}
-    {% else %}
-        <div class="empty-state-container">
-            <div class="empty-icon-box">
-                <i class="bi bi-diagram-3"></i>
-            </div>
-            <h2 style="font-weight: 800;">{{ lang.mod_user_group[17]|default('No user groups found') }}</h2>
-            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
-                <i class="bi bi-plus-lg"></i>
-            </div>
+    <div class="content-list" id="userGroupRootList">
+        
+        <!-- Reorder Toggle Bar -->
+        <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+            <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
+                <i class="bi bi-lock-fill" id="reorderIcon"></i>
+                <span id="reorderText">{{ lang.mod_user_group[19]|default('Rêzkirinê veke') }}</span>
+            </button>
         </div>
-    {% endif %}
-</div>
+
+        {% if user_groupm[0] is defined %}
+             {{ _self.render_tree(user_groupm, 0, 0) }}
+        {% else %}
+            <div class="empty-state-container">
+                <div class="empty-icon-box">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <h2 style="font-weight: 800;">{{ lang.mod_user_group[17]|default('Kom nehatin dîtin') }}</h2>
+                <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
+                    <i class="bi bi-plus-lg"></i>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="standard-toolbar">
-    <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-        <i class="bi bi-pencil-fill"></i>
-        <span>{{ lang.mod_user_group.buttons.edit|default('Edit') }}</span>
-    </button>
+    <div class="standard-toolbar">
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_user_group.buttons.edit|default('Biguhere') }}</span>
+        </button>
+        
+        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
+            <i class="bi bi-plus-lg"></i>
+        </div>
 
-    <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
-        <i class="bi bi-plus-lg"></i>
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+            <span>{{ lang.mod_user_group.buttons.delete|default('Jê bibe') }}</span>
+        </button>
     </div>
-
-    <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-        <i class="bi bi-trash3-fill"></i>
-        <span>{{ lang.mod_user_group.buttons.delete|default('Delete') }}</span>
-    </button>
-</div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-<script>
-    let selectedUserGroupId = null;
-    let userGroupSortables = [];
-    let reorderActive = false;
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const root = document.getElementById('userGroupRootList');
-        if (root) initSortable(root);
-        document.querySelectorAll('.list-children').forEach(el => initSortable(el));
-
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', e => filterUserGroups(e.target.value));
-        }
-    });
-
-    function initSortable(el) {
-        const sortable = new Sortable(el, {
-            group: 'user_group_nested',
-            animation: 250,
-            handle: '.drag-handle',
-            disabled: true,
-            fallbackOnBody: true,
-            swapThreshold: 0.65,
-            ghostClass: 'sortable-ghost',
-            onEnd: function (evt) {
-                Swal.fire({
-                    title: '{{ lang.mod_user_group[19]|e('js') }}',
-                    text: '{{ lang.mod_user_group[15]|default('Confirm')|e('js') }}',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: '{{ lang.mod_user_group[15]|default('Yes')|e('js') }}',
-                    cancelButtonText: '{{ lang.mod_user_group[16]|default('Cancel')|e('js') }}'
-                }).then(result => {
-                    if (!result.isConfirmed) {
-                        location.reload();
-                        return;
-                    }
-
-                    const item = evt.item;
-                    const groupId = item.dataset.id;
-                    let parentId = 0;
-                    if (evt.to.classList.contains('list-children')) {
-                        const parentNode = evt.to.closest('.user-group-node');
-                        if (parentNode) parentId = parentNode.dataset.id;
-                    }
-
-                    const orderIds = [];
-                    document.querySelectorAll('.user-group-node').forEach(node => {
-                        if (node.dataset.id) orderIds.push(node.dataset.id);
-                    });
-
-                    fetch('{{ site.sadres }}mod_user_group/tasi', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: new URLSearchParams({ group_id: groupId, parent_id: parentId }).toString()
-                    })
-                    .then(response => response.text())
-                    .then(moveResponse => {
-                        if (moveResponse.trim().toUpperCase() !== 'OK') {
-                            throw new Error(moveResponse);
-                        }
-
-                        const orderData = new URLSearchParams();
-                        orderIds.forEach(id => orderData.append('order[]', id));
-                        return fetch('{{ site.sadres }}mod_user_group/sira', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: orderData.toString()
-                        });
-                    })
-                    .then(response => response.text())
-                    .then(orderResponse => {
-                        if (orderResponse.trim().toUpperCase() !== 'OK') {
-                            throw new Error(orderResponse);
-                        }
-                        showSnackbar('{{ lang.mod_user_group[10]|e('js') }}', 'success');
-                    })
-                    .catch(error => {
-                        showSnackbar(String(error.message || error), 'error');
-                        setTimeout(() => location.reload(), 700);
-                    });
-                });
-            }
-        });
-        userGroupSortables.push(sortable);
-    }
-
-    window.toggleReorderMode = function () {
-        reorderActive = !reorderActive;
-        const icon = document.getElementById('reorderIcon');
-        const text = document.getElementById('reorderText');
-        const btn = document.getElementById('reorderToggleBtn');
-
-        if (reorderActive) {
-            icon.className = 'bi bi-unlock-fill';
-            text.textContent = '{{ lang.mod_user_group[19]|e('js') }}';
-            btn.style.background = '#eaddff';
-            userGroupSortables.forEach(sortable => sortable.option('disabled', false));
-        } else {
-            icon.className = 'bi bi-lock-fill';
-            text.textContent = '{{ lang.mod_user_group[19]|e('js') }}';
-            btn.style.background = '#f3edf7';
-            userGroupSortables.forEach(sortable => sortable.option('disabled', true));
-        }
-    };
-
-    window.toggleUserGroup = function (button, event) {
-        if (event) event.stopPropagation();
-        const node = button.closest('.user-group-node');
-        const children = node.querySelector('.list-children');
-        if (children) {
-            children.classList.toggle('collapsed');
-            button.classList.toggle('collapsed');
-        }
-    };
-
-    window.selectUserGroup = function (id, card) {
-        document.querySelectorAll('.m3-list-card.selected').forEach(el => el.classList.remove('selected'));
-
-        if (selectedUserGroupId === id) {
-            selectedUserGroupId = null;
-            updateToolbar(false);
-            return;
-        }
-
-        selectedUserGroupId = id;
-        card.classList.add('selected');
-        updateToolbar(true);
-    };
-
-    function updateToolbar(active) {
-        const edit = document.getElementById('toolbarEdit');
-        const del = document.getElementById('toolbarDelete');
-        [edit, del].forEach(btn => {
-            if (!btn) return;
-            btn.style.pointerEvents = active ? 'auto' : 'none';
-            btn.style.opacity = active ? '1' : '0.3';
-            btn.classList.toggle('active', active);
-        });
-    }
-
-    window.editSelected = function () {
-        if (!selectedUserGroupId) return;
-        window.location.href = '{{ site.sadres }}mod_user_group/edit/' + selectedUserGroupId;
-    };
-
-    window.deleteSelected = function () {
-        if (!selectedUserGroupId) return;
-
-        Swal.fire({
-            title: '{{ lang.mod_user_group[8]|e('js') }}',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '{{ lang.mod_user_group[15]|default('Yes')|e('js') }}',
-            cancelButtonText: '{{ lang.mod_user_group[16]|default('Cancel')|e('js') }}'
-        }).then(result => {
-            if (!result.isConfirmed) return;
-
-            fetch('{{ site.sadres }}mod_user_group/sil', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams({ group_id: selectedUserGroupId }).toString()
-            })
-            .then(response => response.text())
-            .then(text => {
-                if (text.trim().toUpperCase() !== 'OK') {
-                    throw new Error(text);
-                }
-                showSnackbar('{{ lang.mod_user_group[9]|e('js') }}', 'success');
-                setTimeout(() => location.reload(), 500);
-            })
-            .catch(error => showSnackbar(String(error.message || error), 'error'));
-        });
-    };
-
-    window.filterUserGroups = function (value) {
-        const term = String(value || '').toLowerCase().trim();
-        const nodes = document.querySelectorAll('.user-group-node');
-
-        if (!term) {
-            nodes.forEach(node => node.style.display = '');
-            return;
-        }
-
-        nodes.forEach(node => node.style.display = 'none');
-        nodes.forEach(node => {
-            const name = node.dataset.name || '';
-            if (name.includes(term)) showParents(node);
-        });
-    };
-
-    function showParents(node) {
-        node.style.display = 'block';
-        let parent = node.parentElement.closest('.user-group-node');
-        while (parent) {
-            parent.style.display = 'block';
-            parent.querySelector('.list-children')?.classList.remove('collapsed');
-            parent.querySelector('.toggle-btn')?.classList.remove('collapsed');
-            parent = parent.parentElement.closest('.user-group-node');
-        }
-    }
-</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    {{ include("mod_user_group/script.twig") }}
 {% endblock %}
