@@ -331,7 +331,11 @@ nav.navbar::before {
     }
 
     nav.navbar .brand-text {
-        display: none !important;
+        display: inline-block !important;
+    }
+
+    nav.navbar .brand-text-gothic {
+        font-size: 1.6rem !important;
     }
 
     /* Modern Mobile Menu Container */
