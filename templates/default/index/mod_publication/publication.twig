@@ -136,6 +136,9 @@
 
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-top border-bottom py-3">
                         <div class="d-flex align-items-center gap-3">
+                            {% if d.username is defined and d.username is not empty %}
+                                <a href="{{ site.sadres }}author/{{ d.username }}" class="text-decoration-none">
+                            {% endif %}
                             {% if d.user_image is defined and d.user_image is not empty %}
                                 <img src="{{ site.radres }}mod_user/thumb/{{ d.user_image }}"
                                      alt="{{ d.u_name }} {{ d.u_last_name }}"
@@ -148,6 +151,9 @@
                                      style="width: 56px; height: 56px; font-weight: 700;">
                                     {{ (d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper }}
                                 </div>
+                            {% endif %}
+                            {% if d.username is defined and d.username is not empty %}
+                                </a>
                             {% endif %}
                             <div class="small text-muted">
                                 {% if d.username is defined and d.username is not empty %}

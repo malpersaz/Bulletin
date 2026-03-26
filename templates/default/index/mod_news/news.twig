@@ -170,19 +170,56 @@
                     </div>
 					<h1 class="card-title display-5 fw-bold mb-4">{{ d.name }}</h1>
 
-					<div class="d-flex justify-content-between align-items-center mb-4 border-top border-bottom py-3">
-						<div class="text-muted small">
-							<p class="mb-1">
-							    <i class="bi bi-calendar3 me-1"></i> {{ lang.index.publish_date }}:
-							    <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time>
-                            </p>
-                            {% if d.updated_at != d.created_at %}
-                            <p class="mb-0">
-							    <i class="bi bi-pencil-square me-1"></i> {{ lang.index.updated_date }}:
-							    <time datetime="{{ d.updated_at|date('Y-m-d') }}">{{ d.updated_at|date('d.m.Y') }}</time>
-                            </p>
+					<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 border-top border-bottom py-3">
+                        <div class="d-flex align-items-center gap-3">
+                            {% if d.u_name is defined and d.u_name is not empty %}
+                                {% if d.username is defined and d.username is not empty %}
+                                    <a href="{{ site.sadres }}author/{{ d.username }}" class="text-decoration-none">
+                                {% endif %}
+                                {% if d.user_image is defined and d.user_image is not empty %}
+                                    <img src="{{ site.radres }}mod_user/thumb/{{ d.user_image }}"
+                                         alt="{{ d.u_name }} {{ d.u_last_name }}"
+                                         class="rounded-circle shadow-sm"
+                                         width="56"
+                                         height="56"
+                                         style="object-fit: cover;">
+                                {% else %}
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center bg-dark text-white shadow-sm"
+                                         style="width: 56px; height: 56px; font-weight: 700;">
+                                        {{ (d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper }}
+                                    </div>
+                                {% endif %}
+                                {% if d.username is defined and d.username is not empty %}
+                                    </a>
+                                {% endif %}
                             {% endif %}
-						</div>
+                            
+                            <div class="small text-muted">
+                                {% if d.u_name is defined and d.u_name is not empty %}
+                                    {% if d.username is defined and d.username is not empty %}
+                                        <div class="fw-semibold text-dark">
+                                            <a href="{{ site.sadres }}author/{{ d.username }}" class="text-decoration-none text-dark">
+                                                {{ d.u_name }} {{ d.u_last_name }}
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="fw-semibold text-dark">{{ d.u_name }} {{ d.u_last_name }}</div>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                <div class="{% if d.u_name is defined and d.u_name is not empty %}mt-1{% endif %}">
+                                    <i class="bi bi-calendar3 me-1"></i> {{ lang.index.publish_date }}:
+                                    <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time>
+                                    
+                                    {% if d.updated_at != d.created_at %}
+                                        <span class="d-block d-md-inline ms-md-3 mt-1 mt-md-0">
+                                            <i class="bi bi-pencil-square me-1"></i> {{ lang.index.updated_date }}:
+                                            <time datetime="{{ d.updated_at|date('Y-m-d') }}">{{ d.updated_at|date('d.m.Y') }}</time>
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
 						<div class="btn-group" role="group" aria-label="Content Tools">
 							<a href="{{ site.sadres }}tools/saveHtml/mod_news/{{ d.id }}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery[1] }}">
 								<i class="bi bi-file-earmark-arrow-down"></i>
