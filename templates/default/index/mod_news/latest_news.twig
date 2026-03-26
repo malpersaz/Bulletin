@@ -1,60 +1,100 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["5", "image,name,seo,keywords,summary"]}) }}
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["2", "image,name,seo,keywords,summary"]}) }}
 {% set latest_news = ctx_get('latest_news') %}
 {% if latest_news is not empty %}
-    <section class="container my-4" aria-labelledby="latest-news-heading">
+    <style>
+        .nyt-news-section {
+            border-top: 1px solid #000;
+            padding-top: 1rem;
+            margin-bottom: 3rem;
+        }
+        .nyt-news-heading {
+            font-family: 'Pirata One', cursive; /* Keeping the brand touch */
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .nyt-article {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .nyt-article:last-child {
+            border-bottom: none;
+        }
+        .nyt-article-title {
+            font-family: 'Literata', 'Georgia', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+        }
+        .nyt-article-title a {
+            color: #000;
+            text-decoration: none;
+        }
+        .nyt-article-title a:hover {
+            color: #333;
+        }
+        .nyt-article-summary {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: #444;
+            margin-bottom: 1rem;
+        }
+        .nyt-article-img-wrapper {
+            margin-bottom: 1rem;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .nyt-article-img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 16 / 9;
+            transition: opacity 0.3s ease;
+        }
+        .nyt-article-img:hover {
+            opacity: 0.9;
+        }
+    </style>
+
+    <section class="nyt-news-section" aria-labelledby="latest-news-heading">
         <header>
-            <h2 id="latest-news-heading" class="mb-4">{{ lang.index.mod_news.latest_news.1 }}</h2>
+            <h2 id="latest-news-heading" class="nyt-news-heading">{{ lang.index.mod_news.latest_news.1 }}</h2>
         </header>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div class="row g-4">
             {% for news in latest_news %}
-                <article class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-img-wrapper">
-                            <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}" aria-label="{{ news.name }}">
-                                {% if news.image is not empty %}
-                                    <img src="{{ site.radres }}mod_news/{{ news.image }}"
-                                         class="card-img-top"
-                                         parent_id="{{ news.name }}"
-                                         loading="lazy">
-                                {% else %}
-                                    <img src="{{ site.radres }}mod_settings/logo.png"
-                                         class="card-img-top p-4 bg-light"
-                                         parent_id="{{ news.name }}"
-                                         loading="lazy"
-                                         style="object-fit: contain;">
-                                {% endif %}
+                <article class="col-md-6 nyt-article">
+                    {% if news.image is not empty %}
+                        <div class="nyt-article-img-wrapper">
+                            <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
+                                <img src="{{ site.radres }}mod_news/{{ news.image }}"
+                                     class="nyt-article-img"
+                                     alt="{{ news.name }}"
+                                     loading="lazy">
                             </a>
                         </div>
-                        <div class="card-body">
-                            <h3 class="card-title h5">
-                                <a href="{{ site.sadres }}news/{{ news.seo }}"
-                                   class="text-decoration-none text-dark"
-                                   title="{{ news.name }}"
-                                   aria-label="{{ news.name }}">{{ news.name }}</a>
-                            </h3>
-                            <p class="card-text">
-                                {% if news.summary != '' %}
-                                    {{ news.summary|raw|striptags|length > 150 ? news.summary|raw|striptags|slice(0, 150) ~ '...' : news.summary|raw|striptags }}
-                                {% else %}
-                                    {{ news.name }}
-                                {% endif %}
-                            </p>
-                        </div>
+                    {% endif %}
+                    <h3 class="nyt-article-title">
+                        <a href="{{ site.sadres }}news/{{ news.seo }}">{{ news.name }}</a>
+                    </h3>
+                    <div class="nyt-article-summary">
+                        {% if news.summary != '' %}
+                            {{ news.summary|raw|striptags|length > 180 ? news.summary|raw|striptags|slice(0, 180) ~ '...' : news.summary|raw|striptags }}
+                        {% else %}
+                            {{ news.name }}
+                        {% endif %}
                     </div>
                 </article>
             {% endfor %}
         </div>
-        <footer class="text-center mt-4">
+        <footer class="text-start mt-2">
             <a href="{{ site.sadres }}newses"
-               class="btn btn-primary"
+               class="btn btn-sm btn-outline-dark rounded-0 px-4"
                aria-label="{{ lang.index.mod_news.latest_news.2 }}">{{ lang.index.mod_news.latest_news.2 }}</a>
         </footer>
-    </section>
-{% else %}
-    <section class="container my-4" aria-labelledby="latest-news-heading">
-        <header>
-            <h2 id="latest-news-heading" class="mb-4">{{ lang.index.mod_news.latest_news.1 }}</h2>
-        </header>
-        <div class="alert alert-info mb-0">{{ lang.index.mod_news.latest_news.3 }}</div>
     </section>
 {% endif %}

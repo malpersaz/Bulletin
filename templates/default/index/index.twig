@@ -25,21 +25,14 @@ $(document).ready(function() {
     {# Include slider when needed #}
     {% include 'index/mod_slider/slider.twig' %}
 
-    {% include 'index/mod_publication/latest_authors.twig' %}
-    
-    {% include 'index/mod_news/latest_news.twig' %}
-    
-
-
-
     <!-- Homepage content -->
     <section class="row" id="orta">
 
         <article id="orta-sol" class="col-md-9">
-
+            {% include 'index/mod_news/latest_news.twig' %}
         </article>
         <aside id="orta-sag" class="col-md-3">
-
+            {% include 'index/mod_publication/latest_authors.twig' %}
         </aside>
     </section>
     
