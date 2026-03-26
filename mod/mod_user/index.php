@@ -280,8 +280,7 @@ class mod_user_mod extends indexMain
             $this->user->logout($session_sid);
         }
 
-        $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
-        $r = $ref != '' ? $ref : $this->site['sadres'] . 'mod_user/login';
+        $r = $this->site['sadres'];
         
         return Helper::yonlendir($r, 1);
     }
