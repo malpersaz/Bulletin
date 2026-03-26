@@ -5,133 +5,137 @@
 <section id="latest-publication-authors" class="py-4">
     <style>
         #latest-publication-authors {
-            --latest-authors-ink: #152033;
-            --latest-authors-muted: #667085;
-            --latest-authors-line: rgba(21, 32, 51, 0.10);
+            --latest-authors-ink: #10224d; /* Prestige Ink Blue */
+            --latest-authors-muted: #475569;
+            --latest-authors-line: rgba(16, 34, 77, 0.08);
             --latest-authors-surface: #ffffff;
         }
 
         #latest-publication-authors .latest-authors-card {
             background: var(--latest-authors-surface);
             border: 1px solid var(--latest-authors-line);
-            border-radius: 1.4rem;
-            padding: 1rem;
-            box-shadow: 0 14px 34px rgba(21, 32, 51, 0.08);
+            border-radius: 4px; /* Professional Minimalist Radius */
+            padding: 1.5rem;
+            box-shadow: none; /* Paper style - no generic digital shadows */
         }
 
         #latest-publication-authors .latest-authors-head {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--latest-authors-ink);
+            padding-bottom: 0.5rem;
         }
 
         #latest-publication-authors .latest-authors-title {
             margin: 0;
             color: var(--latest-authors-ink);
-            font-size: 1.05rem;
+            font-family: 'Literata', serif;
+            font-size: 1.25rem;
             font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         #latest-publication-authors .latest-authors-list {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 0.85rem;
+            gap: 1.5rem;
         }
 
         #latest-publication-authors .latest-authors-item {
-            display: grid;
-            grid-template-columns: auto 1fr;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            gap: 0.85rem;
-            padding: 0.95rem;
-            border: 1px solid var(--latest-authors-line);
-            border-radius: 1.1rem;
+            text-align: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            border: 1px solid transparent;
+            border-radius: 4px;
             text-decoration: none;
             color: inherit;
-            min-width: 0;
-            transition: background-color 0.2s ease, transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #latest-publication-authors .latest-authors-item:hover {
-            background: rgba(21, 32, 51, 0.03);
-            border-color: rgba(15, 118, 110, 0.18);
-            transform: translateY(-2px);
-            box-shadow: 0 14px 26px rgba(21, 32, 51, 0.08);
+            background: rgba(16, 34, 77, 0.02);
+            border-color: var(--latest-authors-line);
+            transform: translateY(-4px);
         }
 
         #latest-publication-authors .latest-authors-avatar {
-            width: 3.15rem;
-            height: 3.15rem;
-            border-radius: 999px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
             overflow: hidden;
-            flex: 0 0 3.15rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #f59e0b, #0f766e);
-            color: #fff;
-            font-size: 0.9rem;
-            font-weight: 800;
-            border: 2px solid rgba(255, 255, 255, 0.92);
-            box-shadow: 0 8px 20px rgba(21, 32, 51, 0.14);
+            background: #f8fafc;
+            border: 1px solid var(--latest-authors-line);
+            transition: transform 0.3s ease;
+        }
+
+        #latest-publication-authors .latest-authors-item:hover .latest-authors-avatar {
+            transform: scale(1.05);
+            border-color: var(--latest-authors-ink);
         }
 
         #latest-publication-authors .latest-authors-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
+            filter: grayscale(100%); /* High-end newspaper feel */
+            transition: filter 0.3s ease;
+        }
+
+        #latest-publication-authors .latest-authors-item:hover img {
+            filter: grayscale(0%);
         }
 
         #latest-publication-authors .latest-authors-copy {
-            min-width: 0;
-            display: grid;
-            gap: 0.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
         #latest-publication-authors .latest-authors-name {
             color: var(--latest-authors-ink);
-            font-size: 1rem;
-            font-weight: 800;
+            font-family: 'Literata', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
             line-height: 1.2;
         }
 
         #latest-publication-authors .latest-authors-publication {
             color: var(--latest-authors-muted);
-            font-size: 0.83rem;
-            line-height: 1.4;
+            font-family: 'Literata', serif;
+            font-size: 0.85rem;
+            font-style: italic;
+            line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        @media (min-width: 576px) {
+        @media (min-width: 768px) {
             #latest-publication-authors .latest-authors-list {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (min-width: 992px) {
-            #latest-publication-authors .latest-authors-list {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media (min-width: 1200px) {
             #latest-publication-authors .latest-authors-list {
-                grid-template-columns: repeat(5, minmax(0, 1fr));
+                grid-template-columns: repeat(5, 1fr);
             }
         }
 
-        html[data-bs-theme="dark"] #latest-publication-authors,
-        body.dark #latest-publication-authors,
-        body.dark-mode #latest-publication-authors {
+        html[data-bs-theme="dark"] #latest-publication-authors {
             --latest-authors-ink: #f8fafc;
             --latest-authors-muted: #94a3b8;
-            --latest-authors-line: rgba(148, 163, 184, 0.18);
-            --latest-authors-surface: #101826;
+            --latest-authors-surface: #0f172a;
         }
 
         html[data-bs-theme="dark"] #latest-publication-authors .latest-authors-card,
