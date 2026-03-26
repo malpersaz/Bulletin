@@ -61,30 +61,31 @@
         }
 
         #publication-author-page .author-identity {
-            margin-bottom: 1rem;
+            margin-bottom: 2.5rem;
+            padding-bottom: 2.5rem;
+            border-bottom: 1px solid var(--author-line);
         }
 
         #publication-author-page .author-identity-inner {
             display: flex;
-            align-items: center;
-            gap: 0.8rem;
+            align-items: flex-start;
+            gap: 2rem;
         }
 
         #publication-author-page .author-avatar {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 999px;
+            width: 7.5rem;
+            height: 7.5rem;
+            border-radius: 50%;
             overflow: hidden;
-            flex: 0 0 3rem;
+            flex: 0 0 7.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #f59e0b, #0f766e);
-            color: #fff;
-            font-size: 0.88rem;
-            font-weight: 800;
-            border: 2px solid rgba(255, 255, 255, 0.92);
-            box-shadow: 0 8px 20px rgba(21, 32, 51, 0.14);
+            background: var(--author-surface-soft);
+            color: var(--author-ink);
+            font-size: 2.5rem;
+            font-weight: 300;
+            border: 1px solid var(--author-line);
         }
 
         #publication-author-page .author-avatar img {
@@ -94,35 +95,82 @@
             display: block;
         }
 
+        #publication-author-page .author-copy {
+            padding-top: 0.5rem;
+        }
+
         #publication-author-page .author-title {
-            margin: 0;
+            margin: 0 0 0.5rem;
             color: var(--author-ink);
-            font-size: clamp(1.15rem, 3vw, 1.7rem);
+            font-size: clamp(2rem, 4vw, 2.75rem);
             line-height: 1.1;
             font-weight: 800;
-            opacity: 1;
+            letter-spacing: -0.02em;
+        }
+
+        #publication-author-page .author-bio {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--author-muted);
+            margin: 0 0 1.25rem;
+            max-width: 800px;
+        }
+        
+        #publication-author-page .author-bio p:last-child {
+            margin-bottom: 0;
         }
 
         #publication-author-page .author-meta {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            gap: 0.6rem 1rem;
-            margin-top: 0.4rem;
-            color: var(--author-muted);
-            font-size: 0.86rem;
+            gap: 0.6rem 0.8rem;
+            color: var(--author-ink);
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         #publication-author-page .author-meta a {
             color: inherit;
             text-decoration: none;
+            transition: color 0.15s ease;
+        }
+
+        #publication-author-page .author-meta a:hover {
+            color: #0f766e;
+        }
+
+        #publication-author-page .meta-divider {
+            color: var(--author-muted);
+            opacity: 0.4;
+            user-select: none;
+        }
+
+        #publication-author-page .author-role {
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--author-muted);
         }
 
         #publication-author-page .author-handle,
-        #publication-author-page .author-email {
+        #publication-author-page .author-social-link {
             display: inline-flex;
             align-items: center;
-            gap: 0.45rem;
+            gap: 0.4rem;
+        }
+
+        @media (max-width: 768px) {
+            #publication-author-page .author-identity-inner {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+                gap: 1.25rem;
+            }
+            #publication-author-page .author-meta {
+                justify-content: center;
+            }
         }
 
         #publication-author-page .author-stream {
@@ -352,7 +400,7 @@
         html[data-bs-theme="dark"] #publication-author-page .author-avatar,
         body.dark #publication-author-page .author-avatar,
         body.dark-mode #publication-author-page .author-avatar {
-            border-color: rgba(15, 23, 42, 0.92);
+            border-color: var(--author-line);
         }
 
         html[data-bs-theme="dark"] #publication-author-page .author-side-item:hover,
@@ -414,7 +462,7 @@
 
         <div class="author-layout">
             <main class="author-main">
-                <section class="author-identity" itemscope itemtype="https://schema.org/Person">
+                <section class="author-identity western-modern" itemscope itemtype="https://schema.org/Person">
                     <div class="author-identity-inner">
                         <div class="author-avatar">
                             {% if author.user_image is defined and author.user_image is not empty %}
@@ -425,13 +473,33 @@
                         </div>
                         <div class="author-copy">
                             <h1 class="author-title" itemprop="name">{{ author_name }}</h1>
+                            {% if author.about is defined and author.about is not empty %}
+                            <div class="author-bio">
+                                {{ author.about|raw }}
+                            </div>
+                            {% endif %}
                             <div class="author-meta">
+                                <span class="author-role">{{ lang.index.mod_publication.author|default('Nivîskar') }}</span>
+                                <span class="meta-divider">·</span>
                                 <span class="author-handle">
                                     <i class="bi bi-at"></i>{{ username }}
                                 </span>
                                 {% if author.email is defined and author.email is not empty %}
-                                    <a class="author-email" href="mailto:{{ author.email }}">
-                                        <i class="bi bi-envelope"></i>{{ author.email }}
+                                    <span class="meta-divider">·</span>
+                                    <a class="author-social-link author-email" href="mailto:{{ author.email }}">
+                                        <i class="bi bi-envelope"></i><span>{{ author.email }}</span>
+                                    </a>
+                                {% endif %}
+                                {% if author.twitter is defined and author.twitter is not empty %}
+                                    <span class="meta-divider">·</span>
+                                    <a class="author-social-link author-twitter" href="{{ author.twitter }}" target="_blank" rel="noopener">
+                                        <i class="bi bi-twitter-x"></i><span>X / Twitter</span>
+                                    </a>
+                                {% endif %}
+                                {% if author.facebook is defined and author.facebook is not empty %}
+                                    <span class="meta-divider">·</span>
+                                    <a class="author-social-link author-facebook" href="{{ author.facebook }}" target="_blank" rel="noopener">
+                                        <i class="bi bi-facebook"></i><span>Facebook</span>
                                     </a>
                                 {% endif %}
                             </div>
