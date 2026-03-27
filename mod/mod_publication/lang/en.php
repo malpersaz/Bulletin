@@ -336,6 +336,7 @@ $lang['mod_publication'] = [
             'video_embed_error' => 'Please enter a valid embed code (iframe).',
             'video_title_error' => 'Video title must be at least 3 characters.',
             'card_click' => 'Card clicked: %s',
+            'no_category_for_lang' => 'No categories found in this language. Please add categories first.',
         ],
         'summary' => [
             'title' => 'Summary',

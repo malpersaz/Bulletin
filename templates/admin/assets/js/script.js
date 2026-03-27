@@ -858,20 +858,10 @@ function toggleWizardCategorySheet() {
         }
     });
 
-    // FALLBACK: If no categories found for this language, show ALL from the same category type
-    if (visibleCount === 0 && items.length > 0) {
-        items.forEach(item => {
-            const isVideoItem = item.classList.contains('video-cat');
-            const isContentItem = item.classList.contains('content-cat');
-            
-            let typeMatch = false;
-            if (isVideoWizard && isVideoItem) typeMatch = true;
-            if (!isVideoWizard && isContentItem) typeMatch = true;
-            
-            if (typeMatch) {
-                item.style.display = 'flex';
-            }
-        });
+    // Show/hide 'No categories found' message
+    const noCatMsg = document.getElementById('no-category-msg');
+    if (noCatMsg) {
+        noCatMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
     }
 
     sheet.classList.add('active');

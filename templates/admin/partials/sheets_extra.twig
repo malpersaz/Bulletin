@@ -129,10 +129,9 @@
             {% endfor %}
         {% endif %}
 
-        {% if categories is not defined and video_embed_categories is not defined %}
-            <div style="padding: 20px; text-align: center; color: var(--md-sys-color-on-surface-variant);">
-                {{ wizard_lang.error_no_category }}
-            </div>
-        {% endif %}
+        <div id="no-category-msg" style="display:none; padding: 32px 16px; text-align: center; color: var(--md-sys-color-on-surface-variant);">
+            <i class="bi bi-folder-x" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
+            <p style="margin: 0; font-size: 14px;">{{ wizard_lang.wizard.messages.no_category_for_lang }}</p>
+        </div>
     </div>
 </div>

@@ -321,6 +321,7 @@ $lang['mod_publication'] = [
             'video_embed_error' => 'Ji kerema xwe kodek embedê ya derbasdar binivîsin (iframe).',
             'video_title_error' => 'Divê sernavê vîdeoyê kêmzêde 3 tîp be.',
             'card_click' => 'Qert hat tikandin: %s',
+            'no_category_for_lang' => 'Nê ziwanî de kategorî nêame dîtene. Kerem kerê verê kategorîyan dekerê.',
         ],
         'summary' => [
             'title' => 'Kurtasî',

@@ -310,9 +310,9 @@ $lang['mod_publication'] = [
         'messages' => [
             'success_sim' => 'بڵاوکراوە بە سەرکەوتوویی دروستکرا! (Simulation)',
             'video_success_sim' => 'ڤیدیۆ بە سەرکەوتوویی زیادکرا! (Simulation)',
-            'video_embed_error' => 'تکایە کۆدی Embed ی دروست بنووسە (iframe).',
             'video_title_error' => 'ناونیشانی ڤیدیۆ دەبێت لانیکەم 3 پیت بێت.',
             'card_click' => 'کارت کرتەکرا: %s',
+            'no_category_for_lang' => 'هیچ پۆلێنێک لەم زمانەدا نەدۆزرایەوە. تکایە سەرەتا پۆلێنەکان زیاد بکە.',
         ],
         'summary' => [
             'title' => 'پوختە',

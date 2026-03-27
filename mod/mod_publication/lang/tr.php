@@ -333,9 +333,9 @@ $lang['mod_publication'] = [
         'messages' => [
             'success_sim' => 'Yayın başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
-            'video_embed_error' => 'Lütfen geçerli bir embed kodu giriniz (iframe).',
             'video_title_error' => 'Video başlığı en az 3 karakter olmalıdır.',
             'card_click' => 'Kart tıklandı: %s',
+            'no_category_for_lang' => 'Bu dilde kategori bulunamadı. Lütfen önce kategorileri ekleyin.',
         ],
         'summary' => [
             'title' => 'Özet',
