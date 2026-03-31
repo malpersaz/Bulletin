@@ -7,6 +7,8 @@
 class mod_video_embed_mod extends indexMain
 {
     public $mod_video_embed_model;
+    private const VIDEO_IMAGE_WIDTH = 1280;
+    private const VIDEO_THUMB_WIDTH = 640;
     function __construct()
     {
         parent::__construct();
@@ -210,10 +212,7 @@ class mod_video_embed_mod extends indexMain
             $image = Load::mod('image');
             $image->mod = 'mod_video_embed';
             $image->name = 'image';
-            $option = [
-                '/' => ['width' => 225, 'height' => NULL, 'option' => 'width'],
-                '/thumb' => ['width' => 100, 'height' => NULL, 'option' => 'width'],
-            ];
+            $option = $this->_videoImageOptions();
 
             try {
                 if ($image->_resize($option)) {
@@ -272,24 +271,11 @@ class mod_video_embed_mod extends indexMain
         }
 
         if ($this->mod_video_embed_model->image != '') {
-            $image = Load::mod('image');
-            $image->mod = 'mod_video_embed';
-            $image->url = $this->mod_video_embed_model->image;
-            $option = [
-                '/' =>
-                [
-                    'width' => 225,
-                    'height' => NULL,
-                    'option' => 'width',
-                ],
-                '/thumb' =>
-                [
-                    'width' => 100,
-                    'height' => NULL,
-                    'option' => 'width',
-                ],
-            ];
-            if ($image->_delete_files($option)) {
+                $image = Load::mod('image');
+                $image->mod = 'mod_video_embed';
+                $image->url = $this->mod_video_embed_model->image;
+                $option = $this->_videoImageOptions();
+                if ($image->_delete_files($option)) {
                 $this->mod_video_embed_model->image = '';
                 $this->mod_video_embed_model->update('id');
                 echo 'Oke';
@@ -349,20 +335,7 @@ class mod_video_embed_mod extends indexMain
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed';
                 $image->name = 'image';
-                $option = [
-                    '/' =>
-                    [
-                        'width' => 225,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                    '/thumb' =>
-                    [
-                        'width' => 100,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                ];
+                $option = $this->_videoImageOptions();
                 if ($image->_resize($option)) {
                     $this->mod_video_embed_model->image = $image->url;
                 } else {
@@ -448,20 +421,7 @@ class mod_video_embed_mod extends indexMain
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed';
                 $image->name = 'image';
-                $option = [
-                    '/' =>
-                    [
-                        'width' => 225,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                    '/thumb' =>
-                    [
-                        'width' => 100,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                ];
+                $option = $this->_videoImageOptions();
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
                     // Berî barkirina wêneyê nû, yê kevin jê bibin
@@ -548,21 +508,7 @@ class mod_video_embed_mod extends indexMain
                 $image->mod = 'mod_video_embed';
                 $image->name = 'image';
                 $image->url = $this->mod_video_embed_model->image;
-
-                $option = [
-                    '/' =>
-                    [
-                        'width' => 225,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                    '/thumb' =>
-                    [
-                        'width' => 100,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                ];
+                $option = $this->_videoImageOptions();
                 if ($image->_delete_files($option) !== TRUE) {
                     echo $image->error;
                 }
@@ -1148,10 +1094,7 @@ class mod_video_embed_mod extends indexMain
             $image = Load::mod('image');
             $image->mod = 'mod_video_embed';
             $image->name = 'image';
-            $option = [
-                '/' => ['width' => 225, 'height' => NULL, 'option' => 'width'],
-                '/thumb' => ['width' => 100, 'height' => NULL, 'option' => 'width'],
-            ];
+            $option = $this->_videoImageOptions();
 
             if (!$image->_resize($option)) {
                 throw new Exception($image->error ?: $this->_autofillMessage('download_failed'));
@@ -1194,6 +1137,22 @@ class mod_video_embed_mod extends indexMain
                 @unlink($path);
             }
         }
+    }
+
+    private function _videoImageOptions()
+    {
+        return [
+            '/' => [
+                'width' => self::VIDEO_IMAGE_WIDTH,
+                'height' => NULL,
+                'option' => 'width',
+            ],
+            '/thumb' => [
+                'width' => self::VIDEO_THUMB_WIDTH,
+                'height' => NULL,
+                'option' => 'width',
+            ],
+        ];
     }
 
     private function _formatIso8601Duration($duration)
