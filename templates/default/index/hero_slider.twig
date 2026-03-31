@@ -22,12 +22,21 @@
     @media (min-width: 768px) {
         .hero-news-slider {
             margin-bottom: 0;
-            border-radius: 18px;
+            border-radius: 0;
         }
     }
 </style>
 
 <section id="heroNewsSlider" class="hero-news-slider hero-slider-shell" aria-label="{{ lang.index.hero_slider.title|default('Featured Stories') }}">
+    <div class="hero-slider__controls">
+        <button type="button" class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide|default('Previous slide') }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <button type="button" class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide|default('Next slide') }}">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
     <div class="swiper hero-news-swiper">
         <div class="swiper-wrapper">
             {% for item in hero_slider %}
@@ -87,36 +96,8 @@
             </div>
             {% endfor %}
         </div>
-
-        <div class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide|default('Previous slide') }}">
-            <i class="bi bi-chevron-left"></i>
-        </div>
-        <div class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide|default('Next slide') }}">
-            <i class="bi bi-chevron-right"></i>
-        </div>
         <div class="hero-news-swiper-pagination"></div>
     </div>
-
-    {% if hero_slider|length > 1 %}
-    <div class="hero-slider__thumbs d-none d-lg-block">
-        <div class="container">
-            <div class="hero-slider__thumb-row">
-                {% for item in hero_slider %}
-                <button class="hero-slider__thumb{{ loop.first ? ' hero-slider__thumb--active' : '' }}"
-                        data-slide="{{ loop.index0 }}"
-                        aria-label="{{ lang.index.hero_slider.go_to_slide|default('Go to slide %s')|format(loop.index) }}">
-                    <span class="hero-slider__thumb-img">
-                        {% if item.thumb_url is not empty %}
-                            <img src="{{ item.thumb_url }}" alt="{{ item.name }}" loading="lazy">
-                        {% endif %}
-                    </span>
-                    <span class="hero-slider__thumb-title">{{ item.name|slice(0, 50) }}{% if item.name|length > 50 %}...{% endif %}</span>
-                </button>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-    {% endif %}
 </section>
 
 <script>
@@ -146,26 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
             prevEl: '.hero-news-swiper-button-prev'
         },
         on: {
-            slideChange: function() {
-                var thumbs = document.querySelectorAll('.hero-slider__thumb');
-                if (!thumbs.length) return;
-
-                thumbs.forEach(function(thumb) {
-                    thumb.classList.remove('hero-slider__thumb--active');
-                });
-
-                if (thumbs[this.realIndex]) {
-                    thumbs[this.realIndex].classList.add('hero-slider__thumb--active');
-                }
-            }
+            slideChange: function() {}
         }
-    });
-
-    document.querySelectorAll('.hero-slider__thumb').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var slideIndex = parseInt(this.getAttribute('data-slide'), 10);
-            heroSwiper.slideToLoop(slideIndex);
-        });
     });
 });
 </script>
