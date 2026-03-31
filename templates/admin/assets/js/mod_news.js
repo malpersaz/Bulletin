@@ -263,17 +263,17 @@ class ContentManager {
         if (scrollFrame) {
             let scrollTimeout = null;
             scrollFrame.addEventListener('scroll', () => {
-                // Throttle: Tenê dema ku scroll raweste, load bike
+                // Throttle: Only load when scrolling stops
                 if (scrollTimeout) clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    // IMPORTANT: Pêşî kontrol bike ka hîn dane hene
+                    // IMPORTANT: Check if there are still more data
                     if (!this.hasMore || this.isLoading) {
                         return;
                     }
                     // Threshold check: Ensure we are really at the bottom
                     // Also check if content is actually taller than viewport
                     if (scrollFrame.scrollHeight <= scrollFrame.clientHeight) {
-                        return; // Don't auto load if content fits (unless we want to fill empty space, but user complained about auto-load)
+                        return; // Don't auto load if content fits
                     }
 
                     if (scrollFrame.scrollTop + scrollFrame.clientHeight >= scrollFrame.scrollHeight - 50) {
@@ -519,7 +519,7 @@ class ContentManager {
             });
 
             const text = (await response.text()).trim();
-            if (text !== 'Oke') {
+            if (text !== 'Success') {
                 showSnackbar(text || CONTENT_LANG.error_general, 'error');
                 return;
             }
@@ -691,7 +691,7 @@ window.deleteSelected = function () {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         mgr.selectedContentId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -744,7 +744,7 @@ window.handleContextAction = function (action) {
                     })
                         .then(response => response.text())
                         .then(msg => {
-                            if (msg === 'Oke') {
+                            if (msg.trim() === 'Success') {
                                 window.contentManager.loadData(true);
                                 closeContextMenu();
                                 showSnackbar(adminLang.context_menu.delete_success, 'success');
@@ -816,7 +816,7 @@ window.toggleStatus = function (id, currentStatus) {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         window.contentManager.loadData(true);
                         showSnackbar(successMsg, 'success');
                     } else {

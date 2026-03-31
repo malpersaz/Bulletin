@@ -22,8 +22,15 @@
 
         <div class="wizard-image-preview-card" id="{{ preview_card_id }}"{% if preview_hidden|default(true) %} hidden{% endif %}>
             <div class="wizard-image-preview-frame">
-                <button type="button" class="wizard-image-remove-btn"{% if remove_btn_id|default('') %} id="{{ remove_btn_id }}"{% endif %} onclick="event.stopPropagation(); {{ remove_action_js }}">
-                    <i class="bi bi-x-lg"></i>
+                <button
+                    type="button"
+                    class="wizard-image-remove-btn"
+                    {% if remove_btn_id|default('') %} id="{{ remove_btn_id }}"{% endif %}
+                    aria-label="{{ remove_button_label|default('Remove image') }}"
+                    title="{{ remove_button_label|default('Remove image') }}"
+                    onclick="event.stopPropagation(); {{ remove_action_js }}"
+                >
+                    <i class="bi bi-trash-fill"></i>
                 </button>
                 <img id="{{ preview_img_id }}" class="wizard-img-preview" alt="{{ preview_alt|default('') }}"{% if preview_hidden|default(true) %} hidden{% endif %}{% if preview_src|default('') %} src="{{ preview_src }}"{% endif %}>
             </div>

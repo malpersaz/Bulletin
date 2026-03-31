@@ -200,7 +200,7 @@
             max-width: 100%;
             min-height: 0;
             height: auto;
-            grid-template-rows: auto auto auto;
+            width: 100%;
         }
         .edit-image-shell .wizard-image-dropzone {
             min-height: 220px;
@@ -208,16 +208,35 @@
         }
         .edit-image-shell .wizard-image-preview-card {
             height: auto;
-            grid-template-rows: auto auto;
         }
         .edit-image-shell .wizard-image-preview-frame {
-            min-height: 180px;
+            min-height: 0;
             height: auto;
             aspect-ratio: 16 / 10;
+        }
+        .edit-image-shell .wizard-image-url-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .edit-image-shell .wizard-image-url-input,
+        .edit-image-shell .wizard-image-url-row .m3-btn-filled {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .edit-image-shell .wizard-image-url-row .m3-btn-filled {
+            justify-content: center;
+            white-space: normal;
         }
         .edit-image-shell .wizard-image-empty {
             min-height: 180px;
             padding: 12px;
+        }
+        .edit-image-shell .wizard-image-meta {
+            display: none !important;
         }
         @media (max-width: 640px) {
             .edit-image-shell .wizard-image-dropzone {
@@ -244,11 +263,11 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         let errorHtml = '<div style="text-align: left;">';
-                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ mesaj }}</b></div>';
-                        {% if hatalar is defined and hatalar|length > 0 %}
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ message }}</b></div>';
+                        {% if errors is defined and errors|length > 0 %}
                             errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
-                            {% for hata in hatalar %}
-                                errorHtml += '<li style="margin-bottom: 4px;">{{ hata }}</li>';
+                            {% for error in errors %}
+                                errorHtml += '<li style="margin-bottom: 4px;">{{ error }}</li>';
                             {% endfor %}
                             errorHtml += '</ul>';
                         {% endif %}
@@ -257,7 +276,7 @@
                         Swal.fire({
                             icon: 'warning',
                             html: errorHtml,
-                            confirmButtonText: '{{ lang.mod_news.button.tamam }}',
+                            confirmButtonText: '{{ lang.mod_news.button.ok }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -266,7 +285,7 @@
             {% if oke is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
-                    <span>{{ mesaj }}</span>
+                    <span>{{ message }}</span>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -413,11 +432,11 @@
                             'data-remove-id': d.id,
                             'data-remove-title': lang.mod_news.remove_image,
                             'data-remove-confirm': lang.mod_news.context_menu.delete_confirm,
-                            'data-remove-confirm-text': lang.mod_news.button.evet,
-                            'data-remove-cancel-text': lang.mod_news.button.hayir,
-                            'data-success-title': lang.mod_news.oke,
+                            'data-remove-confirm-text': lang.mod_news.button.yes,
+                            'data-remove-cancel-text': lang.mod_news.button.no,
+                            'data-success-title': lang.mod_news.ok,
                             'data-success-message': lang.mod_news.remove_image_oke,
-                            'data-error-title': lang.mod_news.hata
+                            'data-error-title': lang.mod_news.error_occurred
                         },
                         dropzone_id: 'editImageDropzone',
                         trigger_picker_js: 'triggerEditImagePicker()',
@@ -426,16 +445,18 @@
                         drop_title: lang.mod_news.wizard.image.drop_title,
                         upload_link: lang.mod_news.wizard.image.upload_link,
                         preview_card_id: 'editImagePreviewCard',
+                        remove_button_label: lang.mod_news.button.delete,
                         remove_action_js: 'removeEditImage()',
                         preview_img_id: 'editImgPreview',
                         preview_alt: lang.mod_news.wizard.step.image,
                         preview_hidden: d.image ? false : true,
                         preview_src: d.image ? (site.radres ~ 'mod_news/thumb/' ~ d.image) : '',
-                        meta_hidden: false,
+                        meta_id: 'editImageMeta',
+                        meta_hidden: true,
                         file_name_id: 'editImageFileName',
-                        file_name_text: d.image ? d.image : lang.mod_news.wizard.summary.selected_none,
+                        file_name_text: '',
                         file_details_id: 'editImageFileDetails',
-                        file_details_text: d.image ? lang.mod_news.admin.columns.image : lang.mod_news.wizard.image.drop_description,
+                        file_details_text: '',
                         divider_hidden: d.image ? true : false,
                         link_separator: lang.mod_news.wizard.image.link_separator,
                         url_row_hidden: d.image ? true : false,
@@ -478,7 +499,7 @@
 					<div class="m3-input-wrapper">
 						<select class="m3-input-lg" name="file_id">
 							<option value="0">{{ lang.mod_news.choose_wish }}</option>
-							{% for item in mod_news_dosya_id %}
+							{% for item in mod_news_file_id %}
 								<option value="{{ item.id }}" {% if d.file_id == item.id %} selected {% endif %}>{{ item.name }}</option>
 							{% endfor %}
 						</select>
@@ -499,7 +520,7 @@
 				</div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_news.button.yenile }} (SEO, Meta)</span>
+					<span>{{ lang.mod_news.button.refresh }} (SEO, Meta)</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -615,7 +636,7 @@
 	<div class="m3-final-bar">
 		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_news/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
-			{{ lang.mod_news.button.vazgec }}
+			{{ lang.mod_news.button.cancel }}
 		</button>
 		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 			<i class="bi bi-check-lg"></i>

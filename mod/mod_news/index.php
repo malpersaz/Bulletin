@@ -31,7 +31,7 @@ class mod_news_mod extends indexMain
     {
         // Check Add Permission
         if ($this->user->hasPermission('mod_news', 'add', $this->lang['mod_news']['role_errors']['add'], 1) === False) {
-            // AJAX daxwaznameyê kontrol bike
+        // Check if it is an AJAX request
             if ($this->_isAjaxRequest()) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['add']]);
@@ -44,9 +44,9 @@ class mod_news_mod extends indexMain
         if (Req::is_Post('add')) {
             try {
                 $result = $this->_add();
-                // AJAX daxwaznameyê kontrol bike - heke AJAX be, bersiva JSON bişîne û derkevin
+                // Check if it is an AJAX request - if so, exit as _add() handles JSON
                 if ($this->_isAjaxRequest()) {
-                    exit; // _add() allready sends JSON and exits for AJAX
+                    exit; 
                 }
             } catch (Exception $e) {
                 // Log the error
@@ -70,7 +70,7 @@ class mod_news_mod extends indexMain
                     ]);
                     exit;
                 }
-                throw $e; // Non-AJAX request, exception bi rêkûpêk handle bike
+                throw $e; // Non-AJAX request, handle exception normally
             }
         }
         Run::import('management', '_index');
@@ -114,7 +114,7 @@ class mod_news_mod extends indexMain
         $this->mod_news_model = Load::model('mod_news');
         $id = Req::Url_Clear($id);
         if ($this->mod_news_model->exists_id($id) === False) {
-            $this->_error($this->lang['mod_news']['errors']['record']);
+            $this->_fatal_error($this->lang['mod_news']['errors']['record']);
             Run::import('management', '_index');
             $this->tema->tpl('mod_news/edit');
             return;
@@ -239,7 +239,7 @@ class mod_news_mod extends indexMain
                 if ($image->_delete_files($option)) {
                     $this->mod_news_model->image = '';
                     $this->mod_news_model->update('id');
-                    echo 'Oke';
+                    echo 'Success';
                 } else {
                     echo $image->error;
                     return FALSE;
@@ -249,7 +249,7 @@ class mod_news_mod extends indexMain
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -277,7 +277,7 @@ class mod_news_mod extends indexMain
             foreach ($video_model->toArray() as $item) {
                 $results[] = [
                     'id'   => 'video:' . $item['id'],
-                    'name' => $item['name'] . ' (' . $this->lang['mod_news']['lokal'] . ')'
+                    'name' => $item['name'] . ' (' . $this->lang['mod_news']['local'] . ')'
                 ];
             }
         }
@@ -349,7 +349,7 @@ class mod_news_mod extends indexMain
                 foreach ($video_model->toArray() as $item) {
                     $results[] = [
                         'id'   => 'video:' . $item['id'],
-                        'name' => $item['name'] . ' (' . $this->lang['mod_news']['lokal'] . ')'
+                        'name' => $item['name'] . ' (' . $this->lang['mod_news']['local'] . ')'
                     ];
                 }
             }
@@ -382,20 +382,20 @@ class mod_news_mod extends indexMain
         
         $this->val = Load::validator('mod_news.add');
         if ($this->val->check()) {
-            // Validator xeletî dît
+            // Validator found errors
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
                 exit;
             }
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('errors', $this->val->errors);
         } else {
             $this->mod_news_model = Load::model('mod_news');
 
@@ -495,24 +495,24 @@ class mod_news_mod extends indexMain
                     exit;
                 }
                 
-                $this->_oke_message($this->lang['mod_news']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_news']['message']['oke']['add']);
                 Helper::yonlendir($this->site['sadres'] . 'mod_news/list', 1);
             } else {
                 // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
-
+                
                 if ($isAjax) {
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'error',
-                        'message' => $this->lang['mod_news']['message']['error']['add'] ?? 'Zêdekirin têk çû'
+                        'message' => $this->lang['mod_news']['message']['error']['add'] ?? 'Addition failed'
                     ]);
                     exit;
                 }
                 
-                $this->_error_message($this->lang['mod_news']['message']['oke']['add']);
+                $this->_error_message($this->lang['mod_news']['message']['error']['add']);
             }
         }
     }
@@ -525,7 +525,7 @@ class mod_news_mod extends indexMain
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('errors', $this->val->errors);
         } else {
             $this->mod_news_model = Load::model('mod_news');
 
@@ -597,7 +597,7 @@ class mod_news_mod extends indexMain
                 ];
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî barkirina wêneyê nû, yê kevin jê bibin
+                    // Before uploading new image, delete the old one
                     $old_data = Load::model('mod_news');
                     $old_data->where_id($id)->gRo()->sync();
                     if ($old_data->image != '') {
@@ -631,7 +631,7 @@ class mod_news_mod extends indexMain
                     $mod_menu_model->update();
                 }
 
-                $this->_oke_message($this->lang['mod_news']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_news']['message']['oke']['edit']);
                 Helper::yonlendir($this->site['sadres'] . 'mod_news/list', 1);
             } else {
                 // If Image exists
@@ -651,7 +651,7 @@ class mod_news_mod extends indexMain
         }
         if (Req::is_Post( 'delete')) {
             if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo 'HATA';
             }
@@ -791,7 +791,7 @@ class mod_news_mod extends indexMain
             try {
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî ku em wêneyê nû qeyd bikin, yê kevin jê bibin (Heke hebe)
+                    // Before registering new image, delete the old one (if exists)
                     if ($this->mod_news_model->image != '') {
                         $image->mod = 'mod_news';
                         $image->url = $this->mod_news_model->image;
@@ -861,23 +861,23 @@ class mod_news_mod extends indexMain
 
         $wheres = [];
 
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
+        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+            foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
                 }
             }
         }
 
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+            foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
             }
         }
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
+        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+            foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
                         $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
@@ -1007,8 +1007,8 @@ class mod_news_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<div style="cursor:pointer;" onclick="mod_news_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_news']['resim_yukle_degistir'] . '">' .
-                    ($content['image'] ? '<img src="' . $this->site['radres'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['resim_add'] . '</span></button>') .
+                    '<div style="cursor:pointer;" onclick="mod_news_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_news']['upload_image'] . '">' .
+                    ($content['image'] ? '<img src="' . $this->site['radres'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['add_image'] . '</span></button>') .
                     '</div>',
                     $content['lang'],
                     $content['created_at'],
@@ -1039,7 +1039,7 @@ class mod_news_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_approve($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -1071,7 +1071,7 @@ class mod_news_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_unapprove($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -1096,35 +1096,35 @@ class mod_news_mod extends indexMain
     }
 
     // Success Message
-    private function _oke_message($mesaj)
+    private function _success_message($message)
     {
         $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->tema->veri('message', $message);
     }
 
     // Error Message
-    private function _error_message($mesaj)
+    private function _error_message($message)
     {
         $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->tema->veri('errors', [$message]);
     }
 
     // Error Message
-    private function _error($mesaj)
+    private function _fatal_error($message)
     {
         $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->tema->veri('message', $message);
     }
 
     // Check if request is AJAX (for wizard and other AJAX calls)
     private function _isAjaxRequest()
     {
-        // Rêya herî hêsan: POST parameter kontrol bike
+        // Simplest way: check POST parameter
         if (Req::is_Post('ajax_request') && Req::Post_Safe('ajax_request') === '1') {
             return true;
         }
         
-        // Fallback: Header kontrol bike
+        // Fallback: check Header
         return (
             !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'

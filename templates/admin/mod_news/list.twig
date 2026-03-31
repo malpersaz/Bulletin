@@ -217,11 +217,11 @@
     <input type="hidden" name="draw" id="filterDraw" value="1">
     
     <!-- Search -->
-    <input type="hidden" name="arama[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
     
     <!-- Custom Filters -->
-    <input type="hidden" name="arama[lang]" id="filterLang" value="">
-    <input type="hidden" name="arama[category_id]" id="filterCategory" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+    <input type="hidden" name="search[category_id]" id="filterCategory" value="">
     
     <!-- Standard DT order (default id desc) -->
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1"> 
@@ -271,6 +271,7 @@
                 drop_title: lang.mod_news.wizard.image.drop_title,
                 upload_link: lang.mod_news.wizard.image.upload_link,
                 preview_card_id: 'listImagePreviewCard',
+                remove_button_label: lang.mod_news.button.delete,
                 remove_action_js: 'window.contentManager?.handleListImageRemoveAction()',
                 preview_img_id: 'listImgPreview',
                 preview_alt: '',
@@ -293,7 +294,7 @@
         </div>
 
         <div id="newsImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
-            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_news.button.hayir }}</button>
+            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_news.button.cancel }}</button>
         </div>
     </div>
 </div>
@@ -343,10 +344,10 @@
         confirm_delete: "{{ lang.mod_news.delete_confirm|e('js') }}",
         confirm_publish: "{{ lang.mod_news.quick_publish_confirm|e('js') }}",
         confirm_unpublish: "{{ lang.mod_news.quick_unpublish_confirm|e('js') }}",
-        error_general: "{{ lang.mod_news.hata|e('js') }}",
+        error_general: "{{ lang.mod_news.error_occurred|e('js') }}",
         error_upload: "{{ lang.mod_news.message.error.add|e('js') }}",
         save_image: "{{ lang.mod_news.wizard.button.save|e('js') }}",
-        cancel: "{{ lang.mod_news.button.hayir|e('js') }}",
+        cancel: "{{ lang.mod_news.button.cancel|e('js') }}",
         image_title: "{{ lang.mod_news.wizard.step.image|e('js') }}",
         image_empty: "{{ lang.mod_news.wizard.summary.selected_none|e('js') }}",
         image_remote_failed: "{{ lang.mod_news.wizard.image.hint_remote_failed|e('js') }}",
@@ -354,8 +355,8 @@
         image_updated: "{{ lang.mod_news.oke|e('js') }}",
         image_remove_title: "{{ lang.mod_news.remove_image|e('js') }}",
         image_remove_confirm: "{{ lang.mod_news.context_menu.delete_confirm|e('js') }}",
-        image_remove_confirm_text: "{{ lang.mod_news.button.evet|e('js') }}",
-        image_remove_cancel_text: "{{ lang.mod_news.button.hayir|e('js') }}",
+        image_remove_confirm_text: "{{ lang.mod_news.button.yes|e('js') }}",
+        image_remove_cancel_text: "{{ lang.mod_news.button.cancel|e('js') }}",
         image_remove_success: "{{ lang.mod_news.remove_image_oke|e('js') }}",
         loading: "{{ lang.mod_news.grid[104]|e('js') }}",
         grid: {
@@ -363,5 +364,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.1"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.2"></script>
 {% endblock %}

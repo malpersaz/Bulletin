@@ -1878,19 +1878,33 @@ body.selection-mode .card-checkbox {
 
 .wizard-image-remove-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 34px;
-  height: 34px;
+  top: 8px;
+  right: 8px;
+  width: 40px;
+  height: 40px;
   border: none;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.56);
+  background: #b3261e;
   color: #fff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 2;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(179, 38, 30, 0.28);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.wizard-image-remove-btn:hover,
+.wizard-image-remove-btn:focus-visible {
+  background: #8c1d18;
+  transform: scale(1.06);
+}
+
+.wizard-image-remove-btn i {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .wizard-image-url-row .m3-btn-filled {

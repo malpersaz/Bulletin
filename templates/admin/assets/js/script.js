@@ -1564,7 +1564,7 @@ function previewEditImage(input) {
             } else if (area) {
                 area.innerHTML = `<img id="editImgPreview" src="${e.target.result}" style="width:100%; height:auto; border-radius:8px;">
                                  <input type="file" name="image" id="editImgInput" hidden onchange="previewEditImage(this)">
-                                 <button type="button" class="remove-img-btn" onclick="event.stopPropagation(); removeEditImage()"><i class="bi bi-x"></i></button>`;
+                                 <button type="button" class="remove-img-btn" onclick="event.stopPropagation(); removeEditImage()"><i class="bi bi-trash"></i></button>`;
             }
             const removeBtn = document.querySelector('.remove-img-btn');
             if (removeBtn) {
@@ -1639,7 +1639,7 @@ function removeEditImage() {
                 })
                     .then(r => r.text())
                     .then(data => {
-                        if (data.trim() !== 'Oke') {
+                        if (data.trim() !== 'Success') {
                             Swal.fire(shell.dataset.errorTitle || 'Error', data, 'error');
                             return;
                         }
