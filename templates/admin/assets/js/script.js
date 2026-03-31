@@ -924,18 +924,415 @@ function selectWizardPublishStatus(el, val) {
 // Step 7: Image Preview
 function previewWizardImage(input) {
     if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = document.getElementById('wizardImgPreview');
-            if (img) {
-                img.src = e.target.result;
-                img.style.display = 'block';
-            }
-            const label = document.querySelector('.image-upload-area p');
-            if (label) label.innerText = adminLang.wizard.label.change_image;
-        }
-        reader.readAsDataURL(input.files[0]);
+        setWizardImageFile(input.files[0]);
     }
+}
+
+function triggerWizardImagePicker() {
+    const input = document.getElementById('wizardImgInput');
+    if (input) {
+        input.click();
+    }
+}
+
+function getWizardImageI18n() {
+    const shell = document.getElementById('wizardImageShell');
+    const data = shell ? shell.dataset : {};
+    const selectedNone = adminLang?.wizard?.summary?.selected_none || '';
+    const imageLabel = adminLang?.wizard?.step?.image || '';
+    const changeImage = adminLang?.wizard?.label?.change_image || '';
+
+    return {
+        dropTitle: data.dropTitle || '',
+        dropDescription: data.dropDescription || '',
+        uploadLink: data.uploadLink || '',
+        linkSeparator: data.linkSeparator || '',
+        linkPlaceholder: data.linkPlaceholder || '',
+        linkAction: data.linkAction || '',
+        hintLoading: data.hintLoading || '',
+        hintInvalidType: data.hintInvalidType || '',
+        hintNoDropData: data.hintNoDropData || '',
+        hintRemoteFailed: data.hintRemoteFailed || '',
+        emptyName: data.emptyName || selectedNone,
+        emptyMeta: data.emptyMeta || '',
+        imageLabel,
+        changeImage
+    };
+}
+
+function setWizardImageInputFile(file) {
+    const input = document.getElementById('wizardImgInput');
+    if (!input || !file) {
+        return;
+    }
+
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    input.files = transfer.files;
+}
+
+function formatWizardFileSize(size) {
+    if (!Number.isFinite(size) || size <= 0) {
+        return '0 KB';
+    }
+
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let value = size;
+    let unitIndex = 0;
+
+    while (value >= 1024 && unitIndex < units.length - 1) {
+        value /= 1024;
+        unitIndex += 1;
+    }
+
+    const precision = unitIndex === 0 ? 0 : 1;
+    return `${value.toFixed(precision)} ${units[unitIndex]}`;
+}
+
+function showWizardImageFeedback(message, type = 'default') {
+    const urlInput = document.getElementById('wizardImageUrlInput');
+    if (!urlInput) {
+        return;
+    }
+
+    if (type === 'error') {
+        urlInput.value = '';
+        urlInput.placeholder = message;
+        urlInput.dataset.state = 'error';
+    } else {
+        urlInput.dataset.state = '';
+        urlInput.placeholder = getWizardImageI18n().linkPlaceholder;
+    }
+}
+
+function renderWizardImagePreview(file, src) {
+    const i18n = getWizardImageI18n();
+    const shell = document.getElementById('wizardImageShell');
+    const preview = document.getElementById('wizardImgPreview');
+    const emptyState = document.getElementById('wizardImageEmptyState');
+    const previewCard = document.getElementById('wizardImagePreviewCard');
+    const divider = shell ? shell.querySelector('.wizard-image-divider') : null;
+    const urlRow = shell ? shell.querySelector('.wizard-image-url-row') : null;
+    const fileName = document.getElementById('wizardImageFileName');
+    const fileDetails = document.getElementById('wizardImageFileDetails');
+    const replaceBtn = document.getElementById('wizardImageReplaceBtn');
+    const removeBtn = document.getElementById('wizardImageRemoveBtn');
+    const dropzone = document.getElementById('wizardImageDropzone');
+
+    if (preview) {
+        preview.src = src;
+        preview.hidden = false;
+    }
+    if (emptyState) {
+        emptyState.hidden = true;
+    }
+    if (previewCard) {
+        previewCard.hidden = false;
+    }
+    if (divider) {
+        divider.hidden = true;
+    }
+    if (urlRow) {
+        urlRow.hidden = true;
+    }
+    if (fileName) {
+        fileName.textContent = file.name || i18n.emptyName;
+    }
+    if (fileDetails) {
+        const details = [];
+        if (file.type) {
+            details.push(file.type);
+        }
+        details.push(formatWizardFileSize(file.size));
+        fileDetails.textContent = details.join(' • ');
+    }
+    if (replaceBtn) {
+        replaceBtn.disabled = false;
+    }
+    if (removeBtn) {
+        removeBtn.disabled = false;
+    }
+    if (dropzone) {
+        dropzone.classList.add('has-image');
+    }
+    if (shell) {
+        shell.classList.add('has-image');
+    }
+    const urlInput = document.getElementById('wizardImageUrlInput');
+    if (urlInput) {
+        urlInput.value = '';
+    }
+
+    showWizardImageFeedback('', 'success');
+    wizardData.image = {
+        name: file.name || i18n.emptyName,
+        type: file.type || '',
+        size: file.size || 0
+    };
+}
+
+function setWizardImageFile(file) {
+    const i18n = getWizardImageI18n();
+    if (!file) {
+        return;
+    }
+
+    if (!file.type || !file.type.startsWith('image/')) {
+        showWizardImageFeedback(i18n.hintInvalidType, 'error');
+        return;
+    }
+
+    setWizardImageInputFile(file);
+
+    const reader = new FileReader();
+    reader.onload = function (event) {
+        renderWizardImagePreview(file, event.target.result);
+    };
+    reader.readAsDataURL(file);
+}
+
+async function setWizardImageFromUrl(url) {
+    const i18n = getWizardImageI18n();
+    if (!url) {
+        return;
+    }
+
+    showWizardImageFeedback(i18n.hintLoading, 'loading');
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        const blob = await response.blob();
+        if (!blob.type.startsWith('image/')) {
+            throw new Error('Not an image');
+        }
+
+        const cleanUrl = url.split('?')[0];
+        const fileNameFromUrl = cleanUrl.split('/').pop() || `${i18n.imageLabel || 'image'}.${(blob.type.split('/')[1] || 'png')}`;
+        const file = new File([blob], fileNameFromUrl, { type: blob.type });
+        setWizardImageFile(file);
+    } catch (error) {
+        console.warn('Remote image import failed:', error);
+        showWizardImageFeedback(i18n.hintRemoteFailed, 'error');
+    }
+}
+
+function removeWizardImage() {
+    const i18n = getWizardImageI18n();
+    const shell = document.getElementById('wizardImageShell');
+    const input = document.getElementById('wizardImgInput');
+    const preview = document.getElementById('wizardImgPreview');
+    const emptyState = document.getElementById('wizardImageEmptyState');
+    const previewCard = document.getElementById('wizardImagePreviewCard');
+    const divider = shell ? shell.querySelector('.wizard-image-divider') : null;
+    const urlRow = shell ? shell.querySelector('.wizard-image-url-row') : null;
+    const fileName = document.getElementById('wizardImageFileName');
+    const fileDetails = document.getElementById('wizardImageFileDetails');
+    const replaceBtn = document.getElementById('wizardImageReplaceBtn');
+    const removeBtn = document.getElementById('wizardImageRemoveBtn');
+    const dropzone = document.getElementById('wizardImageDropzone');
+
+    if (input) {
+        input.value = '';
+    }
+    if (preview) {
+        preview.removeAttribute('src');
+        preview.hidden = true;
+    }
+    if (emptyState) {
+        emptyState.hidden = false;
+    }
+    if (previewCard) {
+        previewCard.hidden = true;
+    }
+    if (divider) {
+        divider.hidden = false;
+    }
+    if (urlRow) {
+        urlRow.hidden = false;
+    }
+    if (fileName) {
+        fileName.textContent = i18n.emptyName || adminLang?.wizard?.summary?.selected_none || '';
+    }
+    if (fileDetails) {
+        fileDetails.textContent = i18n.emptyMeta || adminLang?.wizard?.summary?.selected_none || '';
+    }
+    if (replaceBtn) {
+        replaceBtn.disabled = true;
+    }
+    if (removeBtn) {
+        removeBtn.disabled = true;
+    }
+    if (dropzone) {
+        dropzone.classList.remove('has-image', 'is-dragover');
+    }
+    if (shell) {
+        shell.classList.remove('has-image');
+    }
+    const urlInput = document.getElementById('wizardImageUrlInput');
+    if (urlInput) {
+        urlInput.value = '';
+    }
+
+    wizardData.image = null;
+    showWizardImageFeedback('', 'default');
+}
+
+window.previewWizardImage = previewWizardImage;
+window.triggerWizardImagePicker = triggerWizardImagePicker;
+window.removeWizardImage = removeWizardImage;
+
+function extractImageUrlFromDataTransfer(dataTransfer) {
+    if (!dataTransfer) {
+        return '';
+    }
+
+    const uriList = dataTransfer.getData('text/uri-list');
+    if (uriList) {
+        const url = uriList.split('\n').map(item => item.trim()).find(item => item && !item.startsWith('#'));
+        if (url) {
+            return url;
+        }
+    }
+
+    const html = dataTransfer.getData('text/html');
+    if (html) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        const img = doc.querySelector('img');
+        if (img && img.src) {
+            return img.src;
+        }
+    }
+
+    const text = dataTransfer.getData('text/plain');
+    if (text && /^https?:\/\//i.test(text.trim())) {
+        return text.trim();
+    }
+
+    return '';
+}
+
+function initializeWizardImageInteractions() {
+    const i18n = getWizardImageI18n();
+    const dropzone = document.getElementById('wizardImageDropzone');
+    const input = document.getElementById('wizardImgInput');
+    const urlInput = document.getElementById('wizardImageUrlInput');
+    const urlImportBtn = document.getElementById('wizardImageUrlImportBtn');
+    if (!dropzone || !input || dropzone.dataset.bound === 'true') {
+        return;
+    }
+
+    dropzone.dataset.bound = 'true';
+
+    dropzone.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            triggerWizardImagePicker();
+        }
+    });
+
+    ['dragenter', 'dragover'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.add('is-dragover');
+        });
+    });
+
+    ['dragleave', 'dragend'].forEach((eventName) => {
+        dropzone.addEventListener(eventName, (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dropzone.classList.remove('is-dragover');
+        });
+    });
+
+    dropzone.addEventListener('drop', async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        dropzone.classList.remove('is-dragover');
+
+        const files = Array.from(event.dataTransfer?.files || []).filter(file => file.type.startsWith('image/'));
+        if (files.length) {
+            setWizardImageFile(files[0]);
+            return;
+        }
+
+        const imageUrl = extractImageUrlFromDataTransfer(event.dataTransfer);
+        if (imageUrl) {
+            await setWizardImageFromUrl(imageUrl);
+            return;
+        }
+
+        showWizardImageFeedback(i18n.hintNoDropData, 'error');
+    });
+
+    document.addEventListener('paste', (event) => {
+        if (wizardCurrentStep !== 7) {
+            return;
+        }
+
+        const clipboardItems = Array.from(event.clipboardData?.items || []);
+        const imageItem = clipboardItems.find(item => item.type && item.type.startsWith('image/'));
+        if (imageItem) {
+            const file = imageItem.getAsFile();
+            if (file) {
+                event.preventDefault();
+                const ext = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+                const namedFile = new File([file], `${i18n.imageLabel || 'image'}.${ext}`, { type: file.type });
+                setWizardImageFile(namedFile);
+            }
+            return;
+        }
+
+        const pastedText = event.clipboardData?.getData('text/plain') || '';
+        if (/^https?:\/\//i.test(pastedText.trim()) && wizardCurrentStep === 7) {
+            event.preventDefault();
+            setWizardImageFromUrl(pastedText.trim());
+        }
+    });
+
+    const importFromInput = async () => {
+        const rawValue = urlInput ? urlInput.value.trim() : '';
+        if (!rawValue) {
+            showWizardImageFeedback(i18n.linkPlaceholder, 'error');
+            return;
+        }
+        if (!/^https?:\/\//i.test(rawValue)) {
+            showWizardImageFeedback(i18n.hintRemoteFailed, 'error');
+            return;
+        }
+
+        await setWizardImageFromUrl(rawValue);
+    };
+
+    if (urlImportBtn) {
+        urlImportBtn.addEventListener('click', () => {
+            importFromInput();
+        });
+    }
+
+    if (urlInput) {
+        urlInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                importFromInput();
+            }
+        });
+
+        urlInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                if (urlInput.value.trim()) {
+                    showWizardImageFeedback('', 'default');
+                }
+            }, 0);
+        });
+    }
+
+    showWizardImageFeedback('', 'default');
 }
 
 function previewEditImage(input) {
@@ -1163,6 +1560,8 @@ function prepareAndSubmitWizard() {
 
 // Add Listeners dynamically if needed
 document.addEventListener('DOMContentLoaded', () => {
+    initializeWizardImageInteractions();
+
     // Validation Listeners
     const titleInput = document.getElementById('wizardTitleInput');
     if (titleInput) {

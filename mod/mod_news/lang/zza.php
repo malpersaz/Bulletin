@@ -61,10 +61,6 @@ $lang['mod_news'] = [
         'select_lang' => 'Ziman Hilbijêre',
         'all_langs' => 'Hemû Ziman',
         'select_label' => 'Hilbijêre',
-        'delete_error' => 'Jêbirin biserneket!',
-        'video_success_sim' => 'Vîdeo bi Serkeftî Hat Zêdekirin (Simulasyon)',
-        'video_embed_error' => 'Koda Embed Şaş e',
-        'video_title_error' => 'Sernav Şaş e',
     ],
 
     // === Messages ===
@@ -88,6 +84,7 @@ $lang['mod_news'] = [
     'button' => [
         'next' => 'Pêşve',
         'prev' => 'Vegere',
+        'send' => 'Bışawê',
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
         'yenile' => 'Nû Bike',
@@ -141,13 +138,21 @@ $lang['mod_news'] = [
     // === Permission Roles ===
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Rolenên Rêveberiya Nûçeyan',
+        'name' => 'Rolên Rêveberiya Nûçeyan',
         'add' => 'Dikare nûçeyan lê zêde bike',
         'edit' => 'Dikare nûçeyan biguhere',
         'delete' => 'Dikare nûçeyan rake',
         'list' => 'Dikare rêveberiya nûçeyan bibîne',
         'publish' => 'Dikare nûçeyan weşîne',
         'unpublish' => 'Dikare nûçeyan ji weşanê rake',
+        'change_status' => 'Dikare rewşa weşanê biguherîne',
+        'edit_status' => 'Dikare rewşa weşanê ya berfireh biguherîne',
+        'moderate_edit' => 'Dikare nûçeyên kesên din biguherîne',
+        'moderate_delete' => 'Dikare nûçeyên kesên din jêbibe',
+        'gallery' => 'Dikare rêveberiya galeriyê bike',
+        'file' => 'Dikare rêveberiya pelan bike',
+        'approval' => 'Dikare nûçeyan bipejirîne',
+        'video_download' => 'Dikare vîdeoyan daxîne',
     ],
 
     // === Permission Errors ===
@@ -184,7 +189,9 @@ $lang['mod_news'] = [
             'gallery_id' => 'Galerî',
             'file_id' => 'Pel',
             'acl_id' => 'Kontrola Têketinê',
+            'menu' => 'Li Menuyê Zêde Bike',
             'video' => 'Galeriya Vîdeoyê',
+            'video_help' => 'Navê vîdeoya ku tu dixwazî di nûçeyê de diyar bibe bibîne',
         ],
         'radio' => [
             'publish_yes' => 'Hate Weşandin',
@@ -219,6 +226,8 @@ $lang['mod_news'] = [
         'olusturan' => 'Afirîner',
         'kopyala' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
+        'default_lang' => 'ZZA',
+        'date_locale' => 'zza-TR',
         'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
         'filter_applied' => 'Parzûn hatin sepandin',
@@ -319,6 +328,16 @@ $lang['mod_news'] = [
             'change_image' => 'Wêne biguherîne',
             'editor_placeholder' => 'Dest bi nivîsandina nûçeya xwe bikin...',
         ],
+        'image' => [
+            'drop_title' => 'Wêneyekî bikişîne vir',
+            'drop_description' => 'Bar bike, pêve bike an jî wêneyekî berde vir.',
+            'link_placeholder' => 'Lînka wêneyê pêve bike',
+            'link_action' => 'Anîne hundur',
+            'hint_loading' => 'Wêne tê anîn...',
+            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
+            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
+            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
+        ],
         'messages' => [
             'success_sim' => 'Nûçe bi serketî hat afirandin! (Simulasyon)',
             'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
@@ -346,6 +365,10 @@ $lang['mod_news'] = [
         'files' => 'Operasyonên Pelan',
         'status' => 'Rewşê Biguherîne',
         'delete' => 'Rake',
+        'delete_error' => 'Jêbirin biserneket!',
+        'video_success_sim' => 'Vîdeo bi Serkeftî Hat Zêdekirin (Simulasyon)',
+        'video_embed_error' => 'Koda Embed Şaş e',
+        'video_title_error' => 'Sernav Şaş e',
         'publish' => 'Biweşîne',
         'unpublish' => 'Neweşîne',
         'published_msg' => 'Hat Weşandin',

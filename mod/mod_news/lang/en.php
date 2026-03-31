@@ -188,7 +188,9 @@ $lang['mod_news'] = [
             'gallery_id' => 'Gallery',
             'file_id' => 'File',
             'acl_id' => 'Access Control',
+            'menu' => 'Add to Menu',
             'video' => 'Video Gallery',
+            'video_help' => 'Search for the name of the video you want to appear in the news',
         ],
         'radio' => [
             'publish_yes' => 'Published',
@@ -324,6 +326,18 @@ $lang['mod_news'] = [
             'category_select' => 'Select Category...',
             'change_image' => 'Change Image',
             'editor_placeholder' => 'Start writing your news here...',
+        ],
+        'image' => [
+            'drop_title' => 'Drag an image here',
+            'drop_description' => 'Upload, paste, or drop an image.',
+            'upload_link' => 'upload a file',
+            'link_separator' => 'OR',
+            'link_placeholder' => 'Paste image link',
+            'link_action' => 'Import',
+            'hint_loading' => 'Importing image...',
+            'hint_invalid_type' => 'Only image files are supported here.',
+            'hint_no_drop_data' => 'No usable image was found in the dropped content.',
+            'hint_remote_failed' => 'The image could not be imported from that source.',
         ],
         'messages' => [
             'success_sim' => 'News successfully created! (Simulation)',

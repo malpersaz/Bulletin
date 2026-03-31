@@ -188,7 +188,9 @@ $lang['mod_news'] = [
             'gallery_id' => 'Galleri',
             'file_id' => 'Fil',
             'acl_id' => 'Åtkomstkontroll',
+            'menu' => 'Lägg till i Meny',
             'video' => 'Videogalleri',
+            'video_help' => 'Sök efter namnet på videon du vill ska visas i nyheten',
         ],
         'radio' => [
             'publish_yes' => 'Publicerad',
@@ -324,6 +326,16 @@ $lang['mod_news'] = [
             'category_select' => 'Välj Kategori...',
             'change_image' => 'Byt Bild',
             'editor_placeholder' => 'Börja skriva din nyhet här...',
+        ],
+        'image' => [
+            'drop_title' => 'Dra en bild hit',
+            'drop_description' => 'Ladda upp, klistra in eller släpp en bild.',
+            'link_placeholder' => 'Klistra in bildlänk',
+            'link_action' => 'Importera',
+            'hint_loading' => 'Importerar bild...',
+            'hint_invalid_type' => 'Endast bildfiler stöds här.',
+            'hint_no_drop_data' => 'Ingen användbar bild hittades i det släppta innehållet.',
+            'hint_remote_failed' => 'Bilden kunde inte importeras från den källan.',
         ],
         'messages' => [
             'success_sim' => 'Nyheten har skapats framgångsrikt! (Simulering)',

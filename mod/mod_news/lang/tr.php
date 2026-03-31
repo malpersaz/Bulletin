@@ -137,7 +137,7 @@ $lang['mod_news'] = [
 
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Haber Yönetim Rolleri',
+        'name' => 'Haber Yönetim Rolleri',
         'add' => 'Haber Ekleyebilir',
         'edit' => 'Haber Düzenleyebilir',
         'delete' => 'Haber Silebilir',
@@ -327,6 +327,18 @@ $lang['mod_news'] = [
             'category_select' => 'Kategori Seçiniz...',
             'change_image' => 'Görsel Değiştir',
         ],
+        'image' => [
+            'drop_title' => 'Bir görseli buraya sürükleyin',
+            'drop_description' => 'Yükleyin, yapıştırın veya bir görsel bırakın.',
+            'upload_link' => 'dosya yükleyin',
+            'link_separator' => 'VEYA',
+            'link_placeholder' => 'Görsel bağlantısını yapıştırın',
+            'link_action' => 'İçe Aktar',
+            'hint_loading' => 'Görsel içe aktarılıyor...',
+            'hint_invalid_type' => 'Burada yalnızca görsel dosyaları desteklenir.',
+            'hint_no_drop_data' => 'Bırakılan içerikte kullanılabilir bir görsel bulunamadı.',
+            'hint_remote_failed' => 'Bu kaynaktaki görsel içe aktarılamadı.',
+        ],
         'messages' => [
             'success_sim' => 'Haber başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
@@ -354,6 +366,10 @@ $lang['mod_news'] = [
         'files' => 'Dosya Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
+        'delete_error' => 'Silme işlemi başarısız!',
+        'video_success_sim' => 'Video Başarıyla Eklendi (Simülasyon)',
+        'video_embed_error' => 'Geçersiz Embed Kodu',
+        'video_title_error' => 'Geçersiz Başlık',
         'publish' => 'Yayınla',
         'unpublish' => 'Yayından Kaldır',
         'published_msg' => 'Yayınlandı',
