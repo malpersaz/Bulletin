@@ -198,7 +198,7 @@ class mod_publication_mod extends indexMain
         $this->tema->tpl('mod_publication/list');
     }
 
-    public function remove_image()
+    public function image_remove_image()
     {
         // Check edit permission.
         if ($this->user->hasPermission('mod_publication', 'edit', $this->lang['mod_publication']['role_errors']['edit'], 1) === False) {
@@ -241,7 +241,7 @@ class mod_publication_mod extends indexMain
                 if ($image->_delete_files($option)) {
                     $this->mod_publication_model->image = '';
                     $this->mod_publication_model->update('id');
-                    echo 'Oke';
+                    echo 'Success';
                 } else {
                     echo $image->error;
                     return FALSE;
@@ -251,8 +251,13 @@ class mod_publication_mod extends indexMain
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
+    }
+
+    public function remove_image()
+    {
+        return $this->image_remove_image();
     }
 
     public function videos()
@@ -509,7 +514,7 @@ class mod_publication_mod extends indexMain
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'error',
-                        'message' => $this->lang['mod_publication']['message']['error']['add'] ?? 'Zêdekirin têk çû'
+                        'message' => $this->lang['mod_publication']['message']['error']['add'] ?? 'Add operation failed'
                     ]);
                     exit;
                 }

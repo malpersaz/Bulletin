@@ -1,18 +1,18 @@
-{% set module_lang_key = 'mod_content' %}
-{% set wizard_module = 'mod_content' %}
 {% set hide_navbar = true %}
+{% set module_lang_key = 'mod_content' %}
 {% extends 'admin/layout.twig' %}
 
 {% set hide_search = true %}
 {% set hide_fab = true %}
 {% set hide_navbar = true %}
+{% set wizard_module = 'mod_content' %}
 
 {% block title %}
-	{{ lang.mod_content.edit|default('Biguhere') }}
+	{{ lang.mod_content.edit }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_content.edit|default('Biguhere') }}
+	{{ lang.mod_content.edit }}
 {% endblock %}
 
 {% block content %}
@@ -196,6 +196,58 @@
         }
 
         .image-upload-area { position: relative; }
+        .edit-image-shell {
+            margin-top: 8px;
+            max-width: 100%;
+            min-height: 0;
+            height: auto;
+            width: 100%;
+        }
+        .edit-image-shell .wizard-image-dropzone {
+            min-height: 220px;
+            height: auto;
+        }
+        .edit-image-shell .wizard-image-preview-card {
+            height: auto;
+        }
+        .edit-image-shell .wizard-image-preview-frame {
+            min-height: 0;
+            height: auto;
+            aspect-ratio: 16 / 10;
+        }
+        .edit-image-shell .wizard-image-url-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            align-items: stretch;
+            gap: 12px;
+        }
+        .edit-image-shell .wizard-image-url-input,
+        .edit-image-shell .wizard-image-url-row .m3-btn-filled {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        .edit-image-shell .wizard-image-url-row .m3-btn-filled {
+            justify-content: center;
+            white-space: normal;
+        }
+        .edit-image-shell .wizard-image-empty {
+            min-height: 180px;
+            padding: 12px;
+        }
+        .edit-image-shell .wizard-image-meta {
+            display: none !important;
+        }
+        @media (max-width: 640px) {
+            .edit-image-shell .wizard-image-dropzone {
+                min-height: 180px;
+            }
+            .edit-image-shell .wizard-image-preview-frame,
+            .edit-image-shell .wizard-image-empty {
+                min-height: 150px;
+            }
+        }
 	</style>
 
 	<form id="editForm" method="POST" action="{{ site.sadres }}mod_content/edit/{{ d.id }}" enctype="multipart/form-data">
@@ -211,21 +263,39 @@
             {% if error is defined %}
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        let errorHtml = '<div style="text-align: left;">';
-                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ mesaj }}</b></div>';
-                        {% if hatalar is defined and hatalar|length > 0 %}
-                            errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
-                            {% for hata in hatalar %}
-                                errorHtml += '<li style="margin-bottom: 4px;">{{ hata }}</li>';
-                            {% endfor %}
-                            errorHtml += '</ul>';
-                        {% endif %}
-                        errorHtml += '</div>';
+                        const errorMessage = {{ message|default('')|json_encode|raw }};
+                        const errorItems = {{ (errors is defined ? errors : [])|json_encode|raw }};
+
+                        const wrapper = document.createElement('div');
+                        wrapper.style.textAlign = 'left';
+
+                        const titleRow = document.createElement('div');
+                        titleRow.style.marginBottom = '8px';
+                        titleRow.innerHTML = '<i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b></b>';
+                        titleRow.querySelector('b').textContent = errorMessage;
+                        wrapper.appendChild(titleRow);
+
+                        if (Array.isArray(errorItems) && errorItems.length > 0) {
+                            const list = document.createElement('ul');
+                            list.style.margin = '0';
+                            list.style.paddingLeft = '20px';
+                            list.style.fontSize = '14px';
+                            list.style.color = '#ba1a1a';
+
+                            errorItems.forEach(function(item) {
+                                const listItem = document.createElement('li');
+                                listItem.style.marginBottom = '4px';
+                                listItem.textContent = item;
+                                list.appendChild(listItem);
+                            });
+
+                            wrapper.appendChild(list);
+                        }
 
                         Swal.fire({
                             icon: 'warning',
-                            html: errorHtml,
-                            confirmButtonText: '{{ lang.mod_content.button.tamam|default("Tamam") }}',
+                            html: wrapper.outerHTML,
+                            confirmButtonText: '{{ lang.mod_content.button.ok }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -234,7 +304,7 @@
             {% if oke is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
-                    <span>{{ mesaj }}</span>
+                    <span>{{ message }}</span>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -278,7 +348,7 @@
 										{% endif %}
 									{% endfor %}
 								{% endif %}
-								{{ current_cat_name|default(lang.mod_content.choose_wish) }}
+								{{ current_cat_name ? current_cat_name : lang.mod_content.choose_wish }}
 							</span>
 							<i class="bi bi-chevron-down"></i>
 						</div>
@@ -322,11 +392,11 @@
 					<div class="char-counter" id="editIntroCounter" style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">{{ d.summary|length }} / 280</div>
 				</div>
 
-				{# Deck / Manşet #}
+				{# Deck toggle #}
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_content.admin.columns.deck }}</label>
 					<div class="selection-grid" style="grid-template-columns: 1fr 1fr; margin-top:8px;">
-						<input type="hidden" name="deck" id="deckHidden" value="{{ d.deck|default('n') }}">
+						<input type="hidden" name="deck" id="deckHidden" value="{{ d.deck == 'y' ? 'y' : 'n' }}">
 						<div class="selection-card {% if d.deck == 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'y')" style="padding:12px;">
 							<div class="selection-label">{{ lang.mod_content.admin.radio.deck_yes }}</div>
 							<i class="bi bi-check-circle-fill check-icon"></i>
@@ -356,16 +426,66 @@
 
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_content.admin.columns.image }}</label>
-					<label for="editImgInput" class="image-upload-area" style="margin-top: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-						{% if d.image %}
-							<img id="editImgPreview" src="{{ site.radres }}mod_content/thumb/{{ d.image }}" style="width:100%; height:auto; border-radius:8px;">
-                            <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage()"><i class="bi bi-trash"></i></button>
-						{% else %}
-							<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-							<p>{{ lang.mod_content.wizard.label.upload_text }}</p>
-						{% endif %}
-					</label>
-                    <input type="file" name="image" id="editImgInput" style="display:none;" onchange="previewEditImage(this)">
+                    {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                        shell_id: 'editImageShell',
+                        shell_class: 'edit-image-shell',
+                        has_image: d.image ? true : false,
+                        shell_attrs: {
+                            'data-drop-title': lang.mod_content.wizard.image.drop_title,
+                            'data-drop-description': lang.mod_content.wizard.image.drop_description,
+                            'data-upload-link': lang.mod_content.wizard.image.upload_link,
+                            'data-link-separator': lang.mod_content.wizard.image.link_separator,
+                            'data-link-placeholder': lang.mod_content.wizard.image.link_placeholder,
+                            'data-link-action': lang.mod_content.wizard.image.link_action,
+                            'data-hint-loading': lang.mod_content.wizard.image.hint_loading,
+                            'data-hint-invalid-type': lang.mod_content.wizard.image.hint_invalid_type,
+                            'data-hint-no-drop-data': lang.mod_content.wizard.image.hint_no_drop_data,
+                            'data-hint-remote-failed': lang.mod_content.wizard.image.hint_remote_failed,
+                            'data-empty-name': lang.mod_content.wizard.summary.selected_none,
+                            'data-empty-meta': lang.mod_content.wizard.image.drop_description,
+                            'data-existing-image': d.image ? 'true' : 'false',
+                            'data-existing-src': d.image ? (site.radres ~ 'mod_content/thumb/' ~ d.image) : '',
+                            'data-existing-name': d.image|default(''),
+                            'data-existing-meta': lang.mod_content.admin.columns.image,
+                            'data-remove-url': site.sadres ~ 'mod_content/image_remove_image',
+                            'data-remove-id': d.id,
+                            'data-remove-title': lang.mod_content.remove_image,
+                            'data-remove-confirm': lang.mod_content.context_menu.delete_confirm,
+                            'data-remove-confirm-text': lang.mod_content.button.yes,
+                            'data-remove-cancel-text': lang.mod_content.button.no|default('No'),
+                            'data-success-title': lang.mod_content.ok|default(lang.mod_content.oke),
+                            'data-success-message': lang.mod_content.remove_image_oke,
+                            'data-error-title': lang.mod_content.error_occurred
+                        },
+                        dropzone_id: 'editImageDropzone',
+                        trigger_picker_js: 'triggerEditImagePicker()',
+                        empty_state_id: 'editImageEmptyState',
+                        empty_hidden: d.image ? true : false,
+                        drop_title: lang.mod_content.wizard.image.drop_title,
+                        upload_link: lang.mod_content.wizard.image.upload_link,
+                        preview_card_id: 'editImagePreviewCard',
+                        remove_button_label: lang.mod_content.button.delete,
+                        remove_action_js: 'removeEditImage()',
+                        preview_img_id: 'editImgPreview',
+                        preview_alt: lang.mod_content.wizard.step.image,
+                        preview_hidden: d.image ? false : true,
+                        preview_src: d.image ? (site.radres ~ 'mod_content/thumb/' ~ d.image) : '',
+                        meta_id: 'editImageMeta',
+                        meta_hidden: true,
+                        file_name_id: 'editImageFileName',
+                        file_name_text: '',
+                        file_details_id: 'editImageFileDetails',
+                        file_details_text: '',
+                        divider_hidden: d.image ? true : false,
+                        link_separator: lang.mod_content.wizard.image.link_separator,
+                        url_row_hidden: d.image ? true : false,
+                        url_input_id: 'editImageUrlInput',
+                        link_placeholder: lang.mod_content.wizard.image.link_placeholder,
+                        import_btn_id: 'editImageUrlImportBtn',
+                        link_action: lang.mod_content.wizard.image.link_action,
+                        file_input_id: 'editImgInput',
+                        file_input_onchange: 'previewEditImage(this)'
+                    } %}
 					</div>
 
 
@@ -398,7 +518,7 @@
 					<div class="m3-input-wrapper">
 						<select class="m3-input-lg" name="file_id">
 							<option value="0">{{ lang.mod_content.choose_wish }}</option>
-							{% for item in mod_content_dosya_id %}
+							{% for item in mod_content_file_id %}
 								<option value="{{ item.id }}" {% if d.file_id == item.id %} selected {% endif %}>{{ item.name }}</option>
 							{% endfor %}
 						</select>
@@ -419,7 +539,7 @@
 				</div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_content.button.yenile|default('Têkiliyên Pêşketî') }} (SEO, Meta)</span>
+					<span>{{ lang.mod_content.button.refresh }} (SEO, Meta)</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -535,7 +655,7 @@
 	<div class="m3-final-bar">
 		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_content/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
-			{{ lang.mod_content.button.vazgec }}
+			{{ lang.mod_content.button.cancel }}
 		</button>
 		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 			<i class="bi bi-check-lg"></i>
@@ -550,6 +670,7 @@
         // Initialize Rich Editor
         document.addEventListener('DOMContentLoaded', () => {
             initRichEditor('#editContentTextarea', 400);
+            initializeEditImageInteractions();
         });
 
         // Store current edit mode to override sheet behavior
@@ -602,23 +723,6 @@
             }
         };
 
-		// Image Preview
-		function previewEditImage(input) {
-			if (input.files && input.files[0]) {
-				const reader = new FileReader();
-				reader.onload = function (e) {
-					let preview = document.getElementById('editImgPreview');
-					if (!preview) {
-						const area = document.querySelector('.image-upload-area');
-						area.innerHTML = `<img id="editImgPreview" style="width:100%; height:auto; border-radius:8px;">`;
-						preview = document.getElementById('editImgPreview');
-					}
-					preview.src = e.target.result;
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
-
 		// Advanced Accordion
 		        function selectPublishStatus(el, val) {
             document.querySelectorAll('#publishHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
@@ -653,51 +757,16 @@
 		}
 
         function submitEditForm(formId) {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.triggerSave();
+            }
+
             const form = document.getElementById(formId);
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
             form.submit();
-        }
-
-        function removeEditImage() {
-            const id = "{{ d.id }}";
-            Swal.fire({
-                title: '{{ lang.mod_content.remove_image }}',
-                text: '{{ lang.mod_content.context_menu.delete_confirm }}',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ba1a1a',
-                cancelButtonColor: '#6e7881',
-                confirmButtonText: '{{ lang.mod_content.button.evet }}',
-                cancelButtonText: '{{ lang.mod_content.button.hayir }}'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var formData = new URLSearchParams();
-                    formData.append('id', id);
-
-                    fetch('{{ site.sadres }}mod_content/image_remove_image', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData
-                    })
-                    .then(r => r.text())
-                    .then(data => {
-                        if (data.trim() === 'Oke') {
-                            Swal.fire('{{ lang.mod_content.oke }}', '{{ lang.mod_content.remove_image_oke }}', 'success');
-                            const area = document.querySelector('.image-upload-area');
-                            area.innerHTML = `
-                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                                <p>{{ lang.mod_content.wizard.label.upload_text }}</p>
-                            `;
-                            document.getElementById('editImgInput').value = '';
-                        } else {
-                            Swal.fire('{{ lang.mod_content.hata }}', data, 'error');
-                        }
-                    });
-                }
-            });
         }
 	</script>
 {% endblock %}

@@ -31,7 +31,7 @@ class mod_content_mod extends indexMain
     {
         // Check Add Permission
         if ($this->user->hasPermission('mod_content', 'add', $this->lang['mod_content']['role_errors']['add'], 1) === False) {
-            // AJAX daxwaznameyê kontrol bike
+            // Return JSON for AJAX requests.
             if ($this->_isAjaxRequest()) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['role_errors']['add']]);
@@ -40,11 +40,11 @@ class mod_content_mod extends indexMain
             return False;
         }
         
-        // AJAX Exception Handler
+        // Handle AJAX exceptions.
         if (Req::is_Post('add')) {
             try {
                 $result = $this->_add();
-                // AJAX daxwaznameyê kontrol bike - heke AJAX be, bersiva JSON bişîne û derkevin
+                // Stop after the JSON response is sent for AJAX requests.
                 if ($this->_isAjaxRequest()) {
                     exit; // _add() allready sends JSON and exits for AJAX
                 }
@@ -70,7 +70,7 @@ class mod_content_mod extends indexMain
                     ]);
                     exit;
                 }
-                throw $e; // Non-AJAX request, exception bi rêkûpêk handle bike
+                throw $e; // Non-AJAX request, let normal exception handling continue.
             }
         }
         Run::import('management', '_index');
@@ -237,7 +237,7 @@ class mod_content_mod extends indexMain
                 if ($image->_delete_files($option)) {
                     $this->mod_content_model->image = '';
                     $this->mod_content_model->update('id');
-                    echo 'Oke';
+                    echo 'Success';
                 } else {
                     echo $image->error;
                     return FALSE;
@@ -247,7 +247,7 @@ class mod_content_mod extends indexMain
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -380,7 +380,7 @@ class mod_content_mod extends indexMain
         
         $this->val = Load::validator('mod_content.add');
         if ($this->val->check()) {
-            // Validator xeletî dît
+            // Validation failed.
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
@@ -505,7 +505,7 @@ class mod_content_mod extends indexMain
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'error',
-                        'message' => $this->lang['mod_content']['message']['error']['add'] ?? 'Zêdekirin têk çû'
+                        'message' => $this->lang['mod_content']['message']['error']['add'] ?? 'Add operation failed'
                     ]);
                     exit;
                 }
@@ -595,7 +595,7 @@ class mod_content_mod extends indexMain
                 ];
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî barkirina wêneyê nû, yê kevin jê bibin
+                    // Remove the previous image before storing the new one.
                     $old_data = Load::model('mod_content');
                     $old_data->where_id($id)->gRo()->sync();
                     if ($old_data->image != '') {
@@ -789,7 +789,7 @@ class mod_content_mod extends indexMain
             try {
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî ku em wêneyê nû qeyd bikin, yê kevin jê bibin (Heke hebe)
+                    // Remove the previous image before saving the new one.
                     if ($this->mod_content_model->image != '') {
                         $image->mod = 'mod_content';
                         $image->url = $this->mod_content_model->image;
@@ -1117,7 +1117,7 @@ class mod_content_mod extends indexMain
     // Check if request is AJAX (for wizard and other AJAX calls)
     private function _isAjaxRequest()
     {
-        // Rêya herî hêsan: POST parameter kontrol bike
+        // Fast path: check the explicit POST flag first.
         if (Req::is_Post('ajax_request') && Req::Post_Safe('ajax_request') === '1') {
             return true;
         }

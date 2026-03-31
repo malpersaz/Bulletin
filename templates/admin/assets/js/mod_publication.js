@@ -8,10 +8,25 @@ class ContentManager {
         this.container = document.getElementById('content-list-container');
         this.loader = document.getElementById('infinite-loader');
         this.emptyState = document.getElementById('empty-state');
+        this.imageModal = document.getElementById('newsImageModal');
+        this.imageModalTitle = document.getElementById('newsImageModalTitle');
+        this.imageModalSubtitle = document.getElementById('newsImageModalSubtitle');
+        this.imageMeta = document.getElementById('listImageMeta');
+        this.imageFooter = document.getElementById('newsImageModalFooter');
+        this.imageCancelBtn = document.getElementById('newsImageCancelBtn');
+        this.imageSaveBtn = document.getElementById('newsImageSaveBtn');
 
         this.isLoading = false;
         this.hasMore = true;
         this.selectedContentId = null;
+        this.imageUploadContentId = null;
+        this.imageUploader = null;
+        this.imageUploaderBound = false;
+        this.imageModalState = {
+            hasExistingImage: false,
+            existingImageSrc: '',
+            existingImageName: ''
+        };
 
         this.start = 0;
         this.length = 10;
@@ -28,6 +43,14 @@ class ContentManager {
         // this.initScrollListener(); 
         this.initSearchListener();
         this.initPullToRefresh();
+        this.initListImageUploader();
+        this.initializeImageModalCopy();
+    }
+
+    initializeImageModalCopy() {
+        if (this.imageCancelBtn && typeof adminLang !== 'undefined' && adminLang.context_menu?.cancel) {
+            this.imageCancelBtn.textContent = adminLang.context_menu.cancel;
+        }
     }
 
     createLoadMoreButton() {
@@ -155,7 +178,7 @@ class ContentManager {
             const date = this.stripHtml(item[5]); // Confirmed date string
             const categoryId = item[7] || 0;
             const statusRaw = item[8] || 'n';
-            const authorName = item[9] || '';
+            const authorName = this.stripHtml(item[9] || '');
 
             // Extract Text Title
             const tempDiv = document.createElement('div');
@@ -171,6 +194,8 @@ class ContentManager {
             const card = document.createElement('div');
             card.className = 'm3-card content-card';
             card.dataset.id = id;
+            card.dataset.imageSrc = imgSrc || '';
+            card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : '';
             card.onclick = () => window.contentManager.selectContent(id, card);
 
             // Status Logic
@@ -187,39 +212,65 @@ class ContentManager {
                 categoryName = CATEGORY_MAP[categoryId];
             }
 
+            const safeStatusText = this.escapeHtml(statusText);
+            const safeCategoryName = this.escapeHtml(categoryName);
+            const safeTitleText = this.escapeHtml(titleText);
+            const safeLang = this.escapeHtml(lang);
+            const safeDate = this.escapeHtml(date);
+            const safeAuthorName = this.escapeHtml(authorName);
+
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
                 <div class="card-content-layout">
-                    <!-- Thumbnail -->
-                    <div class="card-thumbnail" 
-                         onclick="event.stopPropagation(); window.contentManager.processImageUpload('${id}')"
-                         style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
-                        ${!imgSrc ? '<i class="bi bi-image" style="font-size: 24px;"></i>' : ''}
+                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
+                        ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
                     <div class="card-body-col">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
                                 <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span style="color:${statusColor}; font-weight:500;">${statusText}</span>
+                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
                                     <span>•</span>
-                                    <span>${categoryName}</span>
+                                    <span>${safeCategoryName}</span>
                                 </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
+                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
                              </div>
-                             <button class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" onclick="event.stopPropagation(); window.contentManager.openActionSheet('${id}', '${titleText.replace(/'/g, "\\\'")}', '${statusRaw}')">
+                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
 
                         <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${lang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${date}</span>
-                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${authorName}</span>
+                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
+                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
+                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
                         </div>
                     </div>
                 </div>
             `;
+
+            const thumbnail = card.querySelector('.card-thumbnail');
+            if (thumbnail) {
+                if (imgSrc) {
+                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
+                    thumbnail.style.backgroundSize = 'cover';
+                    thumbnail.style.backgroundPosition = 'center';
+                }
+
+                thumbnail.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.processImageUpload(id);
+                });
+            }
+
+            const actionButton = card.querySelector('.m3-icon-btn');
+            if (actionButton) {
+                actionButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.openActionSheet(id, titleText, statusRaw);
+                });
+            }
 
             fragment.appendChild(card);
         });
@@ -233,22 +284,31 @@ class ContentManager {
         return tmp.textContent || tmp.innerText || "";
     }
 
+    escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
     initScrollListener() {
         const scrollFrame = document.querySelector('.app-scroll-frame');
         if (scrollFrame) {
             let scrollTimeout = null;
             scrollFrame.addEventListener('scroll', () => {
-                // Throttle: Tenê dema ku scroll raweste, load bike
+                // Throttle: Only load when scrolling stops
                 if (scrollTimeout) clearTimeout(scrollTimeout);
                 scrollTimeout = setTimeout(() => {
-                    // IMPORTANT: Pêşî kontrol bike ka hîn dane hene
+                    // IMPORTANT: Check if there are still more data
                     if (!this.hasMore || this.isLoading) {
                         return;
                     }
                     // Threshold check: Ensure we are really at the bottom
                     // Also check if content is actually taller than viewport
                     if (scrollFrame.scrollHeight <= scrollFrame.clientHeight) {
-                        return; // Don't auto load if content fits (unless we want to fill empty space, but user complained about auto-load)
+                        return; // Don't auto load if content fits
                     }
 
                     if (scrollFrame.scrollTop + scrollFrame.clientHeight >= scrollFrame.scrollHeight - 50) {
@@ -280,57 +340,283 @@ class ContentManager {
         window.refreshContent = () => this.loadData(true);
     }
 
-    processImageUpload(id) {
-        let input = document.getElementById('ajax_image_input_modern');
-        if (!input) {
-            input = document.createElement('input');
-            input.type = 'file';
-            input.id = 'ajax_image_input_modern';
-            input.name = 'image';
-            input.style.display = 'none';
-            input.accept = 'image/*';
-            document.body.appendChild(input);
+    getListImageI18n() {
+        const shell = document.getElementById('listImageShell');
+        const data = shell ? shell.dataset : {};
+
+        return {
+            dropTitle: data.dropTitle || '',
+            dropDescription: data.dropDescription || '',
+            uploadLink: data.uploadLink || '',
+            linkSeparator: data.linkSeparator || '',
+            linkPlaceholder: data.linkPlaceholder || '',
+            linkAction: data.linkAction || '',
+            hintLoading: data.hintLoading || '',
+            hintInvalidType: data.hintInvalidType || '',
+            hintNoDropData: data.hintNoDropData || '',
+            hintRemoteFailed: data.hintRemoteFailed || CONTENT_LANG.image_remote_failed || '',
+            emptyName: data.emptyName || CONTENT_LANG.image_empty || '',
+            emptyMeta: data.emptyMeta || CONTENT_LANG.image_drop_description || '',
+            imageLabel: CONTENT_LANG.image_title || 'Image'
+        };
+    }
+
+    initListImageUploader() {
+        if (typeof window.createImageUploader !== 'function') {
+            return;
         }
 
-        // Unbind previous handlers
-        const newInput = input.cloneNode(true);
-        input.parentNode.replaceChild(newInput, input);
-        input = newInput;
-
-        input.onchange = async () => {
-            if (input.files && input.files[0]) {
-                const fileData = input.files[0];
-                const formData = new FormData();
-                formData.append('image', fileData);
-                formData.append('id', id);
-
-                // UI Feedback (Simple loader for now, could be improved)
-                this.loader.style.display = 'flex';
-
-                try {
-                    const response = await fetch(`${MODULE_URL}ajax_image_upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
-
-                    if (result.status === 'success') {
-                        // Refresh to show new image
-                        this.loadData(true);
-                    } else {
-                        alert(result.message || CONTENT_LANG.error_upload);
+        if (!this.imageUploader) {
+            this.imageUploader = window.createImageUploader({
+                rootId: 'listImageShell',
+                inputId: 'listImgInput',
+                previewId: 'listImgPreview',
+                emptyStateId: 'listImageEmptyState',
+                previewCardId: 'listImagePreviewCard',
+                fileNameId: 'listImageFileName',
+                fileDetailsId: 'listImageFileDetails',
+                dropzoneId: 'listImageDropzone',
+                urlInputId: 'listImageUrlInput',
+                urlImportBtnId: 'listImageUrlImportBtn',
+                getI18n: () => this.getListImageI18n(),
+                onTriggerPicker: () => document.getElementById('listImgInput')?.click(),
+                shouldHandlePaste: () => {
+                    if (!this.imageModal || !this.imageModal.classList.contains('active')) {
+                        return false;
                     }
-                } catch (err) {
-                    console.error('Upload error:', err);
-                    alert(CONTENT_LANG.error_upload);
-                } finally {
-                    this.loader.style.display = 'none';
-                    input.value = ''; // Reset
+
+                    const activeElement = document.activeElement;
+                    return !activeElement || activeElement === document.body || this.imageModal.contains(activeElement);
+                },
+                onChange: ({ file, source, name }) => {
+                    if (source === 'existing' && name) {
+                        this.imageModalState.existingImageName = name;
+                    }
+                    this.updateImageModalActions(source, file);
                 }
+            });
+        }
+
+        if (!this.imageUploaderBound && this.imageUploader) {
+            this.imageUploader.bind();
+            this.imageUploaderBound = true;
+        }
+
+        if (!this.imageModal) {
+            return;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.imageModal.classList.contains('active')) {
+                this.closeImageUploader();
             }
+        });
+    }
+
+    openImageUploader(id, title) {
+        this.initListImageUploader();
+        this.imageUploadContentId = id;
+        const card = document.querySelector(`.content-card[data-id="${id}"]`);
+        const existingImageSrc = card?.dataset.imageSrc || '';
+        const existingImageName = card?.dataset.imageName || title || CONTENT_LANG.image_title;
+        this.imageModalState = {
+            hasExistingImage: Boolean(existingImageSrc),
+            existingImageSrc,
+            existingImageName
         };
 
-        input.click();
+        if (this.imageModalTitle) {
+            this.imageModalTitle.textContent = CONTENT_LANG.image_title;
+        }
+        if (this.imageModalSubtitle) {
+            this.imageModalSubtitle.textContent = '';
+            this.imageModalSubtitle.hidden = true;
+        }
+
+        this.resetListImageUploader();
+
+        if (this.imageModal) {
+            document.body.classList.add('news-image-modal-open');
+            this.imageModal.classList.add('active');
+            this.imageModal.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    closeImageUploader() {
+        if (this.imageModal) {
+            this.imageModal.classList.remove('active');
+            this.imageModal.setAttribute('aria-hidden', 'true');
+        }
+
+        document.body.classList.remove('news-image-modal-open');
+        this.imageUploadContentId = null;
+        this.imageModalState = {
+            hasExistingImage: false,
+            existingImageSrc: '',
+            existingImageName: ''
+        };
+        this.resetListImageUploader({ preserveExisting: false });
+    }
+
+    resetListImageUploader(options = {}) {
+        if (this.imageUploader) {
+            this.imageUploader.reset();
+        }
+        this.resetImageModalActions();
+        if (options.preserveExisting !== false && this.imageModalState.hasExistingImage && this.imageUploader) {
+            this.imageUploader.renderExistingImage({
+                src: this.imageModalState.existingImageSrc,
+                name: this.imageModalState.existingImageName || CONTENT_LANG.image_title,
+                metaText: ''
+            });
+        }
+    }
+
+    resetImageModalActions() {
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.disabled = true;
+            this.imageSaveBtn.hidden = true;
+            this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
+        }
+        if (this.imageMeta) {
+            this.imageMeta.hidden = true;
+        }
+        if (this.imageFooter) {
+            this.imageFooter.classList.add('is-single-action');
+        }
+    }
+
+    updateImageModalActions(source, file) {
+        const hasPendingFile = Boolean(file) && source !== 'existing';
+
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.hidden = !hasPendingFile;
+            this.imageSaveBtn.disabled = !hasPendingFile;
+        }
+        if (this.imageMeta) {
+            this.imageMeta.hidden = !hasPendingFile;
+        }
+        if (this.imageFooter) {
+            this.imageFooter.classList.toggle('is-single-action', !hasPendingFile);
+        }
+    }
+
+    processImageUpload(id) {
+        const card = document.querySelector(`.content-card[data-id="${id}"]`);
+        const title = card?.querySelector('h3')?.textContent?.trim() || '';
+        this.openImageUploader(id, title);
+    }
+
+    handleListImageRemoveAction() {
+        const pendingFile = this.imageUploader?.getSelectedFile();
+        if (pendingFile) {
+            this.resetListImageUploader();
+            return;
+        }
+
+        if (this.imageModalState.hasExistingImage) {
+            this.removeExistingListImage();
+        }
+    }
+
+    async removeExistingListImage() {
+        if (!this.imageUploadContentId || !this.imageModalState.hasExistingImage) {
+            return;
+        }
+
+        const result = await Swal.fire({
+            title: CONTENT_LANG.image_remove_title,
+            text: CONTENT_LANG.image_remove_confirm,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#B71C1C',
+            cancelButtonColor: '#6750A4',
+            confirmButtonText: CONTENT_LANG.image_remove_confirm_text,
+            cancelButtonText: CONTENT_LANG.image_remove_cancel_text,
+            background: 'var(--md-sys-color-surface-container-high, #fff)',
+            color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        this.loader.style.display = 'flex';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('id', this.imageUploadContentId);
+
+            const response = await fetch(`${MODULE_URL}image_remove_image`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+
+            const text = (await response.text()).trim();
+            if (text !== 'Success') {
+                showSnackbar(text || CONTENT_LANG.error_general, 'error');
+                return;
+            }
+
+            this.closeImageUploader();
+            await this.loadData(true);
+            showSnackbar(CONTENT_LANG.image_remove_success || CONTENT_LANG.image_updated, 'success');
+        } catch (error) {
+            console.error('Remove image error:', error);
+            showSnackbar(CONTENT_LANG.error_general, 'error');
+        } finally {
+            this.loader.style.display = 'none';
+        }
+    }
+
+    async submitListImageUpload() {
+        const fileData = this.imageUploader?.getSelectedFile();
+        if (!this.imageUploadContentId || !fileData) {
+            this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', fileData);
+        formData.append('id', this.imageUploadContentId);
+
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.hidden = false;
+            this.imageSaveBtn.disabled = true;
+            this.imageSaveBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${CONTENT_LANG.loading}`;
+        }
+
+        this.loader.style.display = 'flex';
+
+        try {
+            const response = await fetch(`${MODULE_URL}ajax_image_upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                this.closeImageUploader();
+                await this.loadData(true);
+                showSnackbar(result.message || CONTENT_LANG.image_updated, 'success');
+            } else {
+                this.imageUploader?.showFeedback(result.message || CONTENT_LANG.error_upload, 'error');
+                showSnackbar(result.message || CONTENT_LANG.error_upload, 'error');
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
+            showSnackbar(CONTENT_LANG.error_upload, 'error');
+        } finally {
+            this.loader.style.display = 'none';
+            if (this.imageSaveBtn) {
+                const hasPendingFile = !!this.imageUploader?.getSelectedFile();
+                this.imageSaveBtn.hidden = !hasPendingFile;
+                this.imageSaveBtn.disabled = !hasPendingFile;
+                this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
+            }
+        }
     }
 
     openActionSheet(id, title, status) {
@@ -399,14 +685,14 @@ window.editSelected = function () {
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_gallery/list/mod_publication/' + mgr.selectedContentId;
+        window.location.href = SITE_URL + 'mod_gallery/list/mod_news/' + mgr.selectedContentId;
     }
 };
 
 window.filesSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_attachment/list/mod_publication/' + mgr.selectedContentId;
+        window.location.href = SITE_URL + 'mod_attachment/list/mod_news/' + mgr.selectedContentId;
     }
 };
 
@@ -440,7 +726,7 @@ window.deleteSelected = function () {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if ((msg || '').trim() === 'Success') {
                         mgr.selectedContentId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -493,7 +779,7 @@ window.handleContextAction = function (action) {
                     })
                         .then(response => response.text())
                         .then(msg => {
-                            if (msg === 'Oke') {
+                            if ((msg || '').trim() === 'Success') {
                                 window.contentManager.loadData(true);
                                 closeContextMenu();
                                 showSnackbar(adminLang.context_menu.delete_success, 'success');
@@ -509,10 +795,10 @@ window.handleContextAction = function (action) {
             });
             break;
         case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_publication/${id}`;
+            window.location.href = `${SITE_URL}mod_gallery/list/mod_news/${id}`;
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_publication/${id}`;
+            window.location.href = `${SITE_URL}mod_attachment/list/mod_news/${id}`;
             break;
         case 'status':
             // Call the existing toggleStatus logic
@@ -531,7 +817,7 @@ window.handleContextAction = function (action) {
  */
 window.toggleStatus = function (id, currentStatus) {
     if (typeof event !== 'undefined') event.stopPropagation();
-    const endpoint = currentStatus === 'y' ? 'unpublish' : 'publish';
+    const endpoint = currentStatus === 'y' ? 'unapprove' : 'approve';
     const isPublishing = currentStatus !== 'y';
 
     const confirmMsg = isPublishing ? CONTENT_LANG.confirm_publish : CONTENT_LANG.confirm_unpublish;
@@ -565,7 +851,7 @@ window.toggleStatus = function (id, currentStatus) {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if ((msg || '').trim() === 'Success') {
                         window.contentManager.loadData(true);
                         showSnackbar(successMsg, 'success');
                     } else {
