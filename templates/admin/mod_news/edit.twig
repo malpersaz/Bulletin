@@ -4,6 +4,7 @@
 {% set hide_search = true %}
 {% set hide_fab = true %}
 {% set hide_navbar = true %}
+{% set wizard_module = 'mod_news' %}
 
 {% block title %}
 	{{ lang.mod_news.edit }}
@@ -194,6 +195,39 @@
         }
 
         .image-upload-area { position: relative; }
+        .edit-image-shell {
+            margin-top: 8px;
+            max-width: 100%;
+            min-height: 0;
+            height: auto;
+            grid-template-rows: auto auto auto;
+        }
+        .edit-image-shell .wizard-image-dropzone {
+            min-height: 220px;
+            height: auto;
+        }
+        .edit-image-shell .wizard-image-preview-card {
+            height: auto;
+            grid-template-rows: auto auto;
+        }
+        .edit-image-shell .wizard-image-preview-frame {
+            min-height: 180px;
+            height: auto;
+            aspect-ratio: 16 / 10;
+        }
+        .edit-image-shell .wizard-image-empty {
+            min-height: 180px;
+            padding: 12px;
+        }
+        @media (max-width: 640px) {
+            .edit-image-shell .wizard-image-dropzone {
+                min-height: 180px;
+            }
+            .edit-image-shell .wizard-image-preview-frame,
+            .edit-image-shell .wizard-image-empty {
+                min-height: 150px;
+            }
+        }
 	</style>
 
 	<form id="editForm" method="POST" action="{{ site.sadres }}mod_news/edit/{{ d.id }}" enctype="multipart/form-data">
@@ -354,16 +388,64 @@
 
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_news.admin.columns.image }}</label>
-					<label for="editImgInput" class="image-upload-area" style="margin-top: 8px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-						{% if d.image %}
-							<img id="editImgPreview" src="{{ site.radres }}mod_news/thumb/{{ d.image }}" style="width:100%; height:auto; border-radius:8px;">
-                            <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage()"><i class="bi bi-trash"></i></button>
-						{% else %}
-							<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-							<p>{{ lang.mod_news.wizard.label.upload_text }}</p>
-						{% endif %}
-					</label>
-                    <input type="file" name="image" id="editImgInput" style="display:none;" onchange="previewEditImage(this)">
+                    {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                        shell_id: 'editImageShell',
+                        shell_class: 'edit-image-shell',
+                        has_image: d.image ? true : false,
+                        shell_attrs: {
+                            'data-drop-title': lang.mod_news.wizard.image.drop_title,
+                            'data-drop-description': lang.mod_news.wizard.image.drop_description,
+                            'data-upload-link': lang.mod_news.wizard.image.upload_link,
+                            'data-link-separator': lang.mod_news.wizard.image.link_separator,
+                            'data-link-placeholder': lang.mod_news.wizard.image.link_placeholder,
+                            'data-link-action': lang.mod_news.wizard.image.link_action,
+                            'data-hint-loading': lang.mod_news.wizard.image.hint_loading,
+                            'data-hint-invalid-type': lang.mod_news.wizard.image.hint_invalid_type,
+                            'data-hint-no-drop-data': lang.mod_news.wizard.image.hint_no_drop_data,
+                            'data-hint-remote-failed': lang.mod_news.wizard.image.hint_remote_failed,
+                            'data-empty-name': lang.mod_news.wizard.summary.selected_none,
+                            'data-empty-meta': lang.mod_news.wizard.image.drop_description,
+                            'data-existing-image': d.image ? 'true' : 'false',
+                            'data-existing-src': d.image ? (site.radres ~ 'mod_news/thumb/' ~ d.image) : '',
+                            'data-existing-name': d.image|default(''),
+                            'data-existing-meta': lang.mod_news.admin.columns.image,
+                            'data-remove-url': site.sadres ~ 'mod_news/image_remove_image',
+                            'data-remove-id': d.id,
+                            'data-remove-title': lang.mod_news.remove_image,
+                            'data-remove-confirm': lang.mod_news.context_menu.delete_confirm,
+                            'data-remove-confirm-text': lang.mod_news.button.evet,
+                            'data-remove-cancel-text': lang.mod_news.button.hayir,
+                            'data-success-title': lang.mod_news.oke,
+                            'data-success-message': lang.mod_news.remove_image_oke,
+                            'data-error-title': lang.mod_news.hata
+                        },
+                        dropzone_id: 'editImageDropzone',
+                        trigger_picker_js: 'triggerEditImagePicker()',
+                        empty_state_id: 'editImageEmptyState',
+                        empty_hidden: d.image ? true : false,
+                        drop_title: lang.mod_news.wizard.image.drop_title,
+                        upload_link: lang.mod_news.wizard.image.upload_link,
+                        preview_card_id: 'editImagePreviewCard',
+                        remove_action_js: 'removeEditImage()',
+                        preview_img_id: 'editImgPreview',
+                        preview_alt: lang.mod_news.wizard.step.image,
+                        preview_hidden: d.image ? false : true,
+                        preview_src: d.image ? (site.radres ~ 'mod_news/thumb/' ~ d.image) : '',
+                        meta_hidden: false,
+                        file_name_id: 'editImageFileName',
+                        file_name_text: d.image ? d.image : lang.mod_news.wizard.summary.selected_none,
+                        file_details_id: 'editImageFileDetails',
+                        file_details_text: d.image ? lang.mod_news.admin.columns.image : lang.mod_news.wizard.image.drop_description,
+                        divider_hidden: d.image ? true : false,
+                        link_separator: lang.mod_news.wizard.image.link_separator,
+                        url_row_hidden: d.image ? true : false,
+                        url_input_id: 'editImageUrlInput',
+                        link_placeholder: lang.mod_news.wizard.image.link_placeholder,
+                        import_btn_id: 'editImageUrlImportBtn',
+                        link_action: lang.mod_news.wizard.image.link_action,
+                        file_input_id: 'editImgInput',
+                        file_input_onchange: 'previewEditImage(this)'
+                    } %}
 					</div>
 
 
@@ -548,6 +630,7 @@
         // Initialize Rich Editor
         document.addEventListener('DOMContentLoaded', () => {
             initRichEditor('#editContentTextarea', 400);
+            initializeEditImageInteractions();
         });
 
         // Store current edit mode to override sheet behavior
@@ -600,23 +683,6 @@
             }
         };
 
-		// Image Preview
-		function previewEditImage(input) {
-			if (input.files && input.files[0]) {
-				const reader = new FileReader();
-				reader.onload = function (e) {
-					let preview = document.getElementById('editImgPreview');
-					if (!preview) {
-						const area = document.querySelector('.image-upload-area');
-						area.innerHTML = `<img id="editImgPreview" style="width:100%; height:auto; border-radius:8px;">`;
-						preview = document.getElementById('editImgPreview');
-					}
-					preview.src = e.target.result;
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
-
 		// Advanced Accordion
 		        function selectPublishStatus(el, val) {
             document.querySelectorAll('#publishHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
@@ -657,45 +723,6 @@
                 return;
             }
             form.submit();
-        }
-
-        function removeEditImage() {
-            const id = "{{ d.id }}";
-            Swal.fire({
-                title: '{{ lang.mod_news.remove_image }}',
-                text: '{{ lang.mod_news.context_menu.delete_confirm }}',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ba1a1a',
-                cancelButtonColor: '#6e7881',
-                confirmButtonText: '{{ lang.mod_news.button.evet }}',
-                cancelButtonText: '{{ lang.mod_news.button.hayir }}'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    var formData = new URLSearchParams();
-                    formData.append('id', id);
-
-                    fetch('{{ site.sadres }}mod_news/image_remove_image', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: formData
-                    })
-                    .then(r => r.text())
-                    .then(data => {
-                        if (data.trim() === 'Oke') {
-                            Swal.fire('{{ lang.mod_news.oke }}', '{{ lang.mod_news.remove_image_oke }}', 'success');
-                            const area = document.querySelector('.image-upload-area');
-                            area.innerHTML = `
-                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                                <p>{{ lang.mod_news.wizard.label.upload_text }}</p>
-                            `;
-                            document.getElementById('editImgInput').value = '';
-                        } else {
-                            Swal.fire('{{ lang.mod_news.hata }}', data, 'error');
-                        }
-                    });
-                }
-            });
         }
 	</script>
 {% endblock %}

@@ -24,6 +24,141 @@
     .news-toolbar #toolbarDelete.active i {
         filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
     }
+    .news-image-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 12000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 16px;
+        box-sizing: border-box;
+        opacity: 0;
+        pointer-events: none;
+        overflow-x: hidden;
+        transition: opacity 0.24s ease;
+    }
+    .news-image-modal.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .news-image-modal__scrim {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: rgba(28, 27, 31, 0.54);
+        backdrop-filter: blur(3px);
+    }
+    .news-image-modal__sheet {
+        position: relative;
+        z-index: 1;
+        width: min(calc(100vw - 32px), 560px);
+        max-height: min(88vh, 760px);
+        overflow: auto;
+        overflow-x: hidden;
+        border-radius: 28px;
+        background: var(--md-sys-color-surface, #fff);
+        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+        transform: translateY(28px);
+        transition: transform 0.24s ease;
+    }
+    .news-image-modal.active .news-image-modal__sheet {
+        transform: translateY(0);
+    }
+    .news-image-modal__body {
+        padding-bottom: 20px;
+    }
+    .wizard-title #newsImageModalTitle {
+        font-size: 16px;
+        font-weight: 500;
+    }
+    .wizard-title #newsImageModalSubtitle {
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .news-image-shell {
+        background: var(--md-sys-color-surface-container-low, #f8f2fa);
+        border-radius: 24px;
+        padding: 16px;
+        overflow-x: hidden;
+    }
+    .news-image-shell .wizard-image-url-row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+    }
+    .news-image-shell .wizard-image-url-input,
+    .news-image-shell .wizard-image-url-row .m3-btn-filled {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .news-image-shell .wizard-image-url-row .m3-btn-filled {
+        justify-content: center !important;
+        white-space: normal !important;
+    }
+    .news-image-shell .wizard-image-dropzone {
+        min-height: 220px;
+    }
+    .news-image-shell .wizard-image-meta {
+        padding-top: 12px;
+    }
+    .news-image-shell .wizard-image-meta[hidden] {
+        display: none !important;
+    }
+    .news-image-shell .wizard-image-meta strong {
+        word-break: break-word;
+    }
+    .news-image-save[disabled] {
+        opacity: 0.45;
+        pointer-events: none;
+    }
+    .news-image-save[hidden] {
+        display: none !important;
+    }
+    .news-image-modal__footer.is-single-action {
+        justify-content: flex-start;
+    }
+    .news-image-modal__footer.is-single-action > * {
+        width: 100%;
+    }
+    .news-image-modal__footer.wizard-footer {
+        padding-top: 16px;
+        padding-bottom: 24px;
+    }
+    body.news-image-modal-open {
+        overflow: hidden;
+        overflow-x: hidden;
+    }
+    body.news-image-modal-open .app-scroll-frame {
+        overflow-x: hidden;
+    }
+    body.news-image-modal-open .top-app-bar,
+    body.news-image-modal-open .search-row,
+    body.news-image-modal-open .standard-toolbar {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-8px);
+        transition: opacity 0.18s ease, transform 0.18s ease;
+    }
+    @media (max-width: 767px) {
+        .news-image-modal {
+            align-items: flex-end;
+            padding: 0;
+        }
+        .news-image-modal__sheet {
+            width: 100%;
+            max-height: 88vh;
+            border-radius: 28px 28px 0 0;
+        }
+        .news-image-modal__body,
+        .news-image-modal__footer {
+            padding-left: 12px;
+            padding-right: 12px;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -92,6 +227,76 @@
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1"> 
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
+
+<div id="newsImageModal" class="news-image-modal" aria-hidden="true">
+    <div class="news-image-modal__scrim" onclick="window.contentManager?.closeImageUploader()"></div>
+    <div class="news-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="newsImageModalTitle">
+        <header class="wizard-header">
+            <button type="button" class="icon-btn" onclick="window.contentManager?.closeImageUploader()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="wizard-title">
+                <span id="newsImageModalTitle">{{ lang.mod_news.wizard.step.image }}</span>
+                <span id="newsImageModalSubtitle" hidden></span>
+            </div>
+            <button type="button" id="newsImageSaveBtn" class="m3-btn-text news-image-save" onclick="window.contentManager?.submitListImageUpload()" disabled hidden>{{ lang.mod_news.wizard.button.save }}</button>
+        </header>
+
+        <div class="wizard-progress-bar">
+            <div class="wizard-progress-fill" style="width: 100%;"></div>
+        </div>
+
+        <div class="wizard-content news-image-modal__body">
+            {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                shell_id: 'listImageShell',
+                shell_class: 'news-image-shell',
+                has_image: false,
+                shell_attrs: {
+                    'data-drop-title': lang.mod_news.wizard.image.drop_title,
+                    'data-drop-description': lang.mod_news.wizard.image.drop_description,
+                    'data-upload-link': lang.mod_news.wizard.image.upload_link,
+                    'data-link-separator': lang.mod_news.wizard.image.link_separator,
+                    'data-link-placeholder': lang.mod_news.wizard.image.link_placeholder,
+                    'data-link-action': lang.mod_news.wizard.image.link_action,
+                    'data-hint-loading': lang.mod_news.wizard.image.hint_loading,
+                    'data-hint-invalid-type': lang.mod_news.wizard.image.hint_invalid_type,
+                    'data-hint-no-drop-data': lang.mod_news.wizard.image.hint_no_drop_data,
+                    'data-hint-remote-failed': lang.mod_news.wizard.image.hint_remote_failed,
+                    'data-empty-name': lang.mod_news.wizard.summary.selected_none,
+                    'data-empty-meta': lang.mod_news.wizard.image.drop_description
+                },
+                dropzone_id: 'listImageDropzone',
+                trigger_picker_js: "document.getElementById('listImgInput')?.click()",
+                empty_state_id: 'listImageEmptyState',
+                drop_title: lang.mod_news.wizard.image.drop_title,
+                upload_link: lang.mod_news.wizard.image.upload_link,
+                preview_card_id: 'listImagePreviewCard',
+                remove_action_js: 'window.contentManager?.handleListImageRemoveAction()',
+                preview_img_id: 'listImgPreview',
+                preview_alt: '',
+                preview_hidden: true,
+                meta_id: 'listImageMeta',
+                meta_hidden: true,
+                file_name_id: 'listImageFileName',
+                file_name_text: lang.mod_news.wizard.summary.selected_none,
+                file_details_id: 'listImageFileDetails',
+                file_details_text: lang.mod_news.wizard.image.drop_description,
+                divider_hidden: false,
+                link_separator: lang.mod_news.wizard.image.link_separator,
+                url_row_hidden: false,
+                url_input_id: 'listImageUrlInput',
+                link_placeholder: lang.mod_news.wizard.image.link_placeholder,
+                import_btn_id: 'listImageUrlImportBtn',
+                link_action: lang.mod_news.wizard.image.link_action,
+                file_input_id: 'listImgInput'
+            } %}
+        </div>
+
+        <div id="newsImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
+            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_news.button.hayir }}</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block fixed_bottom %}
@@ -140,11 +345,23 @@
         confirm_unpublish: "{{ lang.mod_news.quick_unpublish_confirm|e('js') }}",
         error_general: "{{ lang.mod_news.hata|e('js') }}",
         error_upload: "{{ lang.mod_news.message.error.add|e('js') }}",
+        save_image: "{{ lang.mod_news.wizard.button.save|e('js') }}",
+        cancel: "{{ lang.mod_news.button.hayir|e('js') }}",
+        image_title: "{{ lang.mod_news.wizard.step.image|e('js') }}",
+        image_empty: "{{ lang.mod_news.wizard.summary.selected_none|e('js') }}",
+        image_remote_failed: "{{ lang.mod_news.wizard.image.hint_remote_failed|e('js') }}",
+        image_drop_description: "{{ lang.mod_news.wizard.image.drop_description|e('js') }}",
+        image_updated: "{{ lang.mod_news.oke|e('js') }}",
+        image_remove_title: "{{ lang.mod_news.remove_image|e('js') }}",
+        image_remove_confirm: "{{ lang.mod_news.context_menu.delete_confirm|e('js') }}",
+        image_remove_confirm_text: "{{ lang.mod_news.button.evet|e('js') }}",
+        image_remove_cancel_text: "{{ lang.mod_news.button.hayir|e('js') }}",
+        image_remove_success: "{{ lang.mod_news.remove_image_oke|e('js') }}",
         loading: "{{ lang.mod_news.grid[104]|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_news.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=2.3"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.1"></script>
 {% endblock %}

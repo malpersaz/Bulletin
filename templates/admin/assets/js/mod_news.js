@@ -8,10 +8,25 @@ class ContentManager {
         this.container = document.getElementById('content-list-container');
         this.loader = document.getElementById('infinite-loader');
         this.emptyState = document.getElementById('empty-state');
+        this.imageModal = document.getElementById('newsImageModal');
+        this.imageModalTitle = document.getElementById('newsImageModalTitle');
+        this.imageModalSubtitle = document.getElementById('newsImageModalSubtitle');
+        this.imageMeta = document.getElementById('listImageMeta');
+        this.imageFooter = document.getElementById('newsImageModalFooter');
+        this.imageCancelBtn = document.getElementById('newsImageCancelBtn');
+        this.imageSaveBtn = document.getElementById('newsImageSaveBtn');
 
         this.isLoading = false;
         this.hasMore = true;
         this.selectedContentId = null;
+        this.imageUploadContentId = null;
+        this.imageUploader = null;
+        this.imageUploaderBound = false;
+        this.imageModalState = {
+            hasExistingImage: false,
+            existingImageSrc: '',
+            existingImageName: ''
+        };
 
         this.start = 0;
         this.length = 10;
@@ -28,6 +43,14 @@ class ContentManager {
         // this.initScrollListener(); 
         this.initSearchListener();
         this.initPullToRefresh();
+        this.initListImageUploader();
+        this.initializeImageModalCopy();
+    }
+
+    initializeImageModalCopy() {
+        if (this.imageCancelBtn && typeof adminLang !== 'undefined' && adminLang.context_menu?.cancel) {
+            this.imageCancelBtn.textContent = adminLang.context_menu.cancel;
+        }
     }
 
     createLoadMoreButton() {
@@ -171,6 +194,8 @@ class ContentManager {
             const card = document.createElement('div');
             card.className = 'm3-card content-card';
             card.dataset.id = id;
+            card.dataset.imageSrc = imgSrc || '';
+            card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : '';
             card.onclick = () => window.contentManager.selectContent(id, card);
 
             // Status Logic
@@ -280,57 +305,283 @@ class ContentManager {
         window.refreshContent = () => this.loadData(true);
     }
 
-    processImageUpload(id) {
-        let input = document.getElementById('ajax_image_input_modern');
-        if (!input) {
-            input = document.createElement('input');
-            input.type = 'file';
-            input.id = 'ajax_image_input_modern';
-            input.name = 'image';
-            input.style.display = 'none';
-            input.accept = 'image/*';
-            document.body.appendChild(input);
+    getListImageI18n() {
+        const shell = document.getElementById('listImageShell');
+        const data = shell ? shell.dataset : {};
+
+        return {
+            dropTitle: data.dropTitle || '',
+            dropDescription: data.dropDescription || '',
+            uploadLink: data.uploadLink || '',
+            linkSeparator: data.linkSeparator || '',
+            linkPlaceholder: data.linkPlaceholder || '',
+            linkAction: data.linkAction || '',
+            hintLoading: data.hintLoading || '',
+            hintInvalidType: data.hintInvalidType || '',
+            hintNoDropData: data.hintNoDropData || '',
+            hintRemoteFailed: data.hintRemoteFailed || CONTENT_LANG.image_remote_failed || '',
+            emptyName: data.emptyName || CONTENT_LANG.image_empty || '',
+            emptyMeta: data.emptyMeta || CONTENT_LANG.image_drop_description || '',
+            imageLabel: CONTENT_LANG.image_title || 'Image'
+        };
+    }
+
+    initListImageUploader() {
+        if (typeof window.createImageUploader !== 'function') {
+            return;
         }
 
-        // Unbind previous handlers
-        const newInput = input.cloneNode(true);
-        input.parentNode.replaceChild(newInput, input);
-        input = newInput;
-
-        input.onchange = async () => {
-            if (input.files && input.files[0]) {
-                const fileData = input.files[0];
-                const formData = new FormData();
-                formData.append('image', fileData);
-                formData.append('id', id);
-
-                // UI Feedback (Simple loader for now, could be improved)
-                this.loader.style.display = 'flex';
-
-                try {
-                    const response = await fetch(`${MODULE_URL}ajax_image_upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    const result = await response.json();
-
-                    if (result.status === 'success') {
-                        // Refresh to show new image
-                        this.loadData(true);
-                    } else {
-                        alert(result.message || CONTENT_LANG.error_upload);
+        if (!this.imageUploader) {
+            this.imageUploader = window.createImageUploader({
+                rootId: 'listImageShell',
+                inputId: 'listImgInput',
+                previewId: 'listImgPreview',
+                emptyStateId: 'listImageEmptyState',
+                previewCardId: 'listImagePreviewCard',
+                fileNameId: 'listImageFileName',
+                fileDetailsId: 'listImageFileDetails',
+                dropzoneId: 'listImageDropzone',
+                urlInputId: 'listImageUrlInput',
+                urlImportBtnId: 'listImageUrlImportBtn',
+                getI18n: () => this.getListImageI18n(),
+                onTriggerPicker: () => document.getElementById('listImgInput')?.click(),
+                shouldHandlePaste: () => {
+                    if (!this.imageModal || !this.imageModal.classList.contains('active')) {
+                        return false;
                     }
-                } catch (err) {
-                    console.error('Upload error:', err);
-                    alert(CONTENT_LANG.error_upload);
-                } finally {
-                    this.loader.style.display = 'none';
-                    input.value = ''; // Reset
+
+                    const activeElement = document.activeElement;
+                    return !activeElement || activeElement === document.body || this.imageModal.contains(activeElement);
+                },
+                onChange: ({ file, source, name }) => {
+                    if (source === 'existing' && name) {
+                        this.imageModalState.existingImageName = name;
+                    }
+                    this.updateImageModalActions(source, file);
                 }
+            });
+        }
+
+        if (!this.imageUploaderBound && this.imageUploader) {
+            this.imageUploader.bind();
+            this.imageUploaderBound = true;
+        }
+
+        if (!this.imageModal) {
+            return;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && this.imageModal.classList.contains('active')) {
+                this.closeImageUploader();
             }
+        });
+    }
+
+    openImageUploader(id, title) {
+        this.initListImageUploader();
+        this.imageUploadContentId = id;
+        const card = document.querySelector(`.content-card[data-id="${id}"]`);
+        const existingImageSrc = card?.dataset.imageSrc || '';
+        const existingImageName = card?.dataset.imageName || title || CONTENT_LANG.image_title;
+        this.imageModalState = {
+            hasExistingImage: Boolean(existingImageSrc),
+            existingImageSrc,
+            existingImageName
         };
 
-        input.click();
+        if (this.imageModalTitle) {
+            this.imageModalTitle.textContent = CONTENT_LANG.image_title;
+        }
+        if (this.imageModalSubtitle) {
+            this.imageModalSubtitle.textContent = '';
+            this.imageModalSubtitle.hidden = true;
+        }
+
+        this.resetListImageUploader();
+
+        if (this.imageModal) {
+            document.body.classList.add('news-image-modal-open');
+            this.imageModal.classList.add('active');
+            this.imageModal.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    closeImageUploader() {
+        if (this.imageModal) {
+            this.imageModal.classList.remove('active');
+            this.imageModal.setAttribute('aria-hidden', 'true');
+        }
+
+        document.body.classList.remove('news-image-modal-open');
+        this.imageUploadContentId = null;
+        this.imageModalState = {
+            hasExistingImage: false,
+            existingImageSrc: '',
+            existingImageName: ''
+        };
+        this.resetListImageUploader({ preserveExisting: false });
+    }
+
+    resetListImageUploader(options = {}) {
+        if (this.imageUploader) {
+            this.imageUploader.reset();
+        }
+        this.resetImageModalActions();
+        if (options.preserveExisting !== false && this.imageModalState.hasExistingImage && this.imageUploader) {
+            this.imageUploader.renderExistingImage({
+                src: this.imageModalState.existingImageSrc,
+                name: this.imageModalState.existingImageName || CONTENT_LANG.image_title,
+                metaText: ''
+            });
+        }
+    }
+
+    resetImageModalActions() {
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.disabled = true;
+            this.imageSaveBtn.hidden = true;
+            this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
+        }
+        if (this.imageMeta) {
+            this.imageMeta.hidden = true;
+        }
+        if (this.imageFooter) {
+            this.imageFooter.classList.add('is-single-action');
+        }
+    }
+
+    updateImageModalActions(source, file) {
+        const hasPendingFile = Boolean(file) && source !== 'existing';
+
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.hidden = !hasPendingFile;
+            this.imageSaveBtn.disabled = !hasPendingFile;
+        }
+        if (this.imageMeta) {
+            this.imageMeta.hidden = !hasPendingFile;
+        }
+        if (this.imageFooter) {
+            this.imageFooter.classList.toggle('is-single-action', !hasPendingFile);
+        }
+    }
+
+    processImageUpload(id) {
+        const card = document.querySelector(`.content-card[data-id="${id}"]`);
+        const title = card?.querySelector('h3')?.textContent?.trim() || '';
+        this.openImageUploader(id, title);
+    }
+
+    handleListImageRemoveAction() {
+        const pendingFile = this.imageUploader?.getSelectedFile();
+        if (pendingFile) {
+            this.resetListImageUploader();
+            return;
+        }
+
+        if (this.imageModalState.hasExistingImage) {
+            this.removeExistingListImage();
+        }
+    }
+
+    async removeExistingListImage() {
+        if (!this.imageUploadContentId || !this.imageModalState.hasExistingImage) {
+            return;
+        }
+
+        const result = await Swal.fire({
+            title: CONTENT_LANG.image_remove_title,
+            text: CONTENT_LANG.image_remove_confirm,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#B71C1C',
+            cancelButtonColor: '#6750A4',
+            confirmButtonText: CONTENT_LANG.image_remove_confirm_text,
+            cancelButtonText: CONTENT_LANG.image_remove_cancel_text,
+            background: 'var(--md-sys-color-surface-container-high, #fff)',
+            color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+        });
+
+        if (!result.isConfirmed) {
+            return;
+        }
+
+        this.loader.style.display = 'flex';
+
+        try {
+            const formData = new URLSearchParams();
+            formData.append('id', this.imageUploadContentId);
+
+            const response = await fetch(`${MODULE_URL}image_remove_image`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+
+            const text = (await response.text()).trim();
+            if (text !== 'Oke') {
+                showSnackbar(text || CONTENT_LANG.error_general, 'error');
+                return;
+            }
+
+            this.closeImageUploader();
+            await this.loadData(true);
+            showSnackbar(CONTENT_LANG.image_remove_success || CONTENT_LANG.image_updated, 'success');
+        } catch (error) {
+            console.error('Remove image error:', error);
+            showSnackbar(CONTENT_LANG.error_general, 'error');
+        } finally {
+            this.loader.style.display = 'none';
+        }
+    }
+
+    async submitListImageUpload() {
+        const fileData = this.imageUploader?.getSelectedFile();
+        if (!this.imageUploadContentId || !fileData) {
+            this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('image', fileData);
+        formData.append('id', this.imageUploadContentId);
+
+        if (this.imageSaveBtn) {
+            this.imageSaveBtn.hidden = false;
+            this.imageSaveBtn.disabled = true;
+            this.imageSaveBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${CONTENT_LANG.loading}`;
+        }
+
+        this.loader.style.display = 'flex';
+
+        try {
+            const response = await fetch(`${MODULE_URL}ajax_image_upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                this.closeImageUploader();
+                await this.loadData(true);
+                showSnackbar(result.message || CONTENT_LANG.image_updated, 'success');
+            } else {
+                this.imageUploader?.showFeedback(result.message || CONTENT_LANG.error_upload, 'error');
+                showSnackbar(result.message || CONTENT_LANG.error_upload, 'error');
+            }
+        } catch (err) {
+            console.error('Upload error:', err);
+            this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
+            showSnackbar(CONTENT_LANG.error_upload, 'error');
+        } finally {
+            this.loader.style.display = 'none';
+            if (this.imageSaveBtn) {
+                const hasPendingFile = !!this.imageUploader?.getSelectedFile();
+                this.imageSaveBtn.hidden = !hasPendingFile;
+                this.imageSaveBtn.disabled = !hasPendingFile;
+                this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
+            }
+        }
     }
 
     openActionSheet(id, title, status) {

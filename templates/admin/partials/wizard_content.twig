@@ -122,70 +122,50 @@
         <!-- Step 7: Image -->
         <div class="wizard-step" id="wizardStep7">
             {% if wizard_lang_key == 'mod_news' %}
-                <div
-                    class="wizard-image-shell"
-                    id="wizardImageShell"
-                    data-drop-title="{{ wizard_lang.wizard.image.drop_title }}"
-                    data-drop-description="{{ wizard_lang.wizard.image.drop_description }}"
-                    data-upload-link="{{ wizard_lang.wizard.image.upload_link }}"
-                    data-link-separator="{{ wizard_lang.wizard.image.link_separator }}"
-                    data-link-placeholder="{{ wizard_lang.wizard.image.link_placeholder }}"
-                    data-link-action="{{ wizard_lang.wizard.image.link_action }}"
-                    data-hint-loading="{{ wizard_lang.wizard.image.hint_loading }}"
-                    data-hint-invalid-type="{{ wizard_lang.wizard.image.hint_invalid_type }}"
-                    data-hint-no-drop-data="{{ wizard_lang.wizard.image.hint_no_drop_data }}"
-                    data-hint-remote-failed="{{ wizard_lang.wizard.image.hint_remote_failed }}"
-                    data-empty-name="{{ wizard_lang.wizard.summary.selected_none }}"
-                    data-empty-meta="{{ wizard_lang.wizard.image.drop_description }}"
-                >
-                    <div class="image-upload-area wizard-image-dropzone" id="wizardImageDropzone" tabindex="0" role="button" onclick="triggerWizardImagePicker()">
-                        <div class="wizard-image-empty" id="wizardImageEmptyState">
-                            <div class="wizard-image-empty-icon">
-                                <i class="bi bi-images"></i>
-                            </div>
-                            <div class="wizard-image-empty-copy">
-                                <p class="wizard-image-empty-line">
-                                    <span class="wizard-image-empty-text">{{ wizard_lang.wizard.image.drop_title }}</span>
-                                    <button type="button" class="wizard-image-inline-link" onclick="event.stopPropagation(); triggerWizardImagePicker()">{{ wizard_lang.wizard.image.upload_link }}</button>
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="wizard-image-preview-card" id="wizardImagePreviewCard" hidden>
-                            <div class="wizard-image-preview-frame">
-                                <button type="button" class="wizard-image-remove-btn" id="wizardImageRemoveBtn" onclick="event.stopPropagation(); removeWizardImage()">
-                                    <i class="bi bi-x-lg"></i>
-                                </button>
-                                <img id="wizardImgPreview" class="wizard-img-preview" alt="{{ wizard_lang.wizard.step.image }}" hidden>
-                            </div>
-                            <div class="wizard-image-meta">
-                                <strong id="wizardImageFileName">{{ wizard_lang.wizard.summary.selected_none }}</strong>
-                                <p id="wizardImageFileDetails">{{ wizard_lang.wizard.image.drop_description }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="wizard-image-divider" aria-hidden="true">
-                        <span>{{ wizard_lang.wizard.image.link_separator }}</span>
-                    </div>
-
-                    <div class="wizard-image-url-row">
-                        <input
-                            type="url"
-                            id="wizardImageUrlInput"
-                            class="wizard-image-url-input"
-                            placeholder="{{ wizard_lang.wizard.image.link_placeholder }}"
-                            inputmode="url"
-                            autocomplete="off"
-                            spellcheck="false"
-                        >
-                        <button type="button" class="m3-btn-filled" id="wizardImageUrlImportBtn">
-                            <span>{{ wizard_lang.wizard.image.link_action }}</span>
-                        </button>
-                    </div>
-
-                    <input type="file" name="image" id="wizardImgInput" hidden accept="image/*" onchange="previewWizardImage(this)">
-                </div>
+                {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                    shell_id: 'wizardImageShell',
+                    shell_class: '',
+                    has_image: false,
+                    shell_attrs: {
+                        'data-drop-title': wizard_lang.wizard.image.drop_title,
+                        'data-drop-description': wizard_lang.wizard.image.drop_description,
+                        'data-upload-link': wizard_lang.wizard.image.upload_link,
+                        'data-link-separator': wizard_lang.wizard.image.link_separator,
+                        'data-link-placeholder': wizard_lang.wizard.image.link_placeholder,
+                        'data-link-action': wizard_lang.wizard.image.link_action,
+                        'data-hint-loading': wizard_lang.wizard.image.hint_loading,
+                        'data-hint-invalid-type': wizard_lang.wizard.image.hint_invalid_type,
+                        'data-hint-no-drop-data': wizard_lang.wizard.image.hint_no_drop_data,
+                        'data-hint-remote-failed': wizard_lang.wizard.image.hint_remote_failed,
+                        'data-empty-name': wizard_lang.wizard.summary.selected_none,
+                        'data-empty-meta': wizard_lang.wizard.image.drop_description
+                    },
+                    dropzone_id: 'wizardImageDropzone',
+                    trigger_picker_js: 'triggerWizardImagePicker()',
+                    empty_state_id: 'wizardImageEmptyState',
+                    drop_title: wizard_lang.wizard.image.drop_title,
+                    upload_link: wizard_lang.wizard.image.upload_link,
+                    preview_card_id: 'wizardImagePreviewCard',
+                    remove_btn_id: 'wizardImageRemoveBtn',
+                    remove_action_js: 'removeWizardImage()',
+                    preview_img_id: 'wizardImgPreview',
+                    preview_alt: wizard_lang.wizard.step.image,
+                    preview_hidden: true,
+                    meta_hidden: false,
+                    file_name_id: 'wizardImageFileName',
+                    file_name_text: wizard_lang.wizard.summary.selected_none,
+                    file_details_id: 'wizardImageFileDetails',
+                    file_details_text: wizard_lang.wizard.image.drop_description,
+                    divider_hidden: false,
+                    link_separator: wizard_lang.wizard.image.link_separator,
+                    url_row_hidden: false,
+                    url_input_id: 'wizardImageUrlInput',
+                    link_placeholder: wizard_lang.wizard.image.link_placeholder,
+                    import_btn_id: 'wizardImageUrlImportBtn',
+                    link_action: wizard_lang.wizard.image.link_action,
+                    file_input_id: 'wizardImgInput',
+                    file_input_onchange: 'previewWizardImage(this)'
+                } %}
             {% else %}
                 <h2 class="step-headline">{{ wizard_lang.wizard.step.image }}</h2>
                 <p class="step-subhead">{{ wizard_lang.wizard.subtitle.image }}</p>
