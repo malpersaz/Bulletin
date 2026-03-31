@@ -1,5 +1,4 @@
-{{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
-{% set hero_slider = ctx_get('hero_slider') %}
+{% set hero_slider = hero_slider_items|default(ctx_get('hero_slider')) %}
 
 {% if hero_slider and hero_slider|length > 0 %}
 <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
