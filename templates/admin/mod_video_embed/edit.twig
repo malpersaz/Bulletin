@@ -200,7 +200,7 @@
                         <button type="button" class="remove-img-btn" onclick="event.preventDefault(); event.stopPropagation(); removeExistingImage('{{ d.id }}')"><i class="bi bi-trash"></i></button>
                     {% else %}
                         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+                        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
                     {% endif %}
                 </label>
                 <input type="file" name="image" id="resimInput" accept="image/*" style="display: none;" onchange="previewEditImage(this)">
@@ -211,6 +211,11 @@
         <div class="m3-card">
             <div class="card-title">
                 <i class="bi bi-search"></i> {{ lang.mod_video_embed.seo_title }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
+                <input type="text" id="seoPreviewInput" class="form-input" value="" readonly>
+                <small style="display:block; margin-top:8px; opacity:0.68;">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
             </div>
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
@@ -255,6 +260,23 @@
 document.addEventListener('DOMContentLoaded', function() {
     const STORAGE_KEY = 'videoEmbedEditForm_{{ d.id|default(0) }}';
     const form = document.getElementById('videoEditForm');
+    const nameInput = document.getElementById('nameInput');
+    const titleInput = document.getElementById('titleInput');
+    const keywordsInput = document.getElementById('keywordsInput');
+    const aciklamaInput = document.getElementById('aciklamaInput');
+    const contentInput = document.getElementById('videoContent');
+
+    function cleanMetaText(value) {
+        let cleaned = (value || '').toString();
+        cleaned = cleaned.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, ' ');
+        cleaned = cleaned.trim();
+
+        for (let i = 0; i <= 15; i += 1) {
+            cleaned = cleaned.replace(/  /g, ' ');
+        }
+
+        return cleaned;
+    }
 
     // -- localStorage: Daneyên formê tomar bike --
     function saveFormData() {
@@ -316,6 +338,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function slugifyVideoName(value) {
+        let slug = cleanMetaText(value);
+        slug = slug.replace(/\s+/g, '_');
+        slug = slug.replace(/İ/g, 'i');
+
+        for (let i = 0; i <= 5; i += 1) {
+            slug = slug.replace(/__/g, '_');
+        }
+
+        return slug || 'video';
+    }
+
+    function updateSeoPreview() {
+        const seoPreviewInput = document.getElementById('seoPreviewInput');
+        if (!seoPreviewInput || !nameInput) return;
+        const slug = slugifyVideoName(nameInput.value);
+        seoPreviewInput.value = '{{ site.sadres }}video/{{ d.id }}-' + slug;
+    }
+
     if (embedInput) {
         embedInput.addEventListener('input', function() {
             updateEmbedPreview();
@@ -323,27 +364,25 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // -- Name -> SEO alanlarini otomatik doldur --
-    const nameInput = document.getElementById('nameInput');
     if (nameInput) {
         nameInput.addEventListener('input', function() {
             const val = this.value;
-            const titleInput = document.getElementById('titleInput');
-            const keywordsInput = document.getElementById('keywordsInput');
-            const aciklamaInput = document.getElementById('aciklamaInput');
+            const cleanedVal = cleanMetaText(val);
 
             if (titleInput && (!titleInput.value || titleInput.dataset.autofilled !== 'false')) {
-                titleInput.value = (typeof temizle === 'function') ? temizle(val) : val;
+                titleInput.value = cleanedVal;
                 titleInput.dataset.autofilled = 'true';
             }
             if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.autofilled !== 'false')) {
-                keywordsInput.value = (typeof makeKeywordsValue === 'function') ? makeKeywordsValue(val) : val.toLowerCase().replace(/\s+/g, ',');
+                keywordsInput.value = cleanMetaText(val).replace(/\s+/g, ',').toLowerCase().replace(/İ/g, 'i');
                 keywordsInput.dataset.autofilled = 'true';
             }
             if (aciklamaInput && (!aciklamaInput.value || aciklamaInput.dataset.autofilled !== 'false')) {
-                aciklamaInput.value = (typeof temizle === 'function') ? temizle(val) : val;
+                aciklamaInput.value = cleanedVal;
                 aciklamaInput.dataset.autofilled = 'true';
             }
             saveFormData();
+            updateSeoPreview();
         });
     }
 
@@ -365,11 +404,30 @@ document.addEventListener('DOMContentLoaded', function() {
         hiddenBtn.name = 'edit';
         hiddenBtn.value = '{{ lang.mod_video_embed.button.edit }}';
         form.appendChild(hiddenBtn);
+
+        form.addEventListener('submit', function(event) {
+            const restrictedFields = [nameInput, titleInput, keywordsInput, aciklamaInput, contentInput];
+            const hasUnsupportedCharacter = restrictedFields.some(function(field) {
+                return field && /[\u{10000}-\u{10FFFF}]/u.test(field.value || '');
+            });
+
+            if (hasUnsupportedCharacter) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    text: '{{ lang.mod_video_embed.validator.unsupported_emoji|e('js')|replace({'%s': lang.mod_video_embed.admin.columns.content|e('js')}) }}',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam|e('js') }}',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            }
+        });
     }
 
     if (typeof initSelectPickerSheets === 'function') {
         initSelectPickerSheets();
     }
+
+    updateSeoPreview();
 });
 </script>
 
@@ -420,7 +478,7 @@ function clearSelectedImage() {
     const area = document.getElementById('imageUploadArea');
     area.innerHTML = `
         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
     `;
 }
 

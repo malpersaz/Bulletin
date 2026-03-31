@@ -16,6 +16,14 @@ $lang['mod_video_embed'] = [
     'delete_confirm' => 'Are you sure you want to delete this video?',
     'quick_publish_confirm' => 'Do you want to publish this video?',
     'quick_unpublish_confirm' => 'Do you want to unpublish this video?',
+    'autofill' => [
+        'button' => 'Import from YouTube',
+        'hint' => 'Paste a YouTube iframe or URL to fill title, duration, description, and cover image automatically.',
+        'loading' => 'Fetching video details from YouTube...',
+        'success' => 'Video details imported successfully.',
+        'partial' => 'Cover image and basic details were imported. Fill the remaining fields if YouTube did not expose all metadata.',
+        'error' => 'Video details could not be imported.',
+    ],
     'wizard' => [
         'step' => [
             'language' => 'Language Selection',
@@ -106,6 +114,7 @@ $lang['mod_video_embed'] = [
         'required' => 'Please do not leave %s field empty',
         'length' => '%s must be between %s and %s characters',
         'inarray' => '%s field can only take \' %s \' values',
+        'unsupported_emoji' => 'Emoji or unsupported characters are not allowed in the %s field.',
     ],
     'context_menu' => [
         'title' => 'Actions',
@@ -150,6 +159,10 @@ $lang['mod_video_embed'] = [
             'image' => 'Image',
             'acl_id' => 'Who Can View This Video?',
             'onizleme' => 'Preview',
+            'seo_preview' => 'SEO URL Preview',
+        ],
+        'help' => [
+            'seo_preview' => 'The frontend URL is generated automatically from the video name when the record is shown.',
         ],
         'radio' => [
             'publish_yes' => 'Yes',

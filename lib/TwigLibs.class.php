@@ -105,6 +105,7 @@ class TwigLibs extends AbstractExtension
             new TwigFilter('permission', [$this, 'permissionFilter']),
             new TwigFilter('mzaman', [$this, 'mzamanFilter']),
             new TwigFilter('sefurl', [$this, 'sefurlFilter']),
+            new TwigFilter('legacy_seo', [$this, 'legacySeoFilter']),
             new TwigFilter('base64_encode', [$this, 'base64Encode']),
         ];
     }
@@ -389,6 +390,24 @@ class TwigLibs extends AbstractExtension
         }
 
         return strtolower($s);
+    }
+
+    public function legacySeoFilter(?string $s): string
+    {
+        if ($s === null) {
+            throw new \InvalidArgumentException('legacy_seo Modifier Hata: Parametre Boş Olamaz');
+        }
+
+        $s = preg_replace('/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"\' ]/', ' ', $s);
+        $s = trim($s);
+        $s = preg_replace('/\s+/', '_', $s);
+        $s = str_replace('İ', 'i', $s);
+
+        for ($i = 0; $i <= 5; $i++) {
+            $s = str_replace('__', '_', $s);
+        }
+
+        return $s;
     }
 }
 

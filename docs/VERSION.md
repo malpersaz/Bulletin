@@ -127,7 +127,7 @@
 - **Installer Permission Updates**: Updated the installer configuration for `mod_content` to use English permission keys (`add`, `edit`, `list`) instead of the legacy Turkish ones.
 
 ## v1.0.11 (2025-12-19)
-- **Module Professionalization**: Renamed `mod_vid` to `mod_video_embed` and `mod_vid_category` to `mod_video_embed_category` to clarify source distinction (Remote vs Local).
+- **Module Professionalization**: Renamed the remote video module to `mod_video_embed` and its category module to `mod_video_embed_category` to clarify source distinction (Remote vs Local).
 - **Database Column Standardization**: Renamed `ad` column to `name` in `mod_video_embed` table and updated the `videos` SQL view for international compatibility.
 - **Robust Refactoring**: Successfully resolved naming conflicts between `mod_video` and `mod_video_embed` across PHP classes, Twig templates, and SQL schemas.
 - **KU Language Localization**: Fully translated the Kurdish (KU) language file for the Video Embed module, including system and DataTable AJAX error messages.

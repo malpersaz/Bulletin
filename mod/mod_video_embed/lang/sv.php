@@ -25,6 +25,14 @@ $lang['mod_video_embed'] = [
     'delete_confirm' => 'Är du säker på att du vill radera denna video?',
     'quick_publish_confirm' => 'Vill du publicera denna video?',
     'quick_unpublish_confirm' => 'Vill du avpublicera denna video?',
+    'autofill' => [
+        'button' => 'Importera från YouTube',
+        'hint' => 'Klistra in en YouTube-iframe eller länk för att fylla titel, längd, beskrivning och omslagsbild automatiskt.',
+        'loading' => 'Hämtar videodetaljer från YouTube...',
+        'success' => 'Videodetaljer importerades.',
+        'partial' => 'Omslagsbild och grundläggande uppgifter importerades. Fyll i återstående fält om YouTube inte exponerade all metadata.',
+        'error' => 'Videodetaljer kunde inte importeras.',
+    ],
     'wizard' => [
         'step' => [
             'language' => 'Språkval',
@@ -113,6 +121,7 @@ $lang['mod_video_embed'] = [
         'required' => 'Vänligen lämna inte fältet %s tomt',
         'length' => '%s måste vara mellan %s och %s tecken',
         'inarray' => 'Fältet %s kan endast ta värdena \' %s \'',
+        'unsupported_emoji' => 'Emoji eller tecken som inte stöds är inte tillåtna i fältet %s.',
     ],
     'context_menu' => [
         'title' => 'Åtgärder',
@@ -157,6 +166,10 @@ $lang['mod_video_embed'] = [
             'image' => 'Bild',
             'acl_id' => 'Vem kan se denna video?',
             'onizleme' => 'Förhandsvisning',
+            'seo_preview' => 'Förhandsvisning av SEO-URL',
+        ],
+        'help' => [
+            'seo_preview' => 'Frontend-URL:en skapas automatiskt från videons namn när posten visas.',
         ],
         'radio' => [
             'publish_yes' => 'Ja',

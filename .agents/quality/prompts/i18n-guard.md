@@ -21,6 +21,7 @@ Flag:
 - newly added unused language keys created by the current change
 - newly introduced non-English language key names
 - new UI copy in Twig, JS, or PHP that bypasses repository language structures
+- any new `lang.*|default(...)` or equivalent fallback that masks a missing translation key instead of requiring a language-file entry
 
 Do not flag:
 

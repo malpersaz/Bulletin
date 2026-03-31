@@ -3,9 +3,6 @@
 {% if hero_slider and hero_slider|length > 0 %}
 <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
 <style>
-    .hero-slider-shell {
-        height: 100%;
-    }
     .hero-slide__hitbox {
         position: absolute;
         inset: 0;
@@ -74,21 +71,49 @@
                 </div>
 
                 <div class="hero-slide__content">
-                    <h3 class="hero-slide__title">
-                        <a href="{{ item.detail_url }}">{{ item.name }}</a>
-                    </h3>
+                    <div class="hero-slide__body hero-slide__body--{{ item.source_mod == 'mod_publication' ? 'publication' : 'news' }}">
+                        {% if item.source_mod == 'mod_publication' %}
+                        <div class="hero-slide__publication-head">
+                            <div class="hero-slide__meta">
+                                <div class="hero-slide__author hero-slide__author--publication">
+                                    <span class="hero-slide__avatar">
+                                        {% if item.author_image_url is not empty %}
+                                            <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
+                                        {% else %}
+                                            <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="hero-slide__author-copy">
+                                        <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                                    </span>
+                                </div>
+                            </div>
 
-                    <div class="hero-slide__meta">
-                        <div class="hero-slide__author">
-                            <span class="hero-slide__avatar">
-                                {% if item.author_image_url is not empty %}
-                                    <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
-                                {% else %}
-                                    <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
-                                {% endif %}
-                            </span>
-                            <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                            <h3 class="hero-slide__title">
+                                <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                            </h3>
                         </div>
+                        {% endif %}
+
+                        {% if item.source_mod != 'mod_publication' %}
+                        <h3 class="hero-slide__title">
+                            <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                        </h3>
+                        <div class="hero-slide__meta">
+                            <div class="hero-slide__author hero-slide__author--news">
+                                <span class="hero-slide__avatar">
+                                    {% if item.author_image_url is not empty %}
+                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
+                                    {% else %}
+                                        <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                    {% endif %}
+                                </span>
+                                <span class="hero-slide__author-copy">
+                                    <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

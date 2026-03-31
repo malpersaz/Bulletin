@@ -1,5 +1,5 @@
 <?php
-class videolar_model extends ORM
+class videos_model extends ORM
 {
     public $_table = "videos";
     public $_pk = "id";

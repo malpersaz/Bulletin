@@ -16,6 +16,14 @@ $lang['mod_video_embed'] = [
     'delete_confirm' => 'Tu bawer î ku dixwazî vê vîdyoyê jê bibî?',
     'quick_publish_confirm' => 'Tu dixwazî vê vîdyoyê biweşînî?',
     'quick_unpublish_confirm' => 'Tu dixwazî vê vîdyoyê ji weşandinê rakî?',
+    'autofill' => [
+        'button' => 'Ji YouTube bîne',
+        'hint' => 'Ji bo dagirtina bixweber a sernav, dem, daxuyanî û wêneya kapaxê iframe an lînka YouTube binivîse.',
+        'loading' => 'Agahiyên vîdyoyê ji YouTube têne anîn...',
+        'success' => 'Agahiyên vîdyoyê bi serkeftî hatin anîn.',
+        'partial' => 'Wêneya kapaxê û agahiyên bingehîn hatin anîn. Heke YouTube hemû metadata nepeyde bike, qadan bi destan dagire.',
+        'error' => 'Agahiyên vîdyoyê nehatin anîn.',
+    ],
     'message' => [
         'oke' => [
             'add' => 'Vîdeo Embed hat lêkirin!',
@@ -67,6 +75,7 @@ $lang['mod_video_embed'] = [
         'required' => 'Qada %s mecbûrî ye!',
         'length' => 'Qada %s divê di navbera %s û %s tîpan de be!',
         'inarray' => 'Nirxa qada %s nederbasdar e!',
+        'unsupported_emoji' => 'Di qada %s de emoji an karakterên nayên piştgirîkirin nayên qebûlkirin.',
     ],
     'context_menu' => [
         'title' => 'Kirar',
@@ -111,6 +120,10 @@ $lang['mod_video_embed'] = [
             'image' => 'Wêne',
             'acl_id' => 'Kî dikare vê vîdyoyê bibîne?',
             'onizleme' => 'Pêşdîtin',
+            'seo_preview' => 'Pêşdîtina URL ya SEO',
+        ],
+        'help' => [
+            'seo_preview' => 'URL ya pêşrûyê di dema nîşandana qeydê de ji navê vîdyoyê bixweber tê afirandin.',
         ],
         'radio' => [
             'publish_yes' => 'Erê',

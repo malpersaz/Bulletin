@@ -24,9 +24,10 @@ $(document).ready(function() {
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
 
     {% if homepage_hero_slider and homepage_hero_slider|length > 0 %}
-    <section class="row" id="orta">
+    <section class="row mt-3" id="orta" style="margin-top: 20px !important;">
         <article id="orta-sol" class="col-md-9">
             {% include 'index/hero_slider.twig' with { hero_slider_items: homepage_hero_slider } %}
+            {% include 'index/mod_video_embed/hero_followup.twig' %}
         </article>
         <aside id="orta-sag" class="col-md-3">
             {% include 'index/mod_publication/latest_authors.twig' %}

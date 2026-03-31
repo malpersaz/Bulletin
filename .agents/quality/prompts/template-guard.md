@@ -17,6 +17,7 @@ Flag:
 - new template/UI text that bypasses the repository localization approach
 - new uploader or admin UI text that is hard-coded
 - any non-English visible hard-coded strings remaining anywhere inside touched template/UI files
+- any new Twig/UI localization fallback such as `lang.*|default(...)` that silently replaces a missing key with inline copy
 
 Do not flag:
 

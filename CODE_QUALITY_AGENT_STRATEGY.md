@@ -100,6 +100,7 @@ Checks:
 - newly added translation keys that are unused
 - newly referenced translation keys that are missing
 - non-English translation key names introduced in the diff
+- translation-key fallbacks such as `lang.*|default(...)` introduced in the diff
 
 Must ignore:
 
@@ -159,6 +160,7 @@ Checks:
 - direct UI text bypassing language files
 - newly added uploader/modal labels that do not use i18n sources
 - non-English visible hard-coded strings anywhere inside touched template/UI files
+- Twig/UI language fallbacks that replace missing keys with inline default text
 
 Must ignore:
 
@@ -395,4 +397,3 @@ The agent strategy is successful when:
 4. Localization and naming regressions are caught early.
 5. Touched files are progressively normalized for comments and visible hard-coded strings.
 6. The system improves consistency without turning every task into a repository-wide cleanup project.
-

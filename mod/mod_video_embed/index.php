@@ -107,7 +107,77 @@ class mod_video_embed_mod extends indexMain
         $this->tema->veri('site', $this->site);
     }
 
-    // AJAX ile lîsteyê de lezgîn wêne barkirin
+    public function autofill_metadata()
+    {
+        if ($this->user->hasPermission('mod_video_embed', 'add', $this->lang['mod_video_embed']['role_errors']['add'], 1) === False) {
+            $this->_jsonResponse([
+                'status' => 'error',
+                'message' => $this->_autofillMessage('permission_denied'),
+            ]);
+            return;
+        }
+
+        $embed = trim((string) Req::Post('embed'));
+        $original = trim((string) Req::Post('original'));
+        $source = $embed !== '' ? $embed : $original;
+
+        if ($source === '') {
+            $this->_jsonResponse([
+                'status' => 'error',
+                'message' => $this->_autofillMessage('missing_source'),
+            ]);
+            return;
+        }
+
+        $videoId = $this->_extractYouTubeVideoId($source);
+        if ($videoId === null) {
+            $this->_jsonResponse([
+                'status' => 'error',
+                'message' => $this->_autofillMessage('invalid_source'),
+            ]);
+            return;
+        }
+
+        try {
+            $metadata = $this->_fetchYouTubeMetadata($videoId);
+            $imageFile = '';
+            $imageUrl = '';
+
+            if (!empty($metadata['thumbnail_url'])) {
+                $imageFile = $this->_importRemoteThumbnail($metadata['thumbnail_url']);
+                if ($imageFile !== '') {
+                    $imageUrl = $this->site['radres'] . 'mod_video_embed/thumb/' . $imageFile . '?v=' . time();
+                }
+            }
+
+            $this->_jsonResponse([
+                'status' => 'success',
+                'message' => $this->_autofillMessage('success'),
+                'data' => [
+                    'video_id' => $videoId,
+                    'name' => $metadata['title'] ?? '',
+                    'title' => $metadata['title'] ?? '',
+                    'description' => $metadata['description'] ?? '',
+                    'content' => $metadata['description'] ?? '',
+                    'duration' => $metadata['duration'] ?? '',
+                    'keywords' => $this->_makeKeywordString($metadata['title'] ?? ''),
+                    'original' => 'https://www.youtube.com/watch?v=' . $videoId,
+                    'embed' => $this->_buildEmbedCode($videoId),
+                    'image' => $imageFile,
+                    'image_url' => $imageUrl,
+                    'source' => $metadata['source'] ?? 'youtube',
+                    'duration_available' => !empty($metadata['duration']),
+                ],
+            ]);
+        } catch (Throwable $e) {
+            $this->_jsonResponse([
+                'status' => 'error',
+                'message' => $e->getMessage() ?: $this->_autofillMessage('generic_error'),
+            ]);
+        }
+    }
+
+    // AJAX image upload from the list screen.
     public function ajax_image_upload()
     {
         // Düzenleme Permissionsi varmı?
@@ -236,8 +306,12 @@ class mod_video_embed_mod extends indexMain
     private function _add()
     {
         $isAjax = $this->_isAjaxRequest();
+        $autofillImage = Req::Post_Safe('autofill_image');
         $this->val = Load::validator('mod_video_embed.add');
         if ($this->val->check()) {
+            if ($autofillImage !== '') {
+                $this->_deleteVideoImageArtifacts($autofillImage);
+            }
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
@@ -270,7 +344,7 @@ class mod_video_embed_mod extends indexMain
             $this->mod_video_embed_model->acl_id = Req::Post_Safe('acl_id');
             $this->mod_video_embed_model->user_id = $this->session->getir('id');
 
-            // Eğer Resim varsa
+            // Use the uploaded image when provided.
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed';
@@ -300,6 +374,8 @@ class mod_video_embed_mod extends indexMain
                 $this->_error_message($image->error);
                 return FALSE;
                 }
+            } elseif ($autofillImage !== '') {
+                $this->mod_video_embed_model->image = $autofillImage;
             } else {
                 if (isset($this->mod_video_embed_model->image)) {
                     unset($this->mod_video_embed_model->image);
@@ -321,6 +397,9 @@ class mod_video_embed_mod extends indexMain
                 // Eğer Resim varsa
                 if (isset($image->url)) {
                     $image->_rollback();
+                }
+                if ($autofillImage !== '') {
+                    $this->_deleteVideoImageArtifacts($autofillImage);
                 }
 
                 if ($isAjax) {
@@ -487,6 +566,7 @@ class mod_video_embed_mod extends indexMain
                 if ($image->_delete_files($option) !== TRUE) {
                     echo $image->error;
                 }
+                $this->_deleteVideoImageArtifacts($this->mod_video_embed_model->image);
             }
 
 
@@ -769,18 +849,384 @@ class mod_video_embed_mod extends indexMain
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Check if request is AJAX (for wizard and other AJAX calls)
+    // Check whether the request should be treated as AJAX.
     private function _isAjaxRequest()
     {
-        // Rêya herî hêsan: POST parameter kontrol bike
+        // Fast path: explicit POST flag.
         if (Req::is_Post('ajax_request') && Req::Post_Safe('ajax_request') === '1') {
             return true;
         }
 
-        // Fallback: Header kontrol bike
+        // Fallback: standard AJAX header.
         return (
             !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'
         );
+    }
+
+    private function _jsonResponse(array $payload)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($payload);
+    }
+
+    private function _autofillMessage($key)
+    {
+        $messages = [
+            'permission_denied' => 'You do not have permission to fetch video details.',
+            'missing_source' => 'Paste a YouTube URL or embed code first.',
+            'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
+            'success' => 'Video details were imported from YouTube.',
+            'generic_error' => 'Video details could not be imported.',
+            'fetch_failed' => 'YouTube metadata could not be fetched.',
+            'download_failed' => 'Thumbnail image could not be downloaded.',
+        ];
+
+        return $messages[$key] ?? $messages['generic_error'];
+    }
+
+    private function _extractYouTubeVideoId($input)
+    {
+        $input = trim((string) $input);
+        if ($input === '') {
+            return null;
+        }
+
+        if (preg_match('/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/youtu\.be\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/[?&]v=([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/^[A-Za-z0-9_-]{11}$/', $input)) {
+            return $input;
+        }
+
+        return null;
+    }
+
+    private function _buildEmbedCode($videoId)
+    {
+        $videoId = trim((string) $videoId);
+        return '<iframe width="560" height="315" src="https://www.youtube.com/embed/' . $videoId . '" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+    }
+
+    private function _fetchYouTubeMetadata($videoId)
+    {
+        $metadata = [
+            'title' => '',
+            'description' => '',
+            'duration' => '',
+            'thumbnail_url' => '',
+            'source' => 'youtube_oembed',
+        ];
+
+        $apiKey = $this->_getYouTubeApiKey();
+        if ($apiKey !== '') {
+            $apiUrl = 'https://www.googleapis.com/youtube/v3/videos?id=' . rawurlencode($videoId) . '&part=snippet,contentDetails&key=' . rawurlencode($apiKey);
+            $apiResponse = $this->_httpGetJson($apiUrl);
+
+            if (isset($apiResponse['items'][0]['snippet']) && is_array($apiResponse['items'][0]['snippet'])) {
+                $snippet = $apiResponse['items'][0]['snippet'];
+                $metadata['title'] = trim((string) ($snippet['title'] ?? ''));
+                $metadata['description'] = trim((string) ($snippet['description'] ?? ''));
+                $metadata['thumbnail_url'] = $this->_pickYouTubeThumbnailUrl($snippet['thumbnails'] ?? []);
+                $metadata['source'] = 'youtube_data_api';
+
+                if (!empty($apiResponse['items'][0]['contentDetails']['duration'])) {
+                    $metadata['duration'] = $this->_formatIso8601Duration($apiResponse['items'][0]['contentDetails']['duration']);
+                }
+            }
+        }
+
+        if ($metadata['title'] === '') {
+            $oembedUrl = 'https://www.youtube.com/oembed?url=' . rawurlencode('https://www.youtube.com/watch?v=' . $videoId) . '&format=json';
+            $oembed = $this->_httpGetJson($oembedUrl);
+
+            if (is_array($oembed)) {
+                $metadata['title'] = trim((string) ($oembed['title'] ?? ''));
+                $metadata['thumbnail_url'] = trim((string) ($oembed['thumbnail_url'] ?? ''));
+                $metadata['source'] = 'youtube_oembed';
+            }
+        }
+
+        if ($metadata['thumbnail_url'] === '') {
+            foreach ($this->_youtubeThumbnailCandidates($videoId) as $candidateUrl) {
+                if ($this->_remoteImageExists($candidateUrl)) {
+                    $metadata['thumbnail_url'] = $candidateUrl;
+                    break;
+                }
+            }
+        }
+
+        if ($metadata['title'] === '') {
+            throw new Exception($this->_autofillMessage('fetch_failed'));
+        }
+
+        return $metadata;
+    }
+
+    private function _getYouTubeApiKey()
+    {
+        $candidates = [
+            getenv('YOUTUBE_DATA_API_KEY'),
+            getenv('YOUTUBE_API_KEY'),
+            $_ENV['YOUTUBE_DATA_API_KEY'] ?? '',
+            $_ENV['YOUTUBE_API_KEY'] ?? '',
+            $_SERVER['YOUTUBE_DATA_API_KEY'] ?? '',
+            $_SERVER['YOUTUBE_API_KEY'] ?? '',
+            $this->site['youtube_data_api_key'] ?? '',
+            $this->site['youtube_api_key'] ?? '',
+        ];
+
+        foreach ($candidates as $candidate) {
+            $candidate = trim((string) $candidate);
+            if ($candidate !== '') {
+                return $candidate;
+            }
+        }
+
+        return '';
+    }
+
+    private function _httpGetJson($url)
+    {
+        $response = $this->_httpRequest($url);
+        if ((int) ($response['status'] ?? 0) < 200 || (int) ($response['status'] ?? 0) >= 300) {
+            return null;
+        }
+
+        $decoded = json_decode((string) ($response['body'] ?? ''), true);
+        return is_array($decoded) ? $decoded : null;
+    }
+
+    private function _httpRequest($url)
+    {
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_TIMEOUT => 20,
+                CURLOPT_USERAGENT => 'RojnameVideoEmbed/1.0',
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_HEADER => true,
+            ]);
+
+            $result = curl_exec($ch);
+            if ($result === false) {
+                curl_close($ch);
+                return ['status' => 0, 'headers' => [], 'body' => ''];
+            }
+
+            $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            $body = substr($result, $headerSize);
+            $headerText = substr($result, 0, $headerSize);
+            curl_close($ch);
+
+            return [
+                'status' => $status,
+                'headers' => $this->_parseResponseHeaders($headerText),
+                'body' => $body,
+            ];
+        }
+
+        $context = stream_context_create([
+            'http' => [
+                'method' => 'GET',
+                'timeout' => 20,
+                'ignore_errors' => true,
+                'header' => "User-Agent: RojnameVideoEmbed/1.0\r\n",
+            ],
+        ]);
+
+        $body = @file_get_contents($url, false, $context);
+        $headers = isset($http_response_header) ? $http_response_header : [];
+        $status = 0;
+        if (!empty($headers[0]) && preg_match('/\s(\d{3})\s/', $headers[0], $matches)) {
+            $status = (int) $matches[1];
+        }
+
+        return [
+            'status' => $status,
+            'headers' => $this->_parseResponseHeaders(is_array($headers) ? implode("\n", $headers) : ''),
+            'body' => $body !== false ? $body : '',
+        ];
+    }
+
+    private function _parseResponseHeaders($headerText)
+    {
+        $headers = [];
+        foreach (preg_split("/\r\n|\n|\r/", (string) $headerText) as $line) {
+            if (strpos($line, ':') === false) {
+                continue;
+            }
+            [$name, $value] = explode(':', $line, 2);
+            $headers[strtolower(trim($name))] = trim($value);
+        }
+
+        return $headers;
+    }
+
+    private function _pickYouTubeThumbnailUrl($thumbnails)
+    {
+        $priority = ['maxres', 'standard', 'high', 'medium', 'default'];
+        foreach ($priority as $key) {
+            if (!empty($thumbnails[$key]['url'])) {
+                return (string) $thumbnails[$key]['url'];
+            }
+        }
+
+        return '';
+    }
+
+    private function _youtubeThumbnailCandidates($videoId)
+    {
+        return [
+            'https://i.ytimg.com/vi/' . $videoId . '/maxresdefault.jpg',
+            'https://i.ytimg.com/vi/' . $videoId . '/sddefault.jpg',
+            'https://i.ytimg.com/vi/' . $videoId . '/hqdefault.jpg',
+            'https://i.ytimg.com/vi/' . $videoId . '/mqdefault.jpg',
+            'https://i.ytimg.com/vi/' . $videoId . '/default.jpg',
+        ];
+    }
+
+    private function _remoteImageExists($url)
+    {
+        $response = $this->_httpRequest($url);
+        $contentType = strtolower((string) ($response['headers']['content-type'] ?? ''));
+
+        return (int) ($response['status'] ?? 0) >= 200
+            && (int) ($response['status'] ?? 0) < 300
+            && strpos($contentType, 'image/') === 0;
+    }
+
+    private function _importRemoteThumbnail($url)
+    {
+        $response = $this->_httpRequest($url);
+        $status = (int) ($response['status'] ?? 0);
+        $contentType = strtolower((string) ($response['headers']['content-type'] ?? ''));
+        $body = (string) ($response['body'] ?? '');
+
+        if ($status < 200 || $status >= 300 || strpos($contentType, 'image/') !== 0 || $body === '') {
+            throw new Exception($this->_autofillMessage('download_failed'));
+        }
+
+        $extension = $this->_extensionFromContentType($contentType);
+        $tempPath = tempnam(sys_get_temp_dir(), 'ytthumb_');
+        if ($tempPath === false) {
+            throw new Exception($this->_autofillMessage('download_failed'));
+        }
+
+        $tempFile = $tempPath . '.' . $extension;
+        @rename($tempPath, $tempFile);
+        file_put_contents($tempFile, $body);
+
+        $originalFiles = $_FILES;
+        $_FILES['image'] = [
+            'name' => 'youtube-thumbnail.' . $extension,
+            'type' => $contentType,
+            'tmp_name' => $tempFile,
+            'error' => 0,
+            'size' => filesize($tempFile),
+        ];
+
+        try {
+            $image = Load::mod('image');
+            $image->mod = 'mod_video_embed';
+            $image->name = 'image';
+            $option = [
+                '/' => ['width' => 225, 'height' => NULL, 'option' => 'width'],
+                '/thumb' => ['width' => 100, 'height' => NULL, 'option' => 'width'],
+            ];
+
+            if (!$image->_resize($option)) {
+                throw new Exception($image->error ?: $this->_autofillMessage('download_failed'));
+            }
+
+            return (string) $image->url;
+        } finally {
+            $_FILES = $originalFiles;
+            @unlink($tempFile);
+        }
+    }
+
+    private function _extensionFromContentType($contentType)
+    {
+        $map = [
+            'image/jpeg' => 'jpg',
+            'image/jpg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+        ];
+
+        return $map[$contentType] ?? 'jpg';
+    }
+
+    private function _deleteVideoImageArtifacts($filename)
+    {
+        $filename = basename((string) $filename);
+        if ($filename === '') {
+            return;
+        }
+
+        $paths = [
+            root_dir . 'static' . DS . 'mod_video_embed' . DS . $filename,
+            root_dir . 'static' . DS . 'mod_video_embed' . DS . 'thumb' . DS . $filename,
+        ];
+
+        foreach ($paths as $path) {
+            if (is_file($path)) {
+                @unlink($path);
+            }
+        }
+    }
+
+    private function _formatIso8601Duration($duration)
+    {
+        try {
+            $interval = new DateInterval($duration);
+        } catch (Throwable $e) {
+            return '';
+        }
+
+        $hours = ($interval->d * 24) + $interval->h;
+        $minutes = $interval->i;
+        $seconds = $interval->s;
+
+        if ($hours > 0) {
+            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+
+        return sprintf('%02d:%02d', $minutes, $seconds);
+    }
+
+    private function _makeKeywordString($title)
+    {
+        $title = trim((string) $title);
+        if ($title === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/', strtolower($title));
+        $parts = array_filter(array_unique(array_map(static function ($part) {
+            return trim($part, " \t\n\r\0\x0B.,!?;:\"'()[]{}");
+        }, $parts)));
+
+        return implode(',', $parts);
     }
 }

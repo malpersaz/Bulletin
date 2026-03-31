@@ -1,0 +1,175 @@
+{{ run({"mod": "index", "method": "_latest_videos", "extra": ["3", "id,image,name,content,duration"]}) }}
+{% set hero_followup_videos = ctx_get('latest_videos') %}
+
+{% if hero_followup_videos is not empty %}
+<style>
+    .hero-followup-videos {
+        --video-ribbon-ink: #111111;
+        --video-ribbon-muted: rgba(17, 17, 17, 0.58);
+        --video-ribbon-line: rgba(17, 17, 17, 0.12);
+        margin-top: 6px;
+        padding-top: 4px;
+        padding-bottom: 0;
+    }
+    .hero-followup-videos__head {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 4px;
+    }
+    .hero-followup-videos__all {
+        display: inline-flex;
+        margin-top: 0;
+        color: var(--video-ribbon-muted);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-decoration: none;
+        text-transform: uppercase;
+    }
+    .hero-followup-videos__grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .hero-followup-video {
+        display: grid;
+        grid-template-columns: 96px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+        min-width: 0;
+        color: inherit;
+        text-decoration: none;
+        transition: opacity 0.18s ease;
+    }
+    .hero-followup-video__media {
+        position: relative;
+        height: 54px;
+        overflow: hidden;
+        background: #0f0f0f;
+    }
+    .hero-followup-video__media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+    .hero-followup-video__play {
+        position: absolute;
+        left: 6px;
+        bottom: 6px;
+        width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.72);
+        color: #fff;
+        font-size: 0.58rem;
+    }
+    .hero-followup-video__duration {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+        padding: 3px 5px;
+        background: rgba(0, 0, 0, 0.78);
+        color: #fff;
+        font-size: 0.54rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+    .hero-followup-video__body {
+        min-width: 0;
+    }
+    .hero-followup-video__name {
+        margin: 0;
+        color: var(--video-ribbon-ink);
+        font-family: 'Literata', serif;
+        font-size: 0.8rem;
+        font-weight: 700;
+        line-height: 1.15;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        overflow: hidden;
+    }
+    .hero-followup-video:hover {
+        opacity: 0.82;
+    }
+    @media (max-width: 991px) {
+        .hero-followup-videos {
+            margin-top: 6px;
+        }
+        .hero-followup-videos__grid {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .hero-followup-videos__grid::-webkit-scrollbar {
+            display: none;
+        }
+        .hero-followup-video {
+            flex: 0 0 220px;
+        }
+    }
+    @media (max-width: 767px) {
+        .hero-followup-videos {
+            margin-top: 5px;
+            padding-top: 3px;
+            padding-bottom: 0;
+        }
+        .hero-followup-video {
+            flex-basis: 196px;
+            grid-template-columns: 88px minmax(0, 1fr);
+            gap: 8px;
+        }
+        .hero-followup-video__media {
+            height: 50px;
+        }
+        .hero-followup-video__name {
+            font-size: 0.75rem;
+        }
+    }
+    html[data-bs-theme="dark"] .hero-followup-videos,
+    body.dark .hero-followup-videos,
+    body.dark-mode .hero-followup-videos {
+        --video-ribbon-ink: #f8fafc;
+        --video-ribbon-muted: rgba(248, 250, 252, 0.62);
+        --video-ribbon-line: rgba(148, 163, 184, 0.16);
+    }
+</style>
+
+<section class="hero-followup-videos" aria-label="{{ lang.index.mod_video_embed.latest_videos.1 }}">
+    <div class="hero-followup-videos__head">
+        <a class="hero-followup-videos__all" href="{{ site.sadres }}videos">
+            {{ lang.index.mod_video_embed.latest_videos.2 }}
+        </a>
+    </div>
+    <div class="hero-followup-videos__grid">
+        {% for video in hero_followup_videos %}
+            <a class="hero-followup-video"
+               href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
+               title="{{ video.name }}">
+                <div class="hero-followup-video__media">
+                    {% if video.image is not empty %}
+                        <img src="{{ site.radres }}mod_video_embed/thumb/{{ video.image }}" alt="{{ video.name }}" loading="lazy">
+                    {% else %}
+                        <img src="{{ site.radres }}mod_settings/logo.png" alt="{{ video.name }}" loading="lazy">
+                    {% endif %}
+                    <span class="hero-followup-video__play">
+                        <i class="bi bi-play-fill"></i>
+                    </span>
+                    {% if video.duration is not empty %}
+                        <span class="hero-followup-video__duration">{{ video.duration }}</span>
+                    {% endif %}
+                </div>
+                <div class="hero-followup-video__body">
+                    <h3 class="hero-followup-video__name">{{ video.name }}</h3>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

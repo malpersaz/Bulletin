@@ -212,6 +212,10 @@ class add_validator
             return True;
         }
 
+        if ($this->_checkUnsupportedCharacters() === True) {
+            return True;
+        }
+
         #Check inarray
         // status in Array
         $this->valid->ekle(
@@ -235,6 +239,29 @@ class add_validator
         #Check Unique with column
 
         return False;
+    }
+
+    private function _checkUnsupportedCharacters()
+    {
+        $fields = [
+            'name' => $this->lang['mod_video_embed']['admin']['columns']['name'],
+            'content' => $this->lang['mod_video_embed']['admin']['columns']['content'],
+            'title' => $this->lang['mod_video_embed']['admin']['columns']['title'],
+            'keywords' => $this->lang['mod_video_embed']['admin']['columns']['keywords'],
+            'description' => $this->lang['mod_video_embed']['admin']['columns']['aciklama'],
+        ];
+
+        foreach ($fields as $field => $label) {
+            $value = (string) Req::Post($field);
+            if ($value !== '' && preg_match('/[\x{10000}-\x{10FFFF}]/u', $value) === 1) {
+                $this->hatalar[] = sprintf(
+                    $this->lang['mod_video_embed']['validator']['unsupported_emoji'],
+                    $label
+                );
+            }
+        }
+
+        return count($this->hatalar) > 0;
     }
 
     public function _check()

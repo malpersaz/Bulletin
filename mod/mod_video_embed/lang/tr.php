@@ -16,6 +16,14 @@
     'delete_confirm' => 'Bu videoyu silmek istediğinize emin misiniz?',
     'quick_publish_confirm' => 'Bu videoyu yayınlamak istiyor musunuz?',
     'quick_unpublish_confirm' => 'Bu videoyu yayından kaldırmak istiyor musunuz?',
+    'autofill' => [
+        'button' => 'YouTube\'dan Getir',
+        'hint' => 'Başlık, süre, açıklama ve kapak görselini otomatik doldurmak için bir YouTube iframe ya da adresi yapıştırın.',
+        'loading' => 'Video bilgileri YouTube\'dan alınıyor...',
+        'success' => 'Video bilgileri başarıyla içe aktarıldı.',
+        'partial' => 'Kapak görseli ve temel bilgiler alındı. YouTube tüm metadata bilgilerini vermediyse kalan alanları elle doldurun.',
+        'error' => 'Video bilgileri içe aktarılamadı.',
+    ],
     'wizard' => [
         'step' => [
             'language' => 'Dil Seçimi',
@@ -106,6 +114,7 @@
         'required' => 'Lütfen %s Alanını Boş Bırakmayın',
         'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
         'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
+        'unsupported_emoji' => '%s alanında emoji veya desteklenmeyen karakter kullanılamaz.',
     ],
     'context_menu' => [
         'title' => 'İşlemler',
@@ -150,6 +159,10 @@
             'image' => 'Resim',
             'acl_id' => 'Bu Videoyu Kimler Görüntüleyebilir?',
             'onizleme' => 'Önizleme',
+            'seo_preview' => 'SEO URL Önizlemesi',
+        ],
+        'help' => [
+            'seo_preview' => 'Önyüz URL adresi kayıt gösterilirken video adından otomatik üretilir.',
         ],
         'radio' => [
             'publish_yes' => 'Evet',

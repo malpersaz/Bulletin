@@ -124,7 +124,7 @@ The `artist` theme currently provides these important behaviors that must not be
 - Theme-aware early color-mode bootstrapping in `layouts/base.twig` to reduce flicker.
 - `color_mode` persistence via cookie and `localStorage`.
 - Theme-specific imagery and branding assets such as background and artist identity visuals.
-- A separate video template namespace under `index/mod_vid`.
+- A separate video template namespace under `index/mod_video_embed`.
 - Additional `base_static` assets related to gallery and AKM tools.
 - A homepage variant where latest content is intentionally hidden, which means homepage block composition is theme-driven and must remain configurable.
 
@@ -139,7 +139,7 @@ The project uses `tema` cookie-based template switching, but the `artist` theme 
 `default` uses a classic Bootstrap navbar pattern, while `artist` uses a floating artistic header. The new theme may choose a new visual direction, but it must retain the full capability set of both approaches.
 
 3. Video template namespace:
-`default` uses `index/mod_video_embed`, while `artist` uses `index/mod_vid`. The new theme must verify which module outputs are active in runtime and support the required namespace instead of assuming one naming pattern.
+Frontend video templates use `index/mod_video_embed`. The new theme must support the active runtime namespace instead of assuming outdated module names.
 
 4. Homepage composition:
 `default` renders latest content on the homepage, while `artist` suppresses it. The new theme must make this a deliberate, configurable content-priority decision rather than an accidental omission.
@@ -296,7 +296,7 @@ Inspect the page templates used by frontend modules, especially:
 - `index/mod_slider`
 - `index/mod_announcements`
 - `index/mod_imagecategories`
-- `index/mod_video_embed` or `index/mod_vid`
+- `index/mod_video_embed`
 
 Confirm that all includes and extends statements point to the new theme namespace.
 

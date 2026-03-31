@@ -87,11 +87,17 @@
 
     <form method="POST" action="" id="videoAddForm" enctype="multipart/form-data">
 
-        {# Card 1: Embed Code + Preview #}
         <div class="m3-card">
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.embed }}</label>
                 <textarea name="embed" id="embedInput" rows="3" class="form-input" style="resize:vertical; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13px;" required>{{ embed|default('') }}</textarea>
+            </div>
+            <div class="form-group" style="display: flex; gap: 12px; align-items: center; margin-top: -8px;">
+                <button type="button" id="autofillButton" class="toolbar-item active" style="width: auto; padding-inline: 16px;">
+                    <i class="bi bi-magic"></i>
+                    <span>{{ lang.mod_video_embed.autofill.button }}</span>
+                </button>
+                <span id="autofillStatus" style="font-size: 13px; opacity: 0.72;">{{ lang.mod_video_embed.autofill.hint }}</span>
             </div>
             <div id="embedPreview" class="embed-preview">
                 <div class="embed-placeholder">
@@ -101,7 +107,6 @@
             </div>
         </div>
 
-        {# Card 2: Agahiyên Bingehîn #}
         <div class="m3-card">
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
@@ -123,7 +128,6 @@
             </div>
         </div>
 
-        {# Card 3: Mîheng #}
         <div class="m3-card">
             <div class="form-group" style="display:flex; gap: 16px;">
                 <div style="flex: 1;">
@@ -187,7 +191,6 @@
             </div>
         </div>
 
-        {# Card 4: Naverok + Wêne #}
         <div class="m3-card">
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.content }}</label>
@@ -198,16 +201,21 @@
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.image }}</label>
                 <label for="resimInput" class="image-upload-area" id="imageUploadArea">
                     <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                    <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+                    <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
                 </label>
                 <input type="file" name="image" id="resimInput" accept="image/*" style="display: none;" onchange="previewEditImage(this)">
+                <input type="hidden" name="autofill_image" id="autofillImageInput" value="{{ autofill_image|default('') }}">
             </div>
         </div>
 
-        {# Card 5: SEO #}
         <div class="m3-card">
             <div class="card-title">
                 <i class="bi bi-search"></i> {{ lang.mod_video_embed.seo_title }}
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
+                <input type="text" id="seoPreviewInput" class="form-input" value="" readonly>
+                <small style="display:block; margin-top:8px; opacity:0.68;">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
             </div>
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
@@ -252,8 +260,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     const STORAGE_KEY = 'videoEmbedAddForm_v2';
     const form = document.getElementById('videoAddForm');
+    const siteBase = '{{ site.sadres }}';
+    const embedInput = document.getElementById('embedInput');
+    const embedPreview = document.getElementById('embedPreview');
+    const originalInput = form?.querySelector('[name="original"]');
+    const nameInput = document.getElementById('nameInput');
+    const titleInput = document.getElementById('titleInput');
+    const keywordsInput = document.getElementById('keywordsInput');
+    const descriptionInput = document.getElementById('aciklamaInput');
+    const contentInput = document.getElementById('videoContent');
+    const durationInput = form?.querySelector('[name="sure"]');
+    const dateInput = document.getElementById('tarihInput');
+    const autofillButton = document.getElementById('autofillButton');
+    const autofillStatus = document.getElementById('autofillStatus');
+    const autofillImageInput = document.getElementById('autofillImageInput');
+    let autofillTimer = null;
+    let lastAutofillSignature = '';
+    let autofillInFlight = false;
 
-    // -- localStorage: Daneyên formê tomar bike --
+    function cleanMetaText(value) {
+        let cleaned = (value || '').toString();
+        cleaned = cleaned.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, ' ');
+        cleaned = cleaned.trim();
+
+        for (let i = 0; i <= 15; i += 1) {
+            cleaned = cleaned.replace(/  /g, ' ');
+        }
+
+        return cleaned;
+    }
+
     function saveFormData() {
         if (!form) return;
         const data = {};
@@ -265,7 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    // -- localStorage: Daneyên parastî bar bike --
     function restoreFormData() {
         if (!form) return;
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -279,30 +314,21 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             document.getElementById('langSelect')?.dispatchEvent(new Event('change', { bubbles: true }));
             document.getElementById('categorySelect')?.dispatchEvent(new Event('change', { bubbles: true }));
-            updateEmbedPreview();
-        } catch(e) {}
+        } catch (error) {}
     }
 
-    // -- localStorage: Piştî şandina serketî paqij bike --
     {% if oke is defined %}
         localStorage.removeItem(STORAGE_KEY);
     {% endif %}
 
-    // Heke hatalar hebe an jî rûpel normal tê, daneyan bar bike
-    // Tenê heke 'oke' (serkeftin) tune be bar bike.
     {% if oke is not defined %}
         restoreFormData();
     {% endif %}
 
-    // Her guheztinê de tomar bike
     if (form) {
         form.addEventListener('input', saveFormData);
         form.addEventListener('change', saveFormData);
     }
-
-    // -- Embed Preview --
-    const embedInput = document.getElementById('embedInput');
-    const embedPreview = document.getElementById('embedPreview');
 
     function updateEmbedPreview() {
         if (!embedInput || !embedPreview) return;
@@ -315,77 +341,243 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    function setAutofillStatus(message, isError = false) {
+        if (!autofillStatus) return;
+        autofillStatus.textContent = message;
+        autofillStatus.style.color = isError ? '#ba1a1a' : '';
+    }
+
+    function makeKeywordFallback(value) {
+        return cleanMetaText(value)
+            .replace(/\s+/g, ',')
+            .toLowerCase()
+            .replace(/İ/g, 'i');
+    }
+
+    function setFieldValue(input, value) {
+        if (!input || !value) return;
+        if (input.value && input.dataset.autofilled !== 'true') return;
+        input.value = value;
+        input.dataset.autofilled = 'true';
+    }
+
+    function setTextAreaValue(input, value) {
+        if (!input || !value) return;
+        if (input.value && input.dataset.autofilled !== 'true') return;
+        input.value = value;
+        input.dataset.autofilled = 'true';
+    }
+
+    function renderStoredImage(url) {
+        const area = document.getElementById('imageUploadArea');
+        if (!area || !url) return;
+        area.innerHTML = `
+            <img id="editImgPreview" src="${url}" class="current-image">
+            <button type="button" class="remove-img-btn" onclick="clearSelectedImage()"><i class="bi bi-x-lg"></i></button>
+        `;
+    }
+
+    function slugifyVideoName(value) {
+        let slug = cleanMetaText(value);
+        slug = slug.replace(/\s+/g, '_');
+        slug = slug.replace(/İ/g, 'i');
+
+        for (let i = 0; i <= 5; i += 1) {
+            slug = slug.replace(/__/g, '_');
+        }
+
+        return slug || 'video';
+    }
+
+    function updateSeoPreview() {
+        const seoPreviewInput = document.getElementById('seoPreviewInput');
+        if (!seoPreviewInput || !nameInput) return;
+        const slug = slugifyVideoName(nameInput.value);
+        seoPreviewInput.value = `${siteBase}video/{id}-${slug}`;
+    }
+
+    async function runAutofill(force = false) {
+        if (!embedInput || autofillInFlight) return;
+
+        const signature = `${embedInput.value.trim()}|${originalInput?.value.trim() || ''}`;
+        if (!signature.trim()) return;
+        if (!force && signature === lastAutofillSignature) return;
+
+        autofillInFlight = true;
+        if (autofillButton) {
+            autofillButton.disabled = true;
+        }
+        setAutofillStatus('{{ lang.mod_video_embed.autofill.loading }}');
+
+        try {
+            const response = await fetch(`${siteBase}mod_video_embed/autofill_metadata`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    embed: embedInput.value,
+                    original: originalInput?.value || '',
+                    ajax_request: '1'
+                }).toString()
+            });
+
+            const result = await response.json();
+            if (!response.ok || result.status !== 'success' || !result.data) {
+                throw new Error(result.message || '{{ lang.mod_video_embed.autofill.error }}');
+            }
+
+            const data = result.data;
+            setFieldValue(nameInput, data.name || '');
+            setFieldValue(titleInput, data.title || '');
+            setFieldValue(keywordsInput, data.keywords || '');
+            setFieldValue(descriptionInput, data.description || '');
+            setTextAreaValue(contentInput, data.content || '');
+            if (durationInput && data.duration) {
+                setFieldValue(durationInput, data.duration);
+            }
+            if (originalInput && (!originalInput.value || originalInput.dataset.autofilled === 'true')) {
+                originalInput.value = data.original || originalInput.value;
+                originalInput.dataset.autofilled = 'true';
+            }
+            if (embedInput && data.embed) {
+                embedInput.value = data.embed;
+                embedInput.dataset.autofilled = 'true';
+            }
+            if (autofillImageInput && data.image) {
+                autofillImageInput.value = data.image;
+            }
+            if (data.image_url) {
+                renderStoredImage(data.image_url);
+                const fileInput = document.getElementById('resimInput');
+                if (fileInput) {
+                    fileInput.value = '';
+                }
+            }
+
+            updateEmbedPreview();
+            saveFormData();
+            lastAutofillSignature = signature;
+            if (data.duration_available) {
+                setAutofillStatus(result.message || '{{ lang.mod_video_embed.autofill.success }}');
+            } else {
+                setAutofillStatus('{{ lang.mod_video_embed.autofill.partial }}');
+            }
+        } catch (error) {
+            setAutofillStatus(error.message || '{{ lang.mod_video_embed.autofill.error }}', true);
+        } finally {
+            autofillInFlight = false;
+            if (autofillButton) {
+                autofillButton.disabled = false;
+            }
+        }
+    }
+
     if (embedInput) {
         embedInput.addEventListener('input', function() {
             updateEmbedPreview();
+            window.clearTimeout(autofillTimer);
+            autofillTimer = window.setTimeout(() => runAutofill(false), 900);
         });
     }
 
-    // -- Name -> SEO alanlarini otomatik doldur --
-    const nameInput = document.getElementById('nameInput');
+    if (originalInput) {
+        originalInput.addEventListener('input', function() {
+            window.clearTimeout(autofillTimer);
+            autofillTimer = window.setTimeout(() => runAutofill(false), 900);
+        });
+    }
+
     if (nameInput) {
         nameInput.addEventListener('input', function() {
-            const val = this.value;
-            const titleInput = document.getElementById('titleInput');
-            const keywordsInput = document.getElementById('keywordsInput');
-            const aciklamaInput = document.getElementById('aciklamaInput');
-            
+            const value = this.value;
+            const cleanedValue = cleanMetaText(value);
             if (titleInput && (!titleInput.value || titleInput.dataset.autofilled !== 'false')) {
-                titleInput.value = val;
+                titleInput.value = cleanedValue;
                 titleInput.dataset.autofilled = 'true';
             }
             if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.autofilled !== 'false')) {
-                keywordsInput.value = makeKeywordsValue ? makeKeywordsValue(val) : val.toLowerCase().replace(/\s+/g, ',');
+                keywordsInput.value = makeKeywordFallback(value);
                 keywordsInput.dataset.autofilled = 'true';
             }
-            if (aciklamaInput && (!aciklamaInput.value || aciklamaInput.dataset.autofilled !== 'false')) {
-                aciklamaInput.value = val;
-                aciklamaInput.dataset.autofilled = 'true';
+            if (descriptionInput && (!descriptionInput.value || descriptionInput.dataset.autofilled !== 'false')) {
+                descriptionInput.value = cleanedValue;
+                descriptionInput.dataset.autofilled = 'true';
             }
             saveFormData();
+            updateSeoPreview();
         });
     }
 
-    // Manual edit trackers for SEO fields in ekle page
-    ['titleInput', 'keywordsInput', 'aciklamaInput'].forEach(id => {
+    ['titleInput', 'keywordsInput', 'aciklamaInput', 'videoContent'].forEach(function(id) {
         const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', () => {
-                el.dataset.autofilled = 'false';
-                saveFormData();
-            });
-        }
+        if (!el) return;
+        el.addEventListener('input', function() {
+            el.dataset.autofilled = 'false';
+            saveFormData();
+        });
     });
 
-    // -- Tarih default --
-    const tarihInput = document.getElementById('tarihInput');
-    if (tarihInput && !tarihInput.value) {
+    if (dateInput && !dateInput.value) {
         const now = new Date();
         const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        tarihInput.value = local.toISOString().slice(0, 16);
+        dateInput.value = local.toISOString().slice(0, 16);
         saveFormData();
     }
 
-    // -- Hidden submit button --
     if (form) {
         const hiddenBtn = document.createElement('input');
         hiddenBtn.type = 'hidden';
         hiddenBtn.name = 'add';
         hiddenBtn.value = '{{ lang.mod_video_embed.button.add }}';
         form.appendChild(hiddenBtn);
+
+        form.addEventListener('submit', function(event) {
+            const restrictedFields = [nameInput, titleInput, keywordsInput, descriptionInput, contentInput];
+            const hasUnsupportedCharacter = restrictedFields.some(function(field) {
+                return field && /[\u{10000}-\u{10FFFF}]/u.test(field.value || '');
+            });
+
+            if (hasUnsupportedCharacter) {
+                event.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    text: '{{ lang.mod_video_embed.validator.unsupported_emoji|e('js')|replace({'%s': lang.mod_video_embed.admin.columns.content|e('js')}) }}',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam|e('js') }}',
+                    confirmButtonColor: '#ba1a1a'
+                });
+            }
+        });
     }
 
     if (typeof initSelectPickerSheets === 'function') {
         initSelectPickerSheets();
     }
+
+    if (autofillButton) {
+        autofillButton.addEventListener('click', function() {
+            runAutofill(true);
+        });
+    }
+
+    {% if autofill_image is defined and autofill_image %}
+        renderStoredImage('{{ site.radres }}mod_video_embed/thumb/{{ autofill_image }}?v={{ "now"|date("U") }}');
+    {% endif %}
+
+    updateEmbedPreview();
+    updateSeoPreview();
 });
 </script>
 
 <link rel="stylesheet" href="/templates/admin/assets/css/mod_video_embed.css">
 <script>
-// Image Preview and Remove Functions
 function previewEditImage(input) {
     if (input.files && input.files[0]) {
+        const autofillImageInput = document.getElementById('autofillImageInput');
+        if (autofillImageInput) {
+            autofillImageInput.value = '';
+        }
         const reader = new FileReader();
         reader.onload = function (e) {
             const area = document.getElementById('imageUploadArea');
@@ -400,11 +592,15 @@ function previewEditImage(input) {
 
 function clearSelectedImage() {
     const input = document.getElementById('resimInput');
+    const autofillImageInput = document.getElementById('autofillImageInput');
     input.value = '';
+    if (autofillImageInput) {
+        autofillImageInput.value = '';
+    }
     const area = document.getElementById('imageUploadArea');
     area.innerHTML = `
         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text|default('Wêneyek hilbijêre') }}</p>
+        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
     `;
 }
 </script>

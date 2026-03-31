@@ -195,6 +195,18 @@ class Helper
         }
         return strtolower($s);
     }
+
+    static function legacy_seo($s)
+    {
+        $s = preg_replace('[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"\' ]', " ", $s);
+        $s = trim($s);
+        $s = preg_replace('/\s+/', '_', $s);
+        $s = str_replace('İ', 'i', $s);
+        for ($i = 0; $i <= 5; $i++) {
+            $s = str_replace("__", "_", $s);
+        }
+        return $s;
+    }
     static function sef($s)
     {
         $s = preg_replace('[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890]', " ", $s);
