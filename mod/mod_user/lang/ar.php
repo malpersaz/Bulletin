@@ -91,7 +91,7 @@ $lang['mod_user'] = [
     '29' => 'Blog Name',
     '30' => 'About Me',
     '31' => 'Maximum 255 characters.',
-    '32' => 'You have %s unread messages.'
+    'unread_messages_count' => 'You have %s unread messages.'
 ];
 
 $lang['mod_user']['admin'] = [
@@ -237,7 +237,7 @@ $lang['mod_user']['error'] = [
     '29' => 'IP protection is defined for this account and your IP address does not match',
     '30' => 'This account does not appear to be connected to the system right now, you may have forgotten to open your account on another computer!',
     '31' => 'User not found!',
-    '32' => 'System Error'
+    'unread_messages_count' => 'System Error'
 ];
 
 
@@ -612,7 +612,7 @@ $lang['mod_user']['your_dob'] = 'Doğum Tarihiniz';
 $lang['mod_user']['info_updated_success'] = 'Bilgileriniz başarıyla güncellendi!';
 $lang['mod_user']['mobile_phone'] = 'Cep No *';
 $lang['mod_user']['profile_picture'] = 'Profil Resmi';
-$lang['mod_user']['forgot_password']['password'] = 'Şifrenizi Sıfırlayabilmemiz İçin.<br/> Aşağıdaki Alana Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın.';
+$lang['mod_user']['forgot_password']['info_2'] = 'Şifrenizi Sıfırlayabilmemiz İçin.<br/> Aşağıdaki Alana Hesabınızın Bağlı Olduğu E-Posta Adresini Yazın.';
 $lang['mod_user']['forgot_password']['error']['4'] = 'Geçersiz Bir E-Posta Adresi Yazdınız.';
 $lang['mod_user']['forgot_password']['error']['5'] = 'Belirtmiş Olduğunuz E-Posta Adresi Herhangi Bir Hesaba Kayıtlı Değil.';
 $lang['mod_user']['forgot_password']['error']['reset_code_send_error'] = 'Error occurred while sending password reset code. Please contact the system administrator.';
@@ -724,7 +724,7 @@ $lang['mod_user']['admin']['confirm_remove_image'] = 'Are you sure you want to r
 $lang['mod_user']['admin']['info_updated_image_error'] = 'Your information has been successfully updated!<br>
 						But we could not change your profile picture!';
 $lang['mod_user']['admin']['image_removed_success'] = 'Your profile picture has been removed';
-$lang['mod_user']['grid']['13'] = 'Sil';
+$lang['mod_user']['grid']['delete'] = 'Sil';
 $lang['mod_user']['grid']['showing_results'] = 'Showing {from} to {to} of {total} results.';
 $lang['mod_user']['grid']['page'] = 'Page';
 $lang['mod_user']['grid']['page_count'] = 'Page Count';
@@ -802,11 +802,11 @@ $lang['mod_user']['activation']['lost_code'] = 'If you have lost your activation
 $lang['mod_user']['activation']['success_activated'] = 'Your account has been successfully activated. If you wish
 	<a href="login" style="color:#000">Click here</a> to log in to your account.';
 $lang['mod_user']['activation']['membership_activation'] = 'Membership Activation';
-$lang['mod_user']['resend_activation']['error']['4'] = 'Geçersiz Bir E-Posta Adresi Yazdınız.';
-$lang['mod_user']['resend_activation']['error']['5'] = 'Belirtmiş Olduğunuz E-Posta Adresi Herhangi Bir Hesaba Kayıtlı Değil.';
-$lang['mod_user']['resend_activation']['error']['6'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Zaten Aktif Durumda!';
-$lang['mod_user']['resend_activation']['error']['7'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Sadece Yönetici Tarafından Aktifleştirilebilinir.';
-$lang['mod_user']['resend_activation']['error']['8'] = 'Yazmış Olduğunuz E-Posta Adresine Ait Aktivasyon Kodu Bulunmuyor!';
+$lang['mod_user']['resend_activation']['error']['invalid_email_format'] = 'Geçersiz Bir E-Posta Adresi Yazdınız.';
+$lang['mod_user']['resend_activation']['error']['email_not_registered'] = 'Belirtmiş Olduğunuz E-Posta Adresi Herhangi Bir Hesaba Kayıtlı Değil.';
+$lang['mod_user']['resend_activation']['error']['account_already_active'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Zaten Aktif Durumda!';
+$lang['mod_user']['resend_activation']['error']['admin_activation_required'] = 'Yazmış Olduğunuz E-Posta Adresine Bağlı Hesap Sadece Yönetici Tarafından Aktifleştirilebilinir.';
+$lang['mod_user']['resend_activation']['error']['no_activation_code_found'] = 'Yazmış Olduğunuz E-Posta Adresine Ait Aktivasyon Kodu Bulunmuyor!';
 $lang['mod_user']['resend_activation']['error']['activation_send_error'] = 'Error occurred while sending activation code. Please contact the system administrator.';
 $lang['mod_user']['resend_activation']['error']['invalid_captcha'] = 'You entered the security code incorrectly, please check and try again.';
 $lang['mod_user']['resend_activation']['error']['email_required'] = 'Please write the e-mail address associated with your account.';
@@ -822,17 +822,17 @@ $lang['mod_user']['resend_activation']['email'] = 'E-mail';
 $lang['mod_user']['resend_activation']['security_code'] = 'Security Code';
 $lang['mod_user']['resend_activation']['send_button'] = 'Send';
 $lang['mod_user']['resend_activation']['activation_code_label'] = 'Activation Code';
-$lang['mod_user']['password_reset']['1'] = 'Şifre Sıfırlama';
-$lang['mod_user']['password_reset']['2'] = 'Yeni Şifrenizi Üretebilmemiz İçin,Lütfen Aşağıdaki Alana Şifre Sıfırlama Aktivasyon Kodunuzu Yazınız.';
-$lang['mod_user']['password_reset']['3'] = 'Aktivasyon Kodu';
-$lang['mod_user']['password_reset']['4'] = 'Güvenlik Kodu';
-$lang['mod_user']['password_reset']['5'] = 'Gönder';
-$lang['mod_user']['password_reset']['6'] = 'Tebrikler,Yeni Şifreniz E-Posta Adresinize Gönderildi.<br/>Lütfen E-Posta Adresinizi Kontrol Ediniz.';
-$lang['mod_user']['password_reset']['error']['1'] = 'Güvenlik Kodunu Hatalı Girdiniz,Lütfen Kontrol Ederek Tekrar Deneyiniz.';
-$lang['mod_user']['password_reset']['error']['2'] = 'Lütfen Aktivasyon Kodunu Yazın.';
-$lang['mod_user']['password_reset']['error']['3'] = 'Belirttiğiniz Aktivasyon Kodu Geçersiz,
+$lang['mod_user']['password_reset']['title'] = 'Şifre Sıfırlama';
+$lang['mod_user']['password_reset']['info'] = 'Yeni Şifrenizi Üretebilmemiz İçin,Lütfen Aşağıdaki Alana Şifre Sıfırlama Aktivasyon Kodunuzu Yazınız.';
+$lang['mod_user']['password_reset']['activation_code'] = 'Aktivasyon Kodu';
+$lang['mod_user']['password_reset']['security_code'] = 'Güvenlik Kodu';
+$lang['mod_user']['password_reset']['send_button'] = 'Gönder';
+$lang['mod_user']['password_reset']['success_message'] = 'Tebrikler,Yeni Şifreniz E-Posta Adresinize Gönderildi.<br/>Lütfen E-Posta Adresinizi Kontrol Ediniz.';
+$lang['mod_user']['password_reset']['error']['invalid_captcha'] = 'Güvenlik Kodunu Hatalı Girdiniz,Lütfen Kontrol Ederek Tekrar Deneyiniz.';
+$lang['mod_user']['password_reset']['error']['code_required'] = 'Lütfen Aktivasyon Kodunu Yazın.';
+$lang['mod_user']['password_reset']['error']['invalid_code'] = 'Belirttiğiniz Aktivasyon Kodu Geçersiz,
 		Lütfen Kontrol Ederek Tekrar Deneyiniz.';
-$lang['mod_user']['password_reset']['error']['4'] = 'E-Posta Gönderilirken Hata Oluştur Lütfen Sistem Yöneticisi İle İrtibata Geçin!';
+$lang['mod_user']['password_reset']['error']['email_send_error'] = 'E-Posta Gönderilirken Hata Oluştur Lütfen Sistem Yöneticisi İle İrtibata Geçin!';
 $lang['mod_user']['password_reset']['error']['invalid_captcha'] = 'You entered the security code incorrectly, please check and try again.';
 $lang['mod_user']['password_reset']['error']['code_required'] = 'Please write your activation code.';
 $lang['mod_user']['password_reset']['error']['invalid_code'] = 'The specified activation code is invalid, please check and try again.';

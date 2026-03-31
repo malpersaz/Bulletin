@@ -3,8 +3,8 @@
 {% set hide_search = true %}
 {% extends 'admin/layout.twig' %}
 
-{% block title %}{{ lang.mod_user.admin.9 }}{% endblock %}
-{% block headline %}{{ lang.mod_user.admin.9 }}{% endblock %}
+{% block title %}{{ lang.mod_user.admin.acl }}{% endblock %}
+{% block headline %}{{ lang.mod_user.admin.acl }}{% endblock %}
 
 {% block content %}
 <style>
@@ -137,7 +137,7 @@
             Swal.fire({
                 icon: 'warning',
                 html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ error }}</b>',
-                confirmButtonText: '{{ lang.mod_user.button.evet }}',
+                confirmButtonText: '{{ lang.mod_user.button.yes }}',
                 confirmButtonColor: '#ba1a1a'
             });
         });
@@ -207,7 +207,7 @@
     <div class="standard-toolbar">
         <button class="toolbar-item active" onclick="window.history.back()">
             <i class="bi bi-x-lg"></i>
-            <span>{{ lang.mod_user.button.vazgec }}</span>
+            <span>{{ lang.mod_user.button.cancel }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="window.location.reload()">
