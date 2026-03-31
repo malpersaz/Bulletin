@@ -37,6 +37,120 @@
     height: auto !important;
     padding-bottom: 40px !important; 
 }
+
+#wizard-cat-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#wizard-cat-sheet .category-sheet-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#wizard-cat-sheet .category-sheet-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#wizard-cat-sheet .category-sheet-search {
+    width: 100%;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container);
+    padding: 12px 14px;
+    color: var(--md-sys-color-on-surface);
+    font-size: 14px;
+    outline: none;
+}
+
+#wizard-cat-sheet .category-sheet-search:focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+}
+
+#wizard-cat-sheet .category-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 0 -8px;
+    padding: 0 8px 8px;
+}
+
+#wizard-cat-sheet .category-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    background: var(--md-sys-color-surface);
+    border: 1px solid transparent;
+    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+#wizard-cat-sheet .category-item:hover {
+    background: var(--md-sys-color-surface-container);
+}
+
+#wizard-cat-sheet .category-item.is-selected {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface));
+    border-color: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+}
+
+#wizard-cat-sheet .category-item-meta {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+}
+
+#wizard-cat-sheet .category-item-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+}
+
+#wizard-cat-sheet .category-item-title {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+#wizard-cat-sheet .category-item-subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+}
+
+#wizard-cat-sheet .category-item-check {
+    color: var(--md-sys-color-primary);
+    font-size: 18px;
+    opacity: 0;
+    transform: scale(.8);
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+#wizard-cat-sheet .category-item.is-selected .category-item-check {
+    opacity: 1;
+    transform: scale(1);
+}
 </style>
 
 <!-- NEW: Full Language Selection Sheet -->
@@ -112,19 +226,64 @@
 <div class="bottom-sheet" id="wizard-cat-sheet">
     <div class="sheet-handle-bar"></div>
     <h3 style="margin: 0 0 16px 0;">{{ lang.mod_content.sheet.category_title }}</h3>
-    <div class="nav-drawer-content" style="max-height: 400px; overflow-y: auto;">
+    <div class="category-sheet-meta">
+        <div class="category-sheet-pill">
+            <i class="bi bi-translate"></i>
+            <span id="wizardCatActiveLang">{{ site.lang|upper }}</span>
+        </div>
+        <div class="category-sheet-pill">
+            <i class="bi bi-folder2-open"></i>
+            <span id="wizardCatVisibleCount">0</span>
+        </div>
+    </div>
+    <input
+        type="search"
+        id="wizardCategorySearchInput"
+        class="category-sheet-search"
+        placeholder="{{ wizard_lang.ui.search|default('Search') }}"
+        autocomplete="off"
+        oninput="filterWizardCategorySheet()"
+    >
+    <div class="nav-drawer-content category-list">
         {% if categories is defined %}
             {% for cat in categories %}
-            <div class="nav-item category-item content-cat" data-lang="{{ cat.lang }}" onclick="selectWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})">
-                <span class="nav-item-label">{{ cat.name }}</span>
+            <div
+                class="nav-item category-item content-cat"
+                data-lang="{{ cat.lang }}"
+                data-name="{{ cat.name|lower|e('html_attr') }}"
+                data-category-id="{{ cat.id }}"
+                onclick="selectWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})"
+            >
+                <div class="category-item-meta">
+                    <i class="bi bi-bookmark-star"></i>
+                </div>
+                <div class="category-item-body">
+                    <span class="category-item-title">{{ cat.name }}</span>
+                    <span class="category-item-subtitle">{{ cat.lang|upper }}</span>
+                </div>
+                <i class="bi bi-check-circle-fill category-item-check"></i>
             </div>
             {% endfor %}
         {% endif %}
 
         {% if video_embed_categories is defined %}
             {% for cat in video_embed_categories %}
-            <div class="nav-item category-item video-cat" data-lang="{{ cat.lang }}" onclick="selectVideoEmbedWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})" style="display:none;">
-                <span class="nav-item-label">{{ cat.name }}</span>
+            <div
+                class="nav-item category-item video-cat"
+                data-lang="{{ cat.lang }}"
+                data-name="{{ cat.name|lower|e('html_attr') }}"
+                data-category-id="{{ cat.id }}"
+                onclick="selectVideoEmbedWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})"
+                style="display:none;"
+            >
+                <div class="category-item-meta">
+                    <i class="bi bi-collection"></i>
+                </div>
+                <div class="category-item-body">
+                    <span class="category-item-title">{{ cat.name }}</span>
+                    <span class="category-item-subtitle">{{ cat.lang|upper }}</span>
+                </div>
+                <i class="bi bi-check-circle-fill category-item-check"></i>
             </div>
             {% endfor %}
         {% endif %}

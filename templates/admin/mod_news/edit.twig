@@ -262,20 +262,38 @@
             {% if error is defined %}
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        let errorHtml = '<div style="text-align: left;">';
-                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ message }}</b></div>';
-                        {% if errors is defined and errors|length > 0 %}
-                            errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
-                            {% for error in errors %}
-                                errorHtml += '<li style="margin-bottom: 4px;">{{ error }}</li>';
-                            {% endfor %}
-                            errorHtml += '</ul>';
-                        {% endif %}
-                        errorHtml += '</div>';
+                        const errorMessage = {{ message|default('')|json_encode|raw }};
+                        const errorItems = {{ (errors is defined ? errors : [])|json_encode|raw }};
+
+                        const wrapper = document.createElement('div');
+                        wrapper.style.textAlign = 'left';
+
+                        const titleRow = document.createElement('div');
+                        titleRow.style.marginBottom = '8px';
+                        titleRow.innerHTML = '<i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b></b>';
+                        titleRow.querySelector('b').textContent = errorMessage;
+                        wrapper.appendChild(titleRow);
+
+                        if (Array.isArray(errorItems) && errorItems.length > 0) {
+                            const list = document.createElement('ul');
+                            list.style.margin = '0';
+                            list.style.paddingLeft = '20px';
+                            list.style.fontSize = '14px';
+                            list.style.color = '#ba1a1a';
+
+                            errorItems.forEach(function(item) {
+                                const listItem = document.createElement('li');
+                                listItem.style.marginBottom = '4px';
+                                listItem.textContent = item;
+                                list.appendChild(listItem);
+                            });
+
+                            wrapper.appendChild(list);
+                        }
 
                         Swal.fire({
                             icon: 'warning',
-                            html: errorHtml,
+                            html: wrapper.outerHTML,
                             confirmButtonText: '{{ lang.mod_news.button.ok }}',
                             confirmButtonColor: '#ba1a1a'
                         });
@@ -738,6 +756,10 @@
 		}
 
         function submitEditForm(formId) {
+            if (typeof tinymce !== 'undefined') {
+                tinymce.triggerSave();
+            }
+
             const form = document.getElementById(formId);
             if (!form.checkValidity()) {
                 form.reportValidity();

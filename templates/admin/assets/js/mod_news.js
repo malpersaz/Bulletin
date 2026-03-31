@@ -178,7 +178,7 @@ class ContentManager {
             const date = this.stripHtml(item[5]); // Confirmed date string
             const categoryId = item[7] || 0;
             const statusRaw = item[8] || 'n';
-            const authorName = item[9] || '';
+            const authorName = this.stripHtml(item[9] || '');
 
             // Extract Text Title
             const tempDiv = document.createElement('div');
@@ -212,13 +212,17 @@ class ContentManager {
                 categoryName = CATEGORY_MAP[categoryId];
             }
 
+            const safeStatusText = this.escapeHtml(statusText);
+            const safeCategoryName = this.escapeHtml(categoryName);
+            const safeTitleText = this.escapeHtml(titleText);
+            const safeLang = this.escapeHtml(lang);
+            const safeDate = this.escapeHtml(date);
+            const safeAuthorName = this.escapeHtml(authorName);
+
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
                 <div class="card-content-layout">
-                    <!-- Thumbnail -->
-                    <div class="card-thumbnail" 
-                         onclick="event.stopPropagation(); window.contentManager.processImageUpload('${id}')"
-                         style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
+                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
                         ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
@@ -226,25 +230,47 @@ class ContentManager {
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
                                 <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span style="color:${statusColor}; font-weight:500;">${statusText}</span>
+                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
                                     <span>•</span>
-                                    <span>${categoryName}</span>
+                                    <span>${safeCategoryName}</span>
                                 </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
+                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
                              </div>
-                             <button class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" onclick="event.stopPropagation(); window.contentManager.openActionSheet('${id}', '${titleText.replace(/'/g, "\\\'")}', '${statusRaw}')">
+                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
 
                         <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${lang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${date}</span>
-                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${authorName}</span>
+                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
+                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
+                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
                         </div>
                     </div>
                 </div>
             `;
+
+            const thumbnail = card.querySelector('.card-thumbnail');
+            if (thumbnail) {
+                if (imgSrc) {
+                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
+                    thumbnail.style.backgroundSize = 'cover';
+                    thumbnail.style.backgroundPosition = 'center';
+                }
+
+                thumbnail.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.processImageUpload(id);
+                });
+            }
+
+            const actionButton = card.querySelector('.m3-icon-btn');
+            if (actionButton) {
+                actionButton.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    this.openActionSheet(id, titleText, statusRaw);
+                });
+            }
 
             fragment.appendChild(card);
         });
@@ -256,6 +282,15 @@ class ContentManager {
         let tmp = document.createElement("DIV");
         tmp.innerHTML = html;
         return tmp.textContent || tmp.innerText || "";
+    }
+
+    escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
 
     initScrollListener() {
@@ -691,7 +726,7 @@ window.deleteSelected = function () {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Success') {
+                    if ((msg || '').trim() === 'Success') {
                         mgr.selectedContentId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -744,7 +779,7 @@ window.handleContextAction = function (action) {
                     })
                         .then(response => response.text())
                         .then(msg => {
-                            if (msg.trim() === 'Success') {
+                            if ((msg || '').trim() === 'Success') {
                                 window.contentManager.loadData(true);
                                 closeContextMenu();
                                 showSnackbar(adminLang.context_menu.delete_success, 'success');
@@ -816,7 +851,7 @@ window.toggleStatus = function (id, currentStatus) {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Success') {
+                    if ((msg || '').trim() === 'Success') {
                         window.contentManager.loadData(true);
                         showSnackbar(successMsg, 'success');
                     } else {

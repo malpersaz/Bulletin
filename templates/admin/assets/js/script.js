@@ -506,6 +506,8 @@ function restoreWizardUI() {
         if (hidden) hidden.value = wizardData.category.id;
     }
 
+    ensureWizardCategoryMatchesLanguage();
+
     // Title vesaz bike
     const titleInput = document.getElementById('wizardTitleInput');
     if (titleInput && wizardData.title) {
@@ -798,18 +800,138 @@ function selectWizardLang(el, lang) {
     wizardData.lang = lang;
     const hidden = document.getElementById('wizardHiddenLang');
     if (hidden) hidden.value = lang;
+    ensureWizardCategoryMatchesLanguage();
+    syncWizardCategorySheet();
+    updateWizardUI();
     saveWizardState(); // Save state
 }
 
 // Step 2: Category
+function getWizardCategorySheetContext() {
+    let targetLang = adminLang.filter.default_lang;
+    let isVideoWizard = false;
+    let selectedCategoryId = null;
+
+    const videoEmbedWizard = document.getElementById('videoEmbedWizard');
+    if (videoEmbedWizard && videoEmbedWizard.classList.contains('active')) {
+        targetLang = (videoEmbedWizardData.lang || adminLang.filter.default_lang).toUpperCase();
+        isVideoWizard = true;
+        selectedCategoryId = videoEmbedWizardData?.category?.id || null;
+    } else if (typeof wizardData !== 'undefined' && wizardData.lang) {
+        targetLang = wizardData.lang.toUpperCase();
+        selectedCategoryId = wizardData?.category?.id || null;
+    }
+
+    return { targetLang, isVideoWizard, selectedCategoryId };
+}
+
+function getLanguageNameByCode(code) {
+    const normalized = String(code || '').toUpperCase();
+    const matched = Array.isArray(adminLang.languages)
+        ? adminLang.languages.find(item => item.code === normalized)
+        : null;
+
+    return matched?.name || normalized;
+}
+
+function resetWizardCategorySelection() {
+    if (typeof wizardData === 'undefined') {
+        return;
+    }
+
+    wizardData.category = null;
+
+    const label = document.getElementById('wizardSelectedCategory');
+    const hidden = document.getElementById('wizardHiddenCategory');
+    if (label) {
+        label.innerText = adminLang.wizard?.label?.category_select || adminLang.wizard.summary.selected_none;
+        label.style.color = 'var(--md-sys-color-on-surface-variant)';
+    }
+    if (hidden) {
+        hidden.value = 0;
+    }
+}
+
+function ensureWizardCategoryMatchesLanguage() {
+    if (typeof wizardData === 'undefined' || !wizardData.category?.id) {
+        return;
+    }
+
+    const selectedItem = document.querySelector(
+        `.content-cat[data-category-id="${String(wizardData.category.id)}"]`
+    );
+    const selectedLang = selectedItem?.getAttribute('data-lang')?.toUpperCase();
+    const activeLang = String(wizardData.lang || adminLang.filter.default_lang).toUpperCase();
+
+    if (selectedLang && selectedLang !== activeLang) {
+        resetWizardCategorySelection();
+    }
+}
+
+function syncWizardCategorySheet() {
+    const sheet = document.getElementById('wizard-cat-sheet');
+    if (!sheet) return;
+
+    const { targetLang, isVideoWizard, selectedCategoryId } = getWizardCategorySheetContext();
+    const searchInput = document.getElementById('wizardCategorySearchInput');
+    const query = (searchInput?.value || '').trim().toLocaleLowerCase();
+    const items = sheet.querySelectorAll('.category-item');
+    let visibleCount = 0;
+
+    items.forEach(item => {
+        const itemLangAttr = item.getAttribute('data-lang');
+        const itemLang = itemLangAttr ? itemLangAttr.toUpperCase() : '';
+        const itemName = (item.getAttribute('data-name') || '').toLocaleLowerCase();
+        const itemId = item.getAttribute('data-category-id');
+
+        const isVideoItem = item.classList.contains('video-cat');
+        const isContentItem = item.classList.contains('content-cat');
+
+        let typeMatch = false;
+        if (isVideoWizard && isVideoItem) typeMatch = true;
+        if (!isVideoWizard && isContentItem) typeMatch = true;
+
+        const langMatch = !itemLang || itemLang === targetLang;
+        const searchMatch = !query || itemName.includes(query);
+        const isVisible = typeMatch && langMatch && searchMatch;
+
+        item.style.display = isVisible ? 'flex' : 'none';
+        item.classList.toggle('is-selected', String(selectedCategoryId) === String(itemId));
+
+        if (isVisible) {
+            visibleCount++;
+        }
+    });
+
+    const noCatMsg = document.getElementById('no-category-msg');
+    if (noCatMsg) {
+        noCatMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
+    }
+
+    const countEl = document.getElementById('wizardCatVisibleCount');
+    if (countEl) {
+        countEl.innerText = String(visibleCount);
+    }
+
+    const activeLangEl = document.getElementById('wizardCatActiveLang');
+    if (activeLangEl) {
+        activeLangEl.innerText = getLanguageNameByCode(targetLang);
+    }
+}
+
 function closeWizardCategorySheet() {
     const sheet = document.getElementById('wizard-cat-sheet');
     const overlay = document.getElementById('wizard-cat-overlay');
+    const searchInput = document.getElementById('wizardCategorySearchInput');
     if (!sheet || !overlay) return;
 
     sheet.classList.remove('active');
     overlay.classList.remove('active');
     overlay.style.display = 'none';
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
 }
 
 function toggleWizardCategorySheet() {
@@ -822,51 +944,20 @@ function toggleWizardCategorySheet() {
         return;
     }
 
-    // Detect which wizard is active
-    let targetLang = adminLang.filter.default_lang;
-    let isVideoWizard = false;
-
-    const videoEmbedWizard = document.getElementById('videoEmbedWizard');
-    if (videoEmbedWizard && videoEmbedWizard.classList.contains('active')) {
-        targetLang = (videoEmbedWizardData.lang || adminLang.filter.default_lang).toUpperCase();
-        isVideoWizard = true;
-    } else if (typeof wizardData !== 'undefined' && wizardData.lang) {
-        targetLang = wizardData.lang.toUpperCase();
-    }
-
-    const items = sheet.querySelectorAll('.category-item');
-    let visibleCount = 0;
-
-    items.forEach(item => {
-        const itemLangAttr = item.getAttribute('data-lang');
-        const itemLang = itemLangAttr ? itemLangAttr.toUpperCase() : '';
-
-        const isVideoItem = item.classList.contains('video-cat');
-        const isContentItem = item.classList.contains('content-cat');
-
-        // Filter by Wizard Type
-        let typeMatch = false;
-        if (isVideoWizard && isVideoItem) typeMatch = true;
-        if (!isVideoWizard && isContentItem) typeMatch = true;
-
-        // Show if match or if no lang is defined (fallback)
-        if (typeMatch && (!itemLang || itemLang === targetLang)) {
-            item.style.display = 'flex';
-            visibleCount++;
-        } else {
-            item.style.display = 'none';
-        }
-    });
-
-    // Show/hide 'No categories found' message
-    const noCatMsg = document.getElementById('no-category-msg');
-    if (noCatMsg) {
-        noCatMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
-    }
-
     sheet.classList.add('active');
     overlay.classList.add('active');
     overlay.style.display = 'block';
+
+    syncWizardCategorySheet();
+
+    const searchInput = document.getElementById('wizardCategorySearchInput');
+    if (searchInput) {
+        searchInput.focus();
+    }
+}
+
+function filterWizardCategorySheet() {
+    syncWizardCategorySheet();
 }
 
 function selectWizardCategory(name, id) {
