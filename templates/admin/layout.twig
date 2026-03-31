@@ -15,6 +15,11 @@
     {% block styles %}{% endblock %}
 </head>
 <body class="{% if hide_navbar %}hide-navbar{% endif %} {% if hide_search %}hide-search{% endif %}">
+    {% set active_module_lang_key = module_lang_key is defined ? module_lang_key : (wizard_module is defined ? wizard_module : null) %}
+    {% if active_module_lang_key is not null and lang[active_module_lang_key] is not defined %}
+        {% set __missing_required_module_language__ = 1 / 0 %}
+    {% endif %}
+    {% set active_module_lang = active_module_lang_key is not null ? attribute(lang, active_module_lang_key) : null %}
 
     <!-- Simulator Wrapper for Desktop -->
     <div class="mobile-wrapper">
@@ -42,7 +47,7 @@
         {% if show_fab is not defined or show_fab %}
             {% include 'admin/partials/fab.twig' %}
         {% endif %}
-        {% if show_navbar is not defined or show_navbar %}
+        {% if (show_navbar is not defined or show_navbar) and active_module_lang_key is not null %}
             {% include 'admin/partials/navbar.twig' %}
         {% endif %}
         
@@ -53,12 +58,12 @@
         {% if show_sidebar is not defined or show_sidebar %}
             {% include 'admin/partials/sidebar.twig' %}
         {% endif %}
-        {% if show_filter_sheet is not defined or show_filter_sheet %}
+        {% if (show_filter_sheet is defined and show_filter_sheet) or (show_filter_sheet is not defined and active_module_lang_key is not null) %}
             {% include 'admin/partials/filter_sheet.twig' %}
         {% endif %}
 
         <!-- WIZARDS & MODALS -->
-        {% if show_wizards is not defined or show_wizards %}
+        {% if (show_wizards is defined and show_wizards) or (show_wizards is not defined and wizard_module is defined) %}
             {% block wizards %}
                 {% include 'admin/partials/wizard_content.twig' %}
                 {% include 'admin/partials/wizard_video_embed.twig' %}
@@ -66,29 +71,29 @@
         {% endif %}
         
         <!-- OTHER OVERLAYS -->
-        {% if show_extra_sheets is not defined or show_extra_sheets %}
+        {% if (show_extra_sheets is defined and show_extra_sheets) or (show_extra_sheets is not defined and active_module_lang_key is not null) %}
             {% include 'admin/partials/sheets_extra.twig' %}
         {% endif %}
 
     </div>
 
     <!-- CORE SCRIPTS (Absolute Path) -->
-    {% set wizard_lang_key = wizard_module is defined ? wizard_module : 'mod_content' %}
-    {% set wizard_lang = attribute(lang, wizard_lang_key) %}
-    {% set wizard_title_key = 'content_title' %}
-    {% set wizard_body_key = 'content' %}
-    {% if wizard_lang_key == 'mod_news' %}
-        {% set wizard_title_key = 'news_title' %}
-        {% set wizard_body_key = 'news' %}
-    {% elseif wizard_lang_key == 'mod_publication' %}
-        {% set wizard_title_key = 'publication_title' %}
-        {% set wizard_body_key = 'publication' %}
-    {% endif %}
     <script>
         const SITE_URL = '{{ site.sadres }}';
-        const WIZARD_MODULE = '{{ wizard_lang_key }}';
+        const WIZARD_MODULE = {{ wizard_module is defined ? ('"' ~ wizard_module ~ '"')|raw : 'null' }};
         const adminLang = {
+            {% if wizard_module is defined %}
             wizard: {
+                {% set wizard_lang = attribute(lang, wizard_module) %}
+                {% set wizard_title_key = 'content_title' %}
+                {% set wizard_body_key = 'content' %}
+                {% if wizard_module == 'mod_news' %}
+                    {% set wizard_title_key = 'news_title' %}
+                    {% set wizard_body_key = 'news' %}
+                {% elseif wizard_module == 'mod_publication' %}
+                    {% set wizard_title_key = 'publication_title' %}
+                    {% set wizard_body_key = 'publication' %}
+                {% endif %}
                 step: {
                     language: '{{ wizard_lang.wizard.step.language|e("js") }}',
                     category: '{{ wizard_lang.wizard.step.category|e("js") }}',
@@ -115,6 +120,10 @@
                     finish: '{{ wizard_lang.wizard.button.finish|e("js") }}'
                 }
             },
+            {% else %}
+            wizard: null,
+            {% endif %}
+            {% if lang.mod_video_embed is defined %}
             video_embed: {
                 messages: {
                     success: '{{ lang.mod_video_embed.message.oke.add|e("js") }}',
@@ -164,48 +173,61 @@
                     }
                 }
             },
+            {% else %}
+            video_embed: null,
+            {% endif %}
+            {% if active_module_lang_key is not null %}
             general: {
-                delete_confirm: '{{ wizard_lang.delete_confirm|e("js") }}',
-                card_click: '{{ wizard_lang.wizard.messages.card_click|e("js") }}'
+                delete_confirm: '{{ active_module_lang.delete_confirm|e("js") }}',
+                card_click: '{{ active_module_lang.wizard.messages.card_click|e("js") }}'
             },
             status: {
-                active: '{{ wizard_lang.status_badge.active|e("js") }}',
-                draft: '{{ wizard_lang.status_badge.draft|e("js") }}'
+                active: '{{ active_module_lang.status_badge.active|e("js") }}',
+                draft: '{{ active_module_lang.status_badge.draft|e("js") }}'
             },
             mock: {
-                titles: {{ wizard_lang.mock.titles|json_encode|raw }},
-                categories: {{ wizard_lang.mock.categories|json_encode|raw }},
-                authors: {{ wizard_lang.mock.authors|json_encode|raw }}
+                titles: {{ active_module_lang.mock.titles|json_encode|raw }},
+                categories: {{ active_module_lang.mock.categories|json_encode|raw }},
+                authors: {{ active_module_lang.mock.authors|json_encode|raw }}
             },
             context_menu: {
-                edit: '{{ wizard_lang.context_menu.edit|e("js") }}',
-                publish: '{{ wizard_lang.context_menu.publish|e("js") }}',
-                unpublish: '{{ wizard_lang.context_menu.unpublish|e("js") }}',
-                published_msg: '{{ wizard_lang.context_menu.published_msg|e("js") }}',
-                unpublished_msg: '{{ wizard_lang.context_menu.unpublished_msg|e("js") }}',
-                confirm: '{{ wizard_lang.context_menu.confirm|e("js") }}',
-                cancel: '{{ wizard_lang.context_menu.cancel|e("js") }}',
-                edit_alert: '{{ wizard_lang.context_menu.edit_alert|replace({"\n": "\\n"})|e("js") }}',
-                gallery_alert: '{{ wizard_lang.context_menu.gallery_alert|replace({"\n": "\\n"})|e("js") }}',
-                files_alert: '{{ wizard_lang.context_menu.files_alert|replace({"\n": "\\n"})|e("js") }}',
-                status_alert: '{{ wizard_lang.context_menu.status_alert|replace({"\n": "\\n"})|e("js") }}',
-                delete_confirm: '{{ wizard_lang.context_menu.delete_confirm|e("js") }}',
-                delete_success: '{{ wizard_lang.context_menu.delete_success|e("js") }}'
+                edit: '{{ active_module_lang.context_menu.edit|e("js") }}',
+                publish: '{{ active_module_lang.context_menu.publish|e("js") }}',
+                unpublish: '{{ active_module_lang.context_menu.unpublish|e("js") }}',
+                published_msg: '{{ active_module_lang.context_menu.published_msg|e("js") }}',
+                unpublished_msg: '{{ active_module_lang.context_menu.unpublished_msg|e("js") }}',
+                confirm: '{{ active_module_lang.context_menu.confirm|e("js") }}',
+                cancel: '{{ active_module_lang.context_menu.cancel|e("js") }}',
+                edit_alert: '{{ active_module_lang.context_menu.edit_alert|replace({"\n": "\\n"})|e("js") }}',
+                gallery_alert: '{{ active_module_lang.context_menu.gallery_alert|replace({"\n": "\\n"})|e("js") }}',
+                files_alert: '{{ active_module_lang.context_menu.files_alert|replace({"\n": "\\n"})|e("js") }}',
+                status_alert: '{{ active_module_lang.context_menu.status_alert|replace({"\n": "\\n"})|e("js") }}',
+                delete_confirm: '{{ active_module_lang.context_menu.delete_confirm|e("js") }}',
+                delete_success: '{{ active_module_lang.context_menu.delete_success|e("js") }}'
             },
             filter: {
-                default_sort: '{{ wizard_lang.ui.default_sort|e("js") }}',
+                default_sort: '{{ active_module_lang.ui.default_sort|e("js") }}',
                 default_lang: '{{ site.lang|upper }}'
             },
             ui: {
-                select: '{{ wizard_lang.ui.select|e("js") }}',
-                all: '{{ wizard_lang.ui.all|e("js") }}',
-                filter_cleared: '{{ wizard_lang.ui.filter_cleared|e("js") }}',
-                filter_applied: '{{ wizard_lang.ui.filter_applied|e("js") }}',
-                sort_label: '{{ wizard_lang.ui.sort_label|e("js") }}',
-                limit_label: '{{ wizard_lang.ui.limit_label|e("js") }}',
-                lang_label: '{{ wizard_lang.ui.lang_label|e("js") }}'
+                select: '{{ active_module_lang.ui.select|e("js") }}',
+                all: '{{ active_module_lang.ui.all|e("js") }}',
+                filter_cleared: '{{ active_module_lang.ui.filter_cleared|e("js") }}',
+                filter_applied: '{{ active_module_lang.ui.filter_applied|e("js") }}',
+                sort_label: '{{ active_module_lang.ui.sort_label|e("js") }}',
+                limit_label: '{{ active_module_lang.ui.limit_label|e("js") }}',
+                lang_label: '{{ active_module_lang.ui.lang_label|e("js") }}'
             },
-            adminCategories: {{ categories|json_encode|raw }},
+            adminCategories: {{ categories is defined ? categories|json_encode|raw : '[]' }},
+            {% else %}
+            general: null,
+            status: null,
+            mock: null,
+            context_menu: null,
+            filter: null,
+            ui: null,
+            adminCategories: [],
+            {% endif %}
             video_embed_categories: {{ video_embed_categories|json_encode|raw }},
             date_locale: '{{ site.lang }}',
             languages: [

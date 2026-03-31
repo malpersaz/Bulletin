@@ -3,21 +3,27 @@
 <div class="fab-container" id="fabContainer">
     <div class="fab-overlay" id="fabOverlay" onclick="toggleFabMenu()"></div>
     <div class="fab-actions">
+        {% if shared_admin_modules is defined and shared_admin_modules.mod_content %}
         <button class="fab-mini" onclick="window.location.href='{{ site.sadres }}mod_content/add'" title="{{ lang.mod_user.fab.add_content }}" data-action="content-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_content }}</span>
             <i class="bi bi-file-text-fill main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
         </button>
+        {% endif %}
+        {% if shared_admin_modules is defined and shared_admin_modules.mod_publication %}
         <button class="fab-mini" onclick="window.location.href='{{ site.sadres }}mod_publication/add'" title="{{ lang.mod_user.fab.add_publication }}" data-action="publication-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_publication }}</span>
             <i class="bi bi-journal-richtext main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
         </button>
+        {% endif %}
+        {% if shared_admin_modules is defined and shared_admin_modules.mod_video_embed %}
         <button class="fab-mini" onclick="window.location.href='{{ site.sadres }}mod_video_embed/ekle'" title="{{ lang.mod_user.fab.add_video }}" data-action="video-embed-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_video }}</span>
             <i class="bi bi-camera-reels-fill main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
         </button>
+        {% endif %}
         <button class="fab-mini" onclick="window.location.href='{{ site.sadres }}mod_announcements/ekle'" title="{{ lang.mod_user.fab.add_announcement }}">
             <span class="fab-label">{{ lang.mod_user.fab.add_announcement }}</span>
             <i class="bi bi-megaphone-fill main-icon"></i>

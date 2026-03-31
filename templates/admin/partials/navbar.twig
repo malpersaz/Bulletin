@@ -1,13 +1,14 @@
 <!-- NAVIGATION BAR -->
 {% if not hide_navbar %}
+{% set nav_lang = attribute(lang, active_module_lang_key) %}
 <nav class="navigation-bar">
-    <div class="nav-dest active" title="{{ lang.mod_content.list }}" onclick="window.location.href='{{ site.sadres }}mod_content/list'">
+    <div class="nav-dest active" title="{{ nav_lang.list }}" onclick="window.location.href='{{ site.sadres }}{{ active_module_lang_key }}/list'">
         <div class="nav-icon-container"><i class="bi bi-file-text-fill"></i></div>
     </div>
-    <div class="nav-dest" title="{{ lang.mod_content.button.gallery }}">
+    <div class="nav-dest" title="{{ nav_lang.button.gallery }}">
         <div class="nav-icon-container"><i class="bi bi-images"></i></div>
     </div>
-    <div class="nav-dest" title="{{ lang.mod_content.button.file }}">
+    <div class="nav-dest" title="{{ nav_lang.button.file }}">
         <div class="nav-icon-container"><i class="bi bi-file-earmark-text-fill"></i></div>
     </div>
 </nav>

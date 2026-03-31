@@ -1,14 +1,14 @@
 <div
-    class="wizard-image-shell {{ shell_class|default('') }}{% if has_image|default(false) %} has-image{% endif %}"
+    class="wizard-image-shell {{ shell_class is defined ? shell_class : '' }}{% if has_image is defined and has_image %} has-image{% endif %}"
     id="{{ shell_id }}"
-    {% for key, value in shell_attrs|default({}) %}
+    {% for key, value in shell_attrs is defined ? shell_attrs : {} %}
         {% if value is not null and value is not same as('') %}
             {{ key }}="{{ value }}"
         {% endif %}
     {% endfor %}
 >
     <div class="image-upload-area wizard-image-dropzone" id="{{ dropzone_id }}" tabindex="0" role="button" onclick="{{ trigger_picker_js }}">
-        <div class="wizard-image-empty" id="{{ empty_state_id }}"{% if empty_hidden|default(false) %} hidden{% endif %}>
+        <div class="wizard-image-empty" id="{{ empty_state_id }}"{% if empty_hidden is defined and empty_hidden %} hidden{% endif %}>
             <div class="wizard-image-empty-icon">
                 <i class="bi bi-images"></i>
             </div>
@@ -20,32 +20,32 @@
             </div>
         </div>
 
-        <div class="wizard-image-preview-card" id="{{ preview_card_id }}"{% if preview_hidden|default(true) %} hidden{% endif %}>
+        <div class="wizard-image-preview-card" id="{{ preview_card_id }}"{% if preview_hidden is not defined or preview_hidden %} hidden{% endif %}>
             <div class="wizard-image-preview-frame">
                 <button
                     type="button"
                     class="wizard-image-remove-btn"
-                    {% if remove_btn_id|default('') %} id="{{ remove_btn_id }}"{% endif %}
-                    aria-label="{{ remove_button_label|default('Remove image') }}"
-                    title="{{ remove_button_label|default('Remove image') }}"
+                    {% if remove_btn_id is defined and remove_btn_id %} id="{{ remove_btn_id }}"{% endif %}
+                    aria-label="{{ remove_button_label is defined ? remove_button_label : '' }}"
+                    title="{{ remove_button_label is defined ? remove_button_label : '' }}"
                     onclick="event.stopPropagation(); {{ remove_action_js }}"
                 >
                     <i class="bi bi-trash-fill"></i>
                 </button>
-                <img id="{{ preview_img_id }}" class="wizard-img-preview" alt="{{ preview_alt|default('') }}"{% if preview_hidden|default(true) %} hidden{% endif %}{% if preview_src|default('') %} src="{{ preview_src }}"{% endif %}>
+                <img id="{{ preview_img_id }}" class="wizard-img-preview" alt="{{ preview_alt is defined ? preview_alt : '' }}"{% if preview_hidden is not defined or preview_hidden %} hidden{% endif %}{% if preview_src is defined and preview_src %} src="{{ preview_src }}"{% endif %}>
             </div>
-            <div class="wizard-image-meta"{% if meta_id|default('') %} id="{{ meta_id }}"{% endif %}{% if meta_hidden|default(false) %} hidden{% endif %}>
+            <div class="wizard-image-meta"{% if meta_id is defined and meta_id %} id="{{ meta_id }}"{% endif %}{% if meta_hidden is defined and meta_hidden %} hidden{% endif %}>
                 <strong id="{{ file_name_id }}">{{ file_name_text }}</strong>
                 <p id="{{ file_details_id }}">{{ file_details_text }}</p>
             </div>
         </div>
     </div>
 
-    <div class="wizard-image-divider" aria-hidden="true"{% if divider_hidden|default(false) %} hidden{% endif %}>
+    <div class="wizard-image-divider" aria-hidden="true"{% if divider_hidden is defined and divider_hidden %} hidden{% endif %}>
         <span>{{ link_separator }}</span>
     </div>
 
-    <div class="wizard-image-url-row"{% if url_row_hidden|default(false) %} hidden{% endif %}>
+    <div class="wizard-image-url-row"{% if url_row_hidden is defined and url_row_hidden %} hidden{% endif %}>
         <input
             type="url"
             id="{{ url_input_id }}"
@@ -62,11 +62,11 @@
 
     <input
         type="file"
-        name="{{ input_name|default('image') }}"
+        name="{{ input_name is defined ? input_name : 'image' }}"
         id="{{ file_input_id }}"
         hidden
         accept="image/*"
-        {% if file_input_onchange|default('') %}
+        {% if file_input_onchange is defined and file_input_onchange %}
             onchange="{{ file_input_onchange }}"
         {% endif %}
     >

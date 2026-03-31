@@ -1,3 +1,4 @@
+{% set filter_lang = attribute(lang, active_module_lang_key) %}
 <!-- Filter Sheet -->
 <div class="overlay" id="sheet-overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="sheet-menu">
@@ -5,25 +6,25 @@
     <div class="sheet-header-sticky">
         <div class="sheet-handle-bar"></div>
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="margin: 0; font-size: 22px; color: var(--md-sys-color-on-surface);">{{ lang.mod_content.filter.title }}</h3>
+            <h3 style="margin: 0; font-size: 22px; color: var(--md-sys-color-on-surface);">{{ filter_lang.filter.title }}</h3>
             <button onclick="closeSheet()"
-                style="background:none; border:none; color: var(--md-sys-color-primary); font-weight:500; font-size: 14px; cursor: pointer;">{{ lang.mod_content.filter.close }}</button>
+                style="background:none; border:none; color: var(--md-sys-color-primary); font-weight:500; font-size: 14px; cursor: pointer;">{{ filter_lang.filter.close }}</button>
         </div>
     </div>
 
     <!-- Scrollable Content -->
     <div class="sheet-content-scrollable">
         <!-- Sort Order -->
-        <label class="filter-group-label" style="margin-top: 0;">{{ lang.mod_content.filter.sort_label }}</label>
+        <label class="filter-group-label" style="margin-top: 0;">{{ filter_lang.filter.sort_label }}</label>
         <div class="chip-scroll-container">
-            <div class="filter-chip active" onclick="selectChip(this, 'sort')" data-sort-col="6" data-sort-dir="desc">{{ lang.mod_content.filter.newest }}</div>
-            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="6" data-sort-dir="asc">{{ lang.mod_content.filter.oldest }}</div>
-            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="2" data-sort-dir="asc">{{ lang.mod_content.filter.title_az }}</div>
-            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="2" data-sort-dir="desc">{{ lang.mod_content.filter.title_za }}</div>
+            <div class="filter-chip active" onclick="selectChip(this, 'sort')" data-sort-col="6" data-sort-dir="desc">{{ filter_lang.filter.newest }}</div>
+            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="6" data-sort-dir="asc">{{ filter_lang.filter.oldest }}</div>
+            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="2" data-sort-dir="asc">{{ filter_lang.filter.title_az }}</div>
+            <div class="filter-chip" onclick="selectChip(this, 'sort')" data-sort-col="2" data-sort-dir="desc">{{ filter_lang.filter.title_za }}</div>
         </div>
 
         <!-- Limit Selection -->
-        <label class="filter-group-label" style="margin-top: 24px;">{{ lang.mod_content.filter.limit_label }}</label>
+        <label class="filter-group-label" style="margin-top: 24px;">{{ filter_lang.filter.limit_label }}</label>
         <div class="chip-scroll-container">
             <div class="filter-chip active" onclick="selectChip(this, 'limit')">10</div>
             <div class="filter-chip" onclick="selectChip(this, 'limit')">20</div>
@@ -32,24 +33,24 @@
         </div>
 
         <!-- Language Selection (Summary Mode) -->
-        <label class="filter-group-label" style="margin-top: 24px;">{{ lang.mod_content.filter.lang_label }}</label>
-        <div class="selected-lang-summary" id="langSummaryContainer" data-select-label="{{ lang.mod_content.filter.select_label }}"
+        <label class="filter-group-label" style="margin-top: 24px;">{{ filter_lang.filter.lang_label }}</label>
+        <div class="selected-lang-summary" id="langSummaryContainer" data-select-label="{{ filter_lang.filter.select_label }}"
             style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-            <span style="font-size:14px; color:var(--md-sys-color-on-surface); margin-right:8px;">{{ lang.mod_content.filter.selected_lang }}:</span>
+            <span style="font-size:14px; color:var(--md-sys-color-on-surface); margin-right:8px;">{{ filter_lang.filter.selected_lang }}:</span>
             <button class="add-lang-btn" onclick="openLangSheet()">
-                <i class="bi bi-globe" style="font-size: 14px; margin-right: 6px;"></i> {{ lang.mod_content.filter.all_langs }}
+                <i class="bi bi-globe" style="font-size: 14px; margin-right: 6px;"></i> {{ filter_lang.filter.all_langs }}
             </button>
         </div>
 
         <!-- Date Range -->
-        <label class="filter-group-label" style="margin-top: 24px;">{{ lang.mod_content.filter.date_label }}</label>
+        <label class="filter-group-label" style="margin-top: 24px;">{{ filter_lang.filter.date_label }}</label>
         <div style="display: flex; gap: 16px; margin-bottom: 24px;">
             <div class="input-wrapper" style="flex:1;">
-                <label style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); display:block; margin-bottom: 8px;">{{ lang.mod_content.filter.start_date }}</label>
+                <label style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); display:block; margin-bottom: 8px;">{{ filter_lang.filter.start_date }}</label>
                 <input type="date" class="m3-input">
             </div>
             <div class="input-wrapper" style="flex:1;">
-                <label style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); display:block; margin-bottom: 8px;">{{ lang.mod_content.filter.end_date }}</label>
+                <label style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); display:block; margin-bottom: 8px;">{{ filter_lang.filter.end_date }}</label>
                 <input type="date" class="m3-input">
             </div>
         </div>
@@ -58,8 +59,8 @@
     <!-- Sticky Footer -->
     <div class="sheet-footer-sticky">
         <div style="display: flex; gap: 12px; width: 100%;">
-            <button class="m3-btn-outlined" onclick="clearFilters()" style="flex: 1;">{{ lang.mod_content.filter.clear }}</button>
-            <button class="m3-btn-filled" onclick="applyFilters()" style="flex: 1;">{{ lang.mod_content.filter.apply }}</button>
+            <button class="m3-btn-outlined" onclick="clearFilters()" style="flex: 1;">{{ filter_lang.filter.clear }}</button>
+            <button class="m3-btn-filled" onclick="applyFilters()" style="flex: 1;">{{ filter_lang.filter.apply }}</button>
         </div>
     </div>
 </div>

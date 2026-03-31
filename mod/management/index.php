@@ -5,6 +5,10 @@ require_once(__DIR__ . '/../index/indexBase.php');
 
 class management_mod extends indexBase
 {
+    private function moduleExists($moduleName)
+    {
+        return is_dir(mod_dir . $moduleName);
+    }
 
     function __construct()
     {
@@ -29,30 +33,30 @@ class management_mod extends indexBase
         $this->_site();
         //$this->_lang();
         $this->tema->lang(Load::lang('mod_user'));
-        
-        // Load mod_news language for FAB/Wizard support across all admin pages
-        $this->tema->lang(Load::lang('mod_news'));
-        
-        // Load mod_video_embed language for FAB/Wizard support across all admin pages
-        $this->tema->lang(Load::lang('mod_video_embed'));
+
+        $sharedModules = [
+            'mod_content' => $this->moduleExists('mod_content'),
+            'mod_news' => $this->moduleExists('mod_news'),
+            'mod_publication' => $this->moduleExists('mod_publication'),
+            'mod_video_embed' => $this->moduleExists('mod_video_embed'),
+        ];
+
+        $this->tema->setGlobal('shared_admin_modules', $sharedModules);
         
         // Load languages for wizard (from database)
         $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo ASC");
         $this->tema->setGlobal('lang_lang', $this->db->getResult()->toArray());
-        
-        // Load News categories for wizard
-        $mod_news_category = Load::model('mod_news_category');
-        $mod_news_category->select('id, name, lang');
-        $mod_news_category->addWhere("parent_id != '0'");
-        $mod_news_category->all();
-        $this->tema->setGlobal('categories', $mod_news_category->toArray());
 
         // Load Video Embed categories for wizard
-        $mod_video_category = Load::model('mod_video_embed_category');
-        $mod_video_category->select('id, name, lang');
-        $mod_video_category->addWhere("parent_id != '0'");
-        $mod_video_category->all();
-        $this->tema->setGlobal('video_embed_categories', $mod_video_category->toArray());
+        if ($this->moduleExists('mod_video_embed_category')) {
+            $mod_video_category = Load::model('mod_video_embed_category');
+            $mod_video_category->select('id, name, lang');
+            $mod_video_category->addWhere("parent_id != '0'");
+            $mod_video_category->all();
+            $this->tema->setGlobal('video_embed_categories', $mod_video_category->toArray());
+        } else {
+            $this->tema->setGlobal('video_embed_categories', []);
+        }
         
         // $this->tema->tpl('management/index');
     }

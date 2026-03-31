@@ -71,15 +71,15 @@
 
     <div class="wizard-content">
         <input type="hidden" name="add" value="{{ lang.mod_page.button.add }}">
-        <input type="hidden" name="wizard_step" id="pageWizardStepInput" value="{{ wizard_step|default(1) }}">
+        <input type="hidden" name="wizard_step" id="pageWizardStepInput" value="{{ wizard_step is defined ? wizard_step : 1 }}">
 
         <div class="wizard-step active" id="pageWizardStep1">
             <h2 class="step-headline">{{ lang.mod_page.admin.columns.language }}</h2>
             <p class="step-subhead">Choose the language before building the page tree and related options.</p>
-            <input type="hidden" name="lang" id="pageWizardHiddenLang" value="{{ selected_lang|default(site.lang)|lower }}">
+            <input type="hidden" name="lang" id="pageWizardHiddenLang" value="{{ (selected_lang is defined ? selected_lang : site.lang)|lower }}">
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                    <div class="selection-card{% if selected_lang|default(site.lang)|lower == item.seo|lower %} active{% endif %}" data-value="{{ item.seo|lower }}" onclick="selectPageWizardLang(this, '{{ item.seo|lower }}')">
+                    <div class="selection-card{% if (selected_lang is defined ? selected_lang : site.lang)|lower == item.seo|lower %} active{% endif %}" data-value="{{ item.seo|lower }}" onclick="selectPageWizardLang(this, '{{ item.seo|lower }}')">
                         <div class="selection-icon">{{ item.seo|upper }}</div>
                         <div class="selection-label">{{ item.name }}</div>
                         <i class="bi bi-check-circle-fill check-icon"></i>
@@ -95,7 +95,7 @@
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="parent_id" id="pageWizardParentId">
                     <option value="0">{{ lang.mod_page.choose_wish }}</option>
-                    {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, 0, parent_id|default(0)) }}
+                    {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, 0, parent_id is defined ? parent_id : 0) }}
                 </select>
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.parent_id }}</label>
             </div>
@@ -112,7 +112,7 @@
                     data-picker-lang-source="pageWizardHiddenLang"
                 >
                     <option value="0">{{ lang.mod_page.choose_wish }}</option>
-                    {{ _self.select_nested_category_id_function(select_nested_category_id_result, 0, 0, category_id|default(0)) }}
+                    {{ _self.select_nested_category_id_function(select_nested_category_id_result, 0, 0, category_id is defined ? category_id : 0) }}
                 </select>
                 <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="pageWizardCategoryId">
                     <span class="select-picker-label">{{ lang.mod_page.choose_wish }}</span>
@@ -123,7 +123,7 @@
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="menu" id="pageWizardMenuId">
                     <option value="0">{{ lang.mod_page.choose_wish }}</option>
-                    {{ _self.select_nested_menu_function(select_nested_menu_result, 0, 0, menu|default(0)) }}
+                    {{ _self.select_nested_menu_function(select_nested_menu_result, 0, 0, menu is defined ? menu : 0) }}
                 </select>
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu }}</label>
             </div>
@@ -134,7 +134,7 @@
             <p class="step-subhead">Define the page name that will drive the primary page identity.</p>
 
             <div class="input-wrapper-lg">
-                <input type="text" class="m3-input-lg" name="name" id="pageWizardNameInput" value="{{ name|default('') }}" placeholder=" " autocomplete="off" maxlength="255">
+                <input type="text" class="m3-input-lg" name="name" id="pageWizardNameInput" value="{{ name is defined ? name : '' }}" placeholder=" " autocomplete="off" maxlength="255">
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.name }}</label>
             </div>
             <div class="char-counter" id="pageWizardNameCounter">0 / 255</div>
@@ -145,7 +145,7 @@
             <p class="step-subhead">Write the short intro/deck text shown ahead of the page body.</p>
 
             <div class="input-wrapper-lg">
-                <textarea class="m3-input-lg" name="summary" id="pageWizardSummaryInput" rows="5" placeholder=" " maxlength="280">{{ summary|default('') }}</textarea>
+                <textarea class="m3-input-lg" name="summary" id="pageWizardSummaryInput" rows="5" placeholder=" " maxlength="280">{{ summary is defined ? summary : '' }}</textarea>
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.summary }}</label>
             </div>
             <div class="char-counter" id="pageWizardSummaryCounter">0 / 280</div>
@@ -156,7 +156,7 @@
             <p class="step-subhead">Compose the actual page body.</p>
 
             <div class="mod-page-wizard-editor-wrap">
-                <textarea name="content" id="pageWizardContentTextarea">{{ content|default('') }}</textarea>
+                <textarea name="content" id="pageWizardContentTextarea">{{ content is defined ? content : '' }}</textarea>
             </div>
         </div>
 
@@ -164,7 +164,7 @@
             <h2 class="step-headline">Display</h2>
             <p class="step-subhead">Define structural display behavior for the page.</p>
 
-            <input type="hidden" name="root" value="{{ root|default('n') }}" id="pageWizardRootSelect">
+            <input type="hidden" name="root" value="{{ root is defined ? root : 'n' }}" id="pageWizardRootSelect">
             <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.root }}</label>
             <div class="selection-grid" id="pageWizardRootGrid">
                 <div class="selection-card{% if root is defined and root == 'y' %} active{% endif %}" data-value="y" onclick="selectPageWizardRoot(this, 'y')">
@@ -179,7 +179,7 @@
                 </div>
             </div>
 
-            <input type="hidden" name="deck" value="{{ deck|default('n') }}" id="pageWizardDeckSelect">
+            <input type="hidden" name="deck" value="{{ deck is defined ? deck : 'n' }}" id="pageWizardDeckSelect">
             <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.deck }}</label>
             <div class="selection-grid" id="pageWizardDeckGrid">
                 <div class="selection-card{% if deck is defined and deck == 'y' %} active{% endif %}" data-value="y" onclick="selectPageWizardDeck(this, 'y')">
@@ -232,7 +232,7 @@
             <img id="pageWizardImgPreview" class="wizard-img-preview mod-page-wizard-preview-hidden" alt="">
             <div class="image-upload-area interactive" onclick="document.getElementById('pageWizardImgInput').click()">
                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                <p>{{ lang.mod_page.button.upload|default('Choose Image') }}</p>
+                <p>{{ lang.mod_page.button.upload }}</p>
                 <input type="file" name="image" id="pageWizardImgInput" hidden onchange="previewPageWizardImage(this)">
             </div>
         </div>
@@ -241,35 +241,35 @@
             <h2 class="step-headline">SEO & Finish</h2>
             <p class="step-subhead">Review SEO values, choose publish status, and finish the page setup.</p>
 
-            <input type="hidden" name="status" value="{{ status|default('y') }}" id="pageWizardStatusHidden">
+            <input type="hidden" name="status" value="{{ status is defined ? status : 'y' }}" id="pageWizardStatusHidden">
 
             <div class="input-wrapper-lg">
-                <input type="text" class="m3-input-lg" name="seo" id="pageWizardSeoInput" value="{{ seo|default('') }}" placeholder=" ">
+                <input type="text" class="m3-input-lg" name="seo" id="pageWizardSeoInput" value="{{ seo is defined ? seo : '' }}" placeholder=" ">
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.seo }}</label>
             </div>
 
             <div class="input-wrapper-lg">
-                <input type="text" class="m3-input-lg" name="title" id="pageWizardTitleInput" value="{{ title|default('') }}" placeholder=" ">
+                <input type="text" class="m3-input-lg" name="title" id="pageWizardTitleInput" value="{{ title is defined ? title : '' }}" placeholder=" ">
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.title }}</label>
             </div>
 
             <div class="input-wrapper-lg">
-                <input type="text" class="m3-input-lg" name="keywords" id="pageWizardKeywordsInput" value="{{ keywords|default('') }}" placeholder=" ">
+                <input type="text" class="m3-input-lg" name="keywords" id="pageWizardKeywordsInput" value="{{ keywords is defined ? keywords : '' }}" placeholder=" ">
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.keywords }}</label>
             </div>
 
             <div class="input-wrapper-lg">
-                <input type="text" class="m3-input-lg" name="description" id="pageWizardDescriptionInput" value="{{ description|default('') }}" placeholder=" ">
+                <input type="text" class="m3-input-lg" name="description" id="pageWizardDescriptionInput" value="{{ description is defined ? description : '' }}" placeholder=" ">
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.description }}</label>
             </div>
 
             <div class="wizard-summary">
                 <h3>Page Summary</h3>
                 <div class="summary-item">
-                    <i class="bi bi-translate"></i> <span id="pageWizardSummaryLang">{{ selected_lang|default(site.lang)|upper }}</span>
+                    <i class="bi bi-translate"></i> <span id="pageWizardSummaryLang">{{ (selected_lang is defined ? selected_lang : site.lang)|upper }}</span>
                 </div>
                 <div class="summary-item">
-                    <i class="bi bi-file-earmark-text"></i> <span id="pageWizardSummaryName">{{ name|default(lang.mod_page.choose_wish) }}</span>
+                    <i class="bi bi-file-earmark-text"></i> <span id="pageWizardSummaryName">{{ name is defined ? name : lang.mod_page.choose_wish }}</span>
                 </div>
                 <div class="summary-item">
                     <i class="bi bi-folder"></i> <span id="pageWizardSummaryCategory">{{ lang.mod_page.choose_wish }}</span>

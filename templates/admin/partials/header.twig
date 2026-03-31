@@ -1,7 +1,7 @@
 <!-- TOP APP BAR -->
 <header class="top-app-bar top-app-bar-default">
     <button class="icon-btn" onclick="toggleDrawer()"><i class="bi bi-list" style="font-size:24px;"></i></button>
-    <div class="headline">{{ page_headline|default(site.title)|raw }}</div>
+    <div class="headline">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
     <div class="user-menu-wrapper" style="position: relative; display: inline-flex; justify-content: center; align-items: center; padding-right: 4px;">
         <div class="avatar-small" style="cursor:pointer;" onclick="openUserMenuSheet()" title="User Menu">
             {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
@@ -102,35 +102,35 @@
         {% if session.permissions.mod_user.list is defined %}
         <a href="{{ site.sadres }}mod_user/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-people"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.list|default('User List') }}</span>
+            <span class="context-action-label">{{ lang.mod_user.admin.list }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_user_group.list is defined %}
         <a href="{{ site.sadres }}mod_user_group/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-collection"></i></div>
-            <span class="context-action-label">{{ lang.mod_user_group.admin.list|default('User Groups') }}</span>
+            <span class="context-action-label">{{ lang.mod_user_group.admin.list }}</span>
         </a>
         {% endif %}
 
         {% if session.permissions.mod_user.acl is defined %}
         <a href="{{ site.sadres }}mod_user/acl" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-shield-lock"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.acl|default('User ACL') }}</span>
+            <span class="context-action-label">{{ lang.mod_user.admin.acl }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_acl.list is defined %}
         <a href="{{ site.sadres }}mod_acl/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-shield-check"></i></div>
-            <span class="context-action-label">{{ lang.mod_acl.admin.list|default('System ACL') }}</span>
+            <span class="context-action-label">{{ lang.mod_acl.admin.list }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_user.setting is defined %}
         <a href="{{ site.sadres }}mod_user/settings" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-person-gear"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.settings|default('User Module Settings') }}</span>
+            <span class="context-action-label">{{ lang.mod_user.admin.settings }}</span>
         </a>
         {% endif %}
         
@@ -141,7 +141,7 @@
         </a>
         <a href="{{ site.sadres }}mod_settings/edit" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-sliders"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.site_settings|default('System Settings') }}</span>
+            <span class="context-action-label">{{ lang.mod_user.admin.site_settings }}</span>
         </a>
         {% endif %}
     </div>
@@ -149,9 +149,10 @@
 
 <!-- TOP APP BAR (CONTEXTUAL) -->
 {% if hide_contextual_bar is not defined or not hide_contextual_bar %}
+{% set selection_lang = attribute(lang, active_module_lang_key) %}
 <header class="top-app-bar top-app-bar-contextual">
     <button class="icon-btn" onclick="exitSelectionMode()"><i class="bi bi-x-lg"></i></button>
-    <div class="headline" id="selectionCount">0 {{ lang.mod_content.ui.record_selected }}</div>
+    <div class="headline" id="selectionCount">0 {{ selection_lang.ui.record_selected }}</div>
     <button class="icon-btn"><i class="bi bi-trash3"></i></button>
     <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
 </header>
@@ -163,7 +164,7 @@
 <div class="search-row" style="display: flex !important;">
     <div class="search-bar-container">
         <i class="bi bi-search search-icon"></i>
-        <input type="text" class="search-input" id="searchInput" placeholder="{{ search_placeholder|default(lang.mod_user.panel.search_placeholder)|default('Li vir bigere...') }}" autocomplete="off">
+        <input type="text" class="search-input" id="searchInput" placeholder="{{ search_placeholder is defined ? search_placeholder : lang.mod_user.panel.search_placeholder }}" autocomplete="off">
         <button id="clearSearchBtn" onclick="clearSearch()">
             <i class="bi bi-x-circle-fill"></i>
         </button>

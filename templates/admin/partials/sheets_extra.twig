@@ -1,6 +1,5 @@
 
-{% set wizard_lang_key = wizard_module is defined ? wizard_module : 'mod_content' %}
-{% set wizard_lang = attribute(lang, wizard_lang_key) %}
+{% set wizard_lang = attribute(lang, active_module_lang_key) %}
 
 <style>
 /* FORCE SCROLL BEHAVIOR FOR LANG SHEET - FIXED */
@@ -304,8 +303,8 @@
     <div class="sheet-handle-bar"></div>
 
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 style="margin: 0; font-size: 20px;">{{ lang.mod_content.sheet.lang_title }}</h3>
-        <button onclick="confirmLangSelection()" class="m3-btn-text" style="font-weight: 700;">{{ lang.mod_content.sheet.ok }}</button>
+        <h3 style="margin: 0; font-size: 20px;">{{ wizard_lang.sheet.lang_title }}</h3>
+        <button onclick="confirmLangSelection()" class="m3-btn-text" style="font-weight: 700;">{{ wizard_lang.sheet.ok }}</button>
     </div>
 
     <div class="sheet-content-scrollable" style="flex: 1; overflow-y: auto; padding-bottom: 32px;">
@@ -370,7 +369,7 @@
 <div class="overlay" id="wizard-cat-overlay" onclick="toggleWizardCategorySheet()"></div>
 <div class="bottom-sheet" id="wizard-cat-sheet">
     <div class="sheet-handle-bar"></div>
-    <h3 style="margin: 0 0 16px 0;">{{ lang.mod_content.sheet.category_title }}</h3>
+    <h3 style="margin: 0 0 16px 0;">{{ wizard_lang.sheet.category_title }}</h3>
     <div class="category-sheet-meta">
         <div class="category-sheet-pill">
             <i class="bi bi-translate"></i>
@@ -385,7 +384,7 @@
         type="search"
         id="wizardCategorySearchInput"
         class="category-sheet-search"
-        placeholder="{{ wizard_lang.ui.search|default('Search') }}"
+        placeholder="{{ wizard_lang.ui.search }}"
         autocomplete="off"
         oninput="filterWizardCategorySheet()"
     >
@@ -444,8 +443,8 @@
 <div class="bottom-sheet" id="select-picker-sheet">
     <div class="sheet-handle-bar"></div>
     <div class="select-picker-title-row">
-        <h3 id="selectPickerTitle" style="margin: 0;">{{ lang.mod_content.sheet.category_title }}</h3>
-        <button type="button" class="m3-btn-text" onclick="closeSelectPickerSheet()">{{ wizard_lang.context_menu.cancel|default('Cancel') }}</button>
+        <h3 id="selectPickerTitle" style="margin: 0;">{{ wizard_lang.sheet.category_title }}</h3>
+        <button type="button" class="m3-btn-text" onclick="closeSelectPickerSheet()">{{ wizard_lang.context_menu.cancel }}</button>
     </div>
     <div class="select-picker-meta">
         <div class="select-picker-pill">
@@ -461,7 +460,7 @@
         type="search"
         id="selectPickerSearchInput"
         class="select-picker-search"
-        placeholder="{{ wizard_lang.ui.search|default('Search') }}"
+        placeholder="{{ wizard_lang.ui.search }}"
         autocomplete="off"
         oninput="filterSelectPickerSheet()"
     >
