@@ -58,6 +58,7 @@
 
                     {% if item.published_ago is not empty %}
                         <span class="hero-slide__timestamp">
+                            <i class="bi bi-clock"></i>
                             {{ item.published_ago }}
                         </span>
                     {% endif %}
@@ -76,12 +77,6 @@
                     <h3 class="hero-slide__title">
                         <a href="{{ item.detail_url }}">{{ item.name }}</a>
                     </h3>
-
-                    {% if item.summary is not empty %}
-                        <p class="hero-slide__summary d-none d-md-block">
-                            {{ item.summary|striptags|slice(0, 160) }}{% if item.summary|striptags|length > 160 %}...{% endif %}
-                        </p>
-                    {% endif %}
 
                     <div class="hero-slide__meta">
                         <div class="hero-slide__author">

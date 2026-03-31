@@ -130,6 +130,7 @@
 .hero-slide__timestamp {
     display: inline-flex;
     align-items: center;
+    gap: 0.35rem;
     width: fit-content;
     padding: 0.3rem 0.9rem;
     font-size: 0.7rem;
@@ -141,6 +142,11 @@
     border: 1px solid rgba(255, 248, 235, 0.14);
     border-radius: 0;
     font-family: var(--bs-font-sans-serif);
+}
+
+.hero-slide__timestamp i {
+    font-size: 0.72rem;
+    line-height: 1;
 }
 
 /* Title */
