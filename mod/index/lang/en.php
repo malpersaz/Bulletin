@@ -288,6 +288,16 @@ $lang['index']['template'] = [
     'in_use' => 'Currently In Use'
 ];
 
+# hero_slider
+$lang['index']['hero_slider'] = [
+    'title' => 'Featured Stories',
+    'go_to_slide' => 'Go to slide %s',
+    'previous_slide' => 'Previous slide',
+    'next_slide' => 'Next slide',
+    'no_items' => 'No featured items available.',
+    'read_more' => 'Read More',
+];
+
 $lang['index']['mod_news'] = [
     '1' => '%s ',
     '2' => 'All News',

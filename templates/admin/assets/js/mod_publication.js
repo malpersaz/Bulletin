@@ -19,6 +19,7 @@ class ContentManager {
         this.isLoading = false;
         this.hasMore = true;
         this.selectedContentId = null;
+        this.selectedInHeroSlider = false;
         this.imageUploadContentId = null;
         this.imageUploader = null;
         this.imageUploaderBound = false;
@@ -88,6 +89,9 @@ class ContentManager {
             this.container.innerHTML = '';
             this.hasMore = true;
             this.draw = 1;
+            this.selectedContentId = null;
+            this.selectedInHeroSlider = false;
+            this.updateToolbar(false);
             this.emptyState.style.display = 'none';
             this.loader.style.display = 'flex';
             if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
@@ -179,6 +183,7 @@ class ContentManager {
             const categoryId = item[7] || 0;
             const statusRaw = item[8] || 'n';
             const authorName = this.stripHtml(item[9] || '');
+            const inHeroSlider = String(item[10] || '0') === '1';
 
             // Extract Text Title
             const tempDiv = document.createElement('div');
@@ -196,6 +201,7 @@ class ContentManager {
             card.dataset.id = id;
             card.dataset.imageSrc = imgSrc || '';
             card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : '';
+            card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
             card.onclick = () => window.contentManager.selectContent(id, card);
 
             // Status Logic
@@ -218,6 +224,7 @@ class ContentManager {
             const safeLang = this.escapeHtml(lang);
             const safeDate = this.escapeHtml(date);
             const safeAuthorName = this.escapeHtml(authorName);
+            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.slider_badge || 'Slider');
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
@@ -230,6 +237,10 @@ class ContentManager {
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
                                 <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
+                                    <span class="hero-slider-badge" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'} align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:rgba(255,193,7,0.18); color:#8a5a00; font-weight:700;">
+                                        <i class="bi bi-stars"></i> ${safeSliderBadge}
+                                    </span>
+                                    <span class="hero-slider-dot" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'}">•</span>
                                     <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
                                     <span>•</span>
                                     <span>${safeCategoryName}</span>
@@ -643,16 +654,18 @@ class ContentManager {
         if (!isCurrent) {
             cardElement.classList.add('selected');
             this.selectedContentId = id;
+            this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
             this.updateToolbar(true);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         } else {
             this.selectedContentId = null;
+            this.selectedInHeroSlider = false;
             this.updateToolbar(false);
         }
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete'];
+        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -666,6 +679,77 @@ class ContentManager {
                 btn.style.opacity = '0.3';
             }
         });
+        this.syncSliderToolbarState(active);
+    }
+
+    syncSliderToolbarState(active) {
+        const sliderBtn = document.getElementById('toolbarSlider');
+        if (!sliderBtn) return;
+
+        const label = active && this.selectedInHeroSlider
+            ? (CONTENT_LANG.slider_remove || 'Remove from Slider')
+            : (CONTENT_LANG.slider_add || 'Send to Slider');
+        const labelEl = document.getElementById('toolbarSliderLabel');
+
+        sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
+        sliderBtn.title = label;
+        sliderBtn.setAttribute('aria-label', label);
+        if (labelEl) {
+            labelEl.textContent = label;
+        }
+    }
+
+    getSelectedCard() {
+        if (!this.selectedContentId) return null;
+        return document.querySelector(`.content-card[data-id="${this.selectedContentId}"]`);
+    }
+
+    applyHeroSliderState(card, inHeroSlider) {
+        if (!card) return;
+
+        card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
+        const badge = card.querySelector('.hero-slider-badge');
+        const dot = card.querySelector('.hero-slider-dot');
+
+        if (badge) {
+            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+        if (dot) {
+            dot.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+    }
+
+    async toggleHeroSlider() {
+        if (!this.selectedContentId) return;
+
+        const currentId = this.selectedContentId;
+        const formData = new URLSearchParams();
+        formData.append('id', currentId);
+
+        try {
+            const response = await fetch(`${MODULE_URL}toggle_hero_slider`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || CONTENT_LANG.slider_error, 'error');
+                return;
+            }
+
+            this.selectedInHeroSlider = Boolean(result.in_hero_slider);
+            this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
+            this.syncSliderToolbarState(true);
+            showSnackbar(
+                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.slider_added : CONTENT_LANG.slider_removed),
+                'success'
+            );
+        } catch (error) {
+            console.error('Hero slider toggle error:', error);
+            showSnackbar(CONTENT_LANG.slider_error, 'error');
+        }
     }
 }
 
@@ -741,6 +825,13 @@ window.deleteSelected = function () {
                 });
         }
     });
+};
+
+window.sliderSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        mgr.toggleHeroSlider();
+    }
 };
 
 // Helper for Context Menu Actions (Global scope for onclicks)

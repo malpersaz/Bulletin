@@ -1,3 +1,8 @@
+---
+name: lang-refactor
+description: Refactor repository language keys by replacing numeric or non-English keys in en.php files with descriptive English keys and propagating updates safely across the codebase.
+---
+
 # Language Key Refactoring Skill
 
 This skill provides a systematic approach to refactoring language keys across the repository, specifically focusing on the English (`en.php`) language layer as the primary reference.

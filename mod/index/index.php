@@ -227,6 +227,13 @@ class index_mod extends indexBase
         $t->ctx_set('slider', $result);
     }
 
+    public function _hero_slider($t, $limit)
+    {
+        $slider = Load::helper("index.mod_hero_slider");
+        $result = $slider->hero_slider($limit);
+        $t->ctx_set('hero_slider', $result);
+    }
+
 
     public function _latest_content($t, $limit, $select)
     {

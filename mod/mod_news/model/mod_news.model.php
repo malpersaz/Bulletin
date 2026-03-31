@@ -9,6 +9,7 @@ class mod_news_model extends ORM
         public $name;
         public $category_id;
         public $status;
+        public $slider;
         public $created_at;
         public $updated_at;
         public $deck;

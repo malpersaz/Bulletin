@@ -174,6 +174,11 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_slider", "enson_slider", [$limit]);
     }
 
+    public function _hero_slider($limit)
+    {
+        return $this->_loadHelper("index.mod_hero_slider", "hero_slider", [$limit]);
+    }
+
     // Menu Management
     public function _menu()
     {

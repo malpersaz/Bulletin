@@ -25,6 +25,14 @@
     .news-toolbar #toolbarDelete.active i {
         filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
     }
+    .news-toolbar #toolbarSlider.active {
+        color: #8a5a00 !important;
+        background: rgba(255, 193, 7, 0.16);
+    }
+    .news-toolbar #toolbarSlider.is-selected {
+        color: #8a5a00 !important;
+        background: rgba(255, 193, 7, 0.22);
+    }
     .news-image-modal {
         position: fixed;
         inset: 0;
@@ -306,6 +314,10 @@
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
         </button>
+
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.hero_slider_add|default('Send to Slider') }}">
+            <i class="bi bi-stars"></i>
+        </button>
         
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-image"></i>
@@ -359,11 +371,17 @@
         image_remove_confirm_text: "{{ lang.mod_news.button.yes|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_news.button.cancel|e('js') }}",
         image_remove_success: "{{ lang.mod_news.remove_image_oke|e('js') }}",
+        slider_add: "{{ lang.mod_news.hero_slider_add|default('Send to Slider')|e('js') }}",
+        slider_remove: "{{ lang.mod_news.hero_slider_remove|default('Remove from Slider')|e('js') }}",
+        slider_added: "{{ lang.mod_news.hero_slider_added|default('Sent to slider.')|e('js') }}",
+        slider_removed: "{{ lang.mod_news.hero_slider_removed|default('Removed from slider.')|e('js') }}",
+        slider_error: "{{ lang.mod_news.hero_slider_error|default('Slider update failed.')|e('js') }}",
+        slider_badge: "{{ lang.mod_news.hero_slider_badge|default('Slider')|e('js') }}",
         loading: "{{ lang.mod_news.grid[104]|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_news.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.2"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.3"></script>
 {% endblock %}

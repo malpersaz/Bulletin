@@ -942,10 +942,14 @@ class mod_news_mod extends indexMain
         
         // Collect user IDs
         $user_ids = [];
+        $record_ids = [];
         
         $records = $i->toArray();
         if (is_array($records)) {
             foreach ($records as $item) {
+                if (isset($item['id']) && $item['id'] > 0) {
+                    $record_ids[] = $item['id'];
+                }
                 if (isset($item['user_id']) && $item['user_id'] > 0) {
                     $user_ids[] = $item['user_id'];
                 }
@@ -963,6 +967,21 @@ class mod_news_mod extends indexMain
             if ($user_model->getSize() > 0) {
                 foreach ($user_model->toArray() as $u) {
                     $user_map[$u['id']] = $u['name'] . ' ' . $u['last_name'];
+                }
+            }
+        }
+
+        $has_slider_column = $this->_hasSliderColumn('mod_news');
+        $hero_slider_map = [];
+        if ($has_slider_column && !empty($record_ids)) {
+            $slider_lookup = Load::model('mod_news');
+            $slider_lookup->select('id, slider');
+            $slider_lookup->addWhere("id IN (" . implode(',', array_map('intval', array_unique($record_ids))) . ")");
+            $slider_lookup->gR();
+            $slider_rows = $slider_lookup->toArray();
+            if (is_array($slider_rows)) {
+                foreach ($slider_rows as $slider_row) {
+                    $hero_slider_map[(int) $slider_row['id']] = isset($slider_row['slider']) && $slider_row['slider'] === 'y';
                 }
             }
         }
@@ -1015,7 +1034,8 @@ class mod_news_mod extends indexMain
                     $last,
                     $content['category_id'], // 7: Category ID
                     $content['status'],       // 8: Status (y/n)
-                    $author_name             // 9: Author Name
+                    $author_name,            // 9: Author Name
+                    isset($hero_slider_map[(int) $content['id']]) ? 1 : 0
                 ];
             }
         }
@@ -1028,6 +1048,65 @@ class mod_news_mod extends indexMain
             'recordsFiltered' => $getCount,
             'recordsTotal' => $totalModel->getCount(),
         ]);
+    }
+
+    public function toggle_hero_slider()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if (!$this->_hasSliderColumn('mod_news')) {
+            echo json_encode(['status' => 'error', 'message' => 'Slider column is not installed yet.']);
+            return;
+        }
+
+        if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        if ($id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
+            return;
+        }
+
+        $news_model = Load::model('mod_news');
+        $news_model->where_id($id)->gRo();
+        if ($news_model->getSize() === 0) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
+            return;
+        }
+
+        $record = $news_model->toArray();
+        if ($this->user->checkPermission('mod_news', 'moderate_edit', $record['user_id'], $this->lang['mod_news']['role_errors']['moderate_edit'], 1) === False) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['moderate_edit']]);
+            return;
+        }
+
+        $new_slider_state = (isset($record['slider']) && $record['slider'] === 'y') ? 'n' : 'y';
+        $news_model->id = $id;
+        $news_model->slider = $new_slider_state;
+
+        if ($news_model->update('id')) {
+            echo json_encode([
+                'status' => 'success',
+                'in_hero_slider' => $new_slider_state === 'y',
+                'message' => $new_slider_state === 'y' ? 'Sent to slider.' : 'Removed from slider.'
+            ]);
+            return;
+        }
+
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Slider update failed.'
+        ]);
+    }
+
+    private function _hasSliderColumn($table)
+    {
+        $this->db->fetch_array("SHOW COLUMNS FROM `" . $table . "` LIKE 'slider'");
+        $result = $this->db->getResult()->toArray();
+        return is_array($result) && !empty($result);
     }
 
     // Approve Page

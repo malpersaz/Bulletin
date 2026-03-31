@@ -1,0 +1,173 @@
+{{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
+{% set hero_slider = ctx_get('hero_slider') %}
+
+{% if hero_slider and hero_slider|length > 0 %}
+<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
+<style>
+    .hero-slider-shell {
+        height: 100%;
+    }
+    .hero-slide__hitbox {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+    }
+    .hero-slide__content {
+        z-index: 3;
+    }
+    .hero-slide__content a,
+    .hero-slider__thumb {
+        position: relative;
+        z-index: 4;
+    }
+    @media (min-width: 768px) {
+        .hero-news-slider {
+            margin-bottom: 0;
+            border-radius: 18px;
+        }
+    }
+</style>
+
+<section id="heroNewsSlider" class="hero-news-slider hero-slider-shell" aria-label="{{ lang.index.hero_slider.title|default('Featured Stories') }}">
+    <div class="swiper hero-news-swiper">
+        <div class="swiper-wrapper">
+            {% for item in hero_slider %}
+            <div class="swiper-slide hero-slide" data-slide-index="{{ loop.index0 }}">
+                <a class="hero-slide__hitbox" href="{{ item.detail_url }}" aria-label="{{ item.name }}"></a>
+
+                <div class="hero-slide__image">
+                    {% if item.image_url is not empty %}
+                        <img src="{{ item.image_url }}"
+                             alt="{{ item.name }}"
+                             loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                             fetchpriority="{{ loop.first ? 'high' : 'auto' }}">
+                    {% else %}
+                        <img src="{{ site.radres }}mod_settings/logo.png"
+                             alt="{{ item.name }}"
+                             loading="lazy">
+                    {% endif %}
+                </div>
+
+                <div class="hero-slide__overlay"></div>
+
+                <div class="hero-slide__content">
+                    {% if item.category_name is not empty and item.category_url is not empty %}
+                        <a href="{{ item.category_url }}" class="hero-slide__category">
+                            {{ item.category_name }}
+                        </a>
+                    {% endif %}
+
+                    <h3 class="hero-slide__title">
+                        <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                    </h3>
+
+                    {% if item.summary is not empty %}
+                        <p class="hero-slide__summary d-none d-md-block">
+                            {{ item.summary|striptags|slice(0, 160) }}{% if item.summary|striptags|length > 160 %}...{% endif %}
+                        </p>
+                    {% endif %}
+
+                    <div class="hero-slide__meta">
+                        <div class="hero-slide__author">
+                            <span class="hero-slide__avatar">
+                                {% if item.author_image_url is not empty %}
+                                    <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
+                                {% else %}
+                                    <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                {% endif %}
+                            </span>
+                            <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                        </div>
+                        {% if item.created_at is not empty %}
+                            <time class="hero-slide__time" datetime="{{ item.created_at|date('c') }}">
+                                <i class="bi bi-clock me-1"></i>{{ item.published_ago }}
+                            </time>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide|default('Previous slide') }}">
+            <i class="bi bi-chevron-left"></i>
+        </div>
+        <div class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide|default('Next slide') }}">
+            <i class="bi bi-chevron-right"></i>
+        </div>
+        <div class="hero-news-swiper-pagination"></div>
+    </div>
+
+    {% if hero_slider|length > 1 %}
+    <div class="hero-slider__thumbs d-none d-lg-block">
+        <div class="container">
+            <div class="hero-slider__thumb-row">
+                {% for item in hero_slider %}
+                <button class="hero-slider__thumb{{ loop.first ? ' hero-slider__thumb--active' : '' }}"
+                        data-slide="{{ loop.index0 }}"
+                        aria-label="{{ lang.index.hero_slider.go_to_slide|default('Go to slide %s')|format(loop.index) }}">
+                    <span class="hero-slider__thumb-img">
+                        {% if item.thumb_url is not empty %}
+                            <img src="{{ item.thumb_url }}" alt="{{ item.name }}" loading="lazy">
+                        {% endif %}
+                    </span>
+                    <span class="hero-slider__thumb-title">{{ item.name|slice(0, 50) }}{% if item.name|length > 50 %}...{% endif %}</span>
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var heroSwiperEl = document.querySelector('.hero-news-swiper');
+    if (!heroSwiperEl) return;
+
+    var heroSwiper = new Swiper('.hero-news-swiper', {
+        loop: true,
+        speed: 800,
+        effect: 'fade',
+        fadeEffect: {
+            crossFade: true
+        },
+        autoplay: {
+            delay: 6000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+        },
+        pagination: {
+            el: '.hero-news-swiper-pagination',
+            clickable: true,
+            dynamicBullets: true
+        },
+        navigation: {
+            nextEl: '.hero-news-swiper-button-next',
+            prevEl: '.hero-news-swiper-button-prev'
+        },
+        on: {
+            slideChange: function() {
+                var thumbs = document.querySelectorAll('.hero-slider__thumb');
+                if (!thumbs.length) return;
+
+                thumbs.forEach(function(thumb) {
+                    thumb.classList.remove('hero-slider__thumb--active');
+                });
+
+                if (thumbs[this.realIndex]) {
+                    thumbs[this.realIndex].classList.add('hero-slider__thumb--active');
+                }
+            }
+        }
+    });
+
+    document.querySelectorAll('.hero-slider__thumb').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var slideIndex = parseInt(this.getAttribute('data-slide'), 10);
+            heroSwiper.slideToLoop(slideIndex);
+        });
+    });
+});
+</script>
+{% endif %}

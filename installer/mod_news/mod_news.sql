@@ -4,6 +4,7 @@ CREATE TABLE  `mod_news` (
 `name` VARCHAR(255)  NOT NULL ,
 `category_id` INT(11)  NOT NULL ,
 `status` ENUM( 'y', 'n' ) NOT NULL DEFAULT 'y' ,
+`slider` ENUM( 'y', 'n' ) NOT NULL DEFAULT 'n' ,
 `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `updated_at` DATETIME NULL DEFAULT NULL,
 `deck` ENUM(  'y',  'n' ) NOT NULL DEFAULT 'n' ,

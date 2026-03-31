@@ -4,6 +4,7 @@ SELECT
   mod_publication.name,
   mod_publication.created_at,
   mod_publication.status,
+  mod_publication.slider,
   mod_publication.content,
   mod_publication.summary,
   mod_publication.seo,

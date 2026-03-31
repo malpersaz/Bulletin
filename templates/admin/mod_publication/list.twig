@@ -10,6 +10,14 @@
 
 {% block styles %}
 <style>
+    .standard-toolbar #toolbarSlider.active {
+        color: #8a5a00 !important;
+        background: rgba(255, 193, 7, 0.16);
+    }
+    .standard-toolbar #toolbarSlider.is-selected {
+        color: #8a5a00 !important;
+        background: rgba(255, 193, 7, 0.22);
+    }
     .news-image-modal {
         position: fixed;
         inset: 0;
@@ -269,6 +277,11 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.hero_slider_add|default('Send to Slider') }}">
+            <i class="bi bi-stars"></i>
+            <span id="toolbarSliderLabel">{{ lang.mod_publication.hero_slider_add|default('Send to Slider') }}</span>
+        </button>
+
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_publication.button.edit }}</span>
@@ -327,11 +340,17 @@
         image_remove_confirm_text: "{{ lang.mod_publication.button.evet|default(lang.mod_publication.button.yes)|default('Yes')|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_publication.button.hayir|default(lang.mod_publication.button.no)|default('No')|e('js') }}",
         image_remove_success: "{{ lang.mod_publication.remove_image_oke|e('js') }}",
+        slider_add: "{{ lang.mod_publication.hero_slider_add|default('Send to Slider')|e('js') }}",
+        slider_remove: "{{ lang.mod_publication.hero_slider_remove|default('Remove from Slider')|e('js') }}",
+        slider_added: "{{ lang.mod_publication.hero_slider_added|default('Sent to slider.')|e('js') }}",
+        slider_removed: "{{ lang.mod_publication.hero_slider_removed|default('Removed from slider.')|e('js') }}",
+        slider_error: "{{ lang.mod_publication.hero_slider_error|default('Slider update failed.')|e('js') }}",
+        slider_badge: "{{ lang.mod_publication.hero_slider_badge|default('Slider')|e('js') }}",
         loading: "{{ lang.mod_publication.grid[104]|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_publication.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_publication.js?v=3.2"></script>
+<script src="/templates/admin/assets/js/mod_publication.js?v=3.3"></script>
 {% endblock %}

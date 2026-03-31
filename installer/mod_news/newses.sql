@@ -3,6 +3,7 @@ CREATE VIEW newses AS SELECT
     mod_news.name,
     mod_news.created_at,
     mod_news.status,
+    mod_news.slider,
     mod_news.content,
     mod_news.summary,
     mod_news.seo,
