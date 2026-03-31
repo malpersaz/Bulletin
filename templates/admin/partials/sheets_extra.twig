@@ -151,6 +151,151 @@
     opacity: 1;
     transform: scale(1);
 }
+
+#select-picker-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#select-picker-sheet .select-picker-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+#select-picker-sheet .select-picker-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#select-picker-sheet .select-picker-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#select-picker-sheet .select-picker-search {
+    width: 100%;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: 16px;
+    background: var(--md-sys-color-surface-container);
+    padding: 12px 14px;
+    color: var(--md-sys-color-on-surface);
+    font-size: 14px;
+    outline: none;
+}
+
+#select-picker-sheet .select-picker-search:focus {
+    border-color: var(--md-sys-color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
+}
+
+#select-picker-sheet .select-picker-list {
+    max-height: 400px;
+    overflow-y: auto;
+    margin: 0 -8px;
+    padding: 0 8px 8px;
+}
+
+#select-picker-sheet .select-picker-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: 18px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    background: var(--md-sys-color-surface);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color .18s ease, border-color .18s ease;
+}
+
+#select-picker-sheet .select-picker-item:hover {
+    background: var(--md-sys-color-surface-container);
+}
+
+#select-picker-sheet .select-picker-item.is-selected {
+    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface));
+    border-color: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+}
+
+#select-picker-sheet .select-picker-item-meta {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    background: var(--md-sys-color-surface-container-high);
+    color: var(--md-sys-color-primary);
+}
+
+#select-picker-sheet .select-picker-item-body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+}
+
+#select-picker-sheet .select-picker-item-title {
+    color: var(--md-sys-color-on-surface);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+#select-picker-sheet .select-picker-item-subtitle {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 12px;
+}
+
+#select-picker-sheet .select-picker-item-check {
+    color: var(--md-sys-color-primary);
+    font-size: 18px;
+    opacity: 0;
+    transform: scale(.8);
+    transition: opacity .18s ease, transform .18s ease;
+}
+
+#select-picker-sheet .select-picker-item.is-selected .select-picker-item-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#select-picker-sheet .select-picker-empty {
+    display: none;
+    padding: 32px 16px;
+    text-align: center;
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.select-picker-native {
+    display: none !important;
+}
+
+.select-picker-trigger {
+    width: 100%;
+}
+
+.select-picker-trigger .select-picker-label {
+    color: var(--md-sys-color-on-surface-variant);
+}
+
+.select-picker-trigger.has-value .select-picker-label {
+    color: var(--md-sys-color-on-surface);
+}
 </style>
 
 <!-- NEW: Full Language Selection Sheet -->
@@ -292,5 +437,37 @@
             <i class="bi bi-folder-x" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
             <p style="margin: 0; font-size: 14px;">{{ wizard_lang.wizard.messages.no_category_for_lang }}</p>
         </div>
+    </div>
+</div>
+
+<div class="overlay" id="select-picker-overlay" onclick="closeSelectPickerSheet()"></div>
+<div class="bottom-sheet" id="select-picker-sheet">
+    <div class="sheet-handle-bar"></div>
+    <div class="select-picker-title-row">
+        <h3 id="selectPickerTitle" style="margin: 0;">{{ lang.mod_content.sheet.category_title }}</h3>
+        <button type="button" class="m3-btn-text" onclick="closeSelectPickerSheet()">{{ wizard_lang.context_menu.cancel|default('Cancel') }}</button>
+    </div>
+    <div class="select-picker-meta">
+        <div class="select-picker-pill">
+            <i class="bi bi-translate"></i>
+            <span id="selectPickerActiveLang">{{ site.lang|upper }}</span>
+        </div>
+        <div class="select-picker-pill">
+            <i class="bi bi-grid"></i>
+            <span id="selectPickerVisibleCount">0</span>
+        </div>
+    </div>
+    <input
+        type="search"
+        id="selectPickerSearchInput"
+        class="select-picker-search"
+        placeholder="{{ wizard_lang.ui.search|default('Search') }}"
+        autocomplete="off"
+        oninput="filterSelectPickerSheet()"
+    >
+    <div class="select-picker-list" id="selectPickerList"></div>
+    <div id="selectPickerEmpty" class="select-picker-empty">
+        <i class="bi bi-search" style="font-size: 42px; display:block; margin-bottom:10px; opacity:.5;"></i>
+        <p style="margin: 0;">{{ wizard_lang.wizard.summary.selected_none }}</p>
     </div>
 </div>

@@ -39,7 +39,12 @@
             {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
                 <optgroup label="{{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
             {% else %}
-                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                <option
+                    value="{{ entry.id }}"
+                    {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
+                    data-trigger-label="{{ entry.name|e('html_attr') }}"
+                    {% if selected_id == entry.id %} selected="selected" {% endif %}
+                >
                     {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
                     {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
                 </option>
@@ -117,11 +122,23 @@
 
                 <div class="form-row">
                     <div class="m3-input-wrapper">
-                        <select class="m3-input-lg" name="category_id" id="category_id">
+                        <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.category_id }}</label>
+                        <select
+                            class="m3-input-lg select-picker-native"
+                            name="category_id"
+                            id="category_id"
+                            data-picker-sheet="category"
+                            data-picker-title="{{ lang.mod_page.admin.columns.category_id }}"
+                            data-picker-placeholder="{{ lang.mod_page.choose_wish }}"
+                            data-picker-lang-source="lang"
+                        >
                             <option value="0" {% if d.category_id == 0 %} selected {% endif %}>{{ lang.mod_page.choose_wish }}</option>
                             {{ _self.select_nested_category_id_function(select_nested_category_id_result, 0, d.category_id) }}
                         </select>
-                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.category_id }}</label>
+                        <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="category_id">
+                            <span class="select-picker-label">{{ lang.mod_page.choose_wish }}</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </div>
                     </div>
                 </div>
 			</div>
@@ -319,7 +336,7 @@
     window.MOD_PAGE_FORM = {
         mode: 'edit',
         tinyMceSelector: '#contentTextarea',
-        tomSelectIds: ['parent_id', 'category_id', 'menu', 'acl_id', 'gallery_id', 'file_id'],
+        tomSelectIds: ['parent_id', 'menu', 'acl_id', 'gallery_id', 'file_id'],
         resetSelectIds: ['parent_id', 'category_id', 'menu', 'gallery_id', 'file_id'],
         alerts: {
             errorMessage: {{ mesaj|default('')|json_encode|raw }},
@@ -344,5 +361,5 @@
         }{% else %}null{% endif %}
     };
 </script>
-<script src="/templates/admin/assets/js/mod_page.js?v=2"></script>
+<script src="/templates/admin/assets/js/mod_page.js?v=3"></script>
 {% endblock %}

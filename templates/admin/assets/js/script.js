@@ -960,6 +960,228 @@ function filterWizardCategorySheet() {
     syncWizardCategorySheet();
 }
 
+let activeSelectPickerId = null;
+
+function getPickerLanguageLabel(code) {
+    const normalized = String(code || '').toUpperCase();
+    const matched = Array.isArray(adminLang.languages)
+        ? adminLang.languages.find(item => item.code === normalized)
+        : null;
+
+    return matched?.name || normalized || adminLang.filter.default_lang;
+}
+
+function getSelectPickerLangCode(select) {
+    if (!select) return '';
+
+    const sourceId = select.dataset.pickerLangSource;
+    const source = sourceId ? document.getElementById(sourceId) : null;
+    const value = source ? (source.value || source.textContent || '') : '';
+    return String(value || '').trim().toUpperCase();
+}
+
+function getSelectPickerTrigger(selectId) {
+    return document.querySelector(`[data-picker-trigger-for="${selectId}"]`);
+}
+
+function updateSelectPickerTrigger(selectId) {
+    const select = document.getElementById(selectId);
+    const trigger = getSelectPickerTrigger(selectId);
+    if (!select || !trigger) return;
+
+    const label = trigger.querySelector('.select-picker-label') || trigger;
+    const selectedOption = select.options[select.selectedIndex];
+    const placeholder = select.dataset.pickerPlaceholder || adminLang.wizard.summary.selected_none;
+    const selectedValue = String(select.value || '0');
+    const text = selectedOption && selectedValue !== '0'
+        ? (selectedOption.dataset.triggerLabel || selectedOption.textContent || placeholder)
+        : placeholder;
+
+    label.textContent = text.trim();
+    trigger.classList.toggle('has-value', selectedValue !== '0');
+}
+
+function syncSelectPickerSelectionWithLang(select) {
+    if (!select || !select.dataset.pickerLangSource) return;
+
+    const selectedOption = select.options[select.selectedIndex];
+    const selectedLang = String(selectedOption?.dataset?.lang || '').toUpperCase();
+    const activeLang = getSelectPickerLangCode(select);
+
+    if (selectedLang && activeLang && selectedLang !== activeLang) {
+        select.value = '0';
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+    } else {
+        updateSelectPickerTrigger(select.id);
+    }
+}
+
+function renderSelectPickerOptions() {
+    const select = activeSelectPickerId ? document.getElementById(activeSelectPickerId) : null;
+    const list = document.getElementById('selectPickerList');
+    const empty = document.getElementById('selectPickerEmpty');
+    const count = document.getElementById('selectPickerVisibleCount');
+    const langEl = document.getElementById('selectPickerActiveLang');
+    const searchInput = document.getElementById('selectPickerSearchInput');
+
+    if (!select || !list) return;
+
+    const query = String(searchInput?.value || '').trim().toLocaleLowerCase();
+    const activeLang = getSelectPickerLangCode(select);
+    const options = Array.from(select.options);
+    let visibleCount = 0;
+
+    list.innerHTML = '';
+
+    options.forEach(option => {
+        const value = String(option.value || '0');
+        const label = (option.dataset.triggerLabel || option.textContent || '').trim();
+        const optionLang = String(option.dataset.lang || '').toUpperCase();
+        const searchValue = `${label} ${optionLang}`.toLocaleLowerCase();
+        const langMatch = !optionLang || !activeLang || optionLang === activeLang || value === '0';
+        const searchMatch = !query || searchValue.includes(query);
+
+        if (!langMatch || !searchMatch) {
+            return;
+        }
+
+        visibleCount++;
+
+        const item = document.createElement('button');
+        item.type = 'button';
+        item.className = 'select-picker-item';
+        if (select.value === value) {
+            item.classList.add('is-selected');
+        }
+
+        item.innerHTML = `
+            <span class="select-picker-item-meta"><i class="bi bi-bookmark-star"></i></span>
+            <span class="select-picker-item-body">
+                <span class="select-picker-item-title">${label || (select.dataset.pickerPlaceholder || '')}</span>
+                <span class="select-picker-item-subtitle">${optionLang || adminLang.ui.all}</span>
+            </span>
+            <i class="bi bi-check-circle-fill select-picker-item-check"></i>
+        `;
+
+        item.addEventListener('click', () => {
+            select.value = value;
+            select.dispatchEvent(new Event('change', { bubbles: true }));
+            updateSelectPickerTrigger(select.id);
+            closeSelectPickerSheet();
+        });
+
+        list.appendChild(item);
+    });
+
+    if (count) {
+        count.textContent = String(visibleCount);
+    }
+
+    if (langEl) {
+        langEl.textContent = activeLang ? getPickerLanguageLabel(activeLang) : adminLang.ui.all;
+    }
+
+    if (empty) {
+        empty.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+}
+
+function openSelectPickerSheet(selectId) {
+    const select = document.getElementById(selectId);
+    const sheet = document.getElementById('select-picker-sheet');
+    const overlay = document.getElementById('select-picker-overlay');
+    const titleEl = document.getElementById('selectPickerTitle');
+    const searchInput = document.getElementById('selectPickerSearchInput');
+    if (!select || !sheet || !overlay) return;
+
+    activeSelectPickerId = selectId;
+
+    if (titleEl) {
+        titleEl.textContent = select.dataset.pickerTitle || select.name || 'Select';
+    }
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    sheet.classList.add('active');
+    overlay.classList.add('active');
+    overlay.style.display = 'block';
+
+    renderSelectPickerOptions();
+
+    if (searchInput) {
+        searchInput.focus();
+    }
+}
+
+function closeSelectPickerSheet() {
+    const sheet = document.getElementById('select-picker-sheet');
+    const overlay = document.getElementById('select-picker-overlay');
+    const list = document.getElementById('selectPickerList');
+    const searchInput = document.getElementById('selectPickerSearchInput');
+    if (!sheet || !overlay) return;
+
+    activeSelectPickerId = null;
+    sheet.classList.remove('active');
+    overlay.classList.remove('active');
+    overlay.style.display = 'none';
+
+    if (list) {
+        list.innerHTML = '';
+    }
+    if (searchInput) {
+        searchInput.value = '';
+    }
+}
+
+function filterSelectPickerSheet() {
+    renderSelectPickerOptions();
+}
+
+function initSelectPickerSheets(root = document) {
+    const selects = root.querySelectorAll('select[data-picker-sheet="category"]');
+
+    selects.forEach(select => {
+        if (!select.id || select.dataset.pickerReady === 'true') {
+            updateSelectPickerTrigger(select.id);
+            return;
+        }
+
+        select.dataset.pickerReady = 'true';
+        updateSelectPickerTrigger(select.id);
+
+        select.addEventListener('change', () => {
+            updateSelectPickerTrigger(select.id);
+            if (activeSelectPickerId === select.id) {
+                renderSelectPickerOptions();
+            }
+        });
+
+        const trigger = getSelectPickerTrigger(select.id);
+        if (trigger) {
+            trigger.addEventListener('click', () => openSelectPickerSheet(select.id));
+        }
+
+        const langSourceId = select.dataset.pickerLangSource;
+        const langSource = langSourceId ? document.getElementById(langSourceId) : null;
+        if (langSource) {
+            langSource.addEventListener('change', () => {
+                syncSelectPickerSelectionWithLang(select);
+                if (activeSelectPickerId === select.id) {
+                    renderSelectPickerOptions();
+                }
+            });
+        }
+
+        syncSelectPickerSelectionWithLang(select);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    initSelectPickerSheets();
+});
+
 function selectWizardCategory(name, id) {
     const videoEmbedWizard = document.getElementById('videoEmbedWizard');
     if (videoEmbedWizard && videoEmbedWizard.classList.contains('active')) {

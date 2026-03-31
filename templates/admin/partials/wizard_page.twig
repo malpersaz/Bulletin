@@ -21,7 +21,12 @@
             {% set parent_id_loop = entry.id %}
             {% set skip_root = (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
             {% if not skip_root %}
-                <option value="{{ entry.id }}" {% if selected_id == entry.id %}selected{% endif %}>
+                <option
+                    value="{{ entry.id }}"
+                    {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
+                    data-trigger-label="{{ entry.name|e('html_attr') }}"
+                    {% if selected_id == entry.id %}selected{% endif %}
+                >
                     {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang|upper }}){% endif %}
                 </option>
             {% endif %}
@@ -96,11 +101,23 @@
             </div>
 
             <div class="input-wrapper-lg">
-                <select class="m3-input-lg" name="category_id" id="pageWizardCategoryId">
+                <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.category_id }}</label>
+                <select
+                    class="m3-input-lg select-picker-native"
+                    name="category_id"
+                    id="pageWizardCategoryId"
+                    data-picker-sheet="category"
+                    data-picker-title="{{ lang.mod_page.admin.columns.category_id }}"
+                    data-picker-placeholder="{{ lang.mod_page.choose_wish }}"
+                    data-picker-lang-source="pageWizardHiddenLang"
+                >
                     <option value="0">{{ lang.mod_page.choose_wish }}</option>
                     {{ _self.select_nested_category_id_function(select_nested_category_id_result, 0, 0, category_id|default(0)) }}
                 </select>
-                <label class="m3-floating-label">{{ lang.mod_page.admin.columns.category_id }}</label>
+                <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="pageWizardCategoryId">
+                    <span class="select-picker-label">{{ lang.mod_page.choose_wish }}</span>
+                    <i class="bi bi-chevron-down"></i>
+                </div>
             </div>
 
             <div class="input-wrapper-lg">

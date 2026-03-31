@@ -515,6 +515,7 @@
         element.classList.add('active');
         if (getById('pageWizardHiddenLang')) {
             getById('pageWizardHiddenLang').value = String(lang || '').toLowerCase();
+            getById('pageWizardHiddenLang').dispatchEvent(new Event('change', { bubbles: true }));
         }
         updateSummary();
         saveState();
@@ -634,6 +635,9 @@
         }
         initEditor();
         bindInputs();
+        if (typeof initSelectPickerSheets === 'function') {
+            initSelectPickerSheets();
+        }
         setupSeoFieldTracking();
         generateSeoValues();
         updateCounters();

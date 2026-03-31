@@ -10,7 +10,11 @@
         {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
             <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
         {% else %}
-            <option value="{{ entry.id }}">
+            <option
+                value="{{ entry.id }}"
+                {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
+                data-trigger-label="{{ entry.name|e('html_attr') }}"
+            >
                 {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
                 {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
             </option>
@@ -142,10 +146,22 @@
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
                 <div class="select-wrapper">
-                    <select name="category_id" id="categorySelect" class="form-select">
+                    <select
+                        name="category_id"
+                        id="categorySelect"
+                        class="form-select select-picker-native"
+                        data-picker-sheet="category"
+                        data-picker-title="{{ lang.mod_video_embed.admin.columns.category_id }}"
+                        data-picker-placeholder="{{ lang.mod_video_embed.choose_wish }}"
+                        data-picker-lang-source="langSelect"
+                    >
                         <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
                         {{ _self.select_nested_category_id_function(0, 0) }}
                     </select>
+                    <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="categorySelect">
+                        <span class="select-picker-label">{{ lang.mod_video_embed.choose_wish }}</span>
+                        <i class="bi bi-chevron-down"></i>
+                    </div>
                 </div>
             </div>
 
@@ -257,6 +273,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!el || el.type === 'file' || el.type === 'hidden') return;
                 el.value = data[name];
             });
+            document.getElementById('langSelect')?.dispatchEvent(new Event('change', { bubbles: true }));
+            document.getElementById('categorySelect')?.dispatchEvent(new Event('change', { bubbles: true }));
             updateEmbedPreview();
         } catch(e) {}
     }
@@ -351,6 +369,10 @@ document.addEventListener('DOMContentLoaded', function() {
         hiddenBtn.name = 'add';
         hiddenBtn.value = '{{ lang.mod_video_embed.button.add }}';
         form.appendChild(hiddenBtn);
+    }
+
+    if (typeof initSelectPickerSheets === 'function') {
+        initSelectPickerSheets();
     }
 });
 </script>

@@ -146,6 +146,7 @@
                 if (element.tomselect) {
                     element.tomselect.setValue('0', true);
                 }
+                element.dispatchEvent(new Event('change', { bubbles: true }));
             });
         });
     }
@@ -327,6 +328,9 @@
     document.addEventListener('DOMContentLoaded', function () {
         var config = window.MOD_PAGE_FORM || {};
         initTomSelect(config.tomSelectIds || []);
+        if (typeof initSelectPickerSheets === 'function') {
+            initSelectPickerSheets();
+        }
         initTinyMce(config.tinyMceSelector);
         initMetaAutofill();
         if (config.reloadOnLangChange && config.mode === 'add') {
