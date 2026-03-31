@@ -9,10 +9,12 @@ class mod_publication extends installerbase implements installerbaseinterface
     {
         parent::__construct();
         $this->mod = 'mod_publication';
+        // Slider is part of the content schema, not a separate module table.
         $this->tablolar = array(
             'mod_publication',
             'publications'
         );
+        // Hero slider management reuses edit permission on content records.
         $this->rolls = array(
             'add', 'edit', 'delete', 'list', 'gallery', 'file', 'edit_status', 'change_status', 'approval', 'moderate_edit', 'moderate_delete', 'video_download'
         );
@@ -20,6 +22,7 @@ class mod_publication extends installerbase implements installerbaseinterface
 
     public function install()
     {
+        // Create the base content table together with the updated view definition.
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }

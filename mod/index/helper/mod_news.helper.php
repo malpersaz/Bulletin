@@ -158,13 +158,25 @@ class mod_news_helper extends indexBase
 
     public function _latest_news($limit, $select)
     {
-        $m = Load::model('mod_news')->select($select)->where_lang_and_status($this->site['lang'], 'y')->limit($limit)->order('created_at', 'DESC');
+        $m = Load::model('mod_news')->select($select)->where_lang_and_status($this->site['lang'], 'y');
+        if ($this->_hasSliderColumn()) {
+            $m->addWhere("slider='n'");
+        }
+        $m->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
             return $m->toArray();
         }
 
         return [];
+    }
+
+    private function _hasSliderColumn()
+    {
+        $db = Load::lib('Database');
+        $db->fetch_array("SHOW COLUMNS FROM `mod_news` LIKE 'slider'");
+        $result = $db->getResult()->toArray();
+        return is_array($result) && !empty($result);
     }
 
     public function arsiv()
