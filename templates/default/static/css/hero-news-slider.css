@@ -127,6 +127,22 @@
     transform: translateY(-1px);
 }
 
+.hero-slide__timestamp {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #f6f1e8;
+    background: rgba(106, 78, 53, 0.78);
+    border: 1px solid rgba(255, 248, 235, 0.14);
+    border-radius: 0;
+    font-family: var(--bs-font-sans-serif);
+}
+
 /* Title */
 .hero-slide__title {
     font-family: var(--bs-font-serif, 'Literata', Georgia, serif);
@@ -203,12 +219,6 @@
 .hero-slide__author-name {
     font-weight: 600;
     color: rgba(255, 255, 255, 0.9);
-}
-
-.hero-slide__time {
-    color: rgba(255, 255, 255, 0.6);
-    display: flex;
-    align-items: center;
 }
 
 /* -------------------------------------------------------------------------

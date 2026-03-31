@@ -56,6 +56,12 @@
                         </a>
                     {% endif %}
 
+                    {% if item.published_ago is not empty %}
+                        <span class="hero-slide__timestamp">
+                            {{ item.published_ago }}
+                        </span>
+                    {% endif %}
+
                     <div class="hero-slider__controls">
                         <button type="button" class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide|default('Previous slide') }}">
                             <i class="bi bi-chevron-left"></i>
@@ -88,11 +94,6 @@
                             </span>
                             <span class="hero-slide__author-name">{{ item.author_name }}</span>
                         </div>
-                        {% if item.created_at is not empty %}
-                            <time class="hero-slide__time" datetime="{{ item.created_at|date('c') }}">
-                                <i class="bi bi-clock me-1"></i>{{ item.published_ago }}
-                            </time>
-                        {% endif %}
                     </div>
                 </div>
             </div>
