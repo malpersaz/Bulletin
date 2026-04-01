@@ -16,7 +16,7 @@
 }
 
 #latest-publication-authors .latest-authors-head {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.875rem;
     padding-top: 0;
     margin-top: 0;
     border-bottom: 1px solid #eee;
@@ -25,10 +25,10 @@
 #latest-publication-authors .latest-authors-title {
     margin: 0;
     margin-top: 0;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.35rem;
     color: var(--authors-ink);
     font-family: 'Pirata One', cursive;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
@@ -40,11 +40,12 @@
 }
 
 #latest-publication-authors .latest-authors-item {
+    position: relative;
     display: flex;
     flex-direction: row-reverse; /* Avatar on the right for sidebar looks nice */
     justify-content: flex-end;
     align-items: center;
-    gap: 1rem;
+    gap: 0.35rem;
     padding: 1rem 0;
     border-bottom: 1px solid var(--authors-line);
     text-decoration: none;
@@ -66,15 +67,16 @@
     gap: 0.2rem;
     flex: 1;
     min-width: 0;
+    padding-right: 0;
 }
 
 #latest-publication-authors .latest-authors-name {
     color: var(--authors-muted);
     font-family: var(--bs-font-sans-serif);
-    font-size: 0.7rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    text-transform: none;
+    letter-spacing: 0;
 }
 
 #latest-publication-authors .latest-authors-publication {
@@ -90,9 +92,26 @@
     overflow: hidden;
 }
 
+#latest-publication-authors .latest-authors-timeago {
+    position: absolute;
+    top: 0.2rem;
+    right: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--authors-muted);
+    font-family: var(--bs-font-sans-serif);
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
 #latest-publication-authors .latest-authors-avatar {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;

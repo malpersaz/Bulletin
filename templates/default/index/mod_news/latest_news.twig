@@ -1,19 +1,18 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["2", "image,name,seo,keywords,summary"]}) }}
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["2", "image,name,seo,keywords,summary,created_at"]}) }}
 {% set latest_news = ctx_get('latest_news') %}
 {% if latest_news is not empty %}
     <style>
         .nyt-news-section {
             border-top: 1px solid #000;
-            padding-top: 1rem;
+            padding-top: 20px;
             margin-bottom: 3rem;
         }
         .nyt-news-heading {
             font-family: 'Pirata One', cursive; /* Keeping the brand touch */
             font-size: 1.5rem;
             text-transform: uppercase;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
+            padding-bottom: 0.35rem;
+            margin-bottom: 1rem;
             margin-top: 0;
         }
         @media (max-width: 767px) {
@@ -55,9 +54,28 @@
             margin-bottom: 1rem;
         }
         .nyt-article-img-wrapper {
+            position: relative;
             margin-bottom: 1rem;
             overflow: hidden;
             border-radius: 2px;
+        }
+        .nyt-article-timeago {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.55rem;
+            background: rgba(17, 24, 39, 0.78);
+            color: #fff;
+            font-family: var(--bs-font-sans-serif);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            line-height: 1;
+            z-index: 2;
+            backdrop-filter: blur(6px);
         }
         .nyt-article-img {
             width: 100%;
@@ -72,15 +90,18 @@
     </style>
 
     <section class="nyt-news-section" aria-labelledby="latest-news-heading">
-        <header>
-            <h2 id="latest-news-heading" class="nyt-news-heading">{{ lang.index.mod_news.latest_news.1 }}</h2>
-        </header>
         <div class="row g-4">
             {% for news in latest_news %}
                 <article class="col-md-6 nyt-article">
                     {% if news.image is not empty %}
                         <div class="nyt-article-img-wrapper">
                             <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
+                                {% if news.published_ago is not empty %}
+                                    <span class="nyt-article-timeago">
+                                        <i class="bi bi-clock-history"></i>
+                                        <span class="nyt-article-timeago-text">{{ news.published_ago }}</span>
+                                    </span>
+                                {% endif %}
                                 <img src="{{ site.radres }}mod_news/{{ news.image }}"
                                      class="nyt-article-img"
                                      alt="{{ news.name }}"

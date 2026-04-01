@@ -193,10 +193,50 @@ class mod_publication_helper extends indexBase
         $publication->fetch_array($sql);
 
         if ($publication->getSize() !== 0) {
-            return $publication->toArray();
+            $items = $publication->toArray();
+            if (is_array($items)) {
+                foreach ($items as &$item) {
+                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
+                }
+                unset($item);
+            }
+            return $items;
         }
 
         return [];
+    }
+
+    private function formatRelativeTime($datetime)
+    {
+        if (empty($datetime)) {
+            return '';
+        }
+
+        try {
+            $published_at = new DateTime($datetime);
+            $now = new DateTime('now');
+            $diff = $published_at->diff($now);
+        } catch (Exception $e) {
+            return '';
+        }
+
+        if ($diff->y > 0) {
+            return $diff->y . ' ' . ($diff->y === 1 ? 'year ago' : 'years ago');
+        }
+        if ($diff->m > 0) {
+            return $diff->m . ' ' . ($diff->m === 1 ? 'month ago' : 'months ago');
+        }
+        if ($diff->d > 0) {
+            return $diff->d . ' ' . ($diff->d === 1 ? 'day ago' : 'days ago');
+        }
+        if ($diff->h > 0) {
+            return $diff->h . ' ' . ($diff->h === 1 ? 'hour ago' : 'hours ago');
+        }
+        if ($diff->i > 0) {
+            return $diff->i . ' ' . ($diff->i === 1 ? 'minute ago' : 'minutes ago');
+        }
+
+        return 'Just now';
     }
 
     public function authors($page = 1, $page_limit = 12)

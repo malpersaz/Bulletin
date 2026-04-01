@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_content)
+ * Rojname - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_news)
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  */
 
@@ -25,6 +25,30 @@ try {
     $pdoNew = new PDO("mysql:host=$new_host;dbname=$new_db;charset=utf8", $new_user, $new_pass);
     $pdoNew->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    $categoryMap = [
+        2 => 20,
+        5 => 23,
+        6 => 24,
+        7 => 25,
+        8 => 26,
+        9 => 27,
+        10 => 28,
+        11 => 29,
+        12 => 30,
+        13 => 31,
+        14 => 32,
+        15 => 33,
+        16 => 34,
+        17 => 35,
+        18 => 36,
+        20 => 38,
+        21 => 39,
+        23 => 41,
+        24 => 42,
+        25 => 45,
+        26 => 44,
+    ];
+
     // QONAXA 1: Hemû nûçeyan (mod_haber) bikişîne
     $sqlOld = "SELECT id, lang, kat_id, ad, seo, giris, icerik, title, keywords, aciklama, 
                resim, spot, yayin, url, tarih, dtarih, hit, user_id, dosya_id, 
@@ -35,11 +59,17 @@ try {
     $contents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $insertedCount = 0;
+    $skippedCount = 0;
 
     foreach ($contents as $item) {
-        
-        // Hemû naverokan davêje bin kategoriya yekane (25) wek te xwest.
-        $newCategoryId = 25;
+        $oldCategoryId = (int) $item['kat_id'];
+
+        if (!isset($categoryMap[$oldCategoryId])) {
+            $skippedCount++;
+            continue;
+        }
+
+        $newCategoryId = $categoryMap[$oldCategoryId];
 
         // Tespîtkirina demê (dîrok):
         // tarih (old) = created_at (new)
@@ -62,7 +92,7 @@ try {
         $replace = ["'", '"', '&', "'", '"', "'", '&', '<', '>', "'", "'"];
         
         // Pirsira zêdekirinê bo DB'ya nû (stûnên tune ne: url, hit, son_dakika, objectif derketin)
-        $sqlInsert = "INSERT IGNORE INTO mod_content (
+        $sqlInsert = "INSERT IGNORE INTO mod_news (
             id, lang, name, category_id, status, created_at, updated_at, 
             deck, summary, content, seo, title, keywords, description, 
             gallery_id, file_id, image, acl_id, video, user_id
@@ -102,7 +132,8 @@ try {
         }
     }
 
-    echo "<h3>Serkeftî: $insertedCount nûçe (mod_haber) hatin kişandin bo tabloya mod_content a nû.</h3>";
+    echo "<h3>Serkeftî: $insertedCount nûçe (mod_haber) hatin kişandin bo tabloya mod_news a nû.</h3>";
+    echo "<p>$skippedCount tomar ji ber ku ji bo kat_id'ê wan eşleştina category_id tune bû, hatin derbas kirin.</p>";
     echo "<p>Nîşe: Stûnên wekî <em>hit, son_dakika, objectif</em> ji ber daxwaza te li derve hatin hiştin. Herwiha nasnameya ID'yên nûçeyan sedî-sed hatin parastin da ku lînkên te xira nebin!</p>";
 
 } catch (PDOException $e) {

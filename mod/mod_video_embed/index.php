@@ -295,9 +295,6 @@ class mod_video_embed_mod extends indexMain
         $autofillImage = Req::Post_Safe('autofill_image');
         $this->val = Load::validator('mod_video_embed.add');
         if ($this->val->check()) {
-            if ($autofillImage !== '') {
-                $this->_deleteVideoImageArtifacts($autofillImage);
-            }
             if ($isAjax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([

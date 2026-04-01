@@ -389,10 +389,32 @@ document.addEventListener('DOMContentLoaded', function() {
         return slug || 'video';
     }
 
+    function ensureSeoFields() {
+        const sourceValue = (nameInput?.value || titleInput?.value || '').trim();
+        if (!sourceValue) return;
+
+        const cleanedValue = cleanMetaText(sourceValue);
+
+        if (titleInput && !titleInput.value.trim()) {
+            titleInput.value = cleanedValue;
+            titleInput.dataset.autofilled = 'true';
+        }
+
+        if (keywordsInput && !keywordsInput.value.trim()) {
+            keywordsInput.value = makeKeywordFallback(sourceValue);
+            keywordsInput.dataset.autofilled = 'true';
+        }
+
+        if (descriptionInput && !descriptionInput.value.trim()) {
+            descriptionInput.value = cleanedValue;
+            descriptionInput.dataset.autofilled = 'true';
+        }
+    }
+
     function updateSeoPreview() {
         const seoPreviewInput = document.getElementById('seoPreviewInput');
-        if (!seoPreviewInput || !nameInput) return;
-        const slug = slugifyVideoName(nameInput.value);
+        if (!seoPreviewInput) return;
+        const slug = slugifyVideoName(nameInput?.value || titleInput?.value || '');
         seoPreviewInput.value = `${siteBase}video/{id}-${slug}`;
     }
 
@@ -456,7 +478,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
+            ensureSeoFields();
             updateEmbedPreview();
+            updateSeoPreview();
             saveFormData();
             lastAutofillSignature = signature;
             if (data.duration_available) {
@@ -565,6 +589,7 @@ document.addEventListener('DOMContentLoaded', function() {
         renderStoredImage('{{ site.radres }}mod_video_embed/thumb/{{ autofill_image }}?v={{ "now"|date("U") }}');
     {% endif %}
 
+    ensureSeoFields();
     updateEmbedPreview();
     updateSeoPreview();
 });
