@@ -22,3 +22,6 @@ Thumbs.db
 
 # Project configs (optional: hide secrets if needed)
 # config/db.config.php
+
+# Codex local metadata
+.codex

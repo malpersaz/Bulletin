@@ -97,7 +97,8 @@
                         <div class="nyt-article-img-wrapper">
                             <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
                                 {% if news.published_ago is not empty %}
-                                    <span class="nyt-article-timeago">
+                                    <span class="nyt-article-timeago"
+                                          data-published-at="{{ news.created_at|e('html_attr') }}">
                                         <i class="bi bi-clock-history"></i>
                                         <span class="nyt-article-timeago-text">{{ news.published_ago }}</span>
                                     </span>
@@ -128,4 +129,72 @@
                aria-label="{{ lang.index.mod_news.latest_news.2 }}">{{ lang.index.mod_news.latest_news.2 }}</a>
         </footer>
     </section>
+
+    <script>
+        (function () {
+            var timeagoNodes = document.querySelectorAll('.nyt-article-timeago[data-published-at]');
+
+            function parsePublishedAt(value) {
+                if (!value) {
+                    return null;
+                }
+
+                var normalizedValue = value.replace(' ', 'T');
+                var parsedDate = new Date(normalizedValue);
+
+                if (isNaN(parsedDate.getTime())) {
+                    return null;
+                }
+
+                return parsedDate;
+            }
+
+            function formatRelativeTime(publishedAt) {
+                var now = new Date();
+                var diffMs = now.getTime() - publishedAt.getTime();
+
+                if (diffMs <= 0) {
+                    return 'Just now';
+                }
+
+                var diffMinutes = Math.floor(diffMs / 60000);
+                if (diffMinutes < 1) {
+                    return 'Just now';
+                }
+                if (diffMinutes < 60) {
+                    return diffMinutes + ' ' + (diffMinutes === 1 ? 'minute ago' : 'minutes ago');
+                }
+
+                var diffHours = Math.floor(diffMinutes / 60);
+                if (diffHours < 24) {
+                    return diffHours + ' ' + (diffHours === 1 ? 'hour ago' : 'hours ago');
+                }
+
+                var diffDays = Math.floor(diffHours / 24);
+                if (diffDays < 30) {
+                    return diffDays + ' ' + (diffDays === 1 ? 'day ago' : 'days ago');
+                }
+
+                var diffMonths = Math.floor(diffDays / 30);
+                if (diffMonths < 12) {
+                    return diffMonths + ' ' + (diffMonths === 1 ? 'month ago' : 'months ago');
+                }
+
+                var diffYears = Math.floor(diffDays / 365);
+                return diffYears + ' ' + (diffYears === 1 ? 'year ago' : 'years ago');
+            }
+
+            for (var i = 0; i < timeagoNodes.length; i++) {
+                var node = timeagoNodes[i];
+                var publishedAt = parsePublishedAt(node.getAttribute('data-published-at'));
+                var textNode = node.querySelector('.nyt-article-timeago-text');
+
+                if (!publishedAt || !textNode) {
+                    continue;
+                }
+
+                textNode.textContent = formatRelativeTime(publishedAt);
+            }
+        }());
+    </script>
 {% endif %}
