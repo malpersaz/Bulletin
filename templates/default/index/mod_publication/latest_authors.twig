@@ -15,25 +15,25 @@
                 {% set latest_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
                 {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
                 {% set latest_publication_title = (author.title is defined and author.title is not empty ? author.title : author.name)|trim %}
-                <a class="latest-authors-item" href="{{ site.sadres }}publication/{{ author.seo }}">
+                <article class="latest-authors-item">
                     {% if author.published_ago is not empty %}
                         <span class="latest-authors-timeago">
                             <i class="bi bi-clock-history"></i>
                             <span>{{ author.published_ago }}</span>
                         </span>
                     {% endif %}
-                    <span class="latest-authors-avatar">
+                    <a class="latest-authors-avatar" href="{{ site.sadres }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
                         {% if author.user_image is defined and author.user_image is not empty %}
                             <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" loading="lazy">
                         {% else %}
                             <span>{{ latest_author_initials }}</span>
                         {% endif %}
-                    </span>
+                    </a>
                     <span class="latest-authors-copy">
-                        <span class="latest-authors-name">{{ latest_author_name }}</span>
-                        <span class="latest-authors-publication">{{ latest_publication_title }}</span>
+                        <a class="latest-authors-name" href="{{ site.sadres }}author/{{ author.username }}">{{ latest_author_name }}</a>
+                        <a class="latest-authors-publication" href="{{ site.sadres }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
                     </span>
-                </a>
+                </article>
             {% endfor %}
         </div>
     </div>
