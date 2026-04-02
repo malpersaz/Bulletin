@@ -3,9 +3,9 @@
 {% set hide_fab = true %}
 {% set show_search = true %}
 {% extends 'admin/layout.twig' %}
-{% block title %}{{ lang.mod_content.list|default('Content Management') }}{% endblock %}
+{% block title %}{{ lang.mod_content.list }}{% endblock %}
 
-{% block headline %}{{ lang.mod_content.list|default('Content List') }}{% endblock %}
+{% block headline %}{{ lang.mod_content.list }}{% endblock %}
 
 {% block styles %}
 <style>
@@ -152,11 +152,11 @@
     <div style="display: flex; gap: 12px;">
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
             <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_content }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.total_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.mod_user.panel.total_content }}</div>
         </div>
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
             <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_content }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.draft_content }}</div>
+            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.mod_user.panel.draft_content }}</div>
         </div>
     </div>
 </div>
@@ -172,15 +172,15 @@
 
 <div id="empty-state" class="empty-state" style="display: none;">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_content.grid[105]|default(lang.mod_content.datatable.zeroRecords)|default('No Content Found') }}</h3>
-    <p>{{ lang.mod_content.grid[4]|default(lang.mod_content.datatable.emptyTable)|default('No content matches your filters.') }}</p>
+    <h3>{{ lang.mod_content.datatable.zeroRecords }}</h3>
+    <p>{{ lang.mod_content.datatable.emptyTable }}</p>
 </div>
 
 <div id="infinite-loader" class="infinite-loader" style="display: none;">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_content.grid[104]|default(lang.mod_content.datatable.loadingRecords)|default('Loading...') }}</span>
+    <span>{{ lang.mod_content.datatable.loadingRecords }}</span>
 </div>
 
 <form id="filterForm" style="display: none;">
@@ -213,7 +213,7 @@
         </div>
 
         <div class="wizard-content news-image-modal__body">
-            {% include 'admin/partials/mod_news_image_uploader.twig' with {
+            {% include 'admin/partials/image_uploader.twig' with {
                 shell_id: 'listImageShell',
                 shell_class: 'news-image-shell',
                 has_image: false,
@@ -237,7 +237,7 @@
                 drop_title: lang.mod_content.wizard.image.drop_title,
                 upload_link: lang.mod_content.wizard.image.upload_link,
                 preview_card_id: 'listImagePreviewCard',
-                remove_button_label: lang.mod_content.button.delete|default('Delete'),
+                remove_button_label: lang.mod_content.button.delete,
                 remove_action_js: 'window.contentManager?.handleListImageRemoveAction()',
                 preview_img_id: 'listImgPreview',
                 preview_alt: '',
@@ -260,7 +260,7 @@
         </div>
 
         <div id="newsImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
-            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_content.button.cancel|default('Cancel') }}</button>
+            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_content.button.vazgec }}</button>
         </div>
     </div>
 </div>
@@ -270,12 +270,12 @@
     <div class="standard-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_content.button.edit|default('Edit') }}</span>
+            <span>{{ lang.mod_content.button.edit }}</span>
         </button>
 
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-images"></i>
-            <span>{{ lang.mod_content.button.gallery|default('Gallery') }}</span>
+            <span>{{ lang.mod_content.button.gallery }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_content/add'">
@@ -284,12 +284,12 @@
 
         <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_content.button.file|default('File') }}</span>
+            <span>{{ lang.mod_content.button.file }}</span>
         </button>
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_content.button.delete|default('Delete') }}</span>
+            <span>{{ lang.mod_content.button.delete }}</span>
         </button>
     </div>
 {% endblock %}
@@ -309,13 +309,13 @@
         draft: "{{ lang.mod_content.status_badge.draft|e('js') }}",
         general: "{{ lang.mod_content.status_badge.general|e('js') }}",
         sheet_all: "{{ lang.mod_content.sheet.all|e('js') }}",
-        confirm_delete: "{{ lang.mod_content.delete_confirm|default(lang.mod_content.context_menu.delete_confirm)|e('js') }}",
-        confirm_publish: "{{ lang.mod_content.quick_publish_confirm|default(lang.mod_content.grid.approve.value)|e('js') }}",
-        confirm_unpublish: "{{ lang.mod_content.quick_unpublish_confirm|default(lang.mod_content.grid.unapprove.value)|e('js') }}",
+        confirm_delete: "{{ lang.mod_content.delete_confirm|e('js') }}",
+        confirm_publish: "{{ lang.mod_content.quick_publish_confirm|e('js') }}",
+        confirm_unpublish: "{{ lang.mod_content.quick_unpublish_confirm|e('js') }}",
         error_general: "{{ lang.mod_content.hata|e('js') }}",
         error_upload: "{{ lang.mod_content.message.error.add|e('js') }}",
         save_image: "{{ lang.mod_content.wizard.button.save|e('js') }}",
-        cancel: "{{ lang.mod_content.button.cancel|default('Cancel')|e('js') }}",
+        cancel: "{{ lang.mod_content.button.vazgec|e('js') }}",
         image_title: "{{ lang.mod_content.wizard.step.image|e('js') }}",
         image_empty: "{{ lang.mod_content.wizard.summary.selected_none|e('js') }}",
         image_remote_failed: "{{ lang.mod_content.wizard.image.hint_remote_failed|e('js') }}",
@@ -323,12 +323,12 @@
         image_updated: "{{ lang.mod_content.oke|e('js') }}",
         image_remove_title: "{{ lang.mod_content.remove_image|e('js') }}",
         image_remove_confirm: "{{ lang.mod_content.context_menu.delete_confirm|e('js') }}",
-        image_remove_confirm_text: "{{ lang.mod_content.button.evet|default(lang.mod_content.button.yes)|default('Yes')|e('js') }}",
-        image_remove_cancel_text: "{{ lang.mod_content.button.hayir|default(lang.mod_content.button.no)|default('No')|e('js') }}",
+        image_remove_confirm_text: "{{ lang.mod_content.button.evet|e('js') }}",
+        image_remove_cancel_text: "{{ lang.mod_content.button.hayir|e('js') }}",
         image_remove_success: "{{ lang.mod_content.remove_image_oke|e('js') }}",
-        loading: "{{ lang.mod_content.grid[104]|default(lang.mod_content.datatable.loadingRecords)|e('js') }}",
+        loading: "{{ lang.mod_content.datatable.loadingRecords|e('js') }}",
         grid: {
-            load_more: "{{ lang.mod_content.grid.load_more|default('Load More')|e('js') }}"
+            load_more: "{{ lang.mod_content.grid.load_more|e('js') }}"
         }
     };
 </script>

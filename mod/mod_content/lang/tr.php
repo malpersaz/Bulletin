@@ -79,6 +79,8 @@ $lang['mod_content'] = [
         'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
     ],
 
+    'wizard_loading' => 'Sihirbaz yükleniyor...',
+
     // === Buttons ===
     'button' => [
         'next' => 'İleri',

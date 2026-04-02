@@ -1,7 +1,7 @@
 <?php
 /* AKM Software.
  * @2015
- * mod_announcements Modül Sayfası
+ * mod_announcements Module Page
  * mod/mod_announcements/index.php
  */
 class mod_announcements_mod extends BaseModuleController

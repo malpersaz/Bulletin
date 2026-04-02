@@ -1,7 +1,8 @@
 <?php
-/* AKM Software.
+/* 
+ * AKM Software.
  * @2010
- * Haber Modül Sayfası
+ * Video Module Page
  * mod/mod_video/index.php
  */
 
@@ -16,20 +17,20 @@ class mod_video_mod extends indexMain
     {
 
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load Language File
         $this->lang = Load::lang('mod_video');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send Language File to Template
         $this->tema->lang($this->lang);
         if (Req::is_Post('sid')) {
             Kayit::ekle('session_sid', Req::Post_Safe('sid'));
         }
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
@@ -47,23 +48,23 @@ class mod_video_mod extends indexMain
         }
         // require root_dir . 'vendor/autoload.php';
 
-        // Post Edilen Video Dosyası
+        // Posted Video File
         $videop = Req::Post_Safe('video');
 
-        // Video Dönüştürme TEMP dizini
+        // Video Conversion TEMP directory
         $tmp = root_dir . 'cache' . DS . 'video_tmp' . DS;
         $log = root_dir . 'cache' . DS . 'video_log' . DS;
 
         $video_file = $tmp . $videop;
-        // FLV dosyasının Kaydedileceğiz FLV dizini
+        // Output directory for converted video
         $video_out_dir = root_dir . 'cache' . DS . 'video_tmp' . DS;
-        // Resim dosyasının Kaydedileceğiz Resim dizini
+        // Output directory for extracted frame (image)
         $image_out_dir = root_dir . 'cache' . DS . 'video_tmp' . DS;
 
-        // Çıktı Alınacak FLV dosyası
+        // Converted video output filename
         $video_out = Helper::randomkey('14') . ".mp4";
         $video_out_file = $video_out_dir . $video_out;
-        // Çıktı Alınacak Resim dosyası
+        // Extracted frame output filename
         $image_out = Helper::randomkey('14') . ".jpg";
         $image_out_file = $image_out_dir . $image_out;
 
@@ -87,7 +88,7 @@ class mod_video_mod extends indexMain
         }
 
 
-        // Videoyu Bilgisi
+        // Video Information
         try {
 
             $parser = new \PHPVideoToolkit\MediaParser();
@@ -105,7 +106,7 @@ class mod_video_mod extends indexMain
         }
 
 
-        // Videoyu Dönüştür
+        // Convert Video
         try {
             $video = new \PHPVideoToolkit\Video($video_file);
             $output_format = new \PHPVideoToolkit\VideoFormat();
@@ -154,7 +155,7 @@ class mod_video_mod extends indexMain
 
     public function up()
     {
-        // Ekleme Permissionsi varmı?
+        // Check Add Permission
         if (Roll::hasPermission('mod_video', 'add') === False) {
             $ar = ['hata' => true, 'mesaj' => $this->lang['mod_video']['role_errors']['add']];
             echo json_encode($ar);
@@ -184,7 +185,7 @@ class mod_video_mod extends indexMain
             exit();
         }
         $error_message = $this->_file_upload_error_message($_FILES['Filedata']['error']);
-        $ar = ['hata' => true, 'mesaj' => "Hata Oluştu:" . $error_message];
+        $ar = ['hata' => true, 'mesaj' => "An error occurred:" . $error_message];
         echo json_encode($ar);
         exit();
     }
@@ -212,10 +213,12 @@ class mod_video_mod extends indexMain
     }
 
 
-    // Ekleme Sayfası
+    /**
+     * Add Page
+     */
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check Add Permission
         if ($this->user->hasPermission('mod_video', 'add', $this->lang['mod_video']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -232,10 +235,12 @@ class mod_video_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Düzenleme Sayfası
+    /**
+     * Edit Page
+     */
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video', 'edit', $this->lang['mod_video']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -248,7 +253,7 @@ class mod_video_mod extends indexMain
 
         $d = $this->mod_video_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_video', 'moderate_edit', $d['user_id'], $this->lang['mod_video']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -269,10 +274,12 @@ class mod_video_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Listeleme Sayfası
+    /**
+     * List Page
+     */
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_video', 'list', $this->lang['mod_video']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -283,10 +290,12 @@ class mod_video_mod extends indexMain
         $this->tema->veri('site', $this->site);
     }
 
-    // Xml Sayfası
+    /**
+     * XML Page
+     */
     public function xml()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_video', 'list', $this->lang['mod_video']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -296,7 +305,7 @@ class mod_video_mod extends indexMain
 
     public function image_remove_image()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video', 'edit', $this->lang['mod_video']['role_errors']['edit'], 1) === False) {
             return FALSE;
         }
@@ -312,7 +321,7 @@ class mod_video_mod extends indexMain
 
 
         $this->mod_video_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_video', 'moderate_edit', $this->mod_video_model->user_id, $this->lang['mod_video']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -342,7 +351,7 @@ class mod_video_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    // Add Function
     private function _add()
     {
         $this->val = Load::validator('mod_video.ekle');
@@ -389,7 +398,7 @@ class mod_video_mod extends indexMain
             }
 
 
-            // FLV'yi taşıyalım
+            // Move converted video to static directory
             if (copy($cache_flv, $real_flv) === FALSE) {
                 @unlink($cache_flv);
                 @unlink($cache_resim);
@@ -398,7 +407,7 @@ class mod_video_mod extends indexMain
             }
             @unlink($cache_flv);
 
-            // Resim Dosyasını Taşıyalım
+            // Move image to static directory
             if (copy($cache_resim, $real_resim) === FALSE) {
                 @unlink($cache_flv);
                 @unlink($cache_resim);
@@ -409,7 +418,7 @@ class mod_video_mod extends indexMain
             @unlink($cache_resim);
 
 
-            // Orjinal halini Kaydet
+            // Save original video if requested
             if (Req::Post_Safe('unremove_original') === 'y') {
                 if (copy($cache_video, $real_video) === FALSE) {
                     @unlink($cache_flv);
@@ -503,7 +512,7 @@ class mod_video_mod extends indexMain
                 unset($this->mod_video_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) && ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video';
@@ -543,7 +552,7 @@ class mod_video_mod extends indexMain
 
     function json()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_video', 'list', $this->lang['mod_video']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -554,7 +563,7 @@ class mod_video_mod extends indexMain
 
     function sil()
     {
-        // Listeleme Permissionsi varmı?
+        // Check Delete Permission
         if ($this->user->hasPermission('mod_video',  'delete', $this->lang['mod_video']['role_errors'][ 'delete']) === False) {
             return False;
         }
@@ -562,7 +571,7 @@ class mod_video_mod extends indexMain
             if ($this->_delete(Req::Post_Safe( 'delete'))) {
                 echo 'Oke';
             } else {
-                echo 'HATA';
+                echo 'ERROR';
             }
         } else {
             exit($this->lang['mod_video']['errors']['record']);
@@ -579,28 +588,28 @@ class mod_video_mod extends indexMain
                 exit($this->lang['mod_video']['errors']['record']);
             }
             $this->mod_video_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+            // Check Moderate Permission if content belongs to another user
             if ($this->user->checkPermission('mod_video', 'moderate_delete', $this->mod_video_model->user_id, $this->lang['mod_video']['role_errors']['moderate_delete']) === False) {
                 return False;
             }
 
-            // Modül varmı ve Gallery Ekleniyormu
+            // Check if module exists and Gallery is being added
             $this->mod = Load::model('mod_gallery_mod');
             if ($this->mod->exists_mod_name("mod_video") === TRUE) {
-                // İçeriğe Ait Gallery Varsa Silelim
+                // Delete Gallery if exists for content
                 Run::import('mod_gallery', '_remove', ['mod_video', $this->mod_video_model->id]);
             }
 
 
-            // Orjinal Videoyu Sil
+            // Delete original video
             if ($this->mod_video_model->original !== '') {
                 @unlink(root_dir . 'static' . DS . 'mod_video' . DS . 'original' . DS . $this->mod_video_model->original);
             }
-            // FLV'yi Sil
+            // Delete converted video
             if ($this->mod_video_model->flv !== '') {
                 @unlink(root_dir . 'static' . DS . 'mod_video' . DS . 'flv' . DS . $this->mod_video_model->flv);
             }
-            // Resim Dosyasını Sil
+            // Delete image file
             if ($this->mod_video_model->image != '') {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video';
@@ -786,10 +795,12 @@ class mod_video_mod extends indexMain
     }
 
 
-    // publish Sayfası
+    /**
+     * Publish Page
+     */
     public function publish()
     {
-        // edit Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video', 'edit', $this->lang['mod_video']['role_errors']['edit']) === False) {
             return False;
         }
@@ -803,7 +814,7 @@ class mod_video_mod extends indexMain
 
     private function _publish($query = NULL)
     {
-        // mod_video Modeli Yükleyelim
+        // Load mod_video Model
         $this->mod_video_model = Load::model('mod_video');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -818,10 +829,12 @@ class mod_video_mod extends indexMain
         }
         return FALSE;
     }
-    // unpublish Sayfası
+    /**
+     * Unpublish Page
+     */
     public function unpublish()
     {
-        // edit Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video', 'edit', $this->lang['mod_video']['role_errors']['edit']) === False) {
             return False;
         }
@@ -835,7 +848,7 @@ class mod_video_mod extends indexMain
 
     private function _unpublish($query = NULL)
     {
-        // mod_video Modeli Yükleyelim
+        // Load mod_video Model
         $this->mod_video_model = Load::model('mod_video');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -852,21 +865,27 @@ class mod_video_mod extends indexMain
     }
 
 
-    // Valid Mesaj
+    /**
+     * Success Message
+     */
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    /**
+     * Error Message
+     */
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    /**
+     * Error Message
+     */
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

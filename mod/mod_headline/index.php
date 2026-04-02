@@ -1,7 +1,8 @@
 <?php
-/* AKM Software.
+/* 
+ * AKM Software.
  * @2015
- * mod_headline Modül Sayfası
+ * Headline Module Page
  * mod/mod_headline/index.php
  */
 class mod_headline_mod extends indexMain
@@ -10,25 +11,27 @@ class mod_headline_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load Language File
         $this->lang = Load::lang('mod_headline');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send Language File to Template
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    /**
+     * Add Page
+     */
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check Add Permission
         if ($this->user->hasPermission('mod_headline', 'add', $this->lang['mod_headline']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -43,10 +46,12 @@ class mod_headline_mod extends indexMain
         $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
     }
 
-    // Düzenleme Sayfası
+    /**
+     * Edit Page
+     */
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_headline', 'edit', $this->lang['mod_headline']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -61,7 +66,7 @@ class mod_headline_mod extends indexMain
 
         $d = $this->mod_headline_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_headline', 'moderate_edit', $d['user_id'], $this->lang['mod_headline']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -80,10 +85,12 @@ class mod_headline_mod extends indexMain
         $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
     }
 
-    // Listeleme Sayfası
+    /**
+     * List Page
+     */
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_headline', 'list', $this->lang['mod_headline']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -95,7 +102,7 @@ class mod_headline_mod extends indexMain
     }
     public function image_remove_image()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_headline', 'edit', $this->lang['mod_headline']['role_errors']['edit'], 1) === False) {
             return FALSE;
         }
@@ -111,7 +118,7 @@ class mod_headline_mod extends indexMain
 
 
         $this->mod_headline_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_headline', 'moderate_edit', $this->mod_headline_model->user_id, $this->lang['mod_headline']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -147,7 +154,9 @@ class mod_headline_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    /**
+     * Add Function
+     */
     private function _add()
     {
         $this->val = Load::validator('mod_headline.ekle');
@@ -176,7 +185,7 @@ class mod_headline_mod extends indexMain
 
             $this->mod_headline_model->user_id = $this->session->getir('id');
 
-            // Eğer Resim varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_headline';
@@ -210,7 +219,7 @@ class mod_headline_mod extends indexMain
             if ($this->mod_headline_model->save(TRUE)) {
                 $this->_oke_message($this->lang['mod_headline']['message']['oke']['add']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -220,7 +229,9 @@ class mod_headline_mod extends indexMain
         }
     }
 
-    // Düzenleme Fonksiyonu
+    /**
+     * Edit Function
+     */
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_headline.duzenle');
@@ -248,7 +259,7 @@ class mod_headline_mod extends indexMain
                 unset($this->mod_headline_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_headline';
@@ -283,7 +294,7 @@ class mod_headline_mod extends indexMain
             if ($this->mod_headline_model->update('id')) {
                 $this->_oke_message($this->lang['mod_headline']['message']['oke']['edit']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -297,7 +308,7 @@ class mod_headline_mod extends indexMain
 
     function sil()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_headline',  'delete', $this->lang['mod_headline']['role_errors'][ 'delete']) === False) {
             return False;
         }
@@ -305,7 +316,7 @@ class mod_headline_mod extends indexMain
             if ($this->_delete(Req::Post_Safe( 'delete'))) {
                 echo 'Oke';
             } else {
-                echo 'HATA';
+                echo 'ERROR';
             }
         } else {
             exit($this->lang['mod_headline']['errors']['record']);
@@ -322,21 +333,21 @@ class mod_headline_mod extends indexMain
                 exit($this->lang['mod_headline']['errors']['record']);
             }
             $this->mod_headline_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+            // Check Moderate Permission if content belongs to another user
             if ($this->user->checkPermission('mod_headline', 'moderate_delete', $this->mod_headline_model->user_id, $this->lang['mod_headline']['role_errors']['moderate_delete']) === False) {
                 return False;
             }
 
-            // Modül varmı ve Gallery Ekleniyormu
+            // Check if module exists and Gallery is being added
             $this->mod = Load::model('mod_gallery_mod');
             if ($this->mod->exists_mod_name("mod_headline") === TRUE) {
-                // İçeriğe Ait Gallery Varsa Silelim
+                // Delete Gallery if exists for content
                 Run::import('mod_gallery', '_remove', ['mod_headline', $this->mod_headline_model->id]);
             }
-            // Modül varmı ve Dosya Ekleniyormu
+            // Check if module exists and Attachment is being added
             $this->mod = Load::model('mod_attachment_mod');
             if ($this->mod->exists_mod_name("mod_headline") === TRUE) {
-                // İçeriğe Ait Dosya Varsa Silelim
+                // Delete Attachment if exists for content
                 Run::import('mod_attachment', '_remove', ['mod_headline', $this->mod_headline_model->id]);
             }
 
@@ -561,10 +572,12 @@ class mod_headline_mod extends indexMain
 
 
 
-    // publish Sayfası
+    /**
+     * Publish Page
+     */
     public function publish()
     {
-        // duzenle Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_headline', 'edit', $this->lang['mod_headline']['role_errors']['edit']) === False) {
             return False;
         }
@@ -578,7 +591,7 @@ class mod_headline_mod extends indexMain
 
     private function _publish($query = NULL)
     {
-        // mod_headline Modeli Yükleyelim
+        // Load mod_headline Model
         $this->mod_headline_model = Load::model('mod_headline');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -593,10 +606,12 @@ class mod_headline_mod extends indexMain
         }
         return FALSE;
     }
-    // unpublish Sayfası
+    /**
+     * Unpublish Page
+     */
     public function unpublish()
     {
-        // duzenle Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_headline', 'edit', $this->lang['mod_headline']['role_errors']['edit']) === False) {
             return False;
         }
@@ -610,7 +625,7 @@ class mod_headline_mod extends indexMain
 
     private function _unpublish($query = NULL)
     {
-        // mod_headline Modeli Yükleyelim
+        // Load mod_headline Model
         $this->mod_headline_model = Load::model('mod_headline');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -626,21 +641,27 @@ class mod_headline_mod extends indexMain
         return FALSE;
     }
 
-    // Valid Mesaj
+    /**
+     * Success Message
+     */
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    /**
+     * Error Message
+     */
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    /**
+     * Error Message
+     */
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

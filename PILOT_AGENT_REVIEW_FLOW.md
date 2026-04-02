@@ -25,6 +25,12 @@ Responsibilities:
 - implement the requested task
 - keep changes scoped
 - avoid introducing new policy violations
+- apply agent rules during the implementation pass
+- do not use `default(...)`, inline fallback text, or hard-coded fallback strings for visible localized UI
+- if a visible localization key is missing, add or wire it in the same task
+- do not treat partial multilingual wiring as acceptable in the touched flow
+- do not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention
+- do not leave half-refactored modules behind
 
 ### 2. Localization Review
 
@@ -83,6 +89,14 @@ Purpose:
 - discard invalid legacy-only findings
 - keep only actionable errors and warnings
 
+The final gate must also confirm:
+
+- touched files do not retain Turkish comments
+- touched visible UI does not rely on `default(...)` or inline fallback text for localization
+- touched visible flows are fully wired to localization sources
+- the module is not left in a half-refactored state
+- old and new names are not being kept alive together without explicit user approval
+
 ## Scope Rule
 
 The flow uses repository mixed-scope policy.
@@ -93,6 +107,16 @@ The flow uses repository mixed-scope policy.
   - non-English hard-coded user-facing strings
 - all other categories remain diff-scoped by default
 
+Repository boundary:
+
+- The following modules are `Rojname`-only and must be excluded from `AKMbusiness` sync decisions:
+  - `mod_news`
+  - `mod_news_category`
+  - `mod_publication`
+  - `mod_publication_category`
+- `Rojname`-specific installer branding, language exclusions, and seed removals must also stay local.
+- Outside those specific exceptions, refactoring changes should be reviewed as shared-core synchronization candidates.
+
 ## Blocking Conditions
 
 The pilot flow should block delivery if:
@@ -102,6 +126,8 @@ The pilot flow should block delivery if:
 - a new non-English identifier is introduced
 - a new required localization key is missing
 - a new hard-coded visible string bypasses localization
+- a touched visible UI string uses `default(...)` or inline fallback text
+- a touched visible flow is not fully localized end-to-end
 
 ## Non-Blocking Conditions
 
@@ -139,8 +165,8 @@ Goal:
 3. `comment-guard` checks the touched files for non-English comments.
 4. `naming-guard` checks only new identifiers in the diff.
 5. `cleanup-guard` checks for temporary leftovers.
-6. `policy-gate` produces final output.
-7. Developer agent fixes remaining errors.
+6. `policy-gate` confirms the module is not half-refactored and that old/new aliases are not being kept together without approval.
+7. Developer agent fixes remaining errors before moving to the next module.
 
 ## Success Criteria
 
@@ -150,4 +176,3 @@ The pilot is successful when:
 2. touched files become progressively cleaner
 3. visible language debt is reduced during normal work
 4. developers can actually use the process without excessive friction
-

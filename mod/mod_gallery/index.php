@@ -12,15 +12,15 @@ class mod_gallery_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load Language File
         $this->lang = Load::lang('mod_gallery');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send Language File to Template
         $this->tema->lang($this->lang);
 
         if (Req::is_Post('sid')) {
@@ -49,7 +49,7 @@ class mod_gallery_mod extends indexMain
             print("::");
             return FALSE;
         }
-        // Modül varmı ve Gallery Ekleniyormu
+        // Check if module exists and Gallery is being added
         $this->mod = Load::model('mod_gallery_mod');
         if ($this->mod->exists_mod_name($mod) === FALSE) {
             print(":::");
@@ -63,12 +63,12 @@ class mod_gallery_mod extends indexMain
         $value = $this->mod->mod_value;
 
         $this->mlang = Load::lang($mod);
-        // Dil Dosyası Varmı
+        // Check if Language File exists
         if (empty($this->mlang[$mod]['role_errors']['gallery'])) {
             exit("..");
         }
 
-        // Gallery Ekleme Permissionsi varmı?
+        // Check Gallery Add Permission
         if ($this->user->hasPermission($mod, 'gallery', $this->mlang[$mod]['role_errors']['gallery']) === False) {
             return False;
         }
@@ -94,7 +94,9 @@ class mod_gallery_mod extends indexMain
         $this->tema->veri('vid', $vid);
     }
 
-    // Resim Listesi
+    /**
+     * Image List
+     */
     public function list($mod = NULL, $vid = NULL)
     {
         $mod = Req::Url_Clear($mod);
@@ -217,7 +219,7 @@ class mod_gallery_mod extends indexMain
             exit(".");
         }
 
-        // Eğer Resim varsa
+        // If Image exists
         if (isset($_FILES[$isim]['name']) and  $_FILES[$isim]['name'] != '') {
             $image = Load::mod('image');
             $image->mod = 'mod_gallery';
@@ -243,7 +245,7 @@ class mod_gallery_mod extends indexMain
                 return FALSE;
             }
         } else {
-            exit('Resim YOk ORTALIKTA ' . print_r($_FILES, TRUE));
+            exit('Image not found ' . print_r($_FILES, TRUE));
         }
 
 
@@ -262,14 +264,18 @@ class mod_gallery_mod extends indexMain
         }
     }
 
-    // Valid Mesajı
+    /**
+     * Success Message
+     */
     private function _mesaj($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesajı
+    /**
+     * Error Message
+     */
     private function _emesaj($mesaj)
     {
         $this->tema->veri('hata', True);
@@ -288,11 +294,11 @@ class mod_gallery_mod extends indexMain
             $this->r->where_vid_and_mod_name($vid, $mod)->gR();
         }
 
-        // GALLERY YOK DEMEK
+        // NO GALLERY MEANS
         if ($this->r->getSize() === 0) {
             return TRUE;
         }
-        // Galleri varsa eğer
+        // If gallery exists
         $gallerys = $this->r->toArray();
 
         foreach ($gallerys as $g) {
@@ -321,7 +327,7 @@ class mod_gallery_mod extends indexMain
             echo $image->error;
             return FALSE;
         }
-        // Veritabanından'danda Silelim
+        // Delete from database as well
         $this->r->delete();
     }
 }

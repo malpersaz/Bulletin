@@ -79,6 +79,8 @@ $lang['mod_content'] = [
         'record' => 'The specified record could not be found!',
     ],
 
+    'wizard_loading' => 'Loading the wizard...',
+
     // === Buttons ===
     'button' => [
         'next' => 'Next',

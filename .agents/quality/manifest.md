@@ -55,6 +55,10 @@ The following are blocking `Error` conditions:
 - a newly introduced hard-coded user-facing string bypasses localization
 - a newly introduced non-English identifier appears in the diff
 - a newly introduced required language key is missing
+- a visible UI string in the touched flow uses `default(...)`, inline fallback text, or any equivalent fallback mechanism
+- a touched visible flow is left without complete localization coverage
+- old and new keys, routes, methods, validators, templates, or aliases are left alive together after a refactor without explicit user approval
+- a touched module is left in a half-refactored state
 
 ## Non-Blocking Rules
 
@@ -122,6 +126,46 @@ All agents should:
 - avoid repository-wide commentary
 - avoid repeating the same issue already covered by another agent
 
+## Version Log Rule
+
+When a task is completed and repository documentation is updated, agents must treat `/docs/VERSION.md` as the single version log.
+
+- Current active version bucket: `v1.0.49.8`
+- Until the user provides a new Git upload version code, completed work notes must be written under `v1.0.49.8`
+- Agents must not create a new version heading on their own
+
+## Repository Boundary Rule
+
+The following modules are `Rojname`-only:
+
+- `mod_news`
+- `mod_news_category`
+- `mod_publication`
+- `mod_publication_category`
+
+Agents must preserve them as project-specific modules and must not propose them as shared-core changes for `AKMbusiness` unless the user explicitly overrides the rule.
+
+The following installer decisions are also `Rojname`-specific and must remain local unless the user explicitly overrides the rule:
+
+- `Rojname` branding/default project name
+- excluding `tr` and `ar` from installer default languages
+- removal of default sample menu/category/content seeds
+
+Outside those project-specific boundaries, refactoring work should be treated as shared-core candidate work and reviewed for synchronization across sibling repositories.
+
+## Synchronization Rule
+
+When updating a module, agents must apply policy during implementation.
+
+- update the module and apply agent rules in the same pass
+- remove Turkish comments from touched files
+- do not use `default(...)`, inline fallback text, or hard-coded fallback strings for visible UI localization
+- if a visible localization key is missing, add or wire the key instead of leaving fallback text in place
+- require complete multilingual wiring in the touched flow before considering the task done
+- do not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention
+- do not leave half-completed refactors behind
+- perform a short review before moving to the next module
+
 ## Policy Gate Responsibility
 
 `policy-gate` is the final arbiter.
@@ -141,4 +185,3 @@ The manifest is being followed correctly when:
 2. touched files get visibly cleaner
 3. English-only comment and visible-string normalization happens incrementally
 4. development is not blocked by unrelated historical debt
-

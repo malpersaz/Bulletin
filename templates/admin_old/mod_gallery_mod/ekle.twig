@@ -24,7 +24,7 @@
 						<strong>{{ lang.mod_gallery_mod.oke }}</strong>
 						{{ mesaj }}
 						<hr>
-						<a href="{{ site.adres }}mod_gallery_mod/ekle" class="btn green">{{ lang.mod_gallery_mod.add }}</a>
+						<a href="{{ site.adres }}mod_gallery_mod/add" class="btn green">{{ lang.mod_gallery_mod.add }}</a>
 						<a href="{{ site.adres }}mod_gallery_mod/list" class="btn blue">{{ lang.mod_gallery_mod.list }}</a>
 					</div>
 				{% else %}
@@ -39,7 +39,7 @@
 					<form method="POST" action="" id="add" enctype="multipart/form-data" class="form-horizontal">
 						<div
 							class="form-body">
-							<!-- İnputlar Başlar -->
+							<!-- Form fields -->
 							<div class="form-group">
 								<label class="col-md-3 control-label">{{ lang.mod_gallery_mod.admin.columns.name }}
 									:</label>
@@ -76,7 +76,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- İnputlar Biter -->
+							<!-- End form fields -->
 						</div>
 						<!-- form body end -->
 						<div class="form-actions">
@@ -85,7 +85,7 @@
 									<button class="btn green" name="add" value="{{ lang.mod_gallery_mod.button.add }}">
 										{{ lang.mod_gallery_mod.button.add }}
 									</button>
-									<a class="btn blue" href="mod_gallery_mod/list">{{ lang.mod_gallery_mod.button.vazgec }}</a>
+									<a class="btn blue" href="{{ site.adres }}mod_gallery_mod/list">{{ lang.mod_gallery_mod.button.vazgec }}</a>
 								</div>
 							</div>
 						</div>
@@ -99,76 +99,7 @@
 {% block extra %}
 	<script>
 		$(document).ready(function () {
-$("#add").validationEngine();
-
-function temizle(veri) {
-
-var temiz = veri.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, " ");
-temiz = temiz.replace(/^\s+|\s+$/g, "");
-
-for (i = 0; i <= 15; i ++) {
-temiz = temiz.replace('  ', ' ');
-}
-return temiz;
-}
-
-// SEO YAPAR
-function make_seo(name, seo) {
-$("#" + name).change(function () {
-var deger = temizle($("#" + name).val());
-deger = deger.replace(/\s+/g, "_");
-deger = deger.replace('İ', 'i');
-
-$("#" + seo).val(deger);
-});
-}
-
-// Make keywords
-function make_keywords(name, keywords) {
-$("#" + name).change(function () {
-var deger = temizle($("#" + name).val());
-deger = deger.replace(/\s+/g, ",");
-deger = deger.toLowerCase();
-deger = deger.replace('İ', 'i');
-
-$("#" + keywords).val(deger);
-});
-}
-
-// Make Title
-function make_title(name, title) {
-$("#" + name).change(function () {
-var deger = temizle($("#" + name).val());
-$("#" + title).val(deger);
-});
-}
-
-// Make Açıklama
-function make_aciklama(name, description) {
-$("#" + name).change(function () {
-var deger = temizle($("#" + name).val());
-$("#" + description).val(deger);
-});
-}
-// Make Preview
-function make_preview(name) {
-$("#" + name).change(function () {
-$("#" + name + "_preview").html($("#" + name).val());
-});
-}
-
-var simdi = new Date();
-var yil = simdi.getFullYear();
-var ay = (simdi.getMonth() < 9 ? '0' : '') + (simdi.getMonth() + 1);
-var gun = (simdi.getDate() < 10 ? '0' : '') + simdi.getDate();
-var saat = (simdi.getHours() < 10 ? '0' : '') + simdi.getHours();
-var dakika = (simdi.getMinutes() < 10 ? '0' : '') + simdi.getMinutes();
-
-var now = yil + "-" + ay + "-" + gun + " " + saat + ":" + dakika;
-
-
-});
+			$("#add").validationEngine();
+		});
 	</script>
-	<!-- Javascript Başlar -->
-	<!-- Javascript Biter -->
 {% endblock %}

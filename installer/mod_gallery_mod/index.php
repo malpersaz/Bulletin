@@ -19,15 +19,15 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Create tables
+        // Create tables.
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Register module
+        // Register the module.
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Register roles and permissions
+        // Register roles and permissions.
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }
@@ -41,7 +41,7 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
 
     public function add_gallery_mods()
     {
-        $veri = array(
+        $records = array(
             array(
                 'name' => 'Content Galleries',
                 'mod_name' => 'mod_content',
@@ -80,21 +80,21 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
         );
 
         $this->model = Load::model('mod_gallery_mod');
-        foreach ($veri AS $key => $value) {
+        foreach ($records as $key => $value) {
             if ($this->model->exists_mod_name($value['mod_name']) === FALSE) {
-                $this->oke(" -----<b>" . $value['name']."</b> gallery module registered");
+                $this->oke(" -----<b>" . $value['name'] . "</b> gallery module registered");
                 $keys = array_keys($value);
-                foreach ($keys AS $k) {
+                foreach ($keys as $k) {
                     $this->model->$k = $value[$k];
                 }
-                if($this->model->save()===FALSE){
-                    $this->error(" -----Failed to register gallery module for <b>" . $value['name']."</b>".print_r($this->model,TRUE));
+                if ($this->model->save() === FALSE) {
+                    $this->error(" -----Failed to register gallery module for <b>" . $value['name'] . "</b>" . print_r($this->model, TRUE));
                     return FALSE;
                 }
                 continue;
 
-            }else{
-                $this->warning(" -----Gallery module for <b>" . $value['name']."</b> already exists");
+            } else {
+                $this->warning(" -----Gallery module for <b>" . $value['name'] . "</b> already exists");
             }
         }
         return TRUE;

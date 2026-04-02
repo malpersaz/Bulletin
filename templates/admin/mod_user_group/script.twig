@@ -33,12 +33,12 @@
                 dragClass: 'sortable-drag',
                 onEnd: function(evt) {
                     Swal.fire({
-                        title: '{{ lang.mod_user_group[19]|default("Rêzkirin")|e('js') }}',
-                        text: '{{ lang.mod_user_group[15]|default("Ma tu dixwazî rêzê biguherî?")|e('js') }}',
+                        title: '{{ lang.mod_user_group[19]|e('js') }}',
+                        text: '{{ lang.mod_user_group[15]|e('js') }}',
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: '{{ lang.mod_user_group[15]|default("Erê")|e('js') }}',
-                        cancelButtonText: '{{ lang.mod_user_group[16]|default("Na")|e('js') }}',
+                        confirmButtonText: '{{ lang.mod_user_group[15]|e('js') }}',
+                        cancelButtonText: '{{ lang.mod_user_group[16]|e('js') }}',
                         customClass: { popup: 'm3-swal-popup' }
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -66,7 +66,7 @@
             if(isReorderActive) {
                 document.body.classList.add('reorder-active');
                 icon.className = 'bi bi-unlock-fill';
-                text.innerText = '{{ lang.mod_user_group[19]|default("Rêzkirinê Bigire")|e('js') }}';
+                text.innerText = '{{ lang.mod_user_group[19]|e('js') }}';
                 btn.style.background = '#eaddff'; 
                 
                 sortableInstances.forEach(s => s.option('disabled', false));
@@ -79,7 +79,7 @@
             } else {
                 document.body.classList.remove('reorder-active');
                 icon.className = 'bi bi-lock-fill';
-                text.innerText = '{{ lang.mod_user_group[19]|default("Rêzkirinê Veke")|e('js') }}';
+                text.innerText = '{{ lang.mod_user_group[19]|e('js') }}';
                 btn.style.background = '#f3edf7';
                 
                 sortableInstances.forEach(s => s.option('disabled', true));
@@ -136,7 +136,7 @@
                     const Toast = Swal.mixin({
                         toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
                     });
-                    Toast.fire({ icon: 'success', title: '{{ lang.mod_user_group[10]|default("Serkeftî!")|e('js') }}' });
+                    Toast.fire({ icon: 'success', title: '{{ lang.mod_user_group[10]|e('js') }}' });
                 } else {
                     throw new Error(orderResp);
                 }
@@ -244,13 +244,13 @@
         if (!selectedUserGroupId) return;
 
         Swal.fire({
-            title: '{{ lang.mod_user_group[8]|default("Ma tu dixwazî jê bibî?")|e('js') }}',
+            title: '{{ lang.mod_user_group[8]|e('js') }}',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff4444',
             cancelButtonColor: '#999',
-            confirmButtonText: '{{ lang.mod_user_group[15]|default("Erê")|e('js') }}',
-            cancelButtonText: '{{ lang.mod_user_group[16]|default("Na")|e('js') }}',
+            confirmButtonText: '{{ lang.mod_user_group[15]|e('js') }}',
+            cancelButtonText: '{{ lang.mod_user_group[16]|e('js') }}',
             customClass: { popup: 'premium-swal-popup' }
         }).then((result) => {
             if (result.isConfirmed) {

@@ -18,15 +18,15 @@ class mod_gallery extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Create tables
+        // Create tables.
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Register module
+        // Register the module.
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Register roles and permissions
+        // Register roles and permissions.
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }

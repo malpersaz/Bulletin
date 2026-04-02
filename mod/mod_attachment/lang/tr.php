@@ -63,24 +63,24 @@ $lang['mod_attachment']['errors'] = [
     'invalid_record' => 'İlgili kayıt bulunamadı.',
     'invalid_file' => 'İlgili dosya kaydı bulunamadı.',
     'invalid_record_title_field' => 'Bu modül için mod_value alanı geçersiz. Gösterim alanını manuel olarak düzeltin.',
+    'upload_field_missing' => 'Yukleme alani bilgisi eksik.',
+    'uploaded_file_missing' => 'Yuklenecek dosya gonderilmedi.',
 ];
 
-// Roles
 $lang['mod_attachment']['roll']=[
 	'ad'=>'Galeri Rolleri',
 	'add' =>'Dosya Ekleyebilir.',
 	'edit' =>'Eklediği Resmi Düzenleyebilir',
-	'sil'=>'Eklediği Resmi Silebilir',
+	'delete' =>'Eklediği Resmi Silebilir',
 	'list' =>'Dosya Yönetimini Görüntüleyebilir',
 	'moderate_edit'=>'Başkasınına Ait Dosyaları Düzenleyebilir',
 	'moderate_delete'=>'Başkasınına Ait Dosyaları Silebilir'
 ];
-// Role Error Messages
 $lang['mod_attachment']['role_errors']=[
 	'1'=>'Bir Başkasınına Ait Dosyai Düzenlemeye Permissionniz Bulunmuyor',
 	'2'=>'Bir Başkasınına Ait Dosyai Silmeye Permissionniz Yok.',
 	'add' =>'Dosya Eklemeye Permissionniz Yok',
-	'sil'=>'Dosya Silmeye Permissionniz Yok',
+	'delete' =>'Dosya Silmeye Permissionniz Yok',
 	'edit' =>'Dosya Düzenleme Permissionniz Yok',
 	'list' =>'Dosya Yönetimini Görüntülemeye Permissionniz Yok',
 	'moderate_edit'=>'Bir Başkasınına Ait Dosyayı Düzenlemeye Permissionniz Bulunmuyor',

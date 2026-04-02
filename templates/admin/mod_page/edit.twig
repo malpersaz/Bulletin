@@ -6,11 +6,11 @@
 {% set hide_navbar = true %}
 
 {% block title %}
-	{{ lang.mod_page.edit|default('Biguhere') }}
+	{{ lang.mod_page.edit }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_page.edit|default('Biguhere') }}
+	{{ lang.mod_page.edit }}
 {% endblock %}
 {% block styles %}
 <link rel="stylesheet" href="/templates/admin/assets/css/mod_page.css?v=1">
@@ -156,7 +156,7 @@
 
 				<div class="form-row">
 					<label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.deck }}</label>
-					<input type="hidden" name="deck" value="{{ d.deck|default('n') }}" id="deckHidden">
+					<input type="hidden" name="deck" value="{{ d.deck is defined ? d.deck : 'n' }}" id="deckHidden">
 					<div class="selection-grid">
 						<div class="selection-card compact {% if d.deck == 'y' %} active {% endif %}" onclick="selectDeckStatus(this, 'y')">
 							<div class="selection-label">{{ lang.mod_page.admin.radio.deck_yes }}</div>
@@ -189,7 +189,7 @@
                                 <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
                             {% else %}
                                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                                <p>{{ lang.mod_page.button.upload|default(lang.mod_content.wizard.label.upload_text)|default('Wêne Hilbijêre') }}</p>
+                                <p>{{ lang.mod_page.button.upload }}</p>
                             {% endif %}
                         </label>
                         <input type="file" name="image" id="editImgInput" class="mod-page-hidden-input" onchange="previewImage(this)">
@@ -202,12 +202,12 @@
                     <div class="selection-grid">
                         <div class="selection-card {% if d.root == 'y' %} active {% endif %}" onclick="selectRootStatus(this, 'y')">
                             <i class="bi bi-house-door mod-page-icon-lg"></i>
-                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_e|default('Erê') }}</div>
+                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_e }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                         <div class="selection-card {% if d.root == 'n' %} active {% endif %}" onclick="selectRootStatus(this, 'n')">
                             <i class="bi bi-file-earmark mod-page-icon-lg"></i>
-                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_h|default('Na') }}</div>
+                            <div class="selection-label">{{ lang.mod_page.admin.select_value.root_h }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                     </div>
@@ -264,7 +264,7 @@
                 </div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_content.button.yenile|default('Têkiliyên Pêşketî') }} ({{ lang.mod_page.seo_meta|default('SEO, Meta') }})</span>
+					<span>{{ lang.mod_content.button.yenile }} ({{ lang.mod_page.seo_meta }})</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -272,7 +272,7 @@
                     <div class="form-row">
                         <div class="m3-input-wrapper">
                             <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}" placeholder=" ">
-                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.seo|default('SEO URL') }}</label>
+                            <label class="m3-floating-label">{{ lang.mod_page.admin.columns.seo }}</label>
                         </div>
                     </div>
                     <div class="form-row">
@@ -339,9 +339,9 @@
         tomSelectIds: ['parent_id', 'menu', 'acl_id', 'gallery_id', 'file_id'],
         resetSelectIds: ['parent_id', 'category_id', 'menu', 'gallery_id', 'file_id'],
         alerts: {
-            errorMessage: {{ mesaj|default('')|json_encode|raw }},
-            errors: {{ hatalar|default([])|json_encode|raw }},
-            okText: {{ lang.mod_page.button.tamam|default('Tamam')|json_encode|raw }}
+            errorMessage: {{ (mesaj is defined ? mesaj : '')|json_encode|raw }},
+            errors: {{ (hatalar is defined ? hatalar : [])|json_encode|raw }},
+            okText: {{ lang.mod_page.button.tamam|json_encode|raw }}
         },
         removeImage: {
             pageId: {{ d.id|json_encode|raw }},
@@ -352,7 +352,7 @@
             successTitle: {{ lang.mod_page.oke|json_encode|raw }},
             successMessage: {{ lang.mod_page.remove_image_oke|json_encode|raw }},
             errorTitle: {{ lang.mod_page.hata|json_encode|raw }},
-            uploadText: {{ lang.mod_page.button.upload|default(lang.mod_content.wizard.label.upload_text)|default('Wêne Hilbijêre')|json_encode|raw }},
+            uploadText: {{ lang.mod_page.button.upload|json_encode|raw }},
             inputId: 'editImgInput'
         },
         successRedirect: {% if oke is defined %}{

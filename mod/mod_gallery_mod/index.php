@@ -2,7 +2,7 @@
 
 /* AKM Software.
  * @2015
- * mod_gallery_mod Modül Sayfası
+ * mod_gallery_mod module page
  * mod/mod_gallery_mod/index.php
  */
 
@@ -13,26 +13,26 @@ class mod_gallery_mod_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load the admin template library.
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load the database library.
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Load site settings when needed.
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load the language file.
         $this->lang = Load::lang('mod_gallery_mod');
-        // Dil Dosyasını Temaya Gönderelim
+        // Share the language file with the template layer.
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Load the session library.
         $this->session = Load::lib('Session');
-        // User Model
+        // Load the user model.
         $this->user = Load::model('mod_user.user');
     }
 
-    // Ekleme Sayfası
+    // Add page.
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check add permission.
         if ($this->user->hasPermission('mod_gallery_mod', 'add', $this->lang['mod_gallery_mod']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -45,10 +45,10 @@ class mod_gallery_mod_mod extends indexMain
         $this->tema->veri('site', $this->site);
     }
 
-    // Düzenleme Sayfası
+    // Edit page.
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_gallery_mod', 'edit', $this->lang['mod_gallery_mod']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -63,7 +63,7 @@ class mod_gallery_mod_mod extends indexMain
 
         $d = $this->mod_gallery_mod_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check whether the current user can edit another user's record.
         if ($this->user->checkPermission('mod_gallery_mod', 'moderate_edit', $d['user_id'], $this->lang['mod_gallery_mod']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -80,10 +80,10 @@ class mod_gallery_mod_mod extends indexMain
         $this->tema->tpl('mod_gallery_mod/duzenle');
     }
 
-    // Listeleme Sayfası
+    // List page.
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check list permission.
         if ($this->user->hasPermission('mod_gallery_mod', 'list', $this->lang['mod_gallery_mod']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -94,7 +94,7 @@ class mod_gallery_mod_mod extends indexMain
         $this->tema->veri('site', $this->site);
     }
 
-    // Ekleme Fonksiyonu
+    // Add handler.
     private function _add()
     {
         $this->val = Load::validator('mod_gallery_mod.ekle');
@@ -120,18 +120,17 @@ class mod_gallery_mod_mod extends indexMain
 
             $this->mod_gallery_mod_model->user_id = $this->session->getir('id');
 
-            // Eğer Resim varsa
+            // Persist the new record.
             if ($this->mod_gallery_mod_model->save(TRUE)) {
                 $this->_oke_message($this->lang['mod_gallery_mod']['message']['oke']['add']);
             } else {
-                // Eğer Resim varsa
-
-                $this->_error_message($this->lang['mod_gallery_mod']['message']['oke']['add']);
+                // Report the save failure with the matching error message.
+                $this->_error_message($this->lang['mod_gallery_mod']['message']['error']['add']);
             }
         }
     }
 
-    // Düzenleme Fonksiyonu
+    // Edit handler.
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_gallery_mod.duzenle');
@@ -160,12 +159,12 @@ class mod_gallery_mod_mod extends indexMain
                 unset($this->mod_gallery_mod_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // Persist the updated record.
             $this->mod_gallery_mod_model->id = $id;
             if ($this->mod_gallery_mod_model->update('id')) {
                 $this->_oke_message($this->lang['mod_gallery_mod']['message']['oke']['edit']);
             } else {
-                // Eğer Resim varsa
+                // Report the update failure with the matching error message.
                 $this->_error_message($this->lang['mod_gallery_mod']['message']['error']['edit']);
             }
         }
@@ -174,7 +173,7 @@ class mod_gallery_mod_mod extends indexMain
 
     function sil()
     {
-        // Listeleme Permissionsi varmı?
+        // Check delete permission.
         if ($this->user->hasPermission('mod_gallery_mod',  'delete', $this->lang['mod_gallery_mod']['role_errors'][ 'delete']) === False) {
             return False;
         }
@@ -199,7 +198,7 @@ class mod_gallery_mod_mod extends indexMain
                 exit($this->lang['mod_gallery_mod']['errors']['record']);
             }
             $this->mod_gallery_mod_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+            // Check whether the current user can delete another user's record.
             if ($this->user->checkPermission('mod_gallery_mod', 'moderate_delete', $this->mod_gallery_mod_model->user_id, $this->lang['mod_gallery_mod']['role_errors']['moderate_delete']) === False) {
                 return False;
             }
@@ -314,7 +313,6 @@ class mod_gallery_mod_mod extends indexMain
 
 
         $i->gR();
-        //print_r($i);exit;
         $data = [];
 
 
@@ -356,27 +354,25 @@ class mod_gallery_mod_mod extends indexMain
             'data' => $data,
             'recordsFiltered' => $getCount,
             'recordsTotal' => $ii->getCount(),
-            // 'customActionStatus'=>'OK',
-            ///'customActionMessage'=>'Oldumu Şimdi?'
         ]);
     }
 
 
-    // Valid Mesaj
+    // Success message helper.
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    // Validation error helper.
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    // Fatal error helper.
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

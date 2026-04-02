@@ -1,25 +1,11 @@
 <?php
-/**
- * File Upload Module - English Language File
- *
- * @package Rojname
- * @module  mod_file
- * @version 1.0.0
- * @author  AKM Software
- * @license Proprietary
- */
 
-// Prevent direct access
 if (!defined('AKM_LOADED')) {
     die('Direct access to this file is not allowed.');
 }
 
-/**
- * File Upload Module Language Translations
- */
 $lang['mod_attachment'] = [];
 
-// === Admin Interface Messages ===
 $lang['mod_attachment']['admin'] = [
     1 => 'File Upload Area',
     2 => 'Select a file by clicking the Browse button below!',
@@ -64,7 +50,6 @@ $lang['mod_attachment']['admin'] = [
     'help' => 'Help!'
 ];
 
-// === Error Messages ===
 $lang['mod_attachment']['hata'] = [
     1 => 'Could not get file source',
     2 => 'The specified file is not a valid file',
@@ -82,9 +67,10 @@ $lang['mod_attachment']['errors'] = [
     'invalid_record' => 'The related record could not be found.',
     'invalid_file' => 'The related file record could not be found.',
     'invalid_record_title_field' => 'The mod_value field for this module is invalid. Correct the display field manually.',
+    'upload_field_missing' => 'Upload field information is missing.',
+    'uploaded_file_missing' => 'No file was provided for upload.',
 ];
 
-// === Role Permissions ===
 $lang['mod_attachment']['roll'] = [
     'ad' => 'Gallery Roles',
     'add' => 'Can add files.',
@@ -94,18 +80,15 @@ $lang['mod_attachment']['roll'] = [
     'moderate' => 'Can manage files belonging to others'
 ];
 
-// === Module Description ===
 $lang['mod_attachment']['module'] = [
     'description' => 'File Module',
 ];
 
-// === AJAX Response Messages ===
 $lang['mod_attachment']['ajax'] = [
     'success' => 'Success',
     'error' => 'Error',
 ];
 
-// === Role-based Error Messages ===
 $lang['mod_attachment']['role_errors'] = [
     1 => 'You do not have permission to edit a file belonging to someone else',
     2 => 'You do not have permission to delete a file belonging to someone else.',

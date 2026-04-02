@@ -1,7 +1,8 @@
 <?php
-/* AKM Software.
+/* 
+ * AKM Software.
  * @2015
- * mod_video_embed_category Modül Sayfası
+ * Video Embed Category Module Page
  * mod/mod_video_embed_category/index.php
  */
 class mod_video_embed_category_mod extends indexMain
@@ -10,25 +11,27 @@ class mod_video_embed_category_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load Language File
         $this->lang = Load::lang('mod_video_embed_category');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send Language File to Template
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    /**
+     * Add Page
+     */
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check Add Permission
         if ($this->user->hasPermission('mod_video_embed_category', 'add', $this->lang['mod_video_embed_category']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -51,10 +54,12 @@ class mod_video_embed_category_mod extends indexMain
         $this->tema->veri('select_nested_menu_result', $select_nested_menu_result);
     }
 
-    // Düzenleme Sayfası
+    /**
+     * Edit Page
+     */
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video_embed_category', 'edit', $this->lang['mod_video_embed_category']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -69,7 +74,7 @@ class mod_video_embed_category_mod extends indexMain
 
         $d = $this->mod_video_embed_category_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_video_embed_category', 'moderate_edit', $d['user_id'], $this->lang['mod_video_embed_category']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -93,10 +98,12 @@ class mod_video_embed_category_mod extends indexMain
         $this->tema->veri('select_nested_parent_id_result', $select_nested_parent_id_result);
     }
 
-    // Listeleme Sayfası
+    /**
+     * List Page
+     */
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_video_embed_category', 'list', $this->lang['mod_video_embed_category']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -110,7 +117,9 @@ class mod_video_embed_category_mod extends indexMain
         $select_nested_mod_video_embed_category_result = Helper::nested($mod_video_embed_category_nested->toArray(), 'parent_id', 'id');
         $this->tema->veri('select_nested_mod_video_embed_category_result', $select_nested_mod_video_embed_category_result);
     }
-    // mod_video_embed_category Sıra Değişim
+    /**
+     * Order Change
+     */
     public function _sira_degis()
     {
         $b = Req::Post_Safe('order');
@@ -129,10 +138,12 @@ class mod_video_embed_category_mod extends indexMain
     }
 
 
-    // mod_video_embed_category Taşıma
+    /**
+     * Move Category
+     */
     public function tasi()
     {
-        // Taşıma Permissionsi varmı?
+        // Check Move Permission
         if ($this->user->hasPermission('mod_video_embed_category', 'edit', $this->lang['mod_video_embed_category']['role_errors']['edit']) === False) {
             return False;
         }
@@ -148,7 +159,7 @@ class mod_video_embed_category_mod extends indexMain
     }
     public function image_remove_image()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_video_embed_category', 'edit', $this->lang['mod_video_embed_category']['role_errors']['edit'], 1) === False) {
             return FALSE;
         }
@@ -164,7 +175,7 @@ class mod_video_embed_category_mod extends indexMain
 
 
         $this->mod_video_embed_category_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_video_embed_category', 'moderate_edit', $this->mod_video_embed_category_model->user_id, $this->lang['mod_video_embed_category']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -200,7 +211,9 @@ class mod_video_embed_category_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    /**
+     * Add Function
+     */
     private function _add()
     {
         $this->val = Load::validator('mod_video_embed_category.add');
@@ -231,7 +244,7 @@ class mod_video_embed_category_mod extends indexMain
             $this->mod_video_embed_category_model->description = Req::Post_Safe('description');
             $this->mod_video_embed_category_model->user_id = $this->session->getir('id');
 
-            // Eğer Resim varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed_category';
@@ -263,7 +276,7 @@ class mod_video_embed_category_mod extends indexMain
             }
 
             if ($this->mod_video_embed_category_model->save(TRUE)) {
-                // Eğer Menüye Eklemek istemişse
+                // If requested to add to Menu
                 if (Req::Post_Safe('menu') != 0) {
                     $this->model = Load::model('mod_menu');
                     $this->model->parent_id = Req::Post_Safe('menu');
@@ -275,7 +288,7 @@ class mod_video_embed_category_mod extends indexMain
                 }
                 $this->_oke_message($this->lang['mod_video_embed_category']['message']['oke']['add']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -285,7 +298,9 @@ class mod_video_embed_category_mod extends indexMain
         }
     }
 
-    // Düzenleme Fonksiyonu
+    /**
+     * Edit Function
+     */
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_video_embed_category.edit');
@@ -311,7 +326,7 @@ class mod_video_embed_category_mod extends indexMain
             $this->mod_video_embed_category_model->title = Req::Post_Safe('title');
             $this->mod_video_embed_category_model->keywords = Req::Post_Safe('keywords');
             $this->mod_video_embed_category_model->description = Req::Post_Safe('description');
-            // Bu İçerik Daha Önce Menüye Gönderilmişse Güncelleyelim
+            // If content was previously added to Menu, update it
             $new_mod_video_embed_category = new mod_video_embed_category_model();
             $new_mod_video_embed_category->where_id($id)->gRo()->sync();
             $url = $new_mod_video_embed_category->lang . '/videos/' . $new_mod_video_embed_category->seo;
@@ -320,7 +335,7 @@ class mod_video_embed_category_mod extends indexMain
                 unset($this->mod_video_embed_category_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed_category';
@@ -353,7 +368,7 @@ class mod_video_embed_category_mod extends indexMain
 
             $this->mod_video_embed_category_model->id = $id;
             if ($this->mod_video_embed_category_model->update('id')) {
-                // Bu İçerik Daha Önce Menüye Gönderilmişse Güncelleyelim
+                // If content was previously added to Menu, update it
                 $mod_menu_model = Load::model('mod_menu');
                 if ($mod_menu_model->exists_url($url)) {
                     $mod_menu_model->getResultOne()->sync();
@@ -367,7 +382,7 @@ class mod_video_embed_category_mod extends indexMain
 
                 $this->_oke_message($this->lang['mod_video_embed_category']['message']['oke']['edit']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -386,10 +401,12 @@ class mod_video_embed_category_mod extends indexMain
     }
 
 
-    // Silme Sayfası
+    /**
+     * Delete Page
+     */
     public function dragdrop_delete()
     {
-        // Silme Permissionsi varmı?
+        // Check Delete Permission
         if ($this->user->hasPermission('mod_video_embed_category',  'delete', $this->lang['mod_video_embed_category']['role_errors'][ 'delete'], 1) === False) {
             return False;
         }
@@ -402,10 +419,12 @@ class mod_video_embed_category_mod extends indexMain
         }
     }
 
-    // Silme Fonksiyonu
+    /**
+     * Delete Function
+     */
     private function _dragdrop_delete($delete = NULL)
     {
-        // mod_video_embed_category Modeli Yükleyelim
+        // Load mod_video_embed_category Model
         $this->mod_video_embed_category_model = Load::model('mod_video_embed_category');
 
         $this->mod_video_embed_category_model->getid($delete)->getResultOne(TRUE, TRUE);
@@ -415,7 +434,7 @@ class mod_video_embed_category_mod extends indexMain
         }
         $this->mod_video_embed_category_model->sync();
 
-        // Kayıt Başka birine ait ise Permissionsi varmı?
+        // Check Permission if record belongs to another user
         if ($this->user->checkPermission('mod_video_embed_category', 'moderate_delete', $this->mod_video_embed_category_model->user_id, $this->lang['mod_video_embed_category']['role_errors']['moderate_delete']) === False) {
             return False;
         }
@@ -456,16 +475,16 @@ class mod_video_embed_category_mod extends indexMain
 
 
         $this->mod_video_embed_category_model->getid($delete);
-        // Modül varmı ve Gallery Ekleniyormu
+        // Check if module exists and Gallery is being added
         $this->mod = Load::model('mod_gallery_mod');
         if ($this->mod->exists_mod_name("mod_video_embed_category") === TRUE) {
-            // İçeriğe Ait Gallery Varsa Silelim
+            // Delete Gallery if exists for content
             Run::import('mod_gallery', '_remove', ['mod_video_embed_category', $this->mod_video_embed_category_model->id]);
         }
-        // Modül varmı ve Dosya Ekleniyormu
+        // Check if module exists and Attachment is being added
         $this->mod = Load::model('mod_attachment_mod');
         if ($this->mod->exists_mod_name("mod_video_embed_category") === TRUE) {
-            // İçeriğe Ait Dosya Varsa Silelim
+            // Delete Attachment if exists for content
             Run::import('mod_attachment', '_remove', ['mod_video_embed_category', $this->mod_video_embed_category_model->id]);
         }
 
@@ -475,21 +494,27 @@ class mod_video_embed_category_mod extends indexMain
 
 
 
-    // Valid Message
+    /**
+     * Success Message
+     */
     private function _ok_message($message)
     {
         $this->tema->veri('ok', True);
         $this->tema->veri('message', $message);
     }
 
-    // Error Message
+    /**
+     * Error Message
+     */
     private function _error_message($message)
     {
         $this->tema->veri('error', True);
         $this->tema->veri('errors', [$message]);
     }
 
-    // Error Message
+    /**
+     * Error Message
+     */
     private function _error($message)
     {
         $this->tema->veri('error', TRUE);

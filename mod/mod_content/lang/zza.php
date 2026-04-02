@@ -83,6 +83,8 @@ $lang['mod_content'] = [
         'record' => 'Tomara ku texîs kirî nehat dîtin!',
     ],
 
+    'wizard_loading' => 'Sihêrbaz tê barkirin...',
+
     // === Buttons ===
     'button' => [
         'next' => 'Pêşve',

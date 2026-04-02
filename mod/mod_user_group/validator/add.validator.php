@@ -6,14 +6,14 @@ class add_validator
     public $errors = [];
 	function __construct()
 	{
-		// Validator Kütüphanesini Yükleyelim
+		// Load the validator library.
 		$this->valid = Load::lib('Validator');
-		// Dil Dosyası.
+		// Load the module language file.
 		$this->lang = Load::lang('mod_user_group');
 	}
 	public function check()
 	{
-		// AD.
+		// Validate the group name.
 		$this->valid->add(
 			[
 				'name' => 'name',

@@ -1,7 +1,8 @@
 <?php
-/* AKM Software.
+/* 
+ * AKM Software.
  * @2015
- * mod_menu Modül Sayfası
+ * Menu Module Page
  * mod/mod_menu/index.php
  */
 class mod_menu_mod extends indexMain
@@ -10,25 +11,27 @@ class mod_menu_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load Language File
         $this->lang = Load::lang('mod_menu');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send Language File to Template
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    /**
+     * Add Page
+     */
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check Add Permission
         if ($this->user->hasPermission('mod_menu', 'add', $this->lang['mod_menu']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -49,10 +52,12 @@ class mod_menu_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Düzenleme Sayfası
+    /**
+     * Edit Page
+     */
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_menu', 'edit', $this->lang['mod_menu']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -67,7 +72,7 @@ class mod_menu_mod extends indexMain
 
         $d = $this->mod_menu_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_menu', 'moderate_edit', $d['user_id'], $this->lang['mod_menu']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -93,10 +98,12 @@ class mod_menu_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Listeleme Sayfası
+    /**
+     * List Page
+     */
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_menu', 'list', $this->lang['mod_menu']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -128,10 +135,12 @@ class mod_menu_mod extends indexMain
     }
 
 
-    // mod_menu Taşıma
+    /**
+     * mod_menu Move
+     */
     public function tasi()
     {
-        // Taşıma Permissionsi varmı?
+        // Check Move Permission
         if ($this->user->hasPermission('mod_menu', 'edit', $this->lang['mod_menu']['role_errors']['edit']) === False) {
             return False;
         }
@@ -154,7 +163,9 @@ class mod_menu_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    /**
+     * Add Function
+     */
     private function _add()
     {
         $this->val = Load::validator('mod_menu.add');
@@ -189,7 +200,9 @@ class mod_menu_mod extends indexMain
         }
     }
 
-    // Düzenleme Fonksiyonu
+    /**
+     * Edit Function
+     */
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_menu.edit');
@@ -216,13 +229,13 @@ class mod_menu_mod extends indexMain
                 unset($this->mod_menu_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If the record exists
             $this->mod_menu_model->id = $id;
             if ($this->mod_menu_model->update('id')) {
                 $this->_oke_message($this->lang['mod_menu']['message']['oke']['edit']);
                 Helper::yonlendir($this->site['sadres'] . 'mod_menu/list', 1);
             } else {
-                // Eğer Resim varsa
+                // If the update fails
                 $this->_error_message($this->lang['mod_menu']['message']['error']['edit']);
             }
         }
@@ -239,10 +252,12 @@ class mod_menu_mod extends indexMain
     }
 
 
-    // Silme Sayfası
+    /**
+     * Delete Page
+     */
     public function dragdrop_delete()
     {
-        // Silme Permissionsi varmı?
+        // Check Delete Permission
         if ($this->user->hasPermission('mod_menu',  'delete', $this->lang['mod_menu']['role_errors'][ 'delete'], 1) === False) {
             return False;
         }
@@ -255,10 +270,12 @@ class mod_menu_mod extends indexMain
         }
     }
 
-    // Silme Fonksiyonu
+    /**
+     * Delete Function
+     */
     private function _dragdrop_delete($sil = NULL)
     {
-        // mod_menu Modeli Yükleyelim
+        // Load mod_menu Model
         $this->mod_menu_model = Load::model('mod_menu');
 
         $this->mod_menu_model->getid($sil)->getResultOne(TRUE, TRUE);
@@ -268,7 +285,7 @@ class mod_menu_mod extends indexMain
         }
         $this->mod_menu_model->sync();
 
-        // Kayıt Başka birine ait ise Permissionsi varmı?
+        // If record belongs to someone else, check permission
         if ($this->user->checkPermission('mod_menu', 'moderate_delete', $this->mod_menu_model->user_id, $this->lang['mod_menu']['role_errors']['moderate_delete']) === False) {
             return False;
         }
@@ -284,16 +301,16 @@ class mod_menu_mod extends indexMain
 
 
         $this->mod_menu_model->getid($sil);
-        // Modül varmı ve Gallery Ekleniyormu
+        // Check if module exists and Gallery is being added
         $this->mod = Load::model('mod_gallery_mod');
         if ($this->mod->exists_mod_name("mod_menu") === TRUE) {
-            // İçeriğe Ait Gallery Varsa Silelim
+            // Delete Gallery if exists for content
             Run::import('mod_gallery', '_remove', ['mod_menu', $this->mod_menu_model->id]);
         }
-        // Modül varmı ve Dosya Ekleniyormu
+        // Check if module exists and Attachment is being added
         $this->mod = Load::model('mod_attachment_mod');
         if ($this->mod->exists_mod_name("mod_menu") === TRUE) {
-            // İçeriğe Ait Dosya Varsa Silelim
+            // Delete Attachment if exists for content
             Run::import('mod_attachment', '_remove', ['mod_menu', $this->mod_menu_model->id]);
         }
 
@@ -303,21 +320,27 @@ class mod_menu_mod extends indexMain
 
 
 
-    // Valid Mesaj
+    /**
+     * Success Message
+     */
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    /**
+     * Error Message
+     */
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    /**
+     * Error Message
+     */
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

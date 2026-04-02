@@ -41,6 +41,40 @@ The repository uses this scope model:
 - touched files: file-wide enforcement for non-English comments and non-English hard-coded user-facing strings
 - all other policy categories: diff-scoped by default
 
+## Repository Boundary
+
+The following modules are `Rojname`-specific and must not be treated as shared-core candidates for `AKMbusiness`:
+
+- `mod_news`
+- `mod_news_category`
+- `mod_publication`
+- `mod_publication_category`
+
+Agents must preserve this boundary unless the user explicitly overrides it.
+
+The following installer behaviors are also project-specific to `Rojname` and must remain local unless the user explicitly overrides the rule:
+
+- `Rojname` branding in installer defaults
+- excluding `tr` and `ar` from installer default languages
+- removing default sample menu/category/content seeds
+
+Outside those exceptions, refactoring work should be treated as shared-core candidate work that needs cross-repository evaluation.
+
+## Synchronization Discipline
+
+When a module is being synchronized or refactored, the agent must apply policy during implementation, not after the fact.
+
+Required behavior:
+
+- update the module and apply agent rules in the same pass
+- remove Turkish comments from touched files
+- do not use `default(...)`, inline fallback text, or hard-coded fallback strings to cover missing localization in visible UI output
+- if a visible localization key is missing, add or wire the proper key in the same task instead of shipping a fallback
+- treat touched flows as required to reach fully wired multilingual behavior before the task can be considered complete
+- do not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention
+- do not leave half-completed refactors behind
+- run a short review before moving on to the next module
+
 ## Why This Rule Exists
 
 Pure repository-wide enforcement creates too much noise in a legacy-heavy codebase.
@@ -101,6 +135,8 @@ Checks:
 - newly referenced translation keys that are missing
 - non-English translation key names introduced in the diff
 - translation-key fallbacks such as `lang.*|default(...)` introduced in the diff
+- any inline fallback text that masks a missing visible translation key in the touched flow
+- any attempt to ship a touched visible flow without complete localization coverage
 
 Must ignore:
 
@@ -161,6 +197,8 @@ Checks:
 - newly added uploader/modal labels that do not use i18n sources
 - non-English visible hard-coded strings anywhere inside touched template/UI files
 - Twig/UI language fallbacks that replace missing keys with inline default text
+- `default(...)` usage on visible localization expressions in touched templates or JS-rendered UI
+- any visible UI state that depends on fallback copy instead of a real translation key
 
 Must ignore:
 
@@ -196,8 +234,12 @@ Must block delivery:
 - newly introduced Turkish/Kurdish/non-English comment
 - newly introduced non-English method/variable/function/class/file name
 - newly introduced missing translation key in active flow
+- any `lang.*|default(...)` or equivalent inline fallback used for visible UI text in the touched flow
+- any touched visible UI flow that is not fully wired to localization sources
 - any non-English comment remaining inside a touched file
 - any non-English hard-coded user-facing string remaining inside a touched file
+- keeping old and new keys, routes, methods, validators, templates, or aliases alive together after a refactor without explicit user approval
+- leaving a touched module in a half-refactored state
 
 ## Warning
 
@@ -216,6 +258,8 @@ May remain if documented in the change:
 - database-driven legacy field name
 - externally required API name
 - framework or vendor naming that cannot be changed safely
+
+Compatibility retention is allowed only when the user explicitly requests it or when an external dependency is concretely identified in the change.
 
 ## Suggested Review Workflow
 

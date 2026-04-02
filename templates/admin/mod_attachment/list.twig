@@ -705,7 +705,7 @@
         })
             .then((response) => response.text())
             .then((text) => {
-                if (text.trim() !== 'Oke') {
+                if (text.trim() !== 'OK') {
                     throw new Error(text);
                 }
 
@@ -750,7 +750,7 @@
             })
                 .then((response) => response.text())
                 .then((text) => {
-                    if (text.trim() !== 'Oke') {
+                    if (text.trim() !== 'OK') {
                         throw new Error(text);
                     }
 

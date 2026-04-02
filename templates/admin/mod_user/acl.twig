@@ -144,17 +144,35 @@
     </script>
 {% endif %}
 
-<form action="" method="POST" id="aclForm" onsubmit="return false;">
+{% if oke is defined %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
+                confirmButtonText: '{{ lang.mod_user.button.yes }}',
+                confirmButtonColor: '#2e7d32'
+            });
+        });
+    </script>
+{% endif %}
+
+<form action="" method="POST" id="aclForm">
     <div class="acl-container">
         {% for m in modlar %}
             {% set mod_name = m.mod_name %}
             {% set mod_id = m.mod_id %}
+            {% set mod_roll_lang = attribute(attribute(lang, m.mod_name), 'roll') %}
+            {% set mod_title = m.mod_name %}
+            {% if mod_roll_lang is defined and mod_roll_lang.roles is defined %}
+                {% set mod_title = mod_roll_lang.roles %}
+            {% elseif mod_roll_lang is defined and mod_roll_lang.name is defined %}
+                {% set mod_title = mod_roll_lang.name %}
+            {% endif %}
             <div class="acl-module-card">
                 <div class="acl-module-header" onclick="toggleAclModule(this)">
                     <i class="bi bi-shield-lock-fill header-icon"></i>
-                    <span class="header-title">
-                        {{ attribute(lang, m.mod_name).roll.roles | default(attribute(lang, m.mod_name).roll.name) | default(m.mod_name) }}
-                    </span>
+                    <span class="header-title">{{ mod_title }}</span>
                     <i class="bi bi-chevron-down chevron"></i>
                 </div>
                 <div class="acl-table-wrapper" style="display: none;">
@@ -166,7 +184,7 @@
                                     <th style="min-width: 120px; border-left: 1px solid rgba(0,0,0,0.05);">
                                         <div class="acl-group-toggle">
                                             <input type="checkbox" class="acl-checkbox" onchange="toggleGroup(this, '{{ m.mod_id }}', '{{ grup.group_id }}')">
-                                            <span class="acl-group-name">{{ lang.mod_user.groups[grup.name] | default(grup.name) }}</span>
+                                            <span class="acl-group-name">{{ lang.mod_user.groups[grup.name] is defined ? lang.mod_user.groups[grup.name] : grup.name }}</span>
                                         </div>
                                     </th>
                                 {% endfor %}
@@ -176,13 +194,16 @@
                             {% for roll in attribute(roller, mod_id) %}
                                 <tr>
                                     {% set roll_name = roll.roll_name %}
-                                    <td class="sticky-col">{{ attribute(attribute(lang, mod_name).roll, roll.roll_name) | default(roll.roll_name) }}</td>
+                                    {% set role_label = roll.roll_name %}
+                                    {% if mod_roll_lang is defined and attribute(mod_roll_lang, roll.roll_name) is defined %}
+                                        {% set role_label = attribute(mod_roll_lang, roll.roll_name) %}
+                                    {% endif %}
+                                    <td class="sticky-col">{{ role_label }}</td>
                                     {% for grup in gruplar %}
                                         <td style="border-left: 1px solid rgba(0,0,0,0.05);">
                                             <input type="checkbox"
                                                    class="acl-checkbox g-{{ m.mod_id }}-{{ grup.group_id }}"
                                                    name="list[{{ grup.group_id }}][{{ m.mod_id }}][{{ roll.roll_id }}]"
-                                                   onchange="updatePermission(this, '{{ grup.group_id }}', '{{ m.mod_id }}', '{{ roll.roll_id }}')"
                                                    {% for p in permler %}
                                                        {% if grup.group_id == p.group_id and m.mod_id == p.mod_id and roll.roll_id == p.roll_id %}
                                                            checked="checked"
@@ -200,7 +221,6 @@
     </div>
 </form>
 
-<div id="saveStatus" style="position: fixed; top: 120px; left: 50%; transform: translateX(-50%); padding: 12px 24px; border-radius: 50px; background: #6750A4; color: white; font-size: 15px; font-weight: 600; display: none; z-index: 999999; box-shadow: 0 10px 25px rgba(0,0,0,0.4); border: 2px solid white; pointer-events: none;"></div>
 {% endblock %}
 
 {% block fixed_bottom %}
@@ -210,13 +230,13 @@
             <span>{{ lang.mod_user.button.cancel }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="window.location.reload()">
-            <i class="bi bi-arrow-clockwise"></i>
+        <div class="toolbar-fab" onclick="document.getElementById('aclForm').submit()">
+            <i class="bi bi-check-lg"></i>
         </div>
 
-        <button class="toolbar-item active" onclick="window.location.reload()">
-            <i class="bi bi-arrow-clockwise"></i>
-            <span>{{ lang.mod_user.admin.refresh_permissions | default('Rojanekirin') }}</span>
+        <button class="toolbar-item active" onclick="document.getElementById('aclForm').submit()">
+            <i class="bi bi-floppy-fill"></i>
+            <span>{{ lang.mod_user.admin.refresh_permissions }}</span>
         </button>
     </div>
 {% endblock %}
@@ -236,57 +256,25 @@
         }
     }
 
-    // AJAX function to update single permission
-    function updatePermission(el, groupId, modId, rollId) {
-        var status = document.getElementById('saveStatus');
-        status.style.display = 'block';
-        status.innerHTML = '<i class="bi bi-hourglass-split"></i> {{ lang.mod_user.admin.permissions_updated | default('Tê tomarkirin...') }}';
-        
-        var formData = new FormData();
-        formData.append('group_id', groupId);
-        formData.append('mod_id', modId);
-        formData.append('roll_id', rollId);
-        formData.append('checked', el.checked);
-
-        // Robust URL detection (e.g., /ku/mod_user/acl -> /ku/mod_user/acl_ajax)
-        var url = window.location.href.split('?')[0].replace(/\/acl$/, '/acl_ajax');
-
-        fetch(url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            status.innerHTML = '<i class="bi bi-check2-circle"></i> {{ lang.mod_user.admin.permissions_updated | default('Hate tomarkirin') }}';
-            setTimeout(() => {
-                status.style.display = 'none';
-            }, 1200);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            status.style.background = '#ba1a1a';
-            status.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Şaşî derket!';
-            setTimeout(() => {
-                status.style.display = 'none';
-                status.style.background = '#6750A4';
-            }, 3000);
-        });
-    }
-
-    // Toggle all checkboxes in a group column and update via AJAX
+    // Toggle all checkboxes in a group column
     function toggleGroup(el, modId, groupId) {
         var checked = el.checked;
         var cells = document.querySelectorAll('.g-' + modId + '-' + groupId);
         
         cells.forEach(function(cb) {
-            if (cb.checked !== checked) {
-                cb.checked = checked;
-                var nameParts = cb.name.match(/\[(\d+)\]$/);
-                if (nameParts && nameParts[1]) {
-                    updatePermission(cb, groupId, modId, nameParts[1]);
-                }
-            }
+            cb.checked = checked;
         });
     }
+
+    (function() {
+        var form = document.getElementById('aclForm');
+        if (form) {
+            var hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'gonder';
+            hidden.value = '{{ lang.mod_user.admin.refresh_permissions }}';
+            form.appendChild(hidden);
+        }
+    })();
 </script>
 {% endblock %}

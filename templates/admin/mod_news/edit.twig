@@ -426,7 +426,7 @@
 
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_news.admin.columns.image }}</label>
-                    {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                    {% include 'admin/partials/image_uploader.twig' with {
                         shell_id: 'editImageShell',
                         shell_class: 'edit-image-shell',
                         has_image: d.image ? true : false,

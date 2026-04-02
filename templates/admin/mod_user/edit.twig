@@ -295,7 +295,7 @@
 								</button>
 							{% else %}
 								<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-								<p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.admin.select_image|default('Wêne hilbijêre') }}</p>
+								<p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.button.select_image }}</p>
 							{% endif %}
 						</label>
 						<input type="file" name="image" id="image" style="display:none;" onchange="previewAvatar(this)">
@@ -402,7 +402,7 @@
 
         function resetUpload() {
             var area = document.getElementById('image-upload-area');
-            area.innerHTML = '<i class="bi bi-cloud-arrow-up-fill upload-icon"></i><p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.admin.select_image|default("Wêne hilbijêre") }}</p>';
+            area.innerHTML = '<i class="bi bi-cloud-arrow-up-fill upload-icon"></i><p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.button.select_image }}</p>';
             document.getElementById('image').value = '';
         }
 

@@ -15,13 +15,13 @@ class flexigrid_model
     {
         $valid_sort = ["asc", "desc"];
 
-        $colom = ['id', 'ad', 'mod_name', 'mod_key', 'mod_value'];
+        $colom = ['id', 'name', 'mod_name', 'mod_key', 'mod_value'];
 
         $rp = Req::is_Post('rp') === TRUE ? Req::Post_Safe('rp') : 10;
 
         $sortorder = Req::is_Post('sortorder') === TRUE ? Req::Post_Safe('sortorder') : $valid_sort['0'];
 
-        // ORDER BY ID ASC Gibi
+        // Keep the sort order on a valid whitelist.
         if (in_array($sortorder, $valid_sort) === False) {
             $sortorder = $valid_sort['0'];
         }
@@ -66,20 +66,20 @@ class flexigrid_model
         $this->json['total'] = $toplam;
         $this->json['page'] = $page;
 
-        // Eğer Sonuç Yoksa Malesef
+        // Stop early when there are no matching rows.
         if ($toplam < 1) {
             echo json_encode($this->json);
             exit();
         }
 
-        // Ofset Değeri
+        // Calculate the current page offset.
         $offset = $page != 1 ? (($page - 1) * $rp) : NULL;
 
         $this->mod_gallery_mod_model->limit($rp, $offset);
         $this->mod_gallery_mod_model->order($sortname, $sortorder);
         $this->mod_gallery_mod_model->getResult(TRUE, TRUE);
 
-        // Eğer Sonuç Yoksa
+        // Stop early when the current page has no rows.
         if ($this->mod_gallery_mod_model->getSize() < 1) {
             echo json_encode($this->json);
             exit();
@@ -104,7 +104,7 @@ class flexigrid_model
         }
         return $new;
 
-        /*if ($value['durum'] === 'y') {
+        /*if ($value['status'] === 'y') {
             $value['durum'] = $this->lang['mod_user']['grid']['active'];
         } elseif ($value['durum'] === 'n') {
             $value['durum'] = $this->lang['mod_user']['grid']['waiting_email_activation'];

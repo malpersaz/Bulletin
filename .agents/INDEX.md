@@ -16,6 +16,9 @@ Use it to quickly locate:
 - `/.agents/README.md`
   - repository-local agent directory overview
 
+- `/docs/VERSION.md`
+  - active version log and development note target
+
 - `/CODE_QUALITY_AGENT_STRATEGY.md`
   - primary quality-agent policy
 
@@ -82,3 +85,23 @@ When quality-agent policy changes, update these files together:
 - `/.agents/quality/manifest.md`
 - `/.agents/quality/examples.md`
 - any affected prompt files
+
+## Version Logging Rule
+
+- `/docs/VERSION.md` is the repository source of truth for version history.
+- The active version bucket remains `v1.0.49.8` until the user explicitly provides a new Git upload version code.
+- New completed development notes must be appended under the active version bucket until that code changes.
+
+## Repository Boundary Rule
+
+- The following modules are `Rojname`-only:
+  - `mod_news`
+  - `mod_news_category`
+  - `mod_publication`
+  - `mod_publication_category`
+- Agents must preserve them as project-specific modules and must not treat them as shared-core candidates for `AKMbusiness`.
+- The following installer decisions are also `Rojname`-specific:
+  - `Rojname` branding/default project name
+  - excluding `tr` and `ar` from installer default languages
+  - removing default sample menu/category/content seeds
+- Other refactoring work should be treated as shared-core candidate work and compared for sibling-repo synchronization.

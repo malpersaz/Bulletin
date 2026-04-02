@@ -63,23 +63,23 @@ $lang['mod_attachment']['errors'] = [
     'invalid_record' => 'Tomara têkildar nehat dîtin.',
     'invalid_file' => 'Tomara pelê ya têkildar nehat dîtin.',
     'invalid_record_title_field' => 'Ji bo vê modulê qada mod_value ne derbasdar e. Qada nîşandanê bi destan serast bike.',
+    'upload_field_missing' => 'Agahiya qada barkirinê kêm e.',
+    'uploaded_file_missing' => 'Ji bo barkirinê tu pel nehat şandin.',
 ];
 
-// Roles
 $lang['mod_attachment']['roll']=[
 	'ad'=>'Erkên Pelan',
 	'add' =>'Dikare pelan lê zêde bike',
 	'edit' =>'Dikare pelên barkirî biguhere',
-	'sil'=>'Dikare pelên barkirî jê bibe',
+	'delete' =>'Dikare pelên barkirî jê bibe',
 	'list' =>'Dikare rêveberiya pelan bibîne',
 	'moderate'=>'Dikare rêveberiya pelên endamên din bike'
 ];
-// Role Error Messages
 $lang['mod_attachment']['role_errors']=[
 	'1'=>'Destûra te tune ku pelên kesên din biguherî!',
 	'2'=>'Destûra te tune ku pelên kesên din jê bibî!',
 	'add' =>'Destûra te tune ku pelan lê zêde bikî!',
-	'sil'=>'Destûra te ya jêbirina pelan tune!',
+	'delete' =>'Destûra te ya jêbirina pelan tune!',
 	'edit' =>'Destûra te ya guhertina pelan tune!',
 	'list' =>'Destûra te ya dîtina rêveberiya pelan tune!'
 ];

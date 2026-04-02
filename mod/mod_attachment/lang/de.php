@@ -1,25 +1,11 @@
 <?php
-/**
- * Datei-Upload-Modul - Deutsche Sprachdatei
- *
- * @package Rojname
- * @module  mod_file
- * @version 1.0.0
- * @author  AKM Software
- * @license Proprietary
- */
 
-// Direkten Zugriff verhindern
 if (!defined('AKM_LOADED')) {
     die('Direkter Zugriff auf diese Datei ist nicht erlaubt.');
 }
 
-/**
- * Datei-Upload-Modul Sprachübersetzungen
- */
 $lang['mod_attachment'] = [];
 
-// === Admin Interface Nachrichten ===
 $lang['mod_attachment']['admin'] = [
     1 => 'Datei-Upload-Bereich',
     2 => 'Wählen Sie eine Datei aus, indem Sie unten auf die Schaltfläche Durchsuchen klicken!',
@@ -55,13 +41,16 @@ $lang['mod_attachment']['admin'] = [
     38 => 'Datei hinzufügen',
     39 => 'Datei bearbeitet',
     40 => 'Dateiname "+original+" wurde in "+text+" geändert',
+    41 => 'Datei-Upload fehlgeschlagen.',
+    42 => 'Statistik',
+    43 => 'Neu',
+    44 => 'Panel',
     'warning' => 'Warnung!',
     'info' => 'Info!',
     'message' => 'Nachricht!',
     'help' => 'Hilfe!'
 ];
 
-// === Fehlermeldungen ===
 $lang['mod_attachment']['hata'] = [
     1 => 'Dateiquelle konnte nicht abgerufen werden',
     2 => 'Die angegebene Datei ist keine gültige Datei',
@@ -71,7 +60,18 @@ $lang['mod_attachment']['hata'] = [
     6 => 'Dateiausgabe konnte nicht generiert werden'
 ];
 
-// === Rollenberechtigungen ===
+$lang['mod_attachment']['errors'] = [
+    'missing_module_name' => 'Modulinformationen fehlen für den Dateivorgang.',
+    'missing_record_id' => 'Datensatzinformationen fehlen für den Dateivorgang.',
+    'invalid_module' => 'Für diesen Datensatz ist kein Dateimodul definiert.',
+    'module_file_permission_missing' => 'Für dieses Modul ist keine Dateiberechtigung definiert.',
+    'invalid_record' => 'Der zugehörige Datensatz konnte nicht gefunden werden.',
+    'invalid_file' => 'Der zugehörige Dateidatensatz konnte nicht gefunden werden.',
+    'invalid_record_title_field' => 'Das Feld mod_value ist für dieses Modul ungültig. Korrigieren Sie das Anzeigefeld manuell.',
+    'upload_field_missing' => 'Informationen zum Upload-Feld fehlen.',
+    'uploaded_file_missing' => 'Es wurde keine Datei zum Hochladen übermittelt.',
+];
+
 $lang['mod_attachment']['roll'] = [
     'ad' => 'Galerierollen',
     'add' => 'Kann Dateien hinzufügen.',
@@ -81,18 +81,15 @@ $lang['mod_attachment']['roll'] = [
     'moderate' => 'Kann Dateien von anderen verwalten'
 ];
 
-// === Modulbeschreibung ===
 $lang['mod_attachment']['module'] = [
     'description' => 'Dateimodul',
 ];
 
-// === AJAX Antwortnachrichten ===
 $lang['mod_attachment']['ajax'] = [
     'success' => 'Erfolg',
     'error' => 'Fehler',
 ];
 
-// === Rollenbasierte Fehlermeldungen ===
 $lang['mod_attachment']['role_errors'] = [
     1 => 'Sie haben keine Berechtigung, eine Datei zu bearbeiten, die jemand anderem gehört',
     2 => 'Sie haben keine Berechtigung, eine Datei zu löschen, die jemand anderem gehört.',

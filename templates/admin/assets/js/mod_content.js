@@ -354,10 +354,10 @@ class ContentManager {
             hintLoading: data.hintLoading || '',
             hintInvalidType: data.hintInvalidType || '',
             hintNoDropData: data.hintNoDropData || '',
-            hintRemoteFailed: data.hintRemoteFailed || CONTENT_LANG.image_remote_failed || '',
-            emptyName: data.emptyName || CONTENT_LANG.image_empty || '',
-            emptyMeta: data.emptyMeta || CONTENT_LANG.image_drop_description || '',
-            imageLabel: CONTENT_LANG.image_title || 'Image'
+            hintRemoteFailed: data.hintRemoteFailed || CONTENT_LANG.image_remote_failed,
+            emptyName: data.emptyName || CONTENT_LANG.image_empty,
+            emptyMeta: data.emptyMeta || CONTENT_LANG.image_drop_description,
+            imageLabel: CONTENT_LANG.image_title
         };
     }
 
@@ -685,14 +685,14 @@ window.editSelected = function () {
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_gallery/list/mod_news/' + mgr.selectedContentId;
+        window.location.href = SITE_URL + 'mod_gallery/list/mod_content/' + mgr.selectedContentId;
     }
 };
 
 window.filesSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_attachment/list/mod_news/' + mgr.selectedContentId;
+        window.location.href = SITE_URL + 'mod_attachment/list/mod_content/' + mgr.selectedContentId;
     }
 };
 
@@ -795,10 +795,10 @@ window.handleContextAction = function (action) {
             });
             break;
         case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_news/${id}`;
+            window.location.href = `${SITE_URL}mod_gallery/list/mod_content/${id}`;
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_news/${id}`;
+            window.location.href = `${SITE_URL}mod_attachment/list/mod_content/${id}`;
             break;
         case 'status':
             // Call the existing toggleStatus logic

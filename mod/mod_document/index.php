@@ -1,7 +1,7 @@
 <?php
 /* AKM Software.
  * @2015
- * mod_document Modül Sayfası
+ * mod_document Module Page
  * mod/mod_document/index.php
  */
 class mod_document_mod extends indexMain
@@ -10,25 +10,25 @@ class mod_document_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Call the Theme Library
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load the Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Get site settings
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Call the Language File
         $this->lang = Load::lang('mod_document');
-        // Dil Dosyasını Temaya Gönderelim
+        // Send the Language File to the Theme
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    // Add Page
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Is there Add Permission?
         if ($this->user->hasPermission('mod_document', 'add', $this->lang['mod_document']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -47,10 +47,10 @@ class mod_document_mod extends indexMain
         $this->tema->veri('select_nested_menu_result', $select_nested_menu_result);
     }
 
-    // Düzenleme Sayfası
-    public function image_remove_image()
+    // Edit Page
+    public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Is there Edit Permission?
         if ($this->user->hasPermission('mod_document', 'edit', $this->lang['mod_document']['role_errors']['edit'], 1) === FALSE) {
             return FALSE;
         }
@@ -65,7 +65,7 @@ class mod_document_mod extends indexMain
 
         $d = $this->mod_document_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // If the added content belongs to someone else, is there management permission?
         if ($this->user->checkPermission('mod_document', 'moderate_edit', $d['user_id'], $this->lang['mod_document']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -84,10 +84,10 @@ class mod_document_mod extends indexMain
         $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
     }
 
-    // Listeleme Sayfası
+    // List Page
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Is there List Permission?
         if ($this->user->hasPermission('mod_document', 'list', $this->lang['mod_document']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -115,7 +115,7 @@ class mod_document_mod extends indexMain
 
 
         $this->mod_document_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // If the added content belongs to someone else, is there management permission?
         if ($this->user->checkPermission('mod_document', 'moderate_edit', $this->mod_document_model->user_id, $this->lang['mod_document']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -151,7 +151,7 @@ class mod_document_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    // Add Function
     private function _add()
     {
         $this->val = Load::validator('mod_document.ekle');
@@ -182,7 +182,7 @@ class mod_document_mod extends indexMain
             $this->mod_document_model->description = Req::Post_Safe('description');
             $this->mod_document_model->user_id = $this->session->getir('id');
 
-            // Eğer Resim varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_document';
@@ -214,7 +214,7 @@ class mod_document_mod extends indexMain
             }
 
             if ($this->mod_document_model->save(TRUE)) {
-                // Eğer Menüye Eklemek istemişse
+                // If it was requested to be added to the menu
                 if (Req::Post_Safe('menu') != 0) {
                     $this->model = Load::model('mod_menu');
                     $this->model->parent_id = Req::Post_Safe('menu');
@@ -227,7 +227,7 @@ class mod_document_mod extends indexMain
                 }
                 $this->_oke_message($this->lang['mod_document']['message']['oke']['add']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists, rollback
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -237,7 +237,7 @@ class mod_document_mod extends indexMain
         }
     }
 
-    // Düzenleme Fonksiyonu
+    // Edit Function
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_document.duzenle');
@@ -263,7 +263,7 @@ class mod_document_mod extends indexMain
             $this->mod_document_model->title = Req::Post_Safe('title');
             $this->mod_document_model->keywords = Req::Post_Safe('keywords');
             $this->mod_document_model->description = Req::Post_Safe('description');
-            // Bu İçerik Daha Önce Menüye Gönderilmişse Güncelleyelim
+            // If this content was previously sent to the menu, let's update it
             $new_mod_document = new mod_document_model();
             $new_mod_document->where_id($id)->gRo()->sync();
             $url = $new_mod_document->lang . '/dosyalar/' . $new_mod_document->seo;
@@ -272,7 +272,7 @@ class mod_document_mod extends indexMain
                 unset($this->mod_document_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_document';
@@ -305,7 +305,7 @@ class mod_document_mod extends indexMain
 
             $this->mod_document_model->id = $id;
             if ($this->mod_document_model->update('id')) {
-                // Bu İçerik Daha Önce Menüye Gönderilmişse Güncelleyelim
+                // If this content was previously sent to the menu, let's update it
                 $mod_menu_model = Load::model('mod_menu');
                 if ($mod_menu_model->exists_url($url)) {
                     $mod_menu_model->getResultOne()->sync();
@@ -320,7 +320,7 @@ class mod_document_mod extends indexMain
 
                 $this->_oke_message($this->lang['mod_document']['message']['oke']['edit']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists, rollback
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -332,7 +332,7 @@ class mod_document_mod extends indexMain
 
     function sil()
     {
-        // Listeleme Permissionsi varmı?
+        // Is there delete permission?
         if ($this->user->hasPermission('mod_document',  'delete', $this->lang['mod_document']['role_errors'][ 'delete']) === False) {
             return False;
         }
@@ -357,21 +357,21 @@ class mod_document_mod extends indexMain
                 exit($this->lang['mod_document']['errors']['record']);
             }
             $this->mod_document_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+            // If the added content belongs to someone else, is there management permission?
             if ($this->user->checkPermission('mod_document', 'moderate_delete', $this->mod_document_model->user_id, $this->lang['mod_document']['role_errors']['moderate_delete']) === False) {
                 return False;
             }
 
-            // Modül varmı ve Gallery Ekleniyormu
+            // Check if module exists and Gallery is being added
             $this->mod = Load::model('mod_gallery_mod');
             if ($this->mod->exists_mod_name("mod_document") === TRUE) {
-                // İçeriğe Ait Gallery Varsa Silelim
+                // If there is Gallery belonging to the content, let's delete it
                 Run::import('mod_gallery', '_remove', ['mod_document', $this->mod_document_model->id]);
             }
-            // Modül varmı ve Dosya Ekleniyormu
+            // Check if module exists and File is being added
             $this->mod = Load::model('mod_attachment_mod');
             if ($this->mod->exists_mod_name("mod_document") === TRUE) {
-                // İçeriğe Ait Dosya Varsa Silelim
+                // If there is File belonging to the content, let's delete it
                 Run::import('mod_attachment', '_remove', ['mod_document', $this->mod_document_model->id]);
             }
 
@@ -602,21 +602,21 @@ class mod_document_mod extends indexMain
 
 
 
-    // Valid Mesaj
+    // Success Message
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    // Error Message
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    // Error Message
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

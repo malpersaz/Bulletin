@@ -1,5 +1,23 @@
 # Version History
 
+## Active Version Rule
+- `docs/VERSION.md` is the single source of truth for Git upload version notes.
+- The current active Git upload version code is `v1.0.49.8`.
+- Until a new version code is explicitly provided by the user, new completed development notes must be appended under `v1.0.49.8`.
+- Agents must not open a new version section without an explicit new version code from the user.
+
+## v1.0.49.8
+- Active version bucket reserved for upcoming development notes until the next Git upload version code is assigned.
+- **Attachment Module Shared-Core Sync**: Re-established `mod_attachment` as the first shared dependency before relation-module validation, normalized the active controller/template contract to `list/add/upload/edit/delete`, restored localized error handling, and aligned the active attachment workspace across `Rojname` and `AKMbusiness`.
+- **Attachment Mapping Relation Revalidation**: Revalidated `mod_attachment_mod` after the attachment-module sync, keeping its modern `add/edit/list` registry flow aligned with the new attachment workspace contract and confirming shared active parity across both CMS repositories.
+- **Menu Module Shared-Core Audit**: Reviewed `mod_menu` across both CMS repositories and confirmed the active controller, validator, and admin template contract is already aligned; only intentional product-specific package headers and frontend theme surfaces remain different.
+- **Document Module Source Syntax Repair**: Corrected the duplicated `image_remove_image()` controller declaration in `mod_document` by restoring the missing `edit($id = NULL)` action at source level, then revalidated shared parity across both repositories while preserving intentional product-specific package headers.
+- **Content Module Route Fix**: Corrected the admin content quick actions so Gallery and Attachment shortcuts now open `mod_content`-scoped records instead of incorrectly routing through `mod_news`.
+- **Content Module Localization Cleanup**: Removed visible fallback text from the modern `mod_content` admin add, edit, and list flows, added the missing `wizard_loading` language key, and aligned AJAX success/error responses with the English-first admin refactor.
+- **Shared Image Uploader Consolidation**: Replaced the duplicated `mod_news` image uploader partial with the shared `admin/partials/image_uploader.twig` across content, news, publication, and wizard-based admin flows.
+- **Version Log Enforcement Hook**: Added a tracked Git `pre-commit` hook under `.githooks/` so commits that stage repository changes without also staging `docs/VERSION.md` are blocked locally.
+- **Agent Version Logging Policy Sync**: Synchronized the repository agent guidance (`AGENTS.md`, `.agents/*`, and quality strategy docs) so the active version bucket stays fixed at `v1.0.49.8` until the user explicitly assigns a new Git upload version code.
+
 ## v1.0.49 (2026-03-22)
 - **Standalone Social Management**: Refactored the `mod_settings` module to abstract "Social Media" configuration away from general settings, hosting it inside its own dedicated, modernized standalone template (`social_media.twig`).
 - **Material Design 3 (M3) Overhaul**: Completely modernized the user interface for social media links management using M3-styled cards, brand distinct colors, and elegant hover-state CSS micro-animations.

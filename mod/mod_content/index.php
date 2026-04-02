@@ -649,9 +649,9 @@ class mod_content_mod extends indexMain
         }
         if (Req::is_Post( 'delete')) {
             if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
+                echo 'Success';
             } else {
-                echo 'HATA';
+                echo 'Error';
             }
         } else {
             exit($this->lang['mod_content']['errors']['record']);
@@ -1037,9 +1037,9 @@ class mod_content_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_approve($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
-            echo 'ERROR';
+            echo 'Error';
         }
     }
 
@@ -1069,9 +1069,9 @@ class mod_content_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_unapprove($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
-            echo 'ERROR';
+            echo 'Error';
         }
     }
 
@@ -1122,7 +1122,7 @@ class mod_content_mod extends indexMain
             return true;
         }
         
-        // Fallback: Header kontrol bike
+        // Fallback: inspect the AJAX request header.
         return (
             !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest'

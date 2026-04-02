@@ -1,107 +1,95 @@
 <?php
+
 $lang['mod_attachment_mod'] = [
-  'add' => 'Dosya Modu Ekle',
-  'edit' => 'Dosya Modunu Düzenle',
-  'list' => 'Dosya Mod Listesi',
-  'information' => 'Bilgi!',
-  'oke' => 'İşlem Başarılı!',
-  'hata' => 'Hata Oluştu!',
-  'error' => 'Ölümcül Hata Oluştu!',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-  'message' => 
-   [
-    'oke' => 
-     [
-      'add' => 'Dosya Modu Eklendi!',
-      'edit' => 'Dosya Modu Düzenlendi!',
-      'delete' => 'Dosya Modu Silindi!',
+    'list' => 'Dosya Mod Listesi',
+    'add' => 'Dosya Modu Ekle',
+    'edit' => 'Dosya Modunu Duzenle',
+    'information' => 'Bilgi',
+    'oke' => 'Islem Basarili',
+    'hata' => 'Hata Olustu',
+    'error' => 'Olumcul Hata Olustu',
+    'remove_record' => 'Bu kaydi silmek istediginize emin misiniz?',
+    'message' => [
+        'oke' => [
+            'add' => 'Dosya modu eklendi!',
+            'edit' => 'Dosya modu guncellendi!',
+            'delete' => 'Dosya modu silindi!',
+        ],
+        'error' => [
+            'add' => 'Dosya modu eklenemedi!',
+            'edit' => 'Dosya modu guncellenemedi!',
+        ],
     ],
-    'error' => 
-     [
-      'add' => 'Dosya Modu Eklenemedi!',
-      'edit' => 'Dosya Modu Düzenlenemedi!',
+    'errors' => [
+        'record' => 'Belirtilen kayit bulunamadi!',
     ],
-  ],
-  'errors' => 
-   [
-    'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
-  ],
-  'button' => 
-   [
-    'add' => 'Ekle',
-    'edit' => 'Düzenle',
-    'yenile' => 'Yenile',
-    'delete' => 'Sil',
-    'file' => 'Dosyalar',
-    'gallery' => 'Galeri',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Evet',
-    'hayir' => 'Hayır',
-  ],
-  'grid' => 
-   [
-    0 => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
-    1 => 'Sayfa',
-    2 => 'Sayfa Sayısı',
-    3 => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
-    4 => 'Hiçbir Veri Bulunamadı',
-    5 => 'Bağlantı Hatası',
-    6 => 'Arama',
-    7 => 'Lütfen En Az Bir Satır Seçin',
-    8 => 'Lütfen Sadece Bir Satır Seçin',
-  ],
-  'validator' => 
-   [
-    'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'display_field' => '%s alanı teknik veya ilişki kolonu olamaz. id, file_id yerine name veya title gibi gösterim alanı kullanın.',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
-    'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
-  ],
-  'roll' => 
-   [
-    'ad' => 'Dosya Mod Yönetim Rolleri',
-    'add' => 'Dosya Modu Ekleyebilir',
-    'edit' => 'Dosya Modu Düzenleyebilir',
-    'delete' => 'Dosya Modu Silebilir',
-    'list' => 'Dosya Mod Yönetimini Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan Dosya Mod Kaydını Düzenleyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Dosya Mod Kaydını Düzenleyebilir',
-  ],
-  'role_errors' => 
-   [
-    'moderate_edit' => 'Size Ait Olmayan Dosya Mod Kaydını Düzenleyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan Dosya Mod Kaydını Silemezsiniz',
-    'add' => 'Dosya Modu Eklemeye Permissionniz Yok',
-    'edit' => 'Dosya Modu Düzenlemeye Permissionniz Yok',
-    'list' => 'Dosya Modu Yönetimini Görüntülemeye Permissionniz Yok',
-    'delete' => 'Dosya Modu Silmeye Permissionniz Yok',
-  ],
-  'admin' => 
-   [
-    'intro_add' => 'Bir içerik modülünü dosya yöneticisine bağlamak için görünen adı, hedef modül adını ve o modülden okunacak anahtar alanları tanımlayın.',
-    'intro_edit' => 'Bu kaydın hangi modüle bağlandığını ve başlık bilgisinin hangi alanlardan okunacağını buradan güncelleyebilirsiniz.',
-    'empty_description' => 'Dosya modları, farklı içerik modüllerine dosya yönetimi bağlamanızı sağlar.',
-    'hints' =>
-     [
-      'name' => 'Yönetim ekranında görünecek başlık.',
-      'mod_name' => 'Örnek: mod_news, mod_page, mod_attachment_mod',
-      'mod_key' => 'Kayıt başlığını bulmak için okunacak alan adı. Genelde id veya ilişki alanı.',
-      'mod_value' => 'Başlıkta gösterilecek veri alanı. Genelde name, title veya benzeri bir kolon.',
-      'mod_name_edit' => 'Bağlı olduğu sistem modülünün teknik adı.',
-      'mod_key_edit' => 'Başlık kaydını bulmak için okunacak alan.',
-      'mod_value_edit' => 'Listede içerik başlığı olarak gösterilecek alan.',
+    'button' => [
+        'add' => 'Ekle',
+        'edit' => 'Duzenle',
+        'delete' => 'Sil',
+        'refresh' => 'Yenile',
+        'cancel' => 'Vazgec',
+        'remove' => 'Kaldir',
+        'yes' => 'Evet',
+        'no' => 'Hayir',
+        'file' => 'Dosyalar',
+        'gallery' => 'Galeri',
     ],
-    'columns' => 
-     [
-      'id' => 'ID',
-      'name' => 'Dosya Mod İsmi',
-      'ad' => 'Dosya Mod İsmi',
-      'mod_name' => 'Dosya mod_name',
-      'mod_key' => 'Dosya mod_key (id)',
-      'mod_value' => 'Gösterim Alanı',
+    'grid' => [
+        0 => 'Toplam {total} sonuctan {from} ile {to} arasi gosteriliyor',
+        1 => 'Sayfa',
+        2 => 'Sayfa Sayisi',
+        3 => 'Veriler yukleniyor, lutfen bekleyin...',
+        4 => 'Veri bulunamadi',
+        5 => 'Baglanti Hatasi',
+        6 => 'Arama',
+        7 => 'Lutfen en az bir satir secin',
+        8 => 'Lutfen sadece bir satir secin',
     ],
-  ],
+    'validator' => [
+        'required' => 'Lutfen %s alanini bos birakmayin',
+        'length' => '%s en az %s en fazla %s karakter olabilir',
+        'display_field' => '%s alani teknik veya iliski kolonu olamaz. id ya da file_id yerine name veya title gibi bir gosterim alani kullanin.',
+        'email' => '%s alanina gecerli bir e-posta adresi yazin',
+        'unique' => 'Girdiginiz %s sistemde kayitli. Lutfen baska bir %s belirtin!',
+        'inarray' => '%s alani sadece \' %s \' degerlerini alabilir',
+    ],
+    'roll' => [
+        'ad' => 'Dosya Modu Yonetim Rolleri',
+        'add' => 'Dosya modu ekleyebilir',
+        'edit' => 'Dosya modu duzenleyebilir',
+        'delete' => 'Dosya modu silebilir',
+        'list' => 'Dosya modu yonetimini goruntuleyebilir',
+        'moderate_edit' => 'Baskasina ait dosya modu kaydini duzenleyebilir',
+        'moderate_delete' => 'Baskasina ait dosya modu kaydini silebilir',
+    ],
+    'role_errors' => [
+        'moderate_edit' => 'Baskasina ait dosya modu kaydini duzenleyemezsiniz',
+        'moderate_delete' => 'Baskasina ait dosya modu kaydini silemezsiniz',
+        'add' => 'Dosya modu ekleme yetkiniz yok',
+        'edit' => 'Dosya modu duzenleme yetkiniz yok',
+        'list' => 'Dosya modu yonetimini goruntuleme yetkiniz yok',
+        'delete' => 'Dosya modu silme yetkiniz yok',
+    ],
+    'admin' => [
+        'intro_add' => 'Bir icerik modulunu dosya yonetimine baglamak icin gorunen adi, hedef modul adini ve kaynak alanlari tanimlayin.',
+        'intro_edit' => 'Bu kaydin hangi module bagli oldugunu ve baslik bilgisinin hangi alanlardan geldiginin ayarini guncelleyin.',
+        'empty_description' => 'Dosya modlari dosya yonetimini farkli icerik modullerine baglamanizi saglar.',
+        'hints' => [
+            'name' => 'Yonetim ekraninda gorunen baslik.',
+            'mod_name' => 'Ornek: mod_news, mod_page, mod_attachment_mod',
+            'mod_key' => 'Kayit basligini bulmak icin kullanilan alan. Genelde id veya iliski anahtari.',
+            'mod_value' => 'Gorunen baslik olarak kullanilan alan. Genelde name, title veya benzeri bir kolon.',
+            'mod_name_edit' => 'Bagli sistem modulunun teknik adi.',
+            'mod_key_edit' => 'Baslik kaydini bulmak icin kullanilan alan.',
+            'mod_value_edit' => 'Listede icerik basligi olarak gosterilen alan.',
+        ],
+        'columns' => [
+            'id' => 'ID',
+            'name' => 'Dosya Modu Ismi',
+            'mod_name' => 'Modul Adi',
+            'mod_key' => 'Modul Anahtari (ID)',
+            'mod_value' => 'Gosterim Alani',
+        ],
+    ],
 ];

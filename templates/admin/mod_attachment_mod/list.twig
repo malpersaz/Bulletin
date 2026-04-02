@@ -207,7 +207,7 @@
                         <div>${modValue}</div>
                     </div>
                     <div class="attachment-mod-field">
-                        <label>{{ lang.mod_attachment_mod.admin.columns.ad|e('js') }}</label>
+                        <label>{{ lang.mod_attachment_mod.admin.columns.name|e('js') }}</label>
                         <div>${name}</div>
                     </div>
                 </div>
@@ -304,8 +304,8 @@
             icon: 'warning',
             text: '{{ lang.mod_attachment_mod.remove_record|e('js') }}',
             showCancelButton: true,
-            confirmButtonText: '{{ lang.mod_attachment_mod.button.evet|e('js') }}',
-            cancelButtonText: '{{ lang.mod_attachment_mod.button.hayir|e('js') }}'
+            confirmButtonText: '{{ lang.mod_attachment_mod.button.yes|e('js') }}',
+            cancelButtonText: '{{ lang.mod_attachment_mod.button.no|e('js') }}'
         }).then((result) => {
             if (!result.isConfirmed) {
                 return;
@@ -321,7 +321,7 @@
             })
                 .then((response) => response.text())
                 .then((text) => {
-                    if (text.trim() !== 'Oke') {
+                    if (text.trim() !== 'OK') {
                         throw new Error(text);
                     }
 

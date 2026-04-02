@@ -5,17 +5,7 @@ var mod_gallery_mod_table_ajax = mod_gallery_mod_table_ajax || {};
 mod_gallery_mod_table_ajax.grid={};
 
 mod_gallery_mod_table_ajax.akm = {
-    {% if session.permissions.mod_gallery_mod.gallery is defined %}
-    processGallery: function (id) {
-        window.location = '{{ site.adres }}mod_gallery/list/mod_gallery_mod/' + id;
-    },
-    {% endif %}
-    {% if session.permissions.mod_gallery_mod.file is defined %}
-    processFile: function (id) {
-        window.location = '{{ site.adres }}mod_attachment/list/mod_gallery_mod/' + id;
-    },
-    {% endif %}
-    {% if session.permissions.mod_gallery_mod.sil is defined %}
+    {% if session.permissions.mod_gallery_mod.delete is defined %}
     processDelete: function (id) {
         bootbox.dialog({
             message: "{{ lang.mod_gallery_mod.remove_record }}",
@@ -28,16 +18,15 @@ mod_gallery_mod_table_ajax.akm = {
                         var deteleString = '';
 
                         if( typeof id === 'string' ) {
-                            deteleString += 'sil[]=' + id;
+                            deteleString += 'delete[]=' + id;
                         }else{
                             id.forEach(function (entry) {
-                                deteleString += '&sil[]=' + entry;
+                                deteleString += '&delete[]=' + entry;
                             });
                         }
-                        // Send Request
                         $.ajax({
                             type: "POST",
-                            url: "{{ site.adres }}mod_gallery_mod/delete",
+                            url: "{{ site.adres }}mod_gallery_mod/sil",
                             data: deteleString,
                             success: function (msg) {
                                 if (msg == 'Oke') {
@@ -77,7 +66,6 @@ mod_gallery_mod_table_ajax.akm = {
 };
 mod_gallery_mod_table_ajax.gridAction = {
     initPickers: function () {
-//init date pickers
         $('.date-picker').datepicker({
             rtl: Metronic.isRTL(),
             autoclose: true
@@ -102,64 +90,54 @@ mod_gallery_mod_table_ajax.gridAction = {
         grid.init({
             src: $("#mod_gallery_mod_datatable"),
             onSuccess: function (grid) {
-// execute some code after table records loaded
             },
             onError: function (grid) {
-// execute some code on network or other general error
             },
             onDataLoad: function (grid) {
-// execute some code on ajax data load
             },
-            loadingMessage: 'İşleniyor...',
-            dataTable: { // here you can define a typical datatable settings from http://datatables.net/usage/options
-
-// Uncomment below line("dom" parameter) to fix the dropdown overflow issue in the datatable cells. The default datatable layout
-// setup uses scrollable div(table-scrollable) with overflow:auto to enable vertical scroll(see: assets/global/scripts/datatable.js).
-// So when dropdowns used the scrollable div should be removed.
-                "dom": "<'row'<'col-md-10 col-sm-12'pli><'col-md-2 col-sm-12'<'table-group-actions pull-right'>>r>t<'row'<'col-md-8 col-sm-12'pli>T<'col-md-4 col-sm-12'>>", //                    "dom": 'T<"clear">lfrtip',
+            loadingMessage: 'Processing...',
+            dataTable: {
+                "dom": "<'row'<'col-md-10 col-sm-12'pli><'col-md-2 col-sm-12'<'table-group-actions pull-right'>>r>t<'row'<'col-md-8 col-sm-12'pli>T<'col-md-4 col-sm-12'>>",
 
                 "language": {
                     "aria": {
-                        "sortAscending": ": sütun artan olarak sıralamak için",
-                        "sortDescending": ": sütun azalan olarak sıralamak için"
+                        "sortAscending": ": activate to sort column ascending",
+                        "sortDescending": ": activate to sort column descending"
                     },
-                    "emptyTable": "Kayıt Bulunamadı",
-                    "info": "<span class='seperator'>|</span> <b>_TOTAL_</b> Kayıttan <b>_START_</b> - <b>_END_</b> Arası Kayıtlar Gösteriliyor",
-                    "infoEmpty": "Kayıt Yok",
-                    "infoFiltered": "( _MAX_ Kayıt İçerisinden Bulunan)",
-                    "lengthMenu": "<span class='seperator'>|</span> Sayfada _MENU_ Kayıt Göster",
-                    "search": "Bul:",
-                    "zeroRecords": "Eşleşen Kayıt Bulunmadı",
+                    "emptyTable": "No records found",
+                    "info": "<span class='seperator'>|</span> Showing <b>_START_</b> - <b>_END_</b> of <b>_TOTAL_</b> records",
+                    "infoEmpty": "No records available",
+                    "infoFiltered": "(filtered from _MAX_ total records)",
+                    "lengthMenu": "<span class='seperator'>|</span> Show _MENU_ records",
+                    "search": "Search:",
+                    "zeroRecords": "No matching records found",
                     "infoPostFix": "",
                     "thousands": ",",
-                    "loadingRecords": "Yükleniyor...",
-                    "processing": "İşleniyor...",
+                    "loadingRecords": "Loading...",
+                    "processing": "Processing...",
                     "paginate": {
-                        "first": "İlk",
-                        "last": "Son",
-                        "next": "Sonraki",
-                        "previous": "Önceki"
+                        "first": "First",
+                        "last": "Last",
+                        "next": "Next",
+                        "previous": "Previous"
                     },
-                    "metronicGroupActions": "_TOTAL_ kayıt seçildi:  ",
-                    "metronicAjaxRequestGeneralError": "İşlem gerçekleştirilemedi.Lütfen internet bağlantınızı kontrol edin."
-
-                    // data tables spesific
-
+                    "metronicGroupActions": "_TOTAL_ records selected:  ",
+                    "metronicAjaxRequestGeneralError": "The request could not be completed. Please check your connection."
                 },
 
-                "bStateSave": true, // save datatable state(pagination, sort, etc) in cookie.
+                "bStateSave": true,
 
                 "lengthMenu": [
                     [10, 20, 50, 100, 150, -1],
-                    [10, 20, 50, 100, 150, "All"] // change per page values here
+                    [10, 20, 50, 100, 150, "All"]
                 ],
-                "pageLength": 10, // default record count per page
+                "pageLength": 10,
                 "ajax": {
-                    "url": "{{ site.adres }}mod_gallery_mod/datatable_json" // ajax source
+                    "url": "{{ site.adres }}mod_gallery_mod/datatable_json"
                 },
                 "order": [
                     [1, "desc"]
-                ],// set first column as a default sort by asc
+                ],
                 "tableTools": {
                     "sSwfPath": "{{ site.tadres }}/admin/management/assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
                     "aButtons": [{
@@ -189,40 +167,13 @@ mod_gallery_mod_table_ajax.gridAction = {
             e.preventDefault();
             var action = $(".table-group-action-input", grid.getTableWrapper());
             if (action.val() != "" && grid.getSelectedRowsCount() > 0) {
-                /*grid.setAjaxParam("customActionType", "group_action");
-                 grid.setAjaxParam("customActionName", action.val());
-                 grid.setAjaxParam("id", grid.getSelectedRows());
-                 */
-
-                {% if session.permissions.mod_gallery_mod.gallery is defined %}
-                if (action.val() == '{{ lang.mod_gallery_mod.button.gallery }}') {
-                    if (grid.getSelectedRowsCount() != 1) {
-                        return error_message(mod_gallery_mod_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_gallery_mod.grid.8 }}');
-                    }
-                    mod_gallery_mod_table_ajax.akm.processGallery(grid.getSelectedRows());
-                }
-                {% endif %}
-
-                {% if session.permissions.mod_gallery_mod.file is defined %}
-                if (action.val() == '{{ lang.mod_gallery_mod.button.file }}') {
-                    if (grid.getSelectedRowsCount() != 1) {
-                        return error_message(mod_gallery_mod_table_ajax.gridAction.getGrid().getTableWrapper(), '{{ lang.mod_gallery_mod.grid.8 }}');
-                    }
-                    mod_gallery_mod_table_ajax.akm.processFile(grid.getSelectedRows());
-                }
-                {% endif %}
-                {% if session.permissions.mod_gallery_mod.sil is defined %}
-                if (action.val() == '{{ lang.mod_gallery_mod.button.sil }}') {
+                {% if session.permissions.mod_gallery_mod.delete is defined %}
+                if (action.val() == '{{ lang.mod_gallery_mod.button.delete }}') {
                     mod_gallery_mod_table_ajax.akm.processDelete(grid.getSelectedRows());
                 }
                 {% endif %}
-
-
-                
-                //grid.getDataTable().ajax.reload();
-                //grid.clearAjaxParams();
             } else if (action.val() == "") {
-                error_message(grid.getTableWrapper(), 'Lütfen Bir İşlem Seçin');
+                error_message(grid.getTableWrapper(), 'Please select an action');
             } else if (grid.getSelectedRowsCount() === 0) {
                 error_message(grid.getTableWrapper(), '{{ lang.mod_gallery_mod.grid.7 }}');
             }

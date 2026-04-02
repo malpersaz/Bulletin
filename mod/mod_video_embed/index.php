@@ -1,7 +1,7 @@
 <?php
 /* AKM Software.
  * @2015
- * mod_video_embed Modül Sayfası
+ * mod_video_embed Module Page
  * mod/mod_video_embed/index.php
  */
 class mod_video_embed_mod extends indexMain
@@ -12,25 +12,25 @@ class mod_video_embed_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
+        // Load the template library.
         $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Load the database library.
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
+        // Site settings remain available through shared state when needed.
         //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Load the module language file.
         $this->lang = Load::lang('mod_video_embed');
-        // Dil Dosyasını Temaya Gönderelim
+        // Pass language data to the template layer.
         $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Load the session library.
         $this->session = Load::lib('Session');
-        // User Model
+        // Load the user model.
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    // Render the add form.
     public function add()
     {
-        // Ekleme Permissionsi varmı?
+        // Check add permission.
         if ($this->user->hasPermission('mod_video_embed', 'add', $this->lang['mod_video_embed']['role_errors']['add'], 1) === False) {
             return False;
         }
@@ -51,10 +51,10 @@ class mod_video_embed_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Düzenleme Sayfası
+    // Render the edit form.
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit'], 1) === False) {
             return False;
         }
@@ -69,7 +69,7 @@ class mod_video_embed_mod extends indexMain
 
         $d = $this->mod_video_embed_model->getResultOne()->toArray();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check moderate permission if content belongs to another user.
         if ($this->user->checkPermission('mod_video_embed', 'moderate_edit', $d['user_id'], $this->lang['mod_video_embed']['role_errors']['moderate_edit'], 1) === False) {
             return False;
         }
@@ -95,10 +95,10 @@ class mod_video_embed_mod extends indexMain
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
-    // Listeleme Sayfası
+    // Render the list page.
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check list permission.
         if ($this->user->hasPermission('mod_video_embed', 'list', $this->lang['mod_video_embed']['role_errors']['list'], 1) === False) {
             return False;
         }
@@ -182,7 +182,7 @@ class mod_video_embed_mod extends indexMain
     // AJAX image upload from the list screen.
     public function ajax_image_upload()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit'], 1) === False) {
             echo json_encode(['status' => 'error', 'message' => 'Permissionniz yok']);
             return;
@@ -202,7 +202,7 @@ class mod_video_embed_mod extends indexMain
         }
         $this->mod_video_embed_model->sync();
 
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı?
+        // Check moderate permission if content belongs to another user.
         if ($this->user->checkPermission('mod_video_embed', 'moderate_edit', $this->mod_video_embed_model->user_id, $this->lang['mod_video_embed']['role_errors']['moderate_edit']) === False) {
             echo json_encode(['status' => 'error', 'message' => 'Bu içeriği düzenleme permissionniz yok']);
             return;
@@ -217,7 +217,7 @@ class mod_video_embed_mod extends indexMain
             try {
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî ku em wêneyê nû qeyd bikin, yê kevin jê bibin (Heke hebe)
+                    // Delete the old image before saving the new one, if it exists.
                     if ($this->mod_video_embed_model->image != '') {
                         $image->mod = 'mod_video_embed';
                         $image->url = $this->mod_video_embed_model->image;
@@ -249,7 +249,7 @@ class mod_video_embed_mod extends indexMain
 
     public function image_remove_image()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit'], 1) === False) {
             return FALSE;
         }
@@ -265,7 +265,7 @@ class mod_video_embed_mod extends indexMain
 
 
         $this->mod_video_embed_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check moderate permission if content belongs to another user.
         if ($this->user->checkPermission('mod_video_embed', 'moderate_edit', $this->mod_video_embed_model->user_id, $this->lang['mod_video_embed']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -288,7 +288,7 @@ class mod_video_embed_mod extends indexMain
         }
     }
 
-    // Ekleme Fonksiyonu
+    // Handle add form submission.
     private function _add()
     {
         $isAjax = $this->_isAjaxRequest();
@@ -364,7 +364,7 @@ class mod_video_embed_mod extends indexMain
                 }
                 $this->_oke_message($this->lang['mod_video_embed']['message']['oke']['add']);
             } else {
-                // Eğer Resim varsa
+                // Roll back the uploaded image if persistence fails.
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -382,7 +382,7 @@ class mod_video_embed_mod extends indexMain
         }
     }
 
-    // Düzenleme Fonksiyonu
+    // Handle edit form submission.
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_video_embed.edit');
@@ -413,7 +413,7 @@ class mod_video_embed_mod extends indexMain
                 unset($this->mod_video_embed_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // Process the uploaded image when present.
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_video_embed';
@@ -421,7 +421,7 @@ class mod_video_embed_mod extends indexMain
                 $option = $this->_videoImageOptions();
                 if ($image->_resize($option)) {
                     $new_image_url = $image->url;
-                    // Berî barkirina wêneyê nû, yê kevin jê bibin
+                    // Delete the previous image before saving the new one.
                     $old_data = Load::model('mod_video_embed');
                     $old_data->where_id($id)->gRo()->sync();
                     if ($old_data->image != '') {
@@ -444,7 +444,7 @@ class mod_video_embed_mod extends indexMain
             if ($this->mod_video_embed_model->update('id')) {
                 $this->_oke_message($this->lang['mod_video_embed']['message']['oke']['edit']);
             } else {
-                // Eğer Resim varsa
+                // Roll back the uploaded image if persistence fails.
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -457,7 +457,7 @@ class mod_video_embed_mod extends indexMain
 
     public function delete()
     {
-        // Listeleme Permissionsi varmı?
+        // Check delete permission.
         if ($this->user->hasPermission('mod_video_embed',  'delete', $this->lang['mod_video_embed']['role_errors'][ 'delete']) === False) {
             return False;
         }
@@ -482,21 +482,21 @@ class mod_video_embed_mod extends indexMain
                 exit($this->lang['mod_video_embed']['errors']['record']);
             }
             $this->mod_video_embed_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+            // Check moderate permission if content belongs to another user.
             if ($this->user->checkPermission('mod_video_embed', 'moderate_delete', $this->mod_video_embed_model->user_id, $this->lang['mod_video_embed']['role_errors']['moderate_delete']) === False) {
                 return False;
             }
 
-            // Modül varmı ve Gallery Ekleniyormu
+            // Remove related galleries when the relation module is enabled.
             $this->mod = Load::model('mod_gallery_mod');
             if ($this->mod->exists_mod_name("mod_video_embed") === TRUE) {
-                // İçeriğe Ait Gallery Varsa Silelim
+                // Remove gallery data attached to this record.
                 Run::import('mod_gallery', '_remove', ['mod_video_embed', $this->mod_video_embed_model->id]);
             }
-            // Modül varmı ve Dosya Ekleniyormu
+            // Remove related files when the relation module is enabled.
             $this->mod = Load::model('mod_attachment_mod');
             if ($this->mod->exists_mod_name("mod_video_embed") === TRUE) {
-                // İçeriğe Ait Dosya Varsa Silelim
+                // Remove file data attached to this record.
                 Run::import('mod_attachment', '_remove', ['mod_video_embed', $this->mod_video_embed_model->id]);
             }
 
@@ -706,10 +706,10 @@ class mod_video_embed_mod extends indexMain
 
 
 
-    // publish Sayfası
+    // Publish the selected records.
     public function publish()
     {
-        // duzenle Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit']) === False) {
             return False;
         }
@@ -723,7 +723,7 @@ class mod_video_embed_mod extends indexMain
 
     private function _publish($query = NULL)
     {
-        // mod_video_embed Modeli Yükleyelim
+        // Load the video embed model.
         $this->mod_video_embed_model = Load::model('mod_video_embed');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -738,10 +738,10 @@ class mod_video_embed_mod extends indexMain
         }
         return FALSE;
     }
-    // unpublish Sayfası
+    // Unpublish the selected records.
     public function unpublish()
     {
-        // duzenle Permissionsi varmı?
+        // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit']) === False) {
             return False;
         }
@@ -755,7 +755,7 @@ class mod_video_embed_mod extends indexMain
 
     private function _unpublish($query = NULL)
     {
-        // mod_video_embed Modeli Yükleyelim
+        // Load the video embed model.
         $this->mod_video_embed_model = Load::model('mod_video_embed');
         if (is_array($query)) {
             foreach ($query as $s) {
@@ -771,21 +771,21 @@ class mod_video_embed_mod extends indexMain
         return FALSE;
     }
 
-    // Valid Mesaj
+    // Store a success message for the template.
     private function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    // Hata Mesaj
+    // Store a validation error message for the template.
     private function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
-    // Error Mesaj
+    // Store a fatal error message for the template.
     private function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);

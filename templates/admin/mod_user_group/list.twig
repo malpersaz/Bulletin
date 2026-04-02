@@ -2,8 +2,8 @@
 {% set hide_fab = true %}
 {% extends "admin/layout.twig" %}
 
-{% block title %}{{ lang.mod_user_group[17]|default('Lîsteya Koman') }}{% endblock %}
-{% block headline %}{{ lang.mod_user_group[17]|default('Lîsteya Koman') }}{% endblock %}
+{% block title %}{{ lang.mod_user_group[17] }}{% endblock %}
+{% block headline %}{{ lang.mod_user_group[17] }}{% endblock %}
 
 {% block styles %}
     {# Styles moved to global admin/assets/css/style.css #}
@@ -56,7 +56,7 @@
         <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
             <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
                 <i class="bi bi-lock-fill" id="reorderIcon"></i>
-                <span id="reorderText">{{ lang.mod_user_group[19]|default('Rêzkirinê veke') }}</span>
+                <span id="reorderText">{{ lang.mod_user_group[19] }}</span>
             </button>
         </div>
 
@@ -67,7 +67,7 @@
                 <div class="empty-icon-box">
                     <i class="bi bi-diagram-3"></i>
                 </div>
-                <h2 style="font-weight: 800;">{{ lang.mod_user_group[17]|default('Kom nehatin dîtin') }}</h2>
+                <h2 style="font-weight: 800;">{{ lang.mod_user_group[17] }}</h2>
                 <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
                     <i class="bi bi-plus-lg"></i>
                 </div>
@@ -80,7 +80,7 @@
     <div class="standard-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_user_group.buttons.edit|default('Biguhere') }}</span>
+            <span>{{ lang.mod_user_group.buttons.edit }}</span>
         </button>
         
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
@@ -89,7 +89,7 @@
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_user_group.buttons.delete|default('Jê bibe') }}</span>
+            <span>{{ lang.mod_user_group.buttons.delete }}</span>
         </button>
     </div>
 {% endblock %}

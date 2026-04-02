@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+version_file="docs/VERSION.md"
+
+staged_files="$(git diff --cached --name-only --diff-filter=ACMR)"
+
+if [ -z "$staged_files" ]; then
+    exit 0
+fi
+
+non_version_files="$(printf '%s\n' "$staged_files" | grep -v "^${version_file}$" || true)"
+
+if [ -z "$non_version_files" ]; then
+    exit 0
+fi
+
+if printf '%s\n' "$staged_files" | grep -qx "${version_file}"; then
+    exit 0
+fi
+
+echo "Commit blocked: staged code/document changes require an updated ${version_file} entry." >&2
+echo "Stage ${version_file} with the relevant development notes under the active version bucket, then retry." >&2
+exit 1

@@ -1,107 +1,95 @@
 <?php
-$lang['mod_attachment_mod'] = array (
-  'add' => 'Dosya Modu Zêde Bike',
-  'edit' => 'Dosya Modunu Biguhere',
-  'list' => 'Dosya Mod Lîste',
-  'information' => 'Agahî!',
-  'oke' => 'İşlem Serkeftî!',
-  'hata' => 'Çewtî Oluştu!',
-  'error' => 'Ölümcül Çewtî Oluştu!',
-  'remove_record' => 'Bu Kaydı Jê Bibemek İstediğinize Eminmisiniz?',
-  'message' => 
-  array (
-    'oke' => 
-    array (
-      'add' => 'Dosya Modu Zêde Bikendi!',
-      'edit' => 'Dosya Modu Biguherendi!',
-      'delete' => 'Dosya Modu Hate Jêbirin!',
-    ),
-    'error' => 
-    array (
-      'add' => 'Dosya Modu Zêde Bikenemedi!',
-      'edit' => 'Dosya Modu Biguherenemedi!',
-    ),
-  ),
-  'errors' => 
-  array (
-    'record' => 'Belirttiğiniz Kayıt Ne Hate Dîtin!',
-  ),
-  'button' => 
-  array (
-    'add' => 'Zêde Bike',
-    'edit' => 'Biguhere',
-    'yenile' => 'Nû Bike',
-    'delete' => 'Jê Bibe',
-    'file' => 'Pel',
-    'vazgec' => 'Betal',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Erê',
-    'hayir' => 'Na',
-  ),
-  'grid' => 
-  array (
-    0 => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
-    1 => 'Rûpel',
-    2 => 'Rûpel Sayısı',
-    3 => 'Veriler Yükleniyor, Lütfen BZêde Bikeyin ...',
-    4 => 'Hiçbir Veri Ne Hate Dîtin',
-    5 => 'Bağlantı Çewtîsı',
-    6 => 'Lêbigerema',
-    7 => 'Lütfen En Az Bir Satır Hilbijêre',
-    8 => 'Lütfen Sadece Bir Satır Hilbijêre',
-  ),
-  'validator' => 
-  array (
-    'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'display_field' => '%s nikare qada teknîkî an têkiliyê be. Li şûna id an file_id, name an title wekî qada nîşandanê bikar bîne.',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
-    'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',
-  ),
-  'roll' => 
-  array (
-    'ad' => 'Dosya Mod Rêveberî Rolleri',
-    'add' => 'Dosya Modu Zêde Bikeyebilir',
-    'edit' => 'Dosya Modu Biguhereyebilir',
-    'delete' => 'Dosya Modu Jê Bibeebilir',
-    'list' => 'Dosya Mod Rêveberîni Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan Dosya Mod Kaydını Biguhereyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Dosya Mod Kaydını Biguhereyebilir',
-  ),
-  'role_errors' => 
-  array (
-    'moderate_edit' => 'Size Ait Olmayan Dosya Mod Kaydını Biguhereyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan Dosya Mod Kaydını Jê Bibeemezsiniz',
-    'add' => 'Dosya Modu Zêde Bikemeye Permissionniz Yok',
-    'edit' => 'Dosya Modu Biguheremeye Permissionniz Yok',
-    'list' => 'Dosya Modu Rêveberîni Görüntülemeye Permissionniz Yok',
-    'delete' => 'Dosya Modu Jê Bibemeye Permissionniz Yok',
-  ),
-  'admin' => 
-  array (
-    'intro_add' => 'Ji bo girêdana modulê naverokê bi rêveberiya pelan re, navê xuya, navê modulê armanc û qadên anahtar ên tên xwendin binasînin.',
-    'intro_edit' => 'Li vir dikarin vê tomarê bi kîjan modulê ve girêdayî ye û agahiya sernavê ji kîjan qadan tê xwendin nû bikin.',
-    'empty_description' => 'Modulên pelan rê didin ku rêveberiya pelan bi modulên naverokê yên cuda re were girêdan.',
-    'hints' =>
-    array (
-      'name' => 'Sernavê ku di panela rêveberiyê de tê xuyakirin.',
-      'mod_name' => 'Mînak: mod_news, mod_page, mod_attachment_mod',
-      'mod_key' => 'Navê qada ku ji bo dîtina sernavê tomarê tê xwendin. Bi gelemperî id an qada têkiliyê ye.',
-      'mod_value' => 'Qada ku wekî sernav tê nîşandan. Bi gelemperî name, title an kolonêkî wekî wê ye.',
-      'mod_name_edit' => 'Navê teknîkî yê modulê pergala girêdayî.',
-      'mod_key_edit' => 'Qada ku ji bo dîtina tomara sernavê tê xwendin.',
-      'mod_value_edit' => 'Qada ku di lîsteyê de wekî sernavê naverokê tê nîşandan.',
-    ),
-    'columns' => 
-    array (
-      'id' => 'ID',
-      'name' => 'Pel Mod İsmi',
-      'ad' => 'Pel Mod İsmi',
-      'mod_name' => 'Pel mod_name',
-      'mod_key' => 'Pel mod_key (id)',
-      'mod_value' => 'Qada Nîşandanê',
-    ),
-  ),
-);
-?>
+
+$lang['mod_attachment_mod'] = [
+    'list' => 'Lista Modula Pelan',
+    'add' => 'Modula Pelan Cı Ker',
+    'edit' => 'Modula Pelan Bıvurne',
+    'information' => 'Malumat',
+    'oke' => 'Serkeftış',
+    'hata' => 'Xelet peyda bi',
+    'error' => 'Xeleta mezin',
+    'remove_record' => 'Tu bi rastî xwazeno ke na qeydî bıqewime?',
+    'message' => [
+        'oke' => [
+            'add' => 'Modula pelan cı kerda!',
+            'edit' => 'Modula pelan rocnekerda!',
+            'delete' => 'Modula pelan biqewiya!',
+        ],
+        'error' => [
+            'add' => 'Cı kerdışê modula pelan ser neket!',
+            'edit' => 'Rocnekerdışê modula pelan ser neket!',
+        ],
+    ],
+    'errors' => [
+        'record' => 'Qeydê diyarkerde nêvîya nêame dîtış!',
+    ],
+    'button' => [
+        'add' => 'Cı Ker',
+        'edit' => 'Bıvurne',
+        'delete' => 'Bıqewime',
+        'refresh' => 'Nû Bıke',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Ere',
+        'no' => 'Na',
+        'file' => 'Pel',
+        'gallery' => 'Galeri',
+    ],
+    'grid' => [
+        0 => '{total} encaman de {from} ra {to} têne nîşandan',
+        1 => 'Rûpel',
+        2 => 'Hejmara Rûpelan',
+        3 => 'Dane bar beno, kerem ke raweste...',
+        4 => 'Dane nêame dîtış',
+        5 => 'Xeleta Gıredayışi',
+        6 => 'Gerey',
+        7 => 'Kerem ke herî kêm yew rêz hilbijêre',
+        8 => 'Kerem ke tenê yew rêz hilbijêre',
+    ],
+    'validator' => [
+        'required' => 'Kerem ke qada %s vala meke',
+        'length' => '%s beno lazım ke miyanê %s û %s karakteran de bıbo',
+        'display_field' => '%s nêşkeno qada teknîkî an têkiliyê bıbo. Cıgêri id an file_id de qada nîşandanê ya wekî name an title bıkarne.',
+        'email' => 'Kerem ke qada %s de navnîşana e-postayê ya derbasdar binivîse',
+        'unique' => '%s ke tu nivîsandî sistem de heye. Kerem ke %s-eke din diyarkerne!',
+        'inarray' => '%s tenê qimetên \' %s \' qebul keno',
+    ],
+    'roll' => [
+        'ad' => 'Rolê Rêveberiya Modula Pelan',
+        'add' => 'Modula pelan cı kena',
+        'edit' => 'Modula pelan bıvurna',
+        'delete' => 'Modula pelan bıqewima',
+        'list' => 'Rêveberiya modula pelan bıvîna',
+        'moderate_edit' => 'Qeydên modula pelan yên kesê dinan bıvurna',
+        'moderate_delete' => 'Qeydên modula pelan yên kesê dinan bıqewima',
+    ],
+    'role_errors' => [
+        'moderate_edit' => 'Tu nêşkenî qeydên modula pelan yên kesê dinan bıvurnî',
+        'moderate_delete' => 'Tu nêşkenî qeydên modula pelan yên kesê dinan bıqewimî',
+        'add' => 'Destûrê te ya cıkerdışê modula pelan tune yo',
+        'edit' => 'Destûrê te ya bıvurnayışê modula pelan tune yo',
+        'list' => 'Destûrê te ya dîtışê rêveberiya modula pelan tune yo',
+        'delete' => 'Destûrê te ya bıqewimnayışê modula pelan tune yo',
+    ],
+    'admin' => [
+        'intro_add' => 'Ji bo girêdana modulê naverokê bi rêveberiya pelan re, navê xuya, navê modulê armanc û qadên çavkaniyê binivîse.',
+        'intro_edit' => 'No qeydî qet modul ra gıreya u malumatê sername kerdışi çı qadan rê tê, nû bike.',
+        'empty_description' => 'Modulê pelan rê dino ke rêveberiya pelan bi modulên naverokê yên cuda re bıgıre.',
+        'hints' => [
+            'name' => 'Sernava ke panela rêveberiyê de görünena.',
+            'mod_name' => 'Mînak: mod_news, mod_page, mod_attachment_mod',
+            'mod_key' => 'Navê qada ke sernava qeydî dıvê. Pir caran id yan qada têkiliyê yo.',
+            'mod_value' => 'Qada ke wekî sernav tê nîşandan. Pir caran name, title yan kolonekî mîna vano.',
+            'mod_name_edit' => 'Navê teknîkî yê modulê pergala gıredayî.',
+            'mod_key_edit' => 'Qada ke qeydê sernav bi vî ra tê dîtış.',
+            'mod_value_edit' => 'Qada ke listede wekî sernava naverokê tê nîşandan.',
+        ],
+        'columns' => [
+            'id' => 'ID',
+            'name' => 'Navê Modula Pelan',
+            'mod_name' => 'Navê Modulê',
+            'mod_key' => 'Mifteya Modulê (ID)',
+            'mod_value' => 'Qada Nîşandanê',
+        ],
+    ],
+];

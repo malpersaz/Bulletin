@@ -22,15 +22,15 @@ class mod_user_group extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Tabloları Oluşturalım
+        // Create tables.
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Modülü Ekleyelim
+        // Register the module.
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Roller ve Permleri Ekleyelim
+        // Register roles and permissions.
         if ($this->insert_roll() === FALSE) {
             return FALSE;
         }
@@ -73,7 +73,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
             ),
         );
 
-        foreach ($groups As $group) {
+        foreach ($groups as $group) {
             $model->where_group_id($group['group_id'])->getResult(TRUE, TRUE);
             $model->name = $group['name'];
             $model->order = $group['order'];

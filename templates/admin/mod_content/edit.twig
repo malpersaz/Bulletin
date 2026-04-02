@@ -263,8 +263,8 @@
             {% if error is defined %}
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        const errorMessage = {{ message|default('')|json_encode|raw }};
-                        const errorItems = {{ (errors is defined ? errors : [])|json_encode|raw }};
+                        const errorMessage = {{ (mesaj is defined ? mesaj : '')|json_encode|raw }};
+                        const errorItems = {{ (hatalar is defined ? hatalar : [])|json_encode|raw }};
 
                         const wrapper = document.createElement('div');
                         wrapper.style.textAlign = 'left';
@@ -295,7 +295,7 @@
                         Swal.fire({
                             icon: 'warning',
                             html: wrapper.outerHTML,
-                            confirmButtonText: '{{ lang.mod_content.button.ok }}',
+                            confirmButtonText: '{{ lang.mod_content.sheet.ok }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -304,7 +304,7 @@
             {% if oke is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
-                    <span>{{ message }}</span>
+                    <span>{{ mesaj }}</span>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -426,7 +426,7 @@
 
 				<div class="form-row">
 					<label class="filter-group-label">{{ lang.mod_content.admin.columns.image }}</label>
-                    {% include 'admin/partials/mod_news_image_uploader.twig' with {
+                    {% include 'admin/partials/image_uploader.twig' with {
                         shell_id: 'editImageShell',
                         shell_class: 'edit-image-shell',
                         has_image: d.image ? true : false,
@@ -445,17 +445,17 @@
                             'data-empty-meta': lang.mod_content.wizard.image.drop_description,
                             'data-existing-image': d.image ? 'true' : 'false',
                             'data-existing-src': d.image ? (site.radres ~ 'mod_content/thumb/' ~ d.image) : '',
-                            'data-existing-name': d.image|default(''),
+                            'data-existing-name': d.image ? d.image : '',
                             'data-existing-meta': lang.mod_content.admin.columns.image,
                             'data-remove-url': site.sadres ~ 'mod_content/image_remove_image',
                             'data-remove-id': d.id,
                             'data-remove-title': lang.mod_content.remove_image,
                             'data-remove-confirm': lang.mod_content.context_menu.delete_confirm,
-                            'data-remove-confirm-text': lang.mod_content.button.yes,
-                            'data-remove-cancel-text': lang.mod_content.button.no|default('No'),
-                            'data-success-title': lang.mod_content.ok|default(lang.mod_content.oke),
+                            'data-remove-confirm-text': lang.mod_content.button.evet,
+                            'data-remove-cancel-text': lang.mod_content.button.hayir,
+                            'data-success-title': lang.mod_content.oke,
                             'data-success-message': lang.mod_content.remove_image_oke,
-                            'data-error-title': lang.mod_content.error_occurred
+                            'data-error-title': lang.mod_content.hata
                         },
                         dropzone_id: 'editImageDropzone',
                         trigger_picker_js: 'triggerEditImagePicker()',
@@ -539,7 +539,7 @@
 				</div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_content.button.refresh }} (SEO, Meta)</span>
+					<span>{{ lang.mod_content.admin.columns.seo }} / {{ lang.mod_content.admin.columns.title }}</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -547,7 +547,7 @@
                     <div class="form-row">
                         <div class="m3-input-wrapper">
                             <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}">
-                            <label class="m3-floating-label">SEO URL</label>
+                            <label class="m3-floating-label">{{ lang.mod_content.admin.columns.seo }}</label>
                         </div>
                     </div>
                     <div class="form-row">
@@ -655,7 +655,7 @@
 	<div class="m3-final-bar">
 		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_content/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
-			{{ lang.mod_content.button.cancel }}
+			{{ lang.mod_content.button.vazgec }}
 		</button>
 		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 			<i class="bi bi-check-lg"></i>
