@@ -66,19 +66,19 @@ class mod_content_helper extends indexBase
         unset($content);
     }
 
-    public function contents($category = NULL, $sayfa = 1)
+    public function contents($category = NULL, $page = 1)
     {
         $this->_categories();
 
-        $page_limit = 80; // Sayfa Limit
-        $pager_limit = 4; // Sayfalama Limiti
-        $offset = ($sayfa - 1) * $page_limit;
+        $page_limit = 80; // Page Limit
+        $pager_limit = 4; // Pagination Limit
+        $offset = ($page - 1) * $page_limit;
 
-        if (($sayfa == "") or ($sayfa == NULL)) {
-            $sayfa = 1;
+        if (($page == "") or ($page == NULL)) {
+            $page = 1;
         }
 
-        $sayfa = intval($sayfa); // Geçerli Sayfa
+        $page = intval($page); // Current Page
 
 
         $content = Load::model('mod_content.contents');
@@ -102,7 +102,7 @@ class mod_content_helper extends indexBase
             $content->order('created_at', 'DESC')->gR();
             $total_item = $content->getSize();
             //$content->where_category_seo($category)->limit($page_limit, $offset)->gR();
-            $content->getLimit($page_limit, $offset); // Belirtilen Limit Kadar Çekilen Veriden Alalım
+            $content->getLimit($page_limit, $offset); // Fetch from results based on limit
             if ($content->getSize() !== 0) {
                 $this->tema->ctx_set('contents', $content->toArray());
             }
@@ -116,12 +116,12 @@ class mod_content_helper extends indexBase
             $category_seo = $category_model->seo;
         }
 
-        // Sayfalama
+        // Pagination
         $p = Load::lib('Pager');
         $p->total_item = $total_item;
         $p->page_limit = $page_limit;
         $p->pager_limit = $pager_limit;
-        $p->page = $sayfa;
+        $p->page = $page;
 
 
         if ($p->check() === FALSE) {
@@ -129,19 +129,19 @@ class mod_content_helper extends indexBase
         }
 
         if ($p->Result() !== FALSE) {
-            $this->tema->ctx_set('sayfalama', $p->Result());
+            $this->tema->ctx_set('pagination', $p->Result());
         }
 
-        if ($sayfa != '1') {
-            $d['link'] = $this->site['sadres'] . 'category/' . $category . '/' . $sayfa;
+        if ($page != '1') {
+            $d['link'] = $this->site['sadres'] . 'category/' . $category . '/' . $page;
         } else {
             $d['link'] = $this->site['sadres'] . 'category/' . $category;
         }
 
-        if ($sayfa <= 1) {
+        if ($page <= 1) {
             $d['title'] = sprintf($this->lang['index']['mod_content']['1'], $categoryname);
         } else {
-            $d['title'] = sprintf($this->lang['index']['mod_content']['5'], $categoryname, $sayfa);
+            $d['title'] = sprintf($this->lang['index']['mod_content']['5'], $categoryname, $page);
         }
 
         $d['description'] = $this->lang['index']['mod_content']['2'];
@@ -150,7 +150,7 @@ class mod_content_helper extends indexBase
         $this->tema->ctx_set('d', $d);
         $this->tema->ctx_set('categoryname', $categoryname);
         $this->tema->ctx_set('category_seo', $category_seo);
-        $this->tema->ctx_set('sayfa', $sayfa);
+        $this->tema->ctx_set('page', $page);
         $this->tema->tpl('index/mod_content/contents');
 
         $this->_index();

@@ -32,10 +32,10 @@ class index_mod extends indexBase
     }
 
     # mod_video_embed
-    public function videos($category = null, $sayfa = 1)
+    public function videos($category = null, $page = 1)
     {
         $vid = Load::helper("index.mod_video_embed");
-        $vid->videos($category, $sayfa);
+        $vid->videos($category, $page);
         unset($vid);
     }
 
@@ -72,10 +72,10 @@ class index_mod extends indexBase
         unset($content);
     }
 
-    public function contents($category = null, $sayfa = 1)
+    public function contents($category = null, $page = 1)
     {
         $content = Load::helper("index.mod_content");
-        $content->contents($category, $sayfa);
+        $content->contents($category, $page);
         unset($content);
     }
 
@@ -94,10 +94,10 @@ class index_mod extends indexBase
         unset($news);
     }
 
-    public function newses($category = null, $sayfa = 1)
+    public function newses($category = null, $page = 1)
     {
         $news = Load::helper("index.mod_news");
-        $news->newses($category, $sayfa);
+        $news->newses($category, $page);
         unset($news);
     }
 
@@ -116,10 +116,10 @@ class index_mod extends indexBase
         unset($publication);
     }
 
-    public function publications($category = null, $sayfa = 1)
+    public function publications($category = null, $page = 1)
     {
         $publication = Load::helper("index.mod_publication");
-        $publication->publications($category, $sayfa);
+        $publication->publications($category, $page);
         unset($publication);
     }
 
@@ -274,27 +274,52 @@ class index_mod extends indexBase
         unset($publication);
     }
 
-    public function author($username = null, $sayfa = 1)
+    public function author($username = null, $page = 1)
     {
         $publication = Load::helper("index.mod_publication");
-        $publication->author($username, $sayfa);
+        $publication->author($username, $page);
         unset($publication);
     }
 
-    public function newsSitemap($sayfa = 1)
+    public function sitemapIndex()
     {
         header("content-type: text/xml");
-        $sayfa_limit = 50000;
-        if (intval($sayfa) === 0) {
-            $sayfa = 1;
+        echo '<?xml version="1.0" encoding="UTF-8"?>';
+        echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        
+        $valid_langs = Kayit::getir('valid_lang');
+        foreach ($valid_langs as $l) {
+            echo '<sitemap>
+                    <loc>' . $this->site['adres'] . $l . '/newsSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['adres'] . $l . '/publicationSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['adres'] . $l . '/categorySitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['adres'] . $l . '/pageSitemap.xml</loc>
+                  </sitemap>';
         }
-        $offset = ($sayfa - 1) * $sayfa_limit;
-        $news = Load::model('mod_news');
-        $news->where_status('y');
+        
+        echo '</sitemapindex>';
+    }
+
+    public function newsSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $news = Load::model('mod_news.newses');
+        $news->where_status_and_lang('y', $this->site['lang']);
         $news->order('created_at', 'DESC');
         $news->select(['seo', 'lang']);
-        $news->limit($sayfa_limit, $offset);
+        $news->limit($page_limit, $offset);
         $news->gR();
+        
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         if ($news->getSize() != 0) {
@@ -308,20 +333,20 @@ class index_mod extends indexBase
         echo '</urlset>';
     }
 
-    public function publicationSitemap($sayfa = 1)
+    public function publicationSitemap($page = 1)
     {
         header("content-type: text/xml");
-        $sayfa_limit = 50000;
-        if (intval($sayfa) === 0) {
-            $sayfa = 1;
-        }
-        $offset = ($sayfa - 1) * $sayfa_limit;
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
         $pub = Load::model('mod_publication');
-        $pub->where_status('y');
+        $pub->where_status_and_lang('y', $this->site['lang']);
         $pub->order('created_at', 'DESC');
         $pub->select(['seo', 'lang']);
-        $pub->limit($sayfa_limit, $offset);
+        $pub->limit($page_limit, $offset);
         $pub->gR();
+        
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         if ($pub->getSize() != 0) {
@@ -335,21 +360,16 @@ class index_mod extends indexBase
         echo '</urlset>';
     }
 
-    public function categorySitemap($sayfa = 1)
+    public function categorySitemap($page = 1)
     {
         header("content-type: text/xml");
-        $sayfa_limit = 50000;
-        if (intval($sayfa) === 0) {
-            $sayfa = 1;
-        }
-        $offset = ($sayfa - 1) * $sayfa_limit;
         
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         // News Categories
         $cat_news = Load::model('mod_news_category');
-        $cat_news->select(['seo', 'lang']);
+        $cat_news->where_lang($this->site['lang'])->select(['seo', 'lang']);
         $cat_news->gR();
         if ($cat_news->getSize() != 0) {
             foreach ($cat_news->toArray() as $o) {
@@ -362,7 +382,7 @@ class index_mod extends indexBase
 
         // Publication Categories
         $cat_pub = Load::model('mod_publication_category');
-        $cat_pub->select(['seo', 'lang']);
+        $cat_pub->where_lang($this->site['lang'])->select(['seo', 'lang']);
         $cat_pub->gR();
         if ($cat_pub->getSize() != 0) {
             foreach ($cat_pub->toArray() as $o) {
@@ -379,26 +399,28 @@ class index_mod extends indexBase
     public function pageSitemap($page = 1)
     {
         header("content-type: text/xml");
-        $pageLimit = 50000;
-        if (intval($page) === 0) {
-            $page = 1;
-        }
-        $offset = ($page - 1) * $pageLimit;
-        $oyun = Load::model('mod_page');
-        $oyun->where_status('y');
-        $oyun->select(['seo', 'lang']);
-        $oyun->limit($pageLimit, $offset);
-        $oyun->gR();
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $pages = Load::model('mod_page');
+        $pages->where_status_and_lang('y', $this->site['lang']);
+        $pages->select(['seo', 'lang']);
+        $pages->limit($page_limit, $offset);
+        $pages->gR();
+        
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        echo '<url>
-                  <loc>' . $this->site['adres'] . '</loc>
-                  <priority>1.0</priority>
-            </url>';
+        if ($this->site['lang'] == Kayit::getir('valid_lang')[0]) {
+            echo '<url>
+                      <loc>' . $this->site['adres'] . '</loc>
+                      <priority>1.0</priority>
+                </url>';
+        }
         
-        if ($oyun->getSize() != 0) {
-            foreach ($oyun->toArray() as $o) {
+        if ($pages->getSize() != 0) {
+            foreach ($pages->toArray() as $o) {
                 echo '<url>
                           <loc>' . $this->site['adres'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
                           <priority>0.50</priority>
@@ -406,5 +428,13 @@ class index_mod extends indexBase
             }
         }
         echo '</urlset>';
+    }
+
+    public function gone()
+    {
+        header("HTTP/1.0 410 Gone");
+        header("Status: 410 Gone");
+        echo "<h1>410 Gone</h1><p>Ev rûpel êdî tune ye û ji sîstemê hatiye rakirin.</p>";
+        exit();
     }
 }

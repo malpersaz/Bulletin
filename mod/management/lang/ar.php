@@ -49,13 +49,6 @@ $lang['management']=[
     'popup_announcement_management' => 'Popup Announcement Management',
     'popup_announcements' => 'Popup Announcements',
 
-    
-
-
-
-    'general_announcements' => 'General Announcements',
-    'open_announcements' => 'Public Announcements',
-    
     'arama' => 'Search',
     'filtrele' => 'Filter',
     'sirala' => 'Sort',
@@ -108,8 +101,6 @@ $lang['management']=[
     'arkadaslar' => 'Friends',
     'gruplar' => 'Groups',
     'sayfalar' => 'Pages',
-    'makaleler' => 'Articles',
-    'blog' => 'Blog',
     'galeri' => 'Gallery',
     'video_galerisi' => 'Video Gallery',
     'foto_galerisi' => 'Photo Gallery',
@@ -123,23 +114,15 @@ $lang['management']=[
     'ekibimiz' => 'Our Team',
     'referanslar' => 'References',
     'hizmetlerimiz' => 'Our Services',
-    'urunler' => 'Products',
-    'projeler' => 'Projects',
     'haberler' => 'News',
     'announcements' => 'Announcements',
     'etkinlikler' => 'Events',
-    'kampanyalar' => 'Campaigns',
     'destek' => 'Support',
     'yardim' => 'Help',
     'sss' => 'FAQ',
     'dokuman' => 'Documentation',
-    'kullanim_kilavuzu' => 'User Manual',
     'api' => 'API',
-    'web_hizmetleri' => 'Web Services',
-    'mobil_uygulama' => 'Mobile Application',
     'sosyal_medya' => 'Social Media',
-    'abone_ol' => 'Subscribe',
-    'bulten' => 'Newsletter',
     'rss' => 'RSS Feed',
     'sitemap' => 'Sitemap',
     'arama_motorlari' => 'Search Engines',

@@ -25,7 +25,8 @@ class mod_page_helper extends indexBase
             // Hejmara xwendinê zêde bike (IP Bazlı)
             $this->_update_view_count('mod_page', $sayfa->id);
 
-            $this->_parent_id_sayfalar($sayfa->id);
+            $this->_parent_id_pages($page->id);
+
 
             if ($sayfa->category_id !== 0) {
                 $this->_related_content($sayfa->category_id);

@@ -228,18 +228,18 @@ abstract class indexBase
         $this->site['social_links'] = ($social_model->getSize() > 0) ? $social_model->toArray() : [];
     }
 
-    public function _parent_id_sayfalar($id)
+    public function _parent_id_pages($id)
     {
         Load::modelfile('mod_page');
-        $altsayfa = new mod_page_model();
-        $altsayfa->where_parent_id_and_status_and_root_and_lang($id, 'y', 'n', $this->site['lang']);
-        $altsayfa->select('name,summary,seo');
-        $altsayfa->order('order', 'ASC');
-        $altsayfa->gR();
-        if ($altsayfa->getSize() !== 0) {
-            $this->tema->ctx_set('altsayfalar', $altsayfa->toArray());
+        $sub_page = new mod_page_model();
+        $sub_page->where_parent_id_and_status_and_root_and_lang($id, 'y', 'n', $this->site['lang']);
+        $sub_page->select('name,summary,seo');
+        $sub_page->order('order', 'ASC');
+        $sub_page->gR();
+        if ($sub_page->getSize() !== 0) {
+            $this->tema->ctx_set('sub_pages', $sub_page->toArray());
         }
-        unset($altsayfa);
+        unset($sub_page);
     }
 
     public function _related_content($category_id, $limit = 5)

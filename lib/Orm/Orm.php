@@ -57,21 +57,21 @@ abstract class ORM extends Database implements Orm_interface
         try {
             // id|ad|seo
             $desen = implode("|", $this->_orm_coloms);
-            // $oyun->id(1);
+            // $model->id(1);
             $colom_desen = "!^(" . $desen . ")$!";
-            // $oyun->getid(1);
-            // $oyun->Getid(1);
+            // $model->getid(1);
+            // $model->Getid(1);
             $get_desen = "!^(g|G)et(.+)$!";
-            // $oyun->delete_id(1);
-            // $oyun->Delete_id(1);
+            // $model->delete_id(1);
+            // $model->Delete_id(1);
             $delete_desen = "!^(d|D)elete_(.+)$!";
-            // $oyun->where_id(1); $oyun->Where_id(1);
-            // $oyun->where_id_and_seo(1,'seo-key');
+            // $model->where_id(1); $model->Where_id(1);
+            // $model->where_id_and_seo(1,'seo-key');
             //$where_desen = "!^(w|W)here_((".$this->wdesen."|_)+)!";
             $where_desen = "!^(w|W)here_(.+)!";
 
-            // $oyun->exists_id('1');
-            // $oyun->Exists_id_and_seo('1','araba');
+            // $model->exists_id('1');
+            // $model->Exists_id_and_seo('1','example');
             $exists_desen = "!^(e|E)xists_(.+)!";
 
             // Oke

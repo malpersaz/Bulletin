@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Master Sitemap Index for Amida Kurd
+Sitemap: https://amidakurd.net/sitemap.xml
+
+# Specific Language fallbacks (Google will discover these via Index)
+Sitemap: https://amidakurd.net/ku/newsSitemap.xml
+Sitemap: https://amidakurd.net/en/newsSitemap.xml

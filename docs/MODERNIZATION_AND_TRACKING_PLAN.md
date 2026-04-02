@@ -34,16 +34,16 @@ This document outlines the objectives and implementation strategy for the modern
         - **Utility:** Encourages user participation and community discussion.
 
 ### 1.3 Modern Sitemap System
-- **Status:** **In Progress / Partially Completed**
+- **Status:** **Completed / Submitted**
 - **Completed Tasks:**
-    - Developed dynamic XML sitemap generators in `mod/index/index.php` for `news`, `publications`, `categories`, and `pages`.
-    - Implemented `.htaccess` rewrite rules to support standard `.xml` extensions (e.g., `newsSitemap.xml`).
-    - Verified domain ownership in Google Search Console via Cloudflare integration.
+    - Developed dynamic XML sitemap generators in `mod/index/index.php` for all languages.
+    - Implemented **Master Sitemap Index** (`sitemap.xml`) to link all language-specific sub-sitemaps.
+    - Created **`robots.txt`** to point Google directly to the master sitemap.
+    - Implemented `.htaccess` rewrite rules for both global and language-specific XML URLs.
+    - Verified domain ownership in Google Search Console.
 - **Pending Tasks (To Do):**
-    - **Submission:** Submit the new XML URLs (`newsSitemap.xml`, `publicationSitemap.xml`, etc.) to Google Search Console.
-    - **Cleanup:** Manually remove legacy sitemap entries (like `contentSitemap`) from Search Console.
-    - **Sitemap Index:** (Recommended) Create a master `sitemap.xml` index file that points to all individual sitemaps for easier management.
-    - **Legacy Redirection:** Implement `410 Gone` status for `/nuce/` prefixed legacy URLs to force Google to prioritize the new sitemap structure.
+    - **Monitoring:** Monitor indexation rates in Search Console over the next 48 hours.
+    - **Legacy Redirection:** Finalize `410 Gone` for old `/nuce/` links to clear dead URLs from Google.
 
 ### 1.4 Google Services Ecosystem
 - **Google Analytics 4 (GA4):** Integrate real-time behavior tracking (scroll depth, clicks, time on page).
@@ -86,7 +86,28 @@ This document outlines the objectives and implementation strategy for the modern
 1. **Backend Wiring:** Connect the homepage template sections to live database queries.
 2. **Bulk Removal:** Finalize the removal of `/nuce/` prefixed URLs in Google Search Console.
 3. **Data Analysis:** After 1 week of tracking, review `sys_view_logs` to analyze reader behavior and most popular categories.
-4. **Google Indexing API:** (Optional) Implement the Indexing API for instant news submission.
+## 5. Implementation Roadmap (Step-by-Step)
+
+Based on the Amed Framework architecture, the following steps will be taken to complete the pending tasks:
+
+### 5.1 Master Sitemap Index & SEO (Phased Goal 1)
+- **Action:** Add `sitemap()` method to `index_mod` class in `mod/index/index.php`. This method will output a `<sitemapindex>` linking to all existing sub-sitemaps.
+- **Routing:** Update `.htaccess` to include `RewriteRule ^sitemap.xml$ index.php?method=sitemap [L]`.
+- **410 Gone:** Add `gone()` method to `index_mod` and map legacy patterns (`/nuce/.*`) to it in `.htaccess`.
+
+### 5.2 NYT Homepage Wiring (Phased Goal 2)
+- **Logic:** Implement `_get_category_news($category_seo, $limit)` in `indexBase.php` to fetch news for specific sections.
+- **Integration:** Call this method within `index_mod::index()` and assign results to Twig context (e.g., `kurdi_news`, `cihan_news`).
+- **Template:** Update `category_sections.twig` to iterate over these variables using Twig loops.
+
+### 5.3 Rich Media Indicators (Phased Goal 3)
+- **Helper Update:** Modify `mod/index/helper/mod_news.helper.php` (and others) to check for `gallery_id`, `file_id`, and `video` fields.
+- **UI Logic:** Pass flags like `has_gallery`, `has_files`, `has_video` to the template context.
+- **Visuals:** Add Bootstrap icons with conditional logic in `templates/default/index/mod_news/newses.twig`.
+
+### 5.4 Analytics & Verification
+- **Log Review:** Use SQL queries to monitor `sys_view_logs` for accuracy.
+- **Search Console:** Finalize manual submission of `sitemap.xml` and monitor indexation.
 
 ---
-*Documented on: April 2, 2026*
+*Updated on: April 3, 2026*

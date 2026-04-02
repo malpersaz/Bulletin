@@ -64,13 +64,6 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
                 'user_id' => 1
             ),
             array(
-                'name' => 'Project Galleries',
-                'mod_name' => 'mod_proje',
-                'mod_key' => 'id',
-                'mod_value' => 'gallery_id',
-                'user_id' => 1
-            ),
-                        array(
                 'name' => 'Video Galleries',
                 'mod_name' => 'mod_video_embed',
                 'mod_key' => 'id',
