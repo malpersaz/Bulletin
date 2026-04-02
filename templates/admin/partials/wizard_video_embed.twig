@@ -21,7 +21,7 @@
 
         <!-- Hidden Defaults -->
         <input type="hidden" name="add" value="{{ lang.mod_video_embed.button.add }}">
-        <input type="hidden" name="lang" id="videoEmbedWizardHiddenLang" value="{{ site.lang|upper }}">
+        <input type="hidden" name="lang" id="videoEmbedWizardHiddenLang" value="{{ site.lang|lower }}">
         <input type="hidden" name="category_id" id="videoEmbedWizardHiddenCategory" value="0">
         <input type="hidden" name="acl_id" id="videoEmbedWizardHiddenAcl" value="0">
         <input type="hidden" name="status" id="videoEmbedWizardHiddenPublish" value="y">
@@ -35,7 +35,7 @@
             <p class="step-subhead" id="videoEmbedWizardStepSubhead1">{{ lang.mod_video_embed.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|upper == site.lang|upper %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|upper }}')">
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
                     <div class="selection-icon">{{ item.seo|upper }}</div>
                     <div class="selection-label">{{ item.name }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>

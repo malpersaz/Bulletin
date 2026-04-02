@@ -252,7 +252,7 @@
 
 	<form id="editForm" method="POST" action="{{ site.sadres }}mod_publication/edit/{{ d.id }}" enctype="multipart/form-data">
 		<input type="hidden" name="edit" value="{{ lang.mod_publication.button.edit }}">
-		<input type="hidden" name="lang" id="editLang" value="{{ d.lang }}">
+		<input type="hidden" name="lang" id="editLang" value="{{ d.lang|lower }}">
 		<input type="hidden" name="category_id" id="editCategoryId" value="{{ d.category_id }}">
 
 

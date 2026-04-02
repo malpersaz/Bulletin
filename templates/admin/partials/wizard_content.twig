@@ -42,7 +42,7 @@
         <input type="hidden" name="title" id="title" value="">
         <input type="hidden" name="keywords" id="keywords" value="">
         <input type="hidden" name="description" id="description" value="">
-        <input type="hidden" name="lang" id="wizardHiddenLang" value="{{ site.lang|upper }}">
+        <input type="hidden" name="lang" id="wizardHiddenLang" value="{{ site.lang|lower }}">
         <input type="hidden" name="category_id" id="wizardHiddenCategory" value="0">
 
         <!-- Step 1: Language -->
@@ -51,7 +51,7 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|upper == site.lang|upper %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|upper }}')">
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
                     <div class="selection-icon">{{ item.seo|upper }}</div>
                     <div class="selection-label">{{ item.name }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
@@ -59,6 +59,7 @@
                 {% endfor %}
             </div>
         </div>
+
 
         <!-- Step 2: Category -->
         <div class="wizard-step" id="wizardStep2">

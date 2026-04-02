@@ -242,6 +242,26 @@ abstract class indexBase
         unset($sub_page);
     }
 
+    public function _get_category_news($category_seo, $limit = 5)
+    {
+        $news = Load::model('mod_news.newses');
+        $news->where_category_seo_and_status_and_lang($category_seo, 'y', $this->site['lang']);
+        $news->order('created_at', 'DESC');
+        $news->limit($limit);
+        $news->gR();
+        
+        if ($news->getSize() !== 0) {
+            $items = $news->toArray();
+            foreach ($items as &$item) {
+                $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
+                $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
+                $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
+            }
+            return $items;
+        }
+        return [];
+    }
+
     public function _related_content($category_id, $limit = 5)
     {
         $content = Load::model('mod_content.contents');
