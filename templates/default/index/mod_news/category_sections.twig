@@ -1,0 +1,140 @@
+{# Sêwirandina Kategoriyan a bi şêwaza New York Times - PÊŞVEBIRINA TEMAM #}
+<style>
+    .nyt-cat-section {
+        margin-bottom: 4rem;
+        border-top: 1px solid #000;
+        padding-top: 0.75rem;
+    }
+    
+    .nyt-cat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 2rem;
+    }
+    
+    .nyt-cat-title {
+        font-family: 'Pirata One', cursive;
+        font-size: 1.5rem;
+        margin: 0;
+        text-transform: uppercase;
+        color: #000;
+    }
+    
+    .nyt-cat-link {
+        text-decoration: none;
+        color: #333;
+        font-family: 'Inter', sans-serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+    .nyt-cat-link:hover { text-decoration: underline; }
+
+    /* Layout A: Feature + List */
+    .nyt-main-article { border-right: 1px solid #eee; padding-right: 2rem; }
+    @media (max-width: 991px) { .nyt-main-article { border-right: none; padding-right: 0; margin-bottom: 2rem; } }
+    
+    .nyt-main-article img { width: 100%; height: auto; aspect-ratio: 16/9; object-fit: cover; margin-bottom: 1rem; }
+    .nyt-main-article h3 { font-family: 'Literata', 'Georgia', serif; font-weight: 800; font-size: 1.6rem; line-height: 1.1; color: #000; margin-bottom: 0.75rem; }
+    .nyt-main-article p { font-family: 'Inter', sans-serif; font-size: 0.95rem; line-height: 1.5; color: #444; }
+
+    .nyt-side-item { margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid #eee; }
+    .nyt-side-item:last-child { border-bottom: none; }
+    .nyt-side-item h4 { font-family: 'Literata', 'Georgia', serif; font-weight: 700; font-size: 1.1rem; line-height: 1.2; color: #000; margin: 0; }
+    .nyt-side-item h4 a { color: inherit; text-decoration: none; }
+    .nyt-side-item h4 a:hover { color: #666; }
+
+    /* Layout B: Grid */
+    .nyt-grid-col { border-right: 1px solid #eee; }
+    .nyt-grid-col:last-child { border-right: none; }
+    @media (max-width: 767px) { .nyt-grid-col { border-right: none; border-bottom: 1px solid #eee; padding-bottom: 1.5rem; margin-bottom: 1.5rem; } }
+    
+    .nyt-grid-item img { width: 100%; aspect-ratio: 3/2; object-fit: cover; margin-bottom: 0.75rem; }
+    .nyt-grid-item h4 { font-family: 'Literata', 'Georgia', serif; font-weight: 700; font-size: 1.1rem; line-height: 1.2; color: #000; }
+
+    /* Meta & Icons */
+    .nyt-timestamp { font-size: 0.65rem; color: #888; font-weight: 600; text-transform: uppercase; margin-top: 0.25rem; display: block; }
+    .nyt-meta-group { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .nyt-meta-item { display: flex; align-items: center; gap: 0.25rem; font-size: 0.7rem; color: #777; font-weight: 600; }
+    .nyt-meta-item i { font-size: 0.8rem; }
+    .nyt-meta-item.has-video { color: #d0021b; }
+    .nyt-meta-item.has-gallery { color: #0077cc; }
+</style>
+
+<!-- SECTION 1: SIYASAT (Layout A) -->
+<section class="nyt-cat-section">
+    <div class="nyt-cat-header">
+        <h2 class="nyt-cat-title">Siyasat</h2>
+        <a href="#" class="nyt-cat-link">Hemû bixwîne <i class="bi bi-chevron-right"></i></a>
+    </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <article class="nyt-main-article">
+                <img src="https://picsum.photos/800/450?sig=101" alt="Siyasat Main">
+                <h3>Guhertinên siyasî yên dawîn û bandora wan li ser pêşeroja herêmê</h3>
+                <p>Hevdîtinên dîplomatîk ên li paytextê îro bi encamên girîng bi dawî bûn. Rayedaran derbarê peymanên nû de daxuyaniyên fermî dan.</p>
+                
+                <div class="nyt-meta-group">
+                    <span class="nyt-timestamp"><i class="bi bi-clock"></i> 12 Deqe berê</span>
+                    <span class="nyt-meta-item" title="Xwendin"><i class="bi bi-eye"></i> 1.2k</span>
+                    <span class="nyt-meta-item" title="Şîrove"><i class="bi bi-chat-dots"></i> 24</span>
+                    <span class="nyt-meta-item has-video" title="Vîdyo heye"><i class="bi bi-play-circle-fill"></i> Vîdyo</span>
+                    <span class="nyt-meta-item has-gallery" title="Galerî heye"><i class="bi bi-images"></i> Galerî</span>
+                </div>
+            </article>
+        </div>
+        <div class="col-lg-4">
+            <div class="nyt-side-item">
+                <h4><a href="#">Hevdîtina serokên partiyan li ser maseya çareseriyê</a></h4>
+                <div class="nyt-meta-group">
+                    <span class="nyt-timestamp">1 Saet berê</span>
+                    <span class="nyt-meta-item"><i class="bi bi-eye"></i> 850</span>
+                    <span class="nyt-meta-item"><i class="bi bi-paperclip"></i> Pel</span>
+                </div>
+            </div>
+            <div class="nyt-side-item">
+                <h4><a href="#">Encamên hilbijartinên herêmî hatin eşkere kirin</a></h4>
+                <div class="nyt-meta-group">
+                    <span class="nyt-timestamp">3 Saet berê</span>
+                    <span class="nyt-meta-item"><i class="bi bi-eye"></i> 3.4k</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SECTION 2: ÇAND (Layout B) -->
+<section class="nyt-cat-section">
+    <div class="nyt-cat-header">
+        <h2 class="nyt-cat-title">Çand û Huner</h2>
+        <a href="#" class="nyt-cat-link">Hemû <i class="bi bi-chevron-right"></i></a>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-3 nyt-grid-col">
+            <div class="nyt-grid-item">
+                <img src="https://picsum.photos/400/300?sig=105" alt="Art">
+                <h4>Pêşangeha hunerî ya nû li Amedê deriyên xwe vekir</h4>
+            </div>
+        </div>
+        <div class="col-md-3 nyt-grid-col">
+            <div class="nyt-grid-item">
+                <img src="https://picsum.photos/400/300?sig=106" alt="Art">
+                <h4>Festîvala fîlman a îsal amadekariyên xwe temam kir</h4>
+            </div>
+        </div>
+        <div class="col-md-3 nyt-grid-col">
+            <div class="nyt-grid-item">
+                <img src="https://picsum.photos/400/300?sig=107" alt="Art">
+                <h4>Pirtûka nû ya helbestvan gihîşt ber destê xwendevanan</h4>
+            </div>
+        </div>
+        <div class="col-md-3 nyt-grid-col">
+            <div class="nyt-grid-item">
+                <img src="https://picsum.photos/400/300?sig=108" alt="Art">
+                <h4>Muzîka klasîk û şopa wê ya di çanda nûjen de</h4>
+            </div>
+        </div>
+    </div>
+</section>

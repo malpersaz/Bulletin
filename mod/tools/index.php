@@ -337,6 +337,9 @@ class tools_mod extends indexMain
         }
         $file->sync();
 
+        // Hejmara daxistinê zêde bike (IP Bazlı)
+        $this->_update_view_count('mod_attachment', $file->id);
+
         header("Content-Type: " . $file->type);
         header("Cache-Control: public");
         header("Content-Disposition: attachment; filename=\"" . basename($file->name) . "\";");

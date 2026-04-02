@@ -38,6 +38,8 @@ class mod_video_embed_helper extends indexBase
                 return;
             }
 
+            // Hejmara xwendinê zêde bike (IP Bazlı)
+            $this->_update_view_count('mod_video_embed', $video->id);
 
             $category =
                 $this->tema->ctx_set('d', $video->toArray());

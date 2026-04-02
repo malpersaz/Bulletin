@@ -72,6 +72,21 @@
 		<!-- Custom CSS - Bootstrap 5.3.8 Color Modes Test için geçici olarak devre dışı bırakılmıştı, tekrar aktif edildi -->
 		<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
 
+		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
+			<!-- Google tag (gtag.js) -->
+			<script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics_id }}"></script>
+			<script>
+			  window.dataLayer = window.dataLayer || [];
+			  function gtag(){dataLayer.push(arguments);}
+			  gtag('js', new Date());
+			  gtag('config', '{{ site.google_analytics_id }}', {
+				'send_page_view': true,
+				'anonymize_ip': false,
+				'cookie_flags': 'SameSite=None;Secure'
+			  });
+			</script>
+		{% endif %}
+
 		{% block css_custom %}{% endblock %}
 		{% block head %}{% endblock %}
 	</head>

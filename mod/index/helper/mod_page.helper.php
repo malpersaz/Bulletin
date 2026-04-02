@@ -22,6 +22,9 @@ class mod_page_helper extends indexBase
                 return;
             }
 
+            // Hejmara xwendinê zêde bike (IP Bazlı)
+            $this->_update_view_count('mod_page', $sayfa->id);
+
             $this->_parent_id_sayfalar($sayfa->id);
 
             if ($sayfa->category_id !== 0) {

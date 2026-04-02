@@ -5,6 +5,12 @@ RewriteRule ^cache/js/(.*).js$ js.php?cachefile=$1 [L]
 RewriteRule ^cache/css/(.*).css$ css.php?cachefile=$1 [L]
 RewriteRule ^r/(.*)/f/(.*)\.(gif|jpe?g|png)$ resize.php?file=$2.$3&options=$1 [L]
 
+# Sitemap Rewrites
+RewriteRule ^newsSitemap.xml$ index.php?method=newsSitemap [L]
+RewriteRule ^publicationSitemap.xml$ index.php?method=publicationSitemap [L]
+RewriteRule ^categorySitemap.xml$ index.php?method=categorySitemap [L]
+RewriteRule ^pageSitemap.xml$ index.php?method=pageSitemap [L]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

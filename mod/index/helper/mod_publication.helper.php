@@ -47,6 +47,9 @@ class mod_publication_helper extends indexBase
             return;
         }
 
+        // Hejmara xwendinê zêde bike (IP Bazlı)
+        $this->_update_view_count('mod_publication', $publication->id);
+
         if (isset($publication->video) && $publication->video != '') {
             $this->_mod_video($publication->video);
         }

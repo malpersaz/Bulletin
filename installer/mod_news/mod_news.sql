@@ -19,5 +19,6 @@ CREATE TABLE  `mod_news` (
 `image` VARCHAR(20),
 `acl_id` INT(11) DEFAULT 0 ,
 `video` VARCHAR(255)  DEFAULT NULL ,
+`view_count` INT(11) NOT NULL DEFAULT 0,
 `user_id` INT(11) NOT NULL
 )  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

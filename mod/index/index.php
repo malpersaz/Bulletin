@@ -281,6 +281,60 @@ class index_mod extends indexBase
         unset($publication);
     }
 
+    public function newsSitemap($sayfa = 1)
+    {
+        header("content-type: text/xml");
+        $sayfa_limit = 50000;
+        if (intval($sayfa) === 0) {
+            $sayfa = 1;
+        }
+        $offset = ($sayfa - 1) * $sayfa_limit;
+        $news = Load::model('mod_news');
+        $news->where_status('y');
+        $news->order('created_at', 'DESC');
+        $news->select(['seo', 'lang']);
+        $news->limit($sayfa_limit, $offset);
+        $news->gR();
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($news->getSize() != 0) {
+            foreach ($news->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['adres'] . $o['lang'] . '/news/' . $o['seo'] . '</loc>
+                          <priority>0.80</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+    }
+
+    public function publicationSitemap($sayfa = 1)
+    {
+        header("content-type: text/xml");
+        $sayfa_limit = 50000;
+        if (intval($sayfa) === 0) {
+            $sayfa = 1;
+        }
+        $offset = ($sayfa - 1) * $sayfa_limit;
+        $pub = Load::model('mod_publication');
+        $pub->where_status('y');
+        $pub->order('created_at', 'DESC');
+        $pub->select(['seo', 'lang']);
+        $pub->limit($sayfa_limit, $offset);
+        $pub->gR();
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($pub->getSize() != 0) {
+            foreach ($pub->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['adres'] . $o['lang'] . '/publication/' . $o['seo'] . '</loc>
+                          <priority>0.80</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+    }
+
     public function categorySitemap($sayfa = 1)
     {
         header("content-type: text/xml");
@@ -289,49 +343,36 @@ class index_mod extends indexBase
             $sayfa = 1;
         }
         $offset = ($sayfa - 1) * $sayfa_limit;
-        $oyun = Load::model('mod_category');
-        //$oyun->where_status('y');
-        //$oyun->order('zaman', 'DESC');
-        $oyun->select(['seo', 'lang']);
-        $oyun->limit($sayfa_limit, $offset);
-        $oyun->gR();
+        
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($oyun->getSize() != 0) {
-            foreach ($oyun->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/category/' . $o['seo'] . '</loc>
-                          <priority>0.700</priority>
-                    </url>';
-            }
-        }
-        echo '</urlset>';
-    }
 
-    public function contentSitemap($sayfa = 1)
-    {
-        header("content-type: text/xml");
-        $sayfa_limit = 50000;
-        if (intval($sayfa) === 0) {
-            $sayfa = 1;
-        }
-        $offset = ($sayfa - 1) * $sayfa_limit;
-        $oyun = Load::model('mod_content');
-        $oyun->where_status('y');
-        $oyun->order('created_at', 'DESC');
-        $oyun->select(['seo', 'lang']);
-        $oyun->limit($sayfa_limit, $offset);
-        $oyun->gR();
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($oyun->getSize() != 0) {
-            foreach ($oyun->toArray() as $o) {
+        // News Categories
+        $cat_news = Load::model('mod_news_category');
+        $cat_news->select(['seo', 'lang']);
+        $cat_news->gR();
+        if ($cat_news->getSize() != 0) {
+            foreach ($cat_news->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/i/' . $o['seo'] . '</loc>
-                          <priority>0.700</priority>
+                          <loc>' . $this->site['adres'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
+                          <priority>0.60</priority>
                     </url>';
             }
         }
+
+        // Publication Categories
+        $cat_pub = Load::model('mod_publication_category');
+        $cat_pub->select(['seo', 'lang']);
+        $cat_pub->gR();
+        if ($cat_pub->getSize() != 0) {
+            foreach ($cat_pub->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['adres'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                          <priority>0.60</priority>
+                    </url>';
+            }
+        }
+
         echo '</urlset>';
     }
 
@@ -345,7 +386,6 @@ class index_mod extends indexBase
         $offset = ($page - 1) * $pageLimit;
         $oyun = Load::model('mod_page');
         $oyun->where_status('y');
-        //$oyun->order('date', 'DESC');
         $oyun->select(['seo', 'lang']);
         $oyun->limit($pageLimit, $offset);
         $oyun->gR();
@@ -354,22 +394,14 @@ class index_mod extends indexBase
 
         echo '<url>
                   <loc>' . $this->site['adres'] . '</loc>
-                  <priority>1</priority>
+                  <priority>1.0</priority>
             </url>';
-        echo '<url>
-                      <loc>' . $this->site['adres'] . 'tr/</loc>
-                      <priority>1</priority>
-                </url>';
-
-        echo '<url>
-	                      <loc>' . $this->site['adres'] . 'en/</loc>
-	                      <priority>1</priority>
-	                </url>';
+        
         if ($oyun->getSize() != 0) {
             foreach ($oyun->toArray() as $o) {
                 echo '<url>
                           <loc>' . $this->site['adres'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
-                          <priority>0.700</priority>
+                          <priority>0.50</priority>
                     </url>';
             }
         }

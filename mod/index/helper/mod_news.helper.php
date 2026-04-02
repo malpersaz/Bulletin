@@ -40,6 +40,9 @@ class mod_news_helper extends indexBase
             if ($this->_permission_kontrol($news->acl_id)) {
                 return;
             }
+            // Hejmara xwendinê zêde bike (IP Bazlı)
+            $this->_update_view_count('mod_news', $news->id);
+            
             // Bakalım Video varmı : $video olarak gönderilecek
             if (isset($news->video) && $news->video != '') {
                 $this->_mod_video($news->video);

@@ -9,5 +9,6 @@ CREATE TABLE `mod_attachment` (
   `mod_name` varchar(250) COLLATE utf8_unicode_ci NOT NULL,
   `vid` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
+  `view_count` INT(11) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

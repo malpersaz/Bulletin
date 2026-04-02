@@ -309,4 +309,37 @@ abstract class indexBase
         Helper::yonlendir($this->site['adres']);
         exit();
     }
+
+    /**
+     * IP Bazlı Görüntüleme Sayısını Günceller (Anti-F5 Spam)
+     * @param string $table Tablo adı (Örn: mod_news)
+     * @param int $id İçerik ID'si
+     * @return bool
+     */
+    public function _update_view_count($table, $id)
+    {
+        if (empty($table) || empty($id)) {
+            return false;
+        }
+
+        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $today = date('Y-m-d');
+        
+        $db = Load::lib('Database');
+        
+        // Bu IP bugün bu içeriği görmüş mü kontrol et
+        $check = $db->query("SELECT id FROM `sys_view_logs` WHERE `table_name` = '$table' AND `item_id` = " . intval($id) . " AND `ip_address` = '$ip' AND `created_at` = '$today' LIMIT 1");
+        
+        if ($db->getSize() === 0) {
+            // Log kaydı ekle
+            $db->query("INSERT INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
+                        VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
+            
+            // View count artır
+            $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
+            return true;
+        }
+        
+        return false;
+    }
 }
