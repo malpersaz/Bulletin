@@ -30,8 +30,15 @@ $url['announcements']='index/announcements';
 $url['announcements/']='index/announcements';
 $url['announcements/(:any)']='index/announcements/$1';
 
-//Page
+// Page
 $url['page/(:any)']='index/page/$1';
+
+// Sitemaps
+$url['sitemap.xml'] = 'index/sitemapIndex';
+$url['newsSitemap.xml'] = 'index/newsSitemap';
+$url['publicationSitemap.xml'] = 'index/publicationSitemap';
+$url['categorySitemap.xml'] = 'index/categorySitemap';
+$url['pageSitemap.xml'] = 'index/pageSitemap';
 
 
 

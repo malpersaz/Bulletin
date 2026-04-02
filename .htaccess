@@ -6,20 +6,12 @@ RewriteRule ^cache/css/(.*).css$ css.php?cachefile=$1 [L]
 RewriteRule ^r/(.*)/f/(.*)\.(gif|jpe?g|png)$ resize.php?file=$2.$3&options=$1 [L]
 
 # Sitemap Rewrites
-RewriteRule ^sitemap.xml$ index.php?method=sitemapIndex [L]
-RewriteRule ^([a-z]{2,3})/newsSitemap.xml$ index.php?method=newsSitemap [L]
-RewriteRule ^([a-z]{2,3})/publicationSitemap.xml$ index.php?method=publicationSitemap [L]
-RewriteRule ^([a-z]{2,3})/categorySitemap.xml$ index.php?method=categorySitemap [L]
-RewriteRule ^([a-z]{2,3})/pageSitemap.xml$ index.php?method=pageSitemap [L]
+RewriteRule ^sitemap\.xml$ index.php [L]
+RewriteRule ^([a-z]{2,3})/sitemap\.xml$ index.php [L]
+RewriteRule ^([a-z]{2,3})/(news|publication|category|page)Sitemap\.xml$ index.php [L]
 
 # Legacy 410 Gone
 RewriteRule ^nuce/(.*)$ index.php?method=gone [L]
-
-# Legacy Sitemap Rewrites (Fallback)
-RewriteRule ^newsSitemap.xml$ index.php?method=newsSitemap [L]
-RewriteRule ^publicationSitemap.xml$ index.php?method=publicationSitemap [L]
-RewriteRule ^categorySitemap.xml$ index.php?method=categorySitemap [L]
-RewriteRule ^pageSitemap.xml$ index.php?method=pageSitemap [L]
 
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
