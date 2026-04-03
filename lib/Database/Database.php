@@ -376,6 +376,11 @@ class Database
         return $this->_db[self::$database]->num_rows($this->_query_result[self::$database][$this->_sql_text]);
     }
 
+    public function affected_rows()
+    {
+        return $this->_db[self::$database]->affected_rows();
+    }
+
     public function error()
     {
         return $this->_db[self::$database]->error();
