@@ -48,13 +48,15 @@ class indexMain
         $check = $db->query("SELECT id FROM `sys_view_logs` WHERE `table_name` = '$table' AND `item_id` = " . intval($id) . " AND `ip_address` = '$ip' AND `created_at` = '$today' LIMIT 1");
         
         if ($db->getSize() === 0) {
-            // Log kaydı ekle
-            $db->query("INSERT INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
+            // Log kaydı ekle (Duplicate entry hatasını önlemek için IGNORE kullanıyoruz)
+            $db->query("INSERT IGNORE INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
                         VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
             
-            // View count artır
-            $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
-            return true;
+            // Eğer bir satır eklendiyse view count artır
+            if ($db->affected_rows() > 0) {
+                $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
+                return true;
+            }
         }
         
         return false;
