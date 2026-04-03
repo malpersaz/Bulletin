@@ -430,11 +430,15 @@ class index_mod extends indexBase
         echo '</urlset>';
     }
 
-    public function gone()
+    public function legacyRedirect($seo = null)
     {
-        header("HTTP/1.0 410 Gone");
-        header("Status: 410 Gone");
-        echo "<h1>410 Gone</h1><p>Ev rûpel êdî tune ye û ji sîstemê hatiye rakirin.</p>";
+        if ($seo) {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . $this->site['adres'] . 'news/' . $seo);
+            exit();
+        }
+        header("HTTP/1.1 301 Moved Permanently");
+        header("Location: " . $this->site['adres']);
         exit();
     }
 }

@@ -10,8 +10,8 @@ RewriteRule ^sitemap\.xml$ index.php [L]
 RewriteRule ^([a-z]{2,3})/sitemap\.xml$ index.php [L]
 RewriteRule ^([a-z]{2,3})/(news|publication|category|page)Sitemap\.xml$ index.php [L]
 
-# Legacy 410 Gone
-RewriteRule ^nuce/(.*)$ index.php?method=gone [L]
+# Legacy Redirects
+RewriteRule ^nuce/(.*)$ index.php [L]
 
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f

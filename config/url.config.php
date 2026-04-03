@@ -40,6 +40,9 @@ $url['publicationSitemap.xml'] = 'index/publicationSitemap';
 $url['categorySitemap.xml'] = 'index/categorySitemap';
 $url['pageSitemap.xml'] = 'index/pageSitemap';
 
+// Legacy Redirects
+$url['nuce/(:any)'] = 'index/legacyRedirect/$1';
+
 
 
 // mod_video_embed
