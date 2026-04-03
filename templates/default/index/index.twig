@@ -45,7 +45,25 @@ $(document).ready(function() {
 
     <section class="row">
         <article class="col-12">
-            {% include 'index/mod_news/latest_news.twig' %}
+            {# Fetch and display news for each category pinned to the homepage #}
+            {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [4, "image,name,seo,summary,created_at"]}) }}
+            {% set homepage_categories = ctx_get('homepage_news_categories') %}
+            
+            {% if homepage_categories and homepage_categories|length > 0 %}
+                {% for category in homepage_categories %}
+                    {% if category.news|length > 0 %}
+                        <div class="category-homepage-section mt-5">
+                            <h2 class="nyt-news-heading border-bottom pb-2">
+                                <a href="{{ site.sadres }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
+                            </h2>
+                            {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo } %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {# Fallback to general latest news if no categories are pinned #}
+                {% include 'index/mod_news/latest_news.twig' %}
+            {% endif %}
         </article>
     </section>
     

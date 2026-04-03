@@ -251,6 +251,14 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _homepage_news_categories($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_news');
+        $result = $helper->_homepage_categories($limit, $select);
+        $t->ctx_set('homepage_news_categories', $result);
+        unset($helper);
+    }
+
     public function _latest_publications($t, $limit, $select)
     {
         $helper = Load::helper('index.mod_publication');

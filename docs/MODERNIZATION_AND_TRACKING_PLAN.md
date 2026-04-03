@@ -52,14 +52,13 @@ This document outlines the objectives and implementation strategy for the modern
 | Category Pinning (Admin) | **Completed** | UI and Controller logic for `show_on_homepage` |
 | DB Schema Update | **Completed** | `show_on_homepage` column added and mapped |
 | Language Standardization | **Completed** | Replaced 'baslik' with 'title' and added std keys |
-| NYT Homepage Wiring | **In Progress** | Backend logic for fetching pinned categories |
+| NYT Homepage Wiring | **Completed** | Fetches and displays news from pinned categories |
 
 ## 4. Maintenance & Future Steps
 
-1.  **Homepage Wiring:** Update `index_mod::index()` to fetch news only from pinned categories.
-2.  **Publication Categories:** Apply the same Admin UI logic (Pinning) to Publication categories.
-3.  **Rich Media Indicators:** Finalize Bootstrap icon integration in news listings.
-4.  **Bulk Removal:** Continue requesting removal of legacy URLs in Search Console.
+1.  **Rich Media Indicators:** Finalize Bootstrap icon integration in news listings (gallery, video, attachments).
+2.  **Publication Categories:** Apply the same logic (Pinning) to Publication categories if needed in the future.
+3.  **Bulk Removal:** Continue requesting removal of legacy URLs in Search Console.
 
 ---
 *Updated on: April 3, 2026 (RSS & Category Management Update)*

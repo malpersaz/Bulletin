@@ -1,0 +1,95 @@
+{% if news_items is not empty %}
+    <style>
+        .nyt-news-section {
+            padding-top: 10px;
+            margin-bottom: 2rem;
+        }
+        .nyt-article {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .nyt-article:last-child {
+            border-bottom: none;
+        }
+        .nyt-article-title {
+            font-family: 'Literata', 'Georgia', serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
+        }
+        .nyt-article-title a {
+            color: #000;
+            text-decoration: none;
+        }
+        .nyt-article-title a:hover {
+            color: #333;
+        }
+        .nyt-article-summary {
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #555;
+            margin-bottom: 0.75rem;
+        }
+        .nyt-article-img-wrapper {
+            position: relative;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .nyt-article-img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            aspect-ratio: 16 / 9;
+            transition: opacity 0.3s ease;
+        }
+        .nyt-article-img:hover {
+            opacity: 0.9;
+        }
+        .nyt-article-time {
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 0.25rem;
+        }
+    </style>
+
+    <section class="nyt-news-section">
+        <div class="row g-4">
+            {% for news in news_items %}
+                <article class="col-md-3 col-sm-6 nyt-article">
+                    {% if news.image is not empty %}
+                        <div class="nyt-article-img-wrapper">
+                            <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
+                                <img src="{{ site.radres }}mod_news/{{ news.image }}"
+                                     class="nyt-article-img"
+                                     alt="{{ news.name }}"
+                                     loading="lazy">
+                            </a>
+                        </div>
+                    {% endif %}
+                    <h3 class="nyt-article-title">
+                        <a href="{{ site.sadres }}news/{{ news.seo }}">{{ news.name }}</a>
+                    </h3>
+                    <div class="nyt-article-summary">
+                        {% if news.summary != '' %}
+                            {{ news.summary|raw|striptags|length > 120 ? news.summary|raw|striptags|slice(0, 120) ~ '...' : news.summary|raw|striptags }}
+                        {% else %}
+                            {{ news.name }}
+                        {% endif %}
+                    </div>
+                    <div class="nyt-article-time">
+                        <i class="bi bi-clock"></i> {{ news.published_ago }}
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        <footer class="text-start mt-2">
+            <a href="{{ site.sadres }}newses/{{ category_seo }}"
+               class="btn btn-sm btn-outline-dark rounded-0 px-3"
+               style="font-size: 0.8rem;">{{ lang.index.mod_news.latest_news.2 }}</a>
+        </footer>
+    </section>
+{% endif %}

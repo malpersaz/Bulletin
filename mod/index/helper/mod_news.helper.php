@@ -200,6 +200,47 @@ class mod_news_helper extends indexBase
         return [];
     }
 
+    /**
+     * Fetch news categories pinned to the homepage and their news.
+     * @param int $limit Limit of news items per category
+     * @param string $select Fields to select from news table
+     * @return array
+     */
+    public function _homepage_categories($limit = 4, $select = 'image,name,seo,summary,created_at')
+    {
+        $cat_model = Load::model('mod_news_category');
+        $cat_model->where_lang_and_show_on_homepage_and_root($this->site['lang'], 'y', 'n');
+        $cat_model->order('order', 'ASC')->gR();
+
+        if ($cat_model->getSize() === 0) {
+            return [];
+        }
+
+        $categories = $cat_model->toArray();
+        $news_model = Load::model('mod_news.newses');
+
+        foreach ($categories as &$cat) {
+            $news_model->flush();
+            $news_model->where_category_seo_and_status_and_lang($cat['seo'], 'y', $this->site['lang']);
+            $news_model->select($select)->order('created_at', 'DESC')->limit($limit);
+            $news_model->gR();
+
+            $items = $news_model->toArray();
+            if (is_array($items)) {
+                foreach ($items as &$item) {
+                    $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
+                    $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
+                    $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
+                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
+                }
+                unset($item);
+            }
+            $cat['news'] = $items;
+        }
+
+        return $categories;
+    }
+
     private function _hasSliderColumn()
     {
         $db = Load::lib('Database');
