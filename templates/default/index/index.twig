@@ -46,7 +46,7 @@ $(document).ready(function() {
     <section class="row">
         <article class="col-12">
             {# Fetch and display news for each category pinned to the homepage #}
-            {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [4, "image,name,seo,summary,created_at"]}) }}
+            {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [2, "image,name,seo,summary,created_at"]}) }}
             {% set homepage_categories = ctx_get('homepage_news_categories') %}
             
             {% if homepage_categories and homepage_categories|length > 0 %}
