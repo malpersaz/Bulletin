@@ -70,22 +70,22 @@
 
         <div class="share-buttons-list d-flex gap-2 flex-wrap {{ share_inner_class|default('') }}">
             {# Facebook #}
-            <a href="https://www.facebook.com/sharer/sharer.php?u={{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-facebook" aria-label="Facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" target="_blank" class="social-share-btn btn-facebook" aria-label="Facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
             
             {# X (Twitter) #}
-            <a href="https://twitter.com/intent/tweet?text={{ d.name|url_encode }}&url={{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
+            <a href="https://twitter.com/intent/tweet?text={{ d.name|url_encode }}&url={{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" target="_blank" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
             
             {# WhatsApp #}
-            <a href="https://api.whatsapp.com/send?text={{ d.name|url_encode }}%0A{{ site.sadres }}article/{{ d.seo }}" target="_blank" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            <a href="https://api.whatsapp.com/send?text={{ d.name|url_encode }}%0A{{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" target="_blank" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
             
             {# LinkedIn #}
-            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ site.sadres }}article/{{ d.seo }}&title={{ d.name|url_encode }}" target="_blank" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}&title={{ d.name|url_encode }}" target="_blank" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
             
             {# Email #}
-            <a href="mailto:?subject={{ d.name|url_encode }}&body={{ site.sadres }}article/{{ d.seo }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email"><i class="bi bi-envelope"></i></a>
+            <a href="mailto:?subject={{ d.name|url_encode }}&body={{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email"><i class="bi bi-envelope"></i></a>
             
             {# Copy Link #}
-            <button onclick="navigator.clipboard.writeText('{{ site.sadres }}article/{{ d.seo }}').then(() => { var tooltip = bootstrap.Tooltip.getInstance(this); tooltip.setContent({'.tooltip-inner': '{{ lang.index.link_copied|escape('js') }}'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': '{{ lang.index.copy_link|escape('js') }}'}); }, 2000); })" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link }}">
+            <button onclick="navigator.clipboard.writeText('{{ site.sadres }}{{ share_url_path|default('article') }}/{{ d.seo }}').then(() => { var btn = this; var tooltip = bootstrap.Tooltip.getInstance(btn); tooltip.setContent({'.tooltip-inner': '{{ lang.index.link_copied|default('Link hat kopîkirin')|escape('js') }}'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': '{{ lang.index.copy_link|default('Linkê kopî bike')|escape('js') }}'}); tooltip.hide(); }, 2000); })" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link|default('Linkê kopî bike') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link|default('Linkê kopî bike') }}">
                 <i class="bi bi-link-45deg fs-5"></i>
             </button>
         </div>

@@ -128,7 +128,8 @@
                 <div class="card-body p-4 p-md-5 position-relative">
                     {# Sticky Share for Desktop #}
                     {% include 'partials/share.twig' with {
-                        'share_wrap_class': 'share-sticky-sidebar d-none d-lg-block'
+                        'share_wrap_class': 'share-sticky-sidebar d-none d-lg-block',
+                        'share_url_path': 'publication'
                     } %}
                     <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
                         {% if d.category_name is defined and d.category_name is not empty %}
@@ -207,7 +208,8 @@
                     {# Mobile Share Block (inline) placed under the title/date #}
                     {% include 'partials/share.twig' with {
                         'share_wrap_class': 'd-block d-lg-none mb-4',
-                        'share_container_class': 'justify-content-center'
+                        'share_container_class': 'justify-content-center',
+                        'share_url_path': 'publication'
                     } %}
 
                     {% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
@@ -251,7 +253,8 @@
 
                     {# Bottom Share block #}
                     {% include 'partials/share.twig' with {
-                        'share_wrap_class': 'share-inline d-flex justify-content-center'
+                        'share_wrap_class': 'share-inline d-flex justify-content-center',
+                        'share_url_path': 'publication'
                     } %}
 
                     {% if video is not empty %}
