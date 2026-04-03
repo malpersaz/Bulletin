@@ -42,6 +42,7 @@ $url['pageSitemap.xml'] = 'index/pageSitemap';
 
 // Legacy Redirects
 $url['nuce/(:any)'] = 'index/legacyRedirect/$1';
+$url['tekst/(:any)'] = 'index/legacyRedirectPublication/$1';
 
 
 

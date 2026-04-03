@@ -441,4 +441,16 @@ class index_mod extends indexBase
         header("Location: " . $this->site['adres']);
         exit();
     }
+
+    public function legacyRedirectPublication($seo = null)
+    {
+        if ($seo) {
+            header("HTTP/1.1 301 Moved Permanently");
+            header("Location: " . $this->site['adres'] . 'publication/' . $seo);
+            exit();
+        }
+        header("HTTP/1.1 301 Moved Permanently");
+        header("Location: " . $this->site['adres']);
+        exit();
+    }
 }

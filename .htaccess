@@ -12,6 +12,7 @@ RewriteRule ^([a-z]{2,3})/(news|publication|category|page)Sitemap\.xml$ index.ph
 
 # Legacy Redirects
 RewriteRule ^nuce/(.*)$ index.php [L]
+RewriteRule ^tekst/(.*)$ index.php [L]
 
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
