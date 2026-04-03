@@ -33,23 +33,33 @@
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="article">
 	<meta property="og:url" content="{{ site.sadres }}article/{{ d.seo }}">
-	<meta property="og:title" content="{{ d.name }}">
-	<meta property="og:description" content="{{ d.description }}">
+	<meta property="og:title" content="{{ d.title|default(d.name) }}">
+	<meta property="og:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if d.image is not empty %}
 		<meta property="og:image" content="{{ site.radres }}mod_content/{{ d.image }}">
+		<meta property="og:image:secure_url" content="{{ site.radres }}mod_content/{{ d.image }}">
+		<meta property="og:image:type" content="image/jpeg">
+		<meta property="og:image:width" content="1200">
+		<meta property="og:image:height" content="630">
 	{% else %}
 		<meta property="og:image" content="{{ site.radres }}mod_settings/logo.png">
 	{% endif %}
 	<meta property="og:site_name" content="{{ site.title }}">
-	<meta property="og:locale" content="{{ site.lang }}_{{ site.lang|upper }}">
-	<meta property="article:published_time" content="{{ d.created_at|date('Y-m-d') }}">
+    {% set og_locale = site.lang ~ '_SE' %}
+    {% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+    {% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+    {% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+    {% endif %}
+	<meta property="og:locale" content="{{ og_locale }}">
+	<meta property="article:published_time" content="{{ d.created_at|date('c') }}">
+	<meta property="article:modified_time" content="{{ d.updated_at|date('c') }}">
 	<meta property="article:section" content="{{ d.categoryname }}">
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image">
 	<meta name="twitter:url" content="{{ site.sadres }}article/{{ d.seo }}">
-	<meta name="twitter:title" content="{{ d.name }}">
-	<meta name="twitter:description" content="{{ d.description }}">
+	<meta name="twitter:title" content="{{ d.title|default(d.name) }}">
+	<meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if d.image is not empty %}
 		<meta name="twitter:image" content="{{ site.radres }}mod_content/{{ d.image }}">
 	{% else %}

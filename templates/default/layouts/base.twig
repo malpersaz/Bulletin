@@ -31,8 +31,12 @@
 			<meta property="og:description" content="{{ site.description }}">
 			<meta property="og:image" content="{{ site.radres }}mod_settings/logo.png">
 			<meta property="og:site_name" content="{{ site.title }}">
-			<meta
-			property="og:locale" content="{{ site.lang }}_{{ site.lang|upper }}">
+			{% set og_locale = site.lang ~ '_SE' %}
+			{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+			{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+			{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+			{% endif %}
+			<meta property="og:locale" content="{{ og_locale }}">
 
 			<!-- Twitter -->
 			<meta name="twitter:card" content="summary_large_image">
