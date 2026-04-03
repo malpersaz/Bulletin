@@ -59,7 +59,7 @@
     <section class="nyt-news-section">
         <div class="row g-4">
             {% for news in news_items %}
-                <article class="col-md-6 nyt-article">
+                <article class="col-12 nyt-article">
                     {% if news.image is not empty %}
                         <div class="nyt-article-img-wrapper">
                             <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">

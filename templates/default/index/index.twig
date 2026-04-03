@@ -50,16 +50,29 @@ $(document).ready(function() {
             {% set homepage_categories = ctx_get('homepage_news_categories') %}
             
             {% if homepage_categories and homepage_categories|length > 0 %}
-                {% for category in homepage_categories %}
-                    {% if category.news|length > 0 %}
-                        <div class="category-homepage-section mt-5">
-                            <h2 class="nyt-news-heading border-bottom pb-2">
-                                <a href="{{ site.sadres }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
-                            </h2>
-                            {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo } %}
-                        </div>
-                    {% endif %}
-                {% endfor %}
+                <div class="row g-0"> {# Using g-0 for seamless background transitions #}
+                    {% for category in homepage_categories %}
+                        {% if category.news|length > 0 %}
+                            {% set bg_class = '' %}
+                            {% if loop.index0 % 3 == 0 %}
+                                {% set bg_style = 'background-color: #f9f9f9;' %}
+                            {% elseif loop.index0 % 3 == 1 %}
+                                {% set bg_style = 'background-color: #ffffff;' %}
+                            {% else %}
+                                {% set bg_style = 'background-color: #f4f4f4;' %}
+                            {% endif %}
+                            
+                            <div class="col-md-4 p-4" style="{{ bg_style }} border-right: 1px solid #eee; border-bottom: 1px solid #eee;">
+                                <div class="category-homepage-section h-100">
+                                    <h2 class="nyt-news-heading border-bottom pb-2 mb-4">
+                                        <a href="{{ site.sadres }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
+                                    </h2>
+                                    {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo, is_column: true } %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
             {% else %}
                 {# Fallback to general latest news if no categories are pinned #}
                 {% include 'index/mod_news/latest_news.twig' %}
