@@ -78,7 +78,7 @@ $lang['management']=[
     'aktif' => 'Aktif',
     'pasif' => 'Pasif',
     'tarih' => 'Tarih',
-    'baslik' => 'Başlık',
+    'title' => 'Başlık',
     'aciklama' => 'Açıklama',
     'content' => 'İçerik',
     'kategori' => 'Kategori',
@@ -183,5 +183,7 @@ $lang['management']=[
     'add_content' => 'İçerik Ekle',
     'logo_upload_error' => 'Logo yüklenirken hata oluştu: ',
     'favicon_upload_error' => 'Favicon yüklenirken hata oluştu: ',
-    'invalid_image_extension' => 'Geçersiz resim uzantısı: '
+    'invalid_image_extension' => 'Geçersiz resim uzantısı: ',
+    'yes' => 'Evet',
+    'no' => 'Hayır'
 ];

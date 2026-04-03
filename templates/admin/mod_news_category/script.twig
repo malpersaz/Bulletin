@@ -227,23 +227,62 @@
 
     function toggleToolbar(active) {
         const edit = document.getElementById('toolbarEdit');
+        const home = document.getElementById('toolbarHomepage');
         const del = document.getElementById('toolbarDelete');
-        if (edit && del) {
+        if (edit && home && del) {
             if (active) {
                 edit.classList.add('active');
+                home.classList.add('active');
                 del.classList.add('active');
                 edit.style.pointerEvents = "auto";
+                home.style.pointerEvents = "auto";
                 del.style.pointerEvents = "auto";
+                edit.style.opacity = "1";
+                home.style.opacity = "1";
+                del.style.opacity = "1";
             } else {
                 edit.classList.remove('active');
+                home.classList.remove('active');
                 del.classList.remove('active');
                 edit.style.pointerEvents = "none";
+                home.style.pointerEvents = "none";
                 del.style.pointerEvents = "none";
+                edit.style.opacity = "0.3";
+                home.style.opacity = "0.3";
+                del.style.opacity = "0.3";
             }
         }
     }
 
     // --- 6. Final Actions ---
+    window.toggleHomepageSelected = function() {
+        if (!selectedCategoryId) return;
+
+        const formData = new URLSearchParams();
+        formData.append('id', selectedCategoryId);
+
+        fetch(SITE_URL + 'mod_news_category/toggle_homepage', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formData
+        })
+        .then(response => response.text())
+        .then(resp => {
+            if (resp.trim() === 'Oke') {
+                const Toast = Swal.mixin({
+                    toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
+                });
+                Toast.fire({ icon: 'success', title: '{{ lang.management.success }}' });
+                setTimeout(() => window.location.reload(), 1000);
+            } else {
+                Swal.fire('{{ lang.management.error }}', resp, 'error');
+            }
+        })
+        .catch(err => {
+            Swal.fire('{{ lang.management.error }}', '{{ lang.management.network_error }}', 'error');
+        });
+    };
+
     window.editSelected = function() {
         if (selectedCategoryId) {
             window.location.href = "{{ site.sadres }}mod_news_category/edit/" + selectedCategoryId;

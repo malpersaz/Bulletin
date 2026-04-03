@@ -11,6 +11,7 @@ CREATE TABLE `mod_publication_category` (
 `description` VARCHAR(255) NOT NULL,
 `image` VARCHAR(20),
 `menu` INT(11) NOT NULL DEFAULT '0',
+`show_on_homepage` ENUM('y', 'n') NOT NULL DEFAULT 'n' ,
 `acl_id` INT(11) NOT NULL DEFAULT '0',
 `user_id` INT(11) NOT NULL
 ) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -71,7 +71,7 @@ $lang['management'] = [
     'aktif' => 'Aktiv',
     'pasif' => 'Inaktiv',
     'tarih' => 'Datum',
-    'baslik' => 'Titel',
+    'title' => 'Title',
     'aciklama' => 'Beschreibung',
     'content' => 'Inhalt',
     'kategori' => 'Kategorie',
@@ -175,4 +175,6 @@ $lang['management'] = [
     'logo_upload_error' => 'Fehler beim Hochladen des Logos: ',
     'favicon_upload_error' => 'Fehler beim Hochladen des Favicons: ',
     'invalid_image_extension' => 'Ungültige Bilddateiendung: ',
+    'yes' => 'Ja',
+    'no' => 'Nein'
 ];

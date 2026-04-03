@@ -65,7 +65,7 @@ $lang['management']=[
     'aktif' => 'Active',
     'pasif' => 'Inactive',
     'tarih' => 'Date',
-    'baslik' => 'Title',
+    'title' => 'Title',
     'aciklama' => 'Description',
     'content' => 'Content',
     'kategori' => 'Category',
@@ -176,5 +176,7 @@ $lang['management']=[
     'add_content' => 'Add Content',
     'logo_upload_error' => 'Error uploading logo: ',
     'favicon_upload_error' => 'Error uploading favicon: ',
-    'invalid_image_extension' => 'Invalid image extension: '
+    'invalid_image_extension' => 'Invalid image extension: ',
+    'yes' => 'Ja',
+    'no' => 'Nej'
 ];

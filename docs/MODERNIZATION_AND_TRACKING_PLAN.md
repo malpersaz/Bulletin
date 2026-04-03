@@ -34,27 +34,32 @@ This document outlines the objectives and implementation strategy for the modern
         - **Utility:** Encourages user participation and community discussion.
 
 ### 1.3 Modern Sitemap System
-- **Status:** **Completed / Submitted**
+- **Status:** **Verified & Active**
 - **Completed Tasks:**
     - Developed dynamic XML sitemap generators in `mod/index/index.php` for all languages.
     - Implemented **Master Sitemap Index** (`sitemap.xml`) to link all language-specific sub-sitemaps.
+    - Standardized URLs to use **lowercase language codes** (e.g., `/ku/` instead of `/KU/`) across the entire system.
     - Created **`robots.txt`** to point Google directly to the master sitemap.
     - Implemented `.htaccess` rewrite rules for both global and language-specific XML URLs.
-    - Verified domain ownership in Google Search Console.
-- **Pending Tasks (To Do):**
-    - **Monitoring:** Monitor indexation rates in Search Console over the next 48 hours.
-    - **Legacy Redirection:** Finalize `410 Gone` for old `/nuce/` links to clear dead URLs from Google.
+    - Registered sitemap routing in `config/url.config.php` for Amed Framework compatibility.
 
-### 1.4 Google Services Ecosystem
-- **Google Analytics 4 (GA4):** Integrate real-time behavior tracking (scroll depth, clicks, time on page).
-- **Google Search Console:** Verify domain ownership and synchronize sitemaps for rapid indexing.
-- **Legacy Cleanup:** Implement a strategy to remove thousands of dead URLs from the old framework using `410 Gone` status codes and Search Console bulk removals.
+### 1.4 Google Services & Legacy SEO Preservation
+- **Status:** **In Progress (Active Redirection)**
+- **Completed Tasks:**
+    - **301 Redirect Strategy:** Implemented `legacyRedirect()` and `legacyRedirectPublication()` to preserve 21 years of SEO authority.
+    - **URL Normalization:** Automated redirection of legacy `/nuce/` and `/tekst/` paths to the new `/news/` and `/publication/` structure.
+    - **Google Search Console:** Verified domain ownership and submitted the master sitemap.
+- **Pending Tasks (To Do):**
+    - **Monitoring:** Monitor indexation rates and 404 error reduction in Search Console.
+    - **Bulk Removal:** Manually request removal of indexed `/nuce/` URLs if they persist alongside new `/news/` URLs.
 
 ## 2. Technical Implementation
 
 ### 2.1 IP-Based View Tracking (Anti-F5 Spam)
-- **Goal:** Replace simple refresh-based tracking with a robust system to ensure accurate data.
+- **Status:** **Robust & Stable**
 - **Logic:** Track views per IP address per content item per day using the `sys_view_logs` table.
+- **Race Condition Protection:** Implemented **`INSERT IGNORE`** and `affected_rows()` logic to prevent database exceptions during simultaneous requests.
+- **Framework Integration:** Added `affected_rows()` method to core `Database` wrapper for full PDO/PHP8 support.
 - **Scope:** Active across `mod_news`, `mod_publication`, `mod_video_embed`, `mod_page`, and `mod_attachment`.
 
 ### 2.2 Database Schema Changes

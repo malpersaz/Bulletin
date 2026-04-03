@@ -34,6 +34,7 @@ $url['announcements/(:any)']='index/announcements/$1';
 $url['page/(:any)']='index/page/$1';
 
 // Sitemaps
+$url['rss.xml'] = 'index/rss';
 $url['sitemap.xml'] = 'index/sitemapIndex';
 $url['newsSitemap.xml'] = 'index/newsSitemap';
 $url['publicationSitemap.xml'] = 'index/publicationSitemap';

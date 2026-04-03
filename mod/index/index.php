@@ -281,6 +281,56 @@ class index_mod extends indexBase
         unset($publication);
     }
 
+    public function rss()
+    {
+        header("content-type: text/xml; charset=utf-8");
+        
+        $news = Load::model('mod_news.newses');
+        $news->where_status_and_lang('y', $this->site['lang']);
+        $news->order('created_at', 'DESC');
+        $news->select(['title', 'summary', 'created_at', 'seo', 'lang', 'image']);
+        $news->limit(50);
+        $news->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+        <channel>
+            <title>' . htmlspecialchars($this->site['title']) . '</title>
+            <link>' . $this->site['adres'] . $this->site['lang'] . '</link>
+            <description>' . htmlspecialchars($this->site['description']) . '</description>
+            <language>' . $this->site['lang'] . '</language>
+            <lastBuildDate>' . date(DATE_RSS) . '</lastBuildDate>
+            <atom:link href="' . $this->site['adres'] . $this->site['lang'] . '/rss.xml" rel="self" type="application/rss+xml" />';
+
+        if ($news->getSize() != 0) {
+            foreach ($news->toArray() as $o) {
+                $link = $this->site['adres'] . $o['lang'] . '/news/' . $o['seo'];
+                $imageUrl = "";
+                if (!empty($o['image'])) {
+                    $imageUrl = $this->site['radres'] . 'mod_news/thumb/' . $o['image'];
+                }
+                
+                echo '
+            <item>
+                <title>' . htmlspecialchars($o['title']) . '</title>
+                <link>' . $link . '</link>
+                <description><![CDATA[' . ($imageUrl ? '<img src="' . $imageUrl . '" align="left" style="margin-right:10px; margin-bottom:10px;" />' : '') . mb_substr(strip_tags($o['summary']), 0, 500) . '...]]></description>
+                <pubDate>' . date(DATE_RSS, strtotime($o['created_at'])) . '</pubDate>
+                <guid isPermaLink="true">' . $link . '</guid>';
+                if ($imageUrl) {
+                    echo '
+                <media:content url="' . $imageUrl . '" medium="image" />
+                <enclosure url="' . $imageUrl . '" type="image/jpeg" />';
+                }
+                echo '
+            </item>';
+            }
+        }
+        echo '
+        </channel>
+        </rss>';
+    }
+
     public function sitemapIndex()
     {
         header("content-type: text/xml");

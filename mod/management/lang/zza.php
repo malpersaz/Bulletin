@@ -75,9 +75,9 @@ $lang['management']=[
     'publish' => 'Weşîne',
     'unpublish' => 'Ji Weşandinê rake',
     'aktif' => 'Çalak',
-    'pasif' => 'Neçalak',
+    'pasif' => 'Pasîf',
     'tarih' => 'Dîrok',
-    'baslik' => 'Sernivîs',
+    'title' => 'Sernivîs',
     'aciklama' => 'Rave',
     'content' => 'Naverok',
     'kategori' => 'Kategorî',
@@ -194,5 +194,7 @@ $lang['management']=[
 
     // Menûya Lez
     'quick_menu' => 'Menûya Lez',
-    'add_content' => 'Naverokê lê zêde bike'
+    'add_content' => 'Naverokê lê zêde bike',
+    'yes' => 'Erê',
+    'no' => 'Nê'
 ];

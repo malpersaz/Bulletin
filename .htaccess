@@ -8,6 +8,7 @@ RewriteRule ^r/(.*)/f/(.*)\.(gif|jpe?g|png)$ resize.php?file=$2.$3&options=$1 [L
 # Sitemap Rewrites
 RewriteRule ^sitemap\.xml$ index.php [L]
 RewriteRule ^([a-z]{2,3})/sitemap\.xml$ index.php [L]
+RewriteRule ^([a-z]{2,3})/rss\.xml$ index.php [L]
 RewriteRule ^([a-z]{2,3})/(news|publication|category|page)Sitemap\.xml$ index.php [L]
 
 # Legacy Redirects

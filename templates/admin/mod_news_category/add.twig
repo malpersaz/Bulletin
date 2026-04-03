@@ -264,7 +264,7 @@
                 <div class="form-row">
                     <div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="parent_id" id="parent_id">
-                            <option value="0" selected>{{ lang.mod_news_category.form.parent_category|default('Kategoriya Jorîn') }} (Root)</option>
+                            <option value="0" selected>{{ lang.management.parent_category }} (Root)</option>
                             {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, 0) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.parent_id }}</label>
@@ -281,12 +281,12 @@
                     <div class="selection-grid">
                         <div class="selection-card" onclick="selectRootStatus(this, 'y')">
                             <i class="bi bi-folder-check" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_yes|default('Erê') }}</div>
+                            <div class="selection-label">{{ lang.management.yes }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                         <div class="selection-card active" onclick="selectRootStatus(this, 'n')">
                             <i class="bi bi-folder" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_no|default('Na') }}</div>
+                            <div class="selection-label">{{ lang.management.no }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                     </div>
@@ -301,7 +301,7 @@
                                 <option value="{{ item.id }}">{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_news_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
+                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.management.acl_settings }}">
                             <i class="bi bi-gear" style="font-size: 20px;"></i>
                         </a>
                     </div>
@@ -314,6 +314,23 @@
                             {{ _self.select_nested_menu_function(select_nested_menu_result, 0, 0) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.menu }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.management.show_on_homepage }}</label>
+                    <input type="hidden" name="show_on_homepage" value="n" id="homepageHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card" onclick="selectHomepageStatus(this, 'y')">
+                            <i class="bi bi-pin-angle-fill" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.management.yes }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card active" onclick="selectHomepageStatus(this, 'n')">
+                            <i class="bi bi-pin-angle" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.management.no }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
                     </div>
                 </div>
 

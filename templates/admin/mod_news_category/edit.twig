@@ -300,7 +300,7 @@
                 <div class="form-row">
                     <div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="parent_id" id="parent_id">
-                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.mod_news_category.form.parent_category|default('Kategoriya Jorîn') }} (Root)</option>
+                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.management.parent_category }} (Root)</option>
                             {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, d.parent_id, d.id) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_news_category.admin.columns.parent_id }}</label>
@@ -317,12 +317,29 @@
                     <div class="selection-grid">
                         <div class="selection-card {% if d.root == 'y' %} active {% endif %}" onclick="selectRootStatus(this, 'y')">
                             <i class="bi bi-folder-check" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_yes|default('Erê') }}</div>
+                            <div class="selection-label">{{ lang.management.yes }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                         <div class="selection-card {% if d.root == 'n' %} active {% endif %}" onclick="selectRootStatus(this, 'n')">
                             <i class="bi bi-folder" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_news_category.admin.select_values.root_no|default('Na') }}</div>
+                            <div class="selection-label">{{ lang.management.no }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.management.show_on_homepage }}</label>
+                    <input type="hidden" name="show_on_homepage" value="{{ d.show_on_homepage }}" id="homepageHidden">
+                    <div class="selection-grid">
+                        <div class="selection-card {% if d.show_on_homepage == 'y' %} active {% endif %}" onclick="selectHomepageStatus(this, 'y')">
+                            <i class="bi bi-pin-angle-fill" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.management.yes }}</div>
+                            <i class="bi bi-check-circle-fill check-icon"></i>
+                        </div>
+                        <div class="selection-card {% if d.show_on_homepage == 'n' %} active {% endif %}" onclick="selectHomepageStatus(this, 'n')">
+                            <i class="bi bi-pin-angle" style="font-size:24px;"></i>
+                            <div class="selection-label">{{ lang.management.no }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                     </div>
@@ -353,7 +370,7 @@
                                 <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_news_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
+                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.management.acl_settings }}">
                             <i class="bi bi-gear" style="font-size: 20px;"></i>
                         </a>
                     </div>
@@ -520,6 +537,12 @@
         document.querySelectorAll('#rootHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
         document.getElementById('rootHidden').value = val;
+    }
+
+    function selectHomepageStatus(el, val) {
+        document.querySelectorAll('#homepageHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('homepageHidden').value = val;
     }
 
     function previewImage(input) {

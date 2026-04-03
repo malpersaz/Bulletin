@@ -88,6 +88,7 @@ class mod_news_category_mod extends indexMain
         $base['lang'] = Req::Post_Safe('lang');
         $base['parent_id'] = intval(Req::Post_Safe('parent_id'));
         $base['root'] = Req::Post_Safe('root');
+        $base['show_on_homepage'] = Req::Post_Safe('show_on_homepage');
         $base['seo'] = Req::Post_Safe('seo');
         $base['title'] = Req::Post_Safe('title');
         $base['keywords'] = Req::Post_Safe('keywords');
@@ -223,6 +224,7 @@ class mod_news_category_mod extends indexMain
                 $mod_news_category_model->lang = $formData['lang'];
                 $mod_news_category_model->parent_id = $formData['parent_id'];
                 $mod_news_category_model->root = $formData['root'];
+                $mod_news_category_model->show_on_homepage = $formData['show_on_homepage'];
                 $mod_news_category_model->seo = $formData['seo'];
                 $mod_news_category_model->title = $formData['title'];
                 $mod_news_category_model->keywords = $formData['keywords'];
@@ -306,6 +308,7 @@ class mod_news_category_mod extends indexMain
                 $mod_news_category_model->lang = $formData['lang'];
                 $mod_news_category_model->parent_id = $formData['parent_id'];
                 $mod_news_category_model->root = $formData['root'];
+                $mod_news_category_model->show_on_homepage = $formData['show_on_homepage'];
                 $mod_news_category_model->seo = $formData['seo'];
                 $mod_news_category_model->title = $formData['title'];
                 $mod_news_category_model->keywords = $formData['keywords'];
@@ -376,6 +379,31 @@ class mod_news_category_mod extends indexMain
             }
         } else {
             echo 'Oke';
+        }
+    }
+
+    public function toggle_homepage()
+    {
+        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) return False;
+
+        $id = intval(Req::Post_Safe('id'));
+        if ($id > 0) {
+            Load::model('mod_news_category');
+            $category = new mod_news_category_model();
+            $category->where_id($id)->gRo();
+            
+            if ($category->getSize() > 0) {
+                $category->sync();
+                // Toggle between 'y' and 'n'
+                $new_status = ($category->show_on_homepage === 'y') ? 'n' : 'y';
+                
+                $this->db->query("UPDATE `mod_news_category` SET `show_on_homepage` = '$new_status' WHERE `id` = '$id'");
+                echo 'Oke';
+            } else {
+                echo $this->lang['mod_news_category']['errors']['record'];
+            }
+        } else {
+            echo 'IDError';
         }
     }
 

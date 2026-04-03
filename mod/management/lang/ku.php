@@ -78,7 +78,14 @@ $lang['management']=[
     'aktif' => 'Çalak',
     'pasif' => 'Neçalak',
     'tarih' => 'Dîrok',
-    'baslik' => 'Sernivîs',
+    'title' => 'Sernivîs',
+    'show_on_homepage' => 'Li ser rûpela sereke nîşan bide',
+    'homepage_action' => 'Serûpel',
+    'parent_category' => 'Kategoriya Jorîn',
+    'acl_settings' => 'Mîhengên ACL',
+    'error' => 'Çewtî',
+    'success' => 'Serkeftî',
+    'network_error' => 'Çewtiya torê',
     'aciklama' => 'Rave',
     'content' => 'Naverok',
     'kategori' => 'Kategorî',
@@ -195,5 +202,7 @@ $lang['management']=[
 
     // Menûya Lez
     'quick_menu' => 'Menûya Lez',
-    'add_content' => 'Naverokê lê zêde bike'
+    'add_content' => 'Naverokê lê zêde bike',
+    'yes' => 'Erê',
+    'no' => 'Na'
 ];

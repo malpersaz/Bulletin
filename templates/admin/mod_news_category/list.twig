@@ -89,6 +89,11 @@
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_news_category.button.edit|default('Biguhere') }}</span>
         </button>
+
+        <button id="toolbarHomepage" class="toolbar-item" onclick="toggleHomepageSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pin-angle-fill"></i>
+            <span>{{ lang.management.homepage_action }}</span>
+        </button>
         
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_news_category/add'">
             <i class="bi bi-plus-lg"></i>
