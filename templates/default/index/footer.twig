@@ -13,6 +13,14 @@
                     {{ site.title }}
                 </h5>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
+                <div class="mt-4 d-flex gap-3 feeds-area">
+                    <a href="{{ site.adres }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="RSS Feed">
+                        <i class="bi bi-rss-fill text-warning"></i> RSS
+                    </a>
+                    <a href="{{ site.adres }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="Sitemap">
+                        <i class="bi bi-diagram-3-fill text-info"></i> Sitemap
+                    </a>
+                </div>
 			</div>
             
             <div class="col-md-1 col-lg-2 d-none d-md-block">
@@ -103,9 +111,6 @@
                                             </a>
                                         {% endif %}
                                     {% endfor %}
-                                    <a href="{{ site.adres }}{{ site.lang }}/rss.xml" class="btn btn-warning btn-sm rounded-circle social-icon-btn shadow-sm" target="_blank" title="RSS Feed">
-                                        <i class="bi bi-rss"></i>
-                                    </a>
                                 </div>
                             </div>
                         {% endif %}

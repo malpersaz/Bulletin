@@ -36,7 +36,14 @@
                     </div>
 
                     <div class="card-info">
-                        <div class="card-title">{{ entry.name }}</div>
+                        <div class="card-title">
+                            {{ entry.name }}
+                            {% if entry.show_on_homepage == 'y' %}
+                                <i class="bi bi-eye-fill text-primary ms-1" style="font-size: 14px;" title="{{ lang.management.show_on_homepage }}"></i>
+                            {% else %}
+                                <i class="bi bi-eye-slash text-muted ms-1" style="font-size: 14px; opacity: 0.5;"></i>
+                            {% endif %}
+                        </div>
                         <div class="card-meta">
                             {% if entry.lang %} <span class="meta-badge">{{ entry.lang|upper }}</span> {% endif %}
                             <span class="meta-id">#{{ entry.id }}</span>
