@@ -216,10 +216,19 @@ class mod_news_helper extends indexBase
             return [];
         }
 
-        $categories = $cat_model->toArray();
+        $categories_raw = $cat_model->toArray();
         $news_model = Load::model('mod_news.newses');
+        
+        $categories = [];
+        $seen_ids = [];
 
-        foreach ($categories as &$cat) {
+        foreach ($categories_raw as $cat) {
+            // Check if we have already processed this specific category ID
+            if (in_array($cat['id'], $seen_ids)) {
+                continue;
+            }
+            $seen_ids[] = $cat['id'];
+            
             $news_model->flush();
             $news_model->where_category_seo_and_status_and_lang($cat['seo'], 'y', $this->site['lang']);
             $news_model->select($select)->order('created_at', 'DESC')->limit($limit);
@@ -236,6 +245,7 @@ class mod_news_helper extends indexBase
                 unset($item);
             }
             $cat['news'] = $items;
+            $categories[] = $cat;
         }
 
         return $categories;
