@@ -57,7 +57,7 @@ nav.navbar {
     background: none !important;
     background-clip: unset !important;
     font-weight: 600 !important;
-    letter-spacing: -0.2px !important;
+    letter-spacing: 0.05em !important;
     text-decoration: none !important;
     transition: all 0.3s ease;
     display: inline-block;
