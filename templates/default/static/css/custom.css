@@ -1097,10 +1097,10 @@ body {
     text-transform: uppercase !important;
     letter-spacing: 0.12em !important;
     color: #121212 !important;
-    border-top: 1px solid #121212 !important;
+    border-top: 2px solid #000 !important; /* NYT's distinct heavy section line */
     border-bottom: none !important;
-    padding-top: 0.75rem !important; /* Increased for breathing room */
-    margin-bottom: 1.75rem !important; /* Clear separation from content */
+    padding-top: 0.65rem !important;
+    margin-bottom: 1.5rem !important;
     padding-bottom: 0 !important;
     display: block;
     width: 100%;
@@ -1116,21 +1116,29 @@ body {
     opacity: 0.7;
 }
 
-/* Category Column - Modern Grid with Dividers */
+/* Category Column - Modern Grid with Dividers (Fine Ink Grid) */
 .category-column {
-    border-right: 1px solid rgba(0, 0, 0, 0.06) !important;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+    border-right: 1px solid #eeeeee !important;
+    border-bottom: 1px solid #eeeeee !important;
     background-color: #ffffff !important;
-    padding: 2.5rem 2rem !important; /* Elegant whitespace for readability */
     transition: background-color 0.3s ease;
     height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .category-column:hover {
     background-color: #fafafa !important;
 }
 
-/* Ensure visual hierarchy: headings should not scream, they should guide. */
+/* 3-column behavior alignment */
+@media (min-width: 992px) {
+    .category-column:nth-child(3n) {
+        border-right: none !important; /* Clean outer edge */
+    }
+}
+
+/* Ensure visual hierarchy */
 @media (max-width: 768px) {
     .nyt-news-heading {
         font-size: 0.7rem !important;
@@ -1138,7 +1146,7 @@ body {
         padding-top: 0.5rem !important;
     }
     .category-column {
-        padding: 1.5rem !important;
-        border-right: none !important; /* Stack vertically on mobile without side borders */
+        border-right: none !important;
+        border-bottom: 1px solid #eee !important;
     }
 }
