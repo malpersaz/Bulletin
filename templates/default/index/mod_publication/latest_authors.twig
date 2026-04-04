@@ -7,7 +7,12 @@
 
     <div class="latest-authors-card">
         <div class="latest-authors-head">
-            <h2 class="latest-authors-title">{{ lang.index.mod_publication.authors }}</h2>
+            <h2 class="latest-authors-title">
+                <a href="{{ site.sadres }}authors" class="text-decoration-none text-dark d-inline-flex align-items-center">
+                    <span>{{ lang.index.mod_publication.authors }}</span>
+                    <i class="bi bi-chevron-right ms-2" style="font-size: 0.8rem;"></i>
+                </a>
+            </h2>
         </div>
 
         <div class="latest-authors-list">
@@ -16,12 +21,16 @@
                 {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
                 {% set latest_publication_title = (author.title is defined and author.title is not empty ? author.title : author.name)|trim %}
                 <article class="latest-authors-item">
-                    {% if author.published_ago is not empty %}
-                        <span class="latest-authors-timeago">
-                            <i class="bi bi-clock-history"></i>
-                            <span>{{ author.published_ago }}</span>
-                        </span>
-                    {% endif %}
+                    <span class="latest-authors-copy">
+                        <a class="latest-authors-name" href="{{ site.sadres }}author/{{ author.username }}">{{ latest_author_name }}</a>
+                        {% if author.published_ago is not empty %}
+                            <span class="latest-authors-timeago">
+                                <i class="bi bi-clock-history"></i>
+                                {{ author.published_ago }}
+                            </span>
+                        {% endif %}
+                        <a class="latest-authors-publication" href="{{ site.sadres }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
+                    </span>
                     <a class="latest-authors-avatar" href="{{ site.sadres }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
                         {% if author.user_image is defined and author.user_image is not empty %}
                             <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" loading="lazy">
@@ -29,10 +38,6 @@
                             <span>{{ latest_author_initials }}</span>
                         {% endif %}
                     </a>
-                    <span class="latest-authors-copy">
-                        <a class="latest-authors-name" href="{{ site.sadres }}author/{{ author.username }}">{{ latest_author_name }}</a>
-                        <a class="latest-authors-publication" href="{{ site.sadres }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
-                    </span>
                 </article>
             {% endfor %}
         </div>

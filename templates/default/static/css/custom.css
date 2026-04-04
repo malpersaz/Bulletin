@@ -1150,3 +1150,35 @@ body {
         border-bottom: 1px solid #eee !important;
     }
 }
+
+/* Article Headlines & Content - Premium Typography */
+.nyt-article-title {
+    font-family: 'Literata', serif !important;
+    font-size: 1.32rem !important;
+    line-height: 1.35 !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.65rem !important;
+    transition: color 0.2s;
+}
+
+.nyt-article-title a {
+    color: #121212 !important;
+    text-decoration: none !important;
+}
+
+.nyt-article-title a:hover {
+    color: #333 !important;
+}
+
+.nyt-article-summary {
+    font-family: var(--bs-font-sans-serif);
+    font-size: 0.94rem !important;
+    line-height: 1.58 !important;
+    color: #374151 !important;
+    margin-top: 0.85rem !important;
+}
+
+.nyt-article-meta {
+    color: #64748b !important;
+    letter-spacing: 0.05em !important;
+}

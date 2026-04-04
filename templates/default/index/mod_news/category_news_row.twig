@@ -73,6 +73,16 @@
                     <h3 class="nyt-article-title">
                         <a href="{{ site.sadres }}news/{{ news.seo }}">{{ news.name }}</a>
                     </h3>
+                    
+                    {# Reading Time Calculation #}
+                    {% set words = news.summary|striptags|split(' ')|length %}
+                    {% set reading_minutes = (words / 200)|round(0, 'ceil') %}
+                    {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                    
+                    <div class="nyt-article-meta d-flex gap-3 mb-3" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em;">
+                        <span><i class="bi bi-clock"></i> {{ news.created_at|date('d.m.Y') }}</span>
+                        <span class="reading-time"><i class="bi bi-book"></i> {{ reading_minutes }} deqe xwendin</span>
+                    </div>
                     <div class="nyt-article-summary">
                         {% if news.summary != '' %}
                             {{ news.summary|raw|striptags|length > 120 ? news.summary|raw|striptags|slice(0, 120) ~ '...' : news.summary|raw|striptags }}
