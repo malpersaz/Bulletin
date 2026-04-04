@@ -1,9 +1,9 @@
 <div id="cookieConsentBanner" class="cookie-consent-banner">
     <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <p class="cookie-consent-text mb-3 mb-md-0">{{ lang.cookie_consent.message|default('Web sitemiz, deneyiminizi iyileştirmek ve hizmetlerimizi sunmak için çerezleri kullanır. Sitemizi kullanarak çerez politikamızı kabul etmiş olursunuz.') }}</p>
-        <div class="cookie-consent-actions">
-            <button id="acceptCookies" class="btn btn-primary btn-sm me-2">{{ lang.cookie_consent.accept_button|default('Kabul Et') }}</button>
-            <a href="{{ site.sadres }}cookie-policy" class="btn btn-outline-light btn-sm">{{ lang.cookie_consent.policy_link|default('Daha Fazla Bilgi') }}</a>
+        <p class="cookie-consent-text mb-3 mb-md-0">{{ lang.index.cookie_consent.message }}</p>
+        <div class="d-flex align-items-center">
+            <button id="acceptCookies" class="btn btn-primary btn-sm me-2">{{ lang.index.cookie_consent.accept_button }}</button>
+            <a href="{{ site.sadres }}cookie-policy" class="btn btn-outline-light btn-sm">{{ lang.index.cookie_consent.policy_link }}</a>
         </div>
     </div>
 </div>

@@ -61,7 +61,7 @@
 <div class="social-share d-print-none {{ share_wrap_class|default('my-3') }}">
     <div class="share-container d-flex align-items-center gap-2 {{ share_container_class|default('') }}">
         {% if show_share_text|default(true) %}
-        <span class="share-text text-muted fw-bold text-uppercase d-none d-sm-inline-block mr-1" style="font-size: 0.70rem; letter-spacing: 0.5px;">{{ lang.index.share|default('Parve bike') }}:</span>
+        <span class="share-text text-muted fw-bold text-uppercase d-none d-sm-inline-block mr-1" style="font-size: 0.70rem; letter-spacing: 0.5px;">{{ lang.index.share }}:</span>
         {% endif %}
         
         <button class="social-share-btn btn-native-share" title="{{ lang.index.share }}" aria-label="{{ lang.index.share }}">
@@ -85,7 +85,7 @@
             <a href="mailto:?subject={{ d.name|url_encode }}&body={{ (site.sadres ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email"><i class="bi bi-envelope"></i></a>
             
             {# Copy Link #}
-            <button onclick="navigator.clipboard.writeText('{{ site.sadres }}{{ share_url_path|default('article') }}/{{ d.seo }}').then(() => { var btn = this; var tooltip = bootstrap.Tooltip.getInstance(btn); tooltip.setContent({'.tooltip-inner': '{{ lang.index.link_copied|default('Link hat kopîkirin')|escape('js') }}'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': '{{ lang.index.copy_link|default('Linkê kopî bike')|escape('js') }}'}); tooltip.hide(); }, 2000); })" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link|default('Linkê kopî bike') }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link|default('Linkê kopî bike') }}">
+            <button onclick="navigator.clipboard.writeText('{{ site.sadres }}{{ share_url_path|default('article') }}/{{ d.seo }}').then(() => { var btn = this; var tooltip = bootstrap.Tooltip.getInstance(btn); tooltip.setContent({'.tooltip-inner': '{{ lang.index.link_copied|escape('js') }}'}); setTimeout(() => { tooltip.setContent({'.tooltip-inner': '{{ lang.index.copy_link|escape('js') }}'}); tooltip.hide(); }, 2000); })" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link }}">
                 <i class="bi bi-link-45deg fs-5"></i>
             </button>
         </div>
