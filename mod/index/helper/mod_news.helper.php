@@ -49,13 +49,13 @@ class mod_news_helper extends indexBase
             }
             // Bakalım Resim Varmı : $res olarak gönderilecek
             if (isset($news->gallery_id) && $news->gallery_id != 0) {
-                $this->_gallery_resimgetir('mod_news', $news->gallery_id);
+                $this->_exact_gallery($news->gallery_id);
             } else {
                 $this->_gallery_resimgetir('mod_news', $news->id);
             }
             // Bakalım Dosya Varmı : $file olarak gönderilecek
             if (isset($news->file_id) && $news->file_id != 0) {
-                $this->_mod_attachment('mod_news', $news->file_id);
+                $this->_exact_attachment($news->file_id);
             } else {
                 $this->_mod_attachment('mod_news', $news->id);
             }

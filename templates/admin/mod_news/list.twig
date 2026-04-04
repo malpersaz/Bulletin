@@ -318,6 +318,10 @@
         <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.hero_slider_add|default('Send to Slider') }}">
             <i class="bi bi-stars"></i>
         </button>
+
+        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.admin.columns.video|default('Vîdeo') }}">
+            <i class="bi bi-camera-video"></i>
+        </button>
         
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-image"></i>
@@ -383,5 +387,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.3"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.6"></script>
 {% endblock %}

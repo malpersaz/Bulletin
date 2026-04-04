@@ -1045,6 +1045,10 @@ function renderSelectPickerOptions() {
             return;
         }
 
+        if (value === '0') {
+            return; // Hide the '0' option from the visual list
+        }
+
         visibleCount++;
 
         const item = document.createElement('button');
@@ -1054,17 +1058,39 @@ function renderSelectPickerOptions() {
             item.classList.add('is-selected');
         }
 
+        const isFiles = window.currentMediaPickerType === 'files';
+        const isGallery = window.currentMediaPickerType === 'gallery';
+        const isVideo = window.currentMediaPickerType === 'video';
+        
+        let iconClass = 'bi-bookmark-star';
+        if (value === '0') iconClass = 'bi-eraser';
+        else if (isFiles) iconClass = 'bi-file-earmark-arrow-up';
+        else if (isGallery) iconClass = 'bi-images';
+        else if (isVideo) iconClass = 'bi-play-btn';
+        
+        // Remove 'Hemû' fallback. If there's no optionLang, just hide it.
+        const subtitleHtml = (optionLang && optionLang !== adminLang.ui.all && value !== '0') 
+            ? `<span class="select-picker-item-subtitle">${optionLang}</span>`
+            : '';
+
+        const itemTitle = (value === '0') ? 'Hilbijartinê Rabe (Betal Bike)' : (label || (select.dataset.pickerPlaceholder || ''));
+
         item.innerHTML = `
-            <span class="select-picker-item-meta"><i class="bi bi-bookmark-star"></i></span>
+            <span class="select-picker-item-meta" ${value === '0' ? 'style="background:var(--md-sys-color-surface-variant); color:var(--md-sys-color-on-surface-variant);"' : ''}><i class="bi ${iconClass}"></i></span>
             <span class="select-picker-item-body">
-                <span class="select-picker-item-title">${label || (select.dataset.pickerPlaceholder || '')}</span>
-                <span class="select-picker-item-subtitle">${optionLang || adminLang.ui.all}</span>
+                <span class="select-picker-item-title">${itemTitle}</span>
+                ${subtitleHtml}
             </span>
             <i class="bi bi-check-circle-fill select-picker-item-check"></i>
         `;
 
         item.addEventListener('click', () => {
-            select.value = value;
+            if (select.value === value) {
+                // If the user clicks the row that is already selected, it deselects it logic
+                select.value = '0';
+            } else {
+                select.value = value;
+            }
             select.dispatchEvent(new Event('change', { bubbles: true }));
             updateSelectPickerTrigger(select.id);
             closeSelectPickerSheet();

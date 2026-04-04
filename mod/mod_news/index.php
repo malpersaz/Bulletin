@@ -144,9 +144,9 @@ class mod_news_mod extends indexMain
         $mod_news_category_nested->order('order', 'ASC')->all();
         $select_nested_category_id_result = Helper::nested($mod_news_category_nested->toArray(), 'parent_id', 'id');
         $this->tema->veri('select_nested_category_id_result', $select_nested_category_id_result);
-        $this->db->fetch_array("SELECT * FROM `mod_news` ORDER BY id DESC");
+        $this->db->fetch_array("SELECT id, name FROM `mod_gallery` ORDER BY id DESC");
         $this->tema->veri('mod_news_gallery_id', $this->db->getResult()->toArray());
-        $this->db->fetch_array("SELECT * FROM `mod_news` ORDER BY id DESC");
+        $this->db->fetch_array("SELECT id, original_name as name FROM `mod_attachment` ORDER BY id DESC");
         $this->tema->veri('mod_news_file_id', $this->db->getResult()->toArray());
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
         $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
@@ -372,6 +372,132 @@ class mod_news_mod extends indexMain
             echo json_encode($results);
         } else {
             echo '[]';
+        }
+    }
+
+    public function ajax_get_galleries()
+    {
+        if (Roll::hasPermission('mod_news', 'edit') === FALSE) {
+            exit();
+        }
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_gallery');
+        $model->select('id, name');
+        if ($q_param) {
+            $model->addWhere("name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => $item['id'],
+                    'name' => $item['name']
+                ];
+            }
+        }
+        echo json_encode($results);
+    }
+
+    public function ajax_get_files()
+    {
+        if (Roll::hasPermission('mod_news', 'edit') === FALSE) {
+            exit();
+        }
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_attachment');
+        $model->select('id, original_name as name');
+        if ($q_param) {
+            $model->addWhere("original_name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                // Return id and name. For files and galleries it's the same source for now.
+                $results[] = [
+                    'id'   => $item['id'],
+                    'name' => $item['name']
+                ];
+            }
+        }
+        echo json_encode($results);
+    }
+
+    public function ajax_get_current_media()
+    {
+        $id = intval(Req::Post_Safe('id'));
+        if (!$id) {
+            echo json_encode(['file_id' => 0, 'gallery_id' => 0, 'video' => '']);
+            return;
+        }
+        $news = Load::model('mod_news');
+        $news->where_id($id)->select('file_id, gallery_id, video')->gRo();
+        if ($news->getSize() > 0) {
+            echo json_encode([
+                'file_id' => intval($news->file_id),
+                'gallery_id' => intval($news->gallery_id),
+                'video' => $news->video
+            ]);
+        } else {
+            echo json_encode(['file_id' => 0, 'gallery_id' => 0, 'video' => '']);
+        }
+    }
+
+    public function ajax_update_relation()
+    {
+        if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        $type = Req::Post_Safe('type');
+        $value = Req::Post_Safe('value');
+
+        if (!$id) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => 'Nûçe nehat dîtin']);
+            return;
+        }
+
+        $this->mod_news_model = Load::model('mod_news');
+        $this->mod_news_model->where_id($id)->gRo();
+        
+        if ($this->mod_news_model->getSize() === 0) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
+            return;
+        }
+        $this->mod_news_model->sync();
+
+        if ($type === 'gallery') {
+            $this->mod_news_model->gallery_id = intval($value);
+        } elseif ($type === 'files') {
+            $this->mod_news_model->file_id = intval($value);
+        } elseif ($type === 'video') {
+            $existed = unserialize($this->mod_news_model->video);
+            if (!is_array($existed)) $existed = [];
+            
+            if ($value && !in_array($value, $existed)) {
+                $existed[] = $value;
+            }
+            $this->mod_news_model->video = serialize($existed);
+        } else {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => 'Cureyê nenas']);
+            return;
+        }
+
+        if ($this->mod_news_model->update('id')) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_news']['message']['oke']['edit'] ?? 'Serkeftî nû bû']);
+        } else {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => 'Xeta di dema nûkirinê de']);
         }
     }
 

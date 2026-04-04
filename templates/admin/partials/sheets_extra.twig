@@ -154,7 +154,8 @@
 #select-picker-sheet {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
+    padding: 24px !important;
 }
 
 #select-picker-sheet .select-picker-title-row {
@@ -210,68 +211,174 @@
 #select-picker-sheet .select-picker-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    border-radius: 18px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    gap: 16px;
+    border-radius: 20px;
+    padding: 16px;
+    margin-bottom: 12px;
     background: var(--md-sys-color-surface);
-    border: 1px solid transparent;
+    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 40%, transparent);
     cursor: pointer;
-    transition: background-color .18s ease, border-color .18s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Custom Add Button Styling */
+.m3-btn-select-add {
+    position: relative;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: transparent;
+    cursor: pointer;
+    overflow: hidden;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.m3-btn-select-add .add-btn-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, color-mix(in srgb, var(--md-sys-color-primary) 80%, black) 100%);
+    z-index: 0;
+    transition: opacity 0.3s ease;
+}
+.m3-btn-select-add:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+}
+.m3-btn-select-add:active {
+    transform: translateY(0);
+}
+.m3-btn-select-add .add-btn-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Custom Close Button */
+.m3-btn-icon-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: none;
+    background: color-mix(in srgb, var(--md-sys-color-outline-variant) 30%, transparent);
+    color: var(--md-sys-color-on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.m3-btn-icon-close:hover {
+    background: color-mix(in srgb, var(--md-sys-color-error) 15%, transparent);
+    color: var(--md-sys-color-error);
+    transform: rotate(90deg);
+}
+
+#select-picker-sheet .select-picker-item::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 #select-picker-sheet .select-picker-item:hover {
     background: var(--md-sys-color-surface-container);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    border-color: color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+}
+
+#select-picker-sheet .select-picker-item:hover::before {
+    opacity: 1;
 }
 
 #select-picker-sheet .select-picker-item.is-selected {
-    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface));
+    background: color-mix(in srgb, var(--md-sys-color-primary) 8%, var(--md-sys-color-surface));
     border-color: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
 }
 
 #select-picker-sheet .select-picker-item-meta {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    background: var(--md-sys-color-surface-container-high);
+    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
     color: var(--md-sys-color-primary);
+    font-size: 20px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#select-picker-sheet .select-picker-item.is-selected .select-picker-item-meta {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+
+#select-picker-sheet .select-picker-item:hover .select-picker-item-meta {
+    transform: scale(1.08) translateY(-2px);
 }
 
 #select-picker-sheet .select-picker-item-body {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 4px;
     flex: 1 1 auto;
+    z-index: 1;
 }
 
 #select-picker-sheet .select-picker-item-title {
     color: var(--md-sys-color-on-surface);
     font-weight: 600;
+    font-size: 15px;
     line-height: 1.35;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #select-picker-sheet .select-picker-item-subtitle {
     color: var(--md-sys-color-on-surface-variant);
-    font-size: 12px;
+    font-size: 13px;
+    opacity: 0.8;
 }
 
 #select-picker-sheet .select-picker-item-check {
     color: var(--md-sys-color-primary);
-    font-size: 18px;
+    font-size: 22px;
     opacity: 0;
-    transform: scale(.8);
-    transition: opacity .18s ease, transform .18s ease;
+    transform: scale(.5) translateX(10px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 #select-picker-sheet .select-picker-item.is-selected .select-picker-item-check {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateX(0);
 }
+
+
+
+
 
 #select-picker-sheet .select-picker-empty {
     display: none;
@@ -331,12 +438,19 @@
 
         <div class="context-divider"></div>
 
+        <div class="context-action-item" id="contextActionVideo" onclick="handleContextAction('video')">
+            <div class="context-icon icon-video" style="color: #0288D1; background: rgba(2, 136, 209, 0.12);">
+                <i class="bi bi-camera-video"></i>
+            </div>
+            <span class="context-action-label">{{ wizard_lang.context_menu.video|default('Vîdewo Lêke') }}</span>
+        </div>
+
         <div class="context-action-item" id="contextActionGallery" onclick="handleContextAction('gallery')">
             <div class="context-icon icon-gallery">
                 <i class="bi bi-images"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.gallery }}</span>
-            <span class="context-badge">3</span>
+            <span class="context-badge" id="contextGalleryBadge" style="display:none;">0</span>
         </div>
 
         <div class="context-action-item" id="contextActionFiles" onclick="handleContextAction('files')">
@@ -344,6 +458,7 @@
                 <i class="bi bi-paperclip"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.files }}</span>
+            <span class="context-badge" id="contextFilesBadge" style="display:none;">0</span>
         </div>
 
         <div class="context-divider"></div>
@@ -442,11 +557,17 @@
 <div class="overlay" id="select-picker-overlay" onclick="closeSelectPickerSheet()"></div>
 <div class="bottom-sheet" id="select-picker-sheet">
     <div class="sheet-handle-bar"></div>
-    <div class="select-picker-title-row">
-        <h3 id="selectPickerTitle" style="margin: 0;">{{ wizard_lang.sheet.category_title }}</h3>
-        <button type="button" class="m3-btn-text" onclick="closeSelectPickerSheet()">{{ wizard_lang.context_menu.cancel }}</button>
+    <div class="select-picker-title-row" style="flex-wrap: nowrap; align-items: center;">
+        <h3 id="selectPickerTitle" style="margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-size: 18px; font-weight: 700;">{{ wizard_lang.sheet.category_title }}</h3>
+        <div style="display:flex; gap: 8px; flex-shrink: 0; align-items: center;">
+            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add" style="display:none;" onclick="handleSelectPickerAdd()">
+                <div class="add-btn-bg"></div>
+                <span class="add-btn-content"><i class="bi bi-plus-lg"></i> {{ wizard_lang.button.add|default('Nû Zêdebike') }}</span>
+            </button>
+            <button type="button" class="m3-btn-icon-close" aria-label="Close" onclick="closeSelectPickerSheet()"><i class="bi bi-x-lg"></i></button>
+        </div>
     </div>
-    <div class="select-picker-meta">
+    <div class="select-picker-meta" style="display:none !important;">
         <div class="select-picker-pill">
             <i class="bi bi-translate"></i>
             <span id="selectPickerActiveLang">{{ site.lang|upper }}</span>

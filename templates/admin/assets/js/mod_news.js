@@ -665,7 +665,7 @@ class ContentManager {
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider'];
+        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarVideo'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -765,14 +765,21 @@ window.editSelected = function () {
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_gallery/list/mod_news/' + mgr.selectedContentId;
+        openMediaRelationPicker(mgr.selectedContentId, 'gallery');
     }
 };
 
 window.filesSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_attachment/list/mod_news/' + mgr.selectedContentId;
+        openMediaRelationPicker(mgr.selectedContentId, 'files');
+    }
+};
+
+window.videoSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        openMediaRelationPicker(mgr.selectedContentId, 'video');
     }
 };
 
@@ -881,11 +888,11 @@ window.handleContextAction = function (action) {
                 }
             });
             break;
+        case 'video':
         case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_news/${id}`;
-            break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_news/${id}`;
+            closeContextMenu(); // close context menu before opening picker
+            openMediaRelationPicker(id, action);
             break;
         case 'status':
             // Call the existing toggleStatus logic
@@ -952,3 +959,116 @@ window.toggleStatus = function (id, currentStatus) {
         }
     });
 }
+
+// Listen to select picker close to hide our add button
+document.addEventListener('click', function(e) {
+    if (e.target.matches('#select-picker-overlay') || e.target.closest('.m3-btn-text')) {
+        const btn = document.getElementById('selectPickerAddBtn');
+        if (btn) btn.style.display = 'none';
+    }
+});
+
+// Added for media relation picker
+window.openMediaRelationPicker = function(newsId, type) {
+    let endpoint = '';
+    let title = '';
+    let addUrl = '';
+    
+    if (type === 'gallery') {
+        endpoint = `${MODULE_URL}ajax_get_galleries`;
+        title = 'Galeriya Heyî Hilbijêre';
+        addUrl = `${SITE_URL}mod_gallery/list/mod_news/${newsId}`;
+    } else if (type === 'files') {
+        endpoint = `${MODULE_URL}ajax_get_files`;
+        title = 'Pelê Heyî Hilbijêre';
+        addUrl = `${SITE_URL}mod_attachment/list/mod_news/${newsId}`;
+    } else if (type === 'video') {
+        endpoint = `${MODULE_URL}all_video_get`;
+        // Use translation fallback
+        title = 'Vîdeoya Heyî Hilbijêre';
+        addUrl = `${SITE_URL}mod_video_embed/add`; 
+    }
+
+    window.currentMediaPickerAddUrl = addUrl;
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    if (addBtn) addBtn.style.display = 'block';
+
+    const formData = new FormData();
+    formData.append('q', '');
+
+    const currentData = new FormData();
+    currentData.append('id', newsId);
+
+    Promise.all([
+        fetch(endpoint, { method: 'POST', body: formData }).then(r => r.json()),
+        fetch(`${MODULE_URL}ajax_get_current_media`, { method: 'POST', body: currentData }).then(r => r.json())
+    ])
+    .then(([data, currentMedia]) => {
+        let select = document.getElementById('dynamicMediaSelect');
+        if (!select) {
+            select = document.createElement('select');
+            select.id = 'dynamicMediaSelect';
+            select.style.display = 'none';
+            document.body.appendChild(select);
+            
+            select.addEventListener('change', function() {
+                const val = this.value;
+                if (val === undefined || val === null) return;
+                
+                const fd = new FormData();
+                fd.append('id', window.currentMediaPickerNewsId);
+                fd.append('type', window.currentMediaPickerType);
+                fd.append('value', val);
+                
+                fetch(`${MODULE_URL}ajax_update_relation`, {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showSnackbar(res.message, 'success');
+                        if (window.contentManager) window.contentManager.loadData(true);
+                        closeSelectPickerSheet();
+                    } else {
+                        showSnackbar(res.message || 'Error', 'error');
+                    }
+                })
+                .catch(err => showSnackbar('Error occurred', 'error'));
+            });
+        }
+        
+        window.currentMediaPickerNewsId = newsId;
+        window.currentMediaPickerType = type;
+        
+        select.innerHTML = '<option value="0" style="display:none"></option>';
+        data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.value || item.id;
+            opt.textContent = item.name || item.text || item.title || ('ID: ' + item.id);
+            select.appendChild(opt);
+        });
+        
+        // Pre-select the appropriate value based on currentMedia
+        let currentValue = '0';
+        if (type === 'files' && currentMedia.file_id) currentValue = currentMedia.file_id.toString();
+        if (type === 'gallery' && currentMedia.gallery_id) currentValue = currentMedia.gallery_id.toString();
+        // Ignoring video value for now as it's serialized data, not an ID
+        
+        select.value = currentValue;
+        select.dataset.pickerTitle = title;
+        if (typeof openSelectPickerSheet === 'function') {
+            openSelectPickerSheet('dynamicMediaSelect');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showSnackbar('Error loading modal', 'error');
+    });
+};
+
+window.handleSelectPickerAdd = function() {
+    if (window.currentMediaPickerAddUrl) {
+        window.location.href = window.currentMediaPickerAddUrl;
+    }
+};

@@ -92,6 +92,30 @@ abstract class indexBase
         unset($file);
     }
 
+    public function _exact_attachment($id)
+    {
+        $file = Load::model('mod_attachment');
+        $file->where_id($id);
+        $file->select('id,url,original_name,filename')->gRo();
+        
+        if ($file->getSize() !== 0) {
+            $this->tema->ctx_set('file', [$file->toArray()]);
+        }
+        unset($file);
+    }
+
+    public function _exact_gallery($id)
+    {
+        $gallery = Load::model('mod_gallery');
+        $gallery->where_id($id);
+        $gallery->select('id,url,name')->gRo();
+
+        if ($gallery->getSize() !== 0) {
+            $this->tema->ctx_set('res', [$gallery->toArray()]);
+        }
+        unset($gallery);
+    }
+
     public function _mod_video($v)
     {
         $data = unserialize($v);
