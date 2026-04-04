@@ -47,7 +47,7 @@ nav.navbar {
 
 /* Global Newspaper Standard - Gothic Logo */
 .brand-text-gothic {
-    font-family: 'Pirata One', system-ui !important;
+    font-family: 'Grenze Gotisch', serif !important;
     font-size: 2.1rem !important; /* Elegant & Balanced Size (Standard: 2rem - 2.2rem) */
     line-height: 1.1 !important;
     margin-bottom: 0;
@@ -56,7 +56,7 @@ nav.navbar {
     -webkit-text-fill-color: #000000 !important;
     background: none !important;
     background-clip: unset !important;
-    font-weight: 400 !important;
+    font-weight: 600 !important;
     letter-spacing: -0.2px !important;
     text-decoration: none !important;
     transition: all 0.3s ease;
