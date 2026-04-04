@@ -1,4 +1,4 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["2", "image,name,seo,keywords,summary,created_at"]}) }}
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["1", "image,name,seo,keywords,summary,created_at"]}) }}
 {% set latest_news = ctx_get('latest_news') %}
 {% if latest_news is not empty %}
     <style>
