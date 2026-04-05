@@ -395,10 +395,11 @@ $lang['mod_news'] = [
     'hero_slider_error' => 'Slider update failed.',
     'hero_slider_badge' => 'Slider',
 
-    // === Media Picker UI ===
-    'picker_gallery_title' => 'Select Existing Gallery',
-    'picker_file_title' => 'Select Existing File',
-    'picker_video_title' => 'Select Existing Video',
+    'picker' => [
+        'gallery' => 'Select Existing Gallery',
+        'file' => 'Select Existing File',
+        'video' => 'Select Existing Video',
+    ],
 
     // === Latest News ===
     'latest_news' => [

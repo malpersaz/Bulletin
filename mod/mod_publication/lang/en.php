@@ -392,4 +392,29 @@ $lang['mod_publication'] = [
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
         'authors' => [],
     ],
+
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Success',
+        'error' => 'Error Occurred',
+        'database_error' => 'Database Error',
+        'record_not_found' => 'Publication item not found!',
+        'unknown_type' => 'Unknown relation type',
+        'relation_updated' => 'Relation successfully updated',
+    ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Send to Slider',
+    'hero_slider_remove' => 'Remove from Slider',
+    'hero_slider_added' => 'Sent to slider.',
+    'hero_slider_removed' => 'Removed from slider.',
+    'hero_slider_error' => 'Slider update failed.',
+    'hero_slider_badge' => 'Slider',
+
+    // === Media Picker UI ===
+    'picker' => [
+        'gallery' => 'Select Existing Gallery',
+        'file' => 'Select Existing File',
+        'video' => 'Select Existing Video',
+    ],
 ];

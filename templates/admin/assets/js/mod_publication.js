@@ -224,7 +224,7 @@ class ContentManager {
             const safeLang = this.escapeHtml(lang);
             const safeDate = this.escapeHtml(date);
             const safeAuthorName = this.escapeHtml(authorName);
-            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.slider_badge || 'Slider');
+            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.hero_slider_badge || 'Slider');
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
@@ -665,7 +665,7 @@ class ContentManager {
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider'];
+        const ids = ['toolbarEdit', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarGallery', 'toolbarVideo'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -687,8 +687,8 @@ class ContentManager {
         if (!sliderBtn) return;
 
         const label = active && this.selectedInHeroSlider
-            ? (CONTENT_LANG.slider_remove || 'Remove from Slider')
-            : (CONTENT_LANG.slider_add || 'Send to Slider');
+            ? (CONTENT_LANG.hero_slider_remove || 'Remove from Slider')
+            : (CONTENT_LANG.hero_slider_add || 'Send to Slider');
         const labelEl = document.getElementById('toolbarSliderLabel');
 
         sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
@@ -735,7 +735,7 @@ class ContentManager {
             const result = await response.json();
 
             if (result.status !== 'success') {
-                showSnackbar(result.message || CONTENT_LANG.slider_error, 'error');
+                showSnackbar(result.message || CONTENT_LANG.hero_slider_error, 'error');
                 return;
             }
 
@@ -743,12 +743,12 @@ class ContentManager {
             this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
             this.syncSliderToolbarState(true);
             showSnackbar(
-                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.slider_added : CONTENT_LANG.slider_removed),
+                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.hero_slider_added : CONTENT_LANG.hero_slider_removed),
                 'success'
             );
         } catch (error) {
             console.error('Hero slider toggle error:', error);
-            showSnackbar(CONTENT_LANG.slider_error, 'error');
+            showSnackbar(CONTENT_LANG.hero_slider_error, 'error');
         }
     }
 }
@@ -766,17 +766,25 @@ window.editSelected = function () {
     }
 };
 
-window.gallerySelected = function () {
-    const mgr = window.contentManager;
-    if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_gallery/list/mod_news/' + mgr.selectedContentId;
-    }
-};
-
 window.filesSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_attachment/list/mod_news/' + mgr.selectedContentId;
+        openMediaRelationPicker(mgr.selectedContentId, 'files');
+    }
+};
+
+window.gallerySelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        openMediaRelationPicker(mgr.selectedContentId, 'gallery');
+    }
+};
+
+window.videoSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        // Video currently not fully supported in backend for publication, but we keep the button for consistency
+        showSnackbar('Video support is currently limited for publications', 'info');
     }
 };
 
@@ -804,7 +812,7 @@ window.deleteSelected = function () {
             const formData = new FormData();
             formData.append('delete[]', id);
 
-            fetch(MODULE_URL + 'delete', {
+            fetch(`${MODULE_URL}delete`, {
                 method: 'POST',
                 body: formData
             })
@@ -834,8 +842,7 @@ window.sliderSelected = function () {
     }
 };
 
-// Helper for Context Menu Actions (Global scope for onclicks)
-// Helper for Context Menu Actions (Global scope for onclicks)
+// Helper for Context Menu Actions
 window.handleContextAction = function (action) {
     const id = window.currentContentId;
     if (!id) return;
@@ -845,66 +852,23 @@ window.handleContextAction = function (action) {
             window.location.href = `${MODULE_URL}edit/${id}`;
             break;
         case 'delete':
-            Swal.fire({
-                title: CONTENT_LANG.confirm_delete,
-                icon: 'warning',
-                showCancelButton: true,
-                showDenyButton: false,
-                confirmButtonColor: '#B71C1C',
-                cancelButtonColor: '#6750A4',
-                confirmButtonText: '<i class="bi bi-trash3"></i> ' + adminLang.context_menu.delete_confirm,
-                cancelButtonText: '<i class="bi bi-x-lg"></i> ' + adminLang.context_menu.cancel,
-                background: 'var(--md-sys-color-surface-container-high, #fff)',
-                color: 'var(--md-sys-color-on-surface, #1C1B1F)',
-                customClass: { popup: 'm3-swal-popup', title: 'm3-swal-title', actions: 'm3-swal-actions' },
-                showClass: { popup: 'animate__animated animate__fadeInUp animate__faster' },
-                hideClass: { popup: 'animate__animated animate__fadeOutDown animate__faster' }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formData = new FormData();
-                    formData.append('delete[]', id);
-
-                    fetch(`${MODULE_URL}delete`, {
-                        method: 'POST',
-                        body: formData
-                    })
-                        .then(response => response.text())
-                        .then(msg => {
-                            if ((msg || '').trim() === 'Success') {
-                                window.contentManager.loadData(true);
-                                closeContextMenu();
-                                showSnackbar(adminLang.context_menu.delete_success, 'success');
-                            } else {
-                                showSnackbar(msg, 'error');
-                            }
-                        })
-                        .catch(err => {
-                            console.error('Delete error:', err);
-                            showSnackbar(CONTENT_LANG.error_general, 'error');
-                        });
-                }
-            });
-            break;
-        case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_news/${id}`;
+            window.deleteSelected(); 
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_news/${id}`;
+        case 'gallery':
+            closeContextMenu();
+            openMediaRelationPicker(id, action);
             break;
         case 'status':
-            // Call the existing toggleStatus logic
-            // We need the current status 'e' or 'h'. We can get it from the UI or pass it.
-            // Simplified: we can find the card and see its status, but better if openContextMenu passed it
-            // activeContextItem.status is a boolean (isPublished)
             const currentStatus = activeContextItem.status ? 'y' : 'n';
             window.toggleStatus(id, currentStatus);
             break;
     }
     closeContextMenu();
-} // End function
+}
 
 /**
- * Ported from legacy script.twig: Quick Publish/Unpublish
+ * Quick Publish/Unpublish
  */
 window.toggleStatus = function (id, currentStatus) {
     if (typeof event !== 'undefined') event.stopPropagation();
@@ -956,3 +920,124 @@ window.toggleStatus = function (id, currentStatus) {
         }
     });
 }
+
+// Media relation picker
+window.openMediaRelationPicker = function(pubId, type) {
+    let endpoint = '';
+    let title = '';
+    let addUrl = '';
+    
+    if (type === 'gallery') {
+        endpoint = `${MODULE_URL}ajax_get_galleries`;
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.gallery : 'Galeriya Heyî Hilbijêre';
+        addUrl = `${SITE_URL}mod_gallery/list/mod_publication/${pubId}`;
+    } else if (type === 'files') {
+        endpoint = `${MODULE_URL}ajax_get_files`;
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Pelê Heyî Hilbijêre';
+        addUrl = `${SITE_URL}mod_attachment/list/mod_publication/${pubId}`;
+    }
+
+    window.currentMediaPickerAddUrl = addUrl;
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    if (addBtn) addBtn.style.display = 'block';
+
+    const formData = new FormData();
+    formData.append('q', '');
+
+    const currentData = new FormData();
+    currentData.append('id', pubId);
+
+    Promise.all([
+        fetch(endpoint, { method: 'POST', body: formData }).then(r => r.json()),
+        fetch(`${MODULE_URL}ajax_get_current_media`, { method: 'POST', body: currentData }).then(r => r.json())
+    ])
+    .then(([data, currentMedia]) => {
+        let select = document.getElementById('dynamicMediaSelect');
+        if (!select) {
+            select = document.createElement('select');
+            select.id = 'dynamicMediaSelect';
+            select.style.display = 'none';
+            document.body.appendChild(select);
+            
+            select.addEventListener('change', function() {
+                const val = this.value;
+                if (val === undefined || val === null) return;
+                
+                const fd = new FormData();
+                fd.append('id', window.currentMediaPickerPubId);
+                fd.append('type', window.currentMediaPickerType);
+                fd.append('value', val);
+                
+                fetch(`${MODULE_URL}ajax_update_relation`, {
+                    method: 'POST',
+                    body: fd
+                })
+                .then(r => r.json())
+                .then(res => {
+                    if (res.status === 'success') {
+                        showSnackbar(res.message, 'success');
+                        if (window.contentManager) {
+                            window.contentManager.loadData(true);
+                        }
+                        if (typeof closeSelectPickerSheet === 'function') {
+                            closeSelectPickerSheet();
+                        }
+                    } else {
+                        showSnackbar(res.message || 'Error', 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Update Error:', err);
+                    showSnackbar('Error occurred', 'error');
+                });
+            });
+        }
+        
+        window.currentMediaPickerPubId = pubId;
+        window.currentMediaPickerType = type;
+        
+        const pickerTitleEl = document.getElementById('selectPickerTitle');
+        const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');
+        if (pickerTitleEl) pickerTitleEl.textContent = title;
+        if (pickerSubtitleEl) pickerSubtitleEl.textContent = ''; 
+
+        select.innerHTML = '';
+        data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.value || item.id;
+            opt.textContent = item.name || item.text || item.title || ('ID: ' + item.id);
+            select.appendChild(opt);
+        });
+        
+        let currentValue = '0';
+        if (type === 'files' && currentMedia.file_id) {
+            currentValue = currentMedia.file_id.toString();
+        } else if (type === 'gallery' && currentMedia.gallery_id) {
+            currentValue = currentMedia.gallery_id.toString();
+        }
+        
+        select.value = currentValue;
+        select.dataset.pickerTitle = title;
+        if (typeof openSelectPickerSheet === 'function') {
+            openSelectPickerSheet('dynamicMediaSelect');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        showSnackbar(CONTENT_LANG.picker.error_loading || 'Error loading modal', 'error');
+    });
+};
+
+window.handleSelectPickerAdd = function() {
+    if (window.currentMediaPickerAddUrl) {
+        window.location.href = window.currentMediaPickerAddUrl;
+    }
+};
+
+// Listen to select picker close
+document.addEventListener('click', function(e) {
+    if (e.target.matches('#select-picker-overlay') || e.target.closest('.m3-btn-text')) {
+        const btn = document.getElementById('selectPickerAddBtn');
+        if (btn) btn.style.display = 'none';
+    }
+});

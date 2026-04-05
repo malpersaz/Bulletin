@@ -1234,14 +1234,14 @@ class mod_news_mod extends indexMain
             echo json_encode([
                 'status' => 'success',
                 'in_hero_slider' => $new_slider_state === 'y',
-                'message' => $new_slider_state === 'y' ? 'Sent to slider.' : 'Removed from slider.'
+                'message' => $new_slider_state === 'y' ? ($this->lang['mod_news']['hero_slider_added'] ?? 'Sent to slider.') : ($this->lang['mod_news']['hero_slider_removed'] ?? 'Removed from slider.')
             ]);
             return;
         }
 
         echo json_encode([
             'status' => 'error',
-            'message' => 'Slider update failed.'
+            'message' => $this->lang['mod_news']['hero_slider_error'] ?? 'Slider update failed.'
         ]);
     }
 

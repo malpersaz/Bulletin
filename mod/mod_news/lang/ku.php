@@ -394,17 +394,19 @@ $lang['mod_news'] = [
     ],
 
     // === Hero Slider ===
-    'hero_slider_add' => 'Bişîne Slaydirê',
-    'hero_slider_remove' => 'Ji Slaydirê Rake',
-    'hero_slider_added' => 'Nûçe ji Slaydirê re hat şandin.',
-    'hero_slider_removed' => 'Nûçe ji Slaydirê hat rakirin.',
-    'hero_slider_error' => 'Slayir nehat nûkirin!',
-    'hero_slider_badge' => 'Slayir',
+    'hero_slider_add' => 'Bişîne Sliderê',
+    'hero_slider_remove' => 'Ji Sliderê Rake',
+    'hero_slider_added' => 'Nûçe bi serkeftî bo Slider hate şandin.',
+    'hero_slider_removed' => 'Nûçe ji Slider hate rakirin.',
+    'hero_slider_error' => 'Rewşa Slider nehat nûkirin!',
+    'hero_slider_badge' => 'Slider',
 
     // === Media Picker UI ===
-    'picker_gallery_title' => 'Galeriya Heyî Hilbijêre',
-    'picker_file_title' => 'Pelê Heyî Hilbijêre',
-    'picker_video_title' => 'Vîdeoya Heyî Hilbijêre',
+    'picker' => [
+        'gallery' => 'Galeriya Heyî Hilbijêre',
+        'file' => 'Pelê Heyî Hilbijêre',
+        'video' => 'Vîdeoya Heyî Hilbijêre',
+    ],
 
     // === Latest News ===
     'latest_news' => [

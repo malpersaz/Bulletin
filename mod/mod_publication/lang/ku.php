@@ -393,4 +393,29 @@ $lang['mod_publication'] = [
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],
     ],
+
+    // === AJAX & Peyamên Peywendiyê ===
+    'ajax' => [
+        'success' => 'Serkeftî',
+        'error' => 'Çewtî Çêbû',
+        'database_error' => 'Çewtiya Danegehê',
+        'record_not_found' => 'Weşan nehat dîtin!',
+        'unknown_type' => 'Cureyê peywendiyê yê nenas',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûkirin',
+    ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Bişîne Sliderê',
+    'hero_slider_remove' => 'Ji Sliderê Rake',
+    'hero_slider_added' => 'Weşan bi serkeftî bo Slider hate şandin.',
+    'hero_slider_removed' => 'Weşan ji Slider hate rakirin.',
+    'hero_slider_error' => 'Rewşa Slider nehat nûkirin!',
+    'hero_slider_badge' => 'Slider',
+
+    // === Media Picker UI ===
+    'picker' => [
+        'gallery' => 'Galeriya Heyî Hilbijêre',
+        'file' => 'Pelê Heyî Hilbijêre',
+        'video' => 'Vîdeoya Heyî Hilbijêre',
+    ],
 ];

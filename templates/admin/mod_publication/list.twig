@@ -276,34 +276,33 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.hero_slider_add|default('Send to Slider') }}">
+    <div class="standard-toolbar news-toolbar">
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3"></i>
+        </button>
+
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-stars"></i>
-            <span id="toolbarSliderLabel">{{ lang.mod_publication.hero_slider_add|default('Send to Slider') }}</span>
         </button>
 
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_publication.button.edit }}</span>
-        </button>
-
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-images"></i>
-            <span>{{ lang.mod_publication.button.gallery }}</span>
+        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-camera-video"></i>
         </button>
 
         <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_publication/add'">
             <i class="bi bi-plus-lg"></i>
         </div>
 
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_publication.button.file }}</span>
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-image"></i>
         </button>
 
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_publication.button.delete }}</span>
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-paperclip"></i>
+        </button>
+
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil"></i>
         </button>
     </div>
 {% endblock %}
@@ -340,15 +339,20 @@
         image_remove_confirm_text: "{{ lang.mod_publication.button.evet|default(lang.mod_publication.button.yes)|default('Yes')|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_publication.button.hayir|default(lang.mod_publication.button.no)|default('No')|e('js') }}",
         image_remove_success: "{{ lang.mod_publication.remove_image_oke|e('js') }}",
-        slider_add: "{{ lang.mod_publication.hero_slider_add|default('Send to Slider')|e('js') }}",
-        slider_remove: "{{ lang.mod_publication.hero_slider_remove|default('Remove from Slider')|e('js') }}",
-        slider_added: "{{ lang.mod_publication.hero_slider_added|default('Sent to slider.')|e('js') }}",
-        slider_removed: "{{ lang.mod_publication.hero_slider_removed|default('Removed from slider.')|e('js') }}",
-        slider_error: "{{ lang.mod_publication.hero_slider_error|default('Slider update failed.')|e('js') }}",
-        slider_badge: "{{ lang.mod_publication.hero_slider_badge|default('Slider')|e('js') }}",
+        hero_slider_add: "{{ lang.mod_publication.hero_slider_add|e('js') }}",
+        hero_slider_remove: "{{ lang.mod_publication.hero_slider_remove|e('js') }}",
+        hero_slider_added: "{{ lang.mod_publication.hero_slider_added|e('js') }}",
+        hero_slider_removed: "{{ lang.mod_publication.hero_slider_removed|e('js') }}",
+        hero_slider_error: "{{ lang.mod_publication.hero_slider_error|e('js') }}",
+        hero_slider_badge: "{{ lang.mod_publication.hero_slider_badge|e('js') }}",
         loading: "{{ lang.mod_publication.grid[104]|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_publication.grid.load_more|e('js') }}"
+        },
+        picker: {
+            gallery: "{{ lang.mod_publication.picker.gallery|e('js') }}",
+            file: "{{ lang.mod_publication.picker.file|e('js') }}",
+            video: "{{ lang.mod_publication.picker.video|e('js') }}"
         }
     };
 </script>

@@ -262,123 +262,145 @@ class mod_publication_mod extends indexMain
 
     public function videos()
     {
-        if (
-            Roll::hasPermission('mod_publication', 'add') === FALSE
-            && Roll::hasPermission('mod_publication', 'edit') === FALSE
-        ) {
+        if (Roll::hasPermission('mod_publication', 'add') === FALSE && Roll::hasPermission('mod_publication', 'edit') === FALSE) {
             exit();
         }
-
-        $results = [];
-        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
-
-        // Search local videos.
-        $video_model = Load::model('mod_video');
-        $video_model->select('id, name');
-        if ($q_param) {
-            $video_model->where_like_name('%' . $q_param . '%');
-        }
-        $video_model->order('created_at', 'DESC')->gR();
-
-        if ($video_model->getSize() > 0) {
-            foreach ($video_model->toArray() as $item) {
-                $results[] = [
-                    'id'   => 'video:' . $item['id'],
-                    'name' => $item['name'] . ' (' . $this->lang['mod_publication']['lokal'] . ')'
-                ];
-            }
-        }
-
-        // Search embedded videos.
-        $vid_model = Load::model('mod_video_embed');
-        $vid_model->select('id, name');
-        if ($q_param) {
-            $vid_model->where_like_name('%' . $q_param . '%');
-        }
-        $vid_model->order('created_at', 'DESC')->gR();
-
-        if ($vid_model->getSize() > 0) {
-            foreach ($vid_model->toArray() as $item) {
-                $results[] = [
-                    'id'   => 'vid:' . $item['id'],
-                    'name' => $item['name'] . ' (' . $this->lang['mod_publication']['embed'] . ')'
-                ];
-            }
-        }
-
-        if (count($results) > 0) {
-            echo json_encode($results);
-        } else {
-            echo '[]';
-        }
+        // Reverted
+        exit();
     }
 
-    public function videos_get($str = NULL)
+    public function video($str = NULL)
     {
-        if (
-            Roll::hasPermission('mod_publication', 'add') === FALSE
-            && Roll::hasPermission('mod_publication', 'edit') === FALSE
-        ) {
+        if (Roll::hasPermission('mod_publication', 'add') === FALSE && Roll::hasPermission('mod_publication', 'edit') === FALSE) {
             exit();
         }
-        if ($str === NULL) {
-            exit;
+        // Reverted
+        exit();
+    }
+
+
+
+    public function ajax_get_galleries()
+    {
+        if (Roll::hasPermission('mod_publication', 'edit') === FALSE) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            exit();
         }
 
-        $str = base64_decode($str);
-
-        $data = @unserialize($str);
-
-        if (is_array($data) === FALSE) {
-            exit;
+        $q = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_gallery');
+        $model->select('id, name');
+        if ($q) {
+            $model->addWhere("name LIKE '%" . $q . "%'");
         }
+        $model->order('id', 'DESC')->gR();
 
-        $video_ids = [];
-        $vid_ids = [];
-
-        foreach($data as $prefixed_id) {
-            $parts = explode(':', $prefixed_id, 2);
-            if (count($parts) == 2) {
-                if ($parts[0] == 'video') {
-                    $video_ids[] = $parts[1];
-                } elseif ($parts[0] == 'vid') {
-                    $vid_ids[] = $parts[1];
-                }
+        $data = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $data[] = [
+                    'id' => $item['id'],
+                    'text' => $item['name']
+                ];
             }
         }
 
-        $results = [];
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+    }
 
-        if (!empty($video_ids)) {
-            $video_model = Load::model('mod_video');
-            $video_model->select('id, name')->where_id($video_ids)->gR();
-            if ($video_model->getSize() > 0) {
-                foreach ($video_model->toArray() as $item) {
-                    $results[] = [
-                        'id'   => 'video:' . $item['id'],
-                        'name' => $item['name'] . ' (' . $this->lang['mod_publication']['lokal'] . ')'
-                    ];
-                }
+    public function ajax_get_files()
+    {
+        if (Roll::hasPermission('mod_publication', 'edit') === FALSE) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            exit();
+        }
+
+        $q = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_attachment');
+        $model->select('id, original_name as name');
+        if ($q) {
+            $model->addWhere("original_name LIKE '%" . $q . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $data = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $data[] = [
+                    'id' => $item['id'],
+                    'text' => $item['name']
+                ];
             }
         }
 
-        if (!empty($vid_ids)) {
-            $vid_model = Load::model('mod_video_embed');
-            $vid_model->select('id, name')->where_id($vid_ids)->gR();
-            if ($vid_model->getSize() > 0) {
-                foreach ($vid_model->toArray() as $item) {
-                    $results[] = [
-                        'id'   => 'vid:' . $item['id'],
-                        'name' => $item['name'] . ' (' . $this->lang['mod_publication']['embed'] . ')'
-                    ];
-                }
-            }
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data);
+    }
+
+    public function ajax_get_current_media()
+    {
+        $id = intval(Req::Post_Safe('id'));
+        if (!$id) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['file_id' => 0]);
+            return;
         }
 
-        if (count($results) > 0) {
-            echo json_encode($results);
+        $db = new Database();
+        $res = $db->query("SELECT file_id, gallery_id FROM mod_publication WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'file_id' => intval($res['file_id'] ?? 0),
+            'gallery_id' => intval($res['gallery_id'] ?? 0)
+        ]);
+    }
+
+    public function ajax_update_relation()
+    {
+        if ($this->user->hasPermission('mod_publication', 'edit', $this->lang['mod_publication']['role_errors']['edit'], 1) === False) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        $type = Req::Post_Safe('type');
+        $value = Req::Post_Safe('value');
+
+        if (!$id) {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['errors']['record']]);
+            return;
+        }
+
+        $db = new Database();
+        
+        if ($type === 'files') {
+            $val_int = intval($value);
+            $sql = "UPDATE mod_publication SET `file_id` = '$val_int' WHERE id = '$id'";
+        } else if ($type === 'gallery') {
+            $val_int = intval($value);
+            $sql = "UPDATE mod_publication SET `gallery_id` = '$val_int' WHERE id = '$id'";
         } else {
-            echo '[]';
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => 'Unknown type']);
+            return;
+        }
+
+        if ($db->query($sql)) {
+            if (ob_get_level() > 0) ob_clean();
+            $msg = $this->lang['mod_publication']['ajax']['relation_updated'] ?? 'Relation updated';
+            echo json_encode(['status' => 'success', 'message' => $msg]);
+        } else {
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => 'Database error']);
         }
     }
 
@@ -1122,14 +1144,14 @@ class mod_publication_mod extends indexMain
             echo json_encode([
                 'status' => 'success',
                 'in_hero_slider' => $new_slider_state === 'y',
-                'message' => $new_slider_state === 'y' ? 'Sent to slider.' : 'Removed from slider.'
+                'message' => $new_slider_state === 'y' ? ($this->lang['mod_publication']['hero_slider_added'] ?? 'Sent to slider.') : ($this->lang['mod_publication']['hero_slider_removed'] ?? 'Removed from slider.')
             ]);
             return;
         }
 
         echo json_encode([
             'status' => 'error',
-            'message' => 'Slider update failed.'
+            'message' => $this->lang['mod_publication']['hero_slider_error'] ?? 'Slider update failed.'
         ]);
     }
 

@@ -224,7 +224,7 @@ class ContentManager {
             const safeLang = this.escapeHtml(lang);
             const safeDate = this.escapeHtml(date);
             const safeAuthorName = this.escapeHtml(authorName);
-            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.slider_badge || 'Slider');
+            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.hero_slider_badge || 'Slider');
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
@@ -687,8 +687,8 @@ class ContentManager {
         if (!sliderBtn) return;
 
         const label = active && this.selectedInHeroSlider
-            ? (CONTENT_LANG.slider_remove || 'Remove from Slider')
-            : (CONTENT_LANG.slider_add || 'Send to Slider');
+            ? (CONTENT_LANG.hero_slider_remove || 'Remove from Slider')
+            : (CONTENT_LANG.hero_slider_add || 'Send to Slider');
 
         sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
         sliderBtn.title = label;
@@ -731,7 +731,7 @@ class ContentManager {
             const result = await response.json();
 
             if (result.status !== 'success') {
-                showSnackbar(result.message || CONTENT_LANG.slider_error, 'error');
+                showSnackbar(result.message || CONTENT_LANG.hero_slider_error, 'error');
                 return;
             }
 
@@ -739,12 +739,12 @@ class ContentManager {
             this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
             this.syncSliderToolbarState(true);
             showSnackbar(
-                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.slider_added : CONTENT_LANG.slider_removed),
+                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.hero_slider_added : CONTENT_LANG.hero_slider_removed),
                 'success'
             );
         } catch (error) {
             console.error('Hero slider toggle error:', error);
-            showSnackbar(CONTENT_LANG.slider_error, 'error');
+            showSnackbar(CONTENT_LANG.hero_slider_error, 'error');
         }
     }
 }
