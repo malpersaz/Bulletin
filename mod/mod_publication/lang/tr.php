@@ -24,19 +24,19 @@ $lang['mod_publication'] = [
     'edit' => 'Yayını Düzenle',
     'list' => 'Yayın Listesi',
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ölümcül Hata Oluştu!',
+    'success' => 'İşlem Başarılı!',
+    'error' => 'Hata Oluştu!',
+    'fatal_error' => 'Ölümcül Hata Oluştu!',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize emin misiniz?',
-    'remove_image_oke' => 'Resim Kaldırıldı',
+    'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
     'remove_record' => 'Bu Kaydı Silmek İstediğinize emin misiniz?',
     'delete_confirm' => 'Bu yayını silmek istediğinize emin misiniz?',
     'quick_unpublish_confirm' => 'Bu yayını yayından kaldırmak istediğinizden emin misiniz?',
     'quick_publish_confirm' => 'Bu yayını yayınlamak istediğinizden emin misiniz?',
-    'resim_ekle' => 'Resim Ekle',
-    'resim_yukle_degistir' => 'Resim Yükle/Değiştir',
-    'lokal' => 'Lokal',
+    'add_image' => 'Resim Ekle',
+    'upload_change_image' => 'Resim Yükle/Değiştir',
+    'local' => 'Lokal',
     'embed' => 'Embed',
 
     // === Filter Menu ===
@@ -68,7 +68,7 @@ $lang['mod_publication'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Yayın Eklendi!',
             'edit' => 'Yayın Düzenlendi!',
         ],
@@ -90,14 +90,14 @@ $lang['mod_publication'] = [
         'send' => 'Gönder',
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
         'gallery' => 'Resim Galerisi',
         'file' => 'Dosya Yöneticisi',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
+        'cancel' => 'Vazgeç',
+        'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
     ],
 
     // === Data Grid Messages ===
@@ -137,7 +137,6 @@ $lang['mod_publication'] = [
 
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Yayın Yönetim Rolleri',
         'name' => 'Yayın Yönetim Rolleri',
         'add' => 'Yayın Ekleyebilir',
         'edit' => 'Yayın Düzenleyebilir',
@@ -203,28 +202,28 @@ $lang['mod_publication'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Kayıt Yönetimi',
-        'islem' => 'İşlem',
-        'uygula' => 'Uygula',
-        'islem_column' => 'Aksiyon',
+        'record_management' => 'Kayıt Yönetimi',
+        'operation' => 'İşlem',
+        'apply' => 'Uygula',
+        'action_column' => 'Aksiyon',
         'select' => 'Seçin',
-        'burdan' => 'Buradan',
-        'buraya' => 'Buraya',
-        'ara' => 'Ara',
-        'sifirla' => 'Sıfırla',
+        'from' => 'Buradan',
+        'to' => 'Buraya',
+        'search' => 'Ara',
+        'reset' => 'Sıfırla',
         'approval' => 'Onayla',
-        'isleniyor' => 'İşleniyor',
+        'processing' => 'İşleniyor',
         'record_selected' => 'Kayıt seçildi',
-        'islem_gerceklestirilemedi' => 'İşlem gerçekleştirilemedi',
-        'islem_secin' => 'Lütfen bir işlem seçin',
+        'operation_failed' => 'İşlem gerçekleştirilemedi',
+        'select_operation' => 'Lütfen bir işlem seçin',
         'all' => 'Tümü',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Yazdır',
-        'yazdir_bilgi' => 'Yazdır bilgisi',
-        'olusturan' => 'Oluşturan',
-        'kopyala' => 'Kopyala',
+        'print' => 'Yazdır',
+        'print_info' => 'Yazdır bilgisi',
+        'created_by' => 'Oluşturan',
+        'copy' => 'Kopyala',
         'default_sort' => 'En Yeni',
         'default_lang' => 'TR',
         'date_locale' => 'tr-TR',
@@ -391,4 +390,34 @@ $lang['mod_publication'] = [
         'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
         'authors' => [],
     ],
+
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Başarılı',
+        'error' => 'Hata Oluştu',
+        'database_error' => 'Veritabanı Hatası',
+        'record_not_found' => 'Kayıt Bulunamadı!',
+        'unknown_type' => 'Bilinmeyen ilişki türü',
+        'file_added' => 'Yayına bir dosya eklendi',
+        'file_removed' => 'Dosya yayından kaldırıldı',
+        'gallery_added' => 'Yayına bir galeri eklendi',
+        'gallery_removed' => 'Galeri yayından kaldırıldı',
+        'relation_updated' => 'İlişki başarıyla güncellendi',
+    ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Slider\'a Gönder',
+    'hero_slider_remove' => 'Slider\'dan Kaldır',
+    'hero_slider_added' => 'Slider\'a eklendi.',
+    'hero_slider_removed' => 'Slider\'dan kaldırıldı.',
+    'hero_slider_error' => 'Slider güncellemesi başarısız.',
+    'hero_slider_badge' => 'Slider',
+
+    // === Media Picker UI ===
+    'picker' => [
+        'gallery' => 'Mevcut Galeriyi Seç',
+        'file' => 'Mevcut Dosyayı Seç',
+        'video' => 'Mevcut Videoyu Seç',
+    ],
 ];
+

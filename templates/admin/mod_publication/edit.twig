@@ -260,7 +260,7 @@
 
 
 		<div class="edit-container">
-            {% if error is defined %}
+            {% if fatal_error is defined %}
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         const errorMessage = {{ message|default('')|json_encode|raw }};
@@ -301,7 +301,7 @@
                     });
                 </script>
             {% endif %}
-            {% if oke is defined %}
+            {% if success is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
                     <span>{{ message }}</span>
@@ -453,8 +453,8 @@
                             'data-remove-confirm': lang.mod_publication.context_menu.delete_confirm,
                             'data-remove-confirm-text': lang.mod_publication.button.yes,
                             'data-remove-cancel-text': lang.mod_publication.button.no|default('No'),
-                            'data-success-title': lang.mod_publication.ok|default(lang.mod_publication.oke),
-                            'data-success-message': lang.mod_publication.remove_image_oke,
+                            'data-success-title': lang.mod_publication.success,
+                            'data-success-message': lang.mod_publication.remove_image_success,
                             'data-error-title': lang.mod_publication.error_occurred
                         },
                         dropzone_id: 'editImageDropzone',

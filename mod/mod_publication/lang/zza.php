@@ -24,19 +24,19 @@ $lang['mod_publication'] = [
     'edit' => 'Biguhere',
     'list' => 'Lîsteya Weşanan',
     'information' => 'Agahî!',
-    'oke' => 'Çêbû!',
-    'hata' => 'Çewtî Çêbû!',
-    'error' => 'Çewtiya Giran Çêbû!',
+    'success' => 'Çêbû!',
+    'error' => 'Çewtî Çêbû!',
+    'fatal_error' => 'Çewtiya Giran Çêbû!',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î ku dixwazî vî weşanî jê bibî?',
     'delete_confirm' => 'Ma tu bawer î ku dixwazî vî weşanî jê bibî?',
     'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vî weşanî ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vî weşanî biweşînî?',
-    'resim_ekle' => 'Wêne lê zêde bike',
-    'resim_yukle_degistir' => 'Wêne Lê Bar Bike/Biguherîne',
-    'lokal' => 'Lokal',
+    'add_image' => 'Wêne lê zêde bike',
+    'upload_change_image' => 'Wêne Lê Bar Bike/Biguherîne',
+    'local' => 'Lokal',
     'embed' => 'Embed',
 
     // === Filter Menu ===
@@ -68,7 +68,7 @@ $lang['mod_publication'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Weşan Hat Zêdekirin!',
             'edit' => 'Weşan Hat Sererastkirin!',
         ],
@@ -89,14 +89,14 @@ $lang['mod_publication'] = [
         'prev' => 'Vegere',
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Jêbibe',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberê Pelan',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
     ],
 
     // === Data Grid Messages ===
@@ -137,7 +137,7 @@ $lang['mod_publication'] = [
     // === Permission Roles ===
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Rolenên Rêveberiya Weşanan',
+        'name' => 'Rolenên Rêveberiya Weşanan',
         'add' => 'Dikare weşanan lê zêde bike',
         'edit' => 'Dikare weşanan biguhere',
         'delete' => 'Dikare weşanan rake',
@@ -192,28 +192,28 @@ $lang['mod_publication'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Rêveberiya Tomaran',
-        'islem' => 'Operasyon',
-        'uygula' => 'Bisepîne',
-        'islem_column' => 'Çalakî',
+        'record_management' => 'Rêveberiya Tomaran',
+        'operation' => 'Operasyon',
+        'apply' => 'Bisepîne',
+        'action_column' => 'Çalakî',
         'select' => 'Hilbijêre',
-        'burdan' => 'Ji Vir',
-        'buraya' => 'Bo Vir',
-        'ara' => 'Lêbigere',
-        'sifirla' => 'Sifir Bike',
+        'from' => 'Ji Vir',
+        'to' => 'Bo Vir',
+        'search' => 'Lêbigere',
+        'reset' => 'Sifir Bike',
         'approval' => 'Bipejirîne',
-        'isleniyor' => 'Têkirîn',
+        'processing' => 'Têkirîn',
         'record_selected' => 'Tomar hate hilbijartin',
-        'islem_gerceklestirilemedi' => 'Operasyon nehat pêkanîn',
-        'islem_secin' => 'Ji kerema xwe operasyonekê hilbijêrin',
+        'operation_failed' => 'Operasyon nehat pêkanîn',
+        'select_operation' => 'Ji kerema xwe operasyonekê hilbijêrin',
         'all' => 'Hemû',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Çap Bike',
-        'yazdir_bilgi' => 'Agahiya Çapê',
-        'olusturan' => 'Afirîner',
-        'kopyala' => 'Ji Ber Bigire',
+        'print' => 'Çap Bike',
+        'print_info' => 'Agahiya Çapê',
+        'created_by' => 'Afirîner',
+        'copy' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
         'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
@@ -373,4 +373,34 @@ $lang['mod_publication'] = [
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],
     ],
+
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Serkewte',
+        'error' => 'Xeta Bi',
+        'database_error' => 'Xetaya Verînage',
+        'record_not_found' => 'Qeyd nêame dîtêne!',
+        'unknown_type' => 'Tîpê elaqeyî nêzanîyeno',
+        'file_added' => 'Dosya weşane rê ameya dekerdene',
+        'file_removed' => 'Dosya weşane ra ameya kerdene',
+        'gallery_added' => 'Galeri weşane rê ameya dekerdene',
+        'gallery_removed' => 'Galeri weşane ra ameya kerdene',
+        'relation_updated' => 'Elaqe bi serkewtişî ameye nûkerdene',
+    ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Bikişne Slayderî',
+    'hero_slider_remove' => 'Slayderî ra birne',
+    'hero_slider_added' => 'Slayderî rê ameye dekerdene.',
+    'hero_slider_removed' => 'Slayderî ra ameye kerdene.',
+    'hero_slider_error' => 'Nûkerdena slayderî nêbi.',
+    'hero_slider_badge' => 'Slayder',
+
+    // === Media Picker UI ===
+    'picker' => [
+        'gallery' => 'Galerîya Mewcûde Weçîne',
+        'file' => 'Dosyaya Mewcûde Weçîne',
+        'video' => 'Vîdyoya Mewcûde Weçîne',
+    ],
 ];
+

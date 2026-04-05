@@ -4,7 +4,7 @@ class edit_validator
     public $valid;
     public $lang;
     public $mod_publication_model;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
         // Load the validator library.
@@ -237,7 +237,7 @@ class edit_validator
         $this->mod_publication_model = Load::model('mod_publication');
         $this->mod_publication_model->where_seo_and_lang_and_not_id(html_entity_decode(trim(Req::Post('seo')), ENT_QUOTES, 'UTF-8'), Req::Post_Safe('lang'), $id);
         if ($this->mod_publication_model->limit(1)->gRo()->getSize() > 0) {
-            $this->hatalar[] = sprintf($this->lang['mod_publication']['validator']['unique'], $this->lang['mod_publication']['admin']['columns']['seo'], $this->lang['mod_publication']['admin']['columns']['seo']);
+            $this->errors[] = sprintf($this->lang['mod_publication']['validator']['unique'], $this->lang['mod_publication']['admin']['columns']['seo'], $this->lang['mod_publication']['admin']['columns']['seo']);
         }
         if ($this->_check() === True) {
             return True;
@@ -250,10 +250,10 @@ class edit_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

@@ -114,7 +114,7 @@ class mod_publication_mod extends indexMain
         $this->mod_publication_model = Load::model('mod_publication');
         $id = Req::Url_Clear($id);
         if ($this->mod_publication_model->exists_id($id) === False) {
-            $this->_error($this->lang['mod_publication']['errors']['record']);
+            $this->_fatal_error($this->lang['mod_publication']['errors']['record']);
             Run::import('management', '_index');
             $this->tema->tpl('mod_publication/edit');
             return;
@@ -396,7 +396,16 @@ class mod_publication_mod extends indexMain
 
         if ($db->query($sql)) {
             if (ob_get_level() > 0) ob_clean();
-            $msg = $this->lang['mod_publication']['ajax']['relation_updated'] ?? 'Relation updated';
+            
+            // Determine the specific message based on type and value (0 = removed, >0 = added)
+            $msg_key = 'relation_updated';
+            if ($type === 'files') {
+                $msg_key = (intval($value) === 0) ? 'file_removed' : 'file_added';
+            } else if ($type === 'gallery') {
+                $msg_key = (intval($value) === 0) ? 'gallery_removed' : 'gallery_added';
+            }
+            
+            $msg = $this->lang['mod_publication']['ajax'][$msg_key] ?? $this->lang['mod_publication']['ajax']['relation_updated'];
             echo json_encode(['status' => 'success', 'message' => $msg]);
         } else {
             if (ob_get_level() > 0) ob_clean();
@@ -518,13 +527,13 @@ class mod_publication_mod extends indexMain
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'success',
-                        'message' => $this->lang['mod_publication']['message']['oke']['add'],
+                        'message' => $this->lang['mod_publication']['message']['success']['add'],
                         'redirect' => $this->site['sadres'] . 'mod_publication/list'
                     ]);
                     exit;
                 }
                 
-                $this->_oke_message($this->lang['mod_publication']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_publication']['message']['success']['add']);
                 $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
             } else {
                 // If Image exists
@@ -541,7 +550,7 @@ class mod_publication_mod extends indexMain
                     exit;
                 }
                 
-                $this->_error_message($this->lang['mod_publication']['message']['oke']['add']);
+                $this->_error_message($this->lang['mod_publication']['message']['success']['add']);
             }
         }
     }
@@ -660,7 +669,7 @@ class mod_publication_mod extends indexMain
                     $mod_menu_model->update();
                 }
 
-                $this->_oke_message($this->lang['mod_publication']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_publication']['message']['success']['edit']);
                 $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
             } else {
                 // If Image exists
@@ -687,7 +696,7 @@ class mod_publication_mod extends indexMain
                 if ($isAjax) {
                     echo 'Oke';
                 } else {
-                    $this->_oke_message($this->lang['mod_publication']['context_menu']['delete_success']);
+                    $this->_success_message($this->lang['mod_publication']['context_menu']['delete_success']);
                     $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
                 }
             } else {
@@ -1079,7 +1088,7 @@ class mod_publication_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<div style="cursor:pointer;" onclick="mod_publication_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_publication']['resim_yukle_degistir'] . '">' .
+                    '<div style="cursor:pointer;" onclick="mod_publication_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_publication']['upload_change_image'] . '">' .
                     ($content['image'] ? '<img src="' . $this->site['radres'] . 'mod_publication/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_publication']['resim_add'] . '</span></button>') .
                     '</div>',
                     $content['lang'],
@@ -1229,24 +1238,24 @@ class mod_publication_mod extends indexMain
     }
 
     // Success Message
-    private function _oke_message($mesaj)
+    private function _success_message($mesaj)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->tema->veri('success', True);
+        $this->tema->veri('message', $mesaj);
     }
 
     // Error Message
     private function _error_message($mesaj)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->tema->veri('error', True);
+        $this->tema->veri('errors', [$mesaj]);
     }
 
-    // Error Message
-    private function _error($mesaj)
+    // Fatal Error Message
+    private function _fatal_error($mesaj)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->tema->veri('fatal_error', TRUE);
+        $this->tema->veri('message', $mesaj);
     }
 
     // Check if request is AJAX (for wizard and other AJAX calls)
