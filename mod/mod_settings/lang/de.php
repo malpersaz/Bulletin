@@ -105,6 +105,7 @@ $lang['mod_settings'] = [
     'choose_file' => 'Datei auswählen',
     'no_file_selected' => 'Keine Datei ausgewählt',
     'save_error' => 'Beim Speichern der Einstellungen ist ein Fehler aufgetreten',
+    'loading_message' => 'Wird geladen...',
     'missing_language' => 'Sprachinformationen fehlen.',
     'invalid_params' => 'Fehlende oder ungültige Parameter.',
     'settings_not_found' => 'Für die angegebene Sprache wurden keine Einstellungen gefunden.',

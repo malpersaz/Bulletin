@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'Paş ve',
         'show_password' => 'Şîfreyê Nîşan Bide',
         'hide_password' => 'Şîfreyê Veşêre',
+        'user_not_found' => 'Bikarhêner nehat dîtin',
+        'username_required' => 'Navê bikarhêner pêwîst o',
     ],
     'cache' => [
         'title' => 'Rêveberiya Cache',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'Naverok',
-            2 => 'Hemûyan Bibîne',
-            3 => 'Hêna nûçe weşiyaye amade niyo.',
         ],
     ],
     'mod_publication' => [

@@ -59,7 +59,7 @@
     <header class="wizard-header">
         <button type="button" class="icon-btn" onclick="closePageWizard()"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
-            <span id="pageWizardStepTitle">Language</span>
+            <span id="pageWizardStepTitle">{{ lang.mod_page.wizard.steps.language }}</span>
             <span id="pageWizardStepCounter">1/8</span>
         </div>
         <button type="button" class="m3-btn-text" onclick="submitPageWizard()">{{ lang.mod_page.button.add }}</button>
@@ -75,7 +75,7 @@
 
         <div class="wizard-step active" id="pageWizardStep1">
             <h2 class="step-headline">{{ lang.mod_page.admin.columns.language }}</h2>
-            <p class="step-subhead">Choose the language before building the page tree and related options.</p>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.language }}</p>
             <input type="hidden" name="lang" id="pageWizardHiddenLang" value="{{ (selected_lang is defined ? selected_lang : site.lang)|lower }}">
             <div class="selection-grid">
                 {% for item in lang_lang %}
@@ -89,8 +89,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep2">
-            <h2 class="step-headline">Structure</h2>
-            <p class="step-subhead">Choose where this page belongs and whether it should connect to category and menu trees.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.structure }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.structure }}</p>
 
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="parent_id" id="pageWizardParentId">
@@ -130,8 +130,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep3">
-            <h2 class="step-headline">Title</h2>
-            <p class="step-subhead">Define the page name that will drive the primary page identity.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.title }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.title }}</p>
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="pageWizardNameInput" value="{{ name is defined ? name : '' }}" placeholder=" " autocomplete="off" maxlength="255">
@@ -141,8 +141,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep4">
-            <h2 class="step-headline">Summary</h2>
-            <p class="step-subhead">Write the short intro/deck text shown ahead of the page body.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.summary }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.summary }}</p>
 
             <div class="input-wrapper-lg">
                 <textarea class="m3-input-lg" name="summary" id="pageWizardSummaryInput" rows="5" placeholder=" " maxlength="280">{{ summary is defined ? summary : '' }}</textarea>
@@ -152,8 +152,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep5">
-            <h2 class="step-headline">Content</h2>
-            <p class="step-subhead">Compose the actual page body.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.content }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.content }}</p>
 
             <div class="mod-page-wizard-editor-wrap">
                 <textarea name="content" id="pageWizardContentTextarea">{{ content is defined ? content : '' }}</textarea>
@@ -161,8 +161,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep6">
-            <h2 class="step-headline">Display</h2>
-            <p class="step-subhead">Define structural display behavior for the page.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.display }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.display }}</p>
 
             <input type="hidden" name="root" value="{{ root is defined ? root : 'n' }}" id="pageWizardRootSelect">
             <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.root }}</label>
@@ -196,8 +196,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep7">
-            <h2 class="step-headline">Relations</h2>
-            <p class="step-subhead">Connect optional related records and media references.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.relations }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.relations }}</p>
 
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="gallery_id" id="pageWizardGalleryId">
@@ -238,8 +238,8 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep8">
-            <h2 class="step-headline">SEO & Finish</h2>
-            <p class="step-subhead">Review SEO values, choose publish status, and finish the page setup.</p>
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.seo_finish }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.seo_finish }}</p>
 
             <input type="hidden" name="status" value="{{ status is defined ? status : 'y' }}" id="pageWizardStatusHidden">
 
@@ -264,7 +264,7 @@
             </div>
 
             <div class="wizard-summary">
-                <h3>Page Summary</h3>
+                <h3>{{ lang.mod_page.wizard.page_summary }}</h3>
                 <div class="summary-item">
                     <i class="bi bi-translate"></i> <span id="pageWizardSummaryLang">{{ (selected_lang is defined ? selected_lang : site.lang)|upper }}</span>
                 </div>
@@ -295,8 +295,8 @@
     </div>
 
     <div class="wizard-footer">
-        <button type="button" class="m3-btn-outlined" id="btnPageWizardPrev" onclick="prevPageWizardStep(); return false;" disabled>Previous</button>
-        <button type="button" class="m3-btn-filled" id="btnPageWizardNext" onclick="nextPageWizardStep(); return false;">Next</button>
+        <button type="button" class="m3-btn-outlined" id="btnPageWizardPrev" onclick="prevPageWizardStep(); return false;" disabled>{{ lang.mod_page.wizard.previous }}</button>
+        <button type="button" class="m3-btn-filled" id="btnPageWizardNext" onclick="nextPageWizardStep(); return false;">{{ lang.mod_page.wizard.next }}</button>
         <button type="button" class="m3-btn-filled success" id="btnPageWizardFinish" onclick="submitPageWizard(); return false;" style="display:none;">{{ lang.mod_page.button.add }}</button>
     </div>
 </div>

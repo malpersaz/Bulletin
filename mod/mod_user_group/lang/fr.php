@@ -27,6 +27,7 @@ $lang['mod_user_group']['admin']=[
 	'8'=>'Ajouter',
 	'9'=>'Modifier',
 	'10'=>'Liste des Groupes d\'Utilisateurs',
+	'list'=>'Liste des Groupes d\'Utilisateurs',
 	'12'=>'Groupe d\'Utilisateurs Ajouté!',
 	'13'=>'Groupe d\'Utilisateurs Mis à Jour',
 	'22'=>'Sous-groupe d\'Utilisateurs'

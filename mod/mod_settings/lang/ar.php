@@ -122,6 +122,7 @@ $lang['mod_settings'] = [
     'choose_file' => 'اختر ملف',
     'no_file_selected' => 'لم يتم اختيار ملف',
     'save_error' => 'An error occurred while saving settings',
+    'loading_message' => 'جاري التحميل...',
     'invalid_params' => 'Missing or invalid parameters.',
     'settings_not_found' => 'Settings not found for the specified language.',
     'update_error' => 'Database record could not be updated.',

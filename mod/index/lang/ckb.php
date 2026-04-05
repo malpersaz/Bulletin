@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'گەڕانەوە',
         'show_password' => 'پیشاندانی وشەی نهێنی',
         'hide_password' => 'شاردنەوەی وشەی نهێنی',
+        'user_not_found' => 'بەکارهێنەر نەدۆزرایەوە',
+        'username_required' => 'ناوی بەکارهێنەر پێویستە',
     ],
     'cache' => [
         'title' => 'بەڕێوەبردنی کاش',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'ناوەڕۆکی ئێمە',
-            2 => 'هەموو ناوەڕۆک',
-            3 => 'هێشتا هیچ هەواڵێکی بڵاوکراوە بەردەست نییە.',
         ],
     ],
     'mod_publication' => [

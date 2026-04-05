@@ -3,7 +3,7 @@
     <button class="icon-btn" onclick="toggleDrawer()"><i class="bi bi-list" style="font-size:24px;"></i></button>
     <div class="headline">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
     <div class="user-menu-wrapper" style="position: relative; display: inline-flex; justify-content: center; align-items: center; padding-right: 4px;">
-        <div class="avatar-small" style="cursor:pointer;" onclick="openUserMenuSheet()" title="User Menu">
+        <div class="avatar-small" style="cursor:pointer;" onclick="openUserMenuSheet()" title="{{ lang.management.user_menu_title }}">
             {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
                 <img src="{{ site.radres }}mod_user/{{ session.image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
             {% else %}
@@ -26,7 +26,7 @@
         </div>
         <div class="user-menu-header-info">
             <span class="user-menu-header-name">{{ session.full_name }}</span>
-            <span class="user-menu-header-group">{% if session.group_name is defined %}{{ session.group_name }}{% else %}Administrator{% endif %}</span>
+            <span class="user-menu-header-group">{% if session.group_name is defined %}{{ session.group_name }}{% else %}{{ lang.management.administrator_group }}{% endif %}</span>
         </div>
     </div>
     
@@ -130,7 +130,7 @@
         {% if session.permissions.mod_user.setting is defined %}
         <a href="{{ site.sadres }}mod_user/settings" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-person-gear"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.settings }}</span>
+            <span class="context-action-label">{{ lang.mod_user.admin.membership_settings }}</span>
         </a>
         {% endif %}
         

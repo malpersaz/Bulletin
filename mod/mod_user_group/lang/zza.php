@@ -27,6 +27,7 @@ $lang['mod_user_group']['admin']=[
 	'8'=>'Lê Zêde Bike',
 	'9'=>'Biguherîne',
 	'10'=>'Lîsteya Komela Bikarhêner',
+	'list'=>'Lîsteya Komela Bikarhêner',
 	'12'=>'Komela Bikarhêner Hate Zêdekirin!',
 	'13'=>'Komela Bikarhêner Hate Guherandin',
 	'22'=>'Binxetê Komela Bikarhêner'

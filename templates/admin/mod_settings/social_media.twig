@@ -1,8 +1,8 @@
 {% set show_fab = false %}
 {% set show_navbar = false %}
 {% extends 'admin/layout.twig' %}
-{% block title %}{{ lang.mod_settings.sections.social_title|default('Social Media') }}{% endblock %}
-{% block headline %}{{ lang.mod_settings.sections.social_title|default('Social Media') }}{% endblock %}
+{% block title %}{{ lang.mod_settings.sections.social_title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.sections.social_title }}{% endblock %}
 
 {% block styles %}
 <link rel="stylesheet" href="/templates/admin/assets/css/mod_settings.css?v=1.8">
@@ -60,7 +60,7 @@ input:checked + .m3-modern-slider:before {
                 <!-- Social Media items will be loaded here via AJAX -->
                 <div class="text-center p-5" style="background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
                     <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; opacity: 0.5;">
-                        <span class="visually-hidden">Loading...</span>
+                        <span class="visually-hidden">{{ lang.mod_settings.loading_message }}</span>
                     </div>
                 </div>
             </div>

@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'Tillbaka',
         'show_password' => 'Visa lösenord',
         'hide_password' => 'Dölj lösenord',
+        'user_not_found' => 'Användaren hittades inte',
+        'username_required' => 'Användarnamn krävs',
     ],
     'cache' => [
         'title' => 'Cachehantering',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'Vårt innehåll',
-            2 => 'Allt innehåll',
-            3 => 'Det finns inga publicerade nyheter an.',
         ],
     ],
     'mod_publication' => [

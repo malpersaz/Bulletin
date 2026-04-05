@@ -3,9 +3,15 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.34`.
+- The current Git-detected active version code is `v1.0.53.35`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.53.35
+- Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
+- **Admin Localization Synchronization**: Synchronized `mod_user`, `mod_index`, `mod_management`, `mod_acl`, `mod_user_group`, `mod_settings`, and `mod_page` language coverage for the touched admin/user-menu flows, removing confirmed extra keys and filling missing keys from the English reference layer.
+- **Panel Menu Language Bootstrap Fix**: Updated the management bootstrap so the admin user panel request also loads `mod_user_pm`, `mod_user_group`, and `mod_acl` language blocks, fixing blank labels in the personal menu and administration submenu.
+- **Admin Template Hard-String Cleanup**: Replaced visible hard-coded labels in admin header, dashboard, wizard, under-construction, ACL, settings, news, publication, page, and video-embed templates with language keys, and removed newly introduced fallback-based UI output from the touched flows.
 
 ## v1.0.53.34
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.

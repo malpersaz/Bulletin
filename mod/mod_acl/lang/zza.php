@@ -38,6 +38,8 @@ $lang['mod_acl'] = array (
   array (
     'add' => 'Zêde Bike',
     'edit' => 'Serast Bike',
+    'search' => 'Lêgerîn',
+    'reset' => 'Sifir Bike',
     'yenile' => 'Nû Bike',
     'delete' => 'Jêbibe',
     'gallery' => 'Wênedank',
@@ -87,6 +89,7 @@ $lang['mod_acl'] = array (
   ),
   'admin' => 
   array (
+    'list' => 'Lîsteya ACL',
     'columns' => 
     array (
       'id' => 'ID',

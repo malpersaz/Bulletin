@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'Zurück',
         'show_password' => 'Passwort anzeigen',
         'hide_password' => 'Passwort verbergen',
+        'user_not_found' => 'Benutzer nicht gefunden',
+        'username_required' => 'Benutzername ist erforderlich',
     ],
     'cache' => [
         'title' => 'Cache-Verwaltung',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'Unsere Inhalte',
-            2 => 'Alle Inhalte',
-            3 => 'Es sind noch keine veroeffentlichten Nachrichten verfuegbar.',
         ],
     ],
     'mod_publication' => [

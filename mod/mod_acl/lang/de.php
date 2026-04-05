@@ -32,6 +32,8 @@ $lang['mod_acl'] = [
     'button' => [
         'add' => 'Hinzufügen',
         'edit' => 'Bearbeiten',
+        'search' => 'Suchen',
+        'reset' => 'Zurücksetzen',
         'yenile' => 'Aktualisieren',
         'delete' => 'Löschen',
         'gallery' => 'Bildergalerie',
@@ -76,6 +78,7 @@ $lang['mod_acl'] = [
         'delete' => 'Sie haben keine Berechtigung, ACL zu löschen',
     ],
     'admin' => [
+        'list' => 'ACL-Liste',
         'columns' => [
             'id' => 'ID',
             'ad' => 'ACL-Name',

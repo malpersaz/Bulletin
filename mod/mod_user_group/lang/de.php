@@ -27,6 +27,7 @@ $lang['mod_user_group']['admin']=[
 	'8'=>'Hinzufügen',
 	'9'=>'Bearbeiten',
 	'10'=>'Benutzergruppen-Liste',
+	'list'=>'Benutzergruppen-Liste',
 	'12'=>'Benutzergruppe Hinzugefügt!',
 	'13'=>'Benutzergruppe Aktualisiert',
 	'22'=>'Untergeordnete Benutzergruppe'

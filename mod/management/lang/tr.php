@@ -2,14 +2,14 @@
 $lang['management']=[
     '1'=>'Kullanıcı Paneli',
 
-    // Ana Navigasyon Menüsü
+    // Main navigation menu
     'anasayfa' => 'Ana Sayfa',
     'dashboard' => 'Panel',
     'uyelik' => 'Üyelik',
     'content_and_page' => 'İçerik ve Sayfalar',
     'video_and_images' => 'Video ve Resimler',
     
-    // Kullanıcı Arayüz Elemanları
+    // User interface elements
     'profilini_duzenle' => 'Profilini Düzenle',
     'sifre_degistir' => 'Şifre Değiştir',
     'gelen_kutusu' => 'Gelen Kutusu',
@@ -19,7 +19,7 @@ $lang['management']=[
     'belirli_bir_gruba' => 'Belirli Bir Gruba',
     'butun_uyelere' => 'Bütün Üyelere',
 
-    // Üyelik Alt Menüsü
+    // Membership submenu
     'uyeler' => 'Üyeler',
     'uye_gruplari' => 'Üye Grupları',
     'membership_setting' => 'Üyelik Ayarları',
@@ -29,7 +29,7 @@ $lang['management']=[
     'dosya_modulleri' => 'Dosya Modülleri',
     'locale_management' => 'Yerelleştirme Yönetimi',
 
-    // İçerik ve Sayfalar Alt Menüsü
+    // Content and pages submenu
     'content_categories' => 'İçerik Kategorileri',
     'news_categories' => 'Haber Kategorileri',
     'publication_categories' => 'Yayın Kategorileri',
@@ -45,9 +45,10 @@ $lang['management']=[
     'menu_management' => 'Menü Yönetimi',
     'page_management' => 'Sayfa Yönetimi',
     'file_management' => 'Dosya Yönetimi',
+    'service_guide' => 'Hizmet Rehberi',
     'survey_management' => 'Anket Yönetimi',
 
-    // Video ve Resimler Alt Menüsü
+    // Video and images submenu
     'videos' => 'Videolar',
     'remote_videos' => 'Uzak Videolar',
     'uzak_video_kategorisi' => 'Uzak Video Kategorisi',
@@ -56,12 +57,12 @@ $lang['management']=[
     'resim_gallery' => 'Resim Galerisi',
     'image_gallery' => 'Resim Galerisi',
 
-    // Announcement Yönetimi Alt Menüsü
+    // Announcement management submenu
     'announcement_management' => 'Announcement Yönetimi',
     'popup_announcement_management' => 'Popup Announcement Yönetimi',
     'popup_announcements' => 'Popup Duyurular',
 
-    // Ek UI Elemanları
+    // Additional UI elements
     'arama' => 'Arama',
     'filtrele' => 'Filtrele',
     'sirala' => 'Sırala',
@@ -169,6 +170,8 @@ $lang['management']=[
 
     'edit_profile_menu' => 'Profili Düzenle',
     'change_password_menu' => 'Şifre Değiştir',
+    'user_menu_title' => 'Kullanıcı Menüsü',
+    'administrator_group' => 'Yönetici',
     'pm_management_menu' => 'Mesaj Yönetimi',
     'administration_menu' => 'Yönetim',
     'logout_menu' => 'Çıkış Yap',
@@ -181,6 +184,11 @@ $lang['management']=[
 
     'quick_menu' => 'Hızlı Menü',
     'add_content' => 'İçerik Ekle',
+    'under_construction_page_title' => 'Sayfa Hazırlanıyor',
+    'under_construction_module_title' => 'Modül Hazırlanıyor',
+    'under_construction_heading' => 'Bu modül henüz aktif değil',
+    'under_construction_description' => 'Modern tema dönüşümü devam ediyor. Bu sayfaya şu anda yalnızca eski panelden erişilebilir.',
+    'back_to_home' => 'Ana Sayfaya Dön',
     'logo_upload_error' => 'Logo yüklenirken hata oluştu: ',
     'favicon_upload_error' => 'Favicon yüklenirken hata oluştu: ',
     'invalid_image_extension' => 'Geçersiz resim uzantısı: ',

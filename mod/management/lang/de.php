@@ -41,6 +41,7 @@ $lang['management'] = [
     'menu_management' => 'Menüverwaltung',
     'page_management' => 'Seitenverwaltung',
     'file_management' => 'Dateiverwaltung',
+    'service_guide' => 'Serviceleitfaden',
     'survey_management' => 'Umfrageverwaltung',
 
     'videos' => 'Videos',
@@ -160,6 +161,8 @@ $lang['management'] = [
 
     'edit_profile_menu' => 'Profil bearbeiten',
     'change_password_menu' => 'Passwort ändern',
+    'user_menu_title' => 'Benutzermenü',
+    'administrator_group' => 'Administrator',
     'pm_management_menu' => 'Nachrichtenverwaltung',
     'administration_menu' => 'Verwaltung',
     'logout_menu' => 'Abmelden',
@@ -172,6 +175,11 @@ $lang['management'] = [
 
     'quick_menu' => 'Schnellmenü',
     'add_content' => 'Inhalt hinzufügen',
+    'under_construction_page_title' => 'Seite im Aufbau',
+    'under_construction_module_title' => 'Modul im Aufbau',
+    'under_construction_heading' => 'Dieses Modul ist noch nicht aktiv',
+    'under_construction_description' => 'Die Umstellung auf das moderne Theme läuft noch. Diese Seite ist derzeit nur über das alte Panel erreichbar.',
+    'back_to_home' => 'Zur Startseite',
     'logo_upload_error' => 'Fehler beim Hochladen des Logos: ',
     'favicon_upload_error' => 'Fehler beim Hochladen des Favicons: ',
     'invalid_image_extension' => 'Ungültige Bilddateiendung: ',

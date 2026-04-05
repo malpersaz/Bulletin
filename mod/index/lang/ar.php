@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'رجوع',
         'show_password' => 'إظهار كلمة المرور',
         'hide_password' => 'إخفاء كلمة المرور',
+        'user_not_found' => 'المستخدم غير موجود',
+        'username_required' => 'اسم المستخدم مطلوب',
     ],
     'cache' => [
         'title' => 'إدارة الذاكرة المؤقتة',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'محتوانا',
-            2 => 'كل المحتوى',
-            3 => 'لا توجد اخبار منشورة متاحة حالياً.',
         ],
     ],
     'mod_publication' => [

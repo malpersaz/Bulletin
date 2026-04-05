@@ -26,13 +26,16 @@ class management_mod extends indexBase
 
 
     /***************
-    ADMİN PANEL
+    ADMIN PANEL
      ***************/
     public function _index()
     {
         $this->_site();
         //$this->_lang();
         $this->tema->lang(Load::lang('mod_user'));
+        $this->tema->lang(Load::lang('mod_user_pm'));
+        $this->tema->lang(Load::lang('mod_user_group'));
+        $this->tema->lang(Load::lang('mod_acl'));
 
         $sharedModules = [
             'mod_content' => $this->moduleExists('mod_content'),

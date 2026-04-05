@@ -28,6 +28,7 @@ $lang['mod_user_group']['admin']=[
 	'8'=>'Ekle',
 	'9'=>'Düzenle',
 	'10'=>'Üye Grup Listesi',
+	'list'=>'Üye Grup Listesi',
 	'12'=>'Üye Grup Eklendi!',
 	'13'=>'Üye Grup Düzenlendi',
 	'22'=>'Alt Üye Grup'

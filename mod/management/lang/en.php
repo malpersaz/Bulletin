@@ -45,6 +45,7 @@ $lang['management']=[
     'menu_management' => 'Menu Management',
     'page_management' => 'Page Management',
     'file_management' => 'File Management',
+    'service_guide' => 'Service Guide',
     'survey_management' => 'Survey Management',
 
     // Video and Images Submenu
@@ -176,6 +177,8 @@ $lang['management']=[
     // User Profile Menu
     'edit_profile_menu' => 'Edit Profile',
     'change_password_menu' => 'Change Password',
+    'user_menu_title' => 'User Menu',
+    'administrator_group' => 'Administrator',
     'pm_management_menu' => 'Message Management',
     'administration_menu' => 'Administration',
     'logout_menu' => 'Logout',
@@ -189,6 +192,11 @@ $lang['management']=[
     // Quick Menu
     'quick_menu' => 'Quick Menu',
     'add_content' => 'Add Content',
+    'under_construction_page_title' => 'Page Under Construction',
+    'under_construction_module_title' => 'Module Under Construction',
+    'under_construction_heading' => 'This module is not active yet',
+    'under_construction_description' => 'The modern theme conversion is still in progress. This page is currently only accessible from the legacy panel.',
+    'back_to_home' => 'Back to Home',
     'logo_upload_error' => 'Error uploading logo: ',
     'favicon_upload_error' => 'Error uploading favicon: ',
     'invalid_image_extension' => 'Invalid image extension: ',

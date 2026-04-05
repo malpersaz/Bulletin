@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'Geri',
         'show_password' => 'Şifreyi Göster',
         'hide_password' => 'Şifreyi Gizle',
+        'user_not_found' => 'Kullanıcı bulunamadı',
+        'username_required' => 'Kullanıcı adı gerekli',
     ],
     'cache' => [
         'title' => 'Önbellek Yönetimi',
@@ -291,11 +293,6 @@ $lang['index'] = [
             1 => 'News',
             2 => 'View All',
             3 => 'No published news is available yet.',
-        ],
-        'latest_content' => [
-            1 => 'İçeriklerimiz',
-            2 => 'Tüm İçerikler',
-            3 => 'Halen yayinlanmis bir haber bulunamadi.',
         ],
     ],
     'mod_publication' => [

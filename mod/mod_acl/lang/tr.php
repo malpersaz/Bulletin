@@ -38,6 +38,8 @@ $lang['mod_acl'] = [
         [
             'add' => 'Ekle',
             'edit' => 'Düzenle',
+            'search' => 'Ara',
+            'reset' => 'Sıfırla',
             'yenile' => 'Yenile',
             'delete' => 'Sil',
             'gallery' => 'Resim Galerisi',
@@ -87,6 +89,7 @@ $lang['mod_acl'] = [
         ],
     'admin' =>
         [
+            'list' => 'ACL Listesi',
             'columns' =>
                 [
                     'id' => 'ID',

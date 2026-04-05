@@ -128,6 +128,7 @@ $lang['mod_settings'] = [
     'choose_file' => 'Dosya Seç',
     'no_file_selected' => 'Dosya Seçilmedi',
     'save_error' => 'Ayarlar kaydedilirken bir hata oluştu',
+    'loading_message' => 'Yükleniyor...',
     'missing_language' => 'Dil bilgisi eksik.',
     'invalid_params' => 'Eksik veya geçersiz parametreler.',
     'settings_not_found' => 'Belirtilen dil için ayar bulunamadı.',

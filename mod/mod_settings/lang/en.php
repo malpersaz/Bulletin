@@ -129,6 +129,7 @@ $lang['mod_settings'] = [
     'choose_file' => 'Choose File',
     'no_file_selected' => 'No file selected',
     'save_error' => 'An error occurred while saving settings',
+    'loading_message' => 'Loading...',
     'missing_language' => 'Language information is missing.',
     'invalid_params' => 'Missing or invalid parameters.',
     'settings_not_found' => 'Settings not found for the specified language.',

@@ -2,14 +2,14 @@
 $lang['management']=[
     '1'=>'Panela Bikarhêner',
 
-    // Serekeşa Navîgasyonê
+    // Main navigation menu
     'anasayfa' => 'Malper',
     'dashboard' => 'Panel',
     'uyelik' => 'Endamtî',
     'content_and_page' => 'Naverok û Rûpel',
     'video_and_images' => 'Vîdeo û Wêne',
     
-    // Hêmanên Arayûza Bikarhêner
+    // User interface elements
     'profilini_duzenle' => 'Profîla xwe Biguherîne',
     'sifre_degistir' => 'Şîfreyey Biguherîne',
     'gelen_kutusu' => 'Kutiyaya Hatî',
@@ -19,7 +19,7 @@ $lang['management']=[
     'belirli_bir_gruba' => 'Ji Bo Komêke Taybet',
     'butun_uyelere' => 'Ji Bo Hemû Endaman',
 
-    // Binêmenûya Endamiyê
+    // Membership submenu
     'uyeler' => 'Endam',
     'uye_gruplari' => 'Komên Endaman',
     'membership_setting' => 'Mîhengên Endamiyê',
@@ -28,7 +28,7 @@ $lang['management']=[
     'gallery_modulleri' => 'Modûlên Galeriyê',
     'dosya_modulleri' => 'Modûlên Pelan',
 
-    // Binê pêşeka Naverok û Rûpelan
+    // Content and pages submenu
     'content_categories' => 'Kategoriyên Naverokan',
     'news_categories' => 'Kategoriyên Nûçeyan',
     'publication_categories' => 'Kategoriyê Weşan',
@@ -44,9 +44,10 @@ $lang['management']=[
     'menu_management' => 'Rêveberiya Menûyê',
     'page_management' => 'Rêveberiya Rûpelan',
     'file_management' => 'Rêveberiya Pelan',
+    'service_guide' => 'Rêbera Xizmetan',
     'survey_management' => 'Rêveberiya Rêjimînan',
 
-    // Binêmenûya Vîdeo û Wêneyan
+    // Video and images submenu
     'videos' => 'Vîdeoyan',
     'remote_videos' => 'Vîdeoyên Dûr',
     'uzak_video_kategorisi' => 'Kategoriya Vîdeoyên Dûr',
@@ -55,12 +56,12 @@ $lang['management']=[
     'resim_gallery' => 'Galeriya Wêneyan',
     'image_gallery' => 'Galeriya Wêneyan',
 
-    // Binêmenûya Rêveberiya Daxuyaniyan
+    // Announcement management submenu
     'announcement_management' => 'Rêveberiya Daxuyaniyan',
     'popup_announcement_management' => 'Rêveberiya Daxuyaniyên Popup',
     'popup_announcements' => 'Daxuyaniyên Popup',
 
-    // Hêmanên Zêde yên UI
+    // Additional UI elements
     'arama' => 'Lêgerîn',
     'filtrele' => 'Parzûn bike',
     'sirala' => 'Rêz bike',
@@ -172,16 +173,18 @@ $lang['management']=[
     'sunucu_bilgileri' => 'Agahiyên Pêşkêşker',
     'veritabani_bilgileri' => 'Agahiyên Bingeha Daneyan',
 
-    // Rêveberiya Dirban
+    // Theme management
     'theme_1' => 'Dirb 1',
     'theme_2' => 'Dirb 2',
     'theme_3' => 'Dirb 3',
     'theme_4' => 'Dirb 4',
     'theme_management' => 'Rêveberiya Dirban',
 
-    // Menûya Profîla Bikarhêner
+    // User profile menu
     'edit_profile_menu' => 'Profîlê Biguherîne',
     'change_password_menu' => 'Şîfreyey Biguherîne',
+    'user_menu_title' => 'Menûya Bikarhêner',
+    'administrator_group' => 'Adminıstrator',
     'pm_management_menu' => 'Rêveberiya Peyaman',
     'administration_menu' => 'Adminıstrasyon',
     'logout_menu' => 'Vejîye',
@@ -192,9 +195,14 @@ $lang['management']=[
     'to_specific_group_menu' => 'Ji Bo Komêke Taybet',
     'to_all_members_menu' => 'Ji Bo Hemû Endaman',
 
-    // Menûya Lez
+    // Quick menu
     'quick_menu' => 'Menûya Lez',
     'add_content' => 'Naverokê lê zêde bike',
+    'under_construction_page_title' => 'Rûpel Tê Hazirkerdene',
+    'under_construction_module_title' => 'Modul Tê Hazirkerdene',
+    'under_construction_heading' => 'No modul hêştî nê aktîv o',
+    'under_construction_description' => 'Vırnayışê tema modernî hîn dewam keno. No rûpel niha tena çı panela kevn de ra gıhêştış beno.',
+    'back_to_home' => 'Peyserê Serûpelî',
     'yes' => 'Erê',
     'no' => 'Nê'
 ];

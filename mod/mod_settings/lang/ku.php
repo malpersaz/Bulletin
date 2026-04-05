@@ -121,6 +121,7 @@ $lang['mod_settings'] = [
     'choose_file' => 'Pelgeyê Hilbijêre',
     'no_file_selected' => 'Pelge nehatiye hilbijartin',
     'save_error' => 'Di dema tomarkirina mîhengan de çewtiyek çêbû',
+    'loading_message' => 'Tê barkirin...',
     'missing_language' => 'Agahiya zimanê kêm e.',
     'invalid_params' => 'Parametreyên kêm an nederbasdar.',
     'settings_not_found' => 'Ji bo zimanê diyarkirî mîheng nehatin dîtin.',

@@ -131,4 +131,32 @@ $lang['mod_page'] = [
       'deck_no' => 'Hayır',
     ],
   ],
+  'wizard' =>
+  [
+    'steps' =>
+    [
+      'language' => 'Dil',
+      'structure' => 'Yapı',
+      'title' => 'Başlık',
+      'summary' => 'Özet',
+      'content' => 'İçerik',
+      'display' => 'Görünüm',
+      'relations' => 'İlişkiler',
+      'seo_finish' => 'SEO ve Bitiş',
+    ],
+    'descriptions' =>
+    [
+      'language' => 'Sayfa ağacını ve ilgili seçenekleri oluşturmadan önce dili seçin.',
+      'structure' => 'Bu sayfanın nereye ait olduğunu ve kategori ile menü ağaçlarına bağlanıp bağlanmayacağını seçin.',
+      'title' => 'Sayfanın ana kimliğini belirleyecek adı tanımlayın.',
+      'summary' => 'Sayfa gövdesinden önce gösterilecek kısa giriş metnini yazın.',
+      'content' => 'Sayfanın asıl içeriğini oluşturun.',
+      'display' => 'Sayfanın yapısal görünüm davranışını belirleyin.',
+      'relations' => 'İsteğe bağlı ilişkili kayıtları ve medya referanslarını bağlayın.',
+      'seo_finish' => 'SEO değerlerini gözden geçirin, yayın durumunu seçin ve sayfa kurulumunu tamamlayın.',
+    ],
+    'page_summary' => 'Sayfa Özeti',
+    'previous' => 'Önceki',
+    'next' => 'Sonraki',
+  ],
 ];

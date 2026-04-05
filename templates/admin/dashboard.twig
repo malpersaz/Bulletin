@@ -1,6 +1,6 @@
 {% extends 'admin/layout.twig' %}
 
-{% block title %}Ana Sayfa - Rojname Admin{% endblock %}
+{% block title %}{{ lang.management.dashboard }} - {{ site.title }}{% endblock %}
 
 {% block content %}
 <!-- PULL TO REFRESH SPINNER -->
@@ -19,7 +19,7 @@
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>Yükleniyor...</span>
+    <span>{{ lang.mod_user.loading_message }}</span>
 </div>
 
 <!-- PAGINATION (If needed in standard php pagination) -->
