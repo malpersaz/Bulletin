@@ -201,6 +201,8 @@ $lang['index'] = [
         'back' => 'Paş ve',
         'show_password' => 'Şîfreyê Nîşan Bide',
         'hide_password' => 'Şîfreyê Veşêre',
+        'user_not_found' => 'Bikarhêner nehat dîtin',
+        'username_required' => 'Navê bikarhêner pêwîst e',
     ],
     'cache' => [
         'title' => 'Rêveberiya Cache',

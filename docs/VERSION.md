@@ -2,9 +2,14 @@
 
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
-- The current active Git upload version code is `v1.0.49.8`.
-- Until a new version code is explicitly provided by the user, new completed development notes must be appended under `v1.0.49.8`.
-- Agents must not open a new version section without an explicit new version code from the user.
+- Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
+- The current Git-detected active version code is `v1.0.53.34`.
+- Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
+- If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.53.34
+- Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
+- **Agent Version Bucket Detection Fix**: Updated repository agent guidance so version logging no longer stays pinned to `v1.0.49.8`; agents must now inspect Git history, detect the latest upload version, and write notes under that newest section.
 
 ## v1.0.49.8
 - Active version bucket reserved for upcoming development notes until the next Git upload version code is assigned.
@@ -17,6 +22,10 @@
 - **Shared Image Uploader Consolidation**: Replaced the duplicated `mod_news` image uploader partial with the shared `admin/partials/image_uploader.twig` across content, news, publication, and wizard-based admin flows.
 - **Version Log Enforcement Hook**: Added a tracked Git `pre-commit` hook under `.githooks/` so commits that stage repository changes without also staging `docs/VERSION.md` are blocked locally.
 - **Agent Version Logging Policy Sync**: Synchronized the repository agent guidance (`AGENTS.md`, `.agents/*`, and quality strategy docs) so the active version bucket stays fixed at `v1.0.49.8` until the user explicitly assigns a new Git upload version code.
+- **AJAX Login Modal Redirection**: Implemented a seamless redirection from the `/en/login` page to the homepage with a `?login=modal` query parameter. Updated the `mod_user` controller to handle unauthorized access by triggering the login modal instead of a full-page redirect.
+- **Login Modal Auto-Trigger & UX**: Enhanced `login-modal.js` to automatically detect the `login=modal` parameter, trigger the Bootstrap modal, and clean the URL via `window.history.replaceState` for a professional, "hidden URL" experience.
+- **Login Modal Localization**: Fully localized the AJAX login modal flow by removing all hardcoded UI strings (EN/KU) from JavaScript. Added missing language keys (`user_not_found`, `username_required`) and updated the `top_menu.twig` bridge to ensure consistent multilingual support.
+- **PHP Error Correction**: Resolved a critical "Too few arguments" error in `Req::is_Post()` within `mod_user/index.php` by switching to a more direct and robust `$_SERVER['REQUEST_METHOD']` check.
 
 ## v1.0.49 (2026-03-22)
 - **Standalone Social Management**: Refactored the `mod_settings` module to abstract "Social Media" configuration away from general settings, hosting it inside its own dedicated, modernized standalone template (`social_media.twig`).

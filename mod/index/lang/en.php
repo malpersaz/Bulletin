@@ -234,6 +234,8 @@ $lang['index']['modal'] = [
     'back' => 'Back',
     'show_password' => 'Show Password',
     'hide_password' => 'Hide Password',
+    'user_not_found' => 'User not found',
+    'username_required' => 'Username is required',
 ];
 
 # cache management

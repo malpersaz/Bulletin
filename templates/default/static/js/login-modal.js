@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', function () {
     async function goToStep2() {
         const username = usernameInput.value.trim();
         if (!username) {
-            showAlert(modalBody, window.loginModalMessages?.pleaseFillAll || 'Bikirhêner pêwîst e', 'warning');
+            showAlert(modalBody, window.loginModalMessages?.usernameRequired, 'warning');
             return;
         }
 
-        setButtonLoading(btnNext, true, window.loginModalMessages?.signingIn || 'Tê kontrolkirin...');
+        setButtonLoading(btnNext, true, window.loginModalMessages?.signingIn);
 
         try {
             const formData = new FormData();
@@ -48,11 +48,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 passwordInput.focus();
                 removeAlerts(modalBody);
             } else {
-                showAlert(modalBody, data.message || 'Bikirhêner nehat dîtin', 'danger');
+                showAlert(modalBody, data.message || window.loginModalMessages?.userNotFound, 'danger');
             }
         } catch (error) {
-            console.error('Check user error:', error);
-            showAlert(modalBody, window.loginModalMessages?.connectionError || 'Çewtiya têkiliyê', 'danger');
+            showAlert(modalBody, window.loginModalMessages?.connectionError, 'danger');
         } finally {
             setButtonLoading(btnNext, false);
         }
@@ -106,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
             }
 
             this.setAttribute('title', type === 'password' ?
-                (window.loginModalMessages?.showPassword || 'Nîşan bide') :
-                (window.loginModalMessages?.hidePassword || 'Veşêre')
+                window.loginModalMessages?.showPassword :
+                window.loginModalMessages?.hidePassword
             );
         });
     }
@@ -138,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.json();
                 } else {
                     return response.text().then(text => {
-                        let errorMessage = window.loginModalMessages?.serverError || 'Server response error';
+                        let errorMessage = window.loginModalMessages?.serverError;
                         if (text && text.trim().startsWith('{')) {
                             try {
                                 const data = JSON.parse(text);
@@ -156,15 +155,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     handleLoginSuccess(data, loginModal, modalBody);
                 } else {
                     setButtonLoading(submitBtn, false);
-                    showAlert(modalBody, (data && data.message) || window.loginModalMessages?.loginFailed || 'Têketin serneket', 'danger');
+                    showAlert(modalBody, (data && data.message) || window.loginModalMessages?.loginFailed, 'danger');
                 }
             })
             .catch(error => {
-                console.error('Login error:', error);
                 setButtonLoading(submitBtn, false);
                 showAlert(
                     modalBody,
-                    window.loginModalMessages?.connectionError || 'Çewtiya têkiliyê',
+                    window.loginModalMessages?.connectionError,
                     'danger'
                 );
             });
@@ -178,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
             button.dataset.originalHtml = button.innerHTML;
             button.innerHTML = `
                 <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                ${loadingText || window.loginModalMessages?.signingIn || 'Têketin...'}
+                ${loadingText || window.loginModalMessages?.signingIn}
             `;
         } else {
             button.disabled = false;
@@ -192,8 +190,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <div class="mb-3">
                     <i class="bi bi-check-circle-fill text-success" style="font-size: 3rem;"></i>
                 </div>
-                <h4 class="text-success">${window.loginModalMessages?.loginSuccess || 'Serkeftî!'}</h4>
-                <p class="text-muted">${window.loginModalMessages?.redirecting || 'Tê berêvekirin...'}</p>
+                <h4 class="text-success">${window.loginModalMessages?.loginSuccess}</h4>
+                <p class="text-muted">${window.loginModalMessages?.redirecting}</p>
             </div>
         `;
 
@@ -227,27 +225,21 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkAutoOpen() {
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('login') === 'modal') {
-            console.log('Login modal trigger found in URL');
             if (typeof bootstrap !== 'undefined') {
                 try {
                     const modal = new bootstrap.Modal(loginModal);
                     modal.show();
 
-                    // Focus username input after modal finishes opening
                     loginModal.addEventListener('shown.bs.modal', () => {
                         usernameInput.focus();
                     }, { once: true });
 
-                    // Clean up URL without refreshing the page
                     const url = new URL(window.location);
                     url.searchParams.delete('login');
                     window.history.replaceState({}, document.title, url.pathname + url.search);
-                    console.log('Login modal opened and URL cleaned');
                 } catch (e) {
-                    console.error('Error opening login modal:', e);
                 }
             } else {
-                console.log('Bootstrap not ready, retrying...');
                 setTimeout(checkAutoOpen, 200);
             }
         }
