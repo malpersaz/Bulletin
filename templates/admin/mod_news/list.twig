@@ -319,7 +319,7 @@
             <i class="bi bi-stars"></i>
         </button>
 
-        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.admin.columns.video|default('Vîdeo') }}">
+        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.video }}">
             <i class="bi bi-camera-video"></i>
         </button>
         
@@ -327,11 +327,11 @@
             <i class="bi bi-plus-lg"></i>
         </div>
 
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.gallery }}">
             <i class="bi bi-image"></i>
         </button>
 
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.files }}">
             <i class="bi bi-paperclip"></i>
         </button>
 
@@ -392,5 +392,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.7"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.8"></script>
 {% endblock %}

@@ -299,6 +299,8 @@ class mod_news_mod extends indexMain
             }
         }
 
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
         if (count($results) > 0) {
             echo json_encode($results);
         } else {

@@ -983,7 +983,7 @@ window.openMediaRelationPicker = function(newsId, type) {
         title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Pelê Heyî Hilbijêre';
         addUrl = `${SITE_URL}mod_attachment/list/mod_news/${newsId}`;
     } else if (type === 'video') {
-        endpoint = `${MODULE_URL}all_video_get`;
+        endpoint = `${MODULE_URL}all_video`;
         // Use translation fallback
         title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.video : 'Vîdeoya Heyî Hilbijêre';
         addUrl = `${SITE_URL}mod_video_embed/add`; 
