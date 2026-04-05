@@ -997,7 +997,7 @@ class mod_video_embed_mod extends indexMain
         ]);
 
         $body = @file_get_contents($url, false, $context);
-        $headers = isset($http_response_header) ? $http_response_header : [];
+        $headers = http_get_last_response_headers() ?? [];
         $status = 0;
         if (!empty($headers[0]) && preg_match('/\s(\d{3})\s/', $headers[0], $matches)) {
             $status = (int) $matches[1];
