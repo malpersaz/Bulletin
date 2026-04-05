@@ -389,7 +389,22 @@ $lang['mod_news'] = [
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Nûçe hat jêbirin!',
+        'add_video' => 'Vîdeo Lêke',
+        'add_file' => 'Pelan Lêke',
     ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Bişîne Slaydirê',
+    'hero_slider_remove' => 'Ji Slaydirê Rake',
+    'hero_slider_added' => 'Nûçe ji Slaydirê re hat şandin.',
+    'hero_slider_removed' => 'Nûçe ji Slaydirê hat rakirin.',
+    'hero_slider_error' => 'Slayir nehat nûkirin!',
+    'hero_slider_badge' => 'Slayir',
+
+    // === Media Picker UI ===
+    'picker_gallery_title' => 'Galeriya Heyî Hilbijêre',
+    'picker_file_title' => 'Pelê Heyî Hilbijêre',
+    'picker_video_title' => 'Vîdeoya Heyî Hilbijêre',
 
     // === Latest News ===
     'latest_news' => [
@@ -413,5 +428,15 @@ $lang['mod_news'] = [
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],
+    ],
+
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Serkeftî',
+        'error' => 'Çewtî derket',
+        'database_error' => 'Çewtiya Database',
+        'record_not_found' => 'Nûçe nehat dîtin!',
+        'unknown_type' => 'Cureyê nenas',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûkirin',
     ],
 ];

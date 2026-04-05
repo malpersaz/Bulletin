@@ -976,16 +976,16 @@ window.openMediaRelationPicker = function(newsId, type) {
     
     if (type === 'gallery') {
         endpoint = `${MODULE_URL}ajax_get_galleries`;
-        title = 'Galeriya Heyî Hilbijêre';
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.gallery : 'Galeriya Heyî Hilbijêre';
         addUrl = `${SITE_URL}mod_gallery/list/mod_news/${newsId}`;
     } else if (type === 'files') {
         endpoint = `${MODULE_URL}ajax_get_files`;
-        title = 'Pelê Heyî Hilbijêre';
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Pelê Heyî Hilbijêre';
         addUrl = `${SITE_URL}mod_attachment/list/mod_news/${newsId}`;
     } else if (type === 'video') {
         endpoint = `${MODULE_URL}all_video_get`;
         // Use translation fallback
-        title = 'Vîdeoya Heyî Hilbijêre';
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.video : 'Vîdeoya Heyî Hilbijêre';
         addUrl = `${SITE_URL}mod_video_embed/add`; 
     }
 
@@ -1028,20 +1028,33 @@ window.openMediaRelationPicker = function(newsId, type) {
                 .then(res => {
                     if (res.status === 'success') {
                         showSnackbar(res.message, 'success');
-                        if (window.contentManager) window.contentManager.loadData(true);
-                        closeSelectPickerSheet();
+                        if (window.contentManager) {
+                            window.contentManager.loadData(true);
+                        }
+                        if (typeof closeSelectPickerSheet === 'function') {
+                            closeSelectPickerSheet();
+                        }
                     } else {
                         showSnackbar(res.message || 'Error', 'error');
                     }
                 })
-                .catch(err => showSnackbar('Error occurred', 'error'));
+                .catch(err => {
+                    console.error('Update Error:', err);
+                    showSnackbar('Error occurred', 'error');
+                });
             });
         }
         
         window.currentMediaPickerNewsId = newsId;
         window.currentMediaPickerType = type;
         
-        select.innerHTML = '<option value="0" style="display:none"></option>';
+        // Clear stale headers in the picker sheet before opening
+        const pickerTitleEl = document.getElementById('selectPickerTitle');
+        const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');
+        if (pickerTitleEl) pickerTitleEl.textContent = title;
+        if (pickerSubtitleEl) pickerSubtitleEl.textContent = ''; 
+
+        select.innerHTML = '';
         data.forEach(item => {
             const opt = document.createElement('option');
             opt.value = item.value || item.id;
@@ -1051,9 +1064,15 @@ window.openMediaRelationPicker = function(newsId, type) {
         
         // Pre-select the appropriate value based on currentMedia
         let currentValue = '0';
-        if (type === 'files' && currentMedia.file_id) currentValue = currentMedia.file_id.toString();
-        if (type === 'gallery' && currentMedia.gallery_id) currentValue = currentMedia.gallery_id.toString();
-        // Ignoring video value for now as it's serialized data, not an ID
+        if (type === 'files' && currentMedia.file_id) {
+            currentValue = currentMedia.file_id.toString();
+        } else if (type === 'gallery' && currentMedia.gallery_id) {
+            currentValue = currentMedia.gallery_id.toString();
+        } else if (type === 'video' && Array.isArray(currentMedia.video)) {
+            // For videos, we don't have a single "current" because it's a list (array)
+            // But we can still set select.value to '0' to allow adding new ones easily
+            currentValue = '0'; 
+        }
         
         select.value = currentValue;
         select.dataset.pickerTitle = title;

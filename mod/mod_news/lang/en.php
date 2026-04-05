@@ -383,7 +383,22 @@ $lang['mod_news'] = [
         'status_alert' => "STATUS UPDATED:\n%s",
         'delete_confirm' => 'Yes, Delete!',
         'delete_success' => 'News deleted!',
+        'add_video' => 'Add Video',
+        'add_file' => 'Add File',
     ],
+
+    // === Hero Slider ===
+    'hero_slider_add' => 'Send to Slider',
+    'hero_slider_remove' => 'Remove from Slider',
+    'hero_slider_added' => 'Sent to slider.',
+    'hero_slider_removed' => 'Removed from slider.',
+    'hero_slider_error' => 'Slider update failed.',
+    'hero_slider_badge' => 'Slider',
+
+    // === Media Picker UI ===
+    'picker_gallery_title' => 'Select Existing Gallery',
+    'picker_file_title' => 'Select Existing File',
+    'picker_video_title' => 'Select Existing Video',
 
     // === Latest News ===
     'latest_news' => [
@@ -407,5 +422,15 @@ $lang['mod_news'] = [
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
         'authors' => [],
+    ],
+
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Success',
+        'error' => 'Error Occurred',
+        'database_error' => 'Database Error',
+        'record_not_found' => 'News item not found!',
+        'unknown_type' => 'Unknown relation type',
+        'relation_updated' => 'Relation successfully updated',
     ],
 ];

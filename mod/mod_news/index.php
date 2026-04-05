@@ -423,6 +423,7 @@ class mod_news_mod extends indexMain
                 ];
             }
         }
+        if (ob_get_level() > 0) ob_clean();
         echo json_encode($results);
     }
 
@@ -430,20 +431,30 @@ class mod_news_mod extends indexMain
     {
         $id = intval(Req::Post_Safe('id'));
         if (!$id) {
-            echo json_encode(['file_id' => 0, 'gallery_id' => 0, 'video' => '']);
+            if (ob_get_level() > 0) ob_clean();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
         }
-        $news = Load::model('mod_news');
-        $news->where_id($id)->select('file_id, gallery_id, video')->gRo();
-        if ($news->getSize() > 0) {
-            echo json_encode([
-                'file_id' => intval($news->file_id),
-                'gallery_id' => intval($news->gallery_id),
-                'video' => $news->video
-            ]);
-        } else {
-            echo json_encode(['file_id' => 0, 'gallery_id' => 0, 'video' => '']);
+
+        $db = new Database();
+        $res = $db->query("SELECT id, file_id, gallery_id, video FROM mod_news WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+        
+        // Debug Log
+        $log_entry = date('Y-m-d H:i:s') . " | GET_MEDIA | id: $id | result: " . json_encode($res) . "\n";
+        @file_put_contents('/tmp/news_debug.log', $log_entry, FILE_APPEND);
+
+        $video = [];
+        if (!empty($res['video'])) {
+            $unserialized = @unserialize($res['video']);
+            $video = is_array($unserialized) ? $unserialized : [];
         }
+
+        if (ob_get_level() > 0) ob_clean();
+        echo json_encode([
+            'file_id'    => intval($res['file_id'] ?? 0),
+            'gallery_id' => intval($res['gallery_id'] ?? 0),
+            'video'      => $video
+        ]);
     }
 
     public function ajax_update_relation()
@@ -460,44 +471,50 @@ class mod_news_mod extends indexMain
 
         if (!$id) {
             if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => 'Nûçe nehat dîtin']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
         }
 
-        $this->mod_news_model = Load::model('mod_news');
-        $this->mod_news_model->where_id($id)->gRo();
+        $db = new Database();
         
-        if ($this->mod_news_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
-            return;
-        }
-        $this->mod_news_model->sync();
-
-        if ($type === 'gallery') {
-            $this->mod_news_model->gallery_id = intval($value);
-        } elseif ($type === 'files') {
-            $this->mod_news_model->file_id = intval($value);
-        } elseif ($type === 'video') {
-            $existed = unserialize($this->mod_news_model->video);
+        if ($type === 'video') {
+            // Special handling for video as it is serialized
+            $news_res = $db->query("SELECT video FROM mod_news WHERE id = $id")->fetch(PDO::FETCH_ASSOC);
+            $video_data = $news_res['video'] ?? '';
+            $existed = (is_string($video_data) && !empty($video_data)) ? @unserialize($video_data) : [];
             if (!is_array($existed)) $existed = [];
-            
-            if ($value && !in_array($value, $existed)) {
-                $existed[] = $value;
+
+            if ($value === "0" || empty($value)) {
+                $existed = [];
+            } else {
+                if (in_array($value, $existed)) {
+                    $existed = array_values(array_diff($existed, [$value]));
+                } else {
+                    $existed[] = $value;
+                }
             }
-            $this->mod_news_model->video = serialize($existed);
+            $final_val = serialize($existed);
+            $sql = "UPDATE mod_news SET `video` = '" . addslashes($final_val) . "' WHERE id = '$id'";
+        } elseif ($type === 'gallery' || $type === 'files') {
+            $val_int = intval($value);
+            $col = ($type === 'gallery') ? 'gallery_id' : 'file_id';
+            $sql = "UPDATE mod_news SET `$col` = '$val_int' WHERE id = '$id'";
         } else {
             if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => 'Cureyê nenas']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['unknown_type']]);
             return;
         }
 
-        if ($this->mod_news_model->update('id')) {
+        // Debug Log
+        $log_entry = date('Y-m-d H:i:s') . " | UPDATE_MEDIA | id: $id | type: $type | value: $value | sql: $sql\n";
+        @file_put_contents('/tmp/news_debug.log', $log_entry, FILE_APPEND);
+
+        if ($db->query($sql)) {
             if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_news']['message']['oke']['edit'] ?? 'Serkeftî nû bû']);
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_news']['ajax']['relation_updated']]);
         } else {
             if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => 'Xeta di dema nûkirinê de']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['database_error']]);
         }
     }
 

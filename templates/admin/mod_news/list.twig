@@ -375,17 +375,22 @@
         image_remove_confirm_text: "{{ lang.mod_news.button.yes|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_news.button.cancel|e('js') }}",
         image_remove_success: "{{ lang.mod_news.remove_image_oke|e('js') }}",
-        slider_add: "{{ lang.mod_news.hero_slider_add|default('Send to Slider')|e('js') }}",
-        slider_remove: "{{ lang.mod_news.hero_slider_remove|default('Remove from Slider')|e('js') }}",
-        slider_added: "{{ lang.mod_news.hero_slider_added|default('Sent to slider.')|e('js') }}",
-        slider_removed: "{{ lang.mod_news.hero_slider_removed|default('Removed from slider.')|e('js') }}",
-        slider_error: "{{ lang.mod_news.hero_slider_error|default('Slider update failed.')|e('js') }}",
-        slider_badge: "{{ lang.mod_news.hero_slider_badge|default('Slider')|e('js') }}",
+        slider_add: "{{ lang.mod_news.hero_slider_add|e('js') }}",
+        slider_remove: "{{ lang.mod_news.hero_slider_remove|e('js') }}",
+        slider_added: "{{ lang.mod_news.hero_slider_added|e('js') }}",
+        slider_removed: "{{ lang.mod_news.hero_slider_removed|e('js') }}",
+        slider_error: "{{ lang.mod_news.hero_slider_error|e('js') }}",
+        slider_badge: "{{ lang.mod_news.hero_slider_badge|e('js') }}",
+        picker: {
+            gallery: "{{ lang.mod_news.picker_gallery_title|e('js') }}",
+            file: "{{ lang.mod_news.picker_file_title|e('js') }}",
+            video: "{{ lang.mod_news.picker_video_title|e('js') }}"
+        },
         loading: "{{ lang.mod_news.grid[104]|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_news.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.6"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.7"></script>
 {% endblock %}

@@ -1017,6 +1017,7 @@ function syncSelectPickerSelectionWithLang(select) {
 }
 
 function renderSelectPickerOptions() {
+    console.log('Rendering Picker for:', activeSelectPickerId);
     const select = activeSelectPickerId ? document.getElementById(activeSelectPickerId) : null;
     const list = document.getElementById('selectPickerList');
     const empty = document.getElementById('selectPickerEmpty');
@@ -1046,7 +1047,7 @@ function renderSelectPickerOptions() {
         }
 
         if (value === '0') {
-            return; // Hide the '0' option from the visual list
+            return; // Hide the '0' (None) option from the visual list
         }
 
         visibleCount++;
@@ -1073,7 +1074,14 @@ function renderSelectPickerOptions() {
             ? `<span class="select-picker-item-subtitle">${optionLang}</span>`
             : '';
 
-        const itemTitle = (value === '0') ? 'Hilbijartinê Rabe (Betal Bike)' : (label || (select.dataset.pickerPlaceholder || ''));
+        let removeLabel = 'Clear Selection';
+        if (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker && CONTENT_LANG.picker.remove) {
+            removeLabel = CONTENT_LANG.picker.remove;
+        } else if (typeof adminLang !== 'undefined' && adminLang.ui && adminLang.ui.reset) {
+            removeLabel = adminLang.ui.reset;
+        }
+
+        const itemTitle = (value === '0') ? removeLabel : (label || (select.dataset.pickerPlaceholder || ''));
 
         item.innerHTML = `
             <span class="select-picker-item-meta" ${value === '0' ? 'style="background:var(--md-sys-color-surface-variant); color:var(--md-sys-color-on-surface-variant);"' : ''}><i class="bi ${iconClass}"></i></span>
