@@ -222,4 +222,37 @@ document.addEventListener('DOMContentLoaded', function () {
         const existingAlerts = container.querySelectorAll('.alert');
         existingAlerts.forEach(alert => alert.remove());
     }
+
+    // --- Auto-open Modal from URL ---
+    function checkAutoOpen() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('login') === 'modal') {
+            console.log('Login modal trigger found in URL');
+            if (typeof bootstrap !== 'undefined') {
+                try {
+                    const modal = new bootstrap.Modal(loginModal);
+                    modal.show();
+
+                    // Focus username input after modal finishes opening
+                    loginModal.addEventListener('shown.bs.modal', () => {
+                        usernameInput.focus();
+                    }, { once: true });
+
+                    // Clean up URL without refreshing the page
+                    const url = new URL(window.location);
+                    url.searchParams.delete('login');
+                    window.history.replaceState({}, document.title, url.pathname + url.search);
+                    console.log('Login modal opened and URL cleaned');
+                } catch (e) {
+                    console.error('Error opening login modal:', e);
+                }
+            } else {
+                console.log('Bootstrap not ready, retrying...');
+                setTimeout(checkAutoOpen, 200);
+            }
+        }
+    }
+
+    // Run after full page load to ensure Bootstrap etc. are ready
+    window.addEventListener('load', checkAutoOpen);
 });

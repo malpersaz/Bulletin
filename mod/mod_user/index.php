@@ -139,6 +139,12 @@ class mod_user_mod extends indexMain
             return;
         }
 
+        // Redirect to homepage with modal if accessed directly (non-AJAX GET)
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !$this->_is_ajax_request()) {
+            Helper::yonlendir($this->site['sadres'] . "?login=modal", 0);
+            return;
+        }
+
         $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
         $r = $ref != '' ? $ref : $this->site['sadres'] . 'mod_user/panel';
 
@@ -1646,7 +1652,8 @@ class mod_user_mod extends indexMain
     public function check()
     {
         if ($this->user->checklogin() === False) {
-            Helper::yonlendir($this->site['sadres'] . "mod_user/login", 1);
+            // Redirect to home with modal trigger instead of static login page
+            Helper::yonlendir($this->site['sadres'] . "?login=modal", 0);
             return FALSE;
         }
         return TRUE;
