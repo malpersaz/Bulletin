@@ -12,6 +12,7 @@ const GalleryManager = {
     activeImageId: null,
     uploadCounter: 0,
     isUploading: false,
+    autoStartTimer: null,
 
     init: function(config) {
         this.config = config || {};
@@ -22,6 +23,7 @@ const GalleryManager = {
         this.activeImageId = null;
         this.uploadCounter = 0;
         this.isUploading = false;
+        this.autoStartTimer = null;
     },
 
     escapeHtml: function(value) {
@@ -46,6 +48,20 @@ const GalleryManager = {
         }
 
         return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    },
+
+    notify: function(message, type) {
+        if (!message) {
+            return;
+        }
+
+        if (typeof Amed !== 'undefined' && Amed && typeof Amed.notify === 'function') {
+            Amed.notify(message, type);
+            return;
+        }
+
+        const fallback = type === 'error' ? 'error' : 'log';
+        console[fallback](message);
     },
 
     getQueueStatusLabel: function(status) {
@@ -603,9 +619,22 @@ const GalleryManager = {
         });
 
         this.renderUploadPreview();
-        if (!this.isUploading) {
-            this.startUpload();
+        this.scheduleAutoStart();
+    },
+
+    scheduleAutoStart: function() {
+        if (this.isUploading) {
+            return;
         }
+
+        if (this.autoStartTimer) {
+            window.clearTimeout(this.autoStartTimer);
+        }
+
+        this.autoStartTimer = window.setTimeout(() => {
+            this.autoStartTimer = null;
+            this.startUpload();
+        }, 80);
     },
 
     renderUploadPreview: function() {
@@ -705,6 +734,10 @@ const GalleryManager = {
 
         this.selectedFiles = [];
         this.isUploading = false;
+        if (this.autoStartTimer) {
+            window.clearTimeout(this.autoStartTimer);
+            this.autoStartTimer = null;
+        }
 
         const preview = document.getElementById('uploadPreview');
         const queueList = document.getElementById('uploadQueueList');
@@ -743,6 +776,11 @@ const GalleryManager = {
             return;
         }
 
+        if (this.autoStartTimer) {
+            window.clearTimeout(this.autoStartTimer);
+            this.autoStartTimer = null;
+        }
+
         const pendingEntries = this.selectedFiles.filter((entry) => entry.status === 'waiting' || entry.status === 'error');
         if (pendingEntries.length === 0) {
             return;
@@ -755,6 +793,9 @@ const GalleryManager = {
         if (btn) {
             btn.disabled = true;
         }
+
+        let hasError = false;
+        let successCount = 0;
 
         for (let i = 0; i < pendingEntries.length; i++) {
             const entry = pendingEntries[i];
@@ -781,31 +822,23 @@ const GalleryManager = {
                     entry.status = 'error';
                     entry.progress = 0;
                     this.renderUploadPreview();
-                    Amed.notify(result.message ? result.message : this.config.lang.upload_failed, 'error');
-                    if (btn) {
-                        btn.innerHTML = originalHtml;
-                        btn.disabled = false;
-                    }
-                    this.isUploading = false;
-                    return;
+                    this.notify(result.message ? result.message : this.config.lang.upload_failed, 'error');
+                    hasError = true;
+                    continue;
                 }
 
                 entry.status = 'success';
                 entry.progress = 100;
                 this.renderUploadPreview();
-                Amed.notify(this.config.lang.upload_success.replace('%s', file.name), 'success');
+                this.notify(this.config.lang.upload_success.replace('%s', file.name), 'success');
+                successCount += 1;
             } catch (error) {
                 entry.status = 'error';
                 entry.progress = 0;
                 this.renderUploadPreview();
                 console.error('Upload failed', error);
-                Amed.notify(this.config.lang.upload_failed, 'error');
-                if (btn) {
-                    btn.innerHTML = originalHtml;
-                    btn.disabled = false;
-                }
-                this.isUploading = false;
-                return;
+                this.notify(this.config.lang.upload_failed, 'error');
+                hasError = true;
             }
         }
 
@@ -813,15 +846,18 @@ const GalleryManager = {
         this.renderUploadPreview();
         if (btn) {
             btn.innerHTML = originalHtml;
-            btn.disabled = true;
+            btn.disabled = this.selectedFiles.every((entry) => entry.status !== 'waiting' && entry.status !== 'error');
         }
 
-        if (this.selectedFiles.some((entry) => entry.status === 'waiting' || entry.status === 'error')) {
-            this.startUpload();
+        if (hasError) {
             return;
         }
 
-        Amed.notify(this.config.lang.upload_complete, 'success');
+        if (successCount === 0) {
+            return;
+        }
+
+        this.notify(this.config.lang.upload_complete, 'success');
         setTimeout(() => {
             location.reload();
         }, 900);
@@ -1068,3 +1104,5 @@ const GalleryManager = {
         this.updateSelectionUI();
     }
 };
+
+window.GalleryManager = GalleryManager;

@@ -3,14 +3,15 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.43`.
+- The current Git-detected active version code is `v1.0.53.44`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
-## v1.0.53.43
+## v1.0.53.44
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
 - **News List Image Auto-Upload Flow**: Simplified the `mod_news` list-image modal by removing the manual save action, starting uploads immediately after file selection, keeping the modal action state passive during transfer, and adding a request lock so repeated taps cannot start duplicate image uploads.
 - **Gallery Upload Progress And Sheet Locking**: Upgraded the `mod_gallery` phone upload sheet with per-file progress bars, live queue status totals, automatic queue start after file selection, retry-aware upload state handling, and a close guard that prevents the sheet from being dismissed while an upload is still in progress.
+- **Gallery Upload Reliability Repair**: Hardened the `mod_gallery` bulk upload queue by exposing `GalleryManager` globally for inline sheet controls, scheduling auto-start more reliably after multi-file selection, preventing missing `Amed.notify` from breaking successful uploads, continuing through the full queue instead of aborting at the first error, and cache-busting the active `list_images` script include so the repaired upload flow loads immediately in the admin panel.
 
 ## v1.0.53.39
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
