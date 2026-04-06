@@ -773,18 +773,25 @@ window.filesSelected = function () {
     }
 };
 
+function openPublicationGalleryManager(publicationId) {
+    if (!publicationId) {
+        return;
+    }
+
+    window.location.href = `${SITE_URL}mod_gallery/list/mod_publication/${publicationId}`;
+}
+
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        openMediaRelationPicker(mgr.selectedContentId, 'gallery');
+        openPublicationGalleryManager(mgr.selectedContentId);
     }
 };
 
 window.videoSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        // Video currently not fully supported in backend for publication, but we keep the button for consistency
-        showSnackbar('Video support is currently limited for publications', 'info');
+        showSnackbar(CONTENT_LANG.picker.video_unavailable, 'info');
     }
 };
 
@@ -854,10 +861,17 @@ window.handleContextAction = function (action) {
         case 'delete':
             window.deleteSelected(); 
             break;
-        case 'files':
         case 'gallery':
             closeContextMenu();
+            openPublicationGalleryManager(id);
+            return;
+        case 'files':
+            closeContextMenu();
             openMediaRelationPicker(id, action);
+            break;
+        case 'video':
+            closeContextMenu();
+            window.videoSelected();
             break;
         case 'status':
             const currentStatus = activeContextItem.status ? 'y' : 'n';

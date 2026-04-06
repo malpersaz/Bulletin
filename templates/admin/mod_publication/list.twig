@@ -281,11 +281,11 @@
             <i class="bi bi-trash3"></i>
         </button>
 
-        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.hero_slider_add }}">
             <i class="bi bi-stars"></i>
         </button>
 
-        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.context_menu.video }}">
             <i class="bi bi-camera-video"></i>
         </button>
 
@@ -293,11 +293,11 @@
             <i class="bi bi-plus-lg"></i>
         </div>
 
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.context_menu.gallery }}">
             <i class="bi bi-image"></i>
         </button>
 
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.context_menu.files }}">
             <i class="bi bi-paperclip"></i>
         </button>
 
@@ -336,8 +336,8 @@
         image_updated: "{{ lang.mod_publication.success|e('js') }}",
         image_remove_title: "{{ lang.mod_publication.remove_image|e('js') }}",
         image_remove_confirm: "{{ lang.mod_publication.context_menu.delete_confirm|e('js') }}",
-        image_remove_confirm_text: "{{ lang.mod_publication.button.evet|default(lang.mod_publication.button.yes)|default('Yes')|e('js') }}",
-        image_remove_cancel_text: "{{ lang.mod_publication.button.hayir|default(lang.mod_publication.button.no)|default('No')|e('js') }}",
+        image_remove_confirm_text: "{{ lang.mod_publication.button.yes|e('js') }}",
+        image_remove_cancel_text: "{{ lang.mod_publication.button.no|e('js') }}",
         image_remove_success: "{{ lang.mod_publication.remove_image_success|e('js') }}",
         hero_slider_add: "{{ lang.mod_publication.hero_slider_add|e('js') }}",
         hero_slider_remove: "{{ lang.mod_publication.hero_slider_remove|e('js') }}",
@@ -352,9 +352,10 @@
         picker: {
             gallery: "{{ lang.mod_publication.picker.gallery|e('js') }}",
             file: "{{ lang.mod_publication.picker.file|e('js') }}",
-            video: "{{ lang.mod_publication.picker.video|e('js') }}"
+            video: "{{ lang.mod_publication.picker.video|e('js') }}",
+            video_unavailable: "{{ lang.mod_publication.context_menu.video_unavailable|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_publication.js?v=3.3"></script>
+<script src="/templates/admin/assets/js/mod_publication.js?v=3.4"></script>
 {% endblock %}

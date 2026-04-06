@@ -352,8 +352,9 @@ $lang['mod_publication'] = [
     'context_menu' => [
         'title' => 'Yayın İşlemleri',
         'edit' => 'Düzenle',
-        'gallery' => 'Galeri İşlemleri',
-        'files' => 'Dosya İşlemleri',
+        'gallery' => 'Yayına Galeri Ekle',
+        'files' => 'Yayına Dosya Ekle',
+        'video' => 'Yayına Gömülü Video Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
         'delete_error' => 'Silme işlemi başarısız oldu!',
@@ -372,6 +373,7 @@ $lang['mod_publication'] = [
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
         'delete_confirm' => 'Evet, Sil!',
         'delete_success' => 'Yayın silindi!',
+        'video_unavailable' => 'Yayınlar için video yönetimi henüz kullanıma açık değil.',
     ],
 
     'mock' => [
@@ -420,4 +422,3 @@ $lang['mod_publication'] = [
         'video' => 'Mevcut Videoyu Seç',
     ],
 ];
-

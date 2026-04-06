@@ -20,8 +20,10 @@ Agent assets in this directory must support `diff-scoped` review and must not ta
 
 Agent workflows must also respect the repository version log in `/docs/VERSION.md`.
 
-- Current active version bucket: `v1.0.49.8`
-- Until the user declares a new Git upload version code, new development notes belong under that same version heading.
+- Before appending any development note, inspect the latest Git-uploaded version code from the current repository history.
+- Use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target.
+- If that section does not exist yet, create it first and then append the note there.
+- A user-provided version code still overrides the auto-detected Git version for that task.
 
 Agent workflows must also respect repository boundaries.
 

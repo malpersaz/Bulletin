@@ -1,3 +1,6 @@
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_user.panel.search_placeholder %}
 {% set hide_fab = true %}
 {% extends 'admin/layout.twig' %}
 
@@ -138,7 +141,7 @@
 
 <!-- Hidden filter form -->
 <form id="filterForm" style="display: none;">
-    <input type="text" name="arama[username]" id="filterSearch" value="">
+    <input type="text" name="arama[identity]" id="filterSearch" value="">
 </form>
 {% endblock %}
 
@@ -152,7 +155,7 @@
 
         <button class="toolbar-item" id="toolbarActivate" style="pointer-events: none; opacity: 0.3;" onclick="activateSelected()">
             <i class="bi bi-eye-slash-fill" id="toolbarActivateIcon"></i>
-            <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate.key }}</span>
+            <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate_confirm.key }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="window.location.href='{{ site.sadres }}mod_user/add'">
@@ -178,15 +181,15 @@ const DATA_URL = '{{ site.sadres }}mod_user/datatable_json';
 const MODULE_URL = '{{ site.sadres }}mod_user/';
 const RADRES_URL = '{{ site.radres }}';
 const USER_LANG = {
-    confirm_delete: '{{ lang.mod_user.remove_record|default("Tu bawer î ku dixwazî vê tomarê jê bibî?") }}',
-    confirm_activate: '{{ lang.mod_user.grid.status.value|default("Tu bawer î ku dixwazî vê endamî aktîf bikî?") }}',
-    confirm_deactivate: '{{ lang.mod_user.grid.deactivate.value|default("Tu bawer î ku dixwazî vê endamî pasîf bikî?") }}',
-    confirm_yes: '{{ lang.mod_user.button.yes|default("Erê") }}',
-    confirm_no: '{{ lang.mod_user.button.no|default("Na") }}',
-    oke: '{{ lang.mod_user.oke|default("Serkeftî!") }}',
-    error: '{{ lang.mod_user.error_fatal|default("Çewtiyek çêbû!") }}',
+    confirm_delete: '{{ lang.mod_user.remove_record }}',
+    confirm_activate: '{{ lang.mod_user.grid.status.value }}',
+    confirm_deactivate: '{{ lang.mod_user.grid.deactivate_confirm.value }}',
+    confirm_yes: '{{ lang.mod_user.button.yes }}',
+    confirm_no: '{{ lang.mod_user.button.no }}',
+    oke: '{{ lang.mod_user.oke }}',
+    error: '{{ lang.mod_user.error_fatal }}',
     activate: '{{ lang.mod_user.grid.status.key }}',
-    deactivate: '{{ lang.mod_user.grid.deactivate.key }}',
+    deactivate: '{{ lang.mod_user.grid.deactivate_confirm.key }}',
     status_active: '{{ lang.mod_user.grid.active }}',
     status_email_pending: '{{ lang.mod_user.grid.waiting_email_activation }}',
     status_admin_pending: '{{ lang.mod_user.grid.waiting_admin_activation }}',
@@ -222,7 +225,7 @@ class UserManager {
         this.loadMoreBtn = document.createElement('button');
         this.loadMoreBtn.className = 'm3-btn-outlined';
         this.loadMoreBtn.style.cssText = 'display:none; margin: 20px auto; width: fit-content; cursor:pointer; padding: 10px 24px; border-radius: 20px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-primary); font-weight: 500;';
-        this.loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>{{ lang.mod_user.datatable.next|default("Zêdetir") }}';
+        this.loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>{{ lang.mod_user.datatable.next }}';
         if (this.container && this.loader) {
             this.container.parentNode.insertBefore(this.loadMoreBtn, this.loader);
         }
@@ -440,7 +443,7 @@ class UserManager {
                 const editItem = document.querySelector('#context-menu-sheet .context-action-item:first-child .context-action-label');
                 if (editItem) editItem.textContent = USER_LANG.ctx_edit;
 
-                // Status label — Aktîv bike / Deaktîv bike
+                // Status label
                 const statusAction = document.getElementById('contextActionStatus');
                 if (statusAction) {
                     const label = statusAction.querySelector('.nav-item-label');
@@ -468,6 +471,23 @@ class UserManager {
 document.addEventListener('DOMContentLoaded', () => {
     window.userManager = new UserManager();
 });
+
+window.clearSearch = function() {
+    const searchInput = document.getElementById('searchInput');
+    const filterSearch = document.getElementById('filterSearch');
+
+    if (searchInput) {
+        searchInput.value = '';
+    }
+
+    if (filterSearch) {
+        filterSearch.value = '';
+    }
+
+    if (window.userManager) {
+        window.userManager.loadData(true);
+    }
+};
 
 // Toolbar Actions
 window.editSelected = function() {

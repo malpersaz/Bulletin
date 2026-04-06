@@ -339,8 +339,9 @@ $lang['mod_publication'] = [
     'context_menu' => [
         'title' => 'Operasyonên Weşanan',
         'edit' => 'Biguhere',
-        'gallery' => 'Operasyonên Galeriyê',
-        'files' => 'Operasyonên Pelan',
+        'gallery' => 'Galerî li Weşanî deke',
+        'files' => 'Dosya li Weşanî deke',
+        'video' => 'Vîdeo Embed li Weşanî deke',
         'status' => 'Rewşê Biguherîne',
         'delete' => 'Rake',
         'publish' => 'Biweşîne',
@@ -355,6 +356,7 @@ $lang['mod_publication'] = [
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Weşan hat jêbirin!',
+        'video_unavailable' => 'Rêveberiya vîdeo rê weşanan de hîn amade nêyo.',
     ],
 
     'mock' => [
@@ -403,4 +405,3 @@ $lang['mod_publication'] = [
         'video' => 'Vîdyoya Mewcûde Weçîne',
     ],
 ];
-

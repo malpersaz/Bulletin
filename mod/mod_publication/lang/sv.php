@@ -353,8 +353,9 @@ $lang['mod_publication'] = [
     'context_menu' => [
         'title' => 'Publikationsåtgärder',
         'edit' => 'Redigera',
-        'gallery' => 'Galleriåtgärder',
-        'files' => 'Filåtgärder',
+        'gallery' => 'Lägg till galleri i publikationen',
+        'files' => 'Lägg till fil i publikationen',
+        'video' => 'Lägg till inbäddad video i publikationen',
         'status' => 'Ändra status',
         'delete' => 'Ta bort',
         'delete_error' => 'Borttagning misslyckades!',
@@ -373,6 +374,7 @@ $lang['mod_publication'] = [
         'status_alert' => "STATUS UPPDATERAD:\n%s",
         'delete_confirm' => 'Ja, Ta bort!',
         'delete_success' => 'Publikation borttagen!',
+        'video_unavailable' => 'Videohantering är inte tillgänglig för publikationer ännu.',
     ],
 
     'mock' => [

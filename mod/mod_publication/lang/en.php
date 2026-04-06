@@ -353,8 +353,9 @@ $lang['mod_publication'] = [
     'context_menu' => [
         'title' => 'Publication Actions',
         'edit' => 'Edit',
-        'gallery' => 'Gallery Actions',
-        'files' => 'File Actions',
+        'gallery' => 'Add Gallery to the Publication',
+        'files' => 'Add File to the Publication',
+        'video' => 'Add Video Embed to the Publication',
         'status' => 'Change Status',
         'delete' => 'Delete',
         'delete_error' => 'Deletion failed!',
@@ -373,6 +374,7 @@ $lang['mod_publication'] = [
         'status_alert' => "STATUS UPDATED:\n%s",
         'delete_confirm' => 'Yes, Delete!',
         'delete_success' => 'Publication deleted!',
+        'video_unavailable' => 'Video management is not available for publications yet.',
     ],
 
     'mock' => [

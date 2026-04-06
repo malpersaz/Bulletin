@@ -1274,8 +1274,25 @@ class mod_user_mod extends indexMain
 
             if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
                 foreach (Req::Post_Safe('arama') as $k => $v) {
-                    if (in_array($k, $colomns) && $v != '') {
-                        $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
+                    if ($v == '') {
+                        continue;
+                    }
+
+                    $safe_value = Req::Clear($v);
+
+                    if ($k === 'identity') {
+                        $full_name = trim(preg_replace('/\s+/', ' ', $safe_value));
+                        $wheres[] = "(
+                            username LIKE '%" . $safe_value . "%'
+                            OR name LIKE '%" . $safe_value . "%'
+                            OR last_name LIKE '%" . $safe_value . "%'
+                            OR CONCAT(TRIM(name), ' ', TRIM(last_name)) LIKE '%" . $full_name . "%'
+                        )";
+                        continue;
+                    }
+
+                    if (in_array($k, $colomns)) {
+                        $wheres[] = $k . " LIKE '%" . $safe_value . "%'";
                     }
                 }
             }
@@ -1753,7 +1770,7 @@ class mod_user_mod extends indexMain
         if (empty($username) || strlen($username) < 2) {
             echo json_encode([
                 'available' => false,
-                'message' => 'Kullanıcı adı en az 2 karakter olmalıdır'
+                'message' => $this->lang['mod_user']['register']['js']['username_short']
             ]);
             return;
         }

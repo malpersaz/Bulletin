@@ -354,11 +354,12 @@ $lang['mod_publication'] = [
     'context_menu' => [
         'title' => 'Operasyonên Weşanan',
         'edit' => 'Biguhere',
-        'gallery' => 'Operasyonên Galeriyê',
-        'files' => 'Operasyonên Pelan',
+        'gallery' => 'Wênedanka Weşanê Çêke',
+        'files' => 'Pelan li Weşanê Bike',
+        'video' => 'Vîdewo Embed li Weşanê Bike',
         'status' => 'Rewşê Biguherîne',
-        'delete' => 'Rake',
-        'delete_error' => 'Jêbirin biserneket!',
+        'delete' => 'Jêbibe',
+        'delete_error' => 'Jêbirin bi ser neket!',
         'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
         'video_embed_error' => 'Koda embedê nederbasdar e',
         'video_title_error' => 'Sernav nederbasdar e',
@@ -374,6 +375,7 @@ $lang['mod_publication'] = [
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Weşan hat jêbirin!',
+        'video_unavailable' => 'Rêveberiya vîdeoyan ji bo weşanan hîn ne amade ye.',
     ],
 
     'mock' => [

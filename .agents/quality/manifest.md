@@ -132,9 +132,10 @@ All agents should:
 
 When a task is completed and repository documentation is updated, agents must treat `/docs/VERSION.md` as the single version log.
 
-- Current active version bucket: `v1.0.53.36`
-- Until the user provides a new Git upload version code, completed work notes must be written under `v1.0.53.36`
-- Agents must not create a new version heading on their own
+- Before appending any completed development note, inspect the latest Git-uploaded version code from the current repository history.
+- The active version bucket is the newest Git-uploaded version section in `/docs/VERSION.md`.
+- If that section does not exist yet, create it first and then append the note there.
+- A user-provided version code still overrides the auto-detected Git version for that task.
 
 ## Repository Boundary Rule
 
