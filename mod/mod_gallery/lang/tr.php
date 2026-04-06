@@ -75,6 +75,16 @@ $lang['mod_gallery'] = [
         'queue_success' => 'Yüklendi',
         'queue_failed' => 'Başarısız',
         'queue_ready' => '%s dosya yüklenmeye hazır',
+        'upload_status_ready' => 'Kuyruk hazır',
+        'upload_status_active' => 'Yükleme sürüyor',
+        'upload_status_complete' => 'Yükleme tamamlandı',
+        'upload_status_attention' => 'Yükleme sonuçlarını gözden geçir',
+        'upload_progress' => '%s / %s dosya tamamlandı',
+        'upload_progress_with_errors' => '%s / %s dosya tamamlandı, %s başarısız',
+        'upload_remaining' => '%s dosya kaldı',
+        'upload_processing_current' => '%s / %s dosya yükleniyor',
+        'upload_sheet_lock' => 'Tüm yüklemeler bitene kadar bu sayfayı açık tutun. Sayfayı şimdi kapatmak kuyruğu kesebilir.',
+        'upload_leave_warning' => 'Yüklemeler hâlâ sürüyor. Şimdi ayrılırsanız kuyruk kesilebilir.',
     ],
 
     // === Gallery List / Grid ===

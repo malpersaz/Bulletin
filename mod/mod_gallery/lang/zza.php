@@ -76,6 +76,16 @@ $lang['mod_gallery'] = [
         'queue_success' => 'Barkerdo',
         'queue_failed' => 'Sernêket',
         'queue_ready' => '%s pel bo barkerdışi amade yo',
+        'upload_status_ready' => 'Rêza barkerdışi amade ya',
+        'upload_status_active' => 'Barkerdış dewam keno',
+        'upload_status_complete' => 'Barkerdış qediya',
+        'upload_status_attention' => 'Neticeyê barkerdışi bımocne',
+        'upload_progress' => '%s rê %s pel qediya',
+        'upload_progress_with_errors' => '%s rê %s pel qediya, %s sernêket',
+        'upload_remaining' => '%s pel manê',
+        'upload_processing_current' => 'Pel %s rê %s tê barkerdış',
+        'upload_sheet_lock' => 'Heta hemû barkerdış qediya vêrê açıq bıvace. Niha gıraşteno panel rêzê qut kerdışo.',
+        'upload_leave_warning' => 'Barkerdış hîn dewam keno. Eke niha vêrê berdê, rêz qut bibo.',
     ],
 
     // Error Messages

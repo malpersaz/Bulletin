@@ -13,6 +13,7 @@ const GalleryManager = {
     uploadCounter: 0,
     isUploading: false,
     autoStartTimer: null,
+    beforeUnloadRegistered: false,
 
     init: function(config) {
         this.config = config || {};
@@ -24,6 +25,11 @@ const GalleryManager = {
         this.uploadCounter = 0;
         this.isUploading = false;
         this.autoStartTimer = null;
+        if (!this.beforeUnloadRegistered) {
+            window.addEventListener('beforeunload', this.handleBeforeUnload.bind(this));
+            this.beforeUnloadRegistered = true;
+        }
+        this.updateUploadSheetState();
     },
 
     escapeHtml: function(value) {
@@ -52,6 +58,11 @@ const GalleryManager = {
 
     notify: function(message, type) {
         if (!message) {
+            return;
+        }
+
+        if (typeof showSnackbar === 'function') {
+            showSnackbar(message, type === 'error' ? 'error' : type === 'warning' ? 'warning' : type === 'success' ? 'success' : 'info');
             return;
         }
 
@@ -642,6 +653,13 @@ const GalleryManager = {
         const queueList = document.getElementById('uploadQueueList');
         const queueSummary = document.getElementById('uploadQueueSummary');
         const uploadBtn = document.getElementById('uploadBtn');
+        const uploadOverall = document.getElementById('uploadOverall');
+        const uploadOverallTitle = document.getElementById('uploadOverallTitle');
+        const uploadOverallMeta = document.getElementById('uploadOverallMeta');
+        const uploadOverallBar = document.getElementById('uploadOverallBar');
+        const uploadSafety = document.getElementById('uploadSafetyBanner');
+        const uploadSafetyTitle = document.getElementById('uploadSafetyTitle');
+        const uploadSafetyText = document.getElementById('uploadSafetyText');
 
         if (!preview || !queueList || !queueSummary || !uploadBtn) {
             return;
@@ -652,22 +670,70 @@ const GalleryManager = {
         if (this.selectedFiles.length === 0) {
             preview.classList.remove('is-visible');
             uploadBtn.disabled = true;
+            if (uploadOverall) {
+                uploadOverall.hidden = true;
+            }
+            if (uploadSafety) {
+                uploadSafety.hidden = true;
+            }
+            this.updateUploadSheetState();
             return;
         }
 
         preview.classList.add('is-visible');
-        const waitingCount = this.selectedFiles.filter((entry) => entry.status === 'waiting').length;
-        const uploadingCount = this.selectedFiles.filter((entry) => entry.status === 'uploading').length;
-        const successCount = this.selectedFiles.filter((entry) => entry.status === 'success').length;
-        const errorCount = this.selectedFiles.filter((entry) => entry.status === 'error').length;
+        const metrics = this.getUploadMetrics();
+        const waitingCount = metrics.waitingCount;
+        const uploadingCount = metrics.uploadingCount;
+        const successCount = metrics.successCount;
+        const errorCount = metrics.errorCount;
 
         uploadBtn.disabled = this.isUploading || waitingCount === 0;
         if (uploadingCount > 0) {
-            queueSummary.textContent = `${this.config.lang.queue_uploading}: ${uploadingCount} • ${this.config.lang.queue_success}: ${successCount} • ${this.config.lang.queue_failed}: ${errorCount}`;
+            queueSummary.textContent = this.config.lang.upload_processing_current
+                .replace('%s', metrics.processedCount + 1)
+                .replace('%s', metrics.totalCount);
         } else if (errorCount > 0 && waitingCount === 0) {
-            queueSummary.textContent = `${this.config.lang.queue_success}: ${successCount} • ${this.config.lang.queue_failed}: ${errorCount}`;
+            queueSummary.textContent = this.config.lang.upload_progress_with_errors
+                .replace('%s', metrics.processedCount)
+                .replace('%s', metrics.totalCount)
+                .replace('%s', errorCount);
         } else {
-            queueSummary.textContent = this.config.lang.queue_ready.replace('%s', waitingCount);
+            queueSummary.textContent = waitingCount === metrics.totalCount
+                ? this.config.lang.queue_ready.replace('%s', waitingCount)
+                : this.config.lang.upload_remaining.replace('%s', waitingCount);
+        }
+
+        if (uploadOverall && uploadOverallTitle && uploadOverallMeta && uploadOverallBar) {
+            uploadOverall.hidden = false;
+            if (this.isUploading) {
+                uploadOverallTitle.textContent = this.config.lang.upload_status_active;
+            } else if (errorCount > 0) {
+                uploadOverallTitle.textContent = this.config.lang.upload_status_attention;
+            } else if (successCount === metrics.totalCount) {
+                uploadOverallTitle.textContent = this.config.lang.upload_status_complete;
+            } else {
+                uploadOverallTitle.textContent = this.config.lang.upload_status_ready;
+            }
+
+            uploadOverallMeta.textContent = errorCount > 0
+                ? this.config.lang.upload_progress_with_errors
+                    .replace('%s', metrics.processedCount)
+                    .replace('%s', metrics.totalCount)
+                    .replace('%s', errorCount)
+                : this.config.lang.upload_progress
+                    .replace('%s', metrics.processedCount)
+                    .replace('%s', metrics.totalCount);
+
+            uploadOverallBar.style.width = `${metrics.totalProgress}%`;
+            uploadOverall.classList.toggle('is-uploading', this.isUploading);
+            uploadOverall.classList.toggle('is-complete', !this.isUploading && successCount === metrics.totalCount && errorCount === 0);
+            uploadOverall.classList.toggle('is-error', errorCount > 0);
+        }
+
+        if (uploadSafety && uploadSafetyTitle && uploadSafetyText) {
+            uploadSafety.hidden = !this.isUploading;
+            uploadSafetyTitle.textContent = this.config.lang.upload_status_active;
+            uploadSafetyText.textContent = this.config.lang.upload_sheet_lock;
         }
 
         this.selectedFiles.forEach((entry) => {
@@ -709,6 +775,77 @@ const GalleryManager = {
                 </div>
             `);
         });
+
+        this.updateUploadSheetState();
+    },
+
+    getUploadMetrics: function() {
+        const totalCount = this.selectedFiles.length;
+        const waitingCount = this.selectedFiles.filter((entry) => entry.status === 'waiting').length;
+        const uploadingCount = this.selectedFiles.filter((entry) => entry.status === 'uploading').length;
+        const successCount = this.selectedFiles.filter((entry) => entry.status === 'success').length;
+        const errorCount = this.selectedFiles.filter((entry) => entry.status === 'error').length;
+        const processedCount = successCount + errorCount;
+        const totalBytes = this.selectedFiles.reduce((sum, entry) => sum + Number(entry.file?.size || 0), 0);
+        const loadedBytes = this.selectedFiles.reduce((sum, entry) => {
+            const size = Number(entry.file?.size || 0);
+            if (entry.status === 'success') {
+                return sum + size;
+            }
+            if (entry.status === 'uploading') {
+                return sum + (size * Number(entry.progress || 0) / 100);
+            }
+            return sum;
+        }, 0);
+
+        return {
+            totalCount,
+            waitingCount,
+            uploadingCount,
+            successCount,
+            errorCount,
+            processedCount,
+            totalProgress: totalBytes > 0 ? Math.round((loadedBytes / totalBytes) * 100) : 0
+        };
+    },
+
+    updateUploadSheetState: function() {
+        const sheet = document.getElementById('uploadSheet');
+        const uploadArea = document.getElementById('uploadArea');
+        const closeButtons = document.querySelectorAll('[data-upload-close]');
+        const closeIcon = document.getElementById('uploadSheetCloseBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+
+        if (sheet) {
+            sheet.classList.toggle('is-uploading', this.isUploading);
+        }
+
+        if (uploadArea) {
+            uploadArea.classList.toggle('is-disabled', this.isUploading);
+        }
+
+        closeButtons.forEach((button) => {
+            button.disabled = this.isUploading;
+            button.setAttribute('aria-disabled', this.isUploading ? 'true' : 'false');
+        });
+
+        if (closeIcon) {
+            closeIcon.setAttribute('title', this.isUploading ? this.config.lang.upload_sheet_lock : this.config.lang.cancel);
+        }
+
+        if (uploadBtn && !this.isUploading) {
+            uploadBtn.innerHTML = `<i class="bi bi-cloud-upload"></i><span>${this.escapeHtml(this.config.lang.upload_button)}</span>`;
+        }
+    },
+
+    handleBeforeUnload: function(event) {
+        if (!this.isUploading) {
+            return undefined;
+        }
+
+        event.preventDefault();
+        event.returnValue = this.config.lang.upload_leave_warning;
+        return event.returnValue;
     },
 
     removeSelectedFile: function(id) {
@@ -753,6 +890,7 @@ const GalleryManager = {
         if (btn) {
             btn.disabled = true;
         }
+        this.updateUploadSheetState();
     },
 
     handleDrop: function(event) {
@@ -793,6 +931,7 @@ const GalleryManager = {
         if (btn) {
             btn.disabled = true;
         }
+        this.updateUploadSheetState();
 
         let hasError = false;
         let successCount = 0;
@@ -830,7 +969,6 @@ const GalleryManager = {
                 entry.status = 'success';
                 entry.progress = 100;
                 this.renderUploadPreview();
-                this.notify(this.config.lang.upload_success.replace('%s', file.name), 'success');
                 successCount += 1;
             } catch (error) {
                 entry.status = 'error';
@@ -848,8 +986,16 @@ const GalleryManager = {
             btn.innerHTML = originalHtml;
             btn.disabled = this.selectedFiles.every((entry) => entry.status !== 'waiting' && entry.status !== 'error');
         }
+        this.updateUploadSheetState();
 
         if (hasError) {
+            this.notify(
+                this.config.lang.upload_progress_with_errors
+                    .replace('%s', successCount + this.selectedFiles.filter((entry) => entry.status === 'error').length)
+                    .replace('%s', pendingEntries.length)
+                    .replace('%s', this.selectedFiles.filter((entry) => entry.status === 'error').length),
+                'warning'
+            );
             return;
         }
 

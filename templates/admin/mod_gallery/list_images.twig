@@ -554,9 +554,14 @@
         position: relative;
         width: 100%;
         max-width: 680px;
+        max-height: min(92vh, 860px);
         background: var(--md-sys-color-surface);
         border-radius: 32px 32px 0 0;
         padding: 32px;
+        display: grid;
+        grid-template-rows: auto auto auto 1fr auto;
+        gap: 18px;
+        overflow: hidden;
         transform: translateY(100%);
         transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
         box-shadow: var(--md-sys-elevation-level4);
@@ -569,10 +574,80 @@
         font-size: 13px;
         color: var(--md-sys-color-on-surface-variant);
     }
+    .upload-sheet__header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .upload-sheet__overall {
+        display: grid;
+        gap: 10px;
+        padding: 16px 18px;
+        border-radius: 22px;
+        background: color-mix(in srgb, var(--md-sys-color-primary) 10%, var(--md-sys-color-surface));
+        border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 22%, transparent);
+    }
+    .upload-sheet__overall[hidden],
+    .upload-sheet__safety[hidden] {
+        display: none;
+    }
+    .upload-sheet__overall.is-uploading {
+        background: color-mix(in srgb, #0D47A1 11%, var(--md-sys-color-surface));
+        border-color: color-mix(in srgb, #0D47A1 28%, transparent);
+    }
+    .upload-sheet__overall.is-complete {
+        background: color-mix(in srgb, #1B5E20 11%, var(--md-sys-color-surface));
+        border-color: color-mix(in srgb, #1B5E20 26%, transparent);
+    }
+    .upload-sheet__overall.is-error {
+        background: color-mix(in srgb, #B71C1C 10%, var(--md-sys-color-surface));
+        border-color: color-mix(in srgb, #B71C1C 24%, transparent);
+    }
+    .upload-sheet__overall-title {
+        font-size: 14px;
+        font-weight: 800;
+        color: var(--md-sys-color-on-surface);
+    }
+    .upload-sheet__overall-meta {
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .upload-sheet__overall-progress {
+        height: 9px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: color-mix(in srgb, var(--md-sys-color-outline-variant) 45%, transparent);
+    }
+    .upload-sheet__overall-bar {
+        height: 100%;
+        width: 0;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #0D47A1 0%, #1976D2 100%);
+        transition: width 0.2s ease;
+    }
+    .upload-sheet__safety {
+        display: grid;
+        gap: 6px;
+        padding: 14px 16px;
+        border-radius: 20px;
+        background: color-mix(in srgb, #E65100 14%, var(--md-sys-color-surface));
+        border: 1px solid color-mix(in srgb, #E65100 22%, transparent);
+    }
+    .upload-sheet__safety-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #8A3300;
+    }
+    .upload-sheet__safety-text {
+        font-size: 12px;
+        line-height: 1.45;
+        color: var(--md-sys-color-on-surface);
+    }
     .upload-sheet__queue {
-        margin-top: 24px;
         display: none;
         gap: 12px;
+        min-height: 0;
     }
     .upload-sheet__queue.is-visible {
         display: grid;
@@ -596,7 +671,8 @@
     .upload-sheet__queue-list {
         display: grid;
         gap: 10px;
-        max-height: 260px;
+        min-height: 0;
+        max-height: 100%;
         overflow-y: auto;
         padding-right: 6px;
     }
@@ -650,16 +726,16 @@
         color: var(--md-sys-color-on-surface-variant);
     }
     .upload-queue-item__status.is-uploading {
-        background: color-mix(in srgb, var(--md-sys-color-tertiary) 18%, transparent);
-        color: var(--md-sys-color-tertiary);
+        background: color-mix(in srgb, #0D47A1 16%, transparent);
+        color: #0D47A1;
     }
     .upload-queue-item__status.is-success {
-        background: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
-        color: var(--md-sys-color-primary);
+        background: color-mix(in srgb, #1B5E20 14%, transparent);
+        color: #1B5E20;
     }
     .upload-queue-item__status.is-error {
-        background: color-mix(in srgb, var(--md-sys-color-error) 14%, transparent);
-        color: var(--md-sys-color-error);
+        background: color-mix(in srgb, #B71C1C 14%, transparent);
+        color: #B71C1C;
     }
     .upload-queue-item__progress {
         position: relative;
@@ -673,7 +749,7 @@
     .upload-queue-item__progress-bar {
         height: 100%;
         border-radius: inherit;
-        background: var(--md-sys-color-primary);
+        background: linear-gradient(90deg, #0D47A1 0%, #1976D2 100%);
         transition: width 0.18s ease;
     }
     .upload-queue-item__progress-label {
@@ -695,10 +771,28 @@
         background: var(--md-sys-color-secondary-container);
         border-color: var(--md-sys-color-secondary);
     }
+    .image-upload-area.is-disabled {
+        opacity: 0.55;
+        pointer-events: none;
+        filter: grayscale(0.08);
+    }
     .image-upload-area i {
         font-size: 56px;
         color: var(--md-sys-color-primary);
         margin-bottom: 16px;
+    }
+    .upload-sheet__footer {
+        display: flex;
+        gap: 16px;
+        padding-top: 6px;
+    }
+    .upload-sheet.is-uploading .upload-sheet__scrim {
+        background: rgba(15, 23, 42, 0.66);
+    }
+    .upload-sheet.is-uploading [data-upload-close] {
+        opacity: 0.45;
+        cursor: not-allowed;
+        pointer-events: none;
     }
     @media (max-width: 640px) {
         .gallery-shell {
@@ -719,6 +813,11 @@
         }
         .upload-sheet__content {
             padding: 24px 18px;
+            max-height: 94vh;
+            gap: 14px;
+        }
+        .upload-sheet__footer {
+            gap: 12px;
         }
     }
 </style>
@@ -964,15 +1063,28 @@
 <div id="uploadSheet" class="upload-sheet">
     <div class="upload-sheet__scrim" onclick="closeUploadSheet()"></div>
     <div class="upload-sheet__content">
-        <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+        <header class="upload-sheet__header">
             <div>
                 <h3 style="margin: 0; font-size: 22px; font-weight: 500;">{{ lang.mod_gallery.admin.area_title }}</h3>
                 <p class="upload-sheet__subtitle">{{ lang.mod_gallery.admin.upload_area_for|format(record_label) }}</p>
             </div>
-            <button class="m3-icon-btn" onclick="closeUploadSheet()">
+            <button id="uploadSheetCloseBtn" class="m3-icon-btn" type="button" data-upload-close onclick="closeUploadSheet()">
                 <i class="bi bi-x-lg"></i>
             </button>
         </header>
+
+        <div id="uploadOverall" class="upload-sheet__overall" hidden>
+            <div id="uploadOverallTitle" class="upload-sheet__overall-title">{{ lang.mod_gallery.admin.upload_status_ready }}</div>
+            <div id="uploadOverallMeta" class="upload-sheet__overall-meta">{{ lang.mod_gallery.admin.upload_progress|format(0, 0) }}</div>
+            <div class="upload-sheet__overall-progress">
+                <div id="uploadOverallBar" class="upload-sheet__overall-bar"></div>
+            </div>
+        </div>
+
+        <div id="uploadSafetyBanner" class="upload-sheet__safety" hidden>
+            <div id="uploadSafetyTitle" class="upload-sheet__safety-title">{{ lang.mod_gallery.admin.upload_status_active }}</div>
+            <div id="uploadSafetyText" class="upload-sheet__safety-text">{{ lang.mod_gallery.admin.upload_sheet_lock }}</div>
+        </div>
 
         <div
             id="uploadArea"
@@ -1002,11 +1114,11 @@
             <div id="uploadQueueList" class="upload-sheet__queue-list"></div>
         </div>
 
-        <div style="margin-top: 32px; display: flex; gap: 16px;">
-            <button class="m3-btn-text" style="flex: 1;" onclick="closeUploadSheet()">
+        <div class="upload-sheet__footer">
+            <button class="m3-btn-text" type="button" style="flex: 1;" data-upload-close onclick="closeUploadSheet()">
                 {{ lang.mod_gallery.admin.cancel }}
             </button>
-            <button id="uploadBtn" class="m3-btn-filled" style="flex: 2;" disabled onclick="GalleryManager.startUpload()">
+            <button id="uploadBtn" class="m3-btn-filled" type="button" style="flex: 2;" disabled onclick="GalleryManager.startUpload()">
                 <i class="bi bi-cloud-upload"></i>
                 <span>{{ lang.mod_gallery.admin.upload_button }}</span>
             </button>
@@ -1030,7 +1142,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.adres }}templates/admin/assets/js/mod_gallery.js?v=7"></script>
+<script src="{{ site.adres }}templates/admin/assets/js/mod_gallery.js?v=8"></script>
 <script>
     GalleryManager.init({
         vid: '{{ vid }}',
@@ -1083,7 +1195,17 @@
             queue_uploading: '{{ lang.mod_gallery.admin.queue_uploading|e("js") }}',
             queue_success: '{{ lang.mod_gallery.admin.queue_success|e("js") }}',
             queue_failed: '{{ lang.mod_gallery.admin.queue_failed|e("js") }}',
-            queue_ready: '{{ lang.mod_gallery.admin.queue_ready|e("js") }}'
+            queue_ready: '{{ lang.mod_gallery.admin.queue_ready|e("js") }}',
+            upload_status_ready: '{{ lang.mod_gallery.admin.upload_status_ready|e("js") }}',
+            upload_status_active: '{{ lang.mod_gallery.admin.upload_status_active|e("js") }}',
+            upload_status_complete: '{{ lang.mod_gallery.admin.upload_status_complete|e("js") }}',
+            upload_status_attention: '{{ lang.mod_gallery.admin.upload_status_attention|e("js") }}',
+            upload_progress: '{{ lang.mod_gallery.admin.upload_progress|e("js") }}',
+            upload_progress_with_errors: '{{ lang.mod_gallery.admin.upload_progress_with_errors|e("js") }}',
+            upload_remaining: '{{ lang.mod_gallery.admin.upload_remaining|e("js") }}',
+            upload_processing_current: '{{ lang.mod_gallery.admin.upload_processing_current|e("js") }}',
+            upload_sheet_lock: '{{ lang.mod_gallery.admin.upload_sheet_lock|e("js") }}',
+            upload_leave_warning: '{{ lang.mod_gallery.admin.upload_leave_warning|e("js") }}'
         }
     });
 

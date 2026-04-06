@@ -75,6 +75,16 @@ $lang['mod_gallery'] = [
         'queue_success' => 'Uploaded',
         'queue_failed' => 'Failed',
         'queue_ready' => '%s files ready to upload',
+        'upload_status_ready' => 'Queue is ready',
+        'upload_status_active' => 'Upload in progress',
+        'upload_status_complete' => 'Upload complete',
+        'upload_status_attention' => 'Review upload results',
+        'upload_progress' => '%s of %s files completed',
+        'upload_progress_with_errors' => '%s of %s files completed, %s failed',
+        'upload_remaining' => '%s files remaining',
+        'upload_processing_current' => 'File %s of %s is uploading',
+        'upload_sheet_lock' => 'Keep this page open until all uploads finish. Closing the sheet now can interrupt the queue.',
+        'upload_leave_warning' => 'Uploads are still in progress. Leaving now may interrupt the queue.',
     ],
 
     // === Gallery List / Grid ===

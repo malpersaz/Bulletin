@@ -75,6 +75,16 @@ $lang['mod_gallery'] = [
         'queue_success' => 'Hate barkirin',
         'queue_failed' => 'Bi ser neket',
         'queue_ready' => '%s pel ji bo barkirinê amade ne',
+        'upload_status_ready' => 'Rêza barkirinê amade ye',
+        'upload_status_active' => 'Barkirin didome',
+        'upload_status_complete' => 'Barkirin qediya',
+        'upload_status_attention' => 'Encamên barkirinê binêre',
+        'upload_progress' => '%s ji %s pelan qediya',
+        'upload_progress_with_errors' => '%s ji %s pelan qediya, %s bi ser neket',
+        'upload_remaining' => '%s pel maye',
+        'upload_processing_current' => 'Pel %s ji %s tê barkirin',
+        'upload_sheet_lock' => 'Heta hemû barkirin biqede vê rûpelê vekirî bihêle. Girtina vê panelê niha dikare rêzê rawestîne.',
+        'upload_leave_warning' => 'Barkirin hîn didome. Heke niha derkeve, dibe ku rêz qut bibe.',
     ],
 
     // === Gallery List / Grid ===
