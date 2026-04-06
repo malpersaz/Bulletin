@@ -11,6 +11,7 @@ const GalleryManager = {
     selectionMode: false,
     activeImageId: null,
     uploadCounter: 0,
+    isUploading: false,
 
     init: function(config) {
         this.config = config || {};
@@ -20,6 +21,7 @@ const GalleryManager = {
         this.selectionMode = false;
         this.activeImageId = null;
         this.uploadCounter = 0;
+        this.isUploading = false;
     },
 
     escapeHtml: function(value) {
@@ -574,6 +576,7 @@ const GalleryManager = {
             id: `upload-${this.uploadCounter++}`,
             file: file,
             status: 'waiting',
+            progress: 0,
             previewUrl: URL.createObjectURL(file)
         };
     },
@@ -600,6 +603,9 @@ const GalleryManager = {
         });
 
         this.renderUploadPreview();
+        if (!this.isUploading) {
+            this.startUpload();
+        }
     },
 
     renderUploadPreview: function() {
@@ -621,11 +627,31 @@ const GalleryManager = {
         }
 
         preview.classList.add('is-visible');
-        uploadBtn.disabled = false;
-        queueSummary.textContent = this.config.lang.queue_ready.replace('%s', this.selectedFiles.length);
+        const waitingCount = this.selectedFiles.filter((entry) => entry.status === 'waiting').length;
+        const uploadingCount = this.selectedFiles.filter((entry) => entry.status === 'uploading').length;
+        const successCount = this.selectedFiles.filter((entry) => entry.status === 'success').length;
+        const errorCount = this.selectedFiles.filter((entry) => entry.status === 'error').length;
+
+        uploadBtn.disabled = this.isUploading || waitingCount === 0;
+        if (uploadingCount > 0) {
+            queueSummary.textContent = `${this.config.lang.queue_uploading}: ${uploadingCount} • ${this.config.lang.queue_success}: ${successCount} • ${this.config.lang.queue_failed}: ${errorCount}`;
+        } else if (errorCount > 0 && waitingCount === 0) {
+            queueSummary.textContent = `${this.config.lang.queue_success}: ${successCount} • ${this.config.lang.queue_failed}: ${errorCount}`;
+        } else {
+            queueSummary.textContent = this.config.lang.queue_ready.replace('%s', waitingCount);
+        }
 
         this.selectedFiles.forEach((entry) => {
             const statusClass = entry.status === 'waiting' ? '' : ` is-${entry.status}`;
+            const normalizedProgress = Math.max(0, Math.min(100, Number(entry.progress || 0)));
+            const progressValue = entry.status === 'success'
+                ? 100
+                : entry.status === 'waiting'
+                    ? 0
+                    : normalizedProgress;
+            const progressText = entry.status === 'waiting'
+                ? this.config.lang.queue_waiting
+                : `${Math.round(progressValue)}%`;
             const removeButton = entry.status === 'uploading'
                 ? ''
                 : `
@@ -645,6 +671,10 @@ const GalleryManager = {
                             <span>${this.escapeHtml(this.formatFileSize(entry.file.size))}</span>
                             <span class="upload-queue-item__status${statusClass}">${this.escapeHtml(this.getQueueStatusLabel(entry.status))}</span>
                         </div>
+                        <div class="upload-queue-item__progress">
+                            <div class="upload-queue-item__progress-bar" style="width: ${progressValue}%;"></div>
+                        </div>
+                        <div class="upload-queue-item__progress-label">${this.escapeHtml(progressText)}</div>
                     </div>
                     ${removeButton}
                 </div>
@@ -674,6 +704,7 @@ const GalleryManager = {
         });
 
         this.selectedFiles = [];
+        this.isUploading = false;
 
         const preview = document.getElementById('uploadPreview');
         const queueList = document.getElementById('uploadQueueList');
@@ -708,26 +739,33 @@ const GalleryManager = {
     },
 
     startUpload: async function() {
-        if (this.selectedFiles.length === 0) {
+        if (this.isUploading) {
+            return;
+        }
+
+        const pendingEntries = this.selectedFiles.filter((entry) => entry.status === 'waiting' || entry.status === 'error');
+        if (pendingEntries.length === 0) {
             return;
         }
 
         const btn = document.getElementById('uploadBtn');
         const originalHtml = btn ? btn.innerHTML : '';
 
+        this.isUploading = true;
         if (btn) {
             btn.disabled = true;
         }
 
-        for (let i = 0; i < this.selectedFiles.length; i++) {
-            const entry = this.selectedFiles[i];
+        for (let i = 0; i < pendingEntries.length; i++) {
+            const entry = pendingEntries[i];
             const file = entry.file;
 
             entry.status = 'uploading';
+            entry.progress = 0;
             this.renderUploadPreview();
 
             if (btn) {
-                btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>${this.escapeHtml(this.config.lang.uploading)} (${i + 1}/${this.selectedFiles.length})`;
+                btn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>${this.escapeHtml(this.config.lang.uploading)} (${i + 1}/${pendingEntries.length})`;
             }
 
             const formData = new FormData();
@@ -737,28 +775,28 @@ const GalleryManager = {
             formData.append('mod_name', this.config.mod_name);
 
             try {
-                const response = await fetch(this.config.baseUrl + 'up', {
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
+                const result = await this.uploadFileEntry(entry, formData);
 
                 if (result.status !== 'success') {
                     entry.status = 'error';
+                    entry.progress = 0;
                     this.renderUploadPreview();
                     Amed.notify(result.message ? result.message : this.config.lang.upload_failed, 'error');
                     if (btn) {
                         btn.innerHTML = originalHtml;
                         btn.disabled = false;
                     }
+                    this.isUploading = false;
                     return;
                 }
 
                 entry.status = 'success';
+                entry.progress = 100;
                 this.renderUploadPreview();
                 Amed.notify(this.config.lang.upload_success.replace('%s', file.name), 'success');
             } catch (error) {
                 entry.status = 'error';
+                entry.progress = 0;
                 this.renderUploadPreview();
                 console.error('Upload failed', error);
                 Amed.notify(this.config.lang.upload_failed, 'error');
@@ -766,12 +804,60 @@ const GalleryManager = {
                     btn.innerHTML = originalHtml;
                     btn.disabled = false;
                 }
+                this.isUploading = false;
                 return;
             }
         }
 
+        this.isUploading = false;
+        this.renderUploadPreview();
+        if (btn) {
+            btn.innerHTML = originalHtml;
+            btn.disabled = true;
+        }
+
+        if (this.selectedFiles.some((entry) => entry.status === 'waiting' || entry.status === 'error')) {
+            this.startUpload();
+            return;
+        }
+
         Amed.notify(this.config.lang.upload_complete, 'success');
-        location.reload();
+        setTimeout(() => {
+            location.reload();
+        }, 900);
+    },
+
+    uploadFileEntry: function(entry, formData) {
+        return new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', this.config.baseUrl + 'up', true);
+            xhr.responseType = 'json';
+
+            xhr.upload.addEventListener('progress', (event) => {
+                if (!event.lengthComputable) {
+                    return;
+                }
+
+                entry.progress = Math.round((event.loaded / event.total) * 100);
+                this.renderUploadPreview();
+            });
+
+            xhr.addEventListener('load', () => {
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    reject(new Error(`HTTP ${xhr.status}`));
+                    return;
+                }
+
+                const response = xhr.response || JSON.parse(xhr.responseText || '{}');
+                resolve(response);
+            });
+
+            xhr.addEventListener('error', () => {
+                reject(new Error('Network error'));
+            });
+
+            xhr.send(formData);
+        });
     },
 
     deleteImageRequest: async function(id) {

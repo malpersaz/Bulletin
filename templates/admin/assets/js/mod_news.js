@@ -23,6 +23,7 @@ class ContentManager {
         this.imageUploadContentId = null;
         this.imageUploader = null;
         this.imageUploaderBound = false;
+        this.imageUploadInProgress = false;
         this.imageModalState = {
             hasExistingImage: false,
             existingImageSrc: '',
@@ -404,6 +405,9 @@ class ContentManager {
                         this.imageModalState.existingImageName = name;
                     }
                     this.updateImageModalActions(source, file);
+                    if (file && source !== 'existing' && source !== 'reset') {
+                        this.submitListImageUpload();
+                    }
                 }
             });
         }
@@ -461,6 +465,7 @@ class ContentManager {
 
         document.body.classList.remove('news-image-modal-open');
         this.imageUploadContentId = null;
+        this.imageUploadInProgress = false;
         this.imageModalState = {
             hasExistingImage: false,
             existingImageSrc: '',
@@ -501,8 +506,8 @@ class ContentManager {
         const hasPendingFile = Boolean(file) && source !== 'existing';
 
         if (this.imageSaveBtn) {
-            this.imageSaveBtn.hidden = !hasPendingFile;
-            this.imageSaveBtn.disabled = !hasPendingFile;
+            this.imageSaveBtn.hidden = true;
+            this.imageSaveBtn.disabled = true;
         }
         if (this.imageMeta) {
             this.imageMeta.hidden = !hasPendingFile;
@@ -582,6 +587,10 @@ class ContentManager {
     }
 
     async submitListImageUpload() {
+        if (this.imageUploadInProgress) {
+            return;
+        }
+
         const fileData = this.imageUploader?.getSelectedFile();
         if (!this.imageUploadContentId || !fileData) {
             this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
@@ -592,12 +601,7 @@ class ContentManager {
         formData.append('image', fileData);
         formData.append('id', this.imageUploadContentId);
 
-        if (this.imageSaveBtn) {
-            this.imageSaveBtn.hidden = false;
-            this.imageSaveBtn.disabled = true;
-            this.imageSaveBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${CONTENT_LANG.loading}`;
-        }
-
+        this.imageUploadInProgress = true;
         this.loader.style.display = 'flex';
 
         try {
@@ -620,11 +624,11 @@ class ContentManager {
             this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
             showSnackbar(CONTENT_LANG.error_upload, 'error');
         } finally {
+            this.imageUploadInProgress = false;
             this.loader.style.display = 'none';
             if (this.imageSaveBtn) {
-                const hasPendingFile = !!this.imageUploader?.getSelectedFile();
-                this.imageSaveBtn.hidden = !hasPendingFile;
-                this.imageSaveBtn.disabled = !hasPendingFile;
+                this.imageSaveBtn.hidden = true;
+                this.imageSaveBtn.disabled = true;
                 this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
             }
         }
