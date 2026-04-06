@@ -75,6 +75,25 @@ Required behavior:
 - do not leave half-completed refactors behind
 - run a short review before moving on to the next module
 
+## Admin Mobile-Only Rule
+
+The repository admin panel must be treated as a phone-only interface.
+
+Required behavior for admin UI work:
+
+- design and implement for phone screens only
+- treat the repository's device-frame simulator as a phone target, not as a desktop canvas
+- reject tablet-first or desktop-first layout reasoning unless the user explicitly overrides the rule
+- choose UI patterns, densities, controls, and interaction models that fit narrow phone widths and touch input
+- prefer compact vertical composition over decorative top matter when space competes with the primary task
+- validate admin UI behavior only in phone-sized viewports or the phone simulator shell
+
+Agents must report as policy violations:
+
+- admin UI changes optimized primarily for tablet or desktop widths
+- admin validation performed only on tablet or desktop assumptions
+- admin layouts that consume critical phone viewport space with non-essential chrome and make the main task hard to use
+
 ## Why This Rule Exists
 
 Pure repository-wide enforcement creates too much noise in a legacy-heavy codebase.
@@ -199,6 +218,8 @@ Checks:
 - Twig/UI language fallbacks that replace missing keys with inline default text
 - `default(...)` usage on visible localization expressions in touched templates or JS-rendered UI
 - any visible UI state that depends on fallback copy instead of a real translation key
+- any admin UI layout introduced in the diff that is optimized for tablet/desktop instead of phone-first use
+- any admin UI chrome introduced in the diff that materially harms phone usability or hides the primary task in the initial viewport
 
 Must ignore:
 
@@ -240,6 +261,8 @@ Must block delivery:
 - any non-English hard-coded user-facing string remaining inside a touched file
 - keeping old and new keys, routes, methods, validators, templates, or aliases alive together after a refactor without explicit user approval
 - leaving a touched module in a half-refactored state
+- shipping an admin UI change that is clearly built or validated for tablet/desktop instead of the required phone-only target
+- shipping an admin phone flow where non-essential header, hero, toolbar, or overlay chrome materially blocks the primary task in the initial viewport
 
 ## Warning
 

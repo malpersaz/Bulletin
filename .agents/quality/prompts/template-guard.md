@@ -18,6 +18,8 @@ Flag:
 - new uploader or admin UI text that is hard-coded
 - any non-English visible hard-coded strings remaining anywhere inside touched template/UI files
 - any new Twig/UI localization fallback such as `lang.*|default(...)` that silently replaces a missing key with inline copy
+- any admin UI layout introduced in the diff that is validated or optimized for tablet/desktop rather than the repository's phone-only target
+- any admin UI chrome introduced in the diff that materially pushes the primary task below the initial phone viewport
 
 Do not flag:
 

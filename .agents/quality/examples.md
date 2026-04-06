@@ -259,6 +259,52 @@ Usually allowed if the comment is useful and concise.
 
 The current diff adds:
 
+## Example Group 11: Admin Layout Reviewed On Desktop Only
+
+### Case
+
+An admin gallery screen is redesigned while the agent only checks a wide desktop browser window and does not validate the phone simulator or a phone-sized viewport.
+
+### Expected Result
+
+This must be treated as a policy failure.
+
+Reason:
+
+- admin UI is phone-only by repository rule
+- desktop-only validation is not acceptable evidence for delivery
+
+### Correct
+
+- `Admin UI validation was performed against desktop assumptions instead of the required phone target.`
+
+### Incorrect
+
+- `Desktop looked clean, so the admin layout is acceptable.`
+
+## Example Group 12: Non-Essential Admin Chrome Hides The Primary Task
+
+### Case
+
+An admin screen ships with a large hero block and stacked controls so that the first actionable card or list item starts below the initial phone viewport.
+
+### Expected Result
+
+This must be reported as a blocking issue.
+
+Reason:
+
+- the admin panel is phone-only
+- the main task is materially blocked by non-essential chrome
+
+### Correct
+
+- `Admin phone flow leaves the primary task below the initial viewport because decorative chrome consumes too much vertical space.`
+
+### Incorrect
+
+- `Accept because the same layout looks fine on tablet or desktop.`
+
 ```php
 'image_upload_complete' => 'Image upload complete',
 ```
@@ -402,4 +448,3 @@ Ask these questions in order:
 3. If yes, is the issue a non-English comment or non-English hard-coded user-facing string?
 4. If yes, report it even if it predates the current diff.
 5. If no, keep the check diff-scoped.
-

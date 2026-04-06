@@ -106,3 +106,10 @@ When quality-agent policy changes, update these files together:
   - excluding `tr` and `ar` from installer default languages
   - removing default sample menu/category/content seeds
 - Other refactoring work should be treated as shared-core candidate work and compared for sibling-repo synchronization.
+
+## Admin Mobile Rule
+
+- The admin panel is a phone-only product surface.
+- Agents must design, implement, and validate admin interfaces for phone screens only.
+- Tablet and desktop admin layouts are out of scope unless the user explicitly overrides the rule.
+- Validation and browser checks for admin work must use phone-sized viewports or the repository's phone simulator shell.

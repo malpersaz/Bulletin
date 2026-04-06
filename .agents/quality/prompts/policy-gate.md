@@ -21,10 +21,11 @@ Your job:
 - remove any finding that targets untouched legacy code
 - keep file-wide findings only for non-English comments and non-English hard-coded user-facing strings in touched files
 - produce a short final list of blocking and non-blocking issues
+- preserve valid phone-only admin findings when a changed admin flow was optimized for tablet/desktop or when non-essential chrome blocks the primary task on phone
 
 Severity model:
 
-- `Error`: hard-coded user-facing string, non-English new identifier, non-English new comment, newly missing required language key, any non-English comment in a touched file, any non-English hard-coded user-facing string in a touched file
+- `Error`: hard-coded user-facing string, non-English new identifier, non-English new comment, newly missing required language key, any non-English comment in a touched file, any non-English hard-coded user-facing string in a touched file, any admin flow built or validated for tablet/desktop instead of phone, any admin phone flow where non-essential chrome blocks the primary task in the initial viewport
 - `Warning`: unused new key, cleanup leftover, non-critical style inconsistency
 
 Output format:

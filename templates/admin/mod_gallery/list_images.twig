@@ -1,0 +1,1087 @@
+{% set module_lang_key = 'mod_gallery' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_gallery.admin.title }}{% endblock %}
+
+{% block headline %}{{ record_label is defined ? record_label : lang.mod_gallery.admin.title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .headline {
+        font-size: 18px !important;
+        line-height: 1.15 !important;
+        font-weight: 600 !important;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .gallery-shell {
+        padding: 10px 10px 0;
+        display: grid;
+        gap: 10px;
+    }
+    .gallery-context {
+        padding: 12px 14px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--md-sys-color-surface-container-high) 0%, var(--md-sys-color-surface) 100%);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        box-shadow: var(--md-sys-elevation-level1);
+        display: grid;
+        gap: 10px;
+    }
+    .gallery-context__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--md-sys-color-primary);
+        background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+    }
+    .gallery-context__meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .gallery-context__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 32px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: var(--md-sys-color-surface-container-low);
+        color: var(--md-sys-color-on-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .gallery-tools-sheet {
+        position: fixed;
+        inset: 0;
+        z-index: 12005;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .gallery-tools-sheet.active {
+        display: flex;
+    }
+    .gallery-selection-sheet {
+        position: fixed;
+        inset: 0;
+        z-index: 12006;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .gallery-selection-sheet.active {
+        display: flex;
+    }
+    .gallery-tools-sheet__scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.42);
+        backdrop-filter: blur(4px);
+    }
+    .gallery-selection-sheet__scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.42);
+        backdrop-filter: blur(4px);
+    }
+    .gallery-tools-sheet__content {
+        position: relative;
+        width: 100%;
+        max-width: 412px;
+        border-radius: 28px 28px 0 0;
+        background: var(--md-sys-color-surface);
+        box-shadow: var(--md-sys-elevation-level4);
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+        padding: 14px 14px 18px;
+        display: grid;
+        gap: 12px;
+    }
+    .gallery-tools-sheet.active .gallery-tools-sheet__content {
+        transform: translateY(0);
+    }
+    .gallery-selection-sheet__content {
+        position: relative;
+        width: 100%;
+        max-width: 412px;
+        border-radius: 28px 28px 0 0;
+        background: var(--md-sys-color-surface);
+        box-shadow: var(--md-sys-elevation-level4);
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+        padding: 14px 14px 18px;
+        display: grid;
+        gap: 12px;
+    }
+    .gallery-selection-sheet.active .gallery-selection-sheet__content {
+        transform: translateY(0);
+    }
+    .gallery-tools-sheet__handle {
+        width: 52px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--md-sys-color-outline-variant);
+        margin: 0 auto 4px;
+    }
+    .gallery-selection-sheet__handle {
+        width: 52px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--md-sys-color-outline-variant);
+        margin: 0 auto 4px;
+    }
+    .gallery-tools-sheet__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .gallery-selection-sheet__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .gallery-tools-sheet__search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 44px;
+        padding: 0 14px;
+        border-radius: 16px;
+        background: var(--md-sys-color-surface-container-low);
+        border: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .gallery-tools-sheet__search input {
+        border: 0;
+        outline: 0;
+        background: transparent;
+        width: 100%;
+        color: var(--md-sys-color-on-surface);
+    }
+    .gallery-tools-sheet__group {
+        display: grid;
+        gap: 10px;
+    }
+    .gallery-tools-sheet__row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .gallery-tools-sheet__select {
+        min-height: 44px;
+        padding: 0 12px;
+        border-radius: 16px;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        background: var(--md-sys-color-surface-container-low);
+        color: var(--md-sys-color-on-surface);
+    }
+    .gallery-selection-pill {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 16px;
+        background: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
+        color: var(--md-sys-color-primary);
+        font-weight: 700;
+    }
+    .gallery-selection-pill.is-visible {
+        display: inline-flex;
+    }
+    .gallery-selection-sheet__actions {
+        display: grid;
+        gap: 10px;
+    }
+    .gallery-board {
+        border-radius: 28px;
+        overflow: hidden;
+        background: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        box-shadow: var(--md-sys-elevation-level1);
+    }
+    .gallery-workspace {
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: start;
+    }
+    .gallery-workspace__main {
+        min-width: 0;
+    }
+    .gallery-detail-sheet {
+        position: fixed;
+        inset: 0;
+        z-index: 12010;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .gallery-detail-sheet.active {
+        display: flex;
+    }
+    .gallery-detail-sheet__scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.42);
+        backdrop-filter: blur(4px);
+    }
+    .gallery-detail-sheet__content {
+        position: relative;
+        width: 100%;
+        max-width: 412px;
+        max-height: min(52vh, 460px);
+        overflow-y: auto;
+        border-radius: 28px 28px 0 0;
+        background: linear-gradient(180deg, var(--md-sys-color-surface-container-low) 0%, var(--md-sys-color-surface) 100%);
+        box-shadow: var(--md-sys-elevation-level4);
+        transform: translateY(100%);
+        transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+    .gallery-detail-sheet.active .gallery-detail-sheet__content {
+        transform: translateY(0);
+    }
+    .gallery-detail-sheet__handle {
+        width: 52px;
+        height: 5px;
+        border-radius: 999px;
+        background: var(--md-sys-color-outline-variant);
+        margin: 12px auto 4px;
+    }
+    .gallery-detail__inner {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+    }
+    .gallery-detail__eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--md-sys-color-primary);
+        background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+    }
+    .gallery-detail__preview {
+        aspect-ratio: 16 / 10;
+        border-radius: 18px;
+        overflow: hidden;
+        background: var(--md-sys-color-surface-container);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .gallery-detail__preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .gallery-detail__empty {
+        padding: 28px 20px;
+        text-align: center;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .gallery-detail__meta {
+        display: grid;
+        gap: 8px;
+    }
+    .gallery-detail__meta-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .gallery-detail__meta-row strong {
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+        font-weight: 700;
+    }
+    .gallery-detail__meta-row span {
+        text-align: right;
+        color: var(--md-sys-color-on-surface);
+        word-break: break-word;
+    }
+    .gallery-detail__actions,
+    .gallery-detail__nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .gallery-detail__actions > *,
+    .gallery-detail__nav > * {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+    .gallery-board__hint {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        color: var(--md-sys-color-on-surface-variant);
+        background: var(--md-sys-color-surface-container-low);
+        font-size: 13px;
+    }
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+        padding: 12px;
+    }
+    .gallery-item {
+        position: relative;
+        aspect-ratio: auto;
+        border-radius: 0;
+        overflow: visible;
+        background: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        transition: border-color 0.2s ease;
+        cursor: pointer;
+    }
+    .gallery-item:hover {
+        border-color: var(--md-sys-color-primary-container);
+    }
+    .gallery-item.is-selected {
+        border-color: var(--md-sys-color-primary);
+        box-shadow: none;
+    }
+    .gallery-item.is-active {
+        border-color: var(--md-sys-color-secondary);
+        box-shadow: none;
+    }
+    .gallery-item.is-hidden {
+        display: none;
+    }
+    .gallery-item__select {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 2;
+        width: 44px;
+        height: 44px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: var(--md-sys-color-on-surface);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        box-shadow: none;
+    }
+    .gallery-board.is-selection-mode .gallery-item__select {
+        display: inline-flex;
+    }
+    .gallery-item__select.is-selected {
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+    }
+    .gallery-item__media {
+        position: relative;
+        overflow: hidden;
+        background: var(--md-sys-color-surface);
+    }
+    .gallery-item img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        background: var(--md-sys-color-surface);
+    }
+    .gallery-item:hover img {
+        transform: none;
+    }
+    .gallery-item__meta {
+        padding: 10px 12px 12px;
+        background: var(--md-sys-color-surface);
+    }
+    .gallery-item__name {
+        color: var(--md-sys-color-on-surface);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.3;
+        word-break: break-word;
+    }
+    .gallery-item__actions {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+    }
+    .gallery-item__actions .action-btn {
+        width: 36px;
+        min-width: 36px;
+        height: 36px;
+        min-height: 36px;
+        padding: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--md-sys-color-on-surface);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+        font-size: 16px;
+        font-weight: 400;
+        border: none;
+        cursor: pointer;
+        backdrop-filter: none;
+        box-shadow: none;
+    }
+    .gallery-item__actions .action-btn span {
+        display: none;
+    }
+    .gallery-item__actions .action-btn:hover {
+        background: rgba(255, 255, 255, 0.98);
+        color: var(--md-sys-color-primary);
+    }
+    .gallery-empty-search {
+        display: none;
+        padding: 56px 24px 72px;
+        text-align: center;
+    }
+    .gallery-empty-search.is-visible {
+        display: block;
+    }
+    .gallery-empty-search__icon {
+        width: 88px;
+        height: 88px;
+        border-radius: 28px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        color: var(--md-sys-color-primary);
+        background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+    }
+    .gallery-empty-search h3 {
+        margin: 0;
+        font-size: 20px;
+        color: var(--md-sys-color-on-surface);
+    }
+    .gallery-empty-search p {
+        margin: 8px 0 0;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .gallery-empty {
+        padding: 88px 40px;
+        text-align: center;
+    }
+    .gallery-empty__icon {
+        background: var(--md-sys-color-surface-container-high);
+        width: 96px;
+        height: 96px;
+        border-radius: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        font-size: 48px;
+        color: var(--md-sys-color-outline);
+    }
+    .gallery-bottom-bar {
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 16px;
+        z-index: 60;
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--md-sys-color-surface) 92%, transparent);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        box-shadow: var(--md-sys-elevation-level3);
+        backdrop-filter: blur(18px);
+        transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .gallery-bottom-bar.is-hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(120%);
+    }
+    .gallery-bottom-bar__button {
+        flex: 0 0 48px;
+        width: 48px;
+        min-width: 48px;
+        height: 48px;
+        min-height: 48px;
+        padding: 0;
+        border-radius: 999px;
+        justify-content: center;
+    }
+    .upload-sheet {
+        position: fixed;
+        inset: 0;
+        z-index: 12000;
+        display: none;
+        align-items: flex-end;
+        justify-content: center;
+    }
+    .upload-sheet.active {
+        display: flex;
+    }
+    .upload-sheet__scrim {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+    }
+    .upload-sheet__content {
+        position: relative;
+        width: 100%;
+        max-width: 680px;
+        background: var(--md-sys-color-surface);
+        border-radius: 32px 32px 0 0;
+        padding: 32px;
+        transform: translateY(100%);
+        transition: transform 0.4s cubic-bezier(0.1, 0.9, 0.2, 1);
+        box-shadow: var(--md-sys-elevation-level4);
+    }
+    .upload-sheet.active .upload-sheet__content {
+        transform: translateY(0);
+    }
+    .upload-sheet__subtitle {
+        margin: 8px 0 0;
+        font-size: 13px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .upload-sheet__queue {
+        margin-top: 24px;
+        display: none;
+        gap: 12px;
+    }
+    .upload-sheet__queue.is-visible {
+        display: grid;
+    }
+    .upload-sheet__queue-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+    .upload-sheet__queue-header h4 {
+        margin: 0;
+        font-size: 15px;
+        color: var(--md-sys-color-on-surface);
+    }
+    .upload-sheet__queue-header p {
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .upload-sheet__queue-list {
+        display: grid;
+        gap: 10px;
+        max-height: 260px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+    .upload-queue-item {
+        display: grid;
+        grid-template-columns: 68px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px;
+        border-radius: 18px;
+        background: var(--md-sys-color-surface-container-low);
+        border: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .upload-queue-item__thumb {
+        width: 68px;
+        height: 68px;
+        border-radius: 16px;
+        overflow: hidden;
+        background: var(--md-sys-color-surface-container);
+    }
+    .upload-queue-item__thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .upload-queue-item__name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--md-sys-color-on-surface);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .upload-queue-item__meta {
+        margin-top: 4px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .upload-queue-item__status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        background: var(--md-sys-color-surface-container);
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .upload-queue-item__status.is-uploading {
+        background: color-mix(in srgb, var(--md-sys-color-tertiary) 18%, transparent);
+        color: var(--md-sys-color-tertiary);
+    }
+    .upload-queue-item__status.is-success {
+        background: color-mix(in srgb, var(--md-sys-color-primary) 14%, transparent);
+        color: var(--md-sys-color-primary);
+    }
+    .upload-queue-item__status.is-error {
+        background: color-mix(in srgb, var(--md-sys-color-error) 14%, transparent);
+        color: var(--md-sys-color-error);
+    }
+    .image-upload-area {
+        background: var(--md-sys-color-surface-container-low);
+        border: 2px dashed var(--md-sys-color-outline-variant);
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    .image-upload-area:hover,
+    .image-upload-area.is-dragover {
+        background: var(--md-sys-color-secondary-container);
+        border-color: var(--md-sys-color-secondary);
+    }
+    .image-upload-area i {
+        font-size: 56px;
+        color: var(--md-sys-color-primary);
+        margin-bottom: 16px;
+    }
+    @media (max-width: 640px) {
+        .gallery-shell {
+            padding: 10px 10px 0;
+        }
+        .gallery-context,
+        .gallery-board {
+            border-radius: 24px;
+        }
+        .gallery-grid {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 12px;
+            padding: 12px;
+        }
+        .gallery-detail__actions > *,
+        .gallery-detail__nav > * {
+            flex-basis: 100%;
+        }
+        .upload-sheet__content {
+            padding: 24px 18px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% set image_count = pictures is defined ? pictures|length : 0 %}
+
+<div class="gallery-shell">
+    <section class="gallery-context">
+        <div class="gallery-context__eyebrow">
+            <i class="bi bi-images"></i>
+            <span>{{ lang.mod_gallery.admin.title }}</span>
+        </div>
+        <div class="gallery-context__meta">
+            <div class="gallery-context__chip">
+                <i class="bi bi-collection"></i>
+                <strong id="galleryVisibleCount">{{ lang.mod_gallery.admin.images_summary|format(image_count) }}</strong>
+            </div>
+            <div class="gallery-context__chip">
+                <i class="bi bi-diagram-3"></i>
+                <span>{{ mod_name }}</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="galleryBoard" class="gallery-board">
+        {% if pictures is defined and pictures|length > 0 %}
+            <div class="gallery-workspace">
+                <div class="gallery-workspace__main">
+                    <div class="gallery-board__hint">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span id="galleryBoardHint">{{ lang.mod_gallery.admin.edit_hint }}</span>
+                    </div>
+
+                    <div id="galleryGrid" class="gallery-grid">
+                        {% for picture in pictures %}
+                            {% set original_url = site.adres ~ 'static/mod_gallery/' ~ mod_name ~ '/original/' ~ picture.url %}
+                            {% set thumb_url = site.adres ~ 'static/mod_gallery/' ~ mod_name ~ '/thumb/' ~ picture.url %}
+                            <article
+                                class="gallery-item"
+                                id="image-{{ picture.id }}"
+                                data-id="{{ picture.id }}"
+                                data-name="{{ picture.name|lower|e('html_attr') }}"
+                                data-original-name="{{ picture.name|e('html_attr') }}"
+                                data-original-url="{{ original_url|e('html_attr') }}"
+                                data-thumb-url="{{ thumb_url|e('html_attr') }}"
+                                onclick="GalleryManager.handleImageCardClick('{{ picture.id }}')"
+                                ondblclick="GalleryManager.editName('{{ picture.id }}', '{{ picture.name|escape('js') }}')"
+                            >
+                                <div class="gallery-item__media">
+                                    <button type="button" class="gallery-item__select" onclick="event.stopPropagation(); GalleryManager.toggleImageSelection('{{ picture.id }}')">
+                                        <i class="bi bi-check-lg"></i>
+                                    </button>
+                                    <img src="{{ thumb_url }}" alt="{{ picture.name }}">
+                                    <div class="gallery-item__actions">
+                                        <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.openImageDetail('{{ picture.id }}')" title="{{ lang.mod_gallery.admin.open_detail }}">
+                                            <i class="bi bi-layout-sidebar-inset"></i>
+                                            <span>{{ lang.mod_gallery.admin.open_detail }}</span>
+                                        </button>
+                                        <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.viewOriginal('{{ original_url }}')" title="{{ lang.mod_gallery.admin.view_original }}">
+                                            <i class="bi bi-arrows-fullscreen"></i>
+                                            <span>{{ lang.mod_gallery.admin.view_original }}</span>
+                                        </button>
+                                        <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.editName('{{ picture.id }}', '{{ picture.name|escape('js') }}')" title="{{ lang.mod_gallery.admin.rename_image }}">
+                                            <i class="bi bi-pencil"></i>
+                                            <span>{{ lang.mod_gallery.admin.rename_image }}</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="gallery-item__meta">
+                                    <div class="gallery-item__name item-name">{{ picture.name }}</div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                    <div id="galleryEmptySearch" class="gallery-empty-search">
+                        <div class="gallery-empty-search__icon">
+                            <i class="bi bi-search"></i>
+                        </div>
+                        <h3>{{ lang.mod_gallery.admin.no_filtered_images }}</h3>
+                        <p>{{ lang.mod_gallery.admin.clear_search }}</p>
+                    </div>
+                </div>
+
+            </div>
+        {% else %}
+            <div class="gallery-empty">
+                <div class="gallery-empty__icon">
+                    <i class="bi bi-images"></i>
+                </div>
+                <h3 style="margin: 0; font-size: 20px; color: var(--md-sys-color-on-surface);">{{ lang.mod_gallery.admin.no_registered_images }}</h3>
+                <p style="margin: 8px 0 0; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.select_category_hint }}</p>
+                <button class="m3-btn-filled" style="margin-top: 20px; border-radius: 18px;" onclick="openUploadSheet()">
+                    <i class="bi bi-cloud-upload"></i>
+                    <span>{{ lang.mod_gallery.admin.add_images }}</span>
+                </button>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+<div id="galleryToolsSheet" class="gallery-tools-sheet">
+    <div class="gallery-tools-sheet__scrim" onclick="GalleryManager.closeToolsSheet()"></div>
+    <div class="gallery-tools-sheet__content">
+        <div class="gallery-tools-sheet__handle"></div>
+        <div class="gallery-tools-sheet__header">
+            <div class="gallery-context__eyebrow">
+                <i class="bi bi-sliders"></i>
+                <span>{{ lang.mod_gallery.admin.sort_label }}</span>
+            </div>
+            <button class="m3-icon-btn" type="button" onclick="GalleryManager.closeToolsSheet()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="gallery-tools-sheet__search">
+            <i class="bi bi-search"></i>
+            <input
+                type="text"
+                id="galleryImageSearch"
+                placeholder="{{ lang.mod_gallery.admin.search_images }}"
+                oninput="GalleryManager.filterImages(this.value)"
+            >
+        </div>
+        <div class="gallery-tools-sheet__group">
+            <select id="gallerySortSelect" class="gallery-tools-sheet__select" onchange="GalleryManager.sortImages(this.value)">
+                <option value="newest">{{ lang.mod_gallery.admin.sort_label }}: {{ lang.mod_gallery.admin.sort_newest }}</option>
+                <option value="oldest">{{ lang.mod_gallery.admin.sort_label }}: {{ lang.mod_gallery.admin.sort_oldest }}</option>
+                <option value="name_asc">{{ lang.mod_gallery.admin.sort_label }}: {{ lang.mod_gallery.admin.sort_name_asc }}</option>
+                <option value="name_desc">{{ lang.mod_gallery.admin.sort_label }}: {{ lang.mod_gallery.admin.sort_name_desc }}</option>
+            </select>
+            <div class="gallery-tools-sheet__row">
+                <div class="gallery-context__chip">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <span id="galleryToolbarCount">{{ lang.mod_gallery.admin.images_summary|format(image_count) }}</span>
+                </div>
+                <div id="gallerySelectionCount" class="gallery-selection-pill">
+                    <i class="bi bi-check2-circle"></i>
+                    <span>{{ lang.mod_gallery.admin.selected_summary|format(0) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="gallerySelectionSheet" class="gallery-selection-sheet">
+    <div class="gallery-selection-sheet__scrim" onclick="GalleryManager.exitSelectionMode()"></div>
+    <div class="gallery-selection-sheet__content">
+        <div class="gallery-selection-sheet__handle"></div>
+        <div class="gallery-selection-sheet__header">
+            <div id="gallerySelectionCountSheet" class="gallery-selection-pill">
+                <i class="bi bi-check2-circle"></i>
+                <span>{{ lang.mod_gallery.admin.selected_summary|format(0) }}</span>
+            </div>
+            <button class="m3-icon-btn" type="button" onclick="GalleryManager.exitSelectionMode()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="gallery-selection-sheet__actions">
+            <button class="m3-btn-outlined" type="button" onclick="GalleryManager.selectAllVisible()">
+                <i class="bi bi-check2-all"></i>
+                <span>{{ lang.mod_gallery.admin.select_all }}</span>
+            </button>
+            <button class="m3-btn-outlined" type="button" onclick="GalleryManager.clearSelection()">
+                <i class="bi bi-eraser"></i>
+                <span>{{ lang.mod_gallery.admin.clear_selection }}</span>
+            </button>
+            <button class="m3-btn-filled" type="button" onclick="GalleryManager.bulkDeleteSelected()">
+                <i class="bi bi-trash"></i>
+                <span>{{ lang.mod_gallery.admin.bulk_delete }}</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="galleryDetailSheet" class="gallery-detail-sheet">
+    <div class="gallery-detail-sheet__scrim" onclick="GalleryManager.closeDetailSheet()"></div>
+    <div class="gallery-detail-sheet__content">
+        <div class="gallery-detail-sheet__handle"></div>
+        <div class="gallery-detail__inner">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                <div class="gallery-detail__eyebrow">
+                    <i class="bi bi-layout-sidebar-inset"></i>
+                    <span>{{ lang.mod_gallery.admin.detail_title }}</span>
+                </div>
+                <button class="m3-icon-btn" type="button" onclick="GalleryManager.closeDetailSheet()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+
+            <div class="gallery-detail__preview">
+                <img id="galleryDetailImage" src="" alt="{{ lang.mod_gallery.admin.preview_alt }}" style="display: none;">
+                <div id="galleryDetailEmpty" class="gallery-detail__empty">
+                    {{ lang.mod_gallery.admin.detail_empty }}
+                </div>
+            </div>
+
+            <div class="gallery-detail__meta">
+                <div class="gallery-detail__meta-row">
+                    <strong>{{ lang.mod_gallery.admin.detail_filename }}</strong>
+                    <span id="galleryDetailFilename">-</span>
+                </div>
+                <div class="gallery-detail__meta-row">
+                    <strong>{{ lang.mod_gallery.admin.detail_image_id }}</strong>
+                    <span id="galleryDetailId">-</span>
+                </div>
+                <div class="gallery-detail__meta-row">
+                    <strong>{{ lang.mod_gallery.admin.detail_position }}</strong>
+                    <span id="galleryDetailPosition">-</span>
+                </div>
+            </div>
+
+            <div class="gallery-detail__nav">
+                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.showPreviousImage()">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>{{ lang.mod_gallery.admin.previous_image }}</span>
+                </button>
+                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.showNextImage()">
+                    <span>{{ lang.mod_gallery.admin.next_image }}</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+            </div>
+
+            <div class="gallery-detail__actions">
+                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.viewActiveImageOriginal()">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                    <span>{{ lang.mod_gallery.admin.view_original }}</span>
+                </button>
+                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.editActiveImageName()">
+                    <i class="bi bi-pencil"></i>
+                    <span>{{ lang.mod_gallery.admin.rename_image }}</span>
+                </button>
+                <button class="m3-btn-filled" type="button" onclick="GalleryManager.deleteActiveImage()">
+                    <i class="bi bi-trash"></i>
+                    <span>{{ lang.mod_gallery.admin.remove_image }}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="uploadSheet" class="upload-sheet">
+    <div class="upload-sheet__scrim" onclick="closeUploadSheet()"></div>
+    <div class="upload-sheet__content">
+        <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+            <div>
+                <h3 style="margin: 0; font-size: 22px; font-weight: 500;">{{ lang.mod_gallery.admin.area_title }}</h3>
+                <p class="upload-sheet__subtitle">{{ lang.mod_gallery.admin.upload_area_for|format(record_label) }}</p>
+            </div>
+            <button class="m3-icon-btn" onclick="closeUploadSheet()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </header>
+
+        <div
+            id="uploadArea"
+            class="image-upload-area"
+            onclick="document.getElementById('fileInput').click()"
+            ondragenter="GalleryManager.setUploadDragState(true)"
+            ondragover="event.preventDefault(); GalleryManager.setUploadDragState(true)"
+            ondragleave="GalleryManager.setUploadDragState(false)"
+            ondrop="GalleryManager.handleDrop(event)"
+        >
+            <i class="bi bi-cloud-arrow-up"></i>
+            <div>
+                <p style="margin: 0; font-size: 16px; font-weight: 500;">{{ lang.mod_gallery.admin.browse_description }}</p>
+                <p style="margin: 8px 0 0; font-size: 13px; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.ctrl_select_hint|raw }}</p>
+            </div>
+        </div>
+
+        <input type="file" id="fileInput" multiple hidden accept="image/*" onchange="GalleryManager.handleFileSelect(this)">
+
+        <div id="uploadPreview" class="upload-sheet__queue" aria-live="polite">
+            <div class="upload-sheet__queue-header">
+                <div>
+                    <h4>{{ lang.mod_gallery.admin.upload_queue_title }}</h4>
+                    <p id="uploadQueueSummary">{{ lang.mod_gallery.admin.queue_ready|format(0) }}</p>
+                </div>
+            </div>
+            <div id="uploadQueueList" class="upload-sheet__queue-list"></div>
+        </div>
+
+        <div style="margin-top: 32px; display: flex; gap: 16px;">
+            <button class="m3-btn-text" style="flex: 1;" onclick="closeUploadSheet()">
+                {{ lang.mod_gallery.admin.cancel }}
+            </button>
+            <button id="uploadBtn" class="m3-btn-filled" style="flex: 2;" disabled onclick="GalleryManager.startUpload()">
+                <i class="bi bi-cloud-upload"></i>
+                <span>{{ lang.mod_gallery.admin.upload_button }}</span>
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="gallery-bottom-bar">
+    <button id="gallerySelectionToggle" class="m3-btn-outlined gallery-bottom-bar__button" type="button" onclick="GalleryManager.toggleSelectionMode()" title="{{ lang.mod_gallery.admin.select_mode }}" aria-label="{{ lang.mod_gallery.admin.select_mode }}">
+        <i class="bi bi-check2-square"></i>
+    </button>
+    <button class="m3-btn-filled gallery-bottom-bar__button" type="button" onclick="openUploadSheet()" title="{{ lang.mod_gallery.admin.add_images }}" aria-label="{{ lang.mod_gallery.admin.add_images }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+    <button class="m3-btn-outlined gallery-bottom-bar__button" type="button" onclick="GalleryManager.openToolsSheet()" title="{{ lang.mod_gallery.admin.sort_label }}" aria-label="{{ lang.mod_gallery.admin.sort_label }}">
+        <i class="bi bi-sliders"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.adres }}templates/admin/assets/js/mod_gallery.js?v=6"></script>
+<script>
+    GalleryManager.init({
+        vid: '{{ vid }}',
+        mod_name: '{{ mod_name }}',
+        baseUrl: '{{ site.sadres }}mod_gallery/',
+        lang: {
+            uploading: '{{ lang.mod_gallery.admin.uploading }}',
+            delete_title: '{{ lang.mod_gallery.admin.delete_title }}',
+            delete_confirm: '{{ lang.mod_gallery.admin.delete_confirm }}',
+            yes: '{{ lang.mod_gallery.admin.yes }}',
+            cancel: '{{ lang.mod_gallery.admin.cancel }}',
+            edit_title: '{{ lang.mod_gallery.admin.edit_image_name }}',
+            image_name: '{{ lang.mod_gallery.admin.image_name }}',
+            save: '{{ lang.mod_gallery.admin.save }}',
+            upload_button: '{{ lang.mod_gallery.admin.upload_button }}',
+            upload_success: '{{ lang.mod_gallery.admin.upload_success|e("js") }}',
+            upload_complete: '{{ lang.mod_gallery.admin.upload_complete|e("js") }}',
+            upload_failed: '{{ lang.mod_gallery.errors.upload_failed|e("js") }}',
+            image_deleted: '{{ lang.mod_gallery.admin.image_deleted|e("js") }}',
+            image_edited: '{{ lang.mod_gallery.admin.image_edited|e("js") }}',
+            selected_files: '{{ lang.mod_gallery.admin.selected_files|e("js") }}',
+            delete_failed: '{{ lang.mod_gallery.errors.delete_failed|e("js") }}',
+            rename_failed: '{{ lang.mod_gallery.errors.rename_failed|e("js") }}',
+            preview_alt: '{{ lang.mod_gallery.admin.preview_alt|e("js") }}',
+            edit_hint: '{{ lang.mod_gallery.admin.edit_hint|e("js") }}',
+            images_summary: '{{ lang.mod_gallery.admin.images_summary|e("js") }}',
+            no_filtered_images: '{{ lang.mod_gallery.admin.no_filtered_images|e("js") }}',
+            clear_search: '{{ lang.mod_gallery.admin.clear_search|e("js") }}',
+            sort_label: '{{ lang.mod_gallery.admin.sort_label|e("js") }}',
+            sort_newest: '{{ lang.mod_gallery.admin.sort_newest|e("js") }}',
+            sort_oldest: '{{ lang.mod_gallery.admin.sort_oldest|e("js") }}',
+            sort_name_asc: '{{ lang.mod_gallery.admin.sort_name_asc|e("js") }}',
+            sort_name_desc: '{{ lang.mod_gallery.admin.sort_name_desc|e("js") }}',
+            select_mode: '{{ lang.mod_gallery.admin.select_mode|e("js") }}',
+            done_selecting: '{{ lang.mod_gallery.admin.done_selecting|e("js") }}',
+            select_all: '{{ lang.mod_gallery.admin.select_all|e("js") }}',
+            clear_selection: '{{ lang.mod_gallery.admin.clear_selection|e("js") }}',
+            bulk_delete: '{{ lang.mod_gallery.admin.bulk_delete|e("js") }}',
+            selected_summary: '{{ lang.mod_gallery.admin.selected_summary|e("js") }}',
+            bulk_delete_title: '{{ lang.mod_gallery.admin.bulk_delete_title|e("js") }}',
+            bulk_delete_confirm: '{{ lang.mod_gallery.admin.bulk_delete_confirm|e("js") }}',
+            detail_title: '{{ lang.mod_gallery.admin.detail_title|e("js") }}',
+            detail_empty: '{{ lang.mod_gallery.admin.detail_empty|e("js") }}',
+            detail_filename: '{{ lang.mod_gallery.admin.detail_filename|e("js") }}',
+            detail_image_id: '{{ lang.mod_gallery.admin.detail_image_id|e("js") }}',
+            detail_position: '{{ lang.mod_gallery.admin.detail_position|e("js") }}',
+            previous_image: '{{ lang.mod_gallery.admin.previous_image|e("js") }}',
+            next_image: '{{ lang.mod_gallery.admin.next_image|e("js") }}',
+            queue_waiting: '{{ lang.mod_gallery.admin.queue_waiting|e("js") }}',
+            queue_uploading: '{{ lang.mod_gallery.admin.queue_uploading|e("js") }}',
+            queue_success: '{{ lang.mod_gallery.admin.queue_success|e("js") }}',
+            queue_failed: '{{ lang.mod_gallery.admin.queue_failed|e("js") }}',
+            queue_ready: '{{ lang.mod_gallery.admin.queue_ready|e("js") }}'
+        }
+    });
+
+    function openUploadSheet() {
+        GalleryManager.exitSelectionMode();
+        GalleryManager.closeToolsSheet();
+        GalleryManager.closeDetailSheet();
+        document.getElementById('uploadSheet').classList.add('active');
+    }
+
+    function closeUploadSheet() {
+        document.getElementById('uploadSheet').classList.remove('active');
+        GalleryManager.resetUpload();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        GalleryManager.sortImages(document.getElementById('gallerySortSelect')?.value || 'newest');
+        GalleryManager.filterImages('');
+        GalleryManager.openFirstVisibleImage();
+    });
+</script>
+{% endblock %}

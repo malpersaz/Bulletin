@@ -59,6 +59,8 @@ The following are blocking `Error` conditions:
 - a touched visible flow is left without complete localization coverage
 - old and new keys, routes, methods, validators, templates, or aliases are left alive together after a refactor without explicit user approval
 - a touched module is left in a half-refactored state
+- an admin UI change is built or validated primarily for tablet/desktop instead of the required phone-only target
+- an admin phone flow is left with non-essential chrome that materially blocks the primary task in the initial viewport
 
 ## Non-Blocking Rules
 
@@ -130,8 +132,8 @@ All agents should:
 
 When a task is completed and repository documentation is updated, agents must treat `/docs/VERSION.md` as the single version log.
 
-- Current active version bucket: `v1.0.49.8`
-- Until the user provides a new Git upload version code, completed work notes must be written under `v1.0.49.8`
+- Current active version bucket: `v1.0.53.36`
+- Until the user provides a new Git upload version code, completed work notes must be written under `v1.0.53.36`
 - Agents must not create a new version heading on their own
 
 ## Repository Boundary Rule
@@ -165,6 +167,9 @@ When updating a module, agents must apply policy during implementation.
 - do not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention
 - do not leave half-completed refactors behind
 - perform a short review before moving to the next module
+- treat all admin UI work as phone-only unless the user explicitly overrides the rule
+- validate admin flows with phone-sized viewports or the repository phone simulator, not tablet/desktop assumptions
+- prefer compact task-first mobile layouts over decorative top chrome when vertical space is limited
 
 ## Policy Gate Responsibility
 

@@ -1,73 +1,133 @@
 <?php
-$lang['mod_gallery']=[];
+/**
+ * Gallery Management Module Kurdish (Kurmanji) Language File
+ * Amed Framework CMS - Multilingual Content Management System
+ */
 
+$lang['mod_gallery'] = [
+    // === Admin Interface ===
+    'admin' => [
+        'title' => 'Rêveberiya Galeriyê',
+        'list_title' => 'Galerî',
+        'create_gallery' => 'Galeriya Nû Çêbike',
+        'search_placeholder' => 'Di galeriyan de bigere...',
+        'no_results' => 'Li gorî lêgerîna te tu galerî nehatin dîtin.',
+        'no_galleries' => 'Heta niha tu galerî nehatine çêkirin.',
+        'add_images' => 'Wêne Lê Zêde Bike',
+        'rename_image' => 'Navê Wêneyê Biguhere',
+        'back' => 'Vegere Galeriyan',
+        'edit_hint' => 'Ji bo dîtin, navguhertin an jêbirinê bişkokên kiryarê bikar bîne.',
+        'view_original' => 'Orjînalê Bibîne',
+        'remove_image' => 'Wêne Rake',
+        'edit_image_name' => 'Navê Wêneyê Biguhere',
+        'image_name' => 'Navê Wêne',
+        'save' => 'Guhertinan Tomar Bike',
+        'cancel' => 'Betal Bike',
+        'loading_galleries' => 'Galerî tên barkirin...',
+        'uploading' => 'Wêne Tên Lêbarkirin...',
+        'upload_button' => 'Wêneyên Hilbijartî Bar Bike',
+        'upload_success' => '"%s" bi serkeftî hate barkirin.',
+        'upload_complete' => 'Hemû wêneyên hilbijartî bi serkeftî hatin barkirin.',
+        'image_deleted' => 'Wêne hate jêbirin.',
+        'image_edited' => 'Navê wêneyê bi serkeftî hate serastkirin.',
+        'gallery_images_title' => 'Wêneyên di zikê "%s" de',
+        'delete_title' => 'Wêne Jê Bibe',
+        'delete_confirm' => 'Ma tu bawer î ku dixwazî vî wêneyî jê bibî? Ev kirdar nayê vegerandin.',
+        'yes' => 'Erê, Jê Bibe',
+        'browse_description' => 'Ji bo hilbijartina yek an zêdetir wêne, bitikîne',
+        'ctrl_select_hint' => 'Ji bo hilbijartina gelek pelan, tiliya xwe li ser <b>CTRL</b> bigire.',
+        'area_title' => 'Medyayê Lê Bar Bike',
+        'upload_area_for' => 'Ji bo "%s" wêne bar bike',
+        'no_registered_images' => 'Di vê galeriyê de tu wêne tune ne.',
+        'select_category_hint' => 'Ji bo dagirtina galeriyê wêneyan lê bar bike.',
+        'selected_files' => 'Pelên Hilbijartî',
+        'preview_alt' => 'Pêşdîtina wêneya galeriyê',
+        'search_images' => 'Di wêneyan de bigere...',
+        'module_label' => 'Modul',
+        'record_label' => 'Qeyd',
+        'images_summary' => '%s wêne',
+        'no_filtered_images' => 'Li gorî lêgerîna te tu wêne nehatin dîtin.',
+        'clear_search' => 'Lêgerînê paqij bike',
+        'sort_label' => 'Rêz bike',
+        'sort_newest' => 'Ya herî nû pêş',
+        'sort_oldest' => 'Ya herî kevn pêş',
+        'sort_name_asc' => 'Nav A-Z',
+        'sort_name_desc' => 'Nav Z-A',
+        'select_mode' => 'Hilbijêre',
+        'done_selecting' => 'Qediya',
+        'select_all' => 'Yên xuya hilbijêre',
+        'clear_selection' => 'Paqij bike',
+        'bulk_delete' => 'Yên hilbijartî jê bibe',
+        'selected_summary' => '%s hatin hilbijartin',
+        'bulk_delete_title' => 'Wêneyên hilbijartî jê bibe',
+        'bulk_delete_confirm' => 'Ma tu bawer î ku dixwazî %s wêneyên hilbijartî jê bibî? Ev kirdar nayê vegerandin.',
+        'detail_title' => 'Hûrguliyên Wêneyê',
+        'detail_empty' => 'Ji bo dîtina hûrgulî û kiryaran wêneyek hilbijêre.',
+        'detail_filename' => 'Navê pelê',
+        'detail_image_id' => 'ID ya wêneyê',
+        'detail_position' => 'Cih',
+        'open_detail' => 'Hûrguliyan veke',
+        'previous_image' => 'Wêneya berê',
+        'next_image' => 'Wêneya paş',
+        'upload_queue_title' => 'Rêza Barkirinê',
+        'queue_waiting' => 'Li bendê ye',
+        'queue_uploading' => 'Tê barkirin',
+        'queue_success' => 'Hate barkirin',
+        'queue_failed' => 'Bi ser neket',
+        'queue_ready' => '%s pel ji bo barkirinê amade ne',
+    ],
 
-$lang['mod_gallery']['admin']=[
-	'1'=>'Cihê Lêbarkirina Wêne',
-	'2'=>'Wêne Hilbijêre!',
-	'3'=>'Li ser CTRL raweste û gelek wêneyan hilbijêre.',
-	'4'=>'Tê lêbarkirin...',
-	'5'=>'Bibîne',
-	'6'=>'Li Hêviya Dora Lêbarkirinê ye..',
-	'7'=>'Pel',
-	'8'=>'Hejmara Pelên Hilbijartî',
-	'9'=>'Hejmara Pelên Li Hêviya Dora Xwe',
-	'10'=>'Wêneyê \\\'+file.name+\\\' ku te hilbijartiye pir mezin e.',
-	'11'=>'Bibîne',
-	'12'=>'Vegere',
-	'14'=>'Rêveberiya Wêne',
-	'17'=>'Ma tu bawer î, ku dixwazî ji ber vî wêneyî bigirî?',
-	'18'=>'Wêne Jê Bibe',
-	'19'=>'Erê',
-	'20'=>'Betal',
-	'21'=>'Tomarke',
-	'22'=>'Ji bo Nûçeya %s Cihê Lêbarkirina Wêne',
-	'23'=>'Navê Wêne',
-	'24'=>'Ji Bo Guhertina Nav Li Wêneyekî Cot Bitikîne.',
-	'25'=>'Qet Wêne Nehate Dîtin!',
-	'26'=>'---Hemû Wêne---',
-	'27'=>'Tu Wêneyên Tomarkirî Nehatin Dîtin!',
-	'28'=>'Kategoriyê Hilbijêre û Wêne Lê Bar Bike',
-	'29'=>'Li Orjînala Wêne Binihêre',
-	'30'=>'Navê Wêne Biguhere',
-	'31'=>'Wêne Rake',
-	'35'=>'\'Pela    %s Bi Navê %s Li Pêşkêşker Hate Barkirin!   \'',
-	'36'=>'Wêne Hate Jêbirin',
-	'37'=>'Wêneyên Galeriyê yên Nûçeya %s',
-	'38'=>'Wêne Lê Zêde Bike',
-	'39'=>'Wêne Hate Serastkirin',
-	'40'=>'Navê Wêneyê "+original+" Bi "+text+" re Hate Guhertin"'
+    // === Gallery List / Grid ===
+    'grid' => [
+        'name' => 'Navê Galeriyê',
+        'image_count' => 'Wêne',
+        'created_at' => 'Dîroka Çêkirinê',
+        'actions' => 'Kirdar',
+        'load_more' => 'Zêdetir Bîne',
+        'empty_state' => 'Tu galerî ji bo nîşandanê tune ne.',
+    ],
+
+    // === Errors ===
+    'errors' => [
+        'record' => 'Qeyd nehate dîtin!',
+        'upload_failed' => 'Lêbarkirin bi ser neket!',
+        'delete_failed' => 'Qeyd nehate jêbirin.',
+        'load_failed' => 'Galerî nehatin barkirin.',
+        'rename_failed' => 'Navê wêneyê nehate nûkirin.',
+    ],
+
+    // === Role Management ===
+    'roll' => [
+        'ad' => 'Erkên Rêveberiya Galeriyê',
+        'add' => 'Dikare galerî û wêneyan lê zêde bike',
+        'edit' => 'Dikare tiştên galeriyê serast bike',
+        'delete' => 'Dikare wêneyên galeriyê jê bibe',
+        'list' => 'Dikare rêveberiya galeriyê bibîne',
+    ],
+
+    // === Role Errors ===
+    'role_errors' => [
+        'add' => 'Erka te ya zêdekirina galeriyan tune ye.',
+        'edit' => 'Erka te ya serastkirina wêneyên galeriyê tune ye.',
+        'delete' => 'Erka te ya jêbirina wêneyan tune ye.',
+        'list' => 'Erka te ya dîtina rêveberiya galeriyê tune ye.',
+        'gallery' => 'Erka te ya rêveberiya vê galeriyê tune ye.',
+        'file' => 'Erka te ya barkirina pelan bo vê galeriyê tune ye.',
+    ],
+
+    'hata' => [
+        'get_source_failed' => 'Çavkaniya wêne nehate xwendin.',
+    ],
+
+    // === AJAX Messages ===
+    'ajax' => [
+        'success' => 'Kirdar bi serkeftî hate kirin',
+        'error' => 'Di daxwazê de çewtiyek çêbû.',
+        'relation_updated' => 'Têkiliya galeriyê bi serkeftî hate nûkirin.',
+    ],
+
+    'info' => 'Agahî',
+    'warning' => 'Hişyarî',
+    'message' => 'Peyam',
+    'help' => 'Alîkarî',
 ];
-
-$lang['mod_gallery']['hata']=[
-'1'=>'Çavkaniya Wêne Nehate Standin',
-'2'=>'Pela Te Nîşan Kir Ne Wêne ye',
-'3'=>'Tika ye Pela dê Wêne Lê Were Nivîsandin Belî Bike',
-'4'=>'Tênê cureyên pelên png,jpg,jpeg,gif,png,bmp dikare wekî çap bên hilberîn',
-'5'=>'Wêne Nehate Çêkirin',
-'6'=>'Çapa Wêne Çênebû'
-];
-
-// Roles
-$lang['mod_gallery']['roll']=[
-	'ad'=>'Erkên Wênedankê',
-	'add' =>'Dikare Wêne Lê Bar Bike',
-	'edit' =>'Dikare Wêne Biguhere',
-	'sil'=>'Dikare Wêneyê Lêbarkirî Jê Bibe',
-	'list' =>'Dikare Rêveberiya Wêneyan Bibîne',
-	'moderate'=>'Dikare Rêveberiya Wêneyên Endamên Din Bike'
-];
-// Role Error Messages
-$lang['mod_gallery']['role_errors']=[
-	'1'=>'Erka te tune ku wêneyên kesên din biguherî!',
-	'2'=>'Erka te tune tu wêneyên kesên din jê bibî!',
-	'add' =>'Erka te tune ku wêneyan lê bar bikî!',
-	'sil'=>'Erka te ya jêbirina wêneyan tune!',
-	'edit' =>'Erka te ya guhertina wêne tune!',
-	'list' =>'Erka te ya dîtina rêveberiya wêneyan tune!'
-];
-
-$lang['mod_gallery']['warning'] = 'Hişyarî!';
-$lang['mod_gallery']['info'] = 'Agahî!';
-$lang['mod_gallery']['message'] = 'Peyam!';
-$lang['mod_gallery']['help'] = 'Alîkarî!';

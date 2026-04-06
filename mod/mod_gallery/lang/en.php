@@ -2,98 +2,132 @@
 /**
  * Gallery Management Module English Language File
  * Amed Framework CMS - Multilingual Content Management System
- *
- * This file contains all English translations for the gallery management module.
- * Professional translations with modern CMS terminology.
  */
 
 $lang['mod_gallery'] = [
-    // Image Upload Interface Labels
+    // === Admin Interface ===
     'admin' => [
-        1 => 'Image Upload Area',
-        2 => 'Click the Browse button below to select images!',
-        3 => 'You can select multiple images by holding down the <b>CTRL</b> key on your keyboard.',
-        4 => 'Uploading...',
-        5 => 'Preview',
-        6 => 'Waiting in upload queue...',
-        7 => 'File',
-        8 => 'Selected Files Count',
-        9 => 'Files Waiting in Queue',
-        10 => 'The size of the selected image \\\'+file.name+\\\' is too large.',
-        11 => 'Browse',
-        12 => 'Back',
-        14 => 'Image Management',
-        17 => 'Are you sure you want to delete this image?',
-        18 => 'Delete Image',
-        19 => 'Yes',
-        20 => 'Cancel',
-        21 => 'Save',
-        22 => 'Image Upload Area for %s Content',
-        23 => 'Image Name',
-        24 => 'Double-click on the image you want to rename.',
-        25 => 'No images found!',
-        26 => '---All Images---',
-        27 => 'No registered images found!',
-        28 => 'Select a category and add images',
-        29 => 'View Original Image',
-        30 => 'Edit Image Name',
-        31 => 'Remove Image',
-        35 => '\'   File %s uploaded to server as %s!   \'',
-        36 => 'Image Deleted',
-        37 => '"%s" Gallery Images',
-        38 => 'Add Images',
-        39 => 'Image Edited',
-        40 => 'Image named "+original+" has been renamed to "+text+"',
+        'title' => 'Gallery Management',
+        'list_title' => 'Galleries',
+        'create_gallery' => 'Create New Gallery',
+        'search_placeholder' => 'Search galleries...',
+        'no_results' => 'No galleries found matching your search.',
+        'no_galleries' => 'No galleries created yet.',
+        'add_images' => 'Add Images',
+        'rename_image' => 'Rename Image',
+        'back' => 'Back to Galleries',
+        'edit_hint' => 'Use the action buttons to preview, rename, or delete images.',
+        'view_original' => 'View Original',
+        'remove_image' => 'Remove Image',
+        'edit_image_name' => 'Rename Image',
+        'image_name' => 'Image Name',
+        'save' => 'Save Changes',
+        'cancel' => 'Cancel',
+        'loading_galleries' => 'Loading galleries...',
+        'uploading' => 'Uploading Images...',
+        'upload_button' => 'Upload Selected Images',
+        'upload_success' => '"%s" uploaded successfully.',
+        'upload_complete' => 'All selected images were uploaded successfully.',
+        'image_deleted' => 'Image has been deleted.',
+        'image_edited' => 'Image name updated successfully.',
+        'gallery_images_title' => 'Images in "%s"',
+        'delete_title' => 'Delete Image',
+        'delete_confirm' => 'Are you sure you want to delete this image? This action cannot be undone.',
+        'yes' => 'Yes, Delete',
+        'browse_description' => 'Click to select one or more images',
+        'ctrl_select_hint' => 'Hold <b>CTRL</b> to select multiple files.',
+        'area_title' => 'Upload Media',
+        'upload_area_for' => 'Upload images for "%s"',
+        'no_registered_images' => 'No images in this gallery.',
+        'select_category_hint' => 'Upload images to populate this gallery.',
+        'selected_files' => 'Selected files',
+        'preview_alt' => 'Gallery image preview',
+        'search_images' => 'Search images...',
+        'module_label' => 'Module',
+        'record_label' => 'Record',
+        'images_summary' => '%s images',
+        'no_filtered_images' => 'No images match your search.',
+        'clear_search' => 'Clear search',
+        'sort_label' => 'Sort',
+        'sort_newest' => 'Newest first',
+        'sort_oldest' => 'Oldest first',
+        'sort_name_asc' => 'Name A-Z',
+        'sort_name_desc' => 'Name Z-A',
+        'select_mode' => 'Select',
+        'done_selecting' => 'Done',
+        'select_all' => 'Select visible',
+        'clear_selection' => 'Clear',
+        'bulk_delete' => 'Delete selected',
+        'selected_summary' => '%s selected',
+        'bulk_delete_title' => 'Delete selected images',
+        'bulk_delete_confirm' => 'Are you sure you want to delete %s selected images? This action cannot be undone.',
+        'detail_title' => 'Image Details',
+        'detail_empty' => 'Select an image to inspect its details and actions.',
+        'detail_filename' => 'File name',
+        'detail_image_id' => 'Image ID',
+        'detail_position' => 'Position',
+        'open_detail' => 'Open details',
+        'previous_image' => 'Previous image',
+        'next_image' => 'Next image',
+        'upload_queue_title' => 'Upload Queue',
+        'queue_waiting' => 'Waiting',
+        'queue_uploading' => 'Uploading',
+        'queue_success' => 'Uploaded',
+        'queue_failed' => 'Failed',
+        'queue_ready' => '%s files ready to upload',
     ],
 
-    // Error Messages
-    'hata' => [
-        1 => 'Could not get image source',
-        2 => 'Specified file is not an image',
-        3 => 'Please specify the file where the image will be written',
-        4 => 'Only png, jpg, jpeg, gif, bmp files can be generated as output',
-        5 => 'Image could not be created',
-        6 => 'Image output could not be generated',
+    // === Gallery List / Grid ===
+    'grid' => [
+        'name' => 'Gallery Name',
+        'image_count' => 'Images',
+        'created_at' => 'Created',
+        'actions' => 'Actions',
+        'load_more' => 'Load More',
+        'empty_state' => 'No galleries to display.',
     ],
 
-    // Module Description
-    'module' => [
-        'description' => 'Gallery Module',
+    // === Errors ===
+    'errors' => [
+        'record' => 'Record not found!',
+        'upload_failed' => 'Upload failed!',
+        'delete_failed' => 'Could not delete the record.',
+        'load_failed' => 'Could not load galleries.',
+        'rename_failed' => 'Could not update the image name.',
     ],
 
-    // AJAX Response Messages
-    'ajax' => [
-        'success' => 'Success',
-        'error' => 'Error',
-    ],
-
-    // Role Management
+    // === Role Management ===
     'roll' => [
         'ad' => 'Gallery Management Roles',
-        'add' => 'Can add images.',
-        'edit' => 'Can edit added images',
-        'delete' => 'Can delete added images',
-        'list' => 'Can view image management',
-        'moderate' => 'Can manage images belonging to others',
-        'moderate_edit' => 'Can edit images belonging to others',
-        'moderate_delete' => 'Can delete images belonging to others',
+        'add' => 'Can add galleries and images',
+        'edit' => 'Can edit gallery items',
+        'delete' => 'Can delete gallery items',
+        'list' => 'Can view gallery management',
     ],
 
-    // Role-based Error Messages
+    // === Role Errors ===
     'role_errors' => [
-        1 => 'You do not have permission to edit images belonging to someone else',
-        2 => 'You do not have permission to delete images belonging to someone else.',
-        'add' => 'You do not have permission to add images',
-        'delete' => 'You do not have permission to delete images',
-        'edit' => 'You do not have permission to edit images',
-        'list' => 'You do not have permission to view image management',
-        'gallery' => 'You do not have permission to add images to galleries',
-        'file' => 'You do not have permission to add files to galleries',
+        'add' => 'You do not have permission to add galleries.',
+        'edit' => 'You do not have permission to edit gallery items.',
+        'delete' => 'You do not have permission to delete items.',
+        'list' => 'You do not have permission to view gallery management.',
+        'gallery' => 'You do not have permission to manage this gallery.',
+        'file' => 'You do not have permission to upload files to this gallery.',
     ],
 
-    // General
-    'warning' => 'Warning!',
-    'info' => 'Info!',
-    'message' => 'Message!',
-    'help' => 'Help!',
+    'hata' => [
+        'get_source_failed' => 'Image source could not be read.',
+    ],
+
+    // === AJAX Messages ===
+    'ajax' => [
+        'success' => 'Operation successful',
+        'error' => 'An error occurred during the request.',
+        'relation_updated' => 'Gallery relation successfully updated.',
+    ],
+
+    'info' => 'Info',
+    'warning' => 'Warning',
+    'message' => 'Message',
+    'help' => 'Help',
 ];

@@ -383,8 +383,9 @@ class mod_news_mod extends indexMain
             exit();
         }
         $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
-        $model = Load::model('mod_gallery');
+        $model = Load::model('mod_gallery_mod');
         $model->select('id, name');
+        $model->where("mod_name != ''");
         if ($q_param) {
             $model->addWhere("name LIKE '%" . $q_param . "%'");
         }
@@ -399,6 +400,8 @@ class mod_news_mod extends indexMain
                 ];
             }
         }
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
 
@@ -426,6 +429,7 @@ class mod_news_mod extends indexMain
             }
         }
         if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
 

@@ -383,8 +383,9 @@
         hero_slider_badge: "{{ lang.mod_news.hero_slider_badge|e('js') }}",
         picker: {
             gallery: "{{ lang.mod_news.picker.gallery|e('js') }}",
-            file: "{{ lang.mod_news.picker.file|e('js') }}",
-            video: "{{ lang.mod_news.picker.video|e('js') }}"
+            gallery: "{{ lang.mod_news.context_menu.gallery|e('js') }}",
+            file: "{{ lang.mod_news.context_menu.files|e('js') }}",
+            video: "{{ lang.mod_news.context_menu.video|e('js') }}"
         },
         loading: "{{ lang.mod_news.grid[104]|e('js') }}",
         grid: {
@@ -392,5 +393,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_news.js?v=3.8"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=3.9"></script>
 {% endblock %}

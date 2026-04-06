@@ -289,8 +289,9 @@ class mod_publication_mod extends indexMain
         }
 
         $q = Req::is_Post('q') ? Req::Post_Safe('q') : null;
-        $model = Load::model('mod_gallery');
+        $model = Load::model('mod_gallery_mod');
         $model->select('id, name');
+        $model->where("mod_name != ''");
         if ($q) {
             $model->addWhere("name LIKE '%" . $q . "%'");
         }

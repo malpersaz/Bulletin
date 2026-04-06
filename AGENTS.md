@@ -40,3 +40,12 @@ Module synchronization rule:
 - The agent must not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention.
 - The agent must not leave a half-completed refactor behind.
 - Before moving to the next module, the agent must perform a short review of the touched files and fix any obvious rule violations.
+
+Admin mobile rule:
+
+- The entire admin panel must be treated as a phone-only product surface.
+- Agents must develop admin UI for phone screens only; tablet and desktop layouts are not target platforms unless the user explicitly overrides this rule.
+- Agents must not use tablet-first, desktop-first, or responsive desktop assumptions when designing, implementing, or reviewing admin interfaces.
+- Admin UI decisions must optimize for fixed phone-sized app shells, touch interaction, compact vertical space usage, and one-hand usability.
+- During implementation and validation, agents must test admin UI flows only against phone-sized viewports or the repository's phone simulator shell.
+- Tablet and desktop visual polish, breakpoint tuning, and layout validation must not delay or redirect admin work unless the user explicitly requests them.

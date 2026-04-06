@@ -762,10 +762,18 @@ window.editSelected = function () {
     }
 };
 
+function openNewsGalleryManager(newsId) {
+    if (!newsId) {
+        return;
+    }
+
+    window.location.href = `${SITE_URL}mod_gallery/list/mod_news/${newsId}`;
+}
+
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        openMediaRelationPicker(mgr.selectedContentId, 'gallery');
+        openNewsGalleryManager(mgr.selectedContentId);
     }
 };
 
@@ -847,6 +855,10 @@ window.handleContextAction = function (action) {
         case 'edit':
             window.location.href = `${MODULE_URL}edit/${id}`;
             break;
+        case 'gallery':
+            closeContextMenu();
+            openNewsGalleryManager(id);
+            return;
         case 'delete':
             Swal.fire({
                 title: CONTENT_LANG.confirm_delete,
@@ -889,7 +901,6 @@ window.handleContextAction = function (action) {
             });
             break;
         case 'video':
-        case 'gallery':
         case 'files':
             closeContextMenu(); // close context menu before opening picker
             openMediaRelationPicker(id, action);
