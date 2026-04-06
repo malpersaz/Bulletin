@@ -19,6 +19,7 @@ $url['reset-password/(:any)']='mod_user/password_reset/$1';
 
 // Captcha
 $url['captcha']='mod_user/captcha';
+$url['dm/(:any)']='mod_user_pm/send/$1';
 
 #   mod_pictures && mod_imagecategories
 $url['gallery']='index/gallery';

@@ -66,7 +66,7 @@
                                 </span>
                                 {% if username is not empty %}
                                     <span class="meta-divider">·</span>
-                                    <a class="author-social-link author-pm" href="{{ site.sadres }}mod_user_pm/send/{{ username }}">
+                                    <a class="author-social-link author-pm" href="{{ site.sadres }}dm/{{ username|url_encode }}">
                                         <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message }}</span>
                                     </a>
                                 {% endif %}
