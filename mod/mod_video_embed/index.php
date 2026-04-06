@@ -184,13 +184,13 @@ class mod_video_embed_mod extends indexMain
     {
         // Check edit permission.
         if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit'], 1) === False) {
-            echo json_encode(['status' => 'error', 'message' => 'Permissionniz yok']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['permission_denied']]);
             return;
         }
 
         $id = intval(Req::Post_Safe('id'));
         if (!$id) {
-            echo json_encode(['status' => 'error', 'message' => 'ID eksik']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['id_missing']]);
             return;
         }
 
@@ -204,7 +204,7 @@ class mod_video_embed_mod extends indexMain
 
         // Check moderate permission if content belongs to another user.
         if ($this->user->checkPermission('mod_video_embed', 'moderate_edit', $this->mod_video_embed_model->user_id, $this->lang['mod_video_embed']['role_errors']['moderate_edit']) === False) {
-            echo json_encode(['status' => 'error', 'message' => 'Bu içeriği düzenleme permissionniz yok']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['content_permission_denied']]);
             return;
         }
 
@@ -234,7 +234,7 @@ class mod_video_embed_mod extends indexMain
                             'url' => $this->site['radres'] . 'mod_video_embed/thumb/' . $new_image_url . '?v=' . time()
                         ]);
                     } else {
-                        echo json_encode(['status' => 'error', 'message' => 'Veritabanı güncellenemedi.']);
+                        echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['db_update_failed']]);
                     }
                 } else {
                     echo json_encode(['status' => 'error', 'message' => $image->error]);
@@ -243,7 +243,7 @@ class mod_video_embed_mod extends indexMain
                 echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
             }
         } else {
-            echo json_encode(['status' => 'error', 'message' => 'Dosya yüklenmedi']);
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['file_not_uploaded']]);
         }
     }
 
@@ -278,13 +278,13 @@ class mod_video_embed_mod extends indexMain
                 if ($image->_delete_files($option)) {
                 $this->mod_video_embed_model->image = '';
                 $this->mod_video_embed_model->update('id');
-                echo 'Oke';
+                echo $this->lang['mod_video_embed']['ajax']['success'];
             } else {
                 echo $image->error;
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo $this->lang['mod_video_embed']['ajax']['success'];
         }
     }
 
@@ -815,17 +815,7 @@ class mod_video_embed_mod extends indexMain
 
     private function _autofillMessage($key)
     {
-        $messages = [
-            'permission_denied' => 'You do not have permission to fetch video details.',
-            'missing_source' => 'Paste a YouTube URL or embed code first.',
-            'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
-            'success' => 'Video details were imported from YouTube.',
-            'generic_error' => 'Video details could not be imported.',
-            'fetch_failed' => 'YouTube metadata could not be fetched.',
-            'download_failed' => 'Thumbnail image could not be downloaded.',
-        ];
-
-        return $messages[$key] ?? $messages['generic_error'];
+        return $this->lang['mod_video_embed']['autofill'][$key] ?? $this->lang['mod_video_embed']['autofill']['generic_error'];
     }
 
     private function _extractYouTubeVideoId($input)
@@ -1186,3 +1176,28 @@ class mod_video_embed_mod extends indexMain
         return implode(',', $parts);
     }
 }
+rval->s;
+
+        if ($hours > 0) {
+            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+        }
+
+        return sprintf('%02d:%02d', $minutes, $seconds);
+    }
+
+    private function _makeKeywordString($title)
+    {
+        $title = trim((string) $title);
+        if ($title === '') {
+            return '';
+        }
+
+        $parts = preg_split('/\s+/', strtolower($title));
+        $parts = array_filter(array_unique(array_map(static function ($part) {
+            return trim($part, " \t\n\r\0\x0B.,!?;:\"'()[]{}");
+        }, $parts)));
+
+        return implode(',', $parts);
+    }
+}
+

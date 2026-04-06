@@ -23,6 +23,24 @@ $lang['mod_video_embed'] = [
         'success' => 'Video details imported successfully.',
         'partial' => 'Cover image and basic details were imported. Fill the remaining fields if YouTube did not expose all metadata.',
         'error' => 'Video details could not be imported.',
+        'permission_denied' => 'You do not have permission to fetch video details.',
+        'missing_source' => 'Paste a YouTube URL or embed code first.',
+        'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
+        'fetch_failed' => 'YouTube metadata could not be fetched.',
+        'download_failed' => 'Thumbnail image could not be downloaded.',
+    ],
+    'ajax' => [
+        'permission_denied' => 'You do not have permission to perform this action.',
+        'id_missing' => 'ID is missing.',
+        'db_update_failed' => 'Database could not be updated.',
+        'file_not_uploaded' => 'File was not uploaded.',
+        'content_permission_denied' => 'You do not have permission to edit this content.',
+        'success' => 'Operation successful!',
+        'error' => 'Error occurred!',
+        'fatal_error' => 'Fatal Error Occurred!',
+    ],
+    'js_fallback' => [
+        'video' => 'video',
     ],
     'wizard' => [
         'step' => [

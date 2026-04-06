@@ -348,11 +348,11 @@ class VideoManager {
             if (this.selectedStatus === 'y') {
                 // Currently published -> show "Unpublish"
                 publishIcon.className = 'bi bi-eye-slash-fill';
-                publishText.textContent = VIDEO_LANG.unpublish || 'Neweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.unpublish : 'Neweşîne';
             } else {
                 // Currently draft -> show "Publish"
                 publishIcon.className = 'bi bi-eye-fill';
-                publishText.textContent = VIDEO_LANG.publish || 'Biweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.publish : 'Biweşîne';
             }
         }
     }

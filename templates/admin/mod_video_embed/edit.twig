@@ -347,7 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
             slug = slug.replace(/__/g, '_');
         }
 
-        return slug || 'video';
+        return slug || '{{ lang.mod_video_embed.js_fallback.video|e('js') }}';
     }
 
     function updateSeoPreview() {

@@ -1,14 +1,4 @@
 <?php
-/**
- * Video Embed Module - Swedish Language File
- *
- * @package Rojname
- * @module  mod_video_embed
- * @version 1.0.0
- * @author  AKM Software
- * @license Proprietary
- */
-
 $lang['mod_video_embed'] = [
     'add' => 'Lägg till Fjärrvideo',
     'edit' => 'Redigera Fjärrvideo',
@@ -32,6 +22,11 @@ $lang['mod_video_embed'] = [
         'success' => 'Videodetaljer importerades.',
         'partial' => 'Omslagsbild och grundläggande uppgifter importerades. Fyll i återstående fält om YouTube inte exponerade all metadata.',
         'error' => 'Videodetaljer kunde inte importeras.',
+        'permission_denied' => 'You do not have permission to fetch video details.',
+        'missing_source' => 'Paste a YouTube URL or embed code first.',
+        'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
+        'fetch_failed' => 'YouTube metadata could not be fetched.',
+        'download_failed' => 'Thumbnail image could not be downloaded.',
     ],
     'wizard' => [
         'step' => [
@@ -70,7 +65,7 @@ $lang['mod_video_embed'] = [
             'next' => 'Fortsätt',
             'prev' => 'Bakåt',
             'finish' => 'Spara och Slutför',
-        ]
+        ],
     ],
     'message' => [
         'oke' => [
@@ -225,9 +220,64 @@ $lang['mod_video_embed'] = [
             'title' => 'Vänligen välj datum',
             'year' => 'År',
         ],
-        'days_short' => ['Sön', 'Mån', 'Tis', 'Ons', 'Tor', 'Fre', 'Lör'],
-        'days' => ['Söndag', 'Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag'],
-        'months_short' => ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dec'],
-        'months' => ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'],
+        'days_short' => [
+            0 => 'Sön',
+            1 => 'Mån',
+            2 => 'Tis',
+            3 => 'Ons',
+            4 => 'Tor',
+            5 => 'Fre',
+            6 => 'Lör',
+        ],
+        'days' => [
+            0 => 'Söndag',
+            1 => 'Måndag',
+            2 => 'Tisdag',
+            3 => 'Onsdag',
+            4 => 'Torsdag',
+            5 => 'Fredag',
+            6 => 'Lördag',
+        ],
+        'months_short' => [
+            0 => 'Jan',
+            1 => 'Feb',
+            2 => 'Mar',
+            3 => 'Apr',
+            4 => 'Maj',
+            5 => 'Jun',
+            6 => 'Jul',
+            7 => 'Aug',
+            8 => 'Sep',
+            9 => 'Okt',
+            10 => 'Nov',
+            11 => 'Dec',
+        ],
+        'months' => [
+            0 => 'Januari',
+            1 => 'Februari',
+            2 => 'Mars',
+            3 => 'April',
+            4 => 'Maj',
+            5 => 'Juni',
+            6 => 'Juli',
+            7 => 'Augusti',
+            8 => 'September',
+            9 => 'Oktober',
+            10 => 'November',
+            11 => 'December',
+        ],
+    ],
+    'ajax' => [
+        'permission_denied' => 'You do not have permission to perform this action.',
+        'id_missing' => 'ID is missing.',
+        'db_update_failed' => 'Database could not be updated.',
+        'file_not_uploaded' => 'File was not uploaded.',
+        'content_permission_denied' => 'You do not have permission to edit this content.',
+        'success' => 'Operation successful!',
+        'error' => 'Error occurred!',
+        'fatal_error' => 'Fatal Error Occurred!',
+    ],
+    'js_fallback' => [
+        'video' => 'video',
     ],
 ];
