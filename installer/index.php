@@ -13,7 +13,7 @@ class installer extends installerbase
 
     public function install($mods)
     {
-       //$this->db->start_transaction();
+        //$this->db->start_transaction();
         foreach ($mods as $mod) {
             try {
                 $m = $this->load_mod($mod);
@@ -35,7 +35,7 @@ class installer extends installerbase
     public function load_mod($modul)
     {
         if (file_exists($modul . DS . 'index.php') === false) {
-            throw new Exception($modul . " Modülü Bulunamadı!");
+            throw new Exception("Module '" . $modul . "' was not found");
         }
         require_once(installer_dir . $modul . DS . "index.php");
         return new $modul();
@@ -52,7 +52,7 @@ class installer extends installerbase
                 echo $e->getMessage();
                 exit();
             }
-            if ($m->uninstall() !== true) {
+            if ($m->uninstall() !== true || $m->uninstall_blocked === TRUE) {
                 //$this->db->rollback();
                 $this->error("Error occurred while uninstalling '" . $mod . "'");
                 exit();
@@ -112,14 +112,14 @@ $installer->system_mesaj($lang['lang']['system']['starting']);
 $installer->system_mesaj(sprintf($lang['lang']['system']['installing'], 'lang'));
 if ($installer->load_mod('lang')->install() !== TRUE) {
     //$installer->db->rollback();
-    $installer->error("'lang' Yüklenirken Hata Oluştu");
+    $installer->error("Error occurred while installing 'lang'");
     exit();
 }
 
 $installer->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mods'));
 if ($installer->load_mod('mods')->install() !== TRUE) {
     //$installer->db->rollback();
-    $installer->error("'mods' Yüklenirken Hata Oluştu");
+    $installer->error("Error occurred while installing 'mods'");
     exit();
 }
 
@@ -127,21 +127,21 @@ $installer->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_use
 $mod_user = $installer->load_mod('mod_user');
 if ($mod_user->install() !== TRUE) {
     //$installer->db->rollback();
-    $installer->error("'mod_user' Yüklenirken Hata Oluştu");
+    $installer->error("Error occurred while installing 'mod_user'");
     exit();
 }
 
 $installer->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_user_group'));
 if ($installer->load_mod('mod_user_group')->install() !== TRUE) {
    // $installer->db->rollback();
-    $installer->error("'mod_user_group' Yüklenirken Hata Oluştu");
+    $installer->error("Error occurred while installing 'mod_user_group'");
     exit();
 }
 
 $installer->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_user (part 2)'));
 if ($mod_user->install_finish() !== TRUE) {
    // $installer->db->rollback();
-    $installer->error("'mod_user' (finish) Yüklenirken Hata Oluştu");
+    $installer->error("Error occurred while finishing 'mod_user' installation");
     exit();
 }
 //$installer->db->commit();

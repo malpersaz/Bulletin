@@ -9,6 +9,11 @@ class mod_publication_helper extends indexBase
 
     public function _categories()
     {
+        if (!$this->isFeatureReady('publication.front')) {
+            $this->tema->ctx_set('categories', []);
+            return;
+        }
+
         $category_model = Load::model('mod_publication_category');
         $category_model->where_lang_and_root($this->site['lang'], 'n');
         $category_model->order('order', 'ASC')->gR();
@@ -30,6 +35,10 @@ class mod_publication_helper extends indexBase
 
     public function publication($seo)
     {
+        if (!$this->guardFeatureOr404('publication.front')) {
+            return;
+        }
+
         $this->_categories();
         $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
         $publication = Load::model('mod_publication.publications');
@@ -47,7 +56,6 @@ class mod_publication_helper extends indexBase
             return;
         }
 
-        // Hejmara xwendinê zêde bike (IP Bazlı)
         $this->_update_view_count('mod_publication', $publication->id);
 
         if (isset($publication->video) && $publication->video != '') {
@@ -74,6 +82,10 @@ class mod_publication_helper extends indexBase
 
     public function publications($category = NULL, $page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.front')) {
+            return;
+        }
+
         $this->_categories();
 
         if ($page == '' || $page == NULL) {
@@ -159,6 +171,10 @@ class mod_publication_helper extends indexBase
 
     public function _latest_publications($limit, $select)
     {
+        if (!$this->isFeatureReady('publication.latest')) {
+            return [];
+        }
+
         $publication = Load::model('mod_publication')
             ->select($select)
             ->where_lang_and_status($this->site['lang'], 'y')
@@ -175,6 +191,10 @@ class mod_publication_helper extends indexBase
 
     public function _latest_authors($limit)
     {
+        if (!$this->isFeatureReady('publication.authors')) {
+            return [];
+        }
+
         $publication = Load::model('mod_publication.publications');
         $sql = "SELECT p.*
             FROM publications p
@@ -244,6 +264,10 @@ class mod_publication_helper extends indexBase
 
     public function authors($page = 1, $page_limit = 12)
     {
+        if (!$this->guardFeatureOr404('publication.authors')) {
+            return;
+        }
+
         if ($page == '' || $page == null) {
             $page = 1;
         }
@@ -327,6 +351,10 @@ class mod_publication_helper extends indexBase
 
     public function author($username = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.authors')) {
+            return;
+        }
+
         if ($username == null || $username === '') {
             return $this->_404();
         }
@@ -414,6 +442,10 @@ class mod_publication_helper extends indexBase
 
     public function archive()
     {
+        if (!$this->guardFeatureOr404('publication.archive')) {
+            return;
+        }
+
         $publication = Load::model('mod_publication');
         $sql = "SELECT YEAR(MAX(created_at)) AS max_yil, YEAR(MIN(created_at)) AS min_yil FROM `mod_publication` WHERE 1";
         $publication->fetch_array($sql);

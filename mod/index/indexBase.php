@@ -1,9 +1,5 @@
 <?php
-/* AKM Software
- * @ 2011
- * index Base
- * mod/indexBase/index.php
- */
+
 abstract class indexBase
 {
     public $tema;
@@ -20,32 +16,20 @@ abstract class indexBase
     public function __construct()
     {
         $this->tema = Load::lib('TwigTemplate');
-        // print_r($this->tema);
         $this->site = Kayit::getir('site_config');
-        $this->_get_site_settings(); // Call the new site settings loader
+        $this->_get_site_settings();
         $this->tema->setGlobal('site', $this->site);
-        //print_r($this->site);
         $this->lang = Load::lang('index');
         $this->tema->ctx_set('tarih', Helper::format_date(time()));
         $this->tema->lang($this->lang);
-        $this->session=Load::lib('Session');
-        //print_r($_SESSION);
+        $this->session = Load::lib('Session');
     }
 
-        public function _index()
+    public function _index()
     {
         $this->_site();
-    //  $this->tema->tpl('index/index');
-    //  $this->tema->loadFilter('output', 'tidy');
-    //  $this->tema->loadFilter ( 'output', 'trimwhitespace' );
-    //  if ($this->tema->getVeri('tpl') === NULL) {
-    //     $this->tema->tpl('');
-    //  }
-    //  print_r($this->tema);
     }
 
-
-    // ACL'nin dahil olduğu grupları getir
     public function _getAcl($acl_id)
     {
         Cache::$sure = 60 * 60 * 24;
@@ -54,7 +38,6 @@ abstract class indexBase
         }
         $acl = Load::model('mod_acl');
         $acl->where_id($acl_id)->gRo();
-        // Böyle bir acl yok
         if ($acl->getSize() === 0) {
             return FALSE;
         }
@@ -64,8 +47,6 @@ abstract class indexBase
     }
 
 
-
-    // Gallery Images to Theme
     public function _gallery_resimgetir($mod, $vid)
     {
         $gallery = Load::model('mod_gallery');
@@ -149,7 +130,7 @@ abstract class indexBase
 
         if (!empty($vid_ids)) {
             $vid_model = Load::model('mod_video_embed');
-            $vid_model->select('id, name, embed, image'); // Fetch embed and resim (poster)
+            $vid_model->select('id, name, embed, image');
             $vid_model->where_id($vid_ids)->gR();
             if ($vid_model->getSize() > 0) {
                 $results = array_merge($results, $vid_model->toArray());
@@ -193,7 +174,6 @@ abstract class indexBase
         }
         $list = Load::model($mod);
         $list->flush();
-        //$list->addWhere(array('id'=>$id),' OR');
         $list->addWhere(['parent_id' => $id], ' OR');
 
         $list->select($select)->order($order, 'ASC');
@@ -213,20 +193,8 @@ abstract class indexBase
 
     public function _site()
     {
-        //$this->site['title'] = $this->lang['index']['title'];
-        //$this->site['keywords'] = $this->lang['index']['keywords'];
-        //$this->site['description'] = $this->lang['index']['description'];
-
-
-
-        //print_r($this->site);
-       // $this->tema->setGlobal('site', $this->site);
     }
 
-    /**
-     * Fetch site-wide settings for current language and add to site variables
-     * This replaces the old _get_locale_settings.
-     */
     private function _get_site_settings()
     {
         $current_lang = $this->site['lang'] ?? 'tr';
@@ -238,18 +206,43 @@ abstract class indexBase
             $settings_model->sync();
             $settings_data = $settings_model->getResultOne()->toArray();
 
-            // Direct assignment with only necessary transformation
             foreach ($settings_data as $key => $value) {
                 $final_key = ($key === 'email') ? 'mail' : $key;
                 $this->site[$final_key] = $value;
             }
         }
 
-        // Load active social media links
         Load::modelfile('mod_settings.mod_settings_social');
         $social_model = new mod_settings_social_model();
         $social_model->where_is_active('y')->order('display_order', 'ASC')->gR();
         $this->site['social_links'] = ($social_model->getSize() > 0) ? $social_model->toArray() : [];
+    }
+
+    protected function isFeatureReady($feature)
+    {
+        $runtime = Load::lib('ModuleRuntime');
+        return $runtime->isReady($feature);
+    }
+
+    protected function getFeatureFailureReason($feature)
+    {
+        $runtime = Load::lib('ModuleRuntime');
+        return $runtime->getFailureReason($feature);
+    }
+
+    protected function guardFeatureOr404($feature)
+    {
+        $runtime = Load::lib('ModuleRuntime');
+        if (!$runtime->requireReady($feature, [
+            'handler' => get_class($this),
+            'url' => isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '',
+            'lang' => isset($this->site['lang']) ? $this->site['lang'] : null,
+        ])) {
+            $this->_404();
+            return false;
+        }
+
+        return true;
     }
 
     public function _parent_id_pages($id)
@@ -331,7 +324,6 @@ abstract class indexBase
         }
 
         $this->session = Load::lib('Session');
-        // Eğer Üye Grubu Yoksa Üye Grubu 0'dır yani ziyaretçi
         $grup = $this->session->getir('group_id') !== false ? $this->session->getir('group_id') : 0;
         if (!in_array($grup, $acl)) {
             $this->tema->tpl('index/register');
@@ -354,12 +346,6 @@ abstract class indexBase
         exit();
     }
 
-    /**
-     * IP Bazlı Görüntüleme Sayısını Günceller (Anti-F5 Spam)
-     * @param string $table Tablo adı (Örn: mod_news)
-     * @param int $id İçerik ID'si
-     * @return bool
-     */
     public function _update_view_count($table, $id)
     {
         if (empty($table) || empty($id)) {
@@ -368,18 +354,15 @@ abstract class indexBase
 
         $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
         $today = date('Y-m-d');
-        
+
         $db = Load::lib('Database');
-        
-        // Bu IP bugün bu içeriği görmüş mü kontrol et
+
         $check = $db->query("SELECT id FROM `sys_view_logs` WHERE `table_name` = '$table' AND `item_id` = " . intval($id) . " AND `ip_address` = '$ip' AND `created_at` = '$today' LIMIT 1");
-        
+
         if ($db->getSize() === 0) {
-            // Log kaydı ekle (Duplicate entry hatasını önlemek için IGNORE kullanıyoruz)
             $db->query("INSERT IGNORE INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
                         VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
-            
-            // Eğer bir satır eklendiyse view count artır
+
             if ($db->affected_rows() > 0) {
                 $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
                 return true;

@@ -2,56 +2,153 @@
 
 require_once(__DIR__ . '/../index/indexBase.php');
 
-
 class management_mod extends indexBase
 {
-    private function moduleExists($moduleName)
+    private $toggleableModules = [
+        'mod_content',
+        'mod_news',
+        'mod_publication',
+        'mod_video_embed',
+    ];
+
+    private function runtime()
     {
-        return is_dir(mod_dir . $moduleName);
+        return Load::lib('ModuleRuntime');
+    }
+
+    private function canManageModuleStatus()
+    {
+        $userLang = Load::lang('mod_user');
+        return $this->user->hasPermission('mod_user', 'acl', $userLang['mod_user']['role_errors']['acl'], 1);
+    }
+
+    private function moduleStatusColumnExists()
+    {
+        $this->db->fetch_array("SHOW COLUMNS FROM `mods` LIKE 'status'");
+        return $this->db->getSize() !== 0;
+    }
+
+    private function moduleSchemaReadyColumnExists()
+    {
+        $this->db->fetch_array("SHOW COLUMNS FROM `mods` LIKE 'schema_ready'");
+        return $this->db->getSize() !== 0;
+    }
+
+    private function normalizeModuleStatus($status)
+    {
+        if ($status === 'enable' || $status === 'ready' || $status === 'installed') {
+            return 'ready';
+        }
+
+        if ($status === 'disable' || $status === 'disabled') {
+            return 'disabled';
+        }
+
+        return null;
+    }
+
+    private function redirectBackToPanel()
+    {
+        $target = $this->site['sadres'] . 'mod_user/panel';
+        if (!empty($_SERVER['HTTP_REFERER'])) {
+            $target = $_SERVER['HTTP_REFERER'];
+        }
+        Helper::yonlendir($target, 0);
+    }
+
+    private function loadRegistryRow($moduleName)
+    {
+        $model = Load::model('mods');
+        $model->where_mod_name($moduleName)->limit(1)->gRo();
+
+        if ($model->getSize() === 0) {
+            return null;
+        }
+
+        $model->sync();
+        return $model;
+    }
+
+    private function persistRegistryState($model, $status, $schemaReady)
+    {
+        $model->status = $status;
+        if ($this->moduleSchemaReadyColumnExists()) {
+            $model->schema_ready = $schemaReady;
+        }
+        if (property_exists($model, 'updated_at')) {
+            $model->updated_at = NOW;
+        }
+
+        return $model->update('mod_id') !== false;
+    }
+
+    private function isModuleInstalled($moduleName)
+    {
+        return $this->runtime()->isModuleInstalled($moduleName);
+    }
+
+    private function isFeatureReady($feature)
+    {
+        return $this->runtime()->isReady($feature);
+    }
+
+    private function tableExists($tableName)
+    {
+        return $this->runtime()->tableExists($tableName);
+    }
+
+    private function getModuleHealth($moduleName)
+    {
+        return $this->runtime()->getModuleHealth($moduleName);
     }
 
     function __construct()
     {
-                parent::__construct();
+        parent::__construct();
 
         $this->tema = Load::lib('AdminTemplate');
-        //$this->site = Kayit::getir('site_config');
         $this->lang = Load::lang('management');
         $this->tema->lang($this->lang);
         $this->db = Load::lib('Database');
         $this->session = Load::lib('Session');
         $this->user = Load::model('mod_user.user');
-        //print_r($_SESSION);
     }
 
-
-    /***************
-    ADMIN PANEL
-     ***************/
     public function _index()
     {
         $this->_site();
-        //$this->_lang();
         $this->tema->lang(Load::lang('mod_user'));
         $this->tema->lang(Load::lang('mod_user_pm'));
         $this->tema->lang(Load::lang('mod_user_group'));
         $this->tema->lang(Load::lang('mod_acl'));
 
         $sharedModules = [
-            'mod_content' => $this->moduleExists('mod_content'),
-            'mod_news' => $this->moduleExists('mod_news'),
-            'mod_publication' => $this->moduleExists('mod_publication'),
-            'mod_video_embed' => $this->moduleExists('mod_video_embed'),
+            'mod_content' => $this->isFeatureReady('content.front'),
+            'mod_news' => $this->isFeatureReady('news.front'),
+            'mod_publication' => $this->isFeatureReady('publication.front'),
+            'mod_video_embed' => $this->isFeatureReady('video_embed.front'),
+        ];
+        $sharedModuleHealth = [
+            'mod_content' => $this->getModuleHealth('mod_content'),
+            'mod_news' => $this->getModuleHealth('mod_news'),
+            'mod_publication' => $this->getModuleHealth('mod_publication'),
+            'mod_video_embed' => $this->getModuleHealth('mod_video_embed'),
+            'mod_category' => $this->getModuleHealth('mod_category'),
+            'mod_news_category' => $this->getModuleHealth('mod_news_category'),
+            'mod_publication_category' => $this->getModuleHealth('mod_publication_category'),
+            'mod_video_embed_category' => $this->getModuleHealth('mod_video_embed_category'),
         ];
 
         $this->tema->setGlobal('shared_admin_modules', $sharedModules);
-        
-        // Load languages for wizard (from database)
+        $this->tema->setGlobal('shared_admin_module_health', $sharedModuleHealth);
+
         $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo ASC");
         $this->tema->setGlobal('lang_lang', $this->db->getResult()->toArray());
 
-        // Load Video Embed categories for wizard
-        if ($this->moduleExists('mod_video_embed_category')) {
+        if (
+            $this->isModuleInstalled('mod_video_embed_category')
+            && $this->tableExists('mod_video_embed_category')
+        ) {
             $mod_video_category = Load::model('mod_video_embed_category');
             $mod_video_category->select('id, name, lang');
             $mod_video_category->addWhere("parent_id != '0'");
@@ -60,9 +157,8 @@ class management_mod extends indexBase
         } else {
             $this->tema->setGlobal('video_embed_categories', []);
         }
-        
-        // $this->tema->tpl('management/index');
     }
+
     public function _site()
     {
         $this->site['title'] = $this->lang['management']['1'];
@@ -74,5 +170,106 @@ class management_mod extends indexBase
     {
         $this->db->fetch_array("SELECT name,seo FROM `lang` LIMIT 0,3");
         $this->tema->setGlobal('_lang_list', $this->db->result);
+    }
+
+    public function module_status($moduleName = null, $status = null)
+    {
+        Run::import('management', '_index');
+
+        if ($this->canManageModuleStatus() === false) {
+            return false;
+        }
+
+        $moduleName = Req::Url_Clear((string) $moduleName);
+        $status = $this->normalizeModuleStatus(Req::Url_Clear((string) $status));
+
+        if (!in_array($moduleName, $this->toggleableModules, true) || $status === null) {
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        if ($this->moduleStatusColumnExists() === false) {
+            error_log('module_status_toggle_failed: missing status column for module ' . $moduleName);
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        $model = $this->loadRegistryRow($moduleName);
+        if ($model === null) {
+            error_log('module_status_toggle_failed: module row not found for ' . $moduleName);
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        $schemaReady = ($status === 'ready') ? 'y' : (($status === 'disabled') ? 'n' : 'n');
+        if ($this->persistRegistryState($model, $status, $schemaReady) === false) {
+            error_log('module_status_toggle_failed: update failed for ' . $moduleName . ' -> ' . $status);
+        } else {
+            error_log('module_status_toggled: ' . json_encode([
+                'module' => $moduleName,
+                'status' => $status,
+                'user_id' => $this->session->getir('id'),
+            ]));
+        }
+
+        $this->redirectBackToPanel();
+        return true;
+    }
+
+    public function module_repair($moduleName = null)
+    {
+        Run::import('management', '_index');
+
+        if ($this->canManageModuleStatus() === false) {
+            return false;
+        }
+
+        $moduleName = Req::Url_Clear((string) $moduleName);
+        if (!in_array($moduleName, $this->toggleableModules, true)) {
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        if ($this->moduleStatusColumnExists() === false) {
+            error_log('module_repair_failed: missing status column for module ' . $moduleName);
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        $model = $this->loadRegistryRow($moduleName);
+        if ($model === null) {
+            error_log('module_repair_failed: module row not found for ' . $moduleName);
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        if ($model->status === 'disabled') {
+            error_log('module_repair_skipped: module is disabled ' . $moduleName);
+            $this->redirectBackToPanel();
+            return false;
+        }
+
+        $health = $this->getModuleHealth($moduleName);
+        $targetStatus = 'ready';
+        $schemaReady = 'y';
+
+        if (!empty($health['missing_modules']) || !empty($health['missing_tables'])) {
+            $targetStatus = 'degraded';
+            $schemaReady = 'n';
+        }
+
+        if ($this->persistRegistryState($model, $targetStatus, $schemaReady) === false) {
+            error_log('module_repair_failed: update failed for ' . $moduleName);
+        } else {
+            error_log('module_repaired: ' . json_encode([
+                'module' => $moduleName,
+                'status' => $targetStatus,
+                'schema_ready' => $schemaReady,
+                'user_id' => $this->session->getir('id'),
+            ]));
+        }
+
+        $this->redirectBackToPanel();
+        return true;
     }
 }

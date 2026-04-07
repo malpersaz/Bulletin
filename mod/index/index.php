@@ -1,10 +1,5 @@
 <?php
 
-/* AKM Software
- * @ 2010
- * index Modül Sayfası
- * mod/index/index.php
- */
 require_once(__DIR__ . '/indexBase.php');
 
 class index_mod extends indexBase
@@ -14,16 +9,12 @@ class index_mod extends indexBase
         parent::__construct();
     }
 
-    // İndex
     public function index()
     {
         $this->_index();
         $this->tema->tpl('index/index');
     }
 
-
-
-    # mod_page
     public function page($seo = null)
     {
         $page = Load::helper("index.mod_page");
@@ -31,9 +22,12 @@ class index_mod extends indexBase
         unset($page);
     }
 
-    # mod_video_embed
     public function videos($category = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('video_embed.front')) {
+            return;
+        }
+
         $vid = Load::helper("index.mod_video_embed");
         $vid->videos($category, $page);
         unset($vid);
@@ -41,12 +35,15 @@ class index_mod extends indexBase
 
     public function video($id = null)
     {
+        if (!$this->guardFeatureOr404('video_embed.front')) {
+            return;
+        }
+
         $vid = Load::helper("index.mod_video_embed");
         $vid->video($id);
         unset($vid);
     }
 
-    # mod_pictures
     public function gallery($category = null)
     {
         $res = Load::helper("index.mod_imagecategories");
@@ -62,10 +59,12 @@ class index_mod extends indexBase
     }
 
 
-
-    # mod_content
     public function content($seo = null)
     {
+        if (!$this->guardFeatureOr404('content.front')) {
+            return;
+        }
+
         Load::lib("Session");
         $content = Load::helper("index.mod_content");
         $content->content($seo);
@@ -74,6 +73,10 @@ class index_mod extends indexBase
 
     public function contents($category = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('content.front')) {
+            return;
+        }
+
         $content = Load::helper("index.mod_content");
         $content->contents($category, $page);
         unset($content);
@@ -81,6 +84,10 @@ class index_mod extends indexBase
 
     public function arsiv()
     {
+        if (!$this->guardFeatureOr404('content.archive')) {
+            return;
+        }
+
         $content = Load::helper('index.mod_content');
         $content->arsiv();
         unset($content);
@@ -88,6 +95,10 @@ class index_mod extends indexBase
 
     public function news($seo = null)
     {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
         Load::lib("Session");
         $news = Load::helper("index.mod_news");
         $news->news($seo);
@@ -96,6 +107,10 @@ class index_mod extends indexBase
 
     public function newses($category = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
         $news = Load::helper("index.mod_news");
         $news->newses($category, $page);
         unset($news);
@@ -103,6 +118,10 @@ class index_mod extends indexBase
 
     public function news_archive()
     {
+        if (!$this->guardFeatureOr404('news.archive')) {
+            return;
+        }
+
         $news = Load::helper('index.mod_news');
         $news->arsiv();
         unset($news);
@@ -110,6 +129,10 @@ class index_mod extends indexBase
 
     public function publication($seo = null)
     {
+        if (!$this->guardFeatureOr404('publication.front')) {
+            return;
+        }
+
         Load::lib("Session");
         $publication = Load::helper("index.mod_publication");
         $publication->publication($seo);
@@ -118,6 +141,10 @@ class index_mod extends indexBase
 
     public function publications($category = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.front')) {
+            return;
+        }
+
         $publication = Load::helper("index.mod_publication");
         $publication->publications($category, $page);
         unset($publication);
@@ -125,6 +152,10 @@ class index_mod extends indexBase
 
     public function publication_archive()
     {
+        if (!$this->guardFeatureOr404('publication.archive')) {
+            return;
+        }
+
         $publication = Load::helper('index.mod_publication');
         $publication->archive();
         unset($publication);
@@ -154,6 +185,11 @@ class index_mod extends indexBase
 
     public function _latest_videos($t, $limit, $select)
     {
+        if (!$this->isFeatureReady('video_embed.latest')) {
+            $t->ctx_set('latest_videos', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_video_embed');
         $result = $helper->_latest_videos($limit, $select);
         unset($helper);
@@ -173,12 +209,8 @@ class index_mod extends indexBase
         $fullmanset = Load::helper("index.mod_headline");
         $result = $fullmanset->all($limit);
         $t->ctx_set('fullmanset', $result);
-        // unset($fullmanset);
     }
 
-
-
-    // Aktif Anket
     public function _anket($t)
     {
         $anket = Load::helper("index.mod_survey");
@@ -187,14 +219,12 @@ class index_mod extends indexBase
         unset($anket);
     }
 
-    // Anket Oy ver
     public function oyver()
     {
         $anket = Load::helper("index.mod_survey");
         return $anket->oyver();
     }
 
-    # search
     public function search($kelime = null)
     {
         $ara = Load::helper('index.search');
@@ -211,7 +241,6 @@ class index_mod extends indexBase
         unset($popup);
     }
 
-    #mod_menu
     public function _menu($t)
     {
         $menu = Load::helper("index.mod_menu");
@@ -219,7 +248,6 @@ class index_mod extends indexBase
         $t->ctx_set('menu', $result);
     }
 
-    #mod_slider
     public function _slider($t, $limit)
     {
         $slider = Load::helper("index.mod_slider");
@@ -237,6 +265,11 @@ class index_mod extends indexBase
 
     public function _latest_content($t, $limit, $select)
     {
+        if (!$this->isFeatureReady('content.latest')) {
+            $t->ctx_set('latest_content', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_content');
         $result = $helper->_latest_content($limit, $select);
         $t->ctx_set('latest_content', $result);
@@ -245,6 +278,11 @@ class index_mod extends indexBase
 
     public function _latest_news($t, $limit, $select)
     {
+        if (!$this->isFeatureReady('news.latest')) {
+            $t->ctx_set('latest_news', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_news');
         $result = $helper->_latest_news($limit, $select);
         $t->ctx_set('latest_news', $result);
@@ -253,6 +291,11 @@ class index_mod extends indexBase
 
     public function _homepage_news_categories($t, $limit, $select)
     {
+        if (!$this->isFeatureReady('news.homepage_categories')) {
+            $t->ctx_set('homepage_news_categories', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_news');
         $result = $helper->_homepage_categories($limit, $select);
         $t->ctx_set('homepage_news_categories', $result);
@@ -261,6 +304,11 @@ class index_mod extends indexBase
 
     public function _latest_publications($t, $limit, $select)
     {
+        if (!$this->isFeatureReady('publication.latest')) {
+            $t->ctx_set('latest_publications', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_publication');
         $result = $helper->_latest_publications($limit, $select);
         $t->ctx_set('latest_publications', $result);
@@ -269,6 +317,11 @@ class index_mod extends indexBase
 
     public function _latest_authors($t, $limit)
     {
+        if (!$this->isFeatureReady('publication.authors')) {
+            $t->ctx_set('latest_authors', []);
+            return;
+        }
+
         $helper = Load::helper('index.mod_publication');
         $result = $helper->_latest_authors($limit);
         $t->ctx_set('latest_authors', $result);
@@ -277,6 +330,10 @@ class index_mod extends indexBase
 
     public function authors($page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.authors')) {
+            return;
+        }
+
         $publication = Load::helper("index.mod_publication");
         $publication->authors($page);
         unset($publication);
@@ -284,6 +341,10 @@ class index_mod extends indexBase
 
     public function author($username = null, $page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.authors')) {
+            return;
+        }
+
         $publication = Load::helper("index.mod_publication");
         $publication->author($username, $page);
         unset($publication);
@@ -291,6 +352,10 @@ class index_mod extends indexBase
 
     public function rss()
     {
+        if (!$this->guardFeatureOr404('news.feed')) {
+            return;
+        }
+
         header("content-type: text/xml; charset=utf-8");
         
         $news = Load::model('mod_news.newses');
@@ -347,15 +412,21 @@ class index_mod extends indexBase
         
         $valid_langs = Kayit::getir('valid_lang');
         foreach ($valid_langs as $l) {
-            echo '<sitemap>
-                    <loc>' . $this->site['adres'] . $l . '/newsSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['adres'] . $l . '/publicationSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['adres'] . $l . '/categorySitemap.xml</loc>
-                  </sitemap>';
+            if ($this->isFeatureReady('news.latest')) {
+                echo '<sitemap>
+                        <loc>' . $this->site['adres'] . $l . '/newsSitemap.xml</loc>
+                      </sitemap>';
+            }
+            if ($this->isFeatureReady('publication.latest')) {
+                echo '<sitemap>
+                        <loc>' . $this->site['adres'] . $l . '/publicationSitemap.xml</loc>
+                      </sitemap>';
+            }
+            if ($this->isFeatureReady('news.front') || $this->isFeatureReady('publication.front')) {
+                echo '<sitemap>
+                        <loc>' . $this->site['adres'] . $l . '/categorySitemap.xml</loc>
+                      </sitemap>';
+            }
             echo '<sitemap>
                     <loc>' . $this->site['adres'] . $l . '/pageSitemap.xml</loc>
                   </sitemap>';
@@ -366,6 +437,10 @@ class index_mod extends indexBase
 
     public function newsSitemap($page = 1)
     {
+        if (!$this->guardFeatureOr404('news.latest')) {
+            return;
+        }
+
         header("content-type: text/xml");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
@@ -393,6 +468,10 @@ class index_mod extends indexBase
 
     public function publicationSitemap($page = 1)
     {
+        if (!$this->guardFeatureOr404('publication.latest')) {
+            return;
+        }
+
         header("content-type: text/xml");
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
@@ -425,29 +504,31 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        // News Categories
-        $cat_news = Load::model('mod_news_category');
-        $cat_news->where_lang($this->site['lang'])->select(['seo', 'lang']);
-        $cat_news->gR();
-        if ($cat_news->getSize() != 0) {
-            foreach ($cat_news->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
-                          <priority>0.60</priority>
-                    </url>';
+        if ($this->isFeatureReady('news.front')) {
+            $cat_news = Load::model('mod_news_category');
+            $cat_news->where_lang($this->site['lang'])->select(['seo', 'lang']);
+            $cat_news->gR();
+            if ($cat_news->getSize() != 0) {
+                foreach ($cat_news->toArray() as $o) {
+                    echo '<url>
+                              <loc>' . $this->site['adres'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
+                              <priority>0.60</priority>
+                        </url>';
+                }
             }
         }
 
-        // Publication Categories
-        $cat_pub = Load::model('mod_publication_category');
-        $cat_pub->where_lang($this->site['lang'])->select(['seo', 'lang']);
-        $cat_pub->gR();
-        if ($cat_pub->getSize() != 0) {
-            foreach ($cat_pub->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
-                          <priority>0.60</priority>
-                    </url>';
+        if ($this->isFeatureReady('publication.front')) {
+            $cat_pub = Load::model('mod_publication_category');
+            $cat_pub->where_lang($this->site['lang'])->select(['seo', 'lang']);
+            $cat_pub->gR();
+            if ($cat_pub->getSize() != 0) {
+                foreach ($cat_pub->toArray() as $o) {
+                    echo '<url>
+                              <loc>' . $this->site['adres'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                              <priority>0.60</priority>
+                        </url>';
+                }
             }
         }
 

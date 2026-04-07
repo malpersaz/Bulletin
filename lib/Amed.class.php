@@ -4,7 +4,7 @@ class AmedException extends Exception
 {
     public function notcall()
     {
-        echo $this->getMessage() . " Methodu Çalıştırılamaz";
+        echo $this->getMessage() . " method cannot be executed";
     }
 }
 
@@ -22,23 +22,18 @@ class Amed
         $this->url = Load::lib('Url');
         $url_config = Kayit::getir('url_config');
         $this->site = Kayit::getir('site_config');
-        
-        // Load settings module to get ALL settings globally
+
         try {
             $settings_model = Load::model('mod_settings');
-            // If lang is set in site config, use it, otherwise fallback
-            $lang_code = isset($this->site['lang']) ? $this->site['lang'] : 'tr'; 
+            $lang_code = isset($this->site['lang']) ? $this->site['lang'] : 'tr';
             $settings_model->where_lang($lang_code)->gRo();
-            
+
             if ($settings_model->getSize() > 0) {
                 $settings_model->sync();
-                
-                // Merge all settings from DB into site config
-                // DB settings overwrite file config settings
                 $db_settings = $settings_model->toArray();
                 $this->site = array_merge($this->site, $db_settings);
             }
-            // Load available languages
+
             try {
                 $lang_model = Load::model('lang');
                 $lang_model->all();
@@ -53,15 +48,11 @@ class Amed
                 }
                 $this->site['available_languages'] = $available_langs;
             } catch (Exception $lang_e) {
-                // Ignore if lang model is missing
             }
 
-            // Update the registry so it persists globally
             Kayit::yenile('site_config', $this->site);
-            
         } catch (Exception $e) {
-            // If mod_settings model fails to load, ignore
-             Kayit::yenile('site_config', $this->site);
+            Kayit::yenile('site_config', $this->site);
         }
 
         if (Kayit::getir('i18n') === true) {
@@ -77,15 +68,9 @@ class Amed
             Kayit::yenile('site_config', $this->site);
         }
 
-
         if (is_array($url_config)) {
-            // Eğer Özel url tanımlanmışsa değeleri değiştirelim.
             foreach ($url_config as $key => $val) {
-
-                // :any ile .+ yı :num ile [0-9]+'yı değiştirelim
                 $key = str_replace(':any', '.+', str_replace(':num', '[0-9]+', $key));
-
-                // Eğer url de özel url bulunursa
                 if (preg_match('#^' . $key . '$#', $this->url->link)) {
                     if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
                         $val = preg_replace('#^' . $key . '$#', $val, $this->url->link);
@@ -101,7 +86,6 @@ class Amed
 
     public function parselle($parsel)
     {
-        // Eğer Gelen Değerin içinde / varmı bakıyoruz.
         if (strpos($parsel, '/') !== false) {
             $val = explode('/', $parsel);
             $this->class = (isset($val['0']) and $val['0'] != '') ? $val['0'] : Kayit::getir('app_default_mod');
@@ -136,21 +120,64 @@ class Amed
         return true;
     }
 
+    private function hasAdminContext()
+    {
+        return Kayit::varmi('AdminTemplate-lib');
+    }
+
+    private function renderAdminRouteError($type, $target)
+    {
+        header("HTTP/1.1 404 Not Found");
+
+        $managementLang = Load::lang('management');
+        $adminTemplate = Load::lib('AdminTemplate');
+        $adminTemplate->lang($managementLang);
+
+        $site = Kayit::getir('site_config');
+        $site['title'] = $managementLang['management']['route_error_page_title'];
+
+        $config = [
+            'module' => [
+                'headline' => $managementLang['management']['missing_module_title'],
+                'heading' => $managementLang['management']['missing_module_heading'],
+                'description' => sprintf($managementLang['management']['missing_module_description'], $target),
+            ],
+            'method' => [
+                'headline' => $managementLang['management']['missing_method_title'],
+                'heading' => $managementLang['management']['missing_method_heading'],
+                'description' => sprintf($managementLang['management']['missing_method_description'], $target),
+            ],
+            'private_method' => [
+                'headline' => $managementLang['management']['missing_method_title'],
+                'heading' => $managementLang['management']['private_method_heading'],
+                'description' => sprintf($managementLang['management']['private_method_description'], $target),
+            ],
+        ];
+
+        $selected = isset($config[$type]) ? $config[$type] : $config['method'];
+
+        $adminTemplate->setGlobal('site', $site);
+        $adminTemplate->setGlobal('error_title', $managementLang['management']['route_error_page_title']);
+        $adminTemplate->setGlobal('error_headline', $selected['headline']);
+        $adminTemplate->setGlobal('error_heading', $selected['heading']);
+        $adminTemplate->setGlobal('error_description', $selected['description']);
+        $adminTemplate->setGlobal('hide_navbar', true);
+        $adminTemplate->setGlobal('hide_search', true);
+        $adminTemplate->setGlobal('show_fab', false);
+        $adminTemplate->setGlobal('show_sidebar', false);
+        $adminTemplate->setGlobal('show_navbar', false);
+        $adminTemplate->setGlobal('show_filter_sheet', false);
+        $adminTemplate->setGlobal('show_extra_sheets', false);
+        $adminTemplate->setGlobal('show_wizards', false);
+        $adminTemplate->tpl('pages/route_error');
+        $adminTemplate->output();
+    }
+
     public function __destruct()
     {
-        //     $data = [
-        //         'm' => $this->class . ":" . $this->method,
-        //        'u' => $_SESSION['username'],
-        //      'd' => $_SERVER['HTTP_HOST'],
-        //    't' => $this->site['app_template']
-        //   ];
-
-        //var_dump($data);
         try {
             $mod = Load::mod($this->class);
         } catch (ModException $e) {
-            // AmedLog::info('module_not_found', $data);
-
             $e->show();
             exit();
         }
@@ -158,6 +185,10 @@ class Amed
         try {
             $this->_isprivate();
         } catch (AmedException $e) {
+            if ($this->hasAdminContext()) {
+                $this->renderAdminRouteError('private_method', $this->method);
+                exit();
+            }
             $e->notcall();
             exit();
         }
@@ -165,17 +196,14 @@ class Amed
         try {
             Run::calistir($mod, $this->method, $this->ext);
         } catch (RunException $e) {
-
-            // AmedLog::info('module_not_found', $data);
-
+            if ($this->hasAdminContext()) {
+                $this->renderAdminRouteError('method', $this->class . '/' . $this->method);
+                exit();
+            }
             $e->show();
             exit();
         }
 
-        // AmedLog::info('req', $data);
-
-
-        // Skip template output for AJAX requests to prevent corrupting JSON responses
         $isAjax = (
             (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
             || (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'))
@@ -204,7 +232,6 @@ class Amed
 
             if (Kayit::varmi('TwigTemplate-lib')) {
                 $tema = Load::lib('TwigTemplate');
-                //var_dump($tema);
                 if (isset($_SESSION)) {
                     $tema->setGlobal('session', $_SESSION);
                 }
@@ -212,16 +239,13 @@ class Amed
                     $tema->setGlobal('cookie', $_COOKIE);
                 }
                 $tema->setGlobal('mod', $this->class);
-                //$tema->setGlobal('site', Kayit::getir('site_config'));
                 $tema->setGlobal('link', $currentFullUrl);
-                //$tema->ctx_add('site', Kayit::getir('site_config'));
                 $tema->output();
                 unset($tema);
             }
         }
 
         unset($this->url);
-        // Eğer Session varsa tüm objeleri öldürmeden sessionu kaydedelim.
         if (isset($_SESSION)) {
             session_write_close();
         }

@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "test:module-management": "php tests/module_management_runtime_test.php"
+  },
   "require": {
     "buggedcom/phpvideotoolkit": "dev-master",
     "intervention/image": "^3.11",

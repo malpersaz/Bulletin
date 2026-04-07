@@ -178,6 +178,86 @@
         </div>
 
         <div class="nav-divider"></div>
+
+        {% if shared_admin_module_health is defined and shared_admin_module_health is not empty %}
+            {% set health_labels = {
+                'mod_content': lang.management.content_management,
+                'mod_news': lang.management.news_management,
+                'mod_publication': lang.management.publication_management,
+                'mod_video_embed': lang.management.remote_videos,
+                'mod_category': lang.management.content_categories,
+                'mod_news_category': lang.management.news_categories,
+                'mod_publication_category': lang.management.publication_categories,
+                'mod_video_embed_category': lang.management.uzak_video_kategorisi
+            } %}
+            {% set health_modules = [
+                shared_admin_module_health.mod_content,
+                shared_admin_module_health.mod_news,
+                shared_admin_module_health.mod_publication,
+                shared_admin_module_health.mod_video_embed
+            ] %}
+            <section style="padding: 0 16px 24px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                    <div style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6d5f0f; font-weight:700;">
+                        {{ lang.management.module_health }}
+                    </div>
+                    <i class="bi bi-activity" style="font-size:14px; color:#7a7f87;"></i>
+                </div>
+                <div style="display:grid; gap:10px;">
+                    {% for item in health_modules %}
+                        {% set is_ready = item.ready %}
+                        {% set status_key = 'module_health_status_' ~ item.status %}
+                        <div style="border-radius:18px; padding:12px 13px; background:{% if is_ready %}linear-gradient(135deg, #edf9f0 0%, #e3f6e8 100%){% else %}linear-gradient(135deg, #fff4e8 0%, #ffe8d9 100%){% endif %}; border:1px solid {% if is_ready %}#c9e8d1{% else %}#f1d1b7{% endif %};">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+                                <div style="font-size:13px; font-weight:700; color:#1f2933;">
+                                    {{ attribute(health_labels, item.module) }}
+                                </div>
+                                <div style="font-size:11px; font-weight:700; padding:4px 8px; border-radius:999px; background:{% if is_ready %}#1f7a45{% else %}#b45309{% endif %}; color:#fff;">
+                                    {{ attribute(lang.management, status_key) }}
+                                </div>
+                            </div>
+                            {% if session.permissions.mod_user.acl is defined %}
+                                <div style="margin-top:10px; display:flex; justify-content:flex-end;">
+                                    {% if item.status == 'disabled' %}
+                                        <a href="{{ site.sadres }}management/module_status/{{ item.module }}/ready" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#1f7a45; color:#fff; font-size:11px; font-weight:700; text-decoration:none;">
+                                            {{ lang.management.module_health_enable }}
+                                        </a>
+                                    {% elseif not is_ready %}
+                                        <a href="{{ site.sadres }}management/module_repair/{{ item.module }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#fff; color:#265d3b; border:1px solid #9bcbac; font-size:11px; font-weight:700; text-decoration:none;">
+                                            {{ lang.management.module_health_repair }}
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ site.sadres }}management/module_status/{{ item.module }}/disabled" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#fff; color:#8a4b11; border:1px solid #dfb188; font-size:11px; font-weight:700; text-decoration:none;">
+                                            {{ lang.management.module_health_disable }}
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                            {% if not is_ready %}
+                                {% if item.missing_modules is not empty %}
+                                    <div style="margin-top:8px; font-size:11px; line-height:1.4; color:#6b4423;">
+                                        <strong>{{ lang.management.module_health_missing_modules }}:</strong>
+                                        {% for module_name in item.missing_modules %}
+                                            {% if health_labels[module_name] is defined %}
+                                                {{ health_labels[module_name] }}
+                                            {% else %}
+                                                {{ module_name }}
+                                            {% endif %}{% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if item.missing_tables is not empty %}
+                                    <div style="margin-top:6px; font-size:11px; line-height:1.4; color:#6b4423;">
+                                        <strong>{{ lang.management.module_health_missing_tables }}:</strong>
+                                        {{ item.missing_tables|join(', ') }}
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
         
     </div>
 </aside>

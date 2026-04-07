@@ -9,6 +9,11 @@ class mod_content_helper extends indexBase
 
     public function _categories()
     {
+        if (!$this->isFeatureReady('content.front')) {
+            $this->tema->ctx_set('categories', []);
+            return;
+        }
+
         $mod_category_nested = Load::model('mod_category');
         $mod_category_nested->where_lang_and_root($this->site['lang'], 'n');
         $mod_category_nested->order('order', 'ASC')->gR();
@@ -27,6 +32,10 @@ class mod_content_helper extends indexBase
     }
     public function content($seo)
     {
+        if (!$this->guardFeatureOr404('content.front')) {
+            return;
+        }
+
         $this->_categories();
         $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
         $content = Load::model('mod_content.contents');
@@ -34,29 +43,23 @@ class mod_content_helper extends indexBase
         $content->limit(1);
         $content->gRo();
         if ($content->getSize() !== 0) {
-            // Senkronize Edelim
             $content->sync();
-            // Permission Kontrol
             if ($this->_permission_kontrol($content->acl_id)) {
                 return;
             }
-            // Bakalım Video varmı : $video olarak gönderilecek
             if (isset($content->video) && $content->video != '') {
                 $this->_mod_video($content->video);
             }
-            // Bakalım Resim Varmı : $res olarak gönderilecek
             if (isset($content->gallery_id) && $content->gallery_id != 0) {
                 $this->_gallery_resimgetir('mod_content', $content->gallery_id);
             } else {
                 $this->_gallery_resimgetir('mod_content', $content->id);
             }
-            // Bakalım Dosya Varmı : $file olarak gönderilecek
             if (isset($content->file_id) && $content->file_id != 0) {
                 $this->_mod_attachment('mod_content', $content->file_id);
             } else {
                 $this->_mod_attachment('mod_content', $content->id);
             }
-            // Sonucu Temaya Gönder
             $this->tema->ctx_set('d', $content->toArray());
         } else {
             return $this->_404();
@@ -68,17 +71,21 @@ class mod_content_helper extends indexBase
 
     public function contents($category = NULL, $page = 1)
     {
+        if (!$this->guardFeatureOr404('content.front')) {
+            return;
+        }
+
         $this->_categories();
 
-        $page_limit = 80; // Page Limit
-        $pager_limit = 4; // Pagination Limit
+        $page_limit = 80;
+        $pager_limit = 4;
         $offset = ($page - 1) * $page_limit;
 
         if (($page == "") or ($page == NULL)) {
             $page = 1;
         }
 
-        $page = intval($page); // Current Page
+        $page = intval($page);
 
 
         $content = Load::model('mod_content.contents');
@@ -101,13 +108,10 @@ class mod_content_helper extends indexBase
             $content->where_category_seo_and_status_and_lang($category, 'y', $this->site['lang']);
             $content->order('created_at', 'DESC')->gR();
             $total_item = $content->getSize();
-            //$content->where_category_seo($category)->limit($page_limit, $offset)->gR();
-            $content->getLimit($page_limit, $offset); // Fetch from results based on limit
+            $content->getLimit($page_limit, $offset);
             if ($content->getSize() !== 0) {
                 $this->tema->ctx_set('contents', $content->toArray());
             }
-            //print_r($content);
-            // Sync Edelim
             $category_model->where_seo($category);
             $category_model->getResultOne();
             $category_model->sync();
@@ -116,7 +120,6 @@ class mod_content_helper extends indexBase
             $category_seo = $category_model->seo;
         }
 
-        // Pagination
         $p = Load::lib('Pager');
         $p->total_item = $total_item;
         $p->page_limit = $page_limit;
@@ -158,15 +161,25 @@ class mod_content_helper extends indexBase
 
     public function _latest_content($limit, $select)
     {
+        if (!$this->isFeatureReady('content.latest')) {
+            return [];
+        }
+
         $m = Load::model('mod_content')->select($select)->where_lang_and_status($this->site['lang'], 'y')->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
             return $m->toArray();
         }
+
+        return [];
     }
 
     public function arsiv()
     {
+        if (!$this->guardFeatureOr404('content.archive')) {
+            return;
+        }
+
         $content = Load::model('mod_content');
         $sql = "SELECT YEAR(MAX(created_at))  AS max_yil,YEAR(MIN(created_at))  AS min_yil FROM `mod_content` WHERE 1";
         $content->fetch_array($sql);
@@ -242,7 +255,6 @@ class mod_content_helper extends indexBase
                 $this->tema->ctx_set('bulunamadi', True);
             }
 
-            // Ay ve yılı temaya gönderelim
             if ($yil !== NULL) {
                 $this->tema->ctx_set('yil', $yil);
             }

@@ -9,6 +9,11 @@ class mod_news_helper extends indexBase
 
     public function _categories()
     {
+        if (!$this->isFeatureReady('news.front')) {
+            $this->tema->ctx_set('categories', []);
+            return;
+        }
+
         $mod_news_category_nested = Load::model('mod_news_category');
         $mod_news_category_nested->where_lang_and_root($this->site['lang'], 'n');
         $mod_news_category_nested->order('order', 'ASC')->gR();
@@ -27,6 +32,10 @@ class mod_news_helper extends indexBase
     }
     public function news($seo)
     {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
         $this->_categories();
         $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
         $news = Load::model('mod_news.newses');
@@ -34,32 +43,25 @@ class mod_news_helper extends indexBase
         $news->limit(1);
         $news->gRo();
         if ($news->getSize() !== 0) {
-            // Senkronize Edelim
             $news->sync();
-            // Permission Kontrol
             if ($this->_permission_kontrol($news->acl_id)) {
                 return;
             }
-            // Hejmara xwendinê zêde bike (IP Bazlı)
             $this->_update_view_count('mod_news', $news->id);
-            
-            // Bakalım Video varmı : $video olarak gönderilecek
+
             if (isset($news->video) && $news->video != '') {
                 $this->_mod_video($news->video);
             }
-            // Bakalım Resim Varmı : $res olarak gönderilecek
             if (isset($news->gallery_id) && $news->gallery_id != 0) {
                 $this->_exact_gallery($news->gallery_id);
             } else {
                 $this->_gallery_resimgetir('mod_news', $news->id);
             }
-            // Bakalım Dosya Varmı : $file olarak gönderilecek
             if (isset($news->file_id) && $news->file_id != 0) {
                 $this->_exact_attachment($news->file_id);
             } else {
                 $this->_mod_attachment('mod_news', $news->id);
             }
-            // Sonucu Temaya Gönder
             $this->tema->ctx_set('d', $news->toArray());
         } else {
             return $this->_404();
@@ -71,17 +73,21 @@ class mod_news_helper extends indexBase
 
     public function newses($category = NULL, $page = 1)
     {
+        if (!$this->guardFeatureOr404('news.front')) {
+            return;
+        }
+
         $this->_categories();
 
-        $page_limit = 80; // Page Limit
-        $pager_limit = 4; // Pagination Limit
+        $page_limit = 80;
+        $pager_limit = 4;
         $offset = ($page - 1) * $page_limit;
 
         if (($page == "") or ($page == NULL)) {
             $page = 1;
         }
 
-        $page = intval($page); // Current Page
+        $page = intval($page);
 
 
         $news = Load::model('mod_news.newses');
@@ -99,8 +105,6 @@ class mod_news_helper extends indexBase
                     $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                     $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                     $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                    
-                    // Published ago logic
                     $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
                 }
                 $this->tema->ctx_set('newses', $news_items);
@@ -113,8 +117,7 @@ class mod_news_helper extends indexBase
             $news->where_category_seo_and_status_and_lang($category, 'y', $this->site['lang']);
             $news->order('created_at', 'DESC')->gR();
             $total_item = $news->getSize();
-            //$news->where_category_seo($category)->limit($page_limit, $offset)->gR();
-            $news->getLimit($page_limit, $offset); // Fetch from results based on limit
+            $news->getLimit($page_limit, $offset);
             if ($news->getSize() !== 0) {
                 $news_items = $news->toArray();
                 foreach ($news_items as &$item) {
@@ -125,8 +128,6 @@ class mod_news_helper extends indexBase
                 }
                 $this->tema->ctx_set('newses', $news_items);
             }
-            //print_r($news);
-            // Sync Edelim
             $category_model->where_seo($category);
             $category_model->getResultOne();
             $category_model->sync();
@@ -135,7 +136,6 @@ class mod_news_helper extends indexBase
             $category_seo = $category_model->seo;
         }
 
-        // Pagination
         $p = Load::lib('Pager');
         $p->total_item = $total_item;
         $p->page_limit = $page_limit;
@@ -177,6 +177,10 @@ class mod_news_helper extends indexBase
 
     public function _latest_news($limit, $select)
     {
+        if (!$this->isFeatureReady('news.latest')) {
+            return [];
+        }
+
         $m = Load::model('mod_news')->select($select)->where_lang_and_status($this->site['lang'], 'y');
         if ($this->_hasSliderColumn()) {
             $m->addWhere("slider='n'");
@@ -200,14 +204,12 @@ class mod_news_helper extends indexBase
         return [];
     }
 
-    /**
-     * Fetch news categories pinned to the homepage and their news.
-     * @param int $limit Limit of news items per category
-     * @param string $select Fields to select from news table
-     * @return array
-     */
     public function _homepage_categories($limit = 4, $select = 'image,name,seo,summary,created_at')
     {
+        if (!$this->isFeatureReady('news.homepage_categories')) {
+            return [];
+        }
+
         $cat_model = Load::model('mod_news_category');
         $cat_model->where_lang_and_show_on_homepage_and_root($this->site['lang'], 'y', 'n');
         $cat_model->order('order', 'ASC')->gR();
@@ -223,7 +225,6 @@ class mod_news_helper extends indexBase
         $seen_ids = [];
 
         foreach ($categories_raw as $cat) {
-            // Check if we have already processed this specific category ID
             if (in_array($cat['id'], $seen_ids)) {
                 continue;
             }
@@ -294,6 +295,10 @@ class mod_news_helper extends indexBase
 
     public function arsiv()
     {
+        if (!$this->guardFeatureOr404('news.archive')) {
+            return;
+        }
+
         $news = Load::model('mod_news');
         $sql = "SELECT YEAR(MAX(created_at))  AS max_yil,YEAR(MIN(created_at))  AS min_yil FROM `mod_news` WHERE 1";
         $news->fetch_array($sql);
@@ -369,7 +374,6 @@ class mod_news_helper extends indexBase
                 $this->tema->ctx_set('bulunamadi', True);
             }
 
-            // Ay ve yılı temaya gönderelim
             if ($yil !== NULL) {
                 $this->tema->ctx_set('yil', $yil);
             }

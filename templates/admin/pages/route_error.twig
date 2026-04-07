@@ -1,0 +1,17 @@
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ error_title }}{% endblock %}
+
+{% block headline %}{{ error_headline }}{% endblock %}
+
+{% block content %}
+<div class="empty-state">
+    <div class="empty-icon" style="background:#fdecea; color:#b3261e;">
+        <i class="bi bi-exclamation-octagon"></i>
+    </div>
+    <h3>{{ error_heading }}</h3>
+    <p>{{ error_description }}</p>
+    <br>
+    <a href="{{ site.sadres }}" class="m3-btn-outlined">{{ lang.management.back_to_home }}</a>
+</div>
+{% endblock %}

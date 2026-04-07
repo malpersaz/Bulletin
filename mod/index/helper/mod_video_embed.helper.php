@@ -10,15 +10,22 @@ class mod_video_embed_helper extends indexBase
 
     public function _categories()
     {
+        if (!$this->isFeatureReady('video_embed.front')) {
+            $this->tema->ctx_set('categories', []);
+            return;
+        }
+
         $mod_category_nested = Load::model('mod_video_embed_category');
         $mod_category_nested->where_lang_and_root($this->site['lang'], 'n');
         $mod_category_nested->order('order', 'ASC')->gR();
-        //$select_nested_category_id_result=Helper::nested($mod_category_nested->toArray(),'parent_id','id');
         $this->tema->ctx_set('categories', $mod_category_nested->toArray());
     }
 
     public function video($id)
     {
+        if (!$this->guardFeatureOr404('video_embed.front')) {
+            return;
+        }
 
         if (intval($id) === 0) {
             return $this->_404();
@@ -33,12 +40,10 @@ class mod_video_embed_helper extends indexBase
 
         if ($video->getSize() !== 0) {
             $video->sync();
-            // Permission Kontrol
             if ($this->_permission_kontrol($video->acl_id)) {
                 return;
             }
 
-            // Hejmara xwendinê zêde bike (IP Bazlı)
             $this->_update_view_count('mod_video_embed', $video->id);
 
             $category =
@@ -64,16 +69,20 @@ class mod_video_embed_helper extends indexBase
 
     public function videos($category = NULL, $page = 1)
     {
+        if (!$this->guardFeatureOr404('video_embed.front')) {
+            return;
+        }
+
         $this->_categories();
-        $page_limit = 80; // Page Limit
-        $pager_limit = 4; // Pagination Limit
+        $page_limit = 80;
+        $pager_limit = 4;
         $offset = ($page - 1) * $page_limit;
 
         if (($page == "") or ($page == NULL)) {
             $page = 1;
         }
 
-        $page = intval($page); // Current Page
+        $page = intval($page);
 
 
         $video = Load::model('mod_video_embed.videos');
@@ -104,21 +113,18 @@ class mod_video_embed_helper extends indexBase
 
             $video->order('created_at', 'DESC')->gR();
             $total_item = $video->getSize();
-            //$video->where_category_seo($category)->limit($page_limit, $offset)->gR();
-            $video->getLimit($page_limit, $offset); // Fetch from results based on limit
+            $video->getLimit($page_limit, $offset);
             if ($video->getSize() !== 0) {
                 $this->tema->ctx_set('videos', $video->toArray());
             }
-            //print_r($video);
-            // Sync Edelim
-            $category->getResultOne();
-            $category->sync();
+            $category_model->where_seo($category);
+            $category_model->getResultOne();
+            $category_model->sync();
 
-            $categoryname = $category->name;
-            $category_seo = $category->seo;
+            $categoryname = $category_model->name;
+            $category_seo = $category_model->seo;
         }
 
-        // Pagination
         $p = Load::lib('Pager');
         $p->total_item = $total_item;
         $p->page_limit = $page_limit;
@@ -159,13 +165,16 @@ class mod_video_embed_helper extends indexBase
 
     public function _latest_videos($limit, $select)
     {
+        if (!$this->isFeatureReady('video_embed.latest')) {
+            return [];
+        }
+
         $m = Load::model('mod_video_embed')->select($select)->where_lang_and_status($this->site['lang'], 'y')->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
             return $m->toArray();
-            // $this->tema->ctx_set('latest_videos', $m->toArray());
         }
         unset($m);
-        return false;
+        return [];
     }
 }
