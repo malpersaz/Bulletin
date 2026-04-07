@@ -121,3 +121,20 @@ body.dark-mode .social-icon-btn {
     background-color: #2c3034;
     color: #adb5bd;
 }
+
+/* Brand Gothic Style in Footer */
+.site-footer .brand-text-gothic {
+    font-family: 'Grenze Gotisch', serif !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1.1 !important;
+    color: #000000 !important;
+    -webkit-text-fill-color: #000000 !important;
+    text-decoration: none !important;
+}
+
+[data-bs-theme="dark"] .site-footer .brand-text-gothic,
+body.dark-mode .site-footer .brand-text-gothic {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
