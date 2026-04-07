@@ -3,9 +3,16 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.45`.
+- The current Git-detected active version code is `v1.0.53.51`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.53.51
+- Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
+- **Installer Mobile Foundation Shell**: Reworked `installer/index.php` into a phone-first guided setup shell with persistent step state, explicit installer-language selection, structured environment checks, compact project-setup capture, review and reset flows, and a mobile completion screen that wraps the existing legacy installer execution.
+- **Installer Planning Services**: Added `InstallerStateStore`, `InstallerModuleCatalog`, `InstallerDependencyResolver`, and `InstallerEnvironmentCheck` under `installer/app/` so the installer now has dedicated state, manifest, dependency, and readiness services instead of relying only on a print-driven single script.
+- **Installer Loader Path Fix**: Corrected the installer module loader so module file existence is validated against the real `installer/` path before the module class is required.
+- **Installer UI Localization Wiring**: Replaced hard-coded installer shell text with `mod/lang` language keys across the active installer flow and localized the new phone-first setup surface for the installer languages currently exposed by the repository-specific installer configuration.
 
 ## v1.0.53.45
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
