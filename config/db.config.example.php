@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/biys.sqlite',
+            'database_path' => root_dir . 'data/AKMbusiness.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),
@@ -54,9 +54,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'biys_user',
-            'pass' => 'biys_password',
-            'database' => 'biys_db',
+            'user' => 'AKMbusiness_user',
+            'pass' => 'AKMbusiness_password',
+            'database' => 'AKMbusiness_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional

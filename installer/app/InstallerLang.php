@@ -25,6 +25,8 @@ class InstallerLang
             throw new Exception("Installer language file '" . $languageCode . "' is invalid");
         }
 
+        $installerLang = installer_replace_build_name($installerLang);
+
         Kayit::ekle($cacheKey, $installerLang);
         return $installerLang;
     }

@@ -1,6 +1,55 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
 require_once(__DIR__ . DS . 'app' . DS . 'InstallerLang.php');
+
+function installer_site_build_name()
+{
+    if (Kayit::varmi('site_config') === TRUE) {
+        $siteConfig = Kayit::getir('site_config');
+        if (is_array($siteConfig)) {
+            $build = isset($siteConfig['build']) ? trim((string) $siteConfig['build']) : '';
+            if ($build !== '') {
+                return $build;
+            }
+        }
+    }
+
+    return 'Rojname';
+}
+
+function installer_site_build_file_token()
+{
+    $token = preg_replace('/[^A-Za-z0-9._-]+/', '', installer_site_build_name());
+    if ($token === '') {
+        return 'Rojname';
+    }
+
+    return $token;
+}
+
+function installer_default_sqlite_path()
+{
+    return 'data/' . installer_site_build_file_token() . '.sqlite';
+}
+
+function installer_replace_build_name($value)
+{
+    if (is_array($value)) {
+        $replaced = array();
+        foreach ($value as $key => $item) {
+            $replaced[$key] = installer_replace_build_name($item);
+        }
+
+        return $replaced;
+    }
+
+    if (!is_string($value)) {
+        return $value;
+    }
+
+    return str_replace('Rojname', installer_site_build_name(), $value);
+}
+
 // Installer interface contract.
 interface installerbaseinterface
 {
@@ -32,16 +81,27 @@ class installerbase
             return TRUE;
         }
 
+        $adapter = (string) $this->db->getAdapterType();
+        $isSqlite = strpos($adapter, 'PDO_SQLITE') !== false;
+
         $columns = array(
-            'status' => "ALTER TABLE `mods` ADD COLUMN `status` varchar(32) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'installed' AFTER `mod_name`",
-            'schema_ready' => "ALTER TABLE `mods` ADD COLUMN `schema_ready` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'y' AFTER `status`",
-            'installed_at' => "ALTER TABLE `mods` ADD COLUMN `installed_at` datetime DEFAULT NULL AFTER `schema_ready`",
-            'updated_at' => "ALTER TABLE `mods` ADD COLUMN `updated_at` datetime DEFAULT NULL AFTER `installed_at`"
+            'status' => "ALTER TABLE `mods` ADD COLUMN `status` varchar(32) NOT NULL DEFAULT 'installed'",
+            'schema_ready' => "ALTER TABLE `mods` ADD COLUMN `schema_ready` char(1) NOT NULL DEFAULT 'y'",
+            'installed_at' => "ALTER TABLE `mods` ADD COLUMN `installed_at` datetime DEFAULT NULL",
+            'updated_at' => "ALTER TABLE `mods` ADD COLUMN `updated_at` datetime DEFAULT NULL"
         );
 
         foreach ($columns as $column => $sql) {
             if ($this->check_column_exists('mods', $column) === TRUE) {
                 continue;
+            }
+
+            // SQLite does not support AFTER clause
+            if (!$isSqlite) {
+                if ($column === 'status') $sql .= " AFTER `mod_name`";
+                if ($column === 'schema_ready') $sql .= " AFTER `status`";
+                if ($column === 'installed_at') $sql .= " AFTER `schema_ready`";
+                if ($column === 'updated_at') $sql .= " AFTER `installed_at`";
             }
 
             if ($this->db->query($sql) === FALSE) {
@@ -248,6 +308,9 @@ class installerbase
     public function install_sql_file($file)
     {
         $mods_sql_text = $this->load_sql_file($this->mod . DS .$file);
+        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $mods_sql_text = SqliteSqlTransformer::transform($mods_sql_text);
+        }
         if ($this->db->query($mods_sql_text)) {
             return TRUE;
         } else {

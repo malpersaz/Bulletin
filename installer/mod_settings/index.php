@@ -63,7 +63,7 @@ class mod_settings extends installerbase implements installerbaseinterface
             $this->model->where_lang($lang['seo'])->getResult(TRUE, TRUE);
             if ($this->model->getSize() === 0) {
                 $this->model->lang = $lang['seo'];
-                $this->model->title = 'Rojname';
+                $this->model->title = installer_site_build_name();
                 $this->model->description = 'Modern Web Solutions';
                 $this->model->owner_name = 'Owner Name';
                 $this->model->established_year = 2014;

@@ -12,7 +12,6 @@ class InstallerEnvironmentCheck
         );
         $checks[] = $this->checkExtensions();
         $checks[] = $this->checkWritableDirectories();
-        $checks[] = $this->checkDatabaseConfiguration();
 
         return $checks;
     }
@@ -32,6 +31,7 @@ class InstallerEnvironmentCheck
     {
         $required = array('pdo', 'mbstring', 'json');
         $missing = array();
+        $availableDrivers = array();
 
         foreach ($required as $extension) {
             if (!extension_loaded($extension)) {
@@ -39,10 +39,19 @@ class InstallerEnvironmentCheck
             }
         }
 
+        foreach (array('pdo_mysql', 'pdo_sqlite') as $driver) {
+            if (extension_loaded($driver)) {
+                $availableDrivers[] = $driver;
+            }
+        }
+
         return $this->buildStatus(
             empty($missing),
             'extensions',
-            array('missing' => $missing)
+            array(
+                'missing' => $missing,
+                'available_drivers' => $availableDrivers,
+            )
         );
     }
 
@@ -68,32 +77,11 @@ class InstallerEnvironmentCheck
             array('blocked' => $blocked)
         );
     }
-
-    private function checkDatabaseConfiguration()
-    {
-        $dbConfig = Kayit::getir('db_config');
-        $databaseKey = Kayit::getir('database');
-        $configured = is_array($dbConfig) && isset($dbConfig[$databaseKey]['adapter']);
-        $meta = array(
-            'configured' => false,
-            'adapter' => '',
-            'database_key' => '',
-        );
-
-        if ($configured) {
-            $meta['configured'] = true;
-            $meta['adapter'] = $dbConfig[$databaseKey]['adapter'];
-            $meta['database_key'] = $databaseKey;
-        }
-
-        return $this->buildStatus($configured, 'database', $meta);
-    }
-
-    private function buildStatus($ok, $key, array $meta)
+    private function buildStatus($ok, $key, array $meta, $blocking = true)
     {
         return array(
             'ok' => $ok === true,
-            'blocking' => true,
+            'blocking' => $blocking,
             'key' => $key,
             'meta' => $meta,
         );

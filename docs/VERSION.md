@@ -3,9 +3,26 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.54`.
+- The current Git-detected active version code is `v1.0.54.1`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.54.1
+- Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
+- Git history re-verified against the current repository state; latest uploaded commit is `8badf3b` with version `v1.0.54.1`.
+- **Installer SQLite Support Implementation**: Introduced full SQLite support for the phone-first installer, including a new database-configuration step, automatic `.sqlite` database creation in `data/`, and a MySQL-to-SQLite DDL transformer that enables module SQL files to run seamlessly on SQLite.
+- **Cross-Database SQL Transformation**: Implemented `SqliteSqlTransformer` to bixweber translate MySQL-specific syntax (`AUTO_INCREMENT`, `ENUM`, `ENGINE`) into SQLite-compatible DDL during the module installation phase.
+- **Installer Config Persistence**: Added `InstallerConfigWriter` to safely persist selected database credentials and adapters into `config/db.config.php`, ensuring a clean transition from installer state to application runtime.
+- **Installer UI Enhancements**: Optimized the database setup panel for the phone-only admin shell, including dynamic selector-based toggles for database fields, native Kurdish/English localization without fallback text, and non-blocking connection validation.
+
+## v1.0.54.0
+- Active version bucket derived from the latest Git history; latest uploaded commit is `a34258e` with version `v1.0.54.0`.
+
+## v1.0.53.56
+- Active version bucket derived from the latest Git history; latest uploaded commit is `b3e4187` with version `v1.0.53.56`.
+
+## v1.0.53.55
+- Active version bucket derived from the latest Git history; latest uploaded commit is `3983277` with version `v1.0.53.55`.
 
 ## v1.0.53.54
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.

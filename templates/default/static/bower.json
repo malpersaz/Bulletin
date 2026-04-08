@@ -1,10 +1,10 @@
 {
-  "name": "biys",
+  "name": "AKMbusiness",
   "version": "1.0.0",
   "authors": [
-    "s4l1h <kingemkurdam@gmail.com>"
+    "AKM <akmsoftware.co.uk>"
   ],
-  "description": "biys",
+  "description": "AKMbusiness",
   "main": "index.html",
   "moduleType": [
     "amd"

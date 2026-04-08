@@ -271,6 +271,8 @@ class mod_content extends installerbase implements installerbaseinterface
             )
         );
         
+        $veri = installer_replace_build_name($veri);
+
         $this->model = Load::model('mod_content');
         foreach ($veri AS $key => $value){
             if ($this->model->exists_name($value['name']) === FALSE){

@@ -1,5 +1,17 @@
 <?php
 header('Content-Type: text/html; charset=utf-8');
+
+$bootstrapDbConfig = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'db.config.php';
+if (!file_exists($bootstrapDbConfig)) {
+    $stubConfig = "<?php\n\n";
+    $stubConfig .= "if (defined('root_dir') === False) exit(':)');\n\n";
+    $stubConfig .= "\$db = array();\n";
+    $stubConfig .= "Kayit::ekle('database', 'installed');\n";
+    $stubConfig .= "Kayit::ekle('db_config', \$db);\n";
+    $stubConfig .= "unset(\$db);\n";
+    file_put_contents($bootstrapDbConfig, $stubConfig);
+}
+
 require_once('../koberz.init.php');
 define('installer_dir', root_dir . 'installer' . DS);
 
@@ -9,6 +21,8 @@ require_once(installer_dir . 'app' . DS . 'InstallerModuleCatalog.php');
 require_once(installer_dir . 'app' . DS . 'InstallerDependencyResolver.php');
 require_once(installer_dir . 'app' . DS . 'InstallerEnvironmentCheck.php');
 require_once(installer_dir . 'app' . DS . 'InstallerTaskRunner.php');
+require_once(installer_dir . 'app' . DS . 'InstallerConfigWriter.php');
+require_once(installer_dir . 'app' . DS . 'SqliteSqlTransformer.php');
 
 class installer extends installerbase
 {
@@ -92,6 +106,18 @@ function installer_project_languages()
     return $projectLanguages;
 }
 
+function installer_normalize_database_params(array $input, InstallerConfigWriter $writer)
+{
+    return $writer->normalizeParams(array(
+        'adapter' => isset($input['database_adapter']) ? $input['database_adapter'] : 'PDO_MYSQL',
+        'host' => isset($input['database_host']) ? $input['database_host'] : '',
+        'user' => isset($input['database_user']) ? $input['database_user'] : '',
+        'pass' => isset($input['database_pass']) ? $input['database_pass'] : '',
+        'database' => isset($input['database_name']) ? $input['database_name'] : '',
+        'database_path' => isset($input['database_path']) ? $input['database_path'] : installer_default_sqlite_path(),
+    ));
+}
+
 function installer_module_label($module, array $ui)
 {
     if (!empty($ui['module_labels'][$module])) {
@@ -136,23 +162,6 @@ function installer_check_copy(array $check, array $ui)
 
         return array(
             'label' => $ui['checks']['directories']['label'],
-            'detail' => $detail,
-        );
-    }
-
-    if ($key === 'database') {
-        if (empty($meta['configured'])) {
-            $detail = $ui['checks']['database']['missing'];
-        } else {
-            $detail = sprintf(
-                $ui['checks']['database']['detail'],
-                isset($meta['adapter']) ? $meta['adapter'] : '',
-                isset($meta['database_key']) ? $meta['database_key'] : ''
-            );
-        }
-
-        return array(
-            'label' => $ui['checks']['database']['label'],
             'detail' => $detail,
         );
     }
@@ -286,7 +295,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $state = $stateStore->merge(array(
             'installer_language' => $installerLanguage,
             'installer_language_confirmed' => true,
-            'step' => 'welcome',
+            'step' => 'environment',
         ));
         Kayit::yenile('lang', $installerLanguage);
         InstallerLang::reset($installerLanguage);
@@ -304,7 +313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $state = $stateStore->merge(array(
             'installer_language' => $installerLanguage,
-            'installer_language_confirmed' => true,
+            'installer_language_confirmed' => false,
             'step' => 'language',
         ));
         Kayit::yenile('lang', $installerLanguage);
@@ -315,24 +324,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $isBlocked = $environment->hasBlockingFailures($checks);
     }
 
-    if ($action === 'go_back_to_welcome') {
-        $step = !empty($state['installer_language_confirmed']) ? 'welcome' : 'language';
-        $state = $stateStore->merge(array('step' => $step));
-    }
-
     if ($action === 'go_back_to_language') {
         $state = $stateStore->merge(array('step' => 'language'));
-    }
-
-    if ($action === 'continue_to_environment') {
-        if (empty($state['installer_language_confirmed'])) {
-            $state = $stateStore->merge(array(
-                'installer_language_confirmed' => true,
-                'step' => 'environment',
-            ));
-        } else {
-            $state = $stateStore->merge(array('step' => 'environment'));
-        }
     }
 
     if ($action === 'continue_to_setup') {
@@ -340,12 +333,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errorMessage = $ui['errors']['resolve_environment'];
             $state = $stateStore->merge(array('step' => 'environment'));
         } else {
-            $state = $stateStore->merge(array('step' => 'setup'));
+            $state = $stateStore->merge(array('step' => 'database'));
+        }
+    }
+
+    if ($action === 'save_database') {
+        try {
+            $writer = new InstallerConfigWriter();
+            $dbParams = installer_normalize_database_params($_POST, $writer);
+
+            $state = $stateStore->merge(array(
+                'database_adapter' => $dbParams['adapter'],
+                'database_host' => $dbParams['host'],
+                'database_user' => $dbParams['user'],
+                'database_pass' => $dbParams['pass'],
+                'database_name' => $dbParams['database'],
+                'database_path' => $dbParams['database_path'],
+            ));
+
+            if ($dbParams['adapter'] === 'PDO_SQLITE') {
+                $fullPath = root_dir . $dbParams['database_path'];
+                $dir = dirname($fullPath);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0777, true);
+                }
+                if (!is_writable($dir)) {
+                    throw new RuntimeException("Directory not writable: " . $dir);
+                }
+                new PDO("sqlite:" . $fullPath);
+            } elseif ($dbParams['adapter'] === 'PDO_MYSQL') {
+                $dsn = "mysql:host=" . $dbParams['host'] . ";dbname=" . $dbParams['database'];
+                $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5);
+                new PDO($dsn, $dbParams['user'], $dbParams['pass'], $options);
+            } else {
+                throw new InvalidArgumentException($ui['errors']['database_invalid_adapter']);
+            }
+
+            if ($writer->write($dbParams)) {
+                $state = $stateStore->merge(array('database_configured' => true, 'step' => 'setup'));
+                $checks = $environment->run();
+                $isBlocked = $environment->hasBlockingFailures($checks);
+            } else {
+                $errorMessage = $ui['errors']['database_write_failed'];
+            }
+        } catch (Exception $e) {
+            $errorMessage = sprintf($ui['errors']['database_connect_failed'], $e->getMessage());
         }
     }
 
     if ($action === 'save_setup') {
-        $projectName = isset($_POST['project_name']) ? trim($_POST['project_name']) : 'Rojname';
+        $projectName = isset($_POST['project_name']) ? trim($_POST['project_name']) : installer_site_build_name();
         $projectLanguage = isset($_POST['project_default_language']) ? $_POST['project_default_language'] : 'ku';
 
         if (!isset($projectLanguages[$projectLanguage])) {
@@ -353,7 +390,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($projectName === '') {
-            $projectName = 'Rojname';
+            $projectName = installer_site_build_name();
         }
 
         $state = $stateStore->merge(array(
@@ -536,13 +573,14 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
 
         .steps {
             display: flex;
+            flex-wrap: wrap;
             gap: 8px;
-            overflow-x: auto;
             padding: 0 20px 16px;
         }
 
         .step-pill {
-            flex: 0 0 auto;
+            flex: 1 1 calc(25% - 8px);
+            min-width: 0;
             border-radius: 999px;
             padding: 10px 12px;
             background: rgba(255,255,255,0.72);
@@ -550,6 +588,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             color: var(--muted);
             font-size: 12px;
             font-weight: 700;
+            text-align: center;
         }
 
         .step-pill.is-active {
@@ -734,6 +773,65 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
 
         .field { margin-top: 16px; }
 
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .choice-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 56px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: var(--surface);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .choice-card input {
+            display: none;
+        }
+
+        .choice-indicator {
+            width: 18px;
+            height: 18px;
+            border-radius: 999px;
+            border: 2px solid rgba(108, 103, 88, 0.45);
+            background: #fff;
+            flex: 0 0 auto;
+        }
+
+        .choice-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .choice-card:has(input:checked) {
+            border-color: rgba(15, 118, 110, 0.42);
+            background: rgba(15, 118, 110, 0.08);
+        }
+
+        .choice-card:has(input:checked) .choice-indicator {
+            border-color: var(--accent);
+            box-shadow: inset 0 0 0 4px #fff;
+            background: var(--accent);
+        }
+
+        .panel-actions {
+            display: grid;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
         .field label {
             display: block;
             margin-bottom: 8px;
@@ -889,6 +987,17 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             color: var(--ink);
             border: 1px solid var(--border);
         }
+
+        @media (max-width: 360px) {
+            .step-pill {
+                flex-basis: calc(33.333% - 8px);
+            }
+
+            .choice-grid,
+            .language-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
     </style>
 </head>
 <body>
@@ -901,8 +1010,8 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
 
         <div class="steps">
             <div class="<?php echo installer_step_class($state['step'], 'language'); ?>"><?php echo htmlspecialchars($ui['steps']['language'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'welcome'); ?>"><?php echo htmlspecialchars($ui['steps']['welcome'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'environment'); ?>"><?php echo htmlspecialchars($ui['steps']['checks'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'database'); ?>"><?php echo htmlspecialchars($ui['steps']['database'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'setup'); ?>"><?php echo htmlspecialchars($ui['steps']['setup'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'modules'); ?>"><?php echo htmlspecialchars($ui['steps']['modules'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'sample'); ?>"><?php echo htmlspecialchars($ui['steps']['sample'], ENT_QUOTES, 'UTF-8'); ?></div>
@@ -914,38 +1023,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
         <div class="content">
             <?php if ($errorMessage !== ''): ?>
                 <div class="error-box"><?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?></div>
-            <?php endif; ?>
-
-            <?php if ($state['step'] === 'welcome'): ?>
-                <div class="panel">
-                    <h2><?php echo htmlspecialchars($ui['welcome']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['welcome']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <div class="summary-list">
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['welcome']['project_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($ui['welcome']['project_detail'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['welcome']['language_scope_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($ui['welcome']['language_scope_detail'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['welcome']['module_scope_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($ui['welcome']['module_scope_detail'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                    </div>
-                </div>
-
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="continue_to_environment">
-                    <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['start_setup'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'language'): ?>
@@ -963,24 +1040,16 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 </label>
                             <?php endforeach; ?>
                         </div>
+                        <div class="actions">
+                            <button type="submit" class="button button-primary" onclick="document.getElementById('language-action').value='save_language';"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        </div>
                     </form>
-                    <form method="post" class="actions">
-                        <input type="hidden" name="action" value="continue_to_environment">
-                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
-                    </form>
-                    <?php if (!empty($state['installer_language_confirmed'])): ?>
-                        <form method="post" class="actions">
-                            <input type="hidden" name="action" value="go_back_to_welcome">
-                            <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
-                        </form>
-                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'environment'): ?>
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['environment']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['environment']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="status-list">
                         <?php foreach ($checks as $check): ?>
                             <?php $checkCopy = installer_check_copy($check, $ui); ?>
@@ -1007,10 +1076,77 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                 </form>
             <?php endif; ?>
 
+            <?php if ($state['step'] === 'database'): ?>
+                <div class="panel">
+                    <h2><?php echo htmlspecialchars($ui['database']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+
+                    <form method="post" id="db_form">
+                        <input type="hidden" name="action" value="save_database">
+                        
+                        <div class="field">
+                            <label><?php echo htmlspecialchars($ui['database']['adapter_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <div class="choice-grid">
+                                <label class="choice-card">
+                                    <input type="radio" name="database_adapter" value="PDO_MYSQL" <?php echo $state['database_adapter'] === 'PDO_MYSQL' ? 'checked' : ''; ?> onchange="toggleDbFields()">
+                                    <span class="choice-indicator" aria-hidden="true"></span>
+                                    <span class="choice-label"><?php echo htmlspecialchars($ui['database']['adapter_mysql'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                                <label class="choice-card">
+                                    <input type="radio" name="database_adapter" value="PDO_SQLITE" <?php echo $state['database_adapter'] === 'PDO_SQLITE' ? 'checked' : ''; ?> onchange="toggleDbFields()">
+                                    <span class="choice-indicator" aria-hidden="true"></span>
+                                    <span class="choice-label"><?php echo htmlspecialchars($ui['database']['adapter_sqlite'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div id="mysql_fields" style="display: <?php echo $state['database_adapter'] === 'PDO_MYSQL' ? 'block' : 'none'; ?>;">
+                            <div class="field">
+                                <label for="database_host"><?php echo htmlspecialchars($ui['database']['mysql_host_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input id="database_host" name="database_host" type="text" value="<?php echo htmlspecialchars($state['database_host'], ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="field">
+                                <label for="database_user"><?php echo htmlspecialchars($ui['database']['mysql_user_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input id="database_user" name="database_user" type="text" value="<?php echo htmlspecialchars($state['database_user'], ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="field">
+                                <label for="database_pass"><?php echo htmlspecialchars($ui['database']['mysql_pass_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input id="database_pass" name="database_pass" type="password" value="<?php echo htmlspecialchars($state['database_pass'], ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="field">
+                                <label for="database_name"><?php echo htmlspecialchars($ui['database']['mysql_name_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input id="database_name" name="database_name" type="text" value="<?php echo htmlspecialchars($state['database_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                        </div>
+
+                        <div id="sqlite_fields" style="display: <?php echo $state['database_adapter'] === 'PDO_SQLITE' ? 'block' : 'none'; ?>;">
+                            <div class="field">
+                                <label for="database_path"><?php echo htmlspecialchars($ui['database']['sqlite_path_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                                <input id="database_path" name="database_path" type="text" value="<?php echo htmlspecialchars($state['database_path'], ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                        </div>
+
+                        <div class="panel-actions">
+                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        </div>
+                    </form>
+                    <form method="post" class="panel-actions">
+                        <input type="hidden" name="action" value="go_back_to_environment">
+                        <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                    </form>
+
+                    <script>
+                        function toggleDbFields() {
+                            const adapter = document.querySelector('input[name="database_adapter"]:checked').value;
+                            document.getElementById('mysql_fields').style.display = adapter === 'PDO_MYSQL' ? 'block' : 'none';
+                            document.getElementById('sqlite_fields').style.display = adapter === 'PDO_SQLITE' ? 'block' : 'none';
+                        }
+                    </script>
+                </div>
+            <?php endif; ?>
+
             <?php if ($state['step'] === 'setup'): ?>
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['setup']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['setup']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <form method="post">
                         <input type="hidden" name="action" value="save_setup">
                         <div class="field">
@@ -1027,7 +1163,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="notice"><?php echo htmlspecialchars($ui['setup']['language_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <div class="actions">
                             <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_modules'], ENT_QUOTES, 'UTF-8'); ?></button>
                         </div>
@@ -1042,12 +1177,10 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <?php if ($state['step'] === 'modules'): ?>
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['module_selection']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['module_selection']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
 
                 <div class="group-panel">
                     <h3><?php echo htmlspecialchars($ui['module_selection']['required_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                    <p><?php echo htmlspecialchars($ui['module_selection']['required_body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="module-list">
                         <?php foreach ($selection['required_modules'] as $module): ?>
                             <div class="module-item">
@@ -1070,7 +1203,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                     <?php foreach ($selection['optional_groups'] as $group => $modules): ?>
                         <div class="group-panel">
                             <h3><?php echo htmlspecialchars($ui['groups'][$group], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p><?php echo htmlspecialchars($ui['module_selection']['optional_body'], ENT_QUOTES, 'UTF-8'); ?></p>
                             <div class="module-grid">
                                 <?php foreach ($modules as $module): ?>
                                     <?php $moduleState = $selection['module_states'][$module]; ?>
@@ -1113,7 +1245,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         </div>
                     <?php endforeach; ?>
 
-                    <div class="notice"><?php echo htmlspecialchars($ui['module_selection']['locked_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
                     <div class="actions">
                         <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </div>
@@ -1127,7 +1258,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <?php if ($state['step'] === 'sample'): ?>
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['sample']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['sample']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="summary-list">
                         <div class="summary-item">
                             <div class="summary-top">
@@ -1157,7 +1287,6 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 </label>
                             </div>
                         </div>
-                        <div class="notice"><?php echo htmlspecialchars($ui['sample']['sample_content_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <div class="warning-box"><?php echo htmlspecialchars($ui['sample']['sample_content_warning'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <div class="actions">
                             <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['run_installer'], ENT_QUOTES, 'UTF-8'); ?></button>
