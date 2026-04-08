@@ -52,6 +52,7 @@ class lang extends installerbase implements installerbaseinterface
 
     private function sync_lang_table_schema()
     {
+        $isSqlite = $this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false;
         $columns = array(
             'status' => "ALTER TABLE `lang` ADD COLUMN `status` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'y' AFTER `seo`",
             'is_default' => "ALTER TABLE `lang` ADD COLUMN `is_default` char(1) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'n' AFTER `status`",
@@ -60,6 +61,11 @@ class lang extends installerbase implements installerbaseinterface
         foreach ($columns as $column => $sql) {
             if ($this->check_column_exists('lang', $column) === TRUE) {
                 continue;
+            }
+
+            if ($isSqlite) {
+                $sql = preg_replace('/\s+AFTER\s+`[^`]+`/i', '', $sql);
+                $sql = preg_replace('/\s+COLLATE\s+utf8_unicode_ci/i', '', $sql);
             }
 
             if ($this->db->query($sql) === FALSE) {
@@ -94,9 +100,10 @@ class lang extends installerbase implements installerbaseinterface
 
         foreach ($languages as $language) {
             $model = Load::model('lang');
-            $model->where_seo($language['seo'])->getResult(TRUE, TRUE);
+            $model->where_seo($language['seo'])->limit(1)->getResultOne(TRUE, TRUE);
+            $existingRecord = $model->toArray();
 
-            if ($model->getSize() === 0) {
+            if ($existingRecord === null) {
                 $record = Load::model('lang');
                 $record->name = $language['name'];
                 $record->seo = $language['seo'];
@@ -114,6 +121,7 @@ class lang extends installerbase implements installerbaseinterface
                 }
             } else {
                 $model->sync();
+                $model->seo = $language['seo'];
                 $model->name = $language['name'];
                 if ($this->check_column_exists('lang', 'status') === TRUE) {
                     $model->status = 'y';

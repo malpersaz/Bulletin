@@ -305,6 +305,6 @@ class Obuilder
 
     public static function cc($str)
     {
-        return str_replace("'", "\'", (string)$str);
+        return str_replace("'", "''", (string)$str);
     }
 }

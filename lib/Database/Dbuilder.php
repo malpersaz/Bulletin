@@ -16,7 +16,7 @@ class Dbuilder
 
     public static function cc($val)
     {
-        return str_replace("'", "\'", $val);
+        return str_replace("'", "''", $val);
     }
 
     public static function table($arg)

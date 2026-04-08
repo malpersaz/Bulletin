@@ -1253,6 +1253,19 @@ class mod_news_mod extends indexMain
 
     private function _hasSliderColumn($table)
     {
+        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('" . addslashes($table) . "')");
+            $result = $this->db->toArray();
+            if (is_array($result)) {
+                foreach ($result as $row) {
+                    if (isset($row['name']) && $row['name'] === 'slider') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         $this->db->fetch_array("SHOW COLUMNS FROM `" . $table . "` LIKE 'slider'");
         $result = $this->db->getResult()->toArray();
         return is_array($result) && !empty($result);

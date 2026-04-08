@@ -24,12 +24,38 @@ class management_mod extends indexBase
 
     private function moduleStatusColumnExists()
     {
+        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('mods')");
+            $result = $this->db->toArray();
+            if (is_array($result)) {
+                foreach ($result as $row) {
+                    if (isset($row['name']) && $row['name'] === 'status') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         $this->db->fetch_array("SHOW COLUMNS FROM `mods` LIKE 'status'");
         return $this->db->getSize() !== 0;
     }
 
     private function moduleSchemaReadyColumnExists()
     {
+        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('mods')");
+            $result = $this->db->toArray();
+            if (is_array($result)) {
+                foreach ($result as $row) {
+                    if (isset($row['name']) && $row['name'] === 'schema_ready') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         $this->db->fetch_array("SHOW COLUMNS FROM `mods` LIKE 'schema_ready'");
         return $this->db->getSize() !== 0;
     }

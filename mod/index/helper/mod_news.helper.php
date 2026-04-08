@@ -255,6 +255,19 @@ class mod_news_helper extends indexBase
     private function _hasSliderColumn()
     {
         $db = Load::lib('Database');
+        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $db->fetch_array("PRAGMA table_info('mod_news')");
+            $result = $db->toArray();
+            if (is_array($result)) {
+                foreach ($result as $row) {
+                    if (isset($row['name']) && $row['name'] === 'slider') {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         $db->fetch_array("SHOW COLUMNS FROM `mod_news` LIKE 'slider'");
         $result = $db->getResult()->toArray();
         return is_array($result) && !empty($result);
