@@ -89,6 +89,11 @@ $lang['mod_user'] = [
         'ip_protection_error' => 'Für dieses Konto ist ein IP-Schutz definiert und Ihre IP-Adresse stimmt nicht überein',
         'multi_login_error' => 'Dieses Konto scheint derzeit nicht mit dem System verbunden zu sein. Möglicherweise haben Sie vergessen, Ihr Konto auf einem anderen Computer abzumelden!',
         'system_error' => 'Systemfehler',
+        'name_required' => 'Name field is required',
+        'surname_required' => 'Surname field is required',
+        'specify_email' => 'Email field is required',
+        'specify_username' => 'Username field is required',
+        'specify_password' => 'Password field is required',
     ],
     'button' => [
         'add' => 'Hinzufügen',

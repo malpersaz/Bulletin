@@ -85,7 +85,12 @@ $lang['mod_user'] = [
             'fill_all_fields' => 'Please fill in all fields',
             'ip_protection_error' => 'IP protection is defined for this account and your IP address does not match',
             'multi_login_error' => 'This account is already connected to the system from another computer!',
-            'system_error' => 'System Error'
+            'system_error' => 'System Error',
+            'name_required' => 'Please specify your name',
+            'surname_required' => 'Please specify your surname',
+            'specify_email' => 'Please specify your e-mail address',
+            'specify_username' => 'Please specify your username',
+            'specify_password' => 'Please specify your password',
         ],
     'button' =>
         [

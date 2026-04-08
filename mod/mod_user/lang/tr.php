@@ -89,6 +89,11 @@ $lang['mod_user'] = [
         'ip_protection_error' => 'Bu hesap için IP koruması tanımlanmış ve IP adresiniz uyuşmuyor',
         'multi_login_error' => 'Bu hesap şu anda başka bir bilgisayardan bağlı görünüyor!',
         'system_error' => 'Sistem Hatası',
+        'name_required' => 'Lütfen adınızı belirtin',
+        'surname_required' => 'Lütfen soyadınızı belirtin',
+        'specify_email' => 'Lütfen e-posta adresinizi belirtin',
+        'specify_username' => 'Lütfen kullanıcı adınızı belirtin',
+        'specify_password' => 'Lütfen şifrenizi belirtin',
     ],
     'button' => [
         'add' => 'Ekle',

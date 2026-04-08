@@ -89,6 +89,11 @@ $lang['mod_user'] = [
         'ip_protection_error' => 'Parastina IP ji bo vê hesabê heye û navnîşana IP ya te li hev nake',
         'multi_login_error' => 'Ev hesab ji berê ve li ser komputerek din girêdayî ye!',
         'system_error' => 'Çewtiya Pergalê',
+        'name_required' => 'Ji kerema xwe navê xwe diyar bike',
+        'surname_required' => 'Ji kerema xwe paşnavê xwe diyar bike',
+        'specify_email' => 'Ji kerema xwe navnîşana e-peyamê diyar bike',
+        'specify_username' => 'Ji kerema xwe navê bikarhêner diyar bike',
+        'specify_password' => 'Ji kerema xwe şîfreya xwe diyar bike',
     ],
     'button' => [
         'add' => 'Lêzêde Bike',
