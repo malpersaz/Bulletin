@@ -91,6 +91,8 @@ $lang['mod_user'] = [
             'specify_email' => 'Please specify your e-mail address',
             'specify_username' => 'Please specify your username',
             'specify_password' => 'Please specify your password',
+            'email_invalid_format' => 'Please enter a valid email address',
+            'email_registered' => 'This email address is already registered',
         ],
     'button' =>
         [

@@ -94,6 +94,8 @@ $lang['mod_user'] = [
         'specify_email' => 'Ji kerema xwe navnîşana e-peyamê diyar bike',
         'specify_username' => 'Ji kerema xwe navê bikarhêner diyar bike',
         'specify_password' => 'Ji kerema xwe şîfreya xwe diyar bike',
+        'email_invalid_format' => 'Ji kerema xwe re navnîşaneke derbasdar a e-peyamê binivîse',
+        'email_registered' => 'Ev e-peyam jixwe di pergalê de heye',
     ],
     'button' => [
         'add' => 'Lêzêde Bike',

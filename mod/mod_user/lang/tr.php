@@ -94,6 +94,8 @@ $lang['mod_user'] = [
         'specify_email' => 'Lütfen e-posta adresinizi belirtin',
         'specify_username' => 'Lütfen kullanıcı adınızı belirtin',
         'specify_password' => 'Lütfen şifrenizi belirtin',
+        'email_invalid_format' => 'Lütfen geçerli bir e-posta adresi girin',
+        'email_registered' => 'Bu e-posta adresi zaten kayıtlı',
     ],
     'button' => [
         'add' => 'Ekle',
