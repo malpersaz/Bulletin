@@ -3,35 +3,35 @@
 class InstallerModuleCatalog
 {
     private $modules = array(
-        'lang' => array('required' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mods' => array('required' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_settings' => array('required' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_user' => array('required' => true, 'project_specific' => false, 'dependencies' => array('mod_user_group'), 'supports_sample_content' => false),
-        'mod_user_group' => array('required' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_gallery_mod' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_gallery' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_menu' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_slider' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_headline' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_news_category' => array('required' => false, 'project_specific' => true, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_publication_category' => array('required' => false, 'project_specific' => true, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_acl' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_survey' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_announcements' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_attachment' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_attachment_mod' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_video_embed_category' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_document' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_popup' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_video' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_page' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => true),
-        'mod_imagecategories' => array('required' => false, 'project_specific' => false, 'dependencies' => array('mod_gallery'), 'supports_sample_content' => false),
-        'mod_user_pm' => array('required' => false, 'project_specific' => false, 'dependencies' => array('mod_user'), 'supports_sample_content' => false),
-        'mod_video_embed' => array('required' => false, 'project_specific' => false, 'dependencies' => array('mod_user', 'mod_video_embed_category'), 'supports_sample_content' => false),
-        'mod_news' => array('required' => false, 'project_specific' => true, 'dependencies' => array('mod_news_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true),
-        'mod_publication' => array('required' => false, 'project_specific' => true, 'dependencies' => array('mod_publication_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true),
-        'mod_category' => array('required' => false, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false),
-        'mod_content' => array('required' => false, 'project_specific' => false, 'dependencies' => array('mod_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true),
+        'lang' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mods' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_settings' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_user' => array('group' => 'user_access', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user_group'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_user_group' => array('group' => 'user_access', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_gallery_mod' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_gallery' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_menu' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_slider' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_headline' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_news_category' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_publication_category' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_acl' => array('group' => 'user_access', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_survey' => array('group' => 'communication', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_announcements' => array('group' => 'communication', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_attachment' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_attachment_mod' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_video_embed_category' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_document' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_popup' => array('group' => 'communication', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_video' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_page' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => true, 'sample_content_mode' => 'legacy_inline'),
+        'mod_imagecategories' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_gallery'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_user_pm' => array('group' => 'communication', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_video_embed' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user', 'mod_video_embed_category'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_news' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array('mod_news_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'not_available'),
+        'mod_publication' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array('mod_publication_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'not_available'),
+        'mod_category' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => true, 'sample_content_mode' => 'project_rule_excluded'),
+        'mod_content' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'project_rule_excluded'),
     );
 
     private $installOrder = array(
@@ -76,9 +76,60 @@ class InstallerModuleCatalog
         return $this->installOrder;
     }
 
-    public function getDefaultSelectedModules()
+    public function getModule($module)
     {
-        return $this->installOrder;
+        return isset($this->modules[$module]) ? $this->modules[$module] : null;
+    }
+
+    public function getAllModuleNames()
+    {
+        return array_keys($this->modules);
+    }
+
+    public function getRequiredModules()
+    {
+        $required = array();
+
+        foreach ($this->installOrder as $module) {
+            if (!empty($this->modules[$module]['required'])) {
+                $required[] = $module;
+            }
+        }
+
+        return $required;
+    }
+
+    public function getDefaultRequestedModules()
+    {
+        $selected = array();
+
+        foreach ($this->installOrder as $module) {
+            if (!empty($this->modules[$module]['default_selected']) && empty($this->modules[$module]['required'])) {
+                $selected[] = $module;
+            }
+        }
+
+        return $selected;
+    }
+
+    public function filterRequestedModules(array $requestedModules)
+    {
+        $filtered = array();
+        $allowed = array_fill_keys($this->getAllModuleNames(), true);
+
+        foreach ($requestedModules as $module) {
+            if (!isset($allowed[$module])) {
+                continue;
+            }
+
+            if (!empty($this->modules[$module]['required'])) {
+                continue;
+            }
+
+            $filtered[$module] = true;
+        }
+
+        return array_values(array_keys($filtered));
     }
 
     public function getSummary(array $selectedModules)
@@ -101,6 +152,13 @@ class InstallerModuleCatalog
                 $summary['required']++;
             } else {
                 $summary['optional']++;
+            }
+
+            if (isset($this->modules[$module]['group'])) {
+                if (!isset($summary['groups'][$this->modules[$module]['group']])) {
+                    $summary['groups'][$this->modules[$module]['group']] = 0;
+                }
+                $summary['groups'][$this->modules[$module]['group']]++;
             }
 
             if ($this->modules[$module]['project_specific'] === true) {

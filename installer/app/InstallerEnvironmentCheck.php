@@ -42,7 +42,7 @@ class InstallerEnvironmentCheck
         return $this->buildStatus(
             empty($missing),
             'extensions',
-            array('missing' => implode(', ', $missing))
+            array('missing' => $missing)
         );
     }
 
@@ -65,7 +65,7 @@ class InstallerEnvironmentCheck
         return $this->buildStatus(
             empty($blocked),
             'directories',
-            array('blocked' => implode(', ', $blocked))
+            array('blocked' => $blocked)
         );
     }
 
@@ -74,13 +74,19 @@ class InstallerEnvironmentCheck
         $dbConfig = Kayit::getir('db_config');
         $databaseKey = Kayit::getir('database');
         $configured = is_array($dbConfig) && isset($dbConfig[$databaseKey]['adapter']);
-        $detail = 'No active database configuration found.';
+        $meta = array(
+            'configured' => false,
+            'adapter' => '',
+            'database_key' => '',
+        );
 
         if ($configured) {
-            $detail = $dbConfig[$databaseKey]['adapter'] . '|' . $databaseKey;
+            $meta['configured'] = true;
+            $meta['adapter'] = $dbConfig[$databaseKey]['adapter'];
+            $meta['database_key'] = $databaseKey;
         }
 
-        return $this->buildStatus($configured, 'database', array('detail' => $detail));
+        return $this->buildStatus($configured, 'database', $meta);
     }
 
     private function buildStatus($ok, $key, array $meta)

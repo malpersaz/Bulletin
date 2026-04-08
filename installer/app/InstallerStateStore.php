@@ -47,6 +47,8 @@ class InstallerStateStore
             'installer_language' => 'en',
             'project_name' => 'Rojname',
             'project_default_language' => 'ku',
+            'requested_modules' => array(),
+            'resolved_modules' => array(),
             'sample_content' => 'no',
             'install_result' => null,
         );

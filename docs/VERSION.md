@@ -3,9 +3,25 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.51`.
+- The current Git-detected active version code is `v1.0.53.52`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.53.52
+- Active version bucket derived from the latest Git history and confirmed by the current task override.
+- Git history re-verified against the current repository state; latest uploaded commit remains `76cae6d` with version `v1.0.53.52`.
+- **Installer Module Selection Flow**: Extended the phone-first installer with a dedicated module-selection step, manifest-backed module grouping, dependency-aware auto-selection, required-versus-optional visual treatment, and persistent requested-versus-resolved module state.
+- **Installer Execution State Screens**: Replaced the old single result screen with structured install progress cards, per-module runtime states, recoverable retry behavior, a post-install review step, and a distinct finish handoff screen for successful runs.
+- **Installer Localization Coverage Expansion**: Updated the installer mobile language payload across `en`, `de`, `fr`, `ku`, `ckb`, `sv`, and `zza` so the expanded setup, module, progress, review, and finish flow ships without visible fallback text.
+- **Installer Sample-State Reporting**: Added manifest-level sample-content modes plus module-by-module sample-status summaries in the sample, progress, and post-install review steps so legacy inline seed behavior and unsupported sample paths are now surfaced explicitly instead of being hidden behind a single global toggle.
+- **Installer Safe Resume Flow**: Retry now resumes from previously completed modules instead of rerunning the whole selected set blindly, and the progress screen explicitly lists the carried-forward modules in every supported installer language.
+- **Installer Project-Rule Seed Cleanup**: Added post-install enforcement for the `Rojname` rule that strips the default category and content seed records after installation, so legacy inline installer seeders no longer leave those defaults behind.
+- **Installer Clean-Install Page Cleanup**: When sample content is disabled, the installer now removes legacy sample page records created by `mod_page`, while still preserving them when the user explicitly keeps sample content enabled.
+- **Installer Recovery Messaging Hardening**: Replaced hard-coded failure-reason text with localized recovery reason keys and split non-recoverable failure exit behavior from the normal module-edit path.
+- **Installer Module Label Localization**: Moved installer-visible module names into the multilingual installer language payload so module cards, dependency chips, progress summaries, and review screens now follow the selected installer language instead of fixed English labels.
+- **Installer Native Language Cards**: Reworked the installer language step to show native language names with code badges instead of bare uppercase codes, keeping the phone-first chooser aligned with the modernization plan.
+- **Installer Environment Meta Cleanup**: Replaced the database-check string sentinel with structured environment metadata so the phone-first environment screen no longer relies on English-only internal detail parsing.
+- **Installer Environment Item Labels**: Moved required extension names and writable-directory names behind installer language keys so blocked environment summaries no longer surface raw internal identifiers in the mobile UI.
 
 ## v1.0.53.51
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.

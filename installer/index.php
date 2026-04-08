@@ -8,6 +8,8 @@ require_once(installer_dir . 'app' . DS . 'InstallerStateStore.php');
 require_once(installer_dir . 'app' . DS . 'InstallerModuleCatalog.php');
 require_once(installer_dir . 'app' . DS . 'InstallerDependencyResolver.php');
 require_once(installer_dir . 'app' . DS . 'InstallerEnvironmentCheck.php');
+require_once(installer_dir . 'app' . DS . 'InstallerTaskRunner.php');
+
 class installer extends installerbase
 {
     public function __construct()
@@ -17,23 +19,19 @@ class installer extends installerbase
 
     public function install($mods)
     {
-        //$this->db->start_transaction();
         foreach ($mods as $mod) {
             try {
                 $m = $this->load_mod($mod);
             } catch (Exception $e) {
-                //$this->db->rollback();
                 echo $e->getMessage();
                 exit();
             }
+
             if ($m->install() !== true) {
-                //$this->db->rollback();
                 $this->error("Error occurred while installing '" . $mod . "'");
                 exit();
             }
-            //$m->uninstall();
         }
-        //$this->db->commit();
     }
 
     public function load_mod($modul)
@@ -41,100 +39,192 @@ class installer extends installerbase
         if (file_exists(installer_dir . $modul . DS . 'index.php') === false) {
             throw new Exception("Module '" . $modul . "' was not found");
         }
-        require_once(installer_dir . $modul . DS . "index.php");
+
+        require_once(installer_dir . $modul . DS . 'index.php');
         return new $modul();
     }
 
     public function uninstall($mods)
     {
-        //$this->db->start_transaction();
         foreach ($mods as $mod) {
             try {
                 $m = $this->load_mod($mod);
             } catch (Exception $e) {
-                //$this->db->rollback();
                 echo $e->getMessage();
                 exit();
             }
-            if ($m->uninstall() !== true || $m->uninstall_blocked === TRUE) {
-                //$this->db->rollback();
+
+            if ($m->uninstall() !== true || $m->uninstall_blocked === true) {
                 $this->error("Error occurred while uninstalling '" . $mod . "'");
                 exit();
             }
-            //$m->uninstall();
         }
-        //$this->db->commit();
-        //print_r(Database::$_sql_querys);
+    }
+}
+
+function installer_available_languages()
+{
+    return array(
+        'de' => true,
+        'en' => true,
+        'fr' => true,
+        'ku' => true,
+        'ckb' => true,
+        'sv' => true,
+        'zza' => true,
+    );
+}
+
+function installer_language_option($languageCode, array $ui)
+{
+    if (!empty($ui['language_options'][$languageCode])) {
+        return $ui['language_options'][$languageCode];
     }
 
-    public function run_installation(array $mods)
-    {
-        $lang = Load::lang('lang');
-        $output = array();
-        $success = true;
+    return array(
+        'label' => strtoupper($languageCode),
+        'code' => strtoupper($languageCode),
+    );
+}
 
-        ob_start();
+function installer_module_label($module, array $ui)
+{
+    if (!empty($ui['module_labels'][$module])) {
+        return $ui['module_labels'][$module];
+    }
 
-        $this->system_mesaj($lang['lang']['system']['starting']);
+    return ucwords(str_replace('_', ' ', preg_replace('/^mod_/', '', $module)));
+}
 
-        $this->system_mesaj(sprintf($lang['lang']['system']['installing'], 'lang'));
-        if ($this->load_mod('lang')->install() !== TRUE) {
-            $this->error("Error occurred while installing 'lang'");
-            $success = false;
-        }
+function installer_step_class($stateStep, $currentStep)
+{
+    return $stateStep === $currentStep ? 'step-pill is-active' : 'step-pill';
+}
 
-        if ($success === true) {
-            $this->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mods'));
-            if ($this->load_mod('mods')->install() !== TRUE) {
-                $this->error("Error occurred while installing 'mods'");
-                $success = false;
-            }
-        }
+function installer_check_copy(array $check, array $ui)
+{
+    $key = $check['key'];
+    $meta = isset($check['meta']) ? $check['meta'] : array();
 
-        if ($success === true) {
-            $this->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_user (part 1)'));
-            $mod_user = $this->load_mod('mod_user');
-            if ($mod_user->install() !== TRUE) {
-                $this->error("Error occurred while installing 'mod_user'");
-                $success = false;
-            }
-        }
+    if ($key === 'php_version') {
+        return array(
+            'label' => $ui['checks']['php_version']['label'],
+            'detail' => sprintf($ui['checks']['php_version']['detail'], isset($meta['version']) ? $meta['version'] : ''),
+        );
+    }
 
-        if ($success === true) {
-            $this->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_user_group'));
-            if ($this->load_mod('mod_user_group')->install() !== TRUE) {
-                $this->error("Error occurred while installing 'mod_user_group'");
-                $success = false;
-            }
-        }
+    if ($key === 'extensions') {
+        $detail = empty($meta['missing'])
+            ? $ui['checks']['extensions']['ok']
+            : sprintf($ui['checks']['extensions']['missing'], installer_check_item_list(isset($meta['missing']) ? $meta['missing'] : array(), isset($ui['checks']['extensions']['items']) ? $ui['checks']['extensions']['items'] : array()));
 
-        if ($success === true) {
-            $this->system_mesaj(sprintf($lang['lang']['system']['installing'], 'mod_user (part 2)'));
-            if ($mod_user->install_finish() !== TRUE) {
-                $this->error("Error occurred while finishing 'mod_user' installation");
-                $success = false;
-            }
-        }
+        return array(
+            'label' => $ui['checks']['extensions']['label'],
+            'detail' => $detail,
+        );
+    }
 
-        if ($success === true) {
-            $mods = array_values(array_diff($mods, array('lang', 'mods', 'mod_user', 'mod_user_group')));
-            $this->install($mods);
-        }
+    if ($key === 'directories') {
+        $detail = empty($meta['blocked'])
+            ? $ui['checks']['directories']['ok']
+            : sprintf($ui['checks']['directories']['blocked'], installer_check_item_list(isset($meta['blocked']) ? $meta['blocked'] : array(), isset($ui['checks']['directories']['items']) ? $ui['checks']['directories']['items'] : array()));
 
-        $rawOutput = ob_get_clean();
-        $normalizedOutput = preg_replace('/<br\s*\/?>/i', PHP_EOL, $rawOutput);
-        $normalizedOutput = trim(strip_tags($normalizedOutput));
+        return array(
+            'label' => $ui['checks']['directories']['label'],
+            'detail' => $detail,
+        );
+    }
 
-        if ($normalizedOutput !== '') {
-            $output = preg_split('/\r\n|\r|\n/', $normalizedOutput);
+    if ($key === 'database') {
+        if (empty($meta['configured'])) {
+            $detail = $ui['checks']['database']['missing'];
+        } else {
+            $detail = sprintf(
+                $ui['checks']['database']['detail'],
+                isset($meta['adapter']) ? $meta['adapter'] : '',
+                isset($meta['database_key']) ? $meta['database_key'] : ''
+            );
         }
 
         return array(
-            'success' => $success,
-            'output' => $output,
-            'installed_at' => NOW,
+            'label' => $ui['checks']['database']['label'],
+            'detail' => $detail,
         );
     }
+
+    return array('label' => '', 'detail' => '');
+}
+
+function installer_check_item_list(array $items, array $labels)
+{
+    $resolved = array();
+
+    foreach ($items as $item) {
+        $resolved[] = isset($labels[$item]) ? $labels[$item] : $item;
+    }
+
+    return implode(', ', $resolved);
+}
+
+function installer_module_list(array $modules, array $ui)
+{
+    $labels = array();
+
+    foreach ($modules as $module) {
+        $labels[] = installer_module_label($module, $ui);
+    }
+
+    return implode(', ', $labels);
+}
+
+function installer_runtime_state_label($state, array $ui)
+{
+    $key = 'state_' . $state;
+    return isset($ui['progress'][$key]) ? $ui['progress'][$key] : strtoupper((string) $state);
+}
+
+function installer_failure_reason_label(array $result, array $ui)
+{
+    if (empty($result['failure_reason'])) {
+        return '';
+    }
+
+    $key = $result['failure_reason'];
+    return isset($ui['progress'][$key]) ? $ui['progress'][$key] : '';
+}
+
+function installer_result_text($entry, array $ui)
+{
+    if (!is_array($entry) || empty($entry['key'])) {
+        return is_string($entry) ? $entry : '';
+    }
+
+    if (empty($ui['result_messages'][$entry['key']])) {
+        return '';
+    }
+
+    $text = $ui['result_messages'][$entry['key']];
+    $params = isset($entry['params']) && is_array($entry['params']) ? $entry['params'] : array();
+
+    if (empty($params)) {
+        return $text;
+    }
+
+    return vsprintf($text, $params);
+}
+
+function installer_result_list_text(array $entries, array $ui)
+{
+    $parts = array();
+
+    foreach ($entries as $entry) {
+        $text = installer_result_text($entry, $ui);
+        if ($text !== '') {
+            $parts[] = $text;
+        }
+    }
+
+    return implode(' ', $parts);
 }
 
 Load::lib('Session');
@@ -142,17 +232,18 @@ $stateStore = new InstallerStateStore();
 $catalog = new InstallerModuleCatalog();
 $resolver = new InstallerDependencyResolver();
 $environment = new InstallerEnvironmentCheck();
+$taskRunner = new InstallerTaskRunner();
+$availableInstallerLanguages = installer_available_languages();
+$projectLanguages = $availableInstallerLanguages;
 $state = $stateStore->getState();
 
-$availableInstallerLanguages = array(
-    'de' => 'DE',
-    'en' => 'EN',
-    'fr' => 'FR',
-    'ku' => 'KU',
-    'ckb' => 'CKB',
-    'sv' => 'SV',
-    'zza' => 'ZZA',
-);
+if (empty($state['requested_modules'])) {
+    $selection = $resolver->buildSelection($catalog->getDefaultRequestedModules(), $catalog);
+    $state = $stateStore->merge(array(
+        'requested_modules' => $selection['requested'],
+        'resolved_modules' => $selection['resolved'],
+    ));
+}
 
 if (isset($availableInstallerLanguages[$state['installer_language']])) {
     Kayit::yenile('lang', $state['installer_language']);
@@ -160,7 +251,6 @@ if (isset($availableInstallerLanguages[$state['installer_language']])) {
 
 $lang = Load::lang('lang');
 $ui = $lang['lang']['installer_mobile'];
-
 $checks = $environment->run();
 $isBlocked = $environment->hasBlockingFailures($checks);
 $errorMessage = '';
@@ -170,6 +260,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($action === 'reset_setup') {
         $state = $stateStore->reset();
+        $selection = $resolver->buildSelection($catalog->getDefaultRequestedModules(), $catalog);
+        $state = $stateStore->merge(array(
+            'requested_modules' => $selection['requested'],
+            'resolved_modules' => $selection['resolved'],
+        ));
         Kayit::yenile('lang', $state['installer_language']);
     }
 
@@ -188,6 +283,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'step' => 'environment',
         ));
         Kayit::yenile('lang', $installerLanguage);
+        $lang = Load::lang('lang');
+        $ui = $lang['lang']['installer_mobile'];
         $checks = $environment->run();
         $isBlocked = $environment->hasBlockingFailures($checks);
     }
@@ -212,14 +309,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'save_setup') {
         $projectName = isset($_POST['project_name']) ? trim($_POST['project_name']) : 'Rojname';
         $projectLanguage = isset($_POST['project_default_language']) ? $_POST['project_default_language'] : 'ku';
-        $sampleContent = isset($_POST['sample_content']) ? $_POST['sample_content'] : 'no';
 
-        if (!isset($availableInstallerLanguages[$projectLanguage])) {
+        if (!isset($projectLanguages[$projectLanguage])) {
             $projectLanguage = 'ku';
-        }
-
-        if ($sampleContent !== 'yes') {
-            $sampleContent = 'no';
         }
 
         if ($projectName === '') {
@@ -229,8 +321,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $state = $stateStore->merge(array(
             'project_name' => $projectName,
             'project_default_language' => $projectLanguage,
-            'sample_content' => $sampleContent,
-            'step' => 'review',
+            'step' => 'modules',
         ));
     }
 
@@ -238,87 +329,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $state = $stateStore->merge(array('step' => 'environment'));
     }
 
-    if ($action === 'run_install') {
+    if ($action === 'save_modules') {
+        $requestedModules = isset($_POST['modules']) && is_array($_POST['modules']) ? $_POST['modules'] : array();
+        $selection = $resolver->buildSelection($requestedModules, $catalog);
+        $state = $stateStore->merge(array(
+            'requested_modules' => $selection['requested'],
+            'resolved_modules' => $selection['resolved'],
+            'install_result' => null,
+            'step' => 'sample',
+        ));
+    }
+
+    if ($action === 'go_back_to_setup') {
+        $state = $stateStore->merge(array('step' => 'setup'));
+    }
+
+    if ($action === 'edit_modules') {
+        $state = $stateStore->merge(array('step' => 'modules'));
+    }
+
+    if ($action === 'exit_failure') {
+        $state = $stateStore->merge(array(
+            'install_result' => null,
+            'step' => 'modules',
+        ));
+    }
+
+    if ($action === 'run_install' || $action === 'retry_install') {
         $checks = $environment->run();
         $isBlocked = $environment->hasBlockingFailures($checks);
+        $sampleContent = isset($_POST['sample_content']) && $_POST['sample_content'] === 'yes' ? 'yes' : 'no';
 
         if ($isBlocked) {
             $errorMessage = $ui['errors']['blocked_install'];
-            $state = $stateStore->merge(array('step' => 'environment'));
-        } else {
-            $installer = new installer();
-            $selectedModules = $resolver->resolve($catalog->getDefaultSelectedModules(), $catalog);
-            $result = $installer->run_installation($selectedModules);
             $state = $stateStore->merge(array(
-                'install_result' => $result,
-                'step' => 'result',
+                'sample_content' => $sampleContent,
+                'step' => 'environment',
             ));
+        } else {
+            $selection = $resolver->buildSelection($state['requested_modules'], $catalog);
+            $installer = new installer();
+            $previousResult = array();
+            if ($action === 'retry_install' && is_array($state['install_result'])) {
+                $previousResult = $state['install_result'];
+            }
+            $result = $taskRunner->run($installer, $selection['resolved'], $catalog, $sampleContent, $previousResult);
+            $state = $stateStore->merge(array(
+                'sample_content' => $sampleContent,
+                'resolved_modules' => $selection['resolved'],
+                'install_result' => $result,
+                'step' => 'progress',
+            ));
+        }
+    }
+
+    if ($action === 'go_back_to_modules') {
+        $state = $stateStore->merge(array('step' => 'modules'));
+    }
+
+    if ($action === 'view_review') {
+        $result = isset($state['install_result']) ? $state['install_result'] : null;
+        if ($result && !empty($result['success'])) {
+            $state = $stateStore->merge(array('step' => 'post_install'));
+        }
+    }
+
+    if ($action === 'go_back_to_progress') {
+        $state = $stateStore->merge(array('step' => 'progress'));
+    }
+
+    if ($action === 'continue_to_finish') {
+        $result = isset($state['install_result']) ? $state['install_result'] : null;
+        if ($result && !empty($result['success'])) {
+            $state = $stateStore->merge(array('step' => 'finish'));
         }
     }
 }
 
 $state = $stateStore->getState();
-$selectedModules = $resolver->resolve($catalog->getDefaultSelectedModules(), $catalog);
-$summary = $catalog->getSummary($selectedModules);
+$selection = $resolver->buildSelection($state['requested_modules'], $catalog);
+$summary = $selection['summary'];
 $result = isset($state['install_result']) ? $state['install_result'] : null;
-
-function installer_step_class($stateStep, $currentStep)
-{
-    if ($stateStep === $currentStep) {
-        return 'step-pill is-active';
-    }
-
-    return 'step-pill';
-}
-
-function installer_check_copy(array $check, array $ui)
-{
-    $key = $check['key'];
-    $meta = isset($check['meta']) ? $check['meta'] : array();
-
-    if ($key === 'php_version') {
-        return array(
-            'label' => $ui['checks']['php_version']['label'],
-            'detail' => sprintf($ui['checks']['php_version']['detail'], isset($meta['version']) ? $meta['version'] : ''),
-        );
-    }
-
-    if ($key === 'extensions') {
-        $detail = empty($meta['missing'])
-            ? $ui['checks']['extensions']['ok']
-            : sprintf($ui['checks']['extensions']['missing'], $meta['missing']);
-        return array(
-            'label' => $ui['checks']['extensions']['label'],
-            'detail' => $detail,
-        );
-    }
-
-    if ($key === 'directories') {
-        $detail = empty($meta['blocked'])
-            ? $ui['checks']['directories']['ok']
-            : sprintf($ui['checks']['directories']['blocked'], $meta['blocked']);
-        return array(
-            'label' => $ui['checks']['directories']['label'],
-            'detail' => $detail,
-        );
-    }
-
-    if ($key === 'database') {
-        if (empty($meta['detail']) || $meta['detail'] === 'No active database configuration found.') {
-            $detail = $ui['checks']['database']['missing'];
-        } else {
-            list($adapter, $databaseKey) = explode('|', $meta['detail']);
-            $detail = sprintf($ui['checks']['database']['detail'], $adapter, $databaseKey);
-        }
-
-        return array(
-            'label' => $ui['checks']['database']['label'],
-            'detail' => $detail,
-        );
-    }
-
-    return array('label' => '', 'detail' => '');
-}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo htmlspecialchars($state['installer_language'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -340,12 +431,12 @@ function installer_check_copy(array $check, array $ui)
             --ok: #166534;
             --ok-soft: #ecfdf3;
             --border: #e7dcc9;
+            --warning: #b54708;
+            --warning-soft: #fffaeb;
             --shadow: 0 18px 42px rgba(63, 46, 20, 0.10);
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -357,7 +448,7 @@ function installer_check_copy(array $check, array $ui)
             font-family: "Trebuchet MS", "Segoe UI", sans-serif;
             display: flex;
             justify-content: center;
-            padding: 20px 14px 96px;
+            padding: 20px 14px 104px;
         }
 
         .shell {
@@ -390,9 +481,7 @@ function installer_check_copy(array $check, array $ui)
             text-transform: uppercase;
         }
 
-        h1, h2, h3, p {
-            margin: 0;
-        }
+        h1, h2, h3, p { margin: 0; }
 
         .hero h1 {
             margin-top: 14px;
@@ -431,11 +520,10 @@ function installer_check_copy(array $check, array $ui)
             color: #fff;
         }
 
-        .content {
-            padding: 0 20px 20px;
-        }
+        .content { padding: 0 20px 20px; }
 
-        .panel {
+        .panel,
+        .group-panel {
             background: var(--surface-strong);
             border: 1px solid var(--border);
             border-radius: 22px;
@@ -443,13 +531,23 @@ function installer_check_copy(array $check, array $ui)
             margin-bottom: 14px;
         }
 
-        .panel h2 {
+        .finish-panel {
+            background: linear-gradient(180deg, rgba(15, 118, 110, 0.12), rgba(255,255,255,0.98));
+        }
+
+        .panel h2,
+        .group-panel h3 {
             font-size: 20px;
             line-height: 1.2;
             margin-bottom: 8px;
         }
 
-        .panel p {
+        .group-panel h3 {
+            font-size: 16px;
+        }
+
+        .panel p,
+        .group-panel p {
             color: var(--muted);
             font-size: 14px;
             line-height: 1.5;
@@ -457,6 +555,8 @@ function installer_check_copy(array $check, array $ui)
 
         .status-list,
         .summary-list,
+        .module-list,
+        .module-grid,
         .output-list {
             display: grid;
             gap: 12px;
@@ -465,6 +565,7 @@ function installer_check_copy(array $check, array $ui)
 
         .status-item,
         .summary-item,
+        .module-item,
         .output-item {
             border-radius: 18px;
             border: 1px solid var(--border);
@@ -472,49 +573,79 @@ function installer_check_copy(array $check, array $ui)
             background: var(--surface);
         }
 
-        .status-item.is-ok {
+        .status-item.is-ok,
+        .module-item.is-completed {
             background: var(--ok-soft);
             border-color: rgba(22, 101, 52, 0.18);
         }
 
-        .status-item.is-fail {
+        .status-item.is-fail,
+        .module-item.is-failed {
             background: var(--danger-soft);
             border-color: rgba(180, 35, 24, 0.16);
         }
 
+        .module-item.is-skipped {
+            background: rgba(255,255,255,0.88);
+        }
+
         .status-top,
-        .summary-top {
+        .summary-top,
+        .module-top {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
         }
 
         .status-label,
-        .summary-label {
+        .summary-label,
+        .module-label {
             font-size: 14px;
             font-weight: 700;
         }
 
-        .status-chip {
+        .status-chip,
+        .module-state,
+        .chip {
             border-radius: 999px;
             padding: 6px 10px;
             font-size: 12px;
             font-weight: 700;
         }
 
-        .status-chip.is-ok {
+        .status-chip.is-ok,
+        .module-state.is-completed,
+        .chip.is-accent {
             background: rgba(22, 101, 52, 0.12);
             color: var(--ok);
         }
 
-        .status-chip.is-fail {
+        .status-chip.is-fail,
+        .module-state.is-failed {
             background: rgba(180, 35, 24, 0.12);
             color: var(--danger);
         }
 
+        .module-state.is-skipped,
+        .chip.is-neutral {
+            background: rgba(108, 103, 88, 0.10);
+            color: var(--muted);
+        }
+
+        .module-state.is-warning {
+            background: rgba(181, 71, 8, 0.12);
+            color: var(--warning);
+        }
+
+        .chip.is-warning {
+            background: rgba(181, 71, 8, 0.12);
+            color: var(--warning);
+        }
+
         .status-detail,
-        .summary-detail {
+        .summary-detail,
+        .module-detail {
             margin-top: 8px;
             color: var(--muted);
             font-size: 13px;
@@ -528,12 +659,14 @@ function installer_check_copy(array $check, array $ui)
             margin-top: 16px;
         }
 
-        .language-option input {
+        .language-option input,
+        .module-checkbox input {
             display: none;
         }
 
         .language-card {
             display: flex;
+            flex-direction: column;
             min-height: 74px;
             align-items: center;
             justify-content: center;
@@ -543,6 +676,16 @@ function installer_check_copy(array $check, array $ui)
             font-size: 16px;
             font-weight: 800;
             letter-spacing: 0.05em;
+            gap: 6px;
+            text-align: center;
+            line-height: 1.15;
+        }
+
+        .language-card small {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--muted);
         }
 
         .language-option input:checked + .language-card {
@@ -551,9 +694,7 @@ function installer_check_copy(array $check, array $ui)
             border-color: rgba(15, 118, 110, 0.4);
         }
 
-        .field {
-            margin-top: 16px;
-        }
+        .field { margin-top: 16px; }
 
         .field label {
             display: block;
@@ -575,16 +716,41 @@ function installer_check_copy(array $check, array $ui)
             font-size: 15px;
         }
 
+        .module-card {
+            display: block;
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            padding: 14px;
+        }
+
+        .module-checkbox input:checked + .module-card {
+            border-color: rgba(15, 118, 110, 0.42);
+            background: rgba(15, 118, 110, 0.08);
+        }
+
+        .module-checkbox input:disabled + .module-card {
+            opacity: 0.9;
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
         .radio-group {
             display: grid;
             gap: 10px;
+            margin-top: 14px;
         }
 
         .radio-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            min-height: 48px;
+            min-height: 52px;
             padding: 14px;
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -593,26 +759,61 @@ function installer_check_copy(array $check, array $ui)
             font-size: 14px;
         }
 
-        .notice {
-            margin-top: 16px;
+        .notice,
+        .warning-box,
+        .error-box {
+            margin-bottom: 14px;
             border-radius: 18px;
-            border: 1px solid rgba(15, 118, 110, 0.18);
-            background: rgba(15, 118, 110, 0.08);
-            color: var(--accent-strong);
             padding: 14px;
             font-size: 13px;
             line-height: 1.5;
         }
 
+        .notice {
+            border: 1px solid rgba(15, 118, 110, 0.18);
+            background: rgba(15, 118, 110, 0.08);
+            color: var(--accent-strong);
+            margin-top: 16px;
+        }
+
+        .warning-box {
+            border: 1px solid rgba(181, 71, 8, 0.16);
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
         .error-box {
-            margin-bottom: 14px;
-            border-radius: 18px;
-            padding: 14px;
             background: var(--danger-soft);
             border: 1px solid rgba(180, 35, 24, 0.16);
             color: var(--danger);
+        }
+
+        .details {
+            margin-top: 10px;
+            border-top: 1px solid rgba(231, 220, 201, 0.9);
+            padding-top: 10px;
+        }
+
+        .details summary {
+            cursor: pointer;
             font-size: 13px;
-            line-height: 1.5;
+            font-weight: 700;
+            color: var(--accent-strong);
+        }
+
+        .details-list {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .detail-log {
+            font-size: 12px;
+            color: var(--muted);
+            background: rgba(255,255,255,0.72);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
         }
 
         .actions {
@@ -624,7 +825,8 @@ function installer_check_copy(array $check, array $ui)
             background: linear-gradient(180deg, rgba(244,239,230,0), rgba(244,239,230,0.98) 30%);
         }
 
-        .button {
+        .button,
+        .button-link {
             width: 100%;
             min-height: 52px;
             border: 0;
@@ -632,9 +834,14 @@ function installer_check_copy(array $check, array $ui)
             font-size: 15px;
             font-weight: 800;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
         }
 
-        .button-primary {
+        .button-primary,
+        .button-link {
             background: var(--accent);
             color: #fff;
         }
@@ -643,18 +850,6 @@ function installer_check_copy(array $check, array $ui)
             background: #fff;
             color: var(--ink);
             border: 1px solid var(--border);
-        }
-
-        .meta {
-            display: grid;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .meta strong {
-            display: block;
-            font-size: 13px;
-            margin-bottom: 4px;
         }
     </style>
 </head>
@@ -671,8 +866,11 @@ function installer_check_copy(array $check, array $ui)
             <div class="<?php echo installer_step_class($state['step'], 'language'); ?>"><?php echo htmlspecialchars($ui['steps']['language'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'environment'); ?>"><?php echo htmlspecialchars($ui['steps']['checks'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'setup'); ?>"><?php echo htmlspecialchars($ui['steps']['setup'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'review'); ?>"><?php echo htmlspecialchars($ui['steps']['review'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'result'); ?>"><?php echo htmlspecialchars($ui['steps']['result'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'modules'); ?>"><?php echo htmlspecialchars($ui['steps']['modules'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'sample'); ?>"><?php echo htmlspecialchars($ui['steps']['sample'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'progress'); ?>"><?php echo htmlspecialchars($ui['steps']['progress'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'post_install'); ?>"><?php echo htmlspecialchars($ui['steps']['review'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'finish'); ?>"><?php echo htmlspecialchars($ui['steps']['finish'], ENT_QUOTES, 'UTF-8'); ?></div>
         </div>
 
         <div class="content">
@@ -697,6 +895,12 @@ function installer_check_copy(array $check, array $ui)
                             </div>
                             <div class="summary-detail"><?php echo htmlspecialchars($ui['welcome']['language_scope_detail'], ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['welcome']['module_scope_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars($ui['welcome']['module_scope_detail'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
                     </div>
                 </div>
 
@@ -713,10 +917,11 @@ function installer_check_copy(array $check, array $ui)
                     <form method="post">
                         <input type="hidden" name="action" value="save_language">
                         <div class="language-grid">
-                            <?php foreach ($availableInstallerLanguages as $languageCode => $languageLabel): ?>
+                            <?php foreach ($availableInstallerLanguages as $languageCode => $enabled): ?>
+                                <?php $languageOption = installer_language_option($languageCode, $ui); ?>
                                 <label class="language-option">
                                     <input type="radio" name="installer_language" value="<?php echo htmlspecialchars($languageCode, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $state['installer_language'] === $languageCode ? 'checked' : ''; ?>>
-                                    <span class="language-card"><?php echo htmlspecialchars($languageLabel, ENT_QUOTES, 'UTF-8'); ?></span>
+                                    <span class="language-card"><?php echo htmlspecialchars($languageOption['label'], ENT_QUOTES, 'UTF-8'); ?><small><?php echo htmlspecialchars($languageOption['code'], ENT_QUOTES, 'UTF-8'); ?></small></span>
                                 </label>
                             <?php endforeach; ?>
                         </div>
@@ -774,29 +979,16 @@ function installer_check_copy(array $check, array $ui)
                         <div class="field">
                             <label for="project_default_language"><?php echo htmlspecialchars($ui['setup']['project_default_language_label'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <select id="project_default_language" name="project_default_language">
-                                <?php foreach ($availableInstallerLanguages as $languageCode => $languageLabel): ?>
+                                <?php foreach ($projectLanguages as $languageCode => $languageLabel): ?>
                                     <option value="<?php echo htmlspecialchars($languageCode, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $state['project_default_language'] === $languageCode ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($languageLabel, ENT_QUOTES, 'UTF-8'); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
-                        <div class="field">
-                            <label><?php echo htmlspecialchars($ui['setup']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <div class="radio-group">
-                                <label class="radio-item">
-                                    <input type="radio" name="sample_content" value="no" <?php echo $state['sample_content'] === 'no' ? 'checked' : ''; ?>>
-                                    <span><?php echo htmlspecialchars($ui['setup']['sample_content_no'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                </label>
-                                <label class="radio-item">
-                                    <input type="radio" name="sample_content" value="yes" <?php echo $state['sample_content'] === 'yes' ? 'checked' : ''; ?>>
-                                    <span><?php echo htmlspecialchars($ui['setup']['sample_content_yes'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="notice"><?php echo htmlspecialchars($ui['setup']['sample_content_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="notice"><?php echo htmlspecialchars($ui['setup']['language_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <div class="actions">
-                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_review'], ENT_QUOTES, 'UTF-8'); ?></button>
+                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_modules'], ENT_QUOTES, 'UTF-8'); ?></button>
                         </div>
                     </form>
                     <form method="post" class="actions">
@@ -806,75 +998,323 @@ function installer_check_copy(array $check, array $ui)
                 </div>
             <?php endif; ?>
 
-            <?php if ($state['step'] === 'review'): ?>
+            <?php if ($state['step'] === 'modules'): ?>
                 <div class="panel">
-                    <h2><?php echo htmlspecialchars($ui['review']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['review']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <h2><?php echo htmlspecialchars($ui['module_selection']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($ui['module_selection']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                </div>
+
+                <div class="group-panel">
+                    <h3><?php echo htmlspecialchars($ui['module_selection']['required_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                    <p><?php echo htmlspecialchars($ui['module_selection']['required_body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <div class="module-list">
+                        <?php foreach ($selection['required_modules'] as $module): ?>
+                            <div class="module-item">
+                                <div class="module-top">
+                                    <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <div class="chip is-accent"><?php echo htmlspecialchars($ui['module_selection']['required_chip'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                                <?php if (!empty($selection['module_states'][$module]['required_by'])): ?>
+                                    <div class="module-detail">
+                                        <?php echo htmlspecialchars(sprintf($ui['module_selection']['required_by_label'], installer_module_list($selection['module_states'][$module]['required_by'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="action" value="save_modules">
+                    <?php foreach ($selection['optional_groups'] as $group => $modules): ?>
+                        <div class="group-panel">
+                            <h3><?php echo htmlspecialchars($ui['groups'][$group], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p><?php echo htmlspecialchars($ui['module_selection']['optional_body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <div class="module-grid">
+                                <?php foreach ($modules as $module): ?>
+                                    <?php $moduleState = $selection['module_states'][$module]; ?>
+                                    <label class="module-checkbox">
+                                        <input
+                                            type="checkbox"
+                                            name="modules[]"
+                                            value="<?php echo htmlspecialchars($module, ENT_QUOTES, 'UTF-8'); ?>"
+                                            <?php echo $moduleState['selected'] ? 'checked' : ''; ?>
+                                            <?php echo $moduleState['locked'] ? 'disabled' : ''; ?>
+                                        >
+                                        <span class="module-card">
+                                            <span class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="chip-row">
+                                                <span class="chip is-neutral"><?php echo htmlspecialchars($ui['module_selection']['optional_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <?php if ($moduleState['auto_selected']): ?>
+                                                    <span class="chip is-warning"><?php echo htmlspecialchars($ui['module_selection']['auto_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <?php endif; ?>
+                                                <?php if ($moduleState['project_specific']): ?>
+                                                    <span class="chip is-warning"><?php echo htmlspecialchars($ui['module_selection']['project_specific_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <?php endif; ?>
+                                                <?php if ($moduleState['supports_sample_content']): ?>
+                                                    <span class="chip is-accent"><?php echo htmlspecialchars($ui['module_selection']['sample_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                                <?php endif; ?>
+                                            </span>
+                                            <?php if (!empty($moduleState['dependencies'])): ?>
+                                                <div class="module-detail">
+                                                    <?php echo htmlspecialchars(sprintf($ui['module_selection']['dependencies_label'], installer_module_list($moduleState['dependencies'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                            <?php if (!empty($moduleState['required_by'])): ?>
+                                                <div class="module-detail">
+                                                    <?php echo htmlspecialchars(sprintf($ui['module_selection']['required_by_label'], installer_module_list($moduleState['required_by'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </span>
+                                    </label>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <div class="notice"><?php echo htmlspecialchars($ui['module_selection']['locked_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <div class="actions">
+                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
+                    </div>
+                </form>
+                <form method="post" class="actions">
+                    <input type="hidden" name="action" value="go_back_to_setup">
+                    <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                </form>
+            <?php endif; ?>
+
+            <?php if ($state['step'] === 'sample'): ?>
+                <div class="panel">
+                    <h2><?php echo htmlspecialchars($ui['sample']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($ui['sample']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="summary-list">
                         <div class="summary-item">
                             <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['review']['project_name_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['sample']['summary_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['sample']['summary_detail'], (int) $summary['required'], (int) $summary['optional'], (int) $summary['total']), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['sample']['sample_ready_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['sample']['sample_ready_detail'], (int) $summary['sample_content_capable']), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                    </div>
+                    <form method="post">
+                        <input type="hidden" name="action" value="run_install">
+                        <div class="field">
+                            <label><?php echo htmlspecialchars($ui['sample']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <div class="radio-group">
+                                <label class="radio-item">
+                                    <input type="radio" name="sample_content" value="no" <?php echo $state['sample_content'] === 'no' ? 'checked' : ''; ?>>
+                                    <span><?php echo htmlspecialchars($ui['sample']['sample_content_no'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                                <label class="radio-item">
+                                    <input type="radio" name="sample_content" value="yes" <?php echo $state['sample_content'] === 'yes' ? 'checked' : ''; ?>>
+                                    <span><?php echo htmlspecialchars($ui['sample']['sample_content_yes'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="notice"><?php echo htmlspecialchars($ui['sample']['sample_content_notice'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="warning-box"><?php echo htmlspecialchars($ui['sample']['sample_content_warning'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        <div class="actions">
+                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['run_installer'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        </div>
+                    </form>
+                    <form method="post" class="actions">
+                        <input type="hidden" name="action" value="go_back_to_modules">
+                        <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                    </form>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($state['step'] === 'progress'): ?>
+                <div class="panel">
+                    <h2><?php echo htmlspecialchars($result && !empty($result['success']) ? $ui['progress']['success_title'] : $ui['progress']['failure_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($result && !empty($result['success']) ? $ui['progress']['success_body'] : $ui['progress']['failure_body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <div class="summary-list">
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['current_state_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars($result ? installer_runtime_state_label($result['lifecycle_state'], $ui) : installer_runtime_state_label('pending', $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                        <?php if ($result && !empty($result['failed_module'])): ?>
+                            <div class="summary-item">
+                                <div class="summary-top">
+                                    <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['failed_module_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                                <div class="summary-detail"><?php echo htmlspecialchars(installer_module_label($result['failed_module'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-top">
+                                    <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['failure_reason_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                                <div class="summary-detail"><?php echo htmlspecialchars(installer_failure_reason_label($result, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <?php if ($result && !empty($result['resumed_modules'])): ?>
+                            <div class="summary-item">
+                                <div class="summary-top">
+                                    <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['resume_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                                <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['progress']['resume_detail'], count($result['resumed_modules']), installer_module_list($result['resumed_modules'], $ui)), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                        <?php endif; ?>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(isset($result['sample_content_note']) ? installer_result_text($result['sample_content_note'], $ui) : $ui['progress']['no_logs'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                    </div>
+                    <div class="module-list">
+                        <?php if ($result && !empty($result['modules'])): ?>
+                            <?php foreach ($result['modules'] as $module => $moduleResult): ?>
+                                <div class="module-item is-<?php echo htmlspecialchars($moduleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
+                                    <div class="module-top">
+                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                        <div class="module-state is-<?php echo htmlspecialchars($moduleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <?php echo htmlspecialchars(installer_runtime_state_label($moduleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($moduleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <details class="details">
+                                        <summary><?php echo htmlspecialchars($ui['progress']['logs_label'], ENT_QUOTES, 'UTF-8'); ?></summary>
+                                        <div class="details-list">
+                                            <?php if (!empty($moduleResult['logs'])): ?>
+                                                <?php foreach ($moduleResult['logs'] as $line): ?>
+                                                    <div class="detail-log"><?php echo htmlspecialchars(installer_result_text($line, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <div class="detail-log"><?php echo htmlspecialchars($ui['progress']['no_logs'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </details>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    <?php if ($result && !empty($result['sample_content_results'])): ?>
+                        <div class="module-list">
+                            <?php foreach ($result['sample_content_results'] as $module => $sampleResult): ?>
+                                <div class="module-item">
+                                    <div class="module-top">
+                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                        <div class="module-state is-<?php echo htmlspecialchars($sampleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <?php echo htmlspecialchars(installer_runtime_state_label($sampleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($sampleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <?php if ($result && !empty($result['success'])): ?>
+                    <form method="post" class="actions">
+                        <input type="hidden" name="action" value="view_review">
+                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['view_review'], ENT_QUOTES, 'UTF-8'); ?></button>
+                    </form>
+                <?php else: ?>
+                    <?php if ($result && !empty($result['failure_recoverable'])): ?>
+                        <form method="post" class="actions">
+                            <input type="hidden" name="action" value="retry_install">
+                            <input type="hidden" name="sample_content" value="<?php echo htmlspecialchars($state['sample_content'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['retry_install'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        </form>
+                    <?php endif; ?>
+                    <form method="post" class="actions">
+                        <input type="hidden" name="action" value="<?php echo htmlspecialchars(!empty($result['failure_recoverable']) ? 'edit_modules' : 'exit_failure', ENT_QUOTES, 'UTF-8'); ?>">
+                        <button type="submit" class="button button-secondary"><?php echo htmlspecialchars(!empty($result['failure_recoverable']) ? $ui['actions']['edit_modules'] : $ui['actions']['exit_failure'], ENT_QUOTES, 'UTF-8'); ?></button>
+                    </form>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if ($state['step'] === 'post_install' && $result && !empty($result['success'])): ?>
+                <div class="panel">
+                    <h2><?php echo htmlspecialchars($ui['post_install']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($ui['post_install']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <div class="summary-list">
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['installed_modules_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(installer_module_list($result['completed_modules'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['skipped_modules_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(installer_module_list($result['skipped_modules'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(installer_result_text($result['sample_content_note'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['warnings_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                            <div class="summary-detail">
+                                <?php echo htmlspecialchars(!empty($result['warnings']) ? installer_result_list_text($result['warnings'], $ui) : $ui['post_install']['no_warnings'], ENT_QUOTES, 'UTF-8'); ?>
+                            </div>
+                        </div>
+                    </div>
+                    <?php if (!empty($result['sample_content_results'])): ?>
+                        <div class="module-list">
+                            <?php foreach ($result['sample_content_results'] as $module => $sampleResult): ?>
+                                <div class="module-item">
+                                    <div class="module-top">
+                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                        <div class="module-state is-<?php echo htmlspecialchars($sampleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <?php echo htmlspecialchars(installer_runtime_state_label($sampleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
+                                        </div>
+                                    </div>
+                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($sampleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <form method="post" class="actions">
+                    <input type="hidden" name="action" value="continue_to_finish">
+                    <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_finish'], ENT_QUOTES, 'UTF-8'); ?></button>
+                </form>
+                <form method="post" class="actions">
+                    <input type="hidden" name="action" value="go_back_to_progress">
+                    <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                </form>
+            <?php endif; ?>
+
+            <?php if ($state['step'] === 'finish' && $result && !empty($result['success'])): ?>
+                <div class="panel finish-panel">
+                    <h2><?php echo htmlspecialchars($ui['finish']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($ui['finish']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <div class="summary-list">
+                        <div class="summary-item">
+                            <div class="summary-top">
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['setup']['project_name_label'], ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
                             <div class="summary-detail"><?php echo htmlspecialchars($state['project_name'], ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
                         <div class="summary-item">
                             <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['review']['installer_language_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['finish']['reminder_title'], ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(strtoupper($state['installer_language']), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['review']['project_default_language_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(strtoupper($state['project_default_language']), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['review']['module_summary_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['review']['module_summary_detail'], (int) $summary['required'], (int) $summary['optional'], (int) $summary['project_specific'], (int) $summary['sample_content_capable']), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['review']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($state['sample_content'] === 'yes' ? $ui['review']['sample_content_enabled'] : $ui['review']['sample_content_disabled'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="summary-detail"><?php echo htmlspecialchars($ui['finish']['reminder_body'], ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
                     </div>
                 </div>
 
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="run_install">
-                    <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['run_installer'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="go_back_to_environment">
-                    <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
-            <?php endif; ?>
-
-            <?php if ($state['step'] === 'result'): ?>
-                <div class="panel">
-                    <h2><?php echo htmlspecialchars(($result && !empty($result['success'])) ? $ui['result']['success_title'] : $ui['result']['failure_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars(($result && !empty($result['success'])) ? $ui['result']['success_body'] : $ui['result']['failure_body'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <div class="meta">
-                        <div>
-                            <strong><?php echo htmlspecialchars($ui['result']['installed_at'], ENT_QUOTES, 'UTF-8'); ?></strong>
-                            <span><?php echo htmlspecialchars(isset($result['installed_at']) ? $result['installed_at'] : NOW, ENT_QUOTES, 'UTF-8'); ?></span>
-                        </div>
-                    </div>
-                    <div class="output-list">
-                        <?php if ($result && !empty($result['output'])): ?>
-                            <?php foreach ($result['output'] as $line): ?>
-                                <div class="output-item"><?php echo htmlspecialchars($line, ENT_QUOTES, 'UTF-8'); ?></div>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <div class="output-item"><?php echo htmlspecialchars($ui['result']['no_output'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        <?php endif; ?>
-                    </div>
+                <div class="actions">
+                    <a class="button-link" href="../mod_user/panel"><?php echo htmlspecialchars($ui['actions']['open_admin'], ENT_QUOTES, 'UTF-8'); ?></a>
                 </div>
-
                 <form method="post" class="actions">
                     <input type="hidden" name="action" value="reset_setup">
                     <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['reset_state'], ENT_QUOTES, 'UTF-8'); ?></button>

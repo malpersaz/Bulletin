@@ -1,5 +1,31 @@
 # Installer Mobile Modernization Plan
 
+## Status Snapshot
+
+Implementation status for the current repository as of `v1.0.53.52`:
+
+- `Completed`: phone-first installer shell, welcome/language/environment/setup/module/sample/progress/review/finish flow
+- `Completed`: installer state persistence, installer-language persistence, and resumable progress state
+- `Completed`: manifest-backed module catalog, dependency-aware selection, required versus optional visual split, and project-specific module tagging
+- `Completed`: explicit sample-content decision step plus module-by-module sample-content reporting
+- `Completed`: structured task runner, runtime state model, recoverable versus non-recoverable failure handling, and safe retry or resume behavior
+- `Completed`: post-install review and finish screens
+- `Completed`: multilingual installer coverage for `en`, `de`, `fr`, `ku`, `ckb`, `sv`, and `zza` across the touched mobile flow
+- `Completed`: localized module labels, localized result messages, native-language installer language cards, and structured environment metadata
+- `In Progress`: final cleanup of legacy module-owned installer output and sample-seed behavior that still originates inside older module installers
+- `Deferred`: per-module sample-content toggles beyond the current global decision plus explicit per-module task registration
+
+## Remaining Focus
+
+The plan is no longer centered on building the mobile installer shell from scratch. The remaining work is primarily cleanup and convergence work around legacy installer modules.
+
+Highest-value remaining items:
+
+- move legacy sample-seed creation fully out of module `install()` implementations and into explicit installer-managed sample tasks
+- remove or normalize legacy print or echo output still emitted inside older module installers so the modern shell fully owns visible progress copy
+- optionally map database adapter names to user-facing localized labels in the environment step instead of showing raw adapter identifiers
+- add a small verification pass for phone-sized touch ergonomics and content density after each remaining legacy cleanup
+
 ## Goal
 
 Modernize the `installer/` package into a phone-only installation product.
@@ -34,9 +60,11 @@ The new installer should follow these principles:
 
 ## Current Installer Problems
 
-The current installer is functional but not productized.
+The original installer was functional but not productized.
 
-Current limitations:
+Most of these issues have now been addressed in the active mobile installer flow. The remaining limitations are concentrated in legacy module internals.
+
+Original limitations:
 
 - linear PHP execution with primitive text output
 - no dedicated mobile UX system
@@ -47,6 +75,12 @@ Current limitations:
 - no recovery-oriented UI for degraded or failed modules
 - no installer state machine
 - weak separation between installer domain logic and presentation
+
+Current remaining limitations:
+
+- some legacy module installers still emit internal output during execution
+- some legacy modules still own sample-like seed behavior inside module-level install code
+- environment details still expose raw adapter identifiers instead of fully user-facing localized adapter names
 
 ## Target Experience
 
@@ -530,7 +564,15 @@ Recommended:
 
 ## Phase-Based Task List
 
+Status legend:
+
+- `Completed`: implemented in the current repository
+- `In Progress`: partially implemented, but legacy cleanup remains
+- `Deferred`: intentionally left for later
+
 ### Phase 1: Foundation
+
+Status: `Completed`
 
 Goal:
 
@@ -563,6 +605,8 @@ Exit criteria:
 
 ### Phase 2: Selection Flow
 
+Status: `Completed`
+
 Goal:
 
 - turn module choice into a dependency-aware mobile decision flow
@@ -594,6 +638,8 @@ Exit criteria:
 
 ### Phase 3: Execution Flow
 
+Status: `Completed`
+
 Goal:
 
 - replace procedural installer output with a structured installation pipeline and progress UI
@@ -623,6 +669,8 @@ Exit criteria:
 - raw logs and low-level errors are not exposed as the default user-facing screen
 
 ### Phase 4: Recovery and Completion
+
+Status: `Completed` for the mobile shell, `In Progress` for legacy-output cleanup and final polish
 
 Goal:
 
@@ -665,6 +713,17 @@ The modernization is not complete unless these are true:
 - module selection and install progress do not rely on desktop layout assumptions
 - the final experience feels like a modern mobile setup flow, not a legacy script output
 
+Current validation status:
+
+- `Completed`: installer is usable as a phone-only guided flow
+- `Completed`: required and optional modules are visually distinct
+- `Completed`: dependency relationships are visible and enforced
+- `Completed`: installer language can be chosen explicitly and persists
+- `Completed`: sample content can be chosen explicitly
+- `Completed`: failures surface recoverable versus non-recoverable states
+- `Completed`: module selection and progress do not rely on desktop layout assumptions
+- `In Progress`: some legacy module execution paths can still leak old module-owned output semantics behind the structured shell
+
 ## Deliverables
 
 Expected deliverables for implementation:
@@ -678,6 +737,14 @@ Expected deliverables for implementation:
 - async installation progress screen
 - failure and recovery screens
 - validation checklist for phone-sized installer flows
+
+Current repository deliverables:
+
+- implemented phone-first installer shell in `installer/index.php`
+- implemented `InstallerStateStore`, `InstallerModuleCatalog`, `InstallerDependencyResolver`, `InstallerEnvironmentCheck`, and `InstallerTaskRunner`
+- implemented sample-content decision, reporting, review, and finish flows
+- implemented localized mobile installer copy for the supported installer languages
+- implemented recovery-aware failure behavior and resumable execution
 
 ## Backlog
 
@@ -935,6 +1002,10 @@ P0 outcome:
 
 - the installer can run end to end as a phone-first guided flow with dependency-aware selection, resumable execution, and safe completion states
 
+P0 status:
+
+- `Completed`
+
 ### P1
 
 - Story 3.5: report sample-content execution state
@@ -944,11 +1015,18 @@ P1 outcome:
 
 - the installer becomes clearer, more polished, and easier to operate under real-world interruption and localization conditions
 
+P1 status:
+
+- Story 3.5: `Completed`
+- Story 4.4: `In Progress`
+
 ### Deferred
 
 - future per-module sample content toggles
 - expanded technical detail surfaces beyond the minimum recovery view
 - non-essential motion polish beyond meaningful state transitions
+- full migration of legacy module-level sample seeding into explicit installer-managed task definitions
+- full migration of legacy module-level textual installer output into structured task-runner copy only
 
 Deferred rule:
 
@@ -957,6 +1035,47 @@ Deferred rule:
 ## Initial Implementation Order
 
 Use this order for the first execution pass so infrastructure is built before dependent screens and runtime behaviors.
+
+Implementation note:
+
+- Orders 1 through 9 are effectively complete for the first mobile installer pass.
+- Remaining work should now be treated as a follow-up cleanup sequence, not as the original primary implementation order.
+
+## Follow-Up Order
+
+Use this order for the remaining modernization cleanup:
+
+### Follow-Up 1: Legacy Sample Ownership
+
+- move `mod_page`, `mod_content`, `mod_category`, and any similar legacy module seed behavior into explicit installer-managed sample tasks
+
+Reason:
+
+- the current shell already enforces project rules, but ownership still lives partly in legacy module installers
+
+### Follow-Up 2: Legacy Output Normalization
+
+- remove or capture legacy print-driven module output so structured runtime messaging remains the only default user-facing copy
+
+Reason:
+
+- the shell now owns the mobile UX, so legacy module output should not shape the visible installer narrative
+
+### Follow-Up 3: Environment Microcopy Refinement
+
+- map raw database adapter identifiers to localized, user-facing labels if the environment screen still needs more polish
+
+Reason:
+
+- this is a clarity improvement, not a blocker for the current mobile installer flow
+
+### Follow-Up 4: Phone-Only Polish Verification
+
+- run a focused phone-sized review for touch targets, density, scroll behavior, and localized copy after each legacy cleanup pass
+
+Reason:
+
+- the remaining work touches screens that are already shipping, so regressions should be checked incrementally
 
 ### Order 1: Baseline analysis and shell
 
