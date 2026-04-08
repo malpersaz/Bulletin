@@ -373,7 +373,7 @@ class mod_video_mod extends indexMain
             $this->mod_video_model->description = Req::Post_Safe('description');
 
             $this->mod_video_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_video_model->user_id = $this->session->getir('id');
+            $this->mod_video_model->user_id = $this->session->get('id');
 
             $this->mod_video_model->flv = basename(Req::Post_Safe('flv'));
             $this->mod_video_model->image = basename(Req::Post_Safe('image'));
@@ -711,7 +711,7 @@ class mod_video_mod extends indexMain
             and
             (Roll::hasPermission('mod_video', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

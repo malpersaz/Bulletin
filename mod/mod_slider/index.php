@@ -225,7 +225,7 @@ class mod_slider_mod extends indexMain
             $this->mod_slider_model->description = Req::Post_Safe('description');
 
             $this->mod_slider_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_slider_model->user_id = $this->session->getir('id');
+            $this->mod_slider_model->user_id = $this->session->get('id');
 
             // Eğer Resim varsa
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -580,7 +580,7 @@ class mod_slider_mod extends indexMain
             and
             (Roll::hasPermission('mod_slider', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

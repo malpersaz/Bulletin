@@ -81,7 +81,7 @@ class change_password_validator
 
         // Current Password Validation
         $u = Load::model('mod_user');
-        $u->where_id_and_password(Load::lib('Session')->getir('id'), md5(Req::Post_Safe($currentPasswordField)))->gRo();
+        $u->where_id_and_password(Load::lib('Session')->get('id'), md5(Req::Post_Safe($currentPasswordField)))->gRo();
         if ($u->getSize() === 0) {
             $this->errors[] = $this->lang['mod_user']['error']['current_password_incorrect'];
         }

@@ -1,15 +1,15 @@
 <?php
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/26/11 - 3:16 PM
- * Telif Hakkı:AKM Software
+ * User: a.k.mutlu
+ * Date: 4/26/11 - 3:16 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Dosya:i18n.config.php
- * Açıklama: Çoklu Dil ayarları
+ * File: i18n.config.php
+ * Description: Multi-language settings
  */
-// Çoklu Dil Desteği Aktif Yada Pasif
+// Enable or disable multilingual support.
 Kayit::ekle('i18n',TRUE);
-// Geçerli Diller
-Kayit::ekle('valid_lang', array('en','ku','ckb','zza','ar','de','fr','sv','tr'));
+// Fallback language list. Runtime should prefer the database-backed registry when available.
+Kayit::ekle('valid_lang', array('en','ku','ckb','zza','ar','de','fr','sv','tr','fa'));

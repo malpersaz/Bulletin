@@ -178,7 +178,7 @@ class mod_user_group_mod extends indexMain
 			foreach ($_POST as $key => $val) {
 				$this->model->$key = Req::Post_Safe($key);
 			}
-			$this->model->user_id = $this->session->getir('id');
+			$this->model->user_id = $this->session->get('id');
             
             // Default empty role payload to an empty JSON object.
             if (empty($this->model->rolls)) {

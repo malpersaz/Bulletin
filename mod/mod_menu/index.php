@@ -187,7 +187,7 @@ class mod_menu_mod extends indexMain
             $this->mod_menu_model->html = Req::Post('html');
             $this->mod_menu_model->icon = Req::Post_Safe('icon');
             $this->mod_menu_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_menu_model->user_id = $this->session->getir('id');
+            $this->mod_menu_model->user_id = $this->session->get('id');
             // Adding order field default value
             $this->mod_menu_model->order = 0;
 

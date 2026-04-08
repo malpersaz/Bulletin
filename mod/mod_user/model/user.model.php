@@ -71,21 +71,21 @@ class user_model extends ORM
                     $ses->where_id($usermodel->sid)->limit(1);
                     $ses->getResultOne(TRUE, TRUE);
                     // Check if Session ID matches the one in sessions table
-                    if ($ses->getSize() != 0 && $usermodel->sid != $this->session->getir('sid')) {
+                    if ($ses->getSize() != 0 && $usermodel->sid != $this->session->get('sid')) {
                         $this->errors[] = $this->lang['mod_user']['error']['multi_login_error'];
                         return False;
                     }
                 }
                 // Create sessions
-                $this->session->ac('username', $usermodel->username);
-                $this->session->ac('password', $usermodel->password);
-                $this->session->ac('group_id', $usermodel->group_id);
-                $this->session->ac('image', $usermodel->image);
-                $this->session->ac('id', $usermodel->id);
-                $this->session->ac('full_name', Text::title($usermodel->name . " " . $usermodel->last_name));
+                $this->session->set('username', $usermodel->username);
+                $this->session->set('password', $usermodel->password);
+                $this->session->set('group_id', $usermodel->group_id);
+                $this->session->set('image', $usermodel->image);
+                $this->session->set('id', $usermodel->id);
+                $this->session->set('full_name', Text::title($usermodel->name . " " . $usermodel->last_name));
 
                 // Load user roles
-                $this->_loadPermissions($this->session->getir('group_id'));
+                $this->_loadPermissions($this->session->get('group_id'));
                 // Set unread messages as cookies
                 $this->_load_unread_pm_size();
                 // Log successful login
@@ -107,12 +107,12 @@ class user_model extends ORM
     private function _load_unread_pm_size()
     {
         $pm = Load::model('mod_user_pm.inbox');
-        $size = $pm->select('id')->where_reader_id_and_status($this->session->getir('id'), 'n')->getCount();
+        $size = $pm->select('id')->where_reader_id_and_status($this->session->get('id'), 'n')->getCount();
         if ($size !== 0) {
             if (!headers_sent()) {
                 setcookie("okunmamis", $size, ['expires' => time() + 20]);
             }
-            $this->session->ac('okunmamis', $size);
+            $this->session->set('okunmamis', $size);
         }
         unset($size);
         unset($pm);
@@ -172,18 +172,18 @@ class user_model extends ORM
                 $val[$rol['mod_name']][$rol['roll_name']] = True;
             }
         }
-        if ($this->session->varmi('permissions')) {
-            $this->session->kapat('permissions');
+        if ($this->session->has('permissions')) {
+            $this->session->remove('permissions');
         }
         if (is_array($val)) {
-            $this->session->ac('permissions', $val);
+            $this->session->set('permissions', $val);
         }
     }
 
     // Check if user is logged in
     public function checklogin()
     {
-        if ($this->session->varmi('id') === False) {
+        if ($this->session->has('id') === False) {
             return False;
         }
         return TRUE;
@@ -193,7 +193,7 @@ class user_model extends ORM
     public function logout($sid)
     {
         // If user is logged in
-        if ($this->session->varmi('id')) {
+        if ($this->session->has('id')) {
             $user = Load::model('mod_user');
             $user->getsid($sid)->select('id,sid')->limit(1)->getResultOne(TRUE, TRUE);
             if ($user->getSize() != 0) {
@@ -205,13 +205,13 @@ class user_model extends ORM
             }
             unset($user);
         }
-        return $this->session->drop();
+        return $this->session->clear();
     }
 
     // Check for moderator permission
     public function isAuthorized($mod, $id, $mesaj, $nasil = NULl)
     {
-        if ($id != $this->session->getir('id')) {
+        if ($id != $this->session->get('id')) {
             if (Roll::hasPermission($mod, 'moderate') === False) {
                 $this->error = $mesaj;
                 $this->hatamesaj($nasil);
@@ -231,7 +231,7 @@ class user_model extends ORM
      */
     public function checkPermission($mod, $roll, $id, $mesaj, $nasil = NULl)
     {
-        if ($id != $this->session->getir('id')) {
+        if ($id != $this->session->get('id')) {
             if (Roll::hasPermission($mod, $roll) === False) {
                 $this->error = $mesaj;
                 $this->hatamesaj($nasil);

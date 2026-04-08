@@ -521,8 +521,8 @@ class mod_settings_mod extends indexMain
 
     private function _flash_success_and_redirect($selected_lang, $message)
     {
-        if ($this->session->varmi('mod_settings_flash_success')) {
-            $this->session->kapat('mod_settings_flash_success');
+        if ($this->session->has('mod_settings_flash_success')) {
+            $this->session->remove('mod_settings_flash_success');
         }
 
         if (!empty($message) && method_exists($this->session, 'ekle')) {
@@ -535,9 +535,9 @@ class mod_settings_mod extends indexMain
 
     private function _load_flash_messages()
     {
-        if ($this->session->varmi('mod_settings_flash_success')) {
-            $this->_oke_message($this->session->getir('mod_settings_flash_success'));
-            $this->session->kapat('mod_settings_flash_success');
+        if ($this->session->has('mod_settings_flash_success')) {
+            $this->_oke_message($this->session->get('mod_settings_flash_success'));
+            $this->session->remove('mod_settings_flash_success');
         }
     }
 

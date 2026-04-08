@@ -5,5 +5,7 @@ class lang_model extends ORM
     public $_pk = "seo";
     public $name;
     public $seo;
+    public $status;
+    public $is_default;
 
 }

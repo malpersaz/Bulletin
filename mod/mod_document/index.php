@@ -180,7 +180,7 @@ class mod_document_mod extends indexMain
             $this->mod_document_model->title = Req::Post_Safe('title');
             $this->mod_document_model->keywords = Req::Post_Safe('keywords');
             $this->mod_document_model->description = Req::Post_Safe('description');
-            $this->mod_document_model->user_id = $this->session->getir('id');
+            $this->mod_document_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -488,7 +488,7 @@ class mod_document_mod extends indexMain
             and
             (Roll::hasPermission('mod_document', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

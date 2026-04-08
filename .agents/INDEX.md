@@ -103,7 +103,6 @@ When quality-agent policy changes, update these files together:
 - Agents must preserve them as project-specific modules and must not treat them as shared-core candidates for `AKMbusiness`.
 - The following installer decisions are also `Rojname`-specific:
   - `Rojname` branding/default project name
-  - excluding `tr` and `ar` from installer default languages
   - removing default sample menu/category/content seeds
 - Other refactoring work should be treated as shared-core candidate work and compared for sibling-repo synchronization.
 

@@ -16,12 +16,75 @@ class Amed
     private $site;
     private $url;
 
+    private function getFallbackValidLanguages()
+    {
+        $validLangs = Kayit::getir('valid_lang');
+        return is_array($validLangs) && !empty($validLangs) ? array_values($validLangs) : array('ku');
+    }
+
+    private function buildLanguageRegistryState()
+    {
+        $fallbackCodes = $this->getFallbackValidLanguages();
+        $defaultLanguage = isset($this->site['lang']) ? (string) $this->site['lang'] : $fallbackCodes[0];
+        $state = array(
+            'active_codes' => $fallbackCodes,
+            'default_language' => $defaultLanguage,
+            'available_languages' => array(),
+        );
+
+        try {
+            $langModel = Load::model('lang');
+            $langModel->all();
+            if ($langModel->getSize() === 0) {
+                return $state;
+            }
+
+            $rows = $langModel->toArray();
+            $hasStatusColumn = array_key_exists('status', $rows[0]);
+            $hasDefaultColumn = array_key_exists('is_default', $rows[0]);
+            $activeCodes = array();
+            $availableLanguages = array();
+
+            foreach ($rows as $row) {
+                $isActive = !$hasStatusColumn || !isset($row['status']) || $row['status'] === 'y';
+                if ($isActive) {
+                    $activeCodes[] = $row['seo'];
+                    $availableLanguages[] = array(
+                        'code' => $row['seo'],
+                        'name' => $row['name'],
+                    );
+                }
+
+                if ($hasDefaultColumn && isset($row['is_default']) && $row['is_default'] === 'y') {
+                    $defaultLanguage = $row['seo'];
+                }
+            }
+
+            if (empty($activeCodes)) {
+                return $state;
+            }
+
+            $state['active_codes'] = array_values(array_unique($activeCodes));
+            $state['default_language'] = in_array($defaultLanguage, $state['active_codes'], TRUE) ? $defaultLanguage : $state['active_codes'][0];
+            $state['available_languages'] = $availableLanguages;
+        } catch (Exception $exception) {
+            return $state;
+        }
+
+        return $state;
+    }
+
     public function __construct()
     {
         Load::lib('Session');
         $this->url = Load::lib('Url');
         $url_config = Kayit::getir('url_config');
         $this->site = Kayit::getir('site_config');
+        $languageState = $this->buildLanguageRegistryState();
+        $this->site['lang'] = $languageState['default_language'];
+        $this->site['available_languages'] = $languageState['available_languages'];
+        Kayit::yenile('valid_lang', $languageState['active_codes']);
+        Kayit::yenile('default_lang', $languageState['default_language']);
 
         try {
             $settings_model = Load::model('mod_settings');

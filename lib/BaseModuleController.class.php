@@ -489,7 +489,7 @@ abstract class BaseModuleController
                         $model->$field = NOW;
                         break;
                     case 'user_id':
-                        $model->$field = $this->session->getir('id');
+                        $model->$field = $this->session->get('id');
                         break;
                     case 'custom':
                         if (isset($config['callback'])) {
@@ -517,7 +517,7 @@ abstract class BaseModuleController
         if (!isset($model->id)) {
             // Add operation - set user_id and created_at automatically
             if (!isset($this->special_fields['user_id'])) {
-                $model->user_id = $this->session->getir('id');
+                $model->user_id = $this->session->get('id');
             }
             if (!isset($this->special_fields['created_at']) && isset($_POST['created_at'])) {
                 // If created_at is in POST for add operation, set it to NOW

@@ -122,7 +122,7 @@ class mod_acl_mod extends indexMain
 
             $this->mod_acl_model->acl = serialize(Req::Post_Safe('group_id'));
 
-            $this->mod_acl_model->user_id = $this->session->getir('id');
+            $this->mod_acl_model->user_id = $this->session->get('id');
 
             // Eğer Resim varsa
             if ($this->mod_acl_model->save(TRUE)) {
@@ -283,7 +283,7 @@ class mod_acl_mod extends indexMain
             and
             (Roll::hasPermission('mod_acl', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

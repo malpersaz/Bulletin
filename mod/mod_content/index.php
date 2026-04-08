@@ -433,7 +433,7 @@ class mod_content_mod extends indexMain
                 $this->mod_content_model->video = '';
             }
 
-            $this->mod_content_model->user_id = $this->session->getir('id');
+            $this->mod_content_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -896,7 +896,7 @@ class mod_content_mod extends indexMain
             and
             (Roll::hasPermission('mod_content', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

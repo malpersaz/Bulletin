@@ -325,7 +325,7 @@ class mod_video_embed_mod extends indexMain
             $this->mod_video_embed_model->keywords = Req::Post_Safe('keywords');
             $this->mod_video_embed_model->description = Req::Post_Safe('description');
             $this->mod_video_embed_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_video_embed_model->user_id = $this->session->getir('id');
+            $this->mod_video_embed_model->user_id = $this->session->get('id');
 
             // Use the uploaded image when provided.
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -603,7 +603,7 @@ class mod_video_embed_mod extends indexMain
             and
             (Roll::hasPermission('mod_video_embed', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {
@@ -1176,28 +1176,3 @@ class mod_video_embed_mod extends indexMain
         return implode(',', $parts);
     }
 }
-rval->s;
-
-        if ($hours > 0) {
-            return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        }
-
-        return sprintf('%02d:%02d', $minutes, $seconds);
-    }
-
-    private function _makeKeywordString($title)
-    {
-        $title = trim((string) $title);
-        if ($title === '') {
-            return '';
-        }
-
-        $parts = preg_split('/\s+/', strtolower($title));
-        $parts = array_filter(array_unique(array_map(static function ($part) {
-            return trim($part, " \t\n\r\0\x0B.,!?;:\"'()[]{}");
-        }, $parts)));
-
-        return implode(',', $parts);
-    }
-}
-

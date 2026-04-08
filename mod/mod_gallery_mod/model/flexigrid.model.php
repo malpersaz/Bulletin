@@ -45,7 +45,7 @@ class flexigrid_model
         }
 
         if ($moderate === FALSE) {
-            $this->mod_gallery_mod_model->where_user_id($this->session->getir('id'));
+            $this->mod_gallery_mod_model->where_user_id($this->session->get('id'));
         }
 
         $like = "";
@@ -55,7 +55,7 @@ class flexigrid_model
 
             $f = $moderate === FALSE ? 'where_like_' . $qtype . '_and_user_id' : 'where_like_' . $qtype . '';
             if ($moderate === FALSE) {
-                $this->mod_gallery_mod_model->$f('%' . $query . '%', $this->session->getir('id'));
+                $this->mod_gallery_mod_model->$f('%' . $query . '%', $this->session->get('id'));
             } else {
                 $this->mod_gallery_mod_model->$f('%' . $query . '%');
             }

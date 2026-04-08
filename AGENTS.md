@@ -26,7 +26,6 @@ Repository boundary rule:
   - `mod_publication_category`
 - The following installer decisions are also `Rojname`-specific and must stay local unless the user explicitly changes the rule:
   - using `Rojname` as installer branding/default project name
-  - excluding `tr` and `ar` from installer default language setup
   - removing default sample menu/category/content seeds from installer setup
 - Refactoring work outside those project-specific decisions should be treated as shared-core candidate work for sibling-repository synchronization.
 

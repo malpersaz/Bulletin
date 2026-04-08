@@ -174,6 +174,7 @@ $lang['management']=[
     'administrator_group' => 'Yönetici',
     'pm_management_menu' => 'Mesaj Yönetimi',
     'administration_menu' => 'Yönetim',
+    'language_management_menu' => 'Dil Yönetimi',
     'logout_menu' => 'Çıkış Yap',
     'inbox_menu' => 'Gelen Kutusu',
     'sentbox_menu' => 'Giden Kutusu',

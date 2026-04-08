@@ -165,7 +165,7 @@ class DataTableService
             if ((Roll::hasPermission($this->module_name, 'moderate_edit') !== true) &&
                 (Roll::hasPermission($this->module_name, 'moderate_delete') !== true)
             ) {
-                $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+                $wheres[] = "user_id='" . $this->session->get('id') . "'";
             }
         }
 

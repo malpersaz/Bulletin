@@ -1,6 +1,6 @@
 <?php
 /**
- * Language Module - Zazakî Language File
+ * Language Module - Zazaki Language File
  */
 
 if (!defined('AKM_LOADED')) {
@@ -11,36 +11,42 @@ $lang['lang'] = [
     'installer' => [
         'table_exists' => "Tabloya 'lang' danegrot de barkerde ya",
         'sql_added' => "Dosyaya 'lang.sql' danegrot de zêde bîya",
-        'lang_added' => "<b>%s</b> - danegrot de zêde bîya!",
-        'lang_exists' => "<b>%s</b> - danegrot de berê qeyd bîya!",
+        'lang_added' => '<b>%s</b> danegrot de zêde bîya',
+        'lang_exists' => '<b>%s</b> danegrot de xora esto',
     ],
     'system' => [
-        'starting' => "Sazkerdiş dest pê keno...",
-        'installing' => "tê sazkerdene: %s",
+        'starting' => 'Sazkerdış dest pê kena...',
+        'installing' => 'tê sazkerdış: %s',
     ],
-    'installer_mobile' => [
-        'hero' => ['badge' => 'Sazkero Rojname', 'title' => 'Rayeka sazkerdışi ya phone-first', 'body' => 'Na sazkerdiş niha rayeka mobîl a rêberdar, qeydkerdışê gavan, hilbijarnayışê modulan li ser girêdanan û rewşê qediya sazûmanî bi kar têno.'],
-        'steps' => ['welcome' => 'Xêr ameyê', 'language' => 'Ziwan', 'checks' => 'Kontrol', 'setup' => 'Mîheng', 'modules' => 'Modul', 'sample' => 'Nimûne', 'progress' => 'Pêşverde', 'review' => 'Vurnayış', 'finish' => 'Dawî'],
-        'welcome' => ['title' => 'Rayeka sazkerdışi ya armancdar', 'body' => 'Qalib sazkerdışi rayeka telefona de cı keno, hilbijarnayışan qeyd keno û biryarê modulan verê meşandışi eşkere keno.', 'project_label' => 'Proje', 'project_detail' => 'Brandê Rojname hema armanca default a sazkerdışi yê na depo yo.', 'language_scope_label' => 'Qadê ziwanî', 'language_scope_detail' => 'Defaultê sazkerdışi hema derxistışê zıwananê taybetê repo diparêze.', 'module_scope_label' => 'Qadê modulan', 'module_scope_detail' => 'Modulê lazıman, weçarnayışî, girêdayî û taybetê Rojname verê meşandışi cı bêne kerdene.'],
-        'language' => ['title' => 'Ziwanê sazkerdışi', 'body' => 'Verê ke şıma bıri şımayê dewam bıkê ziwanê sessionê sazkerdışi weçine. Na rewş di session de qeyd beno.'],
-        'language_options' => ['de' => ['label' => 'Deutsch', 'code' => 'DE'], 'en' => ['label' => 'English', 'code' => 'EN'], 'fr' => ['label' => 'Français', 'code' => 'FR'], 'ku' => ['label' => 'Kurmancî', 'code' => 'KU'], 'ckb' => ['label' => 'کوردی', 'code' => 'CKB'], 'sv' => ['label' => 'Svenska', 'code' => 'SV'], 'zza' => ['label' => 'Zazakî', 'code' => 'ZZA']],
-        'environment' => ['title' => 'Kontrolê ortamî', 'body' => 'Raya pêşberdışi heta kontrolanê lazıman raşt nêbın gıreya.', 'ready' => 'Hazır', 'blocked' => 'Gıreya'],
-        'setup' => ['title' => 'Mîhengê proje', 'body' => 'Verê ke bıri hilbijarnayışê modulan, rewşa herî kêm a proje qeyd bike.', 'project_name_label' => 'Nameyê proje', 'project_default_language_label' => 'Ziwanê bingeyîn ê proje', 'language_notice' => 'Ziwanê sazkerdışi tenya na rayekê deyişeno. Ziwanê bingeyîn ê proje hilbijarnayışo cuda yo.'],
-        'module_selection' => ['title' => 'Hilbijarnayışê modulan', 'body' => 'Verê destpêkerdışi şiyanê weçarnayışî weçine. Modulê lazıman gıreyanê û girêdan cı ra eşkere beno.', 'required_title' => 'Modulê lazıman', 'required_body' => 'Na modul her tim sazkerdê beno ke bingeh ewle bimano.', 'optional_body' => 'Modulê weçarnayışî ji bo telefona kom bîyaye.', 'dependencies_label' => 'Girêdayî yo bi: %s', 'required_by_label' => 'Lazım o ji bo: %s', 'required_chip' => 'Lazım', 'optional_chip' => 'Weçarnayışî', 'auto_chip' => 'Bi hilbijarnayışi lazim biyo', 'project_specific_chip' => 'Tenya Rojname', 'sample_chip' => 'Ji bo nimûne amade', 'locked_notice' => 'Modulê ke bixweber lazim bıne, heta hilbijarnayışê girêdayî rake nêro.'],
-        'sample' => ['title' => 'Hilbijarnayışê zerreyê nimûne', 'body' => 'Weçine ke sazkerdış naverokê nimûne bıceribno ya na bıkerdışo modulê weçarnayışî ra.', 'summary_label' => 'Modulê weçarnayışî', 'summary_detail' => '%d lazım, %d weçarnayışî, bi tevayî %d modul sazkerdê beno.', 'sample_ready_label' => 'Modulê nimûne-amade', 'sample_ready_detail' => '%d modulê weçarnayışî paştdayışê zerreyê nimûne nışan dıdê.', 'sample_content_label' => 'Zerreyo nimûne', 'sample_content_no' => 'Nê, bi sistemê pak dest pê ke.', 'sample_content_yes' => 'Erê, cıye ke destûr daye de zerreyo nimûne çalak bımano.', 'sample_content_notice' => 'Na hilbijarnayış verê meşandışi qeyd beno ke rayek biryara erê/na aşkere hebe.', 'sample_content_warning' => 'Rojname zerreyê nimûne yê menu, kategori û naverokê bi default neçalak dıhêlo heta qaydeya taybetê proje bıvurno.'],
-        'progress' => ['title' => 'Pêşverdişê sazkerdışi', 'body' => 'Niha meşandışê modulan li cihê derketışê raw rewşê sazûmanî nışan dıdo.', 'success_title' => 'Sazkerdış qediya', 'failure_title' => 'Sazkerdış rawestîya', 'success_body' => 'Modulê weçarnayışî di rayeka rêberdar de qediya.', 'failure_body' => 'Modulek têk çû. Verê tekrar kerdeni kartê rewşê sazûmanî bıvinê.', 'current_state_label' => 'Rewşa sazkerdışi', 'failed_module_label' => 'Modulo têkçûyî', 'failure_reason_label' => 'Rewşa xilasbiyayışi', 'reason_bootstrap_blocked' => 'Modulê bootstrapê mecburî têk çû verê ke sazkerdış nıqteyê ewle yê xilasbiyayışi bıgire.', 'reason_resume_available' => 'Bootstrapê esasî qediya, no sebeban şıma qezayı çare bikerê u tenya modulê mayenı dısa bıceribnê.', 'resume_label' => 'Rewşa domandışi', 'resume_detail' => '%d modul ji hewlo verêni ameyo parastış: %s', 'sample_content_label' => 'Rêvebirina zerreyê nimûne', 'logs_label' => 'Hûrguliyê teknîkî', 'no_logs' => 'Hîç derketışo zêdeyo modul qeyd nêbiyo.', 'state_completed' => 'Qediya', 'state_failed' => 'Têk çû', 'state_skipped' => 'Derbas biyo', 'state_warning' => 'Hişyari', 'state_pending' => 'Li bendê yo', 'state_running' => 'Dewam keno', 'state_degraded' => 'Kêm biyo', 'state_completed_with_warnings' => 'Bi hişyariyan qediya', 'state_resumed_completed' => 'Hat domandin u qediya', 'state_resumed_completed_with_warnings' => 'Hat domandin bi hişyariyan', 'state_recoverable_failure' => 'Têkçûnê ke dıno çare biyo'],
-        'post_install' => ['title' => 'Vurnayışê piştî sazkerdışi', 'body' => 'Verê ke sazkerdışi tera bıraşiyê, bıvinê çi sazkerd biyo.', 'installed_modules_label' => 'Modulê sazkerdbiyayi', 'skipped_modules_label' => 'Modulê derbasbiyayî', 'warnings_label' => 'Hişyari', 'sample_content_label' => 'Zerreyo nimûne', 'no_warnings' => 'Hîç hişyari qeyd nêbiyo.'],
-        'result_messages' => ['module_not_selected' => 'Bo sazkerdışi nêame weçarnayış.', 'module_resumed_completed' => 'Ji gami serkeftiye verêni ameyo parastış u dema domandışi dısa nêame meşnayış.', 'user_finalize_failed' => 'Sazkerdışê karberi nêşiyaya gami qediyayışi temam ke.', 'user_group_sync_complete' => 'Bi senkronizasyona komi saz biyo.', 'module_installed' => 'Bi serkeftış saz biyo.', 'module_execute_failed' => 'Sazker nêşiyaya ena modul bar ke ya zi meşne.', 'module_reported_failure' => 'Modulo dema sazkerdışi de rewşa têkçuni ragihand.', 'sample_note_no_capable_modules' => 'Hîç modulê weçarnayışî piştgiriyê zerreyê nimûne nışan nêdo.', 'sample_note_disabled_selected' => 'Zerreyê nimûne bo modulê weçarnayışî giredaye ma.', 'sample_note_evaluated_selected' => 'Rêveberiya zerreyê nimûne bo komê sazkerdışê weçarnayışî modul bi modul ameya nirxandin.', 'sample_module_disabled' => 'Zerreyê nimûne bo ena modul giredaye ma.', 'sample_module_legacy_inline' => 'Logikê legacy yê sazker hîna qeydê mısalî bo ena modul rêve dıberê, no sebeban toggleyê eşkere hîna bi temamî nehat girêdayış.', 'sample_module_not_available' => 'Bo ena modul hîna karê taybetê zerreyê nimûne qeyd nêbiyo.', 'sample_module_project_rule_excluded' => 'Rojname ena moduleti ji toxbiyayışê standartê zerreyê nimûne derdışeno.', 'sample_module_not_exposed' => 'Ena modul karê zerreyê nimûne nêdeyo.', 'page_seed_kept_enabled' => 'Toxbiyayışê legacy yê pelan bo ena modul çalak ma çımki zerreyê nimûne çalak bû.', 'page_seed_removed' => 'Hilbijarnayışê sazkerdışê pak piştî sazkerdışi %d qeydê legacy yê pelê nimûne racnêkerd.', 'page_seed_not_found' => 'Hilbijarnayışê sazkerdışê pak hîç qeydê legacy yê pelê nimûne peyser nêhışt.', 'content_seed_removed' => 'Qanunê proceyê Rojname piştî sazkerdışi %d qeydê standartê zerreyan racnêkerd.', 'content_seed_disabled' => 'Qanunê proceyê Rojname toxbiyayışê standartê zerreyan bo ena modul giredaye dıheleno.', 'category_seed_removed' => 'Qanunê proceyê Rojname piştî sazkerdışi %d qeydê standartê kategoriyan racnêkerd.', 'category_seed_disabled' => 'Qanunê proceyê Rojname toxbiyayışê standartê kategoriyan bo ena modul giredaye dıheleno.', 'module_failure_log' => 'Modulo %s rewşa têkçuni vegerend.', 'user_finalize_log_failure' => 'Gami qediyayışê karberi rewşa têkçuni vegerend.'],
-        'finish' => ['title' => 'Radestkerdışê dawî', 'body' => 'Sazkerdış bi şopek vurnayışi ya dostê telefon û gava dinê eşkere qediya.', 'reminder_title' => 'Bîyarnayışê ewlehiyê', 'reminder_body' => 'Piştî kontrol kerdeni, eger deployment xo wendayo, gihıştışê sazkerdışi bigire ya rake.'],
-        'actions' => ['start_setup' => 'Dest pê ke', 'continue' => 'Dewam ke', 'back' => 'Peyser', 'continue_to_setup' => 'Bıçı mîhengan', 'continue_to_modules' => 'Bıçı modulan', 'run_installer' => 'Sazkero bımeşne', 'retry_install' => 'Dîsa bıceribne', 'edit_modules' => 'Modulan bıvurne', 'exit_failure' => 'Peyser biçe hilbijarnayışê modulan', 'view_review' => 'Sazkerdışi bıvinê', 'continue_to_finish' => 'Setupi qetne', 'reset_state' => 'Stateyê sazkerdışi sıfır ke', 'open_admin' => 'Admin veke'],
-        'errors' => ['resolve_environment' => 'Verê dewam kerdenî pirsgirêkanê kontrolê ortamî çareser ke.', 'blocked_install' => 'Dema kontrolanê ortamî gıreyayî ne, sazkerdış dest nêkeno.'],
-        'groups' => ['core_system' => 'Pergalo bingeyîn', 'content' => 'Naverok', 'media' => 'Medya', 'user_access' => 'Karber û gihıştış', 'communication' => 'Têkilî', 'project_specific' => 'Modulê taybetê proje'],
-        'module_labels' => ['lang' => 'Paketo ziwanî', 'mods' => 'Tomaro pergalî', 'mod_settings' => 'Mîheng', 'mod_user' => 'Karber', 'mod_user_group' => 'Komê karberan', 'mod_gallery_mod' => 'Gırdeyê galeri', 'mod_gallery' => 'Galeri', 'mod_menu' => 'Menu', 'mod_slider' => 'Slider', 'mod_headline' => 'Sername', 'mod_news_category' => 'Kategoriyê xeberan', 'mod_publication_category' => 'Kategoriyê weşanan', 'mod_acl' => 'Kontrolê gihıştişî', 'mod_survey' => 'Anket', 'mod_announcements' => 'Ragihandış', 'mod_attachment' => 'Pêvek', 'mod_attachment_mod' => 'Gırdeyê pêvekan', 'mod_video_embed_category' => 'Kategoriyê vîdyoyan', 'mod_document' => 'Belge', 'mod_popup' => 'Popup', 'mod_video' => 'Vîdyo', 'mod_page' => 'Pel', 'mod_imagecategories' => 'Kategoriyê resiman', 'mod_user_pm' => 'Peyamê taybet', 'mod_video_embed' => 'Cihdayışê vîdyoyî', 'mod_news' => 'Xeber', 'mod_publication' => 'Weşan', 'mod_category' => 'Kategori', 'mod_content' => 'Naverok'],
-        'checks' => [
-            'php_version' => ['label' => 'PHP 8.0+', 'detail' => 'Runtime a heyî: %s'],
-            'extensions' => ['label' => 'Extensionê lazıman', 'ok' => 'Hemo extensionê lazıman ameyê.', 'missing' => 'Kêmî: %s', 'items' => ['pdo' => 'PDO', 'mbstring' => 'Stringê pir-byte', 'json' => 'JSON']],
-            'directories' => ['label' => 'Rêçê nivîsbari', 'ok' => 'Rêçê depokerdışi yê sazkerdışi nivîsbarê.', 'blocked' => 'Gıreya: %s', 'items' => ['cache' => 'Cache', 'config' => 'Mîheng', 'data' => 'Data', 'templates_c' => 'Cacheyê şablonan']],
-            'database' => ['label' => 'Mîhengê database', 'missing' => 'Mîhengê database yo çalak nêvêniyayo.', 'detail' => 'Adaptero çalak: %s (%s)'],
-        ],
+    'admin' => [
+        'title' => 'Rêveberiya Ziwanan',
+        'headline' => 'Ziwan',
+        'body' => 'Ziwanan çalak kerê, pasif kerê û ziwanê bingeyênê malperî de panelo telefoni ra rêve biberê.',
+        'status_active' => 'Çalak',
+        'status_inactive' => 'Pasif',
+        'default_badge' => 'Bingeyên',
+        'current_badge' => 'Arayışê Nıka',
+        'code_label' => 'Kod',
+        'activate' => 'Çalak Ke',
+        'deactivate' => 'Pasif Ke',
+        'set_default' => 'Bingeyên Ke',
+        'empty_state' => 'Hîç ziwan pey nêbîya.',
+        'permission_denied' => 'Şıma rêzayışê rêveberiya ziwanan nêna.',
+        'back_panel' => 'Panel',
+        'back_home' => 'Malper',
+        'back' => 'Peyser',
+    ],
+    'messages' => [
+        'activated' => '%s niya çalak o.',
+        'deactivated' => '%s niya pasif o.',
+        'default_changed' => '%s niya ziwanê bingeyên o.',
+    ],
+    'errors' => [
+        'language_not_found' => 'Ziwanê weçarnayışî pey nêbîya.',
+        'unknown_action' => 'Karê ziwanî yê xwestışî derbasdar nêo.',
+        'cannot_deactivate_default' => 'Verê pasif kerdenê nê de ziwanekê bingeyênê bîn weçinê.',
+        'cannot_deactivate_last_active' => 'Pêwıst o ke herî kêm yew ziwan çalak bımanê.',
+        'cannot_deactivate_current_interface' => 'Verê pasif kerdenê nê de ziwanê rêveberiyê yê nıka bıvurne.',
+        'update_failed' => 'Rewşa ziwanî nêvurniya.',
     ],
 ];

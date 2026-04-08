@@ -1,8 +1,8 @@
 <?php
 /*
- * Koberz İçerik Yönetim Sistemi
+ * Koberz Content Management System
  * @ 2010
- * Session Sınıfı
+ * Session Class
  * Session.class.php
  */
 class Session
@@ -47,67 +47,67 @@ class Session
         }
 
         if (Kayit::getir('session_check_ip') == true) {
-            if ($this->varmi('ip') && $this->getir('ip') != $this->ip) {
-                print('Lütfen Tekrar Giriş Yapın: 1!');
-                $this->drop();
+            if ($this->has('ip') && $this->get('ip') != $this->ip) {
+                print('Please log in again: 1!');
+                $this->clear();
                 exit();
             }
-            $this->ac('ip', $this->ip);
+            $this->set('ip', $this->ip);
         }
         if (Kayit::getir('session_check_agent') == true) {
-            if ($this->varmi('agent') && $this->getir('agent') != md5($this->agent)) {
-                print('Lütfen Tekrar Giriş Yapın: 2!');
-                $this->drop();
+            if ($this->has('agent') && $this->get('agent') != md5($this->agent)) {
+                print('Please log in again: 2!');
+                $this->clear();
                 exit();
             }
-            $this->ac('agent', md5($this->agent));
+            $this->set('agent', md5($this->agent));
         }
 
-        if ($this->varmi('sid') === false) {
-            $this->ac('sid', $this->sid);
+        if ($this->has('sid') === false) {
+            $this->set('sid', $this->sid);
         }
-        if ($this->varmi('sad') === false) {
-            $this->ac('sad', $this->sad);
+        if ($this->has('sad') === false) {
+            $this->set('sad', $this->sad);
         }
         //var_dump(ini_get('session.auto_start'));
     }
 
-    // Set Session
-    public function ac($name, $val)
+    // Store a session value.
+    public function set($name, $val)
     {
         return $_SESSION[$name] = $val;
     }
 
-    // Get Session
-    public function getir($name)
+    // Read a session value.
+    public function get($name)
     {
         return isset($_SESSION[$name]) ? $_SESSION[$name] : false;
     }
 
-    // Varmı?
-    public function varmi($name)
+    // Check whether a session key exists.
+    public function has($name)
     {
         return isset($_SESSION[$name]);
     }
 
-    // Sil
-    public function kapat($name)
+    // Remove a single session key.
+    public function remove($name)
     {
         unset($_SESSION[$name]);
     }
 
-    // Hepsini Sil
-    public function drop()
+    // Remove every session value.
+    public function clear()
     {
         foreach ($_SESSION as $key => $ses) {
-            $this->kapat($key);
+            $this->remove($key);
         }
     }
 
-    // Validmi?
-    public function valid($name, $val)
+    // Compare a session value with an expected value.
+    public function matches($name, $val)
     {
-        return $this->getir($name) == $val;
+        return $this->get($name) == $val;
     }
 
     public function dump()
@@ -117,13 +117,13 @@ class Session
 }
 
 /*
-$s = new Session ();
+$s = new Session();
 $s->name = 'amidanews';
-$s->path = DIRNAME ( __FILE__ ) . '/session/';
+$s->path = dirname(__FILE__) . '/session/';
 $s->sid = '5b6bd037e6bc9874a83f176c901686e6';
-$s->check_ip = TRUE;
-//$s->check_agent=TRUE;
-$s->start ();
+$s->check_ip = true;
+//$s->check_agent = true;
+$s->start();
 
-$s->dump ();
+$s->dump();
 */

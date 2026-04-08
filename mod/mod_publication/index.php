@@ -474,7 +474,7 @@ class mod_publication_mod extends indexMain
                 $this->mod_publication_model->video = '';
             }
 
-            $this->mod_publication_model->user_id = $this->session->getir('id');
+            $this->mod_publication_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -961,7 +961,7 @@ class mod_publication_mod extends indexMain
             and
             (Roll::hasPermission('mod_publication', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

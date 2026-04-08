@@ -76,7 +76,7 @@ class mod_user_pm_mod extends indexMain
         Run::import('mod_user', 'check');
 
         $inbox = Load::model('mod_user_pm.inbox');
-        $inbox->where_id_and_reader_id($id, $this->session->getir('id'));
+        $inbox->where_id_and_reader_id($id, $this->session->get('id'));
 
         if ($inbox->gRo()->getSize() === 0) {
             exit('1');
@@ -117,10 +117,10 @@ class mod_user_pm_mod extends indexMain
         $inbox->where([
             'mod_user_pm_inbox.id' => $id,
             'condition' => 'AND',
-            'mod_user_pm_inbox.reader_id' => $this->session->getir('id')
+            'mod_user_pm_inbox.reader_id' => $this->session->get('id')
         ]);
         //$inbox->order('okunma', 'ASC');
-        //$inbox->where_reader_id_and_id($this->session->getir('id'));
+        //$inbox->where_reader_id_and_id($this->session->get('id'));
 
 
 
@@ -128,7 +128,7 @@ class mod_user_pm_mod extends indexMain
         $inbox->sync();
         if ($inbox->status != 'y') {
             $inbox->status = 'y';
-            $this->session->ac('okunmamis', $this->session->getir('okunmamis') - 1);
+            $this->session->set('okunmamis', $this->session->get('okunmamis') - 1);
             $inbox->update();
         }
 
@@ -150,7 +150,7 @@ class mod_user_pm_mod extends indexMain
         Run::import('mod_user', 'check');
 
         $sent = Load::model('mod_user_pm.sent');
-        $sent->where_id_and_user_id($id, $this->session->getir('id'));
+        $sent->where_id_and_user_id($id, $this->session->get('id'));
 
         if ($sent->gRo()->getSize() === 0) {
             exit('1');
@@ -187,11 +187,11 @@ class mod_user_pm_mod extends indexMain
         ];
         $sent->table_join($join);
         //$inbox->order('okunma', 'ASC');
-        //$inbox->where_reader_id_and_id($this->session->getir('id'));
+        //$inbox->where_reader_id_and_id($this->session->get('id'));
         $sent->where([
             'mod_user_pm_sent.id' => $id,
             'condition' => 'AND',
-            'mod_user_pm_sent.user_id' => $this->session->getir('id')
+            'mod_user_pm_sent.user_id' => $this->session->get('id')
         ]);
         $sent->gRo();
 
@@ -239,16 +239,16 @@ class mod_user_pm_mod extends indexMain
             ]
         ];
         $inbox->table_join($join);
-        $inbox->where("mod_user_pm_inbox.created_at > '" . date("Y-m-d H:i:s", $this->session->getir('check_pm')) . "' AND reader_id='" . $this->session->getir('id') . "'");
-        //$inbox->where_reader_id($this->session->getir('id'));
+        $inbox->where("mod_user_pm_inbox.created_at > '" . date("Y-m-d H:i:s", $this->session->get('check_pm')) . "' AND reader_id='" . $this->session->get('id') . "'");
+        //$inbox->where_reader_id($this->session->get('id'));
         $inbox->order('created_at', 'DESC');
 
         $size = $inbox->getCount();
 
-        $this->session->ac('check_pm', time());
+        $this->session->set('check_pm', time());
 
         if ($size != 0) {
-            $this->session->ac("okunmamis", $this->session->getir('okunmamis') + $size);
+            $this->session->set("okunmamis", $this->session->get('okunmamis') + $size);
             $j = [
                 'okunmamis' => $size
             ];
@@ -301,7 +301,7 @@ class mod_user_pm_mod extends indexMain
             ]
         ];
         $inbox->table_join($join);
-        $inbox->where_reader_id($this->session->getir('id'));
+        $inbox->where_reader_id($this->session->get('id'));
         $inbox->order('created_at', 'DESC');
         $inbox->all();
         //print_r($inbox);
@@ -352,7 +352,7 @@ class mod_user_pm_mod extends indexMain
             ]
         ];
         $sent->table_join($join);
-        $sent->where_user_id($this->session->getir('id'));
+        $sent->where_user_id($this->session->get('id'));
         $sent->order('created_at', 'DESC');
         $sent->all();
         $this->site['title'] = $this->lang['mod_user_pm']['sent_title'];
@@ -417,7 +417,7 @@ class mod_user_pm_mod extends indexMain
                 $subject,
                 $message,
                 $this->u->id,
-                $this->session->getir('id')
+                $this->session->get('id')
             )) {
                 $this->setSuccessMessage($this->lang['mod_user_pm']['message_sent_success']);
             } else {
@@ -461,7 +461,7 @@ class mod_user_pm_mod extends indexMain
             $subject = Req::Post_Safe('subject');
             $message = Req::Post_Safe('message');
             $this->model = Load::model('mod_user_pm.sent');
-            if ($this->model->send_bulk_message($subject, $message, $data, $this->session->getir('id'))) {
+            if ($this->model->send_bulk_message($subject, $message, $data, $this->session->get('id'))) {
                 $this->setSuccessMessage($this->lang['mod_user_pm']['bulk_sent_success']);
             } else {
                 $this->setErrorMessage(print_r($this->model, TRUE));
@@ -514,7 +514,7 @@ class mod_user_pm_mod extends indexMain
             $message = Req::Post_Safe('message');
             $groupid = Req::Post_Safe('group_id');
             $this->model = Load::model('mod_user_pm.sent');
-            if ($this->model->send_user_group_message($subject, $message, $groupid, $this->session->getir('id'))) {
+            if ($this->model->send_user_group_message($subject, $message, $groupid, $this->session->get('id'))) {
                 $this->setSuccessMessage($this->lang['mod_user_pm']['group_sent_success']);
             } else {
                 $this->setErrorMessage($this->lang['mod_user_pm']['error']['group_not_found']);
@@ -525,7 +525,7 @@ class mod_user_pm_mod extends indexMain
     public function inbox_delete()
     {
         $this->model = Load::model('mod_user_pm.inbox');
-        $this->model->where_id_and_reader_id(Req::Post_Safe('id'), $this->session->getir('id'));
+        $this->model->where_id_and_reader_id(Req::Post_Safe('id'), $this->session->get('id'));
         $this->model->gRo();
         if ($this->model->getSize() === 0) {
             echo $this->lang['mod_user_pm']['no_messages_yet'];
@@ -558,7 +558,7 @@ class mod_user_pm_mod extends indexMain
         $inbox->table_join($join);
 
         // Filters
-        $reader_id = $this->session->getir('id');
+        $reader_id = $this->session->get('id');
         $where = "mod_user_pm_inbox.reader_id = '$reader_id'";
 
         // Search
@@ -612,7 +612,7 @@ class mod_user_pm_mod extends indexMain
     public function sent_delete()
     {
         $this->model = Load::model('mod_user_pm.sent');
-        $this->model->where_id_and_user_id(Req::Post_Safe('id'), $this->session->getir('id'));
+        $this->model->where_id_and_user_id(Req::Post_Safe('id'), $this->session->get('id'));
         $this->model->gRo();
         if ($this->model->getSize() === 0) {
             echo $this->lang['mod_user_pm']['no_messages_yet'];
@@ -705,7 +705,7 @@ class mod_user_pm_mod extends indexMain
             $message = Req::Post_Safe($messageField);
             $this->model = Load::model('mod_user_pm.sent');
 
-            if ($this->model->send_all_user_message($subject, $message, $this->session->getir('id'))) {
+            if ($this->model->send_all_user_message($subject, $message, $this->session->get('id'))) {
                 $this->setSuccessMessage($this->lang['mod_user_pm']['all_sent_success']);
             } else {
                 $this->setErrorMessage(print_r($this->model));

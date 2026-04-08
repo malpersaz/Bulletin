@@ -3,9 +3,15 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.53.52`.
+- The current Git-detected active version code is `v1.0.53.54`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.53.54
+- Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
+- Git history re-verified against the current repository state; latest uploaded commit is `f75f3f9` with version `v1.0.53.54`.
+- **Agent Policy Update For Installer Languages**: Removed the old repository-local agent instruction that excluded `tr` and `ar` from installer default languages so future agent work follows the expanded installer language scope.
+- **Installer TR/FA/AR Localization Completion**: Added dedicated installer language payloads for `tr`, `fa`, and `ar`, extended the installer language registry to expose them in the phone-first flow, and repaired the project default language selector so the expanded language set renders real labels instead of array output.
 
 ## v1.0.53.52
 - Active version bucket derived from the latest Git history and confirmed by the current task override.

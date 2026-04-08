@@ -187,6 +187,7 @@ $lang['management']=[
     'administrator_group' => 'Adminıstrator',
     'pm_management_menu' => 'Rêveberiya Peyaman',
     'administration_menu' => 'Adminıstrasyon',
+    'language_management_menu' => 'Rêveberiya Ziwanan',
     'logout_menu' => 'Vejîye',
     'inbox_menu' => 'Kutiyaya Hatî',
     'sentbox_menu' => 'Kutiyaya Çûyî',

@@ -584,7 +584,7 @@ class mod_news_mod extends indexMain
                 $this->mod_news_model->video = '';
             }
 
-            $this->mod_news_model->user_id = $this->session->getir('id');
+            $this->mod_news_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -1047,7 +1047,7 @@ class mod_news_mod extends indexMain
             and
             (Roll::hasPermission('mod_news', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

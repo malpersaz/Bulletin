@@ -81,7 +81,7 @@ class info_validator
         $u = Load::model('mod_user');
         $session = Load::lib('Session');
 
-        $u->where_not_id_and_email($session->getir('id'), Req::Post_Safe('email'))->gRo();
+        $u->where_not_id_and_email($session->get('id'), Req::Post_Safe('email'))->gRo();
         if ($u->getSize() !== 0) {
             $this->errors[] = $this->lang['mod_user']['error']['email_registered'];
         }
@@ -91,7 +91,7 @@ class info_validator
         }
 
         $u = Load::model('mod_user');
-        $u->where_id_and_password($session->getir('id'), md5(Req::Post_Safe($currentPasswordField)))->gRo();
+        $u->where_id_and_password($session->get('id'), md5(Req::Post_Safe($currentPasswordField)))->gRo();
         if ($u->getSize() === 0) {
             $this->errors[] = $this->lang['mod_user']['error']['current_password_incorrect'];
         }

@@ -13,10 +13,10 @@ class InstallerStateStore
 
     public function getState()
     {
-        $state = $this->session->getir(self::SESSION_KEY);
+        $state = $this->session->get(self::SESSION_KEY);
         if (!is_array($state)) {
             $state = $this->getDefaultState();
-            $this->session->ac(self::SESSION_KEY, $state);
+            $this->session->set(self::SESSION_KEY, $state);
         }
 
         return array_merge($this->getDefaultState(), $state);
@@ -24,7 +24,7 @@ class InstallerStateStore
 
     public function replace(array $state)
     {
-        $this->session->ac(self::SESSION_KEY, $state);
+        $this->session->set(self::SESSION_KEY, $state);
     }
 
     public function merge(array $changes)
@@ -43,8 +43,9 @@ class InstallerStateStore
     public function getDefaultState()
     {
         return array(
-            'step' => 'welcome',
+            'step' => 'language',
             'installer_language' => 'en',
+            'installer_language_confirmed' => false,
             'project_name' => 'Rojname',
             'project_default_language' => 'ku',
             'requested_modules' => array(),

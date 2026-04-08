@@ -40,7 +40,7 @@ class flexigrid_model
         }
 
         if ($moderate === FALSE) {
-            $this->mod_video_model->where_user_id($this->session->getir('user_id'));
+            $this->mod_video_model->where_user_id($this->session->get('user_id'));
         }
 
         $like = "";
@@ -50,7 +50,7 @@ class flexigrid_model
 
             $f = $moderate === FALSE ? 'where_like_' . $qtype . '_and_user_id' : 'where_like_' . $qtype . '';
             if ($moderate === FALSE) {
-                $this->mod_video_model->$f('%' . $query . '%', $this->session->getir('user_id'));
+                $this->mod_video_model->$f('%' . $query . '%', $this->session->get('user_id'));
             } else {
                 $this->mod_video_model->$f('%' . $query . '%');
             }

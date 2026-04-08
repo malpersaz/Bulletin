@@ -118,7 +118,7 @@ class mod_gallery_mod_mod extends indexMain
             $this->mod_gallery_mod_model->mod_value = Req::Post_Safe('mod_value');
 
 
-            $this->mod_gallery_mod_model->user_id = $this->session->getir('id');
+            $this->mod_gallery_mod_model->user_id = $this->session->get('id');
 
             // Persist the new record.
             if ($this->mod_gallery_mod_model->save(TRUE)) {
@@ -291,7 +291,7 @@ class mod_gallery_mod_mod extends indexMain
             and
             (Roll::hasPermission('mod_gallery_mod', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

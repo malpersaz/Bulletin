@@ -183,7 +183,7 @@ class mod_headline_mod extends indexMain
 
             $this->mod_headline_model->created_at = date('Y-m-d H:i:s');
 
-            $this->mod_headline_model->user_id = $this->session->getir('id');
+            $this->mod_headline_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
@@ -465,7 +465,7 @@ class mod_headline_mod extends indexMain
             and
             (Roll::hasPermission('mod_headline', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

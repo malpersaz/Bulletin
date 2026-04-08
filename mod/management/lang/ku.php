@@ -195,6 +195,7 @@ $lang['management']=[
     'administrator_group' => 'Rêvebir',
     'pm_management_menu' => 'Rêveberiya Peyaman',
     'administration_menu' => 'Rêveberî',
+    'language_management_menu' => 'Rêveberiya Ziman',
     'logout_menu' => 'Derketin',
     'inbox_menu' => 'Kutiyaya Hatî',
     'sentbox_menu' => 'Kutiyaya Çûyî',

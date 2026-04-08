@@ -64,27 +64,32 @@ class installer extends installerbase
 
 function installer_available_languages()
 {
-    return array(
-        'de' => true,
-        'en' => true,
-        'fr' => true,
-        'ku' => true,
-        'ckb' => true,
-        'sv' => true,
-        'zza' => true,
-    );
+    return InstallerLang::availableLanguages();
 }
 
 function installer_language_option($languageCode, array $ui)
 {
+    $availableLanguages = InstallerLang::availableLanguages();
+    if (!empty($availableLanguages[$languageCode])) {
+        return $availableLanguages[$languageCode];
+    }
+
     if (!empty($ui['language_options'][$languageCode])) {
         return $ui['language_options'][$languageCode];
     }
 
-    return array(
-        'label' => strtoupper($languageCode),
-        'code' => strtoupper($languageCode),
-    );
+    return array('label' => strtoupper($languageCode), 'code' => strtoupper($languageCode));
+}
+
+function installer_project_languages()
+{
+    $projectLanguages = array();
+
+    foreach (InstallerLang::availableLanguages() as $code => $language) {
+        $projectLanguages[$code] = $language['label'];
+    }
+
+    return $projectLanguages;
 }
 
 function installer_module_label($module, array $ui)
@@ -234,7 +239,7 @@ $resolver = new InstallerDependencyResolver();
 $environment = new InstallerEnvironmentCheck();
 $taskRunner = new InstallerTaskRunner();
 $availableInstallerLanguages = installer_available_languages();
-$projectLanguages = $availableInstallerLanguages;
+$projectLanguages = installer_project_languages();
 $state = $stateStore->getState();
 
 if (empty($state['requested_modules'])) {
@@ -249,8 +254,8 @@ if (isset($availableInstallerLanguages[$state['installer_language']])) {
     Kayit::yenile('lang', $state['installer_language']);
 }
 
-$lang = Load::lang('lang');
-$ui = $lang['lang']['installer_mobile'];
+$lang = InstallerLang::load();
+$ui = $lang['installer_mobile'];
 $checks = $environment->run();
 $isBlocked = $environment->hasBlockingFailures($checks);
 $errorMessage = '';
@@ -280,21 +285,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $state = $stateStore->merge(array(
             'installer_language' => $installerLanguage,
-            'step' => 'environment',
+            'installer_language_confirmed' => true,
+            'step' => 'welcome',
         ));
         Kayit::yenile('lang', $installerLanguage);
-        $lang = Load::lang('lang');
-        $ui = $lang['lang']['installer_mobile'];
+        InstallerLang::reset($installerLanguage);
+        $lang = InstallerLang::load($installerLanguage);
+        $ui = $lang['installer_mobile'];
+        $checks = $environment->run();
+        $isBlocked = $environment->hasBlockingFailures($checks);
+    }
+
+    if ($action === 'preview_language') {
+        $installerLanguage = isset($_POST['installer_language']) ? $_POST['installer_language'] : 'en';
+        if (!isset($availableInstallerLanguages[$installerLanguage])) {
+            $installerLanguage = 'en';
+        }
+
+        $state = $stateStore->merge(array(
+            'installer_language' => $installerLanguage,
+            'installer_language_confirmed' => true,
+            'step' => 'language',
+        ));
+        Kayit::yenile('lang', $installerLanguage);
+        InstallerLang::reset($installerLanguage);
+        $lang = InstallerLang::load($installerLanguage);
+        $ui = $lang['installer_mobile'];
         $checks = $environment->run();
         $isBlocked = $environment->hasBlockingFailures($checks);
     }
 
     if ($action === 'go_back_to_welcome') {
-        $state = $stateStore->merge(array('step' => 'welcome'));
+        $step = !empty($state['installer_language_confirmed']) ? 'welcome' : 'language';
+        $state = $stateStore->merge(array('step' => $step));
     }
 
     if ($action === 'go_back_to_language') {
         $state = $stateStore->merge(array('step' => 'language'));
+    }
+
+    if ($action === 'continue_to_environment') {
+        if (empty($state['installer_language_confirmed'])) {
+            $state = $stateStore->merge(array(
+                'installer_language_confirmed' => true,
+                'step' => 'environment',
+            ));
+        } else {
+            $state = $stateStore->merge(array('step' => 'environment'));
+        }
     }
 
     if ($action === 'continue_to_setup') {
@@ -862,8 +900,8 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
         </div>
 
         <div class="steps">
-            <div class="<?php echo installer_step_class($state['step'], 'welcome'); ?>"><?php echo htmlspecialchars($ui['steps']['welcome'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'language'); ?>"><?php echo htmlspecialchars($ui['steps']['language'], ENT_QUOTES, 'UTF-8'); ?></div>
+            <div class="<?php echo installer_step_class($state['step'], 'welcome'); ?>"><?php echo htmlspecialchars($ui['steps']['welcome'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'environment'); ?>"><?php echo htmlspecialchars($ui['steps']['checks'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'setup'); ?>"><?php echo htmlspecialchars($ui['steps']['setup'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'modules'); ?>"><?php echo htmlspecialchars($ui['steps']['modules'], ENT_QUOTES, 'UTF-8'); ?></div>
@@ -905,7 +943,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                 </div>
 
                 <form method="post" class="actions">
-                    <input type="hidden" name="action" value="go_language">
+                    <input type="hidden" name="action" value="continue_to_environment">
                     <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['start_setup'], ENT_QUOTES, 'UTF-8'); ?></button>
                 </form>
             <?php endif; ?>
@@ -914,8 +952,8 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['language']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <p><?php echo htmlspecialchars($ui['language']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <form method="post">
-                        <input type="hidden" name="action" value="save_language">
+                    <form method="post" id="language-form">
+                        <input type="hidden" name="action" value="preview_language" id="language-action">
                         <div class="language-grid">
                             <?php foreach ($availableInstallerLanguages as $languageCode => $enabled): ?>
                                 <?php $languageOption = installer_language_option($languageCode, $ui); ?>
@@ -925,14 +963,17 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 </label>
                             <?php endforeach; ?>
                         </div>
-                        <div class="actions">
-                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
-                        </div>
                     </form>
                     <form method="post" class="actions">
-                        <input type="hidden" name="action" value="go_back_to_welcome">
-                        <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        <input type="hidden" name="action" value="continue_to_environment">
+                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
+                    <?php if (!empty($state['installer_language_confirmed'])): ?>
+                        <form method="post" class="actions">
+                            <input type="hidden" name="action" value="go_back_to_welcome">
+                            <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        </form>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 
@@ -1322,5 +1363,20 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <?php endif; ?>
         </div>
     </div>
+    <script>
+        (function () {
+            var languageForm = document.getElementById('language-form');
+            if (!languageForm) {
+                return;
+            }
+
+            var languageInputs = languageForm.querySelectorAll('input[name="installer_language"]');
+            for (var i = 0; i < languageInputs.length; i += 1) {
+                languageInputs[i].addEventListener('change', function () {
+                    languageForm.submit();
+                });
+            }
+        }());
+    </script>
 </body>
 </html>

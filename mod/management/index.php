@@ -208,7 +208,7 @@ class management_mod extends indexBase
             error_log('module_status_toggled: ' . json_encode([
                 'module' => $moduleName,
                 'status' => $status,
-                'user_id' => $this->session->getir('id'),
+                'user_id' => $this->session->get('id'),
             ]));
         }
 
@@ -265,7 +265,7 @@ class management_mod extends indexBase
                 'module' => $moduleName,
                 'status' => $targetStatus,
                 'schema_ready' => $schemaReady,
-                'user_id' => $this->session->getir('id'),
+                'user_id' => $this->session->get('id'),
             ]));
         }
 

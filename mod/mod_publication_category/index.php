@@ -229,7 +229,7 @@ class mod_publication_category_mod extends indexMain
                 $mod_publication_category_model->description = $formData['description'];
                 $mod_publication_category_model->menu = $formData['menu'];
                 $mod_publication_category_model->acl_id = $formData['acl_id'];
-                $mod_publication_category_model->user_id = $this->session->getir('id');
+                $mod_publication_category_model->user_id = $this->session->get('id');
                 
                 $orderQuery = $this->db->fetch_array("SELECT MAX(`order`) as max_order FROM mod_publication_category WHERE parent_id = " . intval(Req::Post_Safe('parent_id')))->getResult()->toArray();
                 $maxOrder = isset($orderQuery[0]['max_order']) ? (int)$orderQuery[0]['max_order'] : 0;

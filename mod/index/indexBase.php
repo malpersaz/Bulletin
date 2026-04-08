@@ -324,7 +324,7 @@ abstract class indexBase
         }
 
         $this->session = Load::lib('Session');
-        $grup = $this->session->getir('group_id') !== false ? $this->session->getir('group_id') : 0;
+        $grup = $this->session->get('group_id') !== false ? $this->session->get('group_id') : 0;
         if (!in_array($grup, $acl)) {
             $this->tema->tpl('index/register');
             $this->_index();

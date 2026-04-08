@@ -264,7 +264,7 @@ class mod_attachment_mod extends indexMain
         $file_model->type = $result['type'];
         $file_model->mod_name = $mod;
         $file_model->vid = $vid;
-        $file_model->user_id = $this->session->getir('id');
+        $file_model->user_id = $this->session->get('id');
 
         if ($file_model->save()) {
             echo $result['original_name'];

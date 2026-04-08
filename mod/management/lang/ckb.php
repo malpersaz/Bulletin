@@ -115,6 +115,7 @@ $lang['management']=[
     'administrator_group' => 'بەڕێوەبەر',
     'pm_management_menu' => 'بەڕێوەبردنی پەیامەکان',
     'administration_menu' => 'بەڕێوەبردن',
+    'language_management_menu' => 'بەڕێوەبردنی زمان',
     'logout_menu' => 'چوونەدەرەوە',
     'inbox_menu' => 'سندوقی هاتوو',
     'sentbox_menu' => 'سندوقی نێردراو',

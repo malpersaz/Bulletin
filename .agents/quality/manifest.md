@@ -151,7 +151,6 @@ Agents must preserve them as project-specific modules and must not propose them 
 The following installer decisions are also `Rojname`-specific and must remain local unless the user explicitly overrides the rule:
 
 - `Rojname` branding/default project name
-- excluding `tr` and `ar` from installer default languages
 - removal of default sample menu/category/content seeds
 
 Outside those project-specific boundaries, refactoring work should be treated as shared-core candidate work and reviewed for synchronization across sibling repositories.

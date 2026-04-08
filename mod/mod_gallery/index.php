@@ -323,7 +323,7 @@ class mod_gallery_mod extends indexMain
             $this->r->url = $resim_link;
             $this->r->mod_name = $mod;
             $this->r->vid = $vid;
-            $this->r->user_id = $this->session->getir('id');
+            $this->r->user_id = $this->session->get('id');
 
             if ($this->r->save()) {
                 echo json_encode([

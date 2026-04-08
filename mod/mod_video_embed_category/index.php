@@ -242,7 +242,7 @@ class mod_video_embed_category_mod extends indexMain
             $this->mod_video_embed_category_model->title = Req::Post_Safe('title');
             $this->mod_video_embed_category_model->keywords = Req::Post_Safe('keywords');
             $this->mod_video_embed_category_model->description = Req::Post_Safe('description');
-            $this->mod_video_embed_category_model->user_id = $this->session->getir('id');
+            $this->mod_video_embed_category_model->user_id = $this->session->get('id');
 
             // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {

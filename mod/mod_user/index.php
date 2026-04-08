@@ -206,9 +206,9 @@ class mod_user_mod extends indexMain
     private function _load_login_errors()
     {
         $session = Load::lib('Session');
-        if ($session->varmi('login_errors')) {
-            $this->apptemplate->veri('errors', $session->getir('login_errors'));
-            $session->sil('login_errors');
+        if ($session->has('login_errors')) {
+            $this->apptemplate->veri('errors', $session->get('login_errors'));
+            $session->remove('login_errors');
         }
     }
 
@@ -271,7 +271,7 @@ class mod_user_mod extends indexMain
     public function logout($sid = NULL)
     {
         // Get sid value from Session
-        $session_sid = $this->session->getir('sid');
+        $session_sid = $this->session->get('sid');
 
         // Check if sid comes from URL, otherwise use from session
         if ($sid !== NULL) {
@@ -588,12 +588,12 @@ class mod_user_mod extends indexMain
 
     private function _load_register_flash_messages()
     {
-        if ($this->session->getir('success_message')) {
-            $this->apptemplate->veri('success_message', $this->session->getir('success_message'));
+        if ($this->session->get('success_message')) {
+            $this->apptemplate->veri('success_message', $this->session->get('success_message'));
         }
 
-        if ($this->session->getir('error_message')) {
-            $this->apptemplate->veri('error_message', $this->session->getir('error_message'));
+        if ($this->session->get('error_message')) {
+            $this->apptemplate->veri('error_message', $this->session->get('error_message'));
         }
     }
 
@@ -723,19 +723,19 @@ class mod_user_mod extends indexMain
     {
         if ($this->_activation == 1) {
             if ($this->_email_at()) {
-                $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_activation']);
+                $this->session->set('success_message', $this->lang['mod_user']['register']['registration_success_activation']);
             } else {
-                $this->session->ac('error_message', $this->lang['mod_user']['register']['error']['activation_email_error']);
+                $this->session->set('error_message', $this->lang['mod_user']['register']['error']['activation_email_error']);
             }
             return;
         }
 
         if ($this->_activation == 2) {
-            $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success_admin']);
+            $this->session->set('success_message', $this->lang['mod_user']['register']['registration_success_admin']);
             return;
         }
 
-        $this->session->ac('success_message', $this->lang['mod_user']['register']['registration_success']);
+        $this->session->set('success_message', $this->lang['mod_user']['register']['registration_success']);
     }
 
     private function _redirect_after_register()
@@ -804,11 +804,17 @@ class mod_user_mod extends indexMain
     }
 
 
-    public function panel()
+    public function panel($unused = null)
     {
         if ($this->check() === FALSE) {
             return FALSE;
         }
+
+        if (func_num_args() > 0 && $unused !== null && $unused !== '') {
+            Helper::yonlendir($this->site['sadres'] . 'mod_user/panel', 0);
+            return FALSE;
+        }
+
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user']['user_panel'];
 
@@ -1052,10 +1058,10 @@ class mod_user_mod extends indexMain
         } else {
             $u = Load::model('mod_user');
             $u->password = md5(Req::Post_Safe('new_password'));
-            $u->id = $this->session->getir('id');
+            $u->id = $this->session->get('id');
             if ($u->update('id')) {
-                $this->session->kapat('password');
-                $this->session->ac('password', md5(Req::Post_Safe('new_password')));
+                $this->session->remove('password');
+                $this->session->set('password', md5(Req::Post_Safe('new_password')));
                 $this->_mesaj($this->lang['mod_user']['password_changed_success']);
             } else {
                 $this->tema->veri('errors', ['Database Error: ' . $u->db->sql_error()]);
@@ -1078,7 +1084,7 @@ class mod_user_mod extends indexMain
         }
 
         $u = Load::model('mod_user');
-        $u->Getid($this->session->getir('id'))->gRo();
+        $u->Getid($this->session->get('id'))->gRo();
         $d = $u->toArray();
         
         // Use helper to parse phone data
@@ -1111,7 +1117,7 @@ class mod_user_mod extends indexMain
             $u->city = Req::Post_Safe('city');
             $u->blog_name = Req::Post_Safe('blog_name');
             $u->about = Req::Post_Safe('about');
-            $u->id = $this->session->getir('id');
+            $u->id = $this->session->get('id');
 
 
             // If Image exists
@@ -1135,7 +1141,7 @@ class mod_user_mod extends indexMain
                 ];
                 if ($image->_resize($option)) {
                     $u->image = $image->url;
-                    $this->session->ac('image', $image->url);
+                    $this->session->set('image', $image->url);
                 } else {
                     $this->_emesaj($image->error);
                     return FALSE;
@@ -1146,7 +1152,7 @@ class mod_user_mod extends indexMain
                 }
             }
             $u->update('id');
-            $this->session->ac('full_name', Text::title($u->name . " " . $u->last_name));
+            $this->session->set('full_name', Text::title($u->name . " " . $u->last_name));
             $this->_mesaj($this->lang['mod_user']['info_updated_success']);
         }
     }
@@ -1169,7 +1175,7 @@ class mod_user_mod extends indexMain
 
         $d = $this->mod_user->toArray();
 
-        if ($d['id'] !== $this->session->getir('id')) {
+        if ($d['id'] !== $this->session->get('id')) {
             exit('::');
         }
 
@@ -1196,7 +1202,7 @@ class mod_user_mod extends indexMain
             if ($image->_delete_files($option)) {
                 $this->mod_user->image = '';
                 $this->mod_user->update('id');
-                $this->session->ac('image', '');
+                $this->session->set('image', '');
             echo 'Oke';
             } else {
                 echo $image->error;
@@ -1649,7 +1655,7 @@ class mod_user_mod extends indexMain
         // If there is no problem, Commit and Apply
         $db->commit();
         // Update administrator Roles
-        $this->user->_roll($this->session->getir('group_id'));
+        $this->user->_roll($this->session->get('group_id'));
         $this->_mesaj($this->lang['mod_user']['admin']['permissions_updated']);
     }
 

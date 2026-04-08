@@ -55,7 +55,6 @@ Agents must preserve this boundary unless the user explicitly overrides it.
 The following installer behaviors are also project-specific to `Rojname` and must remain local unless the user explicitly overrides the rule:
 
 - `Rojname` branding in installer defaults
-- excluding `tr` and `ar` from installer default languages
 - removing default sample menu/category/content seeds
 
 Outside those exceptions, refactoring work should be treated as shared-core candidate work that needs cross-repository evaluation.

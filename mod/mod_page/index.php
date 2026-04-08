@@ -390,7 +390,7 @@ class mod_page_mod extends indexMain
             $this->mod_page_model->acl_id = $this->getOptionalInt('acl_id');
             $this->mod_page_model->category_id = $this->getOptionalInt('category_id');
             $this->mod_page_model->menu = $this->getOptionalInt('menu');
-            $this->mod_page_model->user_id = $this->session->getir('id');
+            $this->mod_page_model->user_id = $this->session->get('id');
 
             // Eğer Resim varsa
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {

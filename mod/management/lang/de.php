@@ -165,6 +165,7 @@ $lang['management'] = [
     'administrator_group' => 'Administrator',
     'pm_management_menu' => 'Nachrichtenverwaltung',
     'administration_menu' => 'Verwaltung',
+    'language_management_menu' => 'Sprachverwaltung',
     'logout_menu' => 'Abmelden',
     'inbox_menu' => 'Posteingang',
     'sentbox_menu' => 'Gesendet',

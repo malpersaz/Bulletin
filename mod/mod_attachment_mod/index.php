@@ -96,7 +96,7 @@ class mod_attachment_mod_mod extends indexMain
         $this->mod_attachment_mod_model->mod_name = Req::Post_Safe('mod_name');
         $this->mod_attachment_mod_model->mod_key = Req::Post_Safe('mod_key');
         $this->mod_attachment_mod_model->mod_value = Req::Post_Safe('mod_value');
-        $this->mod_attachment_mod_model->user_id = $this->session->getir('id');
+        $this->mod_attachment_mod_model->user_id = $this->session->get('id');
 
         if ($this->mod_attachment_mod_model->save(true)) {
             $this->_oke_message($this->lang['mod_attachment_mod']['message']['oke']['add']);
@@ -256,7 +256,7 @@ class mod_attachment_mod_mod extends indexMain
         }
 
         if (Roll::hasPermission('mod_attachment_mod', 'moderate_edit') !== true && Roll::hasPermission('mod_attachment_mod', 'moderate_delete') !== true) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {

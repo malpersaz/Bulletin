@@ -236,7 +236,7 @@ class mod_imagecategories_mod extends indexMain
             $this->mod_imagecategories_model->keywords = Req::Post_Safe('keywords');
             $this->mod_imagecategories_model->description = Req::Post_Safe('description');
             $this->mod_imagecategories_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_imagecategories_model->user_id = $this->session->getir('id');
+            $this->mod_imagecategories_model->user_id = $this->session->get('id');
 
             // Eğer Resim varsa
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {

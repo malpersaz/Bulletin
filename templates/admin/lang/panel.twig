@@ -1,0 +1,422 @@
+{% set show_fab = false %}
+{% set show_navbar = false %}
+{% set show_filter_sheet = false %}
+{% set show_extra_sheets = false %}
+{% set hide_search = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.lang.admin.title }}{% endblock %}
+{% block headline %}{{ lang.lang.admin.headline }}{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <style>
+        .lang-panel {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+
+        .lang-flash {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1px solid transparent;
+            font-weight: 600;
+            line-height: 1.45;
+        }
+
+        .lang-flash i {
+            font-size: 1rem;
+        }
+
+        .lang-flash.is-success {
+            background: #ecfdf3;
+            border-color: #a7f3d0;
+            color: #166534;
+        }
+
+        .lang-flash.is-error {
+            background: #fef2f2;
+            border-color: #fecaca;
+            color: #b42318;
+        }
+
+        .lang-flash.is-info {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .lang-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .lang-card {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 14px;
+            border-radius: 18px;
+            background: var(--md-sys-color-surface, #fff);
+            border: 1px solid #d9dde5;
+        }
+
+        .lang-card.is-inactive {
+            background: #fcfcfd;
+            border-color: #eaecf0;
+        }
+
+        .lang-card-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .lang-card-head > :first-child {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        .lang-name {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface, #1d1b20);
+        }
+
+        .lang-code {
+            margin-top: 6px;
+            color: #667085;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .lang-chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .lang-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 26px;
+            padding: 0 9px;
+            border-radius: 999px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+
+        .lang-chip.is-active {
+            background: #ecfdf3;
+            border-color: #a7f3d0;
+            color: #166534;
+        }
+
+        .lang-chip.is-inactive {
+            background: #f8fafc;
+            border-color: #d0d5dd;
+            color: #475467;
+        }
+
+        .lang-chip.is-default {
+            background: #ecfdf3;
+            border-color: #a7f3d0;
+            color: #166534;
+        }
+
+        .lang-chip.is-current {
+            background: #fff7ed;
+            border-color: #fed7aa;
+            color: #c2410c;
+        }
+
+        .lang-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+            width: 100%;
+        }
+
+        .lang-actions > * {
+            flex: 1 1 calc(50% - 4px);
+        }
+
+        .lang-actions > *:only-child {
+            flex-basis: 100%;
+        }
+
+        .lang-button {
+            min-height: 44px;
+            width: 100%;
+            padding: 0 14px;
+            border-radius: 14px;
+            border: 1px solid #d0d5dd;
+            font-weight: 700;
+            cursor: pointer;
+            background: #fff;
+            color: #344054;
+        }
+
+        .lang-button.is-primary {
+            background: #1d4ed8;
+            color: #fff;
+            border-color: #1d4ed8;
+        }
+
+        .lang-button.is-secondary {
+            background: #fff;
+            color: #344054;
+        }
+
+        .lang-button.is-danger {
+            background: #fff;
+            color: #b42318;
+            border-color: #fda29b;
+        }
+
+        .lang-empty {
+            padding: 14px;
+            border-radius: 14px;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            text-align: center;
+            background: #eff6ff;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="lang-panel">
+        <div id="lang-list-root">
+            {% if languages is empty %}
+                <div class="lang-empty">{{ lang.lang.admin.empty_state }}</div>
+            {% else %}
+                <div class="lang-list">
+                    {% for item in languages %}
+                        <div class="lang-card {{ item.status == 'y' ? '' : 'is-inactive' }}">
+                            <div class="lang-card-head">
+                                <div>
+                                    <div class="lang-name">{{ item.name }}</div>
+                                    <div class="lang-code">{{ item.seo|upper }}</div>
+                                </div>
+                                <div class="lang-chip-row">
+                                    <span class="lang-chip {{ item.status == 'y' ? 'is-active' : 'is-inactive' }}">
+                                        {{ item.status == 'y' ? lang.lang.admin.status_active : lang.lang.admin.status_inactive }}
+                                    </span>
+                                    {% if item.is_default == 'y' %}
+                                        <span class="lang-chip is-default">{{ lang.lang.admin.default_badge }}</span>
+                                    {% endif %}
+                                    {% if item.seo == site.lang %}
+                                        <span class="lang-chip is-current">{{ lang.lang.admin.current_badge }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="lang-actions">
+                                {% if item.status != 'y' %}
+                                    <button type="button" class="lang-button is-primary" onclick="return window.langAdminAction ? window.langAdminAction('activate', '{{ item.seo }}') : false;">{{ lang.lang.admin.activate }}</button>
+                                {% endif %}
+
+                                {% if item.status == 'y' and item.is_default != 'y' %}
+                                    <button type="button" class="lang-button is-danger" onclick="return window.langAdminAction ? window.langAdminAction('deactivate', '{{ item.seo }}') : false;">{{ lang.lang.admin.deactivate }}</button>
+                                {% endif %}
+
+                                {% if item.is_default != 'y' %}
+                                    <button type="button" class="lang-button is-secondary" onclick="return window.langAdminAction ? window.langAdminAction('set_default', '{{ item.seo }}') : false;">{{ lang.lang.admin.set_default }}</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script>
+        (function () {
+            const root = document.getElementById('lang-list-root');
+
+            if (!root) {
+                return;
+            }
+
+            const ui = {
+                active: {{ lang.lang.admin.status_active|json_encode|raw }},
+                inactive: {{ lang.lang.admin.status_inactive|json_encode|raw }},
+                defaultBadge: {{ lang.lang.admin.default_badge|json_encode|raw }},
+                currentBadge: {{ lang.lang.admin.current_badge|json_encode|raw }},
+                activate: {{ lang.lang.admin.activate|json_encode|raw }},
+                deactivate: {{ lang.lang.admin.deactivate|json_encode|raw }},
+                setDefault: {{ lang.lang.admin.set_default|json_encode|raw }},
+                emptyState: {{ lang.lang.admin.empty_state|json_encode|raw }},
+                ajaxError: {{ lang.lang.errors.update_failed|json_encode|raw }}
+            };
+
+            function escapeHtml(value) {
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            }
+
+            function renderFlash(type, message) {
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(message, type === 'success' ? 'success' : 'error');
+                    return;
+                }
+
+                if (typeof Swal !== 'undefined' && Swal && typeof Swal.fire === 'function') {
+                    Swal.fire({
+                        icon: type === 'success' ? 'success' : 'error',
+                        text: message,
+                        confirmButtonText: 'OK'
+                    });
+                    return;
+                }
+
+                alert(message);
+            }
+
+            function renderActions(item) {
+                let html = '';
+
+                if (item.status !== 'y') {
+                    html += `
+                        <button type="button" class="lang-button is-primary" onclick="return window.langAdminAction ? window.langAdminAction('activate', '${escapeHtml(item.seo)}') : false;">${escapeHtml(ui.activate)}</button>
+                    `;
+                }
+
+                if (item.status === 'y' && item.is_default !== 'y') {
+                    html += `
+                        <button type="button" class="lang-button is-danger" onclick="return window.langAdminAction ? window.langAdminAction('deactivate', '${escapeHtml(item.seo)}') : false;">${escapeHtml(ui.deactivate)}</button>
+                    `;
+                }
+
+                if (item.is_default !== 'y') {
+                    html += `
+                        <button type="button" class="lang-button is-secondary" onclick="return window.langAdminAction ? window.langAdminAction('set_default', '${escapeHtml(item.seo)}') : false;">${escapeHtml(ui.setDefault)}</button>
+                    `;
+                }
+
+                return html;
+            }
+
+            function renderLanguages(languages, currentLanguage) {
+                if (!Array.isArray(languages) || languages.length === 0) {
+                    root.innerHTML = `<div class="lang-empty">${escapeHtml(ui.emptyState)}</div>`;
+                    return;
+                }
+
+                const cards = languages.map((item) => {
+                    const statusClass = item.status === 'y' ? 'is-active' : 'is-inactive';
+                    const cardClass = item.status === 'y' ? 'lang-card' : 'lang-card is-inactive';
+                    const chips = [
+                        `<span class="lang-chip ${statusClass}">${escapeHtml(item.status === 'y' ? ui.active : ui.inactive)}</span>`
+                    ];
+
+                    if (item.is_default === 'y') {
+                        chips.push(`<span class="lang-chip is-default">${escapeHtml(ui.defaultBadge)}</span>`);
+                    }
+
+                    if (item.seo === currentLanguage) {
+                        chips.push(`<span class="lang-chip is-current">${escapeHtml(ui.currentBadge)}</span>`);
+                    }
+
+                    return `
+                        <div class="${cardClass}">
+                            <div class="lang-card-head">
+                                <div>
+                                    <div class="lang-name">${escapeHtml(item.name)}</div>
+                                    <div class="lang-code">${escapeHtml(String(item.seo).toUpperCase())}</div>
+                                </div>
+                                <div class="lang-chip-row">${chips.join('')}</div>
+                            </div>
+                            <div class="lang-actions">${renderActions(item)}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                root.innerHTML = `<div class="lang-list">${cards}</div>`;
+            }
+
+            async function submitAction(action, languageCode) {
+                const formData = new FormData();
+                formData.append('lang_action', action);
+                formData.append('language_code', languageCode);
+                formData.append('ajax_request', '1');
+                const buttons = Array.from(root.querySelectorAll('.lang-button'));
+                buttons.forEach((button) => {
+                    button.disabled = true;
+                });
+
+                try {
+                    const response = await fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const payload = await response.json();
+
+                    if (!response.ok || !payload || !payload.status) {
+                        throw new Error(ui.ajaxError);
+                    }
+
+                    renderFlash(payload.status, payload.message || ui.ajaxError);
+                    renderLanguages(payload.languages || [], payload.current_language || '');
+                } catch (error) {
+                    renderFlash('error', error.message || ui.ajaxError);
+                } finally {
+                    buttons.forEach((button) => {
+                        button.disabled = false;
+                    });
+                }
+            }
+
+            window.langAdminAction = function (action, languageCode) {
+                submitAction(action, languageCode);
+                return false;
+            };
+        }());
+    </script>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'" title="{{ lang.lang.admin.back_panel }}" aria-label="{{ lang.lang.admin.back_panel }}">
+            <i class="bi bi-speedometer2"></i>
+        </button>
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_settings/edit'" title="{{ lang.management.site_settings }}" aria-label="{{ lang.management.site_settings }}">
+            <i class="bi bi-gear-fill"></i>
+        </button>
+        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/info'" title="{{ lang.management.edit_profile_menu }}" aria-label="{{ lang.management.edit_profile_menu }}">
+            <i class="bi bi-person"></i>
+        </button>
+        <button class="toolbar-item" onclick="history.back()" title="{{ lang.lang.admin.back }}" aria-label="{{ lang.lang.admin.back }}">
+            <i class="bi bi-arrow-left"></i>
+        </button>
+    </div>
+{% endblock %}

@@ -15,7 +15,7 @@ class Captcha
 	public function generate()
 	{
 		$this->create_image();
-		$this->session->ac('captcha', $this->digit);
+		$this->session->set('captcha', $this->digit);
         $dir = root_dir . 'cache' . DS . 'captcha' . DS;
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
@@ -26,8 +26,8 @@ class Captcha
 
 	public function image()
 	{
-		if ($this->session->varmi('captcha')) {
-			$this->file = root_dir . 'cache' . DS . 'captcha' . DS . md5($this->session->getir('captcha')) . '.png';
+		if ($this->session->has('captcha')) {
+			$this->file = root_dir . 'cache' . DS . 'captcha' . DS . md5($this->session->get('captcha')) . '.png';
 			if (file_exists($this->file) === False) {
 				$this->generate();
 			}
@@ -77,15 +77,15 @@ class Captcha
 
 	public function check($val)
 	{
-		if ($this->session->varmi('captcha') === False) {
+		if ($this->session->has('captcha') === False) {
 			return True;
 		}
 
-		if ($this->session->getir('captcha') != $val) {
+		if ($this->session->get('captcha') != $val) {
 			return True;
 		}
-		@unlink($this->file = root_dir . 'cache' . DS . 'captcha' . DS . md5($this->session->getir('captcha')) . '.png');
-		$this->session->kapat('captcha');
+		@unlink($this->file = root_dir . 'cache' . DS . 'captcha' . DS . md5($this->session->get('captcha')) . '.png');
+		$this->session->remove('captcha');
 		return False;
 	}
 }

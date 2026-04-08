@@ -171,6 +171,7 @@ $lang['management']=[
     'administrator_group' => 'Administratör',
     'pm_management_menu' => 'Meddelandehantering',
     'administration_menu' => 'Administration',
+    'language_management_menu' => 'Sprakhantering',
     'logout_menu' => 'Logga ut',
     'inbox_menu' => 'Inbox',
     'sentbox_menu' => 'Sent Box',

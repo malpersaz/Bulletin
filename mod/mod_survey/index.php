@@ -141,7 +141,7 @@ class mod_survey_mod extends indexMain
             $this->mod_survey_model->status = 'n';
 
             $this->mod_survey_model->acl_id = Req::Post_Safe('acl_id');
-            $this->mod_survey_model->user_id = $this->session->getir('id');
+            $this->mod_survey_model->user_id = $this->session->get('id');
 
             // Eğer Resim varsa
             if ($this->mod_survey_model->save(TRUE)) {
@@ -355,7 +355,7 @@ class mod_survey_mod extends indexMain
             and
             (Roll::hasPermission('mod_survey', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->getir('id') . "'";
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         if (count($wheres) > 0) {
