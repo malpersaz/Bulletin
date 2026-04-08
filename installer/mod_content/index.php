@@ -245,7 +245,7 @@ class mod_content extends installerbase implements installerbaseinterface
                 'description' => 'Rojname finns för att ta dig till din förtjänta plats i webbvärlden.',
                 'user_id' => '1'
             ),
-            // Zazaki Content
+            // Zazakî Content
             array(
                 'name' => 'Zerreyo Nimûne',
                 'lang' => 'zza',

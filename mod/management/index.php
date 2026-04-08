@@ -87,7 +87,7 @@ class management_mod extends indexBase
         return $this->runtime()->isModuleInstalled($moduleName);
     }
 
-    private function isFeatureReady($feature)
+    protected function isFeatureReady($feature)
     {
         return $this->runtime()->isReady($feature);
     }

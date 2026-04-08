@@ -39,6 +39,8 @@ class InstallerTaskRunner
 
             if ($module === 'mod_user') {
                 $moduleResult = $this->runModuleInstall($installer, $module);
+                $modUserInstance = isset($moduleResult['instance']) ? $moduleResult['instance'] : null;
+                unset($moduleResult['instance']);
                 $result['modules'][$module] = $moduleResult;
                 $result['logs'] = array_merge($result['logs'], $moduleResult['logs']);
 
@@ -46,13 +48,12 @@ class InstallerTaskRunner
                     return $this->failResult($result, $module);
                 }
 
-                $modUserInstance = $moduleResult['instance'];
-                unset($result['modules'][$module]['instance']);
                 $result['completed_modules'][] = $module;
                 continue;
             }
 
             $moduleResult = $this->runModuleInstall($installer, $module);
+            unset($moduleResult['instance']);
             $result['modules'][$module] = $moduleResult;
             $result['logs'] = array_merge($result['logs'], $moduleResult['logs']);
 
@@ -364,12 +365,17 @@ class InstallerTaskRunner
     {
         $queries = array(
             "DELETE FROM mod_content WHERE user_id = '1' AND category_id IN (
-                SELECT id FROM mod_category
-                WHERE user_id = '1'
-                  AND root = 'n'
-                  AND parent_id IN (
-                    SELECT id FROM mod_category WHERE user_id = '1' AND root = 'y' AND seo = '#'
-                  )
+                SELECT child_rows.id FROM (
+                    SELECT child.id
+                    FROM mod_category AS child
+                    INNER JOIN mod_category AS root_rows
+                        ON child.parent_id = root_rows.id
+                    WHERE child.user_id = '1'
+                      AND child.root = 'n'
+                      AND root_rows.user_id = '1'
+                      AND root_rows.root = 'y'
+                      AND root_rows.seo = '#'
+                ) AS child_rows
             )",
         );
 
@@ -383,7 +389,13 @@ class InstallerTaskRunner
              WHERE user_id = '1'
                AND root = 'n'
                AND parent_id IN (
-                 SELECT id FROM mod_category WHERE user_id = '1' AND root = 'y' AND seo = '#'
+                 SELECT root_ids.id FROM (
+                     SELECT id
+                     FROM mod_category
+                     WHERE user_id = '1'
+                       AND root = 'y'
+                       AND seo = '#'
+                 ) AS root_ids
                )",
             "DELETE FROM mod_category WHERE user_id = '1' AND root = 'y' AND seo = '#'",
         );
@@ -397,7 +409,7 @@ class InstallerTaskRunner
             "DELETE FROM mod_page
              WHERE user_id = '1'
                AND (
-                    (root = 'y' AND seo IN ('English_Pages', 'Rûpelên_Kurdî', 'لاپەڕەکانی_کوردی', 'الصفحات_العربية', 'Deutsche_Seiten', 'Pages_Françaises', 'Svenska_Sidor', 'Türkçe_Sayfalar', 'Pelê_Zazaki'))
+                    (root = 'y' AND seo IN ('English_Pages', 'Rûpelên_Kurdî', 'لاپەڕەکانی_کوردی', 'الصفحات_العربية', 'Deutsche_Seiten', 'Pages_Françaises', 'Svenska_Sidor', 'Türkçe_Sayfalar', 'Pelê_Zazakî'))
                  OR (root = 'n' AND seo IN ('Contact', 'Têkilî', 'پەیوەندی', 'اتصل_بنا', 'Kontakt', 'İletişim', 'Îrtibat', 'About_Us', 'Derbarê_me', 'دەربارەی_ئێمە', 'من_نحن', 'Über_uns', 'À_propos', 'Om_oss', 'Hakkımızda', 'Ma_Heqa'))
                )",
         );

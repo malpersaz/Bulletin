@@ -1,6 +1,6 @@
 <?php
 /**
- * Language Module - Zazaki Language File
+ * Language Module - Zazakî Language File
  */
 
 if (!defined('AKM_LOADED')) {
@@ -23,7 +23,7 @@ $lang['lang'] = [
         'steps' => ['welcome' => 'Xêr ameyê', 'language' => 'Ziwan', 'checks' => 'Kontrol', 'setup' => 'Mîheng', 'modules' => 'Modul', 'sample' => 'Nimûne', 'progress' => 'Pêşverde', 'review' => 'Vurnayış', 'finish' => 'Dawî'],
         'welcome' => ['title' => 'Rayeka sazkerdışi ya armancdar', 'body' => 'Qalib sazkerdışi rayeka telefona de cı keno, hilbijarnayışan qeyd keno û biryarê modulan verê meşandışi eşkere keno.', 'project_label' => 'Proje', 'project_detail' => 'Brandê Rojname hema armanca default a sazkerdışi yê na depo yo.', 'language_scope_label' => 'Qadê ziwanî', 'language_scope_detail' => 'Defaultê sazkerdışi hema derxistışê zıwananê taybetê repo diparêze.', 'module_scope_label' => 'Qadê modulan', 'module_scope_detail' => 'Modulê lazıman, weçarnayışî, girêdayî û taybetê Rojname verê meşandışi cı bêne kerdene.'],
         'language' => ['title' => 'Ziwanê sazkerdışi', 'body' => 'Verê ke şıma bıri şımayê dewam bıkê ziwanê sessionê sazkerdışi weçine. Na rewş di session de qeyd beno.'],
-        'language_options' => ['de' => ['label' => 'Deutsch', 'code' => 'DE'], 'en' => ['label' => 'English', 'code' => 'EN'], 'fr' => ['label' => 'Français', 'code' => 'FR'], 'ku' => ['label' => 'Kurmanci', 'code' => 'KU'], 'ckb' => ['label' => 'کوردی', 'code' => 'CKB'], 'sv' => ['label' => 'Svenska', 'code' => 'SV'], 'zza' => ['label' => 'Zazaki', 'code' => 'ZZA']],
+        'language_options' => ['de' => ['label' => 'Deutsch', 'code' => 'DE'], 'en' => ['label' => 'English', 'code' => 'EN'], 'fr' => ['label' => 'Français', 'code' => 'FR'], 'ku' => ['label' => 'Kurmancî', 'code' => 'KU'], 'ckb' => ['label' => 'کوردی', 'code' => 'CKB'], 'sv' => ['label' => 'Svenska', 'code' => 'SV'], 'zza' => ['label' => 'Zazakî', 'code' => 'ZZA']],
         'environment' => ['title' => 'Kontrolê ortamî', 'body' => 'Raya pêşberdışi heta kontrolanê lazıman raşt nêbın gıreya.', 'ready' => 'Hazır', 'blocked' => 'Gıreya'],
         'setup' => ['title' => 'Mîhengê proje', 'body' => 'Verê ke bıri hilbijarnayışê modulan, rewşa herî kêm a proje qeyd bike.', 'project_name_label' => 'Nameyê proje', 'project_default_language_label' => 'Ziwanê bingeyîn ê proje', 'language_notice' => 'Ziwanê sazkerdışi tenya na rayekê deyişeno. Ziwanê bingeyîn ê proje hilbijarnayışo cuda yo.'],
         'module_selection' => ['title' => 'Hilbijarnayışê modulan', 'body' => 'Verê destpêkerdışi şiyanê weçarnayışî weçine. Modulê lazıman gıreyanê û girêdan cı ra eşkere beno.', 'required_title' => 'Modulê lazıman', 'required_body' => 'Na modul her tim sazkerdê beno ke bingeh ewle bimano.', 'optional_body' => 'Modulê weçarnayışî ji bo telefona kom bîyaye.', 'dependencies_label' => 'Girêdayî yo bi: %s', 'required_by_label' => 'Lazım o ji bo: %s', 'required_chip' => 'Lazım', 'optional_chip' => 'Weçarnayışî', 'auto_chip' => 'Bi hilbijarnayışi lazim biyo', 'project_specific_chip' => 'Tenya Rojname', 'sample_chip' => 'Ji bo nimûne amade', 'locked_notice' => 'Modulê ke bixweber lazim bıne, heta hilbijarnayışê girêdayî rake nêro.'],

@@ -36,7 +36,7 @@ $lang['lang'] = [
             'module_scope_detail' => 'Required, optional, dependency-driven, and Rojname-only modules are separated before execution starts.',
         ],
         'language' => ['title' => 'Installer language', 'body' => 'Select the installer session language before moving deeper into setup. This state is persisted in the current session.'],
-        'language_options' => ['de' => ['label' => 'Deutsch', 'code' => 'DE'], 'en' => ['label' => 'English', 'code' => 'EN'], 'fr' => ['label' => 'Français', 'code' => 'FR'], 'ku' => ['label' => 'Kurmanci', 'code' => 'KU'], 'ckb' => ['label' => 'کوردی', 'code' => 'CKB'], 'sv' => ['label' => 'Svenska', 'code' => 'SV'], 'zza' => ['label' => 'Zazaki', 'code' => 'ZZA']],
+        'language_options' => ['de' => ['label' => 'Deutsch', 'code' => 'DE'], 'en' => ['label' => 'English', 'code' => 'EN'], 'fr' => ['label' => 'Français', 'code' => 'FR'], 'ku' => ['label' => 'Kurmancî', 'code' => 'KU'], 'ckb' => ['label' => 'کوردی', 'code' => 'CKB'], 'sv' => ['label' => 'Svenska', 'code' => 'SV'], 'zza' => ['label' => 'Zazakî', 'code' => 'ZZA']],
         'environment' => ['title' => 'Environment check', 'body' => 'Forward navigation remains blocked until every required check passes.', 'ready' => 'Ready', 'blocked' => 'Blocked'],
         'setup' => [
             'title' => 'Project setup',

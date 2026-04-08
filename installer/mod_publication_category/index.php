@@ -40,10 +40,10 @@ class mod_publication_category extends installerbase implements installerbaseint
             array('name' => '#DEUTSCH', 'lang' => 'de', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
             array('name' => '#ENGLISH', 'lang' => 'en', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
             array('name' => '#FRANCAIS', 'lang' => 'fr', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
-            array('name' => '#KURDI', 'lang' => 'ku', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
+            array('name' => '#KURDÎ', 'lang' => 'ku', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
             array('name' => '#سۆرانی', 'lang' => 'ckb', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
             array('name' => '#SVENSKA', 'lang' => 'sv', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
-            array('name' => '#ZAZAKI', 'lang' => 'zza', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
+            array('name' => '#ZAZAKÎ', 'lang' => 'zza', 'parent_id' => '0', 'order' => '1', 'root' => 'y', 'seo' => '#', 'title' => '#', 'keywords' => '#', 'description' => '#', 'user_id' => '1'),
         );
 
         foreach ($records as $record) {

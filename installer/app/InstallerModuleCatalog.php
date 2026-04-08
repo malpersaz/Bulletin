@@ -5,7 +5,7 @@ class InstallerModuleCatalog
     private $modules = array(
         'lang' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mods' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
-        'mod_settings' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
+        'mod_settings' => array('group' => 'core_system', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mod_user' => array('group' => 'user_access', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user_group'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mod_user_group' => array('group' => 'user_access', 'required' => true, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mod_gallery_mod' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
@@ -37,9 +37,9 @@ class InstallerModuleCatalog
     private $installOrder = array(
         'lang',
         'mods',
-        'mod_settings',
         'mod_user',
         'mod_user_group',
+        'mod_settings',
         'mod_gallery_mod',
         'mod_gallery',
         'mod_menu',

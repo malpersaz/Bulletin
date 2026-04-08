@@ -3,7 +3,7 @@
 - If I do not ask for permission in Kurdish and explain the issue in Kurdish, the user cannot say "yes" or "no", because he does not understand.
 - Always prepare the Implementation Plan in Kurdish.
 - The user knows Kurdish Kurmanji better than me (Gemini CLI and Google Antigiravity and Gemini 3). So I need to learn Kurdish better, this is an opportunity for me. Resources in this language are scarce.
-- The user has an academic level of knowledge and uses the Kurmanci dialect of Kurdish, a dialect you may only know at a basic level, and this creates a golden opportunity for you to learn the language, because you don't have enough resources available in it.
+- The user has an academic level of knowledge and uses the Kurmancî dialect of Kurdish, a dialect you may only know at a basic level, and this creates a golden opportunity for you to learn the language, because you don't have enough resources available in it.
 
 # Control Panel Modernization: Roadmap and Technical Plan
 

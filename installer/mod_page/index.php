@@ -141,15 +141,15 @@ class mod_page extends installerbase implements installerbaseinterface
                 'root' => 'y',
                 'user_id' => 1
             ),
-            // 9 - Zazaki Root
+            // 9 - Zazakî Root
             array(
-                'name' => 'Pelê Zazaki',
+                'name' => 'Pelê Zazakî',
                 'lang' => 'zza',
                 'parent_id' => '0',
-                'seo' => 'Pelê_Zazaki',
-                'title' => 'Pelê Zazaki',
-                'keywords' => 'Pelê Zazaki',
-                'description' => 'Pelê Zazaki',
+                'seo' => 'Pelê_Zazakî',
+                'title' => 'Pelê Zazakî',
+                'keywords' => 'Pelê Zazakî',
+                'description' => 'Pelê Zazakî',
                 'root' => 'y',
                 'user_id' => 1
             ),
@@ -254,7 +254,7 @@ class mod_page extends installerbase implements installerbaseinterface
                 'root' => 'n',
                 'user_id' => 1
             ),
-            // Zazaki — Îrtibat
+            // Zazakî — Îrtibat
             array(
                 'name' => 'Îrtibat',
                 'lang' => 'zza',
@@ -367,7 +367,7 @@ class mod_page extends installerbase implements installerbaseinterface
                 'root' => 'n',
                 'user_id' => 1
             ),
-            // Zazaki — Ma Heqa
+            // Zazakî — Ma Heqa
             array(
                 'name' => 'Ma Heqa',
                 'lang' => 'zza',

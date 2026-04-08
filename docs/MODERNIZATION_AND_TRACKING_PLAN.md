@@ -36,7 +36,7 @@ This document outlines the objectives and implementation strategy for the modern
 
 ### 2.2 Engineering Standards (Purification)
 - **Language Keys:** Replaced all occurrences of non-English keys (e.g., `baslik`) with standardized English keys (`title`).
-- **De-colonial Approach:** Ensured all UI labels are pulled from `lang` files, allowing pure Kurdish/Zazaki translations without hardcoded defaults.
+- **De-colonial Approach:** Ensured all UI labels are pulled from `lang` files, allowing pure Kurdish/Zazakî translations without hardcoded defaults.
 - **Global Actions:** Implemented "Bulk Pin" functionality in the category list with visual indicators (Eye icons).
 
 ### 2.3 IP-Based View Tracking

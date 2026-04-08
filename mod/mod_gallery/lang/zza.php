@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Gallery Management Module Zazaki Language File
+ * Gallery Management Module Zazakî Language File
  * Amed Framework CMS - Multilingual Content Management System
  */
 

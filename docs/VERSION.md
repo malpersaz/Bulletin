@@ -22,6 +22,7 @@
 - **Installer Native Language Cards**: Reworked the installer language step to show native language names with code badges instead of bare uppercase codes, keeping the phone-first chooser aligned with the modernization plan.
 - **Installer Environment Meta Cleanup**: Replaced the database-check string sentinel with structured environment metadata so the phone-first environment screen no longer relies on English-only internal detail parsing.
 - **Installer Environment Item Labels**: Moved required extension names and writable-directory names behind installer language keys so blocked environment summaries no longer surface raw internal identifiers in the mobile UI.
+- **Installer Settings Dependency Fix**: Moved `mod_settings` behind `mod_user` and `mod_user_group` in installer execution order and declared the dependency explicitly so the `settings` SQL view is created only after `mod_user` exists.
 
 ## v1.0.53.51
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.
@@ -124,7 +125,7 @@
 - **Changelog Reliability Fix**: Re-established `VERSION.md` as the single historical log of completed work. The previous gap between the branded application version (`v1.0.45`) and the recorded changelog history is now explicitly closed.
 - **Settings Route Naming Cleanup**: Renamed the active modern settings template to `templates/admin/mod_settings/edit.twig`, updated the controller to render the English `edit` template directly, localized remaining hardcoded error strings in `mod_settings`, and kept `mod_settings/duzenle` as a compatibility alias during the migration.
 - **Dynamic Language Switcher**: Replaced the hard-coded language list in the frontend header (`soul_top_menu.twig`) with a dynamic PHP/Twig workflow. The system now fetches only active and valid languages (`valid_lang`) directly from the database's `lang` table via the `Amed.class.php` bootstrapper. It injects them correctly into the `site.available_languages` configuration, resolving broken links and ensuring the switcher stays synchronized when administrators add or remove languages.
-- **Language File Updates**: Corrected the spelling of "Zazaki" to "Zazakî" in `installer/lang/index.php`.
+- **Language File Updates**: Corrected the spelling of "Zazakî" to "Zazakî" in `installer/lang/index.php`.
 
 ## v1.0.23 (2025-12-28)
 - **Automatic WebP Conversion**: Updated `mod/image` module to automatically convert all uploaded images (JPG, PNG, GIF) to the modern **WebP** format. This significantly reduces file size while maintaining high quality, adhering to Google's next-gen image recommendations.
