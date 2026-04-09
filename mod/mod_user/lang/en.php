@@ -91,8 +91,11 @@ $lang['mod_user'] = [
             'specify_email' => 'Please specify your e-mail address',
             'specify_username' => 'Please specify your username',
             'specify_password' => 'Please specify your password',
+            'username_invalid_chars' => 'Your username can consist of a-z A-Z 0-9 characters',
+            'username_length_error' => 'Your username can be 2 to 20 characters',
             'email_invalid_format' => 'Please enter a valid email address',
             'email_registered' => 'This email address is already registered',
+            'username_registered' => 'This username is already registered',
         ],
     'button' =>
         [
@@ -447,6 +450,9 @@ $lang['mod_user']['ajax'] = [
     'membership_deleted' => 'Account deleted',
     'success' => 'Success',
     'error' => 'An error occurred',
+    'copy_errors' => 'Copy Errors',
+    'errors_copied' => 'Error details copied',
+    'unexpected_response' => 'The server returned an unexpected response',
     'connection_error' => 'Connection error',
     'invalid_credentials' => 'Invalid credentials',
     'account_inactive' => 'Account inactive',

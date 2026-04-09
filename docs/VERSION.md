@@ -8,6 +8,11 @@
 - Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
+## v1.0.54.11
+- Active version bucket derived from the next upload after Git-published `v1.0.54.10`.
+- **Admin User Edit Error-Key Fix**: Added the missing top-level `mod_user.error` username validation keys used by the admin `mod_user/list` edit flow so localized update errors resolve through the correct runtime branch instead of falling through to raw `Undefined array key` warnings.
+- **Admin User Edit AJAX Error Surface**: Upgraded the phone-first admin user edit form to submit through AJAX with structured JSON responses, a copyable error panel, and safe fallback handling for unexpected server output so operators no longer need screenshots to report validation or runtime failures.
+
 ## v1.0.54.10
 - Active version bucket derived from the current user-provided upload version code.
 - **Profile Update Username Validation Fix**: Added the missing `username_length_error` localization key across all active `mod_user` language files so self-profile and admin edit validators no longer trigger raw `Undefined array key` warnings when a username falls outside the allowed edit length.

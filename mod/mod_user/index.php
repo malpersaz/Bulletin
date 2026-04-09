@@ -1611,6 +1611,10 @@ class mod_user_mod extends indexMain
 
     public function edit($id = NULL)
     {
+        $is_ajax = $this->_is_ajax_request();
+        if ($is_ajax && Req::is_Post('edit')) {
+            ob_start();
+        }
 
         // Is there Listing Permission?
         if ($this->user->hasPermission('mod_user', 'edit', $this->lang['mod_user']['role_errors']['edit'], 1) === False) {
@@ -1622,12 +1626,22 @@ class mod_user_mod extends indexMain
         $id = Req::Url_Clear($id);
 
         if ($this->i->exists_id($id) === False) {
+            if ($is_ajax) {
+                $this->_respond_with_json([
+                    'success' => false,
+                    'message' => $this->lang['mod_user']['ajax']['error'],
+                    'errors' => [$this->lang['mod_user']['error']['user_not_found']],
+                ], 404);
+            }
             $this->_emesaj($this->lang['mod_user']['error']['user_not_found']);
             return;
         }
 
         if (Req::is_Post('edit')) {
-            $this->_edit($id);
+            $result = $this->_edit($id, $is_ajax);
+            if ($is_ajax) {
+                $this->_respond_with_json($result['payload'], $result['status']);
+            }
         }
 
 
@@ -1656,13 +1670,23 @@ class mod_user_mod extends indexMain
     }
 
 
-    private function _edit($id)
+    private function _edit($id, $is_ajax = false)
     {
 
         $this->val = Load::validator('mod_user.edit');
 
         if ($this->val->check($id)) {
             $this->tema->veri('errors', $this->val->errors);
+            if ($is_ajax) {
+                return [
+                    'status' => 422,
+                    'payload' => [
+                        'success' => false,
+                        'message' => $this->lang['mod_user']['ajax']['validation_error'],
+                        'errors' => array_values((array) $this->val->errors),
+                    ],
+                ];
+            }
         } else {
             $db = Load::lib('Database');
             $db->start_transaction();
@@ -1711,6 +1735,16 @@ class mod_user_mod extends indexMain
                     $u->image = $image->url;
                 } else {
                     $this->tema->veri('errors', [$image->error]);
+                    if ($is_ajax) {
+                        return [
+                            'status' => 422,
+                            'payload' => [
+                                'success' => false,
+                                'message' => $this->lang['mod_user']['ajax']['validation_error'],
+                                'errors' => [$image->error],
+                            ],
+                        ];
+                    }
                     return FALSE;
                 }
             }
@@ -1718,11 +1752,40 @@ class mod_user_mod extends indexMain
             if ($u->update('id') && $this->_save_social_links($id, $_POST['social_links'] ?? [])) {
                 $db->commit();
                 $this->_mesaj($this->lang['mod_user']['admin']['updated']);
+                if ($is_ajax) {
+                    return [
+                        'status' => 200,
+                        'payload' => [
+                            'success' => true,
+                            'message' => $this->lang['mod_user']['admin']['updated'],
+                            'redirect' => $this->site['sadres'] . 'mod_user/list',
+                        ],
+                    ];
+                }
             } else {
                 $db->rollback();
                 $this->tema->veri('errors', ['Database Error: user update could not be completed.']);
+                if ($is_ajax) {
+                    return [
+                        'status' => 500,
+                        'payload' => [
+                            'success' => false,
+                            'message' => $this->lang['mod_user']['ajax']['error'],
+                            'errors' => ['Database Error: user update could not be completed.'],
+                        ],
+                    ];
+                }
             }
         }
+
+        return [
+            'status' => 200,
+            'payload' => [
+                'success' => false,
+                'message' => $this->lang['mod_user']['ajax']['error'],
+                'errors' => [],
+            ],
+        ];
     }
 
 

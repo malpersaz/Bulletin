@@ -160,16 +160,26 @@
 				}, 2000);
 			</script>
 		{% else %}
-			{% if errors is defined %}
-				<div class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-					{% for error in errors %}
-						<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
-							<i class="bi bi-exclamation-circle-fill"></i>
-							<span>{{ error }}</span>
-						</div>
-					{% endfor %}
+			<div id="errorBanner" class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;{% if errors is not defined %} display: none;{% endif %}">
+				<div id="errorList">
+					{% if errors is defined %}
+						{% for error in errors %}
+							<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
+								<i class="bi bi-exclamation-circle-fill"></i>
+								<span>{{ error }}</span>
+							</div>
+						{% endfor %}
+					{% endif %}
 				</div>
-			{% endif %}
+				<div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+					<button type="button" id="copyErrorsButton" class="m3-btn-half" style="height: 40px !important; flex: 0 0 auto !important; padding: 0 16px !important; background: #c62828 !important; color: #fff !important;">
+						<i class="bi bi-clipboard"></i>
+						{{ lang.mod_user.ajax.copy_errors }}
+					</button>
+				</div>
+				<textarea id="errorDetails" readonly style="width: 100%; min-height: 120px; margin-top: 12px; border-radius: 8px; border: 1px solid #f2b8b5; padding: 12px; font-size: 13px; background: #fff8f7; color: #7f1d1d;">{% if errors is defined %}{% for error in errors %}{{ error }}{% if not loop.last %}
+{% endif %}{% endfor %}{% endif %}</textarea>
+			</div>
 
 			<form method="POST" action="" id="editForm" enctype="multipart/form-data">
 				{# Card 1: Account #}
@@ -387,7 +397,7 @@
 				<i class="bi bi-x-lg"></i>
 				{{ lang.mod_user.button.cancel }}
 			</a>
-			<button type="submit" form="editForm" name="edit" value="{{ lang.mod_user.admin.edit_user }}" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+			<button id="editSubmitButton" type="submit" form="editForm" name="edit" value="{{ lang.mod_user.admin.edit_user }}" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 				<i class="bi bi-check-lg"></i>
 				{{ lang.mod_user.admin.edit_user }}
 			</button>
@@ -398,6 +408,92 @@
 {% block scripts %}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	<script>
+		const editForm = document.getElementById('editForm');
+		const submitButton = document.getElementById('editSubmitButton');
+		const errorBanner = document.getElementById('errorBanner');
+		const errorList = document.getElementById('errorList');
+		const errorDetails = document.getElementById('errorDetails');
+		const copyErrorsButton = document.getElementById('copyErrorsButton');
+		const defaultSubmitHtml = submitButton ? submitButton.innerHTML : '';
+
+		function buildErrorMarkup(errors) {
+			return errors.map((error) => {
+				const row = document.createElement('div');
+				row.style.display = 'flex';
+				row.style.alignItems = 'center';
+				row.style.gap = '12px';
+				row.style.fontSize = '14px';
+				row.style.marginBottom = '4px';
+
+				const icon = document.createElement('i');
+				icon.className = 'bi bi-exclamation-circle-fill';
+
+				const text = document.createElement('span');
+				text.textContent = error;
+
+				row.appendChild(icon);
+				row.appendChild(text);
+
+				return row;
+			});
+		}
+
+		function showErrors(message, errors, rawDetails = '') {
+			if (!errorBanner || !errorList || !errorDetails) {
+				return;
+			}
+
+			const normalizedErrors = [];
+			if (message) {
+				normalizedErrors.push(message);
+			}
+			(errors || []).forEach((error) => {
+				if (error && !normalizedErrors.includes(error)) {
+					normalizedErrors.push(error);
+				}
+			});
+
+			if (!normalizedErrors.length) {
+				normalizedErrors.push('{{ lang.mod_user.ajax.error }}');
+			}
+
+			errorList.innerHTML = '';
+			buildErrorMarkup(normalizedErrors).forEach((node) => errorList.appendChild(node));
+			errorDetails.value = rawDetails ? `${normalizedErrors.join('\n')}\n\n${rawDetails}` : normalizedErrors.join('\n');
+			errorBanner.style.display = 'block';
+			errorBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+
+		function clearErrors() {
+			if (!errorBanner || !errorList || !errorDetails) {
+				return;
+			}
+
+			errorBanner.style.display = 'none';
+			errorList.innerHTML = '';
+			errorDetails.value = '';
+		}
+
+		async function copyErrorsToClipboard() {
+			if (!errorDetails || !errorDetails.value) {
+				return;
+			}
+
+			try {
+				await navigator.clipboard.writeText(errorDetails.value);
+			} catch (error) {
+				errorDetails.focus();
+				errorDetails.select();
+				document.execCommand('copy');
+			}
+
+			Swal.fire('{{ lang.mod_user.ajax.success }}', '{{ lang.mod_user.ajax.errors_copied }}', 'success');
+		}
+
+		if (copyErrorsButton) {
+			copyErrorsButton.addEventListener('click', copyErrorsToClipboard);
+		}
+
 		function previewAvatar(input) {
 			if (input.files && input.files[0]) {
 				var reader = new FileReader();
@@ -457,6 +553,54 @@
 					counter.style.color = 'var(--md-sys-color-on-surface-variant)';
 				}
 			}
+		}
+
+		if (editForm && submitButton) {
+			editForm.addEventListener('submit', async (event) => {
+				event.preventDefault();
+				clearErrors();
+
+				submitButton.disabled = true;
+				submitButton.innerHTML = '<i class="bi bi-arrow-repeat"></i> {{ lang.mod_user.js.updating }}';
+
+				const formData = new FormData(editForm);
+				formData.append('ajax_request', 'true');
+
+				try {
+					const response = await fetch(window.location.href, {
+						method: 'POST',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest',
+							'Accept': 'application/json'
+						},
+						body: formData
+					});
+					const rawResponse = await response.text();
+					let data;
+
+					try {
+						data = JSON.parse(rawResponse);
+					} catch (error) {
+						showErrors('{{ lang.mod_user.ajax.error }}', ['{{ lang.mod_user.ajax.unexpected_response }}'], rawResponse);
+						return;
+					}
+
+					if (!response.ok || !data.success) {
+						showErrors(data.message || '{{ lang.mod_user.ajax.error }}', data.errors || [], rawResponse);
+						return;
+					}
+
+					Swal.fire('{{ lang.mod_user.ajax.success }}', data.message || '{{ lang.mod_user.admin.updated }}', 'success');
+					setTimeout(() => {
+						window.location.href = data.redirect || '{{ site.sadres }}mod_user/list';
+					}, 1200);
+				} catch (error) {
+					showErrors('{{ lang.mod_user.ajax.connection_error }}', [error.message || '{{ lang.mod_user.ajax.connection_error }}']);
+				} finally {
+					submitButton.disabled = false;
+					submitButton.innerHTML = defaultSubmitHtml;
+				}
+			});
 		}
 	</script>
 {% endblock %}
