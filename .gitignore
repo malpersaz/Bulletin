@@ -20,8 +20,9 @@ db_data/
 .DS_Store
 Thumbs.db
 
-# Project configs (optional: hide secrets if needed)
-# config/db.config.php
+# Project configs and runtime databases
+config/db.config.local.php
+data/*.sqlite
 
 # Codex local metadata
 .codex

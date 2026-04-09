@@ -9,7 +9,7 @@ class InstallerConfigWriter
 
     public function __construct($configPath = null)
     {
-        $this->configPath = $configPath ?: root_dir . 'config/db.config.php';
+        $this->configPath = $configPath ?: root_dir . 'config/db.config.local.php';
     }
 
     /**
@@ -38,7 +38,7 @@ class InstallerConfigWriter
             $content .= "    'installed' => array(\n";
             $content .= "        'adapter' => 'PDO_SQLITE',\n";
             $content .= "        'conf' => array(\n";
-            $content .= "            'database_path' => root_dir . '" . $normalized['database_path'] . "',\n";
+            $content .= "            'database_path' => " . $this->renderDatabasePathExpression($normalized['database_path']) . ",\n";
             $content .= "        )\n";
             $content .= "    ),\n";
         } else {
@@ -111,31 +111,29 @@ class InstallerConfigWriter
 
     private function normalizeSqlitePath($path)
     {
-        $path = trim(str_replace('\\', '/', $path));
+        $path = installer_normalize_path_string(trim((string) $path));
         if ($path === '') {
             $path = installer_default_sqlite_path();
         }
 
-        $path = ltrim($path, '/');
-        $segments = explode('/', $path);
-        $normalizedSegments = array();
-
-        foreach ($segments as $segment) {
-            if ($segment === '' || $segment === '.') {
-                continue;
-            }
-
-            if ($segment === '..') {
-                throw new InvalidArgumentException('SQLite database path cannot leave the project root.');
-            }
-
-            $normalizedSegments[] = $segment;
-        }
-
-        if (empty($normalizedSegments)) {
+        $resolvedPath = installer_resolve_sqlite_path($path);
+        if ($resolvedPath === '') {
             throw new InvalidArgumentException('SQLite database path is invalid.');
         }
 
-        return implode('/', $normalizedSegments);
+        if (installer_path_is_within($resolvedPath, root_dir)) {
+            throw new InvalidArgumentException('SQLite database path must stay outside the project root.');
+        }
+
+        return $path;
+    }
+
+    private function renderDatabasePathExpression($path)
+    {
+        if (installer_is_absolute_path($path)) {
+            return "'" . addslashes($path) . "'";
+        }
+
+        return "root_dir . '" . addslashes($path) . "'";
     }
 }

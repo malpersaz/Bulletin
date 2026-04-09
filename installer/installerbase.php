@@ -29,7 +29,83 @@ function installer_site_build_file_token()
 
 function installer_default_sqlite_path()
 {
-    return 'data/' . installer_site_build_file_token() . '.sqlite';
+    return '../storage/sqlite/' . installer_site_build_file_token() . '.sqlite';
+}
+
+function installer_is_absolute_path($path)
+{
+    return is_string($path) && preg_match('#^(?:/|[A-Za-z]:[\\\\/])#', $path) === 1;
+}
+
+function installer_normalize_path_string($path)
+{
+    $path = str_replace('\\', '/', (string) $path);
+    $isAbsolute = installer_is_absolute_path($path);
+    $prefix = '';
+
+    if ($isAbsolute) {
+        if (preg_match('#^[A-Za-z]:/#', $path) === 1) {
+            $prefix = substr($path, 0, 2);
+            $path = substr($path, 2);
+        }
+
+        $path = '/' . ltrim($path, '/');
+    }
+
+    $segments = explode('/', $path);
+    $normalized = array();
+
+    foreach ($segments as $segment) {
+        if ($segment === '' || $segment === '.') {
+            continue;
+        }
+
+        if ($segment === '..') {
+            if (!empty($normalized) && end($normalized) !== '..') {
+                array_pop($normalized);
+                continue;
+            }
+
+            if (!$isAbsolute) {
+                $normalized[] = '..';
+            }
+
+            continue;
+        }
+
+        $normalized[] = $segment;
+    }
+
+    $normalizedPath = implode('/', $normalized);
+
+    if ($isAbsolute) {
+        return $prefix . '/' . $normalizedPath;
+    }
+
+    return $normalizedPath;
+}
+
+function installer_resolve_sqlite_path($path)
+{
+    $path = installer_normalize_path_string($path);
+
+    if ($path === '') {
+        $path = installer_default_sqlite_path();
+    }
+
+    if (installer_is_absolute_path($path)) {
+        return installer_normalize_path_string($path);
+    }
+
+    return installer_normalize_path_string(root_dir . $path);
+}
+
+function installer_path_is_within($path, $basePath)
+{
+    $path = rtrim(installer_normalize_path_string($path), '/');
+    $basePath = rtrim(installer_normalize_path_string($basePath), '/');
+
+    return $path === $basePath || strpos($path . '/', $basePath . '/') === 0;
 }
 
 function installer_replace_build_name($value)

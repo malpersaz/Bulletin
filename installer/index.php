@@ -5,6 +5,11 @@ $bootstrapDbConfig = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTO
 if (!file_exists($bootstrapDbConfig)) {
     $stubConfig = "<?php\n\n";
     $stubConfig .= "if (defined('root_dir') === False) exit(':)');\n\n";
+    $stubConfig .= "\$localConfig = __DIR__ . DIRECTORY_SEPARATOR . 'db.config.local.php';\n";
+    $stubConfig .= "if (file_exists(\$localConfig)) {\n";
+    $stubConfig .= "    require_once \$localConfig;\n";
+    $stubConfig .= "    return;\n";
+    $stubConfig .= "}\n\n";
     $stubConfig .= "\$db = array();\n";
     $stubConfig .= "Kayit::ekle('database', 'installed');\n";
     $stubConfig .= "Kayit::ekle('db_config', \$db);\n";
@@ -352,15 +357,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ));
 
             if ($dbParams['adapter'] === 'PDO_SQLITE') {
-                $fullPath = root_dir . $dbParams['database_path'];
+                $fullPath = installer_resolve_sqlite_path($dbParams['database_path']);
                 $dir = dirname($fullPath);
                 if (!is_dir($dir)) {
-                    mkdir($dir, 0777, true);
+                    if (!mkdir($dir, 0750, true) && !is_dir($dir)) {
+                        throw new RuntimeException("Directory could not be created: " . $dir);
+                    }
                 }
                 if (!is_writable($dir)) {
                     throw new RuntimeException("Directory not writable: " . $dir);
                 }
                 new PDO("sqlite:" . $fullPath);
+                @chmod($dir, 0750);
+                if (file_exists($fullPath)) {
+                    @chmod($fullPath, 0640);
+                }
             } elseif ($dbParams['adapter'] === 'PDO_MYSQL') {
                 $dsn = "mysql:host=" . $dbParams['host'] . ";dbname=" . $dbParams['database'];
                 $options = array(PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5);

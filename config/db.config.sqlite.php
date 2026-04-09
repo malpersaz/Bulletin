@@ -21,7 +21,7 @@ $db = array(
     'localhost' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/data.sqlite',
+            'database_path' => root_dir . '../storage/sqlite/data.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),

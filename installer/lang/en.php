@@ -154,7 +154,7 @@ $installerLang = [
         'errors' => [
             'resolve_environment' => 'Resolve the blocking environment checks before continuing.',
             'blocked_install' => 'Installation cannot start while environment checks are blocked.',
-            'database_write_failed' => 'The installer could not write config/db.config.php. Check config directory permissions.',
+            'database_write_failed' => 'The installer could not write config/db.config.local.php. Check config directory permissions.',
             'database_connect_failed' => 'Database connection test failed: %s',
             'database_invalid_adapter' => 'Select a supported database engine.',
         ],

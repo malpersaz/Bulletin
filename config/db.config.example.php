@@ -7,7 +7,7 @@
  * Telif Hakkı:AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Dosya:db.config.php
+ * Dosya:db.config.local.php
  * Açıklama:Database Bağlantı Bilgileri
  */
 if (defined('root_dir') === False) exit(':)');
@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/AKMbusiness.sqlite',
+            'database_path' => root_dir . '../storage/sqlite/AKMbusiness.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),
