@@ -3,9 +3,16 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.54.1`.
+- The current Git-detected active version code is `v1.0.54.3`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.54.3
+- Active version bucket derived from the latest Git history; latest uploaded commit is `e97291a` with version `v1.0.54.3`.
+- **I18n Bootstrap Demotion**: Refactored [`config/i18n.config.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/config/i18n.config.php) so it no longer publishes a canonical `valid_lang` runtime list and now serves only as fallback bootstrap state through `i18n_bootstrap`.
+- **Runtime Language Registry Keys**: Updated [`lib/Amed.class.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/lib/Amed.class.php) to publish runtime language state through `active_langs`, `default_lang`, and `site.available_languages`, while keeping database-backed language rows authoritative whenever the registry is reachable.
+- **Admin Language State Consistency**: Updated [`mod/lang/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/lang/index.php) so language-management actions refresh the new runtime keys without overwriting the current interface language, preventing the language panel from collapsing current-language state into the default-language state.
+- **Default-Language Consumer Cleanup**: Reworked active consumers in [`mod/mod_settings/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/mod_settings/index.php) and [`mod/index/index.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/mod/index/index.php) to stop deriving defaults from the first active language and instead use the explicit runtime `default_lang` plus `active_langs` registry keys.
 
 ## v1.0.54.1
 - Active version bucket derived from the latest Git history and reserved for upcoming development notes until a newer Git upload version appears or the user explicitly assigns another version code.

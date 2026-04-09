@@ -207,7 +207,7 @@
             },
             filter: {
                 default_sort: '{{ active_module_lang.ui.default_sort|e("js") }}',
-                default_lang: '{{ site.lang|lower }}'
+                default_lang: '{{ (site.default_lang is defined ? site.default_lang : site.lang)|lower }}'
             },
             ui: {
                 select: '{{ active_module_lang.ui.select|e("js") }}',

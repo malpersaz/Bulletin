@@ -16,16 +16,42 @@ class Amed
     private $site;
     private $url;
 
-    private function getFallbackValidLanguages()
+    private function getBootstrapLanguageState()
     {
-        $validLangs = Kayit::getir('valid_lang');
-        return is_array($validLangs) && !empty($validLangs) ? array_values($validLangs) : array('ku');
+        $bootstrap = Kayit::getir('i18n_bootstrap');
+        $fallback = array(
+            'default_language' => 'ku',
+            'active_codes' => array('ku'),
+        );
+
+        if (!is_array($bootstrap)) {
+            return $fallback;
+        }
+
+        $activeCodes = array();
+        if (isset($bootstrap['active_langs']) && is_array($bootstrap['active_langs'])) {
+            $activeCodes = array_values(array_unique(array_filter($bootstrap['active_langs'], 'is_string')));
+        }
+
+        if (empty($activeCodes)) {
+            $activeCodes = $fallback['active_codes'];
+        }
+
+        $defaultLanguage = isset($bootstrap['default_lang']) && is_string($bootstrap['default_lang']) && in_array($bootstrap['default_lang'], $activeCodes, TRUE)
+            ? $bootstrap['default_lang']
+            : $activeCodes[0];
+
+        return array(
+            'default_language' => $defaultLanguage,
+            'active_codes' => $activeCodes,
+        );
     }
 
     private function buildLanguageRegistryState()
     {
-        $fallbackCodes = $this->getFallbackValidLanguages();
-        $defaultLanguage = isset($this->site['lang']) ? (string) $this->site['lang'] : $fallbackCodes[0];
+        $bootstrapState = $this->getBootstrapLanguageState();
+        $fallbackCodes = $bootstrapState['active_codes'];
+        $defaultLanguage = $bootstrapState['default_language'];
         $state = array(
             'active_codes' => $fallbackCodes,
             'default_language' => $defaultLanguage,
@@ -74,6 +100,15 @@ class Amed
         return $state;
     }
 
+    private function publishLanguageRegistryState(array $languageState)
+    {
+        $this->site['default_lang'] = $languageState['default_language'];
+        $this->site['available_languages'] = $languageState['available_languages'];
+
+        Kayit::yenile('active_langs', $languageState['active_codes']);
+        Kayit::yenile('default_lang', $languageState['default_language']);
+    }
+
     public function __construct()
     {
         Load::lib('Session');
@@ -82,9 +117,7 @@ class Amed
         $this->site = Kayit::getir('site_config');
         $languageState = $this->buildLanguageRegistryState();
         $this->site['lang'] = $languageState['default_language'];
-        $this->site['available_languages'] = $languageState['available_languages'];
-        Kayit::yenile('valid_lang', $languageState['active_codes']);
-        Kayit::yenile('default_lang', $languageState['default_language']);
+        $this->publishLanguageRegistryState($languageState);
 
         try {
             $settings_model = Load::model('mod_settings');
@@ -101,10 +134,10 @@ class Amed
                 $lang_model = Load::model('lang');
                 $lang_model->all();
                 $available_langs = [];
-                $valid_langs = Kayit::getir('valid_lang');
+                $active_langs = Kayit::getir('active_langs');
                 if ($lang_model->getSize() > 0) {
                     foreach ($lang_model->toArray() as $l) {
-                        if (in_array($l['seo'], $valid_langs)) {
+                        if (is_array($active_langs) && in_array($l['seo'], $active_langs, TRUE)) {
                             $available_langs[] = ['code' => $l['seo'], 'name' => $l['name']];
                         }
                     }
@@ -119,12 +152,14 @@ class Amed
         }
 
         if (Kayit::getir('i18n') === true) {
-            if (in_array($this->url->path['0'], Kayit::getir('valid_lang'))) {
+            $activeLangs = Kayit::getir('active_langs');
+            if (is_array($activeLangs) && in_array($this->url->path['0'], $activeLangs, TRUE)) {
                 $this->site['lang'] = $this->url->path['0'];
                 $this->site['sadres'] = $this->site['adres'] . $this->url->path['0'] . '/';
                 $lang_len = mb_strlen($this->url->path['0'], "UTF-8");
                 $this->url->link = substr($this->url->link, $lang_len + 1);
             } else {
+                $this->site['lang'] = isset($this->site['default_lang']) ? $this->site['default_lang'] : $this->site['lang'];
                 $this->site['sadres'] = $this->site['adres'] . $this->site['lang'] . '/';
             }
             Kayit::yenile('lang', $this->site['lang']);

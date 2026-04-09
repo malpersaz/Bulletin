@@ -16,10 +16,12 @@ class mod_settings_mod extends indexMain
         $this->tema = Load::lib('AdminTemplate');
         $this->db = Load::lib('Database');
 
-        // Load language based on selected language
-        // Dynamic fallback: Use first valid language or 'en'
-        $valid_langs = Kayit::getir('valid_lang');
-        $default_lang = (is_array($valid_langs) && isset($valid_langs[0])) ? $valid_langs[0] : 'en';
+        // Load language based on the current interface language.
+        // Use the explicit runtime default language when the request does not provide one.
+        $default_lang = Kayit::getir('default_lang');
+        if (!is_string($default_lang) || $default_lang === '') {
+            $default_lang = 'en';
+        }
         
         $selected_lang = $this->site['lang'] ?? $default_lang; // Will be updated later
         $this->lang = Load::lang('mod_settings');
@@ -66,10 +68,11 @@ class mod_settings_mod extends indexMain
         if ($lang && !empty($lang)) {
             $selected_lang = $lang;
         } else {
-            // For admin settings, use dynamic default if available
-            $valid_langs = Kayit::getir('valid_lang');
-            $default_lang = (is_array($valid_langs) && isset($valid_langs[0])) ? $valid_langs[0] : 'en';
-            $selected_lang = $default_lang;
+            // For admin settings, prefer the explicit runtime default language.
+            $selected_lang = Kayit::getir('default_lang');
+            if (!is_string($selected_lang) || $selected_lang === '') {
+                $selected_lang = 'en';
+            }
             $lang_exists = false;
             foreach ($langs as $lang_item) {
                 if ($lang_item['seo'] === $selected_lang) {

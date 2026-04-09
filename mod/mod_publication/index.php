@@ -426,15 +426,15 @@ class mod_publication_mod extends indexMain
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
                 exit;
             }
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('hatalar', $this->val->errors);
         } else {
             $this->mod_publication_model = Load::model('mod_publication');
 
@@ -564,7 +564,7 @@ class mod_publication_mod extends indexMain
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->tema->veri('hatalar', $this->val->errors);
         } else {
             $this->mod_publication_model = Load::model('mod_publication');
 

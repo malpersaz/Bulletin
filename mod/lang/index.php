@@ -161,7 +161,7 @@ class lang_mod extends indexMain
         $languages = $this->getLanguages();
         $activeCodes = array();
         $availableLanguages = array();
-        $defaultLanguage = $forcedDefaultLanguage !== null ? $forcedDefaultLanguage : $this->site['lang'];
+        $defaultLanguage = $forcedDefaultLanguage !== null ? $forcedDefaultLanguage : (isset($this->site['default_lang']) ? $this->site['default_lang'] : $this->site['lang']);
 
         foreach ($languages as $language) {
             if (!isset($language['status']) || $language['status'] === 'y') {
@@ -181,15 +181,16 @@ class lang_mod extends indexMain
             $activeCodes = array($defaultLanguage);
         }
 
-        $this->site['lang'] = $defaultLanguage;
+        $this->site['default_lang'] = $defaultLanguage;
         $this->site['available_languages'] = $availableLanguages;
 
-        Kayit::yenile('valid_lang', array_values(array_unique($activeCodes)));
+        Kayit::yenile('active_langs', array_values(array_unique($activeCodes)));
         Kayit::yenile('default_lang', $defaultLanguage);
+        Kayit::yenile('lang', isset($this->site['lang']) ? $this->site['lang'] : $defaultLanguage);
 
         $siteConfig = Kayit::getir('site_config');
         if (is_array($siteConfig)) {
-            $siteConfig['lang'] = $defaultLanguage;
+            $siteConfig['default_lang'] = $defaultLanguage;
             $siteConfig['available_languages'] = $availableLanguages;
             Kayit::yenile('site_config', $siteConfig);
         }

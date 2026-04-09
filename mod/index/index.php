@@ -410,8 +410,12 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>';
         echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         
-        $valid_langs = Kayit::getir('valid_lang');
-        foreach ($valid_langs as $l) {
+        $active_langs = Kayit::getir('active_langs');
+        if (!is_array($active_langs)) {
+            $active_langs = array();
+        }
+
+        foreach ($active_langs as $l) {
             if ($this->isFeatureReady('news.latest')) {
                 echo '<sitemap>
                         <loc>' . $this->site['adres'] . $l . '/newsSitemap.xml</loc>
@@ -551,7 +555,7 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        if ($this->site['lang'] == Kayit::getir('valid_lang')[0]) {
+        if ($this->site['lang'] == Kayit::getir('default_lang')) {
             echo '<url>
                       <loc>' . $this->site['adres'] . '</loc>
                       <priority>1.0</priority>

@@ -33,6 +33,7 @@ if ($host == 'localhost'
 $site['css'] = 'static/css/';
 $site['js'] = 'static/js/';
 $site['lang'] = 'en';
+$site['default_lang'] = $site['lang'];
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
@@ -61,6 +62,7 @@ Kayit::ekle('app_default_mod', 'index');
 Kayit::ekle('app_default_function', 'index');
 // Site Lang
 Kayit::ekle('lang', $site['lang']);
+Kayit::ekle('default_lang', $site['default_lang']);
 
 Kayit::ekle('site_config', $site);
 unset($site);

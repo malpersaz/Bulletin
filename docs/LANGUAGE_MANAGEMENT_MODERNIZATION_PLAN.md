@@ -2,15 +2,15 @@
 
 ## Status Snapshot
 
-Implementation status for the current repository as of `v1.0.53.52`:
+Implementation status for the current repository as of `v1.0.54.3`:
 
-- `Current`: installer seeds language rows into the `lang` table with only `name` and `seo`
-- `Current`: runtime language validation still depends on the static `valid_lang` list in [`config/i18n.config.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/config/i18n.config.php)
-- `Current`: installer collects a project default language, but that choice is not yet promoted into a canonical language-management state
-- `Current`: many modules read available languages from the `lang` table, but there is no admin control for active versus inactive languages or a single default language
-- `Gap`: the system has no canonical database-backed language lifecycle model
-- `Gap`: the system has no phone-first admin surface for language activation, deactivation, or default-language switching
-- `Gap`: runtime and installer behavior are not yet aligned to the same language source of truth
+- `Current`: installer seeds and synchronizes the `lang` table with `name`, `seo`, `status`, and `is_default`
+- `Current`: runtime language resolution reads active and default languages from the database-backed registry when it is available
+- `Current`: [`config/i18n.config.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/config/i18n.config.php) now acts as fallback bootstrap state only through `i18n_bootstrap`
+- `Current`: the admin language panel exists and can activate, deactivate, and switch the default language from a phone-first surface
+- `Gap`: some legacy module flows still need to stop treating the current interface language as an implicit default-language proxy
+- `Gap`: not every admin or content-maintenance flow has been reviewed yet for strict active-language-only selection rules
+- `Gap`: runtime, installer, and all module flows are closer to one source of truth, but the remaining legacy consumers still need systematic cleanup
 
 ## Goal
 
@@ -52,8 +52,8 @@ Primary problems:
 
 - the `lang` table is not yet designed as a lifecycle-managed registry
 - installer seeding is too limited for post-install language administration
-- `config/i18n.config.php` still acts as a static gatekeeper for valid languages
-- runtime route parsing in [`lib/Amed.class.php`](/home/malpersaz/Desktop/projects/htdocs/Rojname/lib/Amed.class.php) is constrained by that static list
+- some legacy flows still assume the first language-like runtime value is also the default language
+- some module flows still need explicit review to ensure they consume active versus inactive languages intentionally
 - admin code cannot reliably distinguish:
   - all known languages
   - active languages
@@ -98,7 +98,7 @@ Behavior rules:
 
 ### Runtime Language Resolution
 
-Runtime language resolution should no longer treat `config/i18n.config.php` as the canonical valid-language list.
+Runtime language resolution must not treat `config/i18n.config.php` as the canonical valid-language list.
 
 Target runtime behavior:
 
