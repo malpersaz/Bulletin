@@ -297,6 +297,7 @@ $lang['mod_user']['register'] = [
         'name_invalid_chars' => 'There are invalid characters in your name',
         'surname_invalid_chars' => 'There are invalid characters in your surname',
         'username_length' => 'Your username can be 2 to 12 characters',
+        'username_length_error' => 'Your username can be 2 to 20 characters',
         'username_invalid_chars' => 'Your username can consist of a-z A-Z 0-9 characters',
         'password_length' => 'Your password can be 6 to 16 characters',
         'invalid_email' => 'Please specify a valid e-mail address',

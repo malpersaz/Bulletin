@@ -181,6 +181,7 @@ $lang['mod_user'] = [
             'name_invalid_chars' => 'Di navê te de karakterên ne derbasdar hene',
             'surname_invalid_chars' => 'Di paşnavê te de karakterên ne derbasdar hene',
             'username_length' => 'Navê bikarhêner dikare herî kêm 2 û herî pir 12 karakter be',
+            'username_length_error' => 'Navê bikarhêner dikare herî kêm 2 û herî pir 20 karakter be',
             'username_invalid_chars' => 'Navê bikarhêner tenê ji tîpên a-z A-Z 0-9 dikare pêk were',
             'password_length' => 'Şîfre dikare herî kêm 6 û herî pir 16 karakter be',
             'invalid_email' => 'Ji kerema xwe e-peyameke derbasdar binivîse',

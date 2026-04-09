@@ -8,6 +8,10 @@
 - Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
+## v1.0.54.10
+- Active version bucket derived from the current user-provided upload version code.
+- **Profile Update Username Validation Fix**: Added the missing `username_length_error` localization key across all active `mod_user` language files so self-profile and admin edit validators no longer trigger raw `Undefined array key` warnings when a username falls outside the allowed edit length.
+
 ## v1.0.54.9
 - Active version bucket derived from the current user-provided upload version code.
 - **Installer User Social Profiles**: Added a dedicated `mod_user_social` installer table and runtime model so each user can store platform-specific social links independently from the main `mod_user` record without future schema churn.

@@ -182,6 +182,7 @@ $lang['mod_user'] = [
             'name_invalid_chars' => 'Adınızda Geçersiz Karekterler Bulunmakta',
             'surname_invalid_chars' => 'Soyadınızda Geçersiz Karekterler Bulunmakta',
             'username_length' => 'Kullanıcı Adınız En Az 2 En Fazla 12 Karekterden Oluşabilir',
+            'username_length_error' => 'Kullanıcı Adınız En Az 2 En Fazla 20 Karekterden Oluşabilir',
             'username_invalid_chars' => 'Kullanıcı Adınız a-z A-Z 0-9 Karekterlerinden Oluşabilir',
             'password_length' => 'Şifreniz En Az 6 En Fazla 16 Karekterden Oluşabilir',
             'invalid_email' => 'Lütfen Geçerli Bir E-Posta Adresi Belirtin',

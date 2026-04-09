@@ -181,6 +181,7 @@ $lang['mod_user'] = [
             'name_invalid_chars' => 'Adınızda geçersiz karakterler bulunmakta',
             'surname_invalid_chars' => 'Soyadınızda geçersiz karakterler bulunmakta',
             'username_length' => 'Kullanıcı adınız 2 ile 12 karakter arası olabilir',
+            'username_length_error' => 'Kullanıcı adınız 2 ile 20 karakter arası olabilir',
             'username_invalid_chars' => 'Kullanıcı adınız a-z A-Z 0-9 karakterlerinden oluşabilir',
             'password_length' => 'Şifreniz 6 ile 16 karakter arası olabilir',
             'invalid_email' => 'Lütfen geçerli bir e-posta adresi belirtin',
