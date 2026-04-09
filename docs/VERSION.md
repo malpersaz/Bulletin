@@ -8,6 +8,10 @@
 - Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
+## v1.0.54.12
+- Active version bucket derived from the next upload after Git-published `v1.0.54.11`.
+- **Admin User Edit AJAX Submit Flag Fix**: Added the missing `edit` submit field to the AJAX payload for the admin user edit form so the backend enters the real update branch and returns structured JSON instead of rendering the full HTML page as an unexpected response.
+
 ## v1.0.54.11
 - Active version bucket derived from the next upload after Git-published `v1.0.54.10`.
 - **Admin User Edit Error-Key Fix**: Added the missing top-level `mod_user.error` username validation keys used by the admin `mod_user/list` edit flow so localized update errors resolve through the correct runtime branch instead of falling through to raw `Undefined array key` warnings.

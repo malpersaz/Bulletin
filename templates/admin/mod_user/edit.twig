@@ -564,6 +564,7 @@
 				submitButton.innerHTML = '<i class="bi bi-arrow-repeat"></i> {{ lang.mod_user.js.updating }}';
 
 				const formData = new FormData(editForm);
+				formData.append('edit', '{{ lang.mod_user.admin.edit_user }}');
 				formData.append('ajax_request', 'true');
 
 				try {
