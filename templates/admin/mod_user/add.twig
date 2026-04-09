@@ -132,7 +132,7 @@
 			{% endif %}
 
 			<form method="POST" action="" id="addForm" enctype="multipart/form-data">
-				{# Card 1: Hesab (Account) #}
+				{# Card 1: Account #}
 					<div class="edit-card">
 					<div class="form-row">
 						<div class="m3-input-wrapper">
@@ -188,7 +188,7 @@
 					</div>
 				</div>
 
-				{# Card 2: Agahiyên Kesane (Personal Info) #}
+				{# Card 2: Personal Info #}
 					<div class="edit-card" style="margin-top: 16px;">
 						<div class="contact-grid">
 							<div class="form-row">
@@ -223,7 +223,7 @@
 						</div>
 					</div>
 
-				{# Card 3: Nivîskar û Derbarê (Author Info) #}
+				{# Card 3: Author Profile #}
 					<div class="edit-card" style="margin-top: 16px;">
 					<div class="form-row">
 						<div class="m3-input-wrapper">
@@ -243,7 +243,16 @@
 					</div>
 				</div>
 
-				{# Card 4: Wêne (Image) #}
+				{# Card 4: Social Media #}
+				<div class="edit-card" style="margin-top: 16px;">
+					<label class="filter-group-label">{{ lang.mod_user.admin.social_media }}</label>
+					{% include 'mod_user/parts/social_links.twig' with {
+                        'social_platforms': social_platforms,
+                        'social_links': social_links
+                    } %}
+				</div>
+
+				{# Card 5: Image #}
 					<div class="edit-card" style="margin-top: 16px;">
 					<div class="form-row">
 						<div class="m3-input-wrapper">

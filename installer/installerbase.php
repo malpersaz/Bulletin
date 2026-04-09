@@ -29,7 +29,22 @@ function installer_site_build_file_token()
 
 function installer_default_sqlite_path()
 {
+    $preferred = installer_preferred_external_sqlite_path();
+    if (installer_sqlite_path_is_preparable($preferred)) {
+        return $preferred;
+    }
+
+    return 'data/sqlite/' . installer_site_build_file_token() . '.sqlite';
+}
+
+function installer_preferred_external_sqlite_path()
+{
     return '../storage/sqlite/' . installer_site_build_file_token() . '.sqlite';
+}
+
+function installer_internal_sqlite_base_path()
+{
+    return root_dir . 'data/sqlite';
 }
 
 function installer_is_absolute_path($path)
@@ -100,12 +115,110 @@ function installer_resolve_sqlite_path($path)
     return installer_normalize_path_string(root_dir . $path);
 }
 
+function installer_sqlite_directory_candidates($path = null)
+{
+    $path = $path ?: installer_default_sqlite_path();
+    $resolvedPath = installer_resolve_sqlite_path($path);
+    $resolvedDirectory = installer_normalize_path_string(dirname($resolvedPath));
+
+    return array(
+        'resolved_path' => $resolvedPath,
+        'resolved_directory' => $resolvedDirectory,
+        'internal_directory' => installer_normalize_path_string(installer_internal_sqlite_base_path()),
+    );
+}
+
+function installer_find_writable_parent_directory($path)
+{
+    $path = installer_normalize_path_string($path);
+    while ($path !== '' && $path !== '.' && $path !== '/' && !is_dir($path)) {
+        $parent = dirname($path);
+        if ($parent === $path) {
+            break;
+        }
+
+        $path = installer_normalize_path_string($parent);
+    }
+
+    return $path;
+}
+
+function installer_sqlite_path_is_preparable($path)
+{
+    $resolvedDirectory = installer_sqlite_directory_candidates($path)['resolved_directory'];
+    if (is_dir($resolvedDirectory)) {
+        return is_writable($resolvedDirectory);
+    }
+
+    $parent = installer_find_writable_parent_directory($resolvedDirectory);
+    if ($parent === '' || $parent === '.' || !is_dir($parent)) {
+        return false;
+    }
+
+    return is_writable($parent);
+}
+
 function installer_path_is_within($path, $basePath)
 {
     $path = rtrim(installer_normalize_path_string($path), '/');
     $basePath = rtrim(installer_normalize_path_string($basePath), '/');
 
     return $path === $basePath || strpos($path . '/', $basePath . '/') === 0;
+}
+
+function installer_is_allowed_sqlite_path($path)
+{
+    $resolvedPath = installer_normalize_path_string($path);
+    if ($resolvedPath === '') {
+        return false;
+    }
+
+    if (!installer_path_is_within($resolvedPath, root_dir)) {
+        return true;
+    }
+
+    return installer_path_is_within($resolvedPath, installer_internal_sqlite_base_path());
+}
+
+function installer_is_internal_sqlite_path($path)
+{
+    $resolvedPath = installer_normalize_path_string($path);
+    if ($resolvedPath === '') {
+        return false;
+    }
+
+    return installer_path_is_within($resolvedPath, installer_internal_sqlite_base_path());
+}
+
+function installer_prepare_sqlite_directory($path)
+{
+    $resolvedPath = installer_resolve_sqlite_path($path);
+    $directory = installer_normalize_path_string(dirname($resolvedPath));
+    $isInternal = installer_is_internal_sqlite_path($resolvedPath);
+    $directoryMode = $isInternal ? 0777 : 0750;
+    $fileMode = $isInternal ? 0666 : 0640;
+
+    if (!is_dir($directory)) {
+        if (!@mkdir($directory, $directoryMode, true) && !is_dir($directory)) {
+            throw new RuntimeException("Directory could not be created: " . $directory);
+        }
+    }
+
+    if (!is_writable($directory) && $isInternal) {
+        @chmod($directory, $directoryMode);
+        clearstatcache(true, $directory);
+    }
+
+    if (!is_writable($directory)) {
+        throw new RuntimeException("Directory not writable: " . $directory);
+    }
+
+    return array(
+        'path' => $resolvedPath,
+        'directory' => $directory,
+        'directory_mode' => $directoryMode,
+        'file_mode' => $fileMode,
+    );
 }
 
 function installer_replace_build_name($value)

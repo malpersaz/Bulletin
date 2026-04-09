@@ -133,7 +133,8 @@ All agents should:
 When a task is completed and repository documentation is updated, agents must treat `/docs/VERSION.md` as the single version log.
 
 - Before appending any completed development note, inspect the latest Git-uploaded version code from the current repository history.
-- The active version bucket is the newest Git-uploaded version section in `/docs/VERSION.md`.
+- When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
+- If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target.
 - If that section does not exist yet, create it first and then append the note there.
 - A user-provided version code still overrides the auto-detected Git version for that task.
 

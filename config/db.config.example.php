@@ -2,13 +2,13 @@
 
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/26/11 - 1:58 PM
- * Telif Hakkı:AKM Software
+ * User: a.k.mutlu
+ * Date: 4/26/11 - 1:58 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Dosya:db.config.local.php
- * Açıklama:Database Bağlantı Bilgileri
+ * File: db.config.local.php
+ * Description: Database Connection Information
  */
 if (defined('root_dir') === False) exit(':)');
 
@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . '../storage/sqlite/AKMbusiness.sqlite',
+            'database_path' => root_dir . 'data/sqlite/AKMbusiness.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),

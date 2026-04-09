@@ -108,17 +108,13 @@
                                         <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message }}</span>
                                     </a>
                                 {% endif %}
-                                {% if author.twitter is defined and author.twitter is not empty %}
-                                    <span class="meta-divider">·</span>
-                                    <a class="author-social-link author-twitter" href="{{ author.twitter }}" target="_blank" rel="noopener">
-                                        <i class="bi bi-twitter-x"></i><span>X / X</span>
-                                    </a>
-                                {% endif %}
-                                {% if author.facebook is defined and author.facebook is not empty %}
-                                    <span class="meta-divider">·</span>
-                                    <a class="author-social-link author-facebook" href="{{ author.facebook }}" target="_blank" rel="noopener">
-                                        <i class="bi bi-facebook"></i><span>Facebook</span>
-                                    </a>
+                                {% if author_social_links is defined and author_social_links is not empty %}
+                                    {% for link in author_social_links %}
+                                        <span class="meta-divider">·</span>
+                                        <a class="author-social-link author-{{ link.platform }}" href="{{ link.url }}" target="_blank" rel="noopener">
+                                            <i class="{{ link.icon_class }}"></i><span>{{ link.label }}</span>
+                                        </a>
+                                    {% endfor %}
                                 {% endif %}
                             </div>
                         </div>

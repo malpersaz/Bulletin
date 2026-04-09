@@ -3,9 +3,21 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.54.5`.
-- Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
+- The current Git-detected active version code is `v1.0.54.8`.
+- When the current task represents a new upload after the latest Git-uploaded version, create the next version section first and append the completed notes under that new version code.
+- Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.54.9
+- Active version bucket derived from the current user-provided upload version code.
+- **Installer User Social Profiles**: Added a dedicated `mod_user_social` installer table and runtime model so each user can store platform-specific social links independently from the main `mod_user` record without future schema churn.
+- **User Admin Social Fields**: Extended the phone-first `mod_user` add, edit, and self-info admin flows with a reusable social-media input block that saves per-user links for X, Facebook, Instagram, LinkedIn, YouTube, Spotify, and TikTok.
+- **Author Page Social Wiring**: Updated the publication author flow to load user social links from `mod_user_social` and render all active author platforms on the public author page instead of relying on missing hard-coded `twitter` / `facebook` fields.
+- **Installer SQLite Path Fallback Hardening**: Reworked the installer's SQLite target selection so it still prefers `../storage/sqlite/` when that external directory can be prepared, but now automatically falls back to the protected in-project `data/sqlite/` area when sibling storage is not writable, and the installer no longer emits raw `mkdir(): Permission denied` warnings during directory creation failures.
+- **Installer SQLite Session Path Recovery**: Updated SQLite path normalization so an old installer session or posted form value that still carries `../storage/sqlite/...` now auto-recovers to the writable protected fallback path instead of failing with `Directory could not be created: /var/www/storage/sqlite`.
+
+## v1.0.54.8
+- Active version bucket derived from the latest Git history; latest uploaded commit is `10bd86c` with version `v1.0.54.8`.
 
 ## v1.0.54.5
 - Active version bucket derived from the current user request.

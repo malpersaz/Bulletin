@@ -887,6 +887,128 @@ class mod_user_mod extends indexMain
         return $actions;
     }
 
+    private function _get_social_platform_map()
+    {
+        return [
+            'twitter' => ['key' => 'twitter', 'label' => 'X / Twitter', 'icon_class' => 'bi bi-twitter-x', 'display_order' => 1],
+            'facebook' => ['key' => 'facebook', 'label' => 'Facebook', 'icon_class' => 'bi bi-facebook', 'display_order' => 2],
+            'instagram' => ['key' => 'instagram', 'label' => 'Instagram', 'icon_class' => 'bi bi-instagram', 'display_order' => 3],
+            'linkedin' => ['key' => 'linkedin', 'label' => 'LinkedIn', 'icon_class' => 'bi bi-linkedin', 'display_order' => 4],
+            'youtube' => ['key' => 'youtube', 'label' => 'YouTube', 'icon_class' => 'bi bi-youtube', 'display_order' => 5],
+            'spotify' => ['key' => 'spotify', 'label' => 'Spotify', 'icon_class' => 'bi bi-spotify', 'display_order' => 6],
+            'tiktok' => ['key' => 'tiktok', 'label' => 'TikTok', 'icon_class' => 'bi bi-tiktok', 'display_order' => 7],
+        ];
+    }
+
+    private function _get_social_platforms()
+    {
+        return array_values($this->_get_social_platform_map());
+    }
+
+    private function _blank_social_links()
+    {
+        $blank = [];
+        foreach ($this->_get_social_platform_map() as $platform => $meta) {
+            $blank[$platform] = '';
+        }
+
+        return $blank;
+    }
+
+    private function _extract_social_links($input)
+    {
+        $links = $this->_blank_social_links();
+        if (!is_array($input)) {
+            return $links;
+        }
+
+        foreach ($this->_get_social_platform_map() as $platform => $meta) {
+            if (isset($input[$platform])) {
+                $links[$platform] = trim((string) $input[$platform]);
+            }
+        }
+
+        return $links;
+    }
+
+    private function _normalize_social_url($url)
+    {
+        $url = trim((string) $url);
+        if ($url === '') {
+            return '';
+        }
+
+        if (preg_match('#^[a-z][a-z0-9+.-]*://#i', $url) !== 1) {
+            $url = 'https://' . ltrim($url, '/');
+        }
+
+        return filter_var($url, FILTER_SANITIZE_URL);
+    }
+
+    private function _save_social_links($userId, $input)
+    {
+        $userId = intval($userId);
+        $db = Load::lib('Database');
+        $db->query("DELETE FROM `mod_user_social` WHERE `user_id` = " . $userId);
+
+        $links = $this->_extract_social_links($input);
+        $social = Load::model('mod_user.mod_user_social');
+        foreach ($this->_get_social_platform_map() as $platform => $meta) {
+            $url = $this->_normalize_social_url($links[$platform]);
+            if ($url === '') {
+                continue;
+            }
+
+            $social->flush();
+            $social->user_id = $userId;
+            $social->platform = $platform;
+            $social->url = $url;
+            $social->icon_class = $meta['icon_class'];
+            $social->display_order = $meta['display_order'];
+            $social->is_active = 'y';
+
+            if ($social->save() === false) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function _load_social_links($userId)
+    {
+        $payload = [
+            'map' => $this->_blank_social_links(),
+            'items' => [],
+        ];
+
+        if (intval($userId) === 0) {
+            return $payload;
+        }
+
+        $social = Load::model('mod_user.mod_user_social');
+        $social->flush();
+        $social->where_user_id_and_is_active(intval($userId), 'y')->order('display_order', 'ASC')->gR();
+
+        if ($social->getSize() === 0) {
+            return $payload;
+        }
+
+        $platformMap = $this->_get_social_platform_map();
+        foreach ($social->toArray() as $row) {
+            if (!isset($platformMap[$row['platform']])) {
+                continue;
+            }
+
+            $payload['map'][$row['platform']] = $row['url'];
+            $payload['items'][] = array_merge($row, [
+                'label' => $platformMap[$row['platform']]['label'],
+            ]);
+        }
+
+        return $payload;
+    }
+
     // Helper: Prepare phone data for view
     private function _prepare_phone_data(&$d)
     {
@@ -926,7 +1048,8 @@ class mod_user_mod extends indexMain
         $d = [
             'username' => '', 'password' => '', 'email' => '', 
             'name' => '', 'last_name' => '', 'phone' => '', 'city' => '', 
-            'blog_name' => '', 'about' => '', 'status' => 'y'
+            'blog_name' => '', 'about' => '', 'status' => 'y',
+            'social_links' => $this->_blank_social_links()
         ];
 
         if (Req::is_Post('add')) {
@@ -945,6 +1068,7 @@ class mod_user_mod extends indexMain
         
         // Pass country codes
         $this->tema->veri('country_codes', $this->_get_country_codes());
+        $this->tema->veri('social_platforms', $this->_get_social_platforms());
         
         // Pass all data variables to template
         foreach($d as $k => $v) {
@@ -964,10 +1088,13 @@ class mod_user_mod extends indexMain
                 $d[$key] = Req::Post_Safe($key);
             }
         }
+        $d['social_links'] = $this->_extract_social_links($_POST['social_links'] ?? []);
 
         if ($this->val->check()) {
             $this->tema->veri('errors', $this->val->errors);
         } else {
+            $db = Load::lib('Database');
+            $db->start_transaction();
             $u = Load::model('mod_user');
             $u->username = Req::Post_Safe('username');
             $u->password = md5(Req::Post_Safe('password'));
@@ -1020,11 +1147,23 @@ class mod_user_mod extends indexMain
                 $u->image = ''; // Default empty string if no image uploaded
             }
 
-            if ($u->save()) {
+            if ($u->save(true)) {
+                if ($this->_save_social_links($u->id, $_POST['social_links'] ?? []) === false) {
+                    $db->rollback();
+                    $this->tema->veri('errors', ['Database Error: user social links could not be saved.']);
+                    return FALSE;
+                }
+
+                $db->commit();
                 $this->_mesaj($this->lang['mod_user']['admin']['added']);
-                // Clear form data on success
-                $d = array_fill_keys(array_keys($d), '');
+                $d = [
+                    'username' => '', 'password' => '', 'email' => '',
+                    'name' => '', 'last_name' => '', 'phone' => '', 'city' => '',
+                    'blog_name' => '', 'about' => '', 'status' => 'y',
+                    'social_links' => $this->_blank_social_links()
+                ];
             } else {
+                $db->rollback();
                 $this->tema->veri('errors', print_r($u, TRUE));
             }
         }
@@ -1086,6 +1225,7 @@ class mod_user_mod extends indexMain
         $u = Load::model('mod_user');
         $u->Getid($this->session->get('id'))->gRo();
         $d = $u->toArray();
+        $d['social_links'] = $this->_load_social_links($this->session->get('id'))['map'];
         
         // Use helper to parse phone data
         $this->_prepare_phone_data($d);
@@ -1096,6 +1236,7 @@ class mod_user_mod extends indexMain
         
         // Pass country codes
         $this->tema->veri('country_codes', $this->_get_country_codes());
+        $this->tema->veri('social_platforms', $this->_get_social_platforms());
         $this->tema->tpl('mod_user/info');
     }
 
@@ -1105,6 +1246,8 @@ class mod_user_mod extends indexMain
         if ($this->val->check()) {
             $this->tema->veri('errors', $this->val->errors);
         } else {
+            $db = Load::lib('Database');
+            $db->start_transaction();
             $u = Load::model('mod_user');
             $u->name = Req::Post_Safe('name');
             $u->last_name = Req::Post_Safe('last_name');
@@ -1151,9 +1294,14 @@ class mod_user_mod extends indexMain
                     unset($u->image);
                 }
             }
-            $u->update('id');
-            $this->session->set('full_name', Text::title($u->name . " " . $u->last_name));
-            $this->_mesaj($this->lang['mod_user']['info_updated_success']);
+            if ($u->update('id') && $this->_save_social_links($this->session->get('id'), $_POST['social_links'] ?? [])) {
+                $db->commit();
+                $this->session->set('full_name', Text::title($u->name . " " . $u->last_name));
+                $this->_mesaj($this->lang['mod_user']['info_updated_success']);
+            } else {
+                $db->rollback();
+                $this->tema->veri('errors', ['Database Error: profile data could not be updated.']);
+            }
         }
     }
 
@@ -1421,6 +1569,18 @@ class mod_user_mod extends indexMain
     {
         $this->i = Load::model('mod_user');
         foreach ($delete as $s) {
+            $social = Load::model('mod_user.mod_user_social');
+            $social->flush();
+            $social->where_user_id($s)->gR();
+            if ($social->getSize() !== 0) {
+                foreach ($social->toArray() as $socialRow) {
+                    $cleanup = Load::model('mod_user.mod_user_social');
+                    $cleanup->flush();
+                    $cleanup->id = $socialRow['id'];
+                    $cleanup->delete();
+                }
+            }
+
             $this->i->getid($s)->gRo()->sync()->delete();
 
             if ($this->i->image != '') {
@@ -1474,6 +1634,7 @@ class mod_user_mod extends indexMain
         $d = $this->i->getResultOne()->toArray();
         $d['username'] = Req::is_Post('username') ? Req::Post('username') : $d['username'];
         $d['email'] = Req::is_Post('email') ? Req::Post('email') : $d['email'];
+        $d['social_links'] = $this->_load_social_links($id)['map'];
         
         // Prepare phone data
         $this->_prepare_phone_data($d);
@@ -1490,6 +1651,7 @@ class mod_user_mod extends indexMain
         
         // Pass country codes
         $this->tema->veri('country_codes', $this->_get_country_codes());
+        $this->tema->veri('social_platforms', $this->_get_social_platforms());
         $this->tema->tpl('mod_user/edit');
     }
 
@@ -1502,6 +1664,8 @@ class mod_user_mod extends indexMain
         if ($this->val->check($id)) {
             $this->tema->veri('errors', $this->val->errors);
         } else {
+            $db = Load::lib('Database');
+            $db->start_transaction();
             $u = Load::model('mod_user');
             $u->id = $id;
             $u->username = Req::Post_Safe('username');
@@ -1551,10 +1715,12 @@ class mod_user_mod extends indexMain
                 }
             }
 
-            if ($u->update('id')) {
+            if ($u->update('id') && $this->_save_social_links($id, $_POST['social_links'] ?? [])) {
+                $db->commit();
                 $this->_mesaj($this->lang['mod_user']['admin']['updated']);
             } else {
-                $this->tema->veri('errors', ['Database Error: ' . $u->db->sql_error()]);
+                $db->rollback();
+                $this->tema->veri('errors', ['Database Error: user update could not be completed.']);
             }
         }
     }

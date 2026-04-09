@@ -116,13 +116,21 @@ class InstallerConfigWriter
             $path = installer_default_sqlite_path();
         }
 
+        $preferredExternalPath = installer_normalize_path_string(installer_preferred_external_sqlite_path());
+        if (
+            $path === $preferredExternalPath
+            && !installer_sqlite_path_is_preparable($path)
+        ) {
+            $path = installer_default_sqlite_path();
+        }
+
         $resolvedPath = installer_resolve_sqlite_path($path);
         if ($resolvedPath === '') {
             throw new InvalidArgumentException('SQLite database path is invalid.');
         }
 
-        if (installer_path_is_within($resolvedPath, root_dir)) {
-            throw new InvalidArgumentException('SQLite database path must stay outside the project root.');
+        if (!installer_is_allowed_sqlite_path($resolvedPath)) {
+            throw new InvalidArgumentException('SQLite database path is not allowed.');
         }
 
         return $path;

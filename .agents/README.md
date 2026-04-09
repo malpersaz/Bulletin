@@ -21,7 +21,8 @@ Agent assets in this directory must support `diff-scoped` review and must not ta
 Agent workflows must also respect the repository version log in `/docs/VERSION.md`.
 
 - Before appending any development note, inspect the latest Git-uploaded version code from the current repository history.
-- Use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target.
+- When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
+- If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target.
 - If that section does not exist yet, create it first and then append the note there.
 - A user-provided version code still overrides the auto-detected Git version for that task.
 

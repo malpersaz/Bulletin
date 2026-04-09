@@ -1,0 +1,9 @@
+{% for platform in social_platforms %}
+    {% set social_value = social_links is defined and attribute(social_links, platform.key) is defined ? attribute(social_links, platform.key) : '' %}
+    <div class="form-row">
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="social_links[{{ platform.key }}]" value="{{ social_value }}" type="text" id="social_{{ platform.key }}" placeholder=" " inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false">
+            <label class="m3-floating-label">{{ platform.label }}</label>
+        </div>
+    </div>
+{% endfor %}

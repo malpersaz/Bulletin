@@ -12,6 +12,7 @@ class mod_user extends installerbase implements installerbaseinterface
         $this->mod = 'mod_user';
         $this->tablolar = array(
             'mod_user',
+            'mod_user_social',
             'mod_user_activation',
             'mod_user_settings',
             'mod_user_log',

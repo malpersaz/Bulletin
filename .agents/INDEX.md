@@ -89,8 +89,9 @@ When quality-agent policy changes, update these files together:
 ## Version Logging Rule
 
 - `/docs/VERSION.md` is the repository source of truth for version history.
-- Before appending any completed development note, inspect the latest Git upload version code from the current repository history.
-- The active version bucket is the newest Git-uploaded version section in `/docs/VERSION.md`; if that section is missing, create it first and then append the note there.
+- Before appending any completed development note, inspect the latest Git-uploaded version code from the current repository history.
+- When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
+- If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target; if that section is missing, create it first and then append the note there.
 - A user-provided version code overrides the auto-detected Git version for that task.
 
 ## Repository Boundary Rule

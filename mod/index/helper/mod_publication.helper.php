@@ -383,7 +383,11 @@ class mod_publication_helper extends indexBase
         }
 
         $author_data = $author->toArray()[0];
+        $social_data = $this->loadAuthorSocialLinks($author_data['user_id'] ?? 0);
+        $author_data['twitter'] = $social_data['map']['twitter'];
+        $author_data['facebook'] = $social_data['map']['facebook'];
         $this->tema->ctx_set('author', $author_data);
+        $this->tema->ctx_set('author_social_links', $social_data['items']);
         $this->tema->ctx_set('username', $username);
 
         $publication = Load::model('mod_publication.publications');
@@ -438,6 +442,57 @@ class mod_publication_helper extends indexBase
 
         $this->tema->tpl('index/mod_publication/author');
         $this->_index();
+    }
+
+    private function loadAuthorSocialLinks($userId)
+    {
+        $payload = [
+            'map' => [
+                'twitter' => '',
+                'facebook' => '',
+                'instagram' => '',
+                'linkedin' => '',
+                'youtube' => '',
+                'spotify' => '',
+                'tiktok' => '',
+            ],
+            'items' => [],
+        ];
+
+        if (intval($userId) === 0) {
+            return $payload;
+        }
+
+        $platformLabels = [
+            'twitter' => 'X / Twitter',
+            'facebook' => 'Facebook',
+            'instagram' => 'Instagram',
+            'linkedin' => 'LinkedIn',
+            'youtube' => 'YouTube',
+            'spotify' => 'Spotify',
+            'tiktok' => 'TikTok',
+        ];
+
+        $social = Load::model('mod_user.mod_user_social');
+        $social->flush();
+        $social->where_user_id_and_is_active(intval($userId), 'y')->order('display_order', 'ASC')->gR();
+
+        if ($social->getSize() === 0) {
+            return $payload;
+        }
+
+        foreach ($social->toArray() as $row) {
+            if (!isset($platformLabels[$row['platform']])) {
+                continue;
+            }
+
+            $payload['map'][$row['platform']] = $row['url'];
+            $payload['items'][] = array_merge($row, [
+                'label' => $platformLabels[$row['platform']],
+            ]);
+        }
+
+        return $payload;
     }
 
     public function archive()

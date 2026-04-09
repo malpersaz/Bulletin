@@ -357,20 +357,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ));
 
             if ($dbParams['adapter'] === 'PDO_SQLITE') {
-                $fullPath = installer_resolve_sqlite_path($dbParams['database_path']);
-                $dir = dirname($fullPath);
-                if (!is_dir($dir)) {
-                    if (!mkdir($dir, 0750, true) && !is_dir($dir)) {
-                        throw new RuntimeException("Directory could not be created: " . $dir);
-                    }
-                }
-                if (!is_writable($dir)) {
-                    throw new RuntimeException("Directory not writable: " . $dir);
-                }
+                $sqliteTarget = installer_prepare_sqlite_directory($dbParams['database_path']);
+                $fullPath = $sqliteTarget['path'];
+                $dir = $sqliteTarget['directory'];
                 new PDO("sqlite:" . $fullPath);
-                @chmod($dir, 0750);
+                @chmod($dir, $sqliteTarget['directory_mode']);
                 if (file_exists($fullPath)) {
-                    @chmod($fullPath, 0640);
+                    @chmod($fullPath, $sqliteTarget['file_mode']);
                 }
             } elseif ($dbParams['adapter'] === 'PDO_MYSQL') {
                 $dsn = "mysql:host=" . $dbParams['host'] . ";dbname=" . $dbParams['database'];

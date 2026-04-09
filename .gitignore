@@ -23,6 +23,7 @@ Thumbs.db
 # Project configs and runtime databases
 config/db.config.local.php
 data/*.sqlite
+data/sqlite/*.sqlite
 
 # Codex local metadata
 .codex

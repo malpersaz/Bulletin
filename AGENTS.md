@@ -13,8 +13,9 @@ Use the index first to navigate prompts, manifests, and examples.
 Version logging rule:
 
 - `/docs/VERSION.md` is the source of truth for shipped and in-progress version notes.
-- Before appending any new development note, inspect the latest Git upload version code from the current repository history.
-- Use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target; if the section does not exist yet, create it first and then append the note there.
+- Before appending any new development note, inspect the latest Git-uploaded version code from the current repository history.
+- When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
+- If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target; if that section does not exist yet, create it first and then append the note there.
 - A user-provided version code still overrides the auto-detected Git version for that task.
 
 Repository boundary rule:
