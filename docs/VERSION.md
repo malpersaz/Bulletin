@@ -12,6 +12,7 @@
 - **Author Share Meta Data**: Updated `author.twig` and `authors.twig` in `mod_publication` to explicitly override base metadata tags, utilizing context-aware user profile / featured images for better Open Graph and Twitter Share previews.
 - **Author Share Planning**: Documented the full strategy for social metadata handling in `docs/AUTHOR_SHARE_META_PLAN.md`.
 - **View Log Query-State Fix**: Corrected `_update_view_count()` in `mod/index/indexBase.php` and `mod/index/indexMain.php` to evaluate `sys_view_logs` existence through `fetch_array()` instead of stale shared `Database` object state, restoring view-log inserts on detail pages such as `publication`, `news`, `page`, and `video_embed`.
+- **View Log Real-IP Hardening**: Updated detail-page view logging to prefer a public client IP from trusted proxy-style headers only when `REMOTE_ADDR` is not already a public address, reducing undercounting on proxied hosting while preserving the direct-host behavior.
 
 ## v1.0.54.3
 - Active version bucket derived from the latest Git history; latest uploaded commit is `e97291a` with version `v1.0.54.3`.

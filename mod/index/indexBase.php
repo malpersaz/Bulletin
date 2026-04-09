@@ -346,13 +346,48 @@ abstract class indexBase
         exit();
     }
 
+    protected function resolveClientIp()
+    {
+        $remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+
+        if ($this->isPublicIp($remoteAddr)) {
+            return $remoteAddr;
+        }
+
+        foreach (['HTTP_CF_CONNECTING_IP', 'HTTP_TRUE_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_REAL_IP'] as $header) {
+            if (empty($_SERVER[$header])) {
+                continue;
+            }
+
+            foreach (explode(',', $_SERVER[$header]) as $candidate) {
+                $candidate = trim($candidate);
+
+                if ($this->isPublicIp($candidate)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        return $this->normalizeIp($remoteAddr);
+    }
+
+    protected function isPublicIp($ip)
+    {
+        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false;
+    }
+
+    protected function normalizeIp($ip)
+    {
+        return filter_var(trim((string) $ip), FILTER_VALIDATE_IP) ?: '0.0.0.0';
+    }
+
     public function _update_view_count($table, $id)
     {
         if (empty($table) || empty($id)) {
             return false;
         }
 
-        $ip = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+        $ip = $this->resolveClientIp();
         $today = date('Y-m-d');
 
         $db = Load::lib('Database');
