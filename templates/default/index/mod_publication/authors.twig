@@ -3,6 +3,25 @@
 {% set authors = ctx_get('authors') %}
 {% set pagination = ctx_get('pagination') %}
 {% set page = ctx_get('page') %}
+{% set authors_url = site.sadres ~ 'authors' ~ ((page is not empty and page > 1) ? '/' ~ page : '') %}
+{% set authors_description = '' %}
+{% if d is defined and d.description is defined and d.description is not empty %}
+    {% set authors_description = d.description|striptags|trim %}
+{% endif %}
+{% if authors_description == '' %}
+    {% set authors_description = site.description %}
+{% endif %}
+{% set authors_share_image = site.radres ~ 'mod_settings/logo.png' %}
+{% if authors is not empty %}
+    {% for author in authors %}
+        {% if authors_share_image == site.radres ~ 'mod_settings/logo.png' and author.user_image is defined and author.user_image is not empty %}
+            {% set authors_share_image = site.radres ~ 'mod_user/' ~ author.user_image %}
+        {% endif %}
+        {% if authors_share_image == site.radres ~ 'mod_settings/logo.png' and author.image is defined and author.image is not empty %}
+            {% set authors_share_image = site.radres ~ 'mod_publication/' ~ author.image %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
 
 {% block canonical %}
     <link rel="canonical" href="{{ site.sadres }}authors{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
@@ -10,6 +29,32 @@
 
 {% block title %}
     <title>{{ lang.index.mod_publication.authors }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="author" content="{{ site.title }}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ authors_url }}">
+    <meta property="og:title" content="{{ lang.index.mod_publication.authors }} - {{ site.title }}">
+    <meta property="og:description" content="{{ authors_description }}">
+    <meta property="og:image" content="{{ authors_share_image }}">
+    <meta property="og:image:secure_url" content="{{ authors_share_image }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    {% set og_locale = site.lang ~ '_SE' %}
+    {% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+    {% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+    {% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+    {% endif %}
+    <meta property="og:locale" content="{{ og_locale }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ authors_url }}">
+    <meta name="twitter:title" content="{{ lang.index.mod_publication.authors }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ authors_description }}">
+    <meta name="twitter:image" content="{{ authors_share_image }}">
 {% endblock %}
 
 {% block css_custom %}

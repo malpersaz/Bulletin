@@ -3,9 +3,14 @@
 ## Active Version Rule
 - `docs/VERSION.md` is the single source of truth for Git upload version notes.
 - Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.54.3`.
+- The current Git-detected active version code is `v1.0.54.5`.
 - Until the user explicitly provides a different version code, new completed development notes must be appended under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+
+## v1.0.54.5
+- Active version bucket derived from the current user request.
+- **Author Share Meta Data**: Updated `author.twig` and `authors.twig` in `mod_publication` to explicitly override base metadata tags, utilizing context-aware user profile / featured images for better Open Graph and Twitter Share previews.
+- **Author Share Planning**: Documented the full strategy for social metadata handling in `docs/AUTHOR_SHARE_META_PLAN.md`.
 
 ## v1.0.54.3
 - Active version bucket derived from the latest Git history; latest uploaded commit is `e97291a` with version `v1.0.54.3`.
