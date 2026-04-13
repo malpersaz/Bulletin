@@ -8,10 +8,14 @@
 - Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
+## v1.0.54.13
+- Active version bucket derived from the next upload after Git-published `v1.0.54.12`.
+- **Professional Paste Standards Implementation**: Hardened TinyMCE editor configurations across the general editor, page wizard, and modular edit flows. This includes disabling the problematic `smart_paste` logic and the `link_context_toolbar` badge that triggered unwanted link dialogs in Microsoft Edge, while removing the `autolink` plugin and enforcing a strict "Clean Paste" policy that strips foreign colors, fonts, and background styles from clipboard content to preserve the CMS's premium typography and design consistency.
+
 ## v1.0.54.12
 - Active version bucket derived from the next upload after Git-published `v1.0.54.11`.
 - **Admin User Edit AJAX Submit Flag Fix**: Added the missing `edit` submit field to the AJAX payload for the admin user edit form so the backend enters the real update branch and returns structured JSON instead of rendering the full HTML page as an unexpected response.
-- **Professional Paste Standards Implementation**: Hardened TinyMCE editor configurations across the general editor, page wizard, and modular edit flows. This includes disabling the problematic `smart_paste` logic that triggered unwanted link dialogs in Microsoft Edge while enforcing a strict "Clean Paste" policy that strips foreign colors, fonts, and background styles from clipboard content to preserve the CMS's premium typography and design consistency.
+
 
 
 ## v1.0.54.11

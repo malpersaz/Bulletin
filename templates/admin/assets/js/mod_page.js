@@ -68,6 +68,7 @@
         tinymce.init({
             license_key: 'gpl',
             smart_paste: false,
+            link_context_toolbar: false,
             paste_webkit_styles: 'none',
             paste_merge_formats: true,
             paste_data_images: false,
@@ -76,7 +77,7 @@
             height: 400,
             menubar: false,
             plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                'advlist', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table', 'help', 'wordcount'
             ],

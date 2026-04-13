@@ -3588,6 +3588,7 @@ window.initRichEditor = function (selector, height = 400) {
     tinymce.init({
         license_key: 'gpl',
         smart_paste: false,
+        link_context_toolbar: false,
         paste_webkit_styles: 'none',
         paste_merge_formats: true,
         paste_data_images: false,
@@ -3603,7 +3604,7 @@ window.initRichEditor = function (selector, height = 400) {
             toolbar: 'undo redo | bold italic | bullist numlist | link | code'
         },
         plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+            'advlist', 'lists', 'link', 'image', 'charmap', 'preview',
             'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
             'insertdatetime', 'media', 'table', 'help', 'wordcount'
         ],
