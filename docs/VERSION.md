@@ -11,6 +11,8 @@
 ## v1.0.54.12
 - Active version bucket derived from the next upload after Git-published `v1.0.54.11`.
 - **Admin User Edit AJAX Submit Flag Fix**: Added the missing `edit` submit field to the AJAX payload for the admin user edit form so the backend enters the real update branch and returns structured JSON instead of rendering the full HTML page as an unexpected response.
+- **Professional Paste Standards Implementation**: Hardened TinyMCE editor configurations across the general editor, page wizard, and modular edit flows. This includes disabling the problematic `smart_paste` logic that triggered unwanted link dialogs in Microsoft Edge while enforcing a strict "Clean Paste" policy that strips foreign colors, fonts, and background styles from clipboard content to preserve the CMS's premium typography and design consistency.
+
 
 ## v1.0.54.11
 - Active version bucket derived from the next upload after Git-published `v1.0.54.10`.

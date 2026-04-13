@@ -66,6 +66,12 @@
         }
 
         tinymce.init({
+            license_key: 'gpl',
+            smart_paste: false,
+            paste_webkit_styles: 'none',
+            paste_merge_formats: true,
+            paste_data_images: false,
+            invalid_styles: 'color font-family background-color font-size',
             selector: selector,
             height: 400,
             menubar: false,
