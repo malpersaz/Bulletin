@@ -6,26 +6,37 @@
 {% block headline %}{{ lang.mod_news_category.list }}{% endblock %}
 
 {% block styles %}
-    {# Styles moved to global admin/assets/css/style.css #}
+    <style>
+        .list-children-empty {
+            min-height: 48px;
+            border: 2px dashed rgba(103, 80, 164, 0.4);
+            border-radius: 12px;
+            margin-top: 8px;
+            margin-left: 24px;
+            display: none;
+        }
+        body.reorder-active .list-children-empty {
+            display: block;
+        }
+    </style>
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
-    {% for entry in items %}
-        {% set is_child = false %}
-        {% if parent_id == 0 %}
-            {% if entry.parent_id is empty or entry.parent_id == 0 or entry.parent_id == '0' %} {% set is_child = true %} {% endif %}
-        {% else %}
-            {% if entry.parent_id == parent_id %} {% set is_child = true %} {% endif %}
-        {% endif %}
-
-        {% if is_child %}
-            <div class="category-node" data-id="{{ entry.id }}" data-parent="{{ entry.parent_id }}" data-name="{{ entry.name|lower }}">
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            {% set display_name = entry.display_name %}
+            {% set has_children = items[entry.id] is defined %}
+            <div class="category-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}">
                 <div class="m3-list-card" onclick="selectCategory('{{ entry.id }}', this)">
                     <div class="drag-handle" onclick="event.stopPropagation()"><i class="bi bi-grip-vertical"></i></div>
                     
-                    <button class="toggle-btn" onclick="toggleCategory(this, event)">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
+                    {% if has_children %}
+                        <button class="toggle-btn collapsed" onclick="toggleCategory(this, event)">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% else %}
+                        <div style="width:24px; margin-right:4px;"></div>
+                    {% endif %}
 
                     <div class="card-thumb">
                         {% if entry.image %}
@@ -37,7 +48,7 @@
 
                     <div class="card-info">
                         <div class="card-title">
-                            {{ entry.name }}
+                            {{ display_name }}
                             {% if entry.show_on_homepage == 'y' %}
                                 <i class="bi bi-eye-fill text-primary ms-1" style="font-size: 14px;" title="{{ lang.management.show_on_homepage }}"></i>
                             {% else %}
@@ -52,13 +63,15 @@
                 </div>
                 
                 {% if entry.id != parent_id and level < 20 %}
-                <div class="list-children">
-                    {{ _self.render_tree(items, entry.id, level + 1) }}
+                <div class="list-children collapsed{% if not has_children %} list-children-empty{% endif %}">
+                    {% if has_children %}
+                        {{ _self.render_tree(items, entry.id, level + 1) }}
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
 
 {% block content %}
@@ -66,7 +79,6 @@
 
     <div class="content-list" id="categoryRootList">
         
-        <!-- Reorder Toggle Bar -->
         <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
             <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
                 <i class="bi bi-lock-fill" id="reorderIcon"></i>
@@ -74,8 +86,8 @@
             </button>
         </div>
 
-        {% if all_categories is defined and all_categories|length > 0 %}
-             {{ _self.render_tree(all_categories, 0, 0) }}
+        {% if category_tree[0] is defined %}
+             {{ _self.render_tree(category_tree, 0, 0) }}
         {% else %}
             <div class="empty-state-container">
                 <div class="empty-icon-box">
@@ -94,7 +106,7 @@
     <div class="standard-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_news_category.button.edit|default('Biguhere') }}</span>
+            <span>{{ lang.mod_news_category.button.edit }}</span>
         </button>
 
         <button id="toolbarHomepage" class="toolbar-item" onclick="toggleHomepageSelected()" style="opacity:0.3; pointer-events:none;">
@@ -108,7 +120,7 @@
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_news_category.button.delete|default('Jê bibe') }}</span>
+            <span>{{ lang.mod_news_category.button.delete }}</span>
         </button>
     </div>
 {% endblock %}

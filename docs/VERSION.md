@@ -8,6 +8,16 @@
 - Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
 - If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
 
+## v1.0.56
+- Active version bucket derived from the current user request.
+- **News Category Module Modernization**: Modernized the admin news category module (`mod_news_category`) to use a recursive tree-based card view. Integrated SortableJS for drag-and-drop reordering, direct homepage visibility toggling, and recursive subcategory deletion with SweetAlert2 confirmation prompts.
+- **Hierarchical Loop and Language Validation**: Enhanced the category controller to prevent cycle loops (descendant cannot become parent of ancestor) and enforce that child categories belong to the same language tree as their parents.
+- **Menu and Attachment Auto-Synchronization**: Reworked category creation/updating to automatically sync changes to menu slots (`mod_menu`) and ensure cascade recursive deletion of attachments, menu entries, and gallery records.
+- **Video Module Modernization and Sister Project Sync**: Modernized the admin video panel (`mod_video`) to sync with the phone-first Material Design 3 card-based layout from Business CMS. Replaced the legacy flexigrid and Flash-based uploader with standard HTML5 video inputs, real-time AJAX XMLHttpRequest upload progress bars, and SweetAlert2-based confirmation dialogues.
+- **Controller-Level Field Standardizations**: Standardized the backend database and ORM properties to use `duration` consistently instead of the legacy mismatched `sure`.
+- **Safe Dynamic Video Conversion**: Upgraded the backend `cevir` endpoint to dynamically detect server-side `ffmpeg` and `ffprobe` binaries, converting uploaded videos to web-ready mp4 files, with a safe dynamic fallback to accept the original format if the FFMPEG utility is missing on the host.
+- **Multilingual Localization and Comment Cleanup**: Ported complete localization coverage for English, Kurdish, Turkish, and Zazaki language files without any raw fallbacks. Cleaned up Turkish and Kurdish comments from validator and template files, replacing them with English inline documentation.
+
 ## v1.0.55
 - Active version bucket derived from the current user-provided upload version code.
 - **Admin User Panel Modernization and Synchronization**: Modernized the admin user dashboard (`mod_user/panel`) to sync with the phone-first Material Design 3 layout of the AKM Business CMS twin project. Replaced the legacy grid layout with modern MD3 cards, added a primary navigation header with context links, and implemented an interactive bottom sheet ("Zêdetir") for system tools.

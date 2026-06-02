@@ -112,7 +112,7 @@ $lang['mod_video'] = [
 
     // Role Management
     'roll' => [
-        'ad' => 'Video Management Roles',
+        'name' => 'Video Management Roles',
         'add' => 'Can add videos',
         'edit' => 'Can edit videos',
         'delete' => 'Can delete videos',
@@ -135,14 +135,14 @@ $lang['mod_video'] = [
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'language' => 'Display Language',
-            'ad' => 'Video Title',
-            'sure' => 'Duration',
-            'tarih' => 'Date',
+            'lang' => 'Display Language',
+            'name' => 'Video Title',
+            'duration' => 'Duration',
+            'created_at' => 'Date',
             'status' => 'Publish Status',
-            'aciklama' => 'Description',
+            'description' => 'Description',
             'image' => 'Thumbnail',
-            'onizleme' => 'Preview',
+            'preview' => 'Preview',
             'acl_id' => 'Who can view this video? <br><a href=\'mod_acl/List/\' target=\'_blank\' class=\'btn btn-xs blue\' style=\'margin-top:5px;\'><i class=\'fa fa-external-link\'></i> ACL - Access Control List</a>',
         ],
         'radio' => [
@@ -150,11 +150,16 @@ $lang['mod_video'] = [
             'publish_no' => 'No',
         ],
     ],
+     'placeholder' => [
+        'name' => 'Video title...',
+        'description' => 'A short description of the video content and purpose...',
+    ],
+    'empty_state' => 'No uploaded videos found',
 
     // Extended Video Management Features
     'upload' => [
         'select_file' => 'Select Video File',
-        'drag_drop' => 'Drag and drop video files here',
+        'drag_drop' => 'Select or Drag',
         'supported_formats' => 'Supported Formats: MP4, AVI, MOV, WMV, FLV, WebM',
         'max_file_size' => 'Maximum file size: %s',
         'upload_progress' => 'Upload Progress',
@@ -246,10 +251,10 @@ $lang['mod_video'] = [
 
     // Help Text
     'help' => [
-        'upload_tips' => 'Tips: Use high-quality videos for better user experience. Large files may take longer to upload and process.',
-        'conversion_info' => 'Video conversion optimizes your videos for web playback. This may take several minutes depending on file size.',
-        'seo_tips' => 'Use descriptive titles and descriptions to improve search engine visibility.',
-        'embed_help' => 'Copy and paste this code to embed the video on other websites.',
+        'upload_tips' => 'Tips: Use high-quality videos.',
+        'conversion_info' => 'This process may take a few minutes.',
+        'seo_tips' => 'Use descriptive titles and descriptions.',
+        'embed_help' => 'Copy and paste this code to embed the video.',
     ],
 
     // Error Categories
@@ -352,7 +357,7 @@ $lang['mod_video'] = [
 
     // === Permission Roles ===
     'roll' => [
-        'ad' => 'Video Management Roles',
+        'name' => 'Video Management Roles',
         'add' => 'Can Add Videos',
         'edit' => 'Can Edit Videos',
         'delete' => 'Can Delete Videos',
@@ -360,6 +365,15 @@ $lang['mod_video'] = [
         'acl' => 'Can Edit Video Permissions',
         'setting' => 'Can Change Video Settings',
         'link' => 'Can View Video Links'
+    ],
+    // Wizard Steps Instructions
+    'wizard' => [
+        'step1_title' => 'Select Video',
+        'step1_instruction' => 'Select a video file to upload.',
+        'step2_title' => 'Convert Video',
+        'step2_instruction' => 'Convert video for web playback.',
+        'step3_title' => 'Save Video',
+        'step3_instruction' => 'Fill in details and save.',
     ],
 ];
 ?>

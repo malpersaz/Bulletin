@@ -1,5 +1,5 @@
 <?php
-class duzenle_validator
+class edit_validator
 {
     public $valid;
     public $lang;
@@ -7,9 +7,9 @@ class duzenle_validator
 
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_video');
     }
 
@@ -22,7 +22,7 @@ class duzenle_validator
                 'name' => 'lang',
                 'fonk' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['language'])
+                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['lang'])
             ]
         );
         if ($this->_check() === True) {
@@ -40,13 +40,13 @@ class duzenle_validator
         if ($this->_check() === True) {
             return True;
         }
-        // sure Required
+        // duration Required
         $this->valid->ekle(
             [
-                'name' => 'sure',
+                'name' => 'duration',
                 'fonk' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['sure'])
+                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['duration'])
             ]
         );
         if ($this->_check() === True) {
@@ -81,16 +81,16 @@ class duzenle_validator
         if ($this->_check() === True) {
             return True;
         }
-        // sure Length
+        // duration Length
         $this->valid->ekle(
             [
-                'name' => 'sure',
+                'name' => 'duration',
                 'fonk' => 'length',
                 'arg' => [
                     'min' => '5',
                     'max' => '8'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['sure'], '5', '8')
+                'mesaj' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['duration'], '5', '8')
             ]
         );
         if ($this->_check() === True) {

@@ -6,9 +6,9 @@ class add_validator
     public $hatalar = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_news_category');
     }
     public function check()

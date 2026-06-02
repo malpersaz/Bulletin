@@ -2,7 +2,7 @@
 /**
  * Category Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_news_category
  * @version 1.0.0
  * @author  AKM Software
@@ -48,6 +48,17 @@ $lang['mod_news_category'] = [
 
     'errors' => [
         'record' => 'Toma hatiye spartin nehate dîtin!',
+        'parent_selection_required' => 'Ji kerema xwe re kategoriya jorîn hilbijêre.',
+        'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
+        'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
+        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
+        'menu_language_mismatch' => 'Zimanê menuya jorîn divê bi zimanê kategoriyê re yek be.',
+        'order_update_failed' => 'Rêza kategoriyê nehate rojanekirin.',
+    ],
+
+    'parent_labels' => [
+        'system_root' => 'Koka pergalê',
+        'language_root' => 'Koka :language',
     ],
 
     'button' => [
@@ -136,9 +147,10 @@ $lang['mod_news_category'] = [
         'info' => [
             'edit_double_click' => 'Ji bo sererastkirinê dubare li kategoriya xwe bitikîne',
             'drag_reorder' => 'Ji bo guherandina rêzê kategoriya xwe bişîvîne û biavêje',
+            'mode_unlocked' => 'Mod: Rêzkirin (Vekirî)',
         ],
         'warning' => [
-            'reorder' => 'Cihê kategoriyê were guhertin?',
+            'reorder' => 'Tu dixwazî rêzkirina kategoriyê biguherî, tu pê bawer î?',
         ],
     ],
 
@@ -251,11 +263,15 @@ $lang['mod_news_category'] = [
             'description' => 'Ji bo mîhengên SEO ravekirin (Description)',
             'menu' => 'Kategoriya Bişîne Menuyê',
             'image' => 'Wêne',
+            'image_select' => 'Wêne hilbijêre',
             'acl_id' => 'Kî dikare bibîne?',
         ],
         'select_values' => [
             'root_yes' => 'Erê',
             'root_no' => 'Na',
+        ],
+        'tooltips' => [
+            'acl_settings' => 'Mîhengên ACL',
         ],
     ],
 

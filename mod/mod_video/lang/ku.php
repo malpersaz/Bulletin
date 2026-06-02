@@ -92,7 +92,7 @@
     ],
     'roll' =>
     [
-        'ad' => 'Rolenên Rêveberiya Vîdeoyê',
+        'name' => 'Rolenên Rêveberiya Vîdeoyê',
         'add' => 'Dikare vîdeo zêde bike',
         'edit' => 'Dikare vîdeoyan Biguhere',
         'delete' => 'Dikare vîdeoyan rake',
@@ -114,14 +114,14 @@
         'columns' =>
         [
             'id' => 'ID',
-            'language' => 'Zimanê Xuyakirina Vîdeoyê',
-            'ad' => 'Navê Vîdeoyê',
-            'sure' => 'Dem',
-            'tarih' => 'Dîrok',
+            'lang' => 'Zimanê Xuyakirina Vîdeoyê',
+            'name' => 'Navê Vîdeoyê',
+            'duration' => 'Dem',
+            'created_at' => 'Dîrok',
             'status' => 'Were Weşandin?',
-            'aciklama' => 'Ravekirin',
+            'description' => 'Ravekirin',
             'image' => 'Wêne',
-            'onizleme' => 'Pêşdîtin',
+            'preview' => 'Pêşdîtin',
             'acl_id' => 'Kî dikare vê vîdeoyê bibîne? <br><a href=\'mod_acl/list/\' target=\'_blank\' class=\'btn btn-xs blue\' style=\'margin-top:5px;\'><i class=\'fa fa-external-link\'></i> ACL - Lîsteya kontrola têketinê</a>',
         ],
         'radio' =>
@@ -129,5 +129,199 @@
             'publish_yes' => 'Erê',
             'publish_no' => 'Na',
         ],
+    ],
+     'placeholder' => [
+        'name' => 'Navê vîdeoyê...',
+        'description' => 'Ravekirina kurt a li ser naverok û armanca vîdeoyê...',
+    ],
+    'empty_state' => 'Vîdeoyeke barkirî nehat dîtin',
+    // Extended Video Management Features
+    'upload' => [
+        'select_file' => 'Pelê Vîdeoyê Hilbijêre',
+        'drag_drop' => 'Hilbijêre an Bikişîne',
+        'supported_formats' => 'Formatên Tên Piştgirîkirin: MP4, AVI, MOV, WMV, FLV, WebM',
+        'max_file_size' => 'Mezinahiya herî zêde ya pelî: %s',
+        'upload_progress' => 'Pêşveçûna Barkirinê',
+        'processing' => 'Vîdeo tê amadekirin...',
+        'conversion_queue' => 'Vîdeo li rêza veguherandinê hate zêdekirin',
+    ],
+    // Video Quality Options
+    'quality' => [
+        'auto' => 'Kaliteya Xweber',
+        'high' => 'Kaliteya Bilind',
+        'medium' => 'Kaliteya Navîn',
+        'low' => 'Kaliteya Nizm',
+        'original' => 'Kaliteya Resen',
+    ],
+    // Video Categories
+    'category' => [
+        'select' => 'Kategorî Hilbijêre',
+        'all' => 'Hemû Kategorî',
+        'uncategorized' => 'Bêkategorî',
+        'add' => 'Kategoriya Nû Zêde Bike',
+    ],
+    // Publishing Options
+    'publishing' => [
+        'immediately' => 'Yekser Biweşîne',
+        'schedule' => 'Weşandinê Plansaz Bike',
+        'draft' => 'Wekî Pêşnûme Tomar Bike',
+        'private' => 'Taybet',
+        'password_protected' => 'Parastî bi Şîfreyê',
+    ],
+    // SEO Options
+    'seo' => [
+        'meta_title' => 'Sernavê Meta',
+        'meta_description' => 'Ravekirina Meta',
+        'meta_keywords' => 'Peyvên Sereke yên Meta',
+        'friendly_url' => 'URL-ya Dostane',
+        'video_sitemap' => 'Tevlî Sitemap-a Vîdeoyê Bike',
+    ],
+    // Advanced Features
+    'advanced' => [
+        'captions' => 'Altyazî',
+        'chapters' => 'Beşên Vîdeoyê',
+        'playlist' => 'Tevlî Lîsteya Lîstinê Bike',
+        'related_videos' => 'Vîdeoyên Têkildar',
+        'comments' => 'Şîroveyan Çalak Bike',
+        'rating' => 'Nirxandinê Çalak Bike',
+        'embed' => 'Koda Bicihkirinê',
+        'download' => 'Destûra Daxistinê Bide',
+    ],
+    // Video Statistics
+    'statistics' => [
+        'views' => 'Tevahiya Dîtinan',
+        'unique_views' => 'Dîtinên Yekta',
+        'average_watch_time' => 'Têkiliya Dema Temaşekirinê ya Navîn',
+        'completion_rate' => 'Rêjeya Temamkirinê',
+        'engagement' => 'Skora Têkiliyê',
+        'shares' => 'Parvekirin',
+        'likes' => 'Ecibandin',
+        'dislikes' => 'Neecibandin',
+    ],
+    // Bulk Operations
+    'bulk' => [
+        'select_all' => 'Hemûyan Hilbijêre',
+        'deselect_all' => 'Hilbijartinê Betal Bike',
+        'bulk_edit' => 'Komî Biguhere',
+        'bulk_delete' => 'Komî Rake',
+        'bulk_publish' => 'Komî Biweşîne',
+        'bulk_unpublish' => 'Komî ji Weşanê Rake',
+        'export' => 'Vîdeoyan Dervehîne',
+        'import' => 'Vîdeoyan Têkire',
+    ],
+    // Notification Messages
+    'notifications' => [
+        'upload_complete' => 'Vîdeo bi serkeftî hate barkirin',
+        'conversion_started' => 'Pêvajoya veguherandina vîdeoyê dest pê kir',
+        'conversion_complete' => 'Veguherandina vîdeoyê temam bû',
+        'conversion_failed' => 'Veguherandina vîdeoyê bi ser neket',
+        'publish_scheduled' => 'Weşandina vîdeoyê hate plansazkirin',
+        'video_published' => 'Vîdeo bi serkeftî hate weşandin',
+        'video_unpublished' => 'Vîdeo bi serkeftî ji weşanê hate rakirin',
+    ],
+    // Help Text
+    'help' => [
+        'upload_tips' => 'Rênîşandan: Vîdeoyên bi kalîteya bilind bikar bînin.',
+        'conversion_info' => 'Ev pêvajo dikare çend deqîqeyan bikişîne.',
+        'seo_tips' => 'Sernav û ravekirinên berfireh bikar bînin.',
+        'embed_help' => 'Vê kodê kopî bikin û li ser malperên din bi cî bikin.',
+    ],
+    // Error Categories
+    'error_types' => [
+        'upload_error' => 'Çewtiya Barkirinê',
+        'conversion_error' => 'Çewtiya Veguherandinê',
+        'permission_error' => 'Çewtiya Destûrê',
+        'validation_error' => 'Çewtiya Verastkirinê',
+        'system_error' => 'Çewtiya Pergalê',
+        'network_error' => 'Çewtiya Torê',
+    ],
+    // Status Indicators
+    'status' => [
+        'uploading' => 'Tê barkirin...',
+        'processing' => 'Tê amadekirin...',
+        'converting' => 'Tê veguherandin...',
+        'completed' => 'Temam bû',
+        'failed' => 'Bi ser neket',
+        'pending' => 'Li bendê ye',
+        'published' => 'Hate weşandin',
+        'unpublished' => 'Nehate weşandin',
+        'scheduled' => 'Hate plansazkirin',
+        'draft' => 'Pêşnûme',
+    ],
+    // Time Formats
+    'time_formats' => [
+        'seconds' => 'çirke',
+        'minutes' => 'deqîqe',
+        'hours' => 'saet',
+        'ago' => 'berê',
+        'remaining' => 'mayî',
+        'estimated_time' => 'Dema texmînî: %s',
+    ],
+    // File Information
+    'file_info' => [
+        'file_name' => 'Navê Pelî',
+        'file_size' => 'Mezinahiya Pelî',
+        'file_type' => 'Cureyê Pelî',
+        'duration' => 'Dem',
+        'resolution' => 'Çareserî',
+        'bitrate' => 'Bit Rate',
+        'fps' => 'Rêjeya Çarçoveyê',
+        'codec' => 'Kodek',
+    ],
+    // API Integration
+    'api' => [
+        'embed_url' => 'URL-ya Bicihkirinê',
+        'api_endpoint' => 'API Endpoint',
+        'api_key' => 'Mifteya API-yê',
+        'webhook_url' => 'Webhook URL',
+        'third_party' => 'Entegrasyona Aliyê Sêyem',
+    ],
+    // Moderation Tools
+    'moderation' => [
+        'pending_approval' => 'Li benda Pejirandinê ye',
+        'approved' => 'Hate pejirandin',
+        'rejected' => 'Hate redkirin',
+        'flagged' => 'Naveroka Nîşankirî',
+        'review_queue' => 'Rêza Nirxandinê',
+        'moderator_notes' => 'Têbaniyên Moderator',
+    ],
+    // Export/Import Options
+    'data_management' => [
+        'export_csv' => 'Wekî CSV Dervehîne',
+        'export_xml' => 'Wekî XML Dervehîne',
+        'export_json' => 'Wekî JSON Dervehîne',
+        'import_csv' => 'Ji CSV Têkire',
+        'backup_videos' => 'Vîdeoyan Paşgir bike',
+        'restore_videos' => 'Paşgiran Vegerîne',
+    ],
+    // Search and Filter
+    'search_filters' => [
+        'search_by_title' => 'Li gorî Sernavê Lêgerîn',
+        'search_by_description' => 'Li gorî Ravekirinê Lêgerîn',
+        'filter_by_date' => 'Li gorî Dîrokê Parzûn bike',
+        'filter_by_category' => 'Li gorî Kategoriyê Parzûn bike',
+        'filter_by_author' => 'Li gorî Nivîskar Parzûn bike',
+        'filter_by_status' => 'Li gorî Rewşê Parzûn bike',
+        'advanced_search' => 'Lêgerîna Berfireh',
+    ],
+    // User Interface
+    'ui' => [
+        'dashboard' => 'Panela Vîdeoyê',
+        'overview' => 'Nêrîna Giştî',
+        'recent_videos' => 'Vîdeoyên Dawî',
+        'popular_videos' => 'Vîdeoyên Populer',
+        'trending_videos' => 'Vîdeoyên Trend',
+        'featured_videos' => 'Vîdeoyên Taybet',
+        'archive' => 'Arşîva Vîdeoyan',
+        'trash' => 'Serserî (Çop)',
+    ],
+    // Wizard Steps Instructions
+    'wizard' => [
+        'step1_title' => 'Vîdeo Hilbijêre',
+        'step1_instruction' => 'Ji kerema xwe pelê vîdeoyê hilbijêrin.',
+        'step2_title' => 'Vîdeoyê Veguherîne',
+        'step2_instruction' => 'Vîdeoyê ji bo weşanê veguherînin.',
+        'step3_title' => 'Vîdeoyê Tomar Bike',
+        'step3_instruction' => 'Agahiyên vîdeoyê tije bikin û tomar bikin.',
     ],
 ];
