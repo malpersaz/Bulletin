@@ -136,11 +136,12 @@ When a task is completed and repository documentation is updated, agents must tr
 - Every time a version-note update is needed, re-run the version-log checks from the start.
 - Before writing any version note, verify the latest Git-uploaded version from actual Git history first; do not infer it only from `/docs/VERSION.md` or from the current worktree state.
 - After identifying that Git-uploaded version, inspect the developments that exist after it and compare them against `/docs/VERSION.md`.
-- If still-unuploaded developments are missing from `/docs/VERSION.md`, backfill those notes into the correct active version section before appending the current task note.
-- When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
-- If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target.
-- If that section does not exist yet, create it first and then append the note there.
-- A user-provided version code still overrides the auto-detected Git version for that task.
+- Treat the latest Git-uploaded version as the latest shipped version, and keep its section frozen unless the user explicitly asks to repair shipped historical notes.
+- If still-unuploaded developments are missing from `/docs/VERSION.md`, do not backfill them under the shipped version section; create or use the next unpublished version section and place those notes there first.
+- When the current task represents unpublished work after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
+- If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
+- Before appending to any existing version section, explicitly verify whether the note belongs to a shipped Git version or to the next unpublished version.
+- A user-provided version code overrides the auto-detected Git version for that task.
 
 ## Repository Boundary Rule
 
@@ -151,7 +152,7 @@ The following modules are `Rojname`-only:
 - `mod_publication`
 - `mod_publication_category`
 
-Agents must preserve them as project-specific modules and must not propose them as shared-core changes for `AKMbusiness` unless the user explicitly overrides the rule.
+Agents must preserve them as project-specific modules and must not propose them as shared-core changes for sibling projects unless the user explicitly overrides the rule.
 
 The following installer decisions are also `Rojname`-specific and must remain local unless the user explicitly overrides the rule:
 

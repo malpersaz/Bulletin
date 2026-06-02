@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Theme"
+  short_description: "Create repository-safe public frontend themes."
+  default_prompt: "Use this skill when creating, auditing, or registering a public frontend theme under templates/ in this repository."

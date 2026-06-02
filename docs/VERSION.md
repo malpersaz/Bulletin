@@ -1,12 +1,7 @@
-# Version History
-
-## Active Version Rule
-- `docs/VERSION.md` is the single source of truth for Git upload version notes.
-- Before appending any new completed development note, inspect the latest Git upload version code from the current repository history.
-- The current Git-detected active version code is `v1.0.54.8`.
-- When the current task represents a new upload after the latest Git-uploaded version, create the next version section first and append the completed notes under that new version code.
-- Until the user explicitly provides a different version code, tasks that do not introduce a new upload version must append completed notes under the newest Git-uploaded version section.
-- If the latest Git-uploaded version section is missing here, agents must create that section first and then append the new notes under it.
+## v1.0.57
+- Active version bucket derived from the next unpublished cycle.
+- **Nûjenkirin û Xweserkirina Pergala Agentan**: Rêbername, sîyaset, manifest, û skillên agentan (li bin `.agents/theme`, `.agents/design`, û `.agents/skills`) li gorî asta nû ya Business CMS hatin nûjenkirin û bi tevahî ji bo taybetmendiyên portalê nûçe û weşanê yên `Rojname` hatin xweserkirin (bêyî tu nav an modula `product`).
+- **Siyasetên Templates û Sêwiranê yên Nû**: Pelên `templates/AGENTS.md` û `templates/admin/AGENTS.md` yên nû hatin afirandin, û rêgezên visual design contract û sêwirana mobîlê (phone-only admin surface) bi rêkûpêk hatin pênasekirin.
 
 ## v1.0.56
 - Active version bucket derived from the current user request.
