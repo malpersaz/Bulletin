@@ -419,6 +419,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Accès rapide',
         'home_title' => 'Page d\'accueil',
         'admin_brand' => 'Rojname Admin',
+        'recent_workspace' => 'Espace de travail récent',
+        'workspace_nav_media' => 'Médias',
+        'workspace_nav_videos' => 'Gestion des vidéos',
+        'workspace_nav_more' => 'Plus',
+        'more_sheet_title' => 'Plus d\'outils',
+        'more_sheet_copy' => 'Ouvrir les interfaces système et d\'administration moins fréquentes sans encombrer la barre principale.',
+        'more_sheet_open_drawer' => 'Ouvrir le répertoire complet des modules',
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',

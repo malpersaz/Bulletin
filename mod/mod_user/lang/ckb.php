@@ -419,6 +419,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Quick Access',
         'home_title' => 'Home Page',
         'admin_brand' => 'Rojname Admin',
+        'recent_workspace' => 'شوێنی کاری ئەم دواییە',
+        'workspace_nav_media' => 'میدیا',
+        'workspace_nav_videos' => 'بەڕێوەبردنی ڤیدیۆکان',
+        'workspace_nav_more' => 'زیاتر',
+        'more_sheet_title' => 'ئامرازی زیاتر',
+        'more_sheet_copy' => 'کردنەوەی ڕووکارەکانی سیستەم و بەڕێوەبردن بەبێ قەرەباڵغکردنی شریتی سەرەکی.',
+        'more_sheet_open_drawer' => 'کردنەوەی تەواوی ڕێبەری مۆدیولەکان',
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',

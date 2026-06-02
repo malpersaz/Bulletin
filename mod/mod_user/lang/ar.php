@@ -419,6 +419,13 @@ $lang['mod_user'] = [
         'quick_access' => 'وصول سريع',
         'home_title' => 'الصفحة الرئيسية',
         'admin_brand' => 'إدارة Rojname',
+        'recent_workspace' => 'مساحة العمل الأخيرة',
+        'workspace_nav_media' => 'الوسائط',
+        'workspace_nav_videos' => 'إدارة الفيديو',
+        'workspace_nav_more' => 'المزيد',
+        'more_sheet_title' => 'أدوات إضافية',
+        'more_sheet_copy' => 'فتح صفحات النظام والإدارة الأقل استخداماً دون ازدحام شريط مساحة العمل الرئيسي.',
+        'more_sheet_open_drawer' => 'فتح دليل المودولات الكامل',
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',

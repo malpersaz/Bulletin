@@ -14,6 +14,10 @@ Version logging rule:
 
 - `/docs/VERSION.md` is the source of truth for shipped and in-progress version notes.
 - Before appending any new development note, inspect the latest Git-uploaded version code from the current repository history.
+- Every time a version-note update is needed, re-run the version-log checks from the start.
+- Before writing any version note, verify the latest Git-uploaded version from actual Git history first; do not infer it only from `/docs/VERSION.md` or from the current worktree state.
+- After identifying that Git-uploaded version, inspect the developments that exist after it and compare them against `/docs/VERSION.md`.
+- If there are still-unuploaded developments that are not yet written in `/docs/VERSION.md`, append those missing notes to the correct active version section before writing the current task note.
 - When the current task represents a new upload after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
 - If the current task does not introduce a new upload version, use the newest Git-uploaded version section in `/docs/VERSION.md` as the active target; if that section does not exist yet, create it first and then append the note there.
 - A user-provided version code still overrides the auto-detected Git version for that task.

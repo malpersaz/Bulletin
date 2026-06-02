@@ -408,6 +408,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Hızlı Erişim',
         'home_title' => 'Ana Sayfa',
         'admin_brand' => 'Rojname Yönetim',
+        'recent_workspace' => 'Son Kullanılan Alan',
+        'workspace_nav_media' => 'Medya',
+        'workspace_nav_videos' => 'Video Yönetimi',
+        'workspace_nav_more' => 'Diğer',
+        'more_sheet_title' => 'Diğer Araçlar',
+        'more_sheet_copy' => 'Ana çalışma çubuğunu kalabalıklaştırmadan daha düşük frekanslı yönetim yüzeylerini açın.',
+        'more_sheet_open_drawer' => 'Tam modül dizinini aç',
     ],
     'fab' => [
         'add_announcement' => 'Duyuru Ekle',

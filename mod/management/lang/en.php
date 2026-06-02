@@ -20,6 +20,14 @@ $lang['management']=[
     'gallery_modulleri' => 'Gallery Modules',
     'dosya_modulleri' => 'File Modules',
     'locale_management' => 'Locale Management',
+    'system_tools' => 'System Tools',
+    'recent_modules' => 'Recent Modules',
+    'pinned_modules' => 'Pinned Modules',
+    'module_search_placeholder' => 'Search modules...',
+    'module_search_empty' => 'No modules found',
+    'pin_module' => 'Pin module',
+    'unpin_module' => 'Unpin module',
+    'recent_workspace_empty' => 'Recent modules will appear here',
 
     // Content and Pages Submenu
     'content_categories' => 'Content Categories',

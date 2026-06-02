@@ -419,6 +419,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Snabbåtkomst',
         'home_title' => 'Startsida',
         'admin_brand' => 'Rojname Admin',
+        'recent_workspace' => 'Senaste arbetsyta',
+        'workspace_nav_media' => 'Media',
+        'workspace_nav_videos' => 'Videohantering',
+        'workspace_nav_more' => 'Mer',
+        'more_sheet_title' => 'Fler verktyg',
+        'more_sheet_copy' => 'Öppna mindre frekvent använda system- och administrationsytor utan att fylla huvudfältet.',
+        'more_sheet_open_drawer' => 'Öppna fullständig modulmapp',
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',

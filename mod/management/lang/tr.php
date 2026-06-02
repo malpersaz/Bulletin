@@ -20,6 +20,14 @@ $lang['management']=[
     'gallery_modulleri' => 'Galeri Modülleri',
     'dosya_modulleri' => 'Dosya Modülleri',
     'locale_management' => 'Yerelleştirme Yönetimi',
+    'system_tools' => 'Sistem Araçları',
+    'recent_modules' => 'Son Kullanılan Modüller',
+    'pinned_modules' => 'Sabitlenen Modüller',
+    'module_search_placeholder' => 'Modüllerde ara...',
+    'module_search_empty' => 'Modül bulunamadı',
+    'pin_module' => 'Modülü sabitle',
+    'unpin_module' => 'Sabitlemeyi kaldır',
+    'recent_workspace_empty' => 'Son kullanılan modüller burada görünecektir',
 
     // Content and pages submenu
     'content_categories' => 'İçerik Kategorileri',

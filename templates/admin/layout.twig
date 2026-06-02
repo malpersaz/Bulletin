@@ -228,6 +228,11 @@
             ui: null,
             adminCategories: [],
             {% endif %}
+            navigation: {
+                pin_module: '{{ lang.management.pin_module|e("js") }}',
+                unpin_module: '{{ lang.management.unpin_module|e("js") }}',
+                recent_workspace_empty: '{{ lang.management.recent_workspace_empty|e("js") }}'
+            },
             video_embed_categories: {{ video_embed_categories|json_encode|raw }},
             date_locale: '{{ site.lang }}',
             languages: [

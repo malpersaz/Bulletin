@@ -20,6 +20,14 @@ $lang['management']=[
     'gallery_modulleri' => 'Modûlên Galeriyê',
     'dosya_modulleri' => 'Modûlên Pelan',
     'locale_management' => 'Mîhengên Malperê',
+    'system_tools' => 'Amûrên Sîstemê',
+    'recent_modules' => 'Modulên Dawî',
+    'pinned_modules' => 'Modulên Girtî',
+    'module_search_placeholder' => 'Modulan bigere...',
+    'module_search_empty' => 'Ti modul nehat dîtin',
+    'pin_module' => 'Modulê girêde',
+    'unpin_module' => 'Girêdana modulê rake',
+    'recent_workspace_empty' => 'Modulên dawî li vir xuya dibin',
 
     // Content and pages submenu
     'content_categories' => 'Kategoriyên Naverokan',

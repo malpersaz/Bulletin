@@ -816,12 +816,107 @@ class mod_user_mod extends indexMain
         }
 
         Run::import('management', '_index');
+        $this->_assert_panel_language_keys();
         $this->site['title'] = $this->lang['mod_user']['user_panel'];
 
         $this->tema->veri('site', $this->site);
         $this->tema->veri('panel_actions', $this->_build_panel_actions());
         //print_r($_COOKIE);
         $this->tema->tpl('mod_user/panel');
+    }
+
+    private function _assert_panel_language_keys()
+    {
+        $management_lang = Load::lang('management');
+        $video_embed_lang = Load::lang('mod_video_embed');
+        $slider_lang = Load::lang('mod_slider');
+
+        $required_keys = [
+            [$this->lang, ['mod_user', 'panel', 'panel_title']],
+            [$this->lang, ['mod_user', 'panel', 'home_title']],
+            [$this->lang, ['mod_user', 'panel', 'admin_brand']],
+            [$this->lang, ['mod_user', 'panel', 'welcome_main']],
+            [$this->lang, ['mod_user', 'panel', 'recent_workspace']],
+            [$this->lang, ['mod_user', 'panel', 'workspace_nav_videos']],
+            [$this->lang, ['mod_user', 'panel', 'workspace_nav_more']],
+            [$this->lang, ['mod_user', 'panel', 'more_sheet_title']],
+            [$this->lang, ['mod_user', 'panel', 'more_sheet_copy']],
+            [$this->lang, ['mod_user', 'panel', 'more_sheet_open_drawer']],
+            [$management_lang, ['management', 'uyelik']],
+            [$management_lang, ['management', 'content_and_page']],
+            [$management_lang, ['management', 'content_management']],
+            [$management_lang, ['management', 'news_management']],
+            [$management_lang, ['management', 'publication_management']],
+            [$management_lang, ['management', 'system_tools']],
+            [$management_lang, ['management', 'uyeler']],
+            [$management_lang, ['management', 'uye_gruplari']],
+            [$management_lang, ['management', 'membership_setting']],
+            [$management_lang, ['management', 'uye_permission_yonetimi_acl']],
+            [$management_lang, ['management', 'acl']],
+            [$management_lang, ['management', 'page_management']],
+            [$management_lang, ['management', 'language_management_menu']],
+            [$management_lang, ['management', 'settings']],
+            [$video_embed_lang, ['mod_video_embed', 'list']],
+            [$slider_lang, ['mod_slider', 'list']],
+        ];
+
+        foreach ($required_keys as $required_key) {
+            $this->_require_panel_language_value($required_key[0], $required_key[1]);
+        }
+    }
+
+    private function _require_panel_language_value($dictionary, array $path)
+    {
+        $value = $dictionary;
+        foreach ($path as $segment) {
+            if (!is_array($value) || !array_key_exists($segment, $value)) {
+                $this->_render_panel_language_error(implode('.', $path));
+            }
+            $value = $value[$segment];
+        }
+
+        if (!is_string($value) || trim($value) === '') {
+            $this->_render_panel_language_error(implode('.', $path));
+        }
+
+        return $value;
+    }
+
+    private function _render_panel_language_error($key_path)
+    {
+        error_log('mod_user_panel_missing_language_key: ' . $key_path);
+
+        header("HTTP/1.1 500 Internal Server Error");
+
+        $management_lang = Load::lang('management');
+        $management_copy = isset($management_lang['management']) && is_array($management_lang['management'])
+            ? $management_lang['management']
+            : [];
+
+        $error_title = isset($management_copy['route_error_page_title']) && is_string($management_copy['route_error_page_title']) && $management_copy['route_error_page_title'] !== ''
+            ? $management_copy['route_error_page_title']
+            : 'Administration Error';
+
+        $site = Kayit::getir('site_config');
+        $site['title'] = $error_title;
+
+        $this->tema->lang($management_lang);
+        $this->tema->setGlobal('site', $site);
+        $this->tema->setGlobal('error_title', $error_title);
+        $this->tema->setGlobal('error_headline', $error_title);
+        $this->tema->setGlobal('error_heading', $key_path);
+        $this->tema->setGlobal('error_description', '');
+        $this->tema->setGlobal('hide_navbar', true);
+        $this->tema->setGlobal('hide_search', true);
+        $this->tema->setGlobal('show_fab', false);
+        $this->tema->setGlobal('show_sidebar', false);
+        $this->tema->setGlobal('show_navbar', false);
+        $this->tema->setGlobal('show_filter_sheet', false);
+        $this->tema->setGlobal('show_extra_sheets', false);
+        $this->tema->setGlobal('show_wizards', false);
+        $this->tema->tpl('pages/route_error');
+        $this->tema->output();
+        exit();
     }
 
     private function _build_panel_actions()
@@ -873,6 +968,35 @@ class mod_user_mod extends indexMain
                 'meta' => $quick_access,
             ],
         ];
+
+        // Resolve the media_href equivalent for Rêveberiya Vîdewoyan
+        $media_module = null;
+        $media_href = $this->site['sadres'] . 'mod_user/panel';
+
+        if (Roll::hasPermission('mod_video', 'list') === TRUE) {
+            $media_module = 'mod_video';
+            $media_href = $this->site['sadres'] . 'mod_video/list';
+        } elseif (Roll::hasPermission('mod_imagecategories', 'list') === TRUE) {
+            $media_module = 'mod_imagecategories';
+            $media_href = $this->site['sadres'] . 'mod_imagecategories/list';
+        } elseif (Roll::hasPermission('mod_video_embed', 'list') === TRUE) {
+            $media_module = 'mod_video_embed';
+            $media_href = $this->site['sadres'] . 'mod_video_embed/list';
+        } elseif (Roll::hasPermission('mod_gallery_mod', 'list') === TRUE) {
+            $media_module = 'mod_gallery_mod';
+            $media_href = $this->site['sadres'] . 'mod_gallery_mod/list';
+        }
+
+        if ($media_module !== null) {
+            $definitions[] = [
+                'module' => $media_module,
+                'permission' => 'list',
+                'href' => $media_href,
+                'icon' => 'bi bi-camera-video-fill',
+                'title' => $this->lang['mod_user']['panel']['workspace_nav_videos'],
+                'meta' => $quick_access,
+            ];
+        }
 
         $actions = [];
         foreach ($definitions as $definition) {

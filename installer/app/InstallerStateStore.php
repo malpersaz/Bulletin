@@ -13,10 +13,19 @@ class InstallerStateStore
 
     public function getState()
     {
-        $state = $this->session->get(self::SESSION_KEY);
+        $state = null;
+
+        if (Kayit::varmi(self::SESSION_KEY) === TRUE) {
+            $state = Kayit::getir(self::SESSION_KEY);
+        }
+
+        if (!is_array($state)) {
+            $state = $this->session->get(self::SESSION_KEY);
+        }
+
         if (!is_array($state)) {
             $state = $this->getDefaultState();
-            $this->session->set(self::SESSION_KEY, $state);
+            $this->replace($state);
         }
 
         return array_merge($this->getDefaultState(), $state);
@@ -25,6 +34,7 @@ class InstallerStateStore
     public function replace(array $state)
     {
         $this->session->set(self::SESSION_KEY, $state);
+        Kayit::yenile(self::SESSION_KEY, $state);
     }
 
     public function merge(array $changes)

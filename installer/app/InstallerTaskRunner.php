@@ -270,6 +270,13 @@ class InstallerTaskRunner
             );
         }
 
+        if ($mode === 'module_bootstrap_optional') {
+            return array(
+                'state' => 'completed',
+                'message' => $this->buildCopyRef('sample_module_enabled'),
+            );
+        }
+
         if ($mode === 'project_rule_excluded') {
             return array(
                 'state' => 'skipped',
@@ -439,7 +446,7 @@ class InstallerTaskRunner
         $adapter = (string) $db->getAdapterType();
 
         if ($adapter !== '' && strpos($adapter, 'PDO_SQLITE') !== false) {
-            $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='" . addslashes($table) . "'");
+            $db->fetch_array("SELECT name FROM sqlite_master WHERE type IN ('table', 'view') AND name='" . addslashes($table) . "'");
         } elseif ($adapter !== '' && strpos($adapter, 'POSTGRESQL') !== false) {
             $db->fetch_array("SELECT table_name FROM information_schema.tables WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . addslashes($table) . "'");
         } else {

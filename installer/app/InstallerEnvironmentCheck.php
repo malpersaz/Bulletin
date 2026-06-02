@@ -66,6 +66,8 @@ class InstallerEnvironmentCheck
         $blocked = array();
 
         foreach ($directories as $name => $path) {
+            $this->prepareDirectory($path);
+
             if (!is_dir($path) || !is_writable($path)) {
                 $blocked[] = $name;
             }
@@ -77,6 +79,18 @@ class InstallerEnvironmentCheck
             array('blocked' => $blocked)
         );
     }
+
+    private function prepareDirectory($path)
+    {
+        if (is_dir($path)) {
+            return;
+        }
+
+        @mkdir($path, 0775, true);
+
+        clearstatcache(true, $path);
+    }
+
     private function buildStatus($ok, $key, array $meta, $blocking = true)
     {
         return array(

@@ -2,6 +2,7 @@
 
 {% set hide_search = true %}
 {% set hide_navbar = true %}
+{% set show_fab = true %}
 
 {% block title %}{{ lang.mod_user.panel.home_title }} - {{ lang.mod_user.panel.admin_brand }}{% endblock %}
 
@@ -10,7 +11,6 @@
 {% block styles %}
     {{ parent() }}
     <style>
-        /* Modern Panel Variables */
         :root {
             --panel-card-bg: rgba(var(--md-sys-color-surface-container-rgb, 243, 237, 247), 0.7);
             --panel-card-border: rgba(var(--md-sys-color-outline-variant-rgb, 202, 196, 208), 0.5);
@@ -24,12 +24,127 @@
         }
 
         .panel-container {
-            padding: 24px;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
+            padding: 16px 16px 116px;
+            display: grid;
             gap: 20px;
+        }
+
+        .panel-primary-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            right: 16px;
+            z-index: 10;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 22px;
+            background: color-mix(in srgb, var(--md-sys-color-surface) 88%, transparent);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+
+        .panel-primary-link,
+        .panel-primary-button {
+            min-height: 62px;
+            border-radius: 18px;
+            border: none;
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface-variant);
+            text-decoration: none;
+            display: grid;
+            place-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-align: center;
+            padding: 8px 4px;
+        }
+
+        .panel-primary-link i,
+        .panel-primary-button i {
+            font-size: 18px;
+        }
+
+        .panel-primary-link.is-active {
+            background: linear-gradient(180deg, rgba(231, 239, 255, 1) 0%, rgba(214, 228, 255, 1) 100%);
+            color: #183463;
+            box-shadow: 0 10px 24px rgba(29, 78, 216, 0.14);
+        }
+
+        .panel-primary-button {
+            cursor: pointer;
+        }
+
+        .panel-section {
+            display: grid;
+            gap: 12px;
+        }
+
+        .panel-section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .panel-section-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .panel-chip-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .panel-chip {
+            min-width: 0;
+            min-height: 46px;
+            padding: 10px 12px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            background: var(--md-sys-color-surface-container-low);
+            color: var(--md-sys-color-on-surface);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            font-weight: 700;
+            font-size: 0.78rem;
+            line-height: 1.2;
+        }
+
+        .panel-chip-empty {
+            min-height: 52px;
+            padding: 12px;
+            border-radius: 16px;
+            background: var(--md-sys-color-surface-container-low);
+            border: 1px dashed rgba(0, 0, 0, 0.12);
+            color: var(--md-sys-color-on-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.76rem;
+            font-weight: 600;
+            width: 200%;
+        }
+
+        .panel-chip i {
+            font-size: 15px;
+            color: var(--md-sys-color-primary);
+            flex-shrink: 0;
+        }
+
+        .panel-chip span {
+            min-width: 0;
         }
 
         /* Minimal Greeting */
@@ -41,17 +156,215 @@
             gap: 8px;
             margin-bottom: -4px;
         }
-        
+
         .minimal-greeting strong {
             color: var(--md-sys-color-primary);
             font-weight: 600;
         }
 
-        /* Modern Grid Action Cards */
+        /* Dynamic Minimalist Action Card Colors */
+        .card-color-1 {
+            --card-custom-bg: rgba(71, 85, 105, 0.05);
+            --card-custom-border: rgba(71, 85, 105, 0.15);
+            --card-custom-icon-bg: rgba(71, 85, 105, 0.08);
+            --card-custom-icon: #475569;
+            --card-custom-title: #334155;
+        }
+        [data-theme="dark"] .card-color-1 {
+            --card-custom-bg: rgba(148, 163, 184, 0.08);
+            --card-custom-border: rgba(148, 163, 184, 0.18);
+            --card-custom-icon-bg: rgba(148, 163, 184, 0.12);
+            --card-custom-icon: #94a3b8;
+            --card-custom-title: #cbd5e1;
+        }
+
+        .card-color-2 {
+            --card-custom-bg: rgba(22, 101, 52, 0.04);
+            --card-custom-border: rgba(22, 101, 52, 0.12);
+            --card-custom-icon-bg: rgba(22, 101, 52, 0.08);
+            --card-custom-icon: #166534;
+            --card-custom-title: #14532d;
+        }
+        [data-theme="dark"] .card-color-2 {
+            --card-custom-bg: rgba(74, 222, 128, 0.06);
+            --card-custom-border: rgba(74, 222, 128, 0.15);
+            --card-custom-icon-bg: rgba(74, 222, 128, 0.1);
+            --card-custom-icon: #4ade80;
+            --card-custom-title: #bbf7d0;
+        }
+
+        .card-color-3 {
+            --card-custom-bg: rgba(109, 40, 217, 0.04);
+            --card-custom-border: rgba(109, 40, 217, 0.12);
+            --card-custom-icon-bg: rgba(109, 40, 217, 0.08);
+            --card-custom-icon: #6d28d9;
+            --card-custom-title: #581c87;
+        }
+        [data-theme="dark"] .card-color-3 {
+            --card-custom-bg: rgba(167, 139, 250, 0.06);
+            --card-custom-border: rgba(167, 139, 250, 0.15);
+            --card-custom-icon-bg: rgba(167, 139, 250, 0.1);
+            --card-custom-icon: #a78bfa;
+            --card-custom-title: #ddd6fe;
+        }
+
+        .card-color-4 {
+            --card-custom-bg: rgba(180, 83, 9, 0.04);
+            --card-custom-border: rgba(180, 83, 9, 0.12);
+            --card-custom-icon-bg: rgba(180, 83, 9, 0.08);
+            --card-custom-icon: #b45309;
+            --card-custom-title: #7c2d12;
+        }
+        [data-theme="dark"] .card-color-4 {
+            --card-custom-bg: rgba(251, 191, 36, 0.06);
+            --card-custom-border: rgba(251, 191, 36, 0.15);
+            --card-custom-icon-bg: rgba(251, 191, 36, 0.1);
+            --card-custom-icon: #fbbf24;
+            --card-custom-title: #fef3c7;
+        }
+
+        .card-color-5 {
+            --card-custom-bg: rgba(190, 24, 74, 0.04);
+            --card-custom-border: rgba(190, 24, 74, 0.12);
+            --card-custom-icon-bg: rgba(190, 24, 74, 0.08);
+            --card-custom-icon: #be184d;
+            --card-custom-title: #881337;
+        }
+        [data-theme="dark"] .card-color-5 {
+            --card-custom-bg: rgba(251, 113, 133, 0.06);
+            --card-custom-border: rgba(251, 113, 133, 0.15);
+            --card-custom-icon-bg: rgba(251, 113, 133, 0.1);
+            --card-custom-icon: #fb7185;
+            --card-custom-title: #ffe4e6;
+        }
+
+        .card-color-6 {
+            --card-custom-bg: rgba(15, 118, 110, 0.04);
+            --card-custom-border: rgba(15, 118, 110, 0.12);
+            --card-custom-icon-bg: rgba(15, 118, 110, 0.08);
+            --card-custom-icon: #0f766e;
+            --card-custom-title: #115e59;
+        }
+        [data-theme="dark"] .card-color-6 {
+            --card-custom-bg: rgba(45, 212, 191, 0.06);
+            --card-custom-border: rgba(45, 212, 191, 0.15);
+            --card-custom-icon-bg: rgba(45, 212, 191, 0.1);
+            --card-custom-icon: #2dd4bf;
+            --card-custom-title: #ccfbf1;
+        }
+
+        /* FAB Button Custom Minimalist Color (Terracotta/Salmon) */
+        body .fab-large {
+            background: #fda4af !important; /* Soft Rose/Terracotta pastel */
+            color: #9f1239 !important; /* Dark Rose */
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2) !important;
+        }
+        body .fab-container.active .fab-large {
+            background: #fca5a5 !important;
+            color: #9f1239 !important;
+        }
+
+        [data-theme="dark"] body .fab-large {
+            background: #fecdd3 !important; /* Muted pastel Rose */
+            color: #9f1239 !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+        [data-theme="dark"] body .fab-container.active .fab-large {
+            background: #fda4af !important;
+            color: #9f1239 !important;
+        }
+
+        /* Zêdetir Section Custom Minimalist Glassmorphic Indigo/Lavender */
+        .panel-primary-nav {
+            background: rgba(238, 242, 255, 0.85) !important; /* Soft Indigo 50 translucent */
+            border: 1px solid rgba(199, 210, 254, 0.8) !important; /* Soft Indigo 200 */
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.08) !important;
+        }
+
+        .panel-primary-button {
+            background: transparent !important;
+            color: #4f46e5 !important; /* Indigo 600 */
+        }
+
+        .panel-primary-button i {
+            color: #4f46e5 !important;
+        }
+
+        [data-theme="dark"] .panel-primary-nav {
+            background: rgba(30, 27, 75, 0.85) !important; /* Indigo 950 translucent */
+            border: 1px solid rgba(67, 56, 202, 0.5) !important; /* Indigo 700 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        [data-theme="dark"] .panel-primary-button {
+            color: #c7d2fe !important; /* Indigo 200 */
+        }
+
+        [data-theme="dark"] .panel-primary-button i {
+            color: #c7d2fe !important;
+        }
+
+        /* Custom Minimalist Pastel Colors for each Mini FAB button (Speed Dial) */
+        /* Mini FAB 1 (Content Add) - Slate/Blue-gray */
+        .fab-actions .fab-mini:nth-child(1) {
+            background: rgba(71, 85, 105, 0.1) !important;
+            color: #475569 !important;
+            border: 1px solid rgba(71, 85, 105, 0.2) !important;
+        }
+        [data-theme="dark"] .fab-actions .fab-mini:nth-child(1) {
+            background: rgba(148, 163, 184, 0.15) !important;
+            color: #cbd5e1 !important;
+            border: 1px solid rgba(148, 163, 184, 0.3) !important;
+        }
+
+        /* Mini FAB 2 (Publication Add) - Sage Green */
+        .fab-actions .fab-mini:nth-child(2) {
+            background: rgba(22, 101, 52, 0.08) !important;
+            color: #166534 !important;
+            border: 1px solid rgba(22, 101, 52, 0.18) !important;
+        }
+        [data-theme="dark"] .fab-actions .fab-mini:nth-child(2) {
+            background: rgba(74, 222, 128, 0.12) !important;
+            color: #4ade80 !important;
+            border: 1px solid rgba(74, 222, 128, 0.25) !important;
+        }
+
+        /* Mini FAB 3 (Video Embed Add) - Lavender/Violet */
+        .fab-actions .fab-mini:nth-child(3) {
+            background: rgba(109, 40, 217, 0.08) !important;
+            color: #6d28d9 !important;
+            border: 1px solid rgba(109, 40, 217, 0.18) !important;
+        }
+        [data-theme="dark"] .fab-actions .fab-mini:nth-child(3) {
+            background: rgba(167, 139, 250, 0.12) !important;
+            color: #a78bfa !important;
+            border: 1px solid rgba(167, 139, 250, 0.25) !important;
+        }
+
+        /* Mini FAB 4 (Announcement Add) - Ochre/Amber */
+        .fab-actions .fab-mini:nth-child(4) {
+            background: rgba(180, 83, 9, 0.08) !important;
+            color: #b45309 !important;
+            border: 1px solid rgba(180, 83, 9, 0.18) !important;
+        }
+        [data-theme="dark"] .fab-actions .fab-mini:nth-child(4) {
+            background: rgba(251, 191, 36, 0.12) !important;
+            color: #fbbf24 !important;
+            border: 1px solid rgba(251, 191, 36, 0.25) !important;
+        }
+
+        /* Speed dial add-badge styling to blend in */
+        .fab-mini .add-badge {
+            background: transparent !important;
+            color: inherit !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
         .panel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             margin-top: 8px;
         }
 
@@ -59,8 +372,8 @@
             display: flex;
             align-items: center;
             padding: 20px;
-            background: var(--panel-card-bg);
-            border: 1px solid var(--panel-card-border);
+            background: var(--card-custom-bg, var(--panel-card-bg));
+            border: 1px solid var(--card-custom-border, var(--panel-card-border));
             border-radius: 20px;
             text-decoration: none;
             color: inherit;
@@ -74,7 +387,7 @@
         .modern-action-card:hover {
             transform: translateY(-4px) scale(1.01);
             box-shadow: var(--panel-hover-shadow);
-            border-color: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.3);
+            border-color: var(--card-custom-border, rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.3));
             text-decoration: none;
             color: inherit;
         }
@@ -88,13 +401,6 @@
             transform: scale(0.98);
         }
 
-        /* Interactive pulse effect on icon background */
-        .modern-action-card:hover .action-icon-wrap {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
-            transform: scale(1.1);
-        }
-
         .action-icon-wrap {
             display: flex;
             align-items: center;
@@ -102,8 +408,8 @@
             width: 48px;
             height: 48px;
             border-radius: 14px;
-            background: rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1);
-            color: var(--md-sys-color-primary);
+            background: var(--card-custom-icon-bg, rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.1));
+            color: var(--card-custom-icon, var(--md-sys-color-primary));
             font-size: 1.5rem;
             margin-right: 16px;
             transition: all 0.3s ease;
@@ -120,18 +426,11 @@
         .action-title {
             font-size: 1.1rem;
             font-weight: 600;
-            color: var(--md-sys-color-on-surface);
-        }
-
-        .action-meta {
-            font-size: 0.85rem;
-            color: var(--md-sys-color-on-surface-variant);
-            font-weight: 500;
-            letter-spacing: 0.05em;
+            color: var(--card-custom-title, var(--md-sys-color-on-surface));
         }
 
         .action-arrow {
-            color: var(--md-sys-color-outline);
+            color: var(--card-custom-icon, var(--md-sys-color-outline));
             transition: transform 0.3s ease;
             font-size: 1.2rem;
             margin-left: 12px;
@@ -139,43 +438,174 @@
 
         .modern-action-card:hover .action-arrow {
             transform: translateX(4px);
-            color: var(--md-sys-color-primary);
+            color: var(--card-custom-icon, var(--md-sys-color-primary));
         }
 
-        /* Mobile Adjustments */
-        @media (max-width: 600px) {
-            .panel-container {
-                padding: 16px;
-            }
+        .panel-dock-space {
+            height: 12px;
+        }
 
-            .panel-grid {
-                grid-template-columns: 1fr;
-            }
+        #panel-more-overlay.active {
+            background: rgba(17, 24, 39, 0.36);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+
+        #panel-more-sheet {
+            height: min(72vh, 560px);
+            border-top-left-radius: 28px;
+            border-top-right-radius: 28px;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .panel-more-shell {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .panel-more-body {
+            padding: 18px 14px 14px;
+            overflow-y: auto;
+            display: grid;
+            gap: 12px;
+        }
+
+        .panel-more-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        .panel-more-group-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--md-sys-color-on-surface-variant);
+            padding: 0 4px;
+        }
+
+        .panel-more-link {
+            min-height: 56px;
+            padding: 0 16px;
+            border-radius: 18px;
+            background: var(--md-sys-color-surface-container-low);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--md-sys-color-on-surface);
+            font-weight: 700;
+        }
+
+        .panel-more-link i {
+            color: var(--md-sys-color-primary);
+            font-size: 18px;
+        }
+
+        .panel-more-footer {
+            padding: 14px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            background: var(--md-sys-color-surface);
+        }
+
+        .panel-more-footer button {
+            width: 100%;
+            min-height: 52px;
+            border: none;
+            border-radius: 999px;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
     </style>
 {% endblock %}
 
 {% block content %}
 <div class="panel-container">
-    <!-- Minimal Greeting -->
-    <div class="minimal-greeting">
-        👋 <span>{{ lang.mod_user.panel.welcome_main }} <strong>{{ session.full_name }}</strong></span>
-    </div>
+    <section class="panel-section">
+        <div class="panel-grid">
+            {% for action in panel_actions %}
+            <a class="modern-action-card card-color-{{ loop.index }}" href="{{ action.href }}" data-nav-track="1" data-nav-id="{{ action.module }}" data-nav-label="{{ action.title }}">
+                <div class="action-icon-wrap">
+                    <i class="{{ action.icon }}"></i>
+                </div>
+                <div class="action-content">
+                    <div class="action-title">{{ action.title }}</div>
 
-    <!-- Quick Actions Grid -->
-    <div class="panel-grid">
-        {% for action in panel_actions %}
-        <a class="modern-action-card" href="{{ action.href }}">
-            <div class="action-icon-wrap">
-                <i class="{{ action.icon }}"></i>
+                </div>
+                <i class="bi bi-chevron-right action-arrow"></i>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <nav class="panel-primary-nav">
+        <button class="panel-primary-button" type="button" onclick="openPanelMoreSheet()">
+            <i class="bi bi-list-ul"></i>
+            <span>{{ lang.mod_user.panel.workspace_nav_more }}</span>
+        </button>
+    </nav>
+
+    <div class="panel-dock-space"></div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="overlay" id="panel-more-overlay" onclick="closePanelMoreSheet()"></div>
+<div class="bottom-sheet" id="panel-more-sheet">
+    <div class="panel-more-shell">
+        <div class="panel-more-body">
+            <div class="panel-more-group">
+                <div class="panel-more-group-title">{{ lang.management.system_tools }}</div>
+                {% if session.permissions.mod_user.acl is defined %}
+                    <a class="panel-more-link" href="{{ site.sadres }}mod_user/acl">
+                        <i class="bi bi-shield-lock"></i>
+                        <span>{{ lang.management.uye_permission_yonetimi_acl }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_acl.list is defined %}
+                    <a class="panel-more-link" href="{{ site.sadres }}mod_acl/list">
+                        <i class="bi bi-database-fill"></i>
+                        <span>{{ lang.management.acl }}</span>
+                    </a>
+                {% endif %}
             </div>
-            <div class="action-content">
-                <div class="action-title">{{ action.title }}</div>
-                <div class="action-meta">{{ action.meta }}</div>
+
+            <div class="panel-more-group">
+                <div class="panel-more-group-title">{{ lang.management.uyelik }}</div>
+                {% if session.permissions.mod_user.list is defined %}
+                    <a class="panel-more-link" href="{{ site.sadres }}mod_user/list">
+                        <i class="bi bi-person"></i>
+                        <span>{{ lang.management.uyeler }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_user_group.list is defined %}
+                    <a class="panel-more-link" href="{{ site.sadres }}mod_user_group/list">
+                        <i class="bi bi-people"></i>
+                        <span>{{ lang.management.uye_gruplari }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_user.setting is defined %}
+                    <a class="panel-more-link" href="{{ site.sadres }}mod_user/settings">
+                        <i class="bi bi-person-gear"></i>
+                        <span>{{ lang.management.membership_setting }}</span>
+                    </a>
+                {% endif %}
             </div>
-            <i class="bi bi-chevron-right action-arrow"></i>
-        </a>
-        {% endfor %}
+        </div>
+        <div class="panel-more-footer">
+            <button type="button" onclick="openFullModuleDirectory()">
+                <i class="bi bi-layout-text-sidebar-reverse"></i>
+                <span>{{ lang.mod_user.panel.more_sheet_open_drawer }}</span>
+            </button>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -188,5 +618,30 @@
                 wrapper.classList.add('mesh-bg');
             }
         });
+
+        function openPanelMoreSheet() {
+            const sheet = document.getElementById('panel-more-sheet');
+            const overlay = document.getElementById('panel-more-overlay');
+            if (!sheet || !overlay) {
+                return;
+            }
+            sheet.classList.add('active');
+            overlay.classList.add('active');
+        }
+
+        function closePanelMoreSheet() {
+            const sheet = document.getElementById('panel-more-sheet');
+            const overlay = document.getElementById('panel-more-overlay');
+            if (!sheet || !overlay) {
+                return;
+            }
+            sheet.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function openFullModuleDirectory() {
+            closePanelMoreSheet();
+            toggleDrawer();
+        }
     </script>
 {% endblock %}

@@ -19,6 +19,14 @@ $lang['management']=[
     'acl' => 'ACL',
     'gallery_modulleri' => 'Modûlên Galeriyê',
     'dosya_modulleri' => 'Modûlên Pelan',
+    'system_tools' => 'Amurê Sıstemı',
+    'recent_modules' => 'Modulê Peyên',
+    'pinned_modules' => 'Modulê Sabit',
+    'module_search_placeholder' => 'Modulan cıgeyrayış...',
+    'pin_module' => 'Modulê pîn kerê',
+    'unpin_module' => 'Pînkerdışê modulî rakerê',
+    'recent_workspace_empty' => 'Modulê peyênî tiya asenî',
+    'module_search_empty' => 'Modul nêvêniya',
 
     // Content and pages submenu
     'content_categories' => 'Kategoriyên Naverokan',

@@ -419,6 +419,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Gihaştina Lezgîn',
         'home_title' => 'Serûpel',
         'admin_brand' => 'Rêveberiya Rojname',
+        'recent_workspace' => 'Saha Peyên',
+        'workspace_nav_media' => 'Medya',
+        'workspace_nav_videos' => 'İdareyê Videoyan',
+        'workspace_nav_more' => 'Tayêna',
+        'more_sheet_title' => 'Amurê Zêde',
+        'more_sheet_copy' => 'Bêy ku xeta sereke ya kar tijî bibo, rûyê idareyiya kem-bıkaranışi veke.',
+        'more_sheet_open_drawer' => 'Peldanka pêro modulan veke',
     ],
     'fab' => [
         'add_announcement' => 'Daxwiyaniyekê Lêke',

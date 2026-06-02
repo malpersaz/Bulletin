@@ -118,6 +118,14 @@ ini_set('max_execution_time', 30);
 require_once('vendor/autoload.php');
 require_once('koberz.init.php');
 
+require_once('lib/InstallationState.php');
+$installationState = new InstallationState();
+$installCheck = $installationState->inspect();
+if (!$installCheck['is_installed']) {
+    header('Location: ' . sub_dir . 'installer/', true, 302);
+    exit;
+}
+
 Load::lib('Amed');
 
 

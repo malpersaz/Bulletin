@@ -19,6 +19,7 @@ if (!file_exists($bootstrapDbConfig)) {
 
 require_once('../koberz.init.php');
 define('installer_dir', root_dir . 'installer' . DS);
+require_once(lib_dir . 'InstallationState.php');
 
 require_once(installer_dir . 'installerbase.php');
 require_once(installer_dir . 'app' . DS . 'InstallerStateStore.php');
@@ -28,6 +29,14 @@ require_once(installer_dir . 'app' . DS . 'InstallerEnvironmentCheck.php');
 require_once(installer_dir . 'app' . DS . 'InstallerTaskRunner.php');
 require_once(installer_dir . 'app' . DS . 'InstallerConfigWriter.php');
 require_once(installer_dir . 'app' . DS . 'SqliteSqlTransformer.php');
+
+$installationState = new InstallationState();
+$installCheck = $installationState->inspect();
+
+if (!empty($installCheck['is_installed'])) {
+    header('Location: ../', true, 302);
+    exit;
+}
 
 class installer extends installerbase
 {
@@ -134,6 +143,10 @@ function installer_module_label($module, array $ui)
 
 function installer_step_class($stateStep, $currentStep)
 {
+    if ($stateStep === 'progress' && $currentStep === 'finish') {
+        return 'step-pill is-active';
+    }
+
     return $stateStep === $currentStep ? 'step-pill is-active' : 'step-pill';
 }
 

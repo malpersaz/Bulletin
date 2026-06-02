@@ -417,7 +417,14 @@ $lang['mod_user']['panel'] = [
     'search_placeholder' => 'Search...',
     'quick_access' => 'Quick Access',
     'home_title' => 'Home',
-    'admin_brand' => 'Rojname Admin'
+    'admin_brand' => 'Rojname Admin',
+    'recent_workspace' => 'Recent Workspace',
+    'workspace_nav_media' => 'Media',
+    'workspace_nav_videos' => 'Video Management',
+    'workspace_nav_more' => 'More',
+    'more_sheet_title' => 'More Tools',
+    'more_sheet_copy' => 'Open lower-frequency system and administration surfaces without crowding the main workspace bar.',
+    'more_sheet_open_drawer' => 'Open full module directory'
 ];
 
 $lang['mod_user']['fab'] = [

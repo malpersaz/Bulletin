@@ -408,6 +408,13 @@ $lang['mod_user'] = [
         'quick_access' => 'Gihaştina Lezgîn',
         'home_title' => 'Serûpel',
         'admin_brand' => 'Rêveberiya Rojname',
+        'recent_workspace' => 'Çalakiyên Dawî',
+        'workspace_nav_media' => 'Medya',
+        'workspace_nav_videos' => 'Rêveberiya Vîdewoyan',
+        'workspace_nav_more' => 'Zêdetir',
+        'more_sheet_title' => 'Amûrên Zêdetir',
+        'more_sheet_copy' => 'Rûpelên pergalê û rêveberiyê yên kêm tên bikaranîn veke, bêyî ku barê xebatê yê bingehîn qelebalîx bike.',
+        'more_sheet_open_drawer' => 'Hemû lîsteya modulan veke'
     ],
     'fab' => [
         'add_announcement' => 'Daxuyaniyê Lêzêde Bike',
