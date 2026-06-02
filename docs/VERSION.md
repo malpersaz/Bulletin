@@ -1,10 +1,14 @@
 ## v1.0.57
-- Active version bucket derived from the next unpublished cycle.
-- **Nûjenkirin û Xweserkirina Pergala Agentan**: Rêbername, sîyaset, manifest, û skillên agentan (li bin `.agents/theme`, `.agents/design`, û `.agents/skills`) li gorî asta nû ya Business CMS hatin nûjenkirin û bi tevahî ji bo taybetmendiyên portalê nûçe û weşanê yên `Rojname` hatin xweserkirin (bêyî tu nav an modula `product`).
-- **Siyasetên Templates û Sêwiranê yên Nû**: Pelên `templates/AGENTS.md` û `templates/admin/AGENTS.md` yên nû hatin afirandin, û rêgezên visual design contract û sêwirana mobîlê (phone-only admin surface) bi rêkûpêk hatin pênasekirin.
+- Active version bucket derived from the current user request.
+- **Senkronîzekirin û Paqijkirina mod_news_category**: Modula kategoriyên nûçeyan (`mod_news_category`) û sazkerê (installer) wê di navbera projeyên `Rojname` û `Business` de hatin senkronîzekirin.
+- **Nûjenkirina Sazkerê Rojname**: Di sazkerê `Rojname` de pênaseya taybetmendiya zêde `public $model;` û şiroveyên nehewce hatin paqijkirin. Bangkirina fonksiyona seedkirina kategoriyan (`installer_seed_category_bootstrap`) lê hate zêdekirin da ku bi bixweber kategoriyên bingehîn seed bike.
+- **Rakirina Qedexeyên Boundary li Rojname**: Sînorên modula `mod_news_category` û qedexeya seedkirinê ya ji bo sazkerê `Rojname` di pelê `AGENTS.md` de hatin rakirin da ku her du proje li ser vê modulê senkronîze bimînin.
+- **Wergerandin û Paqijkirina Şiroveyên Tirkî yên Business**: Şiroveyên bi zimanê Tirkî yên di pelên validatoran ên `Business` (`add.validator.php` û `edit.validator.php`) de hatin paqijkirin û wergerandin ser Îngilîzî da ku bi asta koda paqij a Rojname re li hev werin.
 
 ## v1.0.56
 - Active version bucket derived from the current user request.
+- **Nûjenkirin û Xweserkirina Pergala Agentan**: Rêbername, sîyaset, manifest, û skillên agentan (li bin `.agents/theme`, `.agents/design`, û `.agents/skills`) li gorî asta nû ya Business CMS hatin nûjenkirin û bi tevahî ji bo taybetmendiyên portalê nûçe û weşanê yên `Rojname` hatin xweserkirin (bêyî tu nav an modula `product`).
+- **Siyasetên Templates û Sêwiranê yên Nû**: Pelên `templates/AGENTS.md` û `templates/admin/AGENTS.md` yên nû hatin afirandin, û rêgezên visual design contract û sêwirana mobîlê (phone-only admin surface) bi rêkûpêk hatin pênasekirin.
 - **News Category Module Modernization**: Modernized the admin news category module (`mod_news_category`) to use a recursive tree-based card view. Integrated SortableJS for drag-and-drop reordering, direct homepage visibility toggling, and recursive subcategory deletion with SweetAlert2 confirmation prompts.
 - **Hierarchical Loop and Language Validation**: Enhanced the category controller to prevent cycle loops (descendant cannot become parent of ancestor) and enforce that child categories belong to the same language tree as their parents.
 - **Menu and Attachment Auto-Synchronization**: Reworked category creation/updating to automatically sync changes to menu slots (`mod_menu`) and ensure cascade recursive deletion of attachments, menu entries, and gallery records.

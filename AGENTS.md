@@ -26,12 +26,11 @@ Repository boundary rule:
 
 - The following modules are `Rojname`-only and must remain project-specific unless the user explicitly changes the rule:
   - `mod_news`
-  - `mod_news_category`
   - `mod_publication`
   - `mod_publication_category`
 - The following installer decisions are also `Rojname`-specific and must stay local unless the user explicitly changes the rule:
   - using `Rojname` as installer branding/default project name
-  - removing default sample menu/category/content seeds from installer setup
+  - removing default sample menu/content seeds from installer setup
 - Refactoring work outside those project-specific decisions should be treated as shared-core candidate work for sibling-repository synchronization.
 
 Module synchronization rule:
