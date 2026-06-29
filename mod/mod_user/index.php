@@ -661,7 +661,8 @@ class mod_user_mod extends indexMain
             'validation_password_long' => $this->lang['mod_user']['register']['js']['validation_password_long'],
             'validation_confirm_password' => $this->lang['mod_user']['register']['js']['validation_confirm_password'],
             'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'],
-            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha']
+            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha'],
+            'password_complexity_error' => $this->lang['mod_user']['error']['password_complexity_error']
         ];
     }
 

@@ -1,3 +1,8 @@
+## v1.0.77
+- **Secure Password Requirements & Complexity Enforcements**: Upgraded password length requirements to min 8 and max 64 characters across password reset and register workflows. Added backend regex validations in `password_reset.validator.php` and `register.validator.php` to enforce uppercase, lowercase, numeric, and special character criteria. Added backend password mismatch check on registration.
+- **Modern Password Input & Strength Checkers**: Modernized password reset and registration interfaces with visibility toggles, dynamic rules checklists, password strength meters, and real-time password match indicators.
+- **Multilingual Localization Alignment**: Expanded translation coverage for the new secure password complexity error keys and validation rules across all 9 active languages (`ku`, `en`, `tr`, `de`, `fr`, `sv`, `zza`, `ar`, `ckb`) without using default fallbacks. Mapped complexity keys to register validation JSON within the controller.
+
 ## v1.0.76
 - **Fix Database Query Builder Side-Effects**: Replaced raw `$db->query` followed by `$db->gRo()` with `$db->fetch_array($sql)` and `$db->getResultOne()` in `password_reset.validator.php`. This bypasses `$db->build()` query generation defaults which previously caused `SELECT * FROM ` syntax errors because builder properties were uninitialized for custom raw SQL strings.
 

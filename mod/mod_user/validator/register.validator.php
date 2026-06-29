@@ -106,10 +106,30 @@ class register_validator
 			[
 				'name' => 'password',
 				'func' => 'length',
-				'arg' => ['min' => 6, 'max' => 16],
+				'arg' => ['min' => 8, 'max' => 64],
 				'message' => $this->lang['mod_user']['register']['error']['password_length']
 			]
 		);
+
+		if ($this->_check() === True) {
+			return True;
+		}
+
+		$password = Req::Post_Safe('password');
+		if (!preg_match('/[A-Z]/', $password) || 
+			!preg_match('/[a-z]/', $password) || 
+			!preg_match('/[0-9]/', $password) || 
+			!preg_match('/[^A-Za-z0-9]/', $password)) {
+			$this->errors[] = $this->lang['mod_user']['error']['password_complexity_error'];
+		}
+
+		if (Req::Post_Safe('password') !== Req::Post_Safe('password2')) {
+			$this->errors[] = $this->lang['mod_user']['error']['passwords_mismatch'];
+		}
+
+		if ($this->_check() === True) {
+			return True;
+		}
 
 		// E-mail.
 		$this->valid->add(

@@ -84,10 +84,22 @@ class password_reset_validator
 			[
 				'name' => 'new_password',
 				'func' => 'length',
-				'arg' => ['min' => 6, 'max' => 20],
+				'arg' => ['min' => 8, 'max' => 64],
 				'message' => $this->lang['mod_user']['error']['password_length_error']
 			]
 		);
+
+		if ($this->_check() === True) {
+			return True;
+		}
+
+		$new_password = Req::Post_Safe('new_password');
+		if (!preg_match('/[A-Z]/', $new_password) || 
+			!preg_match('/[a-z]/', $new_password) || 
+			!preg_match('/[0-9]/', $new_password) || 
+			!preg_match('/[^A-Za-z0-9]/', $new_password)) {
+			$this->errors[] = $this->lang['mod_user']['error']['password_complexity_error'];
+		}
 
 		if ($this->_check() === True) {
 			return True;

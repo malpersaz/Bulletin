@@ -377,13 +377,20 @@ message = LANG.validation_invalid_email || 'Please enter a valid email address';
 } else if (input.id === 'password') {
 if (input.validity.valueMissing) {
 message = LANG.validation_required_password || 'Please enter a password';
-} else if (input.validity.tooShort) {
-message = LANG.validation_password_short || 'Password must be at least 6 characters';
-} else if (input.validity.tooLong) {
-message = LANG.validation_password_long || 'Password must not exceed 20 characters';
+} else if (input.value.trim().length < 8) {
+message = LANG.validation_password_short || 'Password must be at least 8 characters';
+} else if (input.value.trim().length > 64) {
+message = LANG.validation_password_long || 'Password must not exceed 64 characters';
+} else if (!/[A-Z]/.test(input.value) || !/[a-z]/.test(input.value) || !/[0-9]/.test(input.value) || !/[^A-Za-z0-9]/.test(input.value)) {
+message = LANG.password_complexity_error || 'Password must meet complexity requirements';
 }
 } else if (input.id === 'password2') {
+const passwordField = document.getElementById('password');
+if (input.validity.valueMissing) {
 message = LANG.validation_confirm_password || 'Please confirm your password';
+} else if (input.value.trim() !== passwordField.value.trim()) {
+message = LANG.error_6 || 'Passwords do not match';
+}
 } else if (input.id === 'phone') {
 message = LANG.validation_required_phone || 'Please enter your phone number';
 } else if (input.id === 'captcha') {
@@ -479,11 +486,14 @@ isFieldValid = false;
 if (!input.value.trim()) {
 message = LANG.validation_required_password || 'Please enter a password';
 isFieldValid = false;
-} else if (input.value.trim().length < 6) {
-message = LANG.validation_password_short || 'Password must be at least 6 characters';
+} else if (input.value.trim().length < 8) {
+message = LANG.validation_password_short || 'Password must be at least 8 characters';
 isFieldValid = false;
-} else if (input.value.trim().length > 20) {
-message = LANG.validation_password_long || 'Password must not exceed 20 characters';
+} else if (input.value.trim().length > 64) {
+message = LANG.validation_password_long || 'Password must not exceed 64 characters';
+isFieldValid = false;
+} else if (!/[A-Z]/.test(input.value) || !/[a-z]/.test(input.value) || !/[0-9]/.test(input.value) || !/[^A-Za-z0-9]/.test(input.value)) {
+message = LANG.password_complexity_error || 'Password must meet complexity requirements';
 isFieldValid = false;
 }
 } else if (input.id === 'password2') {
@@ -536,6 +546,121 @@ firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
 }
 }
 });
+	// Toggle Password Visibility
+	const toggles = document.querySelectorAll('.toggle-password');
+	toggles.forEach(toggle => {
+		toggle.addEventListener('click', function() {
+			const targetId = this.getAttribute('data-target');
+			const targetInput = document.getElementById(targetId);
+			const icon = this.querySelector('i');
+			if (targetInput && icon) {
+				if (targetInput.type === 'password') {
+					targetInput.type = 'text';
+					icon.classList.remove('bi-eye');
+					icon.classList.add('bi-eye-slash');
+				} else {
+					targetInput.type = 'password';
+					icon.classList.remove('bi-eye-slash');
+					icon.classList.add('bi-eye');
+				}
+			}
+		});
+	});
+
+	// Password strength and criteria check
+	const newPassword = document.getElementById('password');
+	const confirmPassword = document.getElementById('password2');
+	const strengthContainer = document.getElementById('strengthContainer');
+	const strengthBar = document.getElementById('strengthBar');
+	const strengthText = document.getElementById('strengthText');
+	const matchContainer = document.getElementById('matchContainer');
+	const matchIcon = document.getElementById('matchIcon');
+	const matchText = document.getElementById('matchText');
+
+	const rules = {
+		length: val => val.length >= 8,
+		uppercase: val => /[A-Z]/.test(val),
+		lowercase: val => /[a-z]/.test(val),
+		number: val => /[0-9]/.test(val),
+		special: val => /[^A-Za-z0-9]/.test(val)
+	};
+
+	const criteriaLabels = {
+		weak: '{{ lang.mod_user.password_strength.weak }}',
+		fair: '{{ lang.mod_user.password_strength.fair }}',
+		good: '{{ lang.mod_user.password_strength.good }}',
+		strong: '{{ lang.mod_user.password_strength.strong }}'
+	};
+
+	if (newPassword) {
+		newPassword.addEventListener('input', function() {
+			const val = this.value;
+			if (val.length > 0) {
+				strengthContainer.classList.remove('d-none');
+			} else {
+				strengthContainer.classList.add('d-none');
+			}
+
+			let score = 0;
+			Object.keys(rules).forEach(rule => {
+				const isValid = rules[rule](val);
+				const item = document.querySelector(`.criteria-item[data-rule="${rule}"]`);
+				if (item) {
+					const icon = item.querySelector('.criteria-icon');
+					if (isValid) {
+						icon.className = 'bi bi-check-circle-fill text-success criteria-icon';
+						score++;
+					} else {
+						icon.className = 'bi bi-x-circle-fill text-danger criteria-icon';
+					}
+				}
+			});
+
+			// Update strength bar and text
+			let pct = (score / 5) * 100;
+			strengthBar.style.width = pct + '%';
+			if (score <= 2) {
+				strengthBar.className = 'progress-bar bg-danger';
+				strengthText.textContent = criteriaLabels.weak;
+				strengthText.className = 'small fw-bold text-danger';
+			} else if (score <= 4) {
+				strengthBar.className = 'progress-bar bg-warning';
+				strengthText.textContent = criteriaLabels.fair;
+				strengthText.className = 'small fw-bold text-warning';
+			} else {
+				strengthBar.className = 'progress-bar bg-success';
+				strengthText.textContent = criteriaLabels.strong;
+				strengthText.className = 'small fw-bold text-success';
+			}
+
+			checkPasswordsMatch();
+		});
+	}
+
+	function checkPasswordsMatch() {
+		if (!confirmPassword || !newPassword) return;
+		const pass1 = newPassword.value;
+		const pass2 = confirmPassword.value;
+
+		if (pass2.length > 0) {
+			matchContainer.classList.remove('d-none');
+			if (pass1 === pass2) {
+				matchIcon.className = 'bi bi-check-circle-fill text-success';
+				matchText.textContent = '{{ lang.mod_user.password_reset.password_match }}';
+				matchText.className = 'fw-semibold text-success';
+			} else {
+				matchIcon.className = 'bi bi-x-circle-fill text-danger';
+				matchText.textContent = '{{ lang.mod_user.password_match.error }}';
+				matchText.className = 'fw-semibold text-danger';
+			}
+		} else {
+			matchContainer.classList.add('d-none');
+		}
+	}
+
+	if (confirmPassword) {
+		confirmPassword.addEventListener('input', checkPasswordsMatch);
+	}
 }
 });
 	</script>
@@ -625,17 +750,78 @@ firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
 							<div class="row">
 								<div class="col-md-6 mb-3">
 									<label class="form-label" for="password">{{ lang.mod_user.register.your_password }}</label>
-									<input type="password" class="form-control" id="password" name="password" value="{{ sifre }}" required minlength="6" maxlength="20" placeholder="{{ lang.mod_user.register.your_password }}">
+									<div class="input-group">
+										<span class="input-group-text bg-light border-end-0 text-muted">
+											<i class="bi bi-lock"></i>
+										</span>
+										<input type="password" class="form-control border-start-0 border-end-0 ps-0" id="password" name="password" value="{{ sifre }}" required minlength="8" maxlength="64" placeholder="{{ lang.mod_user.register.your_password }}">
+										<span class="input-group-text bg-light text-muted border-start-0 toggle-password" style="cursor: pointer;" data-target="password">
+											<i class="bi bi-eye"></i>
+										</span>
+									</div>
 									<div class="invalid-feedback">
 										{{ lang.mod_user.error_fatal.5 }}
+									</div>
+
+									<!-- Password Strength Indicator -->
+									<div class="mt-2 d-none" id="strengthContainer">
+										<div class="d-flex justify-content-between align-items-center mb-1">
+											<span class="small fw-semibold text-secondary">{{ lang.mod_user.password_reset.strength_label }}</span>
+											<span class="small fw-bold" id="strengthText"></span>
+										</div>
+										<div class="progress shadow-sm" style="height: 6px; border-radius: 3px;">
+											<div class="progress-bar" id="strengthBar" role="progressbar" style="width: 0%; transition: width 0.3s ease, background-color 0.3s ease;"></div>
+										</div>
+									</div>
+
+									<!-- Password Criteria Checklist -->
+									<div class="mt-2 p-2 bg-light rounded shadow-sm border" id="criteriaContainer">
+										<div class="row row-cols-1 g-1">
+											<div class="col small d-flex align-items-center gap-2 criteria-item" data-rule="length">
+												<i class="bi bi-x-circle-fill text-danger criteria-icon" style="transition: transform 0.2s ease; font-size: 0.85rem;"></i>
+												<span class="text-secondary" style="font-size: 0.8rem;">{{ lang.mod_user.password_reset.rule_min_length }}</span>
+											</div>
+											<div class="col small d-flex align-items-center gap-2 criteria-item" data-rule="uppercase">
+												<i class="bi bi-x-circle-fill text-danger criteria-icon" style="transition: transform 0.2s ease; font-size: 0.85rem;"></i>
+												<span class="text-secondary" style="font-size: 0.8rem;">{{ lang.mod_user.password_reset.rule_uppercase }}</span>
+											</div>
+											<div class="col small d-flex align-items-center gap-2 criteria-item" data-rule="lowercase">
+												<i class="bi bi-x-circle-fill text-danger criteria-icon" style="transition: transform 0.2s ease; font-size: 0.85rem;"></i>
+												<span class="text-secondary" style="font-size: 0.8rem;">{{ lang.mod_user.password_reset.rule_lowercase }}</span>
+											</div>
+											<div class="col small d-flex align-items-center gap-2 criteria-item" data-rule="number">
+												<i class="bi bi-x-circle-fill text-danger criteria-icon" style="transition: transform 0.2s ease; font-size: 0.85rem;"></i>
+												<span class="text-secondary" style="font-size: 0.8rem;">{{ lang.mod_user.password_reset.rule_number }}</span>
+											</div>
+											<div class="col small d-flex align-items-center gap-2 criteria-item" data-rule="special">
+												<i class="bi bi-x-circle-fill text-danger criteria-icon" style="transition: transform 0.2s ease; font-size: 0.85rem;"></i>
+												<span class="text-secondary" style="font-size: 0.8rem;">{{ lang.mod_user.password_reset.rule_special }}</span>
+											</div>
+										</div>
 									</div>
 								</div>
 
 								<div class="col-md-6 mb-3">
 									<label class="form-label" for="password2">{{ lang.mod_user.register.confirm_password }}</label>
-									<input type="password" class="form-control" id="password2" name="password2" value="{{ sifre2 }}" required minlength="6" maxlength="20" placeholder="{{ lang.mod_user.register.confirm_password }}">
+									<div class="input-group">
+										<span class="input-group-text bg-light border-end-0 text-muted">
+											<i class="bi bi-lock-fill"></i>
+										</span>
+										<input type="password" class="form-control border-start-0 border-end-0 ps-0" id="password2" name="password2" value="{{ sifre2 }}" required minlength="8" maxlength="64" placeholder="{{ lang.mod_user.register.confirm_password }}">
+										<span class="input-group-text bg-light text-muted border-start-0 toggle-password" style="cursor: pointer;" data-target="password2">
+											<i class="bi bi-eye"></i>
+										</span>
+									</div>
 									<div class="invalid-feedback">
 										{{ lang.mod_user.error_fatal.6 }}
+									</div>
+
+									<!-- Password Matching Status -->
+									<div class="mt-2 d-none" id="matchContainer">
+										<div class="d-flex align-items-center gap-2 small p-2 rounded bg-light border">
+											<i class="bi bi-x-circle-fill text-danger" id="matchIcon"></i>
+											<span class="fw-semibold text-secondary" id="matchText"></span>
+										</div>
 									</div>
 								</div>
 							</div>
