@@ -3017,8 +3017,12 @@ function prepareAndSubmitWizard() {
     const url = (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + WIZARD_MODULE + '/add';
     console.log('Sending to URL:', url);
     console.log('FormData entries:');
-    for (let pair of formData.entries()) {
-        console.log('  ', pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    if (typeof formData.entries === 'function') {
+        for (let pair of formData.entries()) {
+            console.log('  ', pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+        }
+    } else {
+        console.log('  FormData.entries() is not supported on this browser.');
     }
 
     fetch(url, {

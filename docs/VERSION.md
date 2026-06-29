@@ -1,3 +1,8 @@
+## v1.0.63
+- Active version bucket derived from the current user request.
+- **FormData.entries Compatibility Fix**: Wrapped the `formData.entries()` loop inside `script.js` in a capability check to prevent runtime `TypeError` crashes on older browsers and devices that do not support this API, resolving the article publication hang issue.
+- **Safe Language Checks in Add Templates**: Safe-guarded inline language checks in `mod_publication/add.twig`, `mod_content/add.twig`, and `mod_news/add.twig` to verify `adminLang` and `adminLang.languages` existence, preventing potential `TypeError` or `ReferenceError` crashes.
+
 ## v1.0.62
 - Active version bucket derived from the current user request.
 - **English-Only Rules for Version Log and Code**: Updated agent guidelines (`AGENTS.md`, `INDEX.md`, and `quality/manifest.md`) and the `task-validation` skill to enforce that `/docs/VERSION.md` is strictly updated in English. Added clear directives prohibiting Turkish or Kurdish in release notes, code comments, function names, variable names, translation keys, and overall coding elements.
