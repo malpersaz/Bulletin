@@ -329,6 +329,18 @@ $lang['mod_publication'] = [
             'change_image' => 'Change Image',
             'editor_placeholder' => 'Start writing your publication here...',
         ],
+'image' => [
+            'drop_title' => 'Drag an image here',
+            'drop_description' => 'Upload, paste, or drop an image.',
+            'upload_link' => 'upload a file',
+            'link_separator' => 'OR',
+            'link_placeholder' => 'Paste image link',
+            'link_action' => 'Import',
+            'hint_loading' => 'Importing image...',
+            'hint_invalid_type' => 'Only image files are supported here.',
+            'hint_no_drop_data' => 'No usable image was found in the dropped content.',
+            'hint_remote_failed' => 'The image could not be imported from that source.',
+        ],
         'messages' => [
             'success_sim' => 'Publication successfully created! (Simulation)',
             'video_success_sim' => 'Video successfully added! (Simulation)',

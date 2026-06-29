@@ -49,6 +49,17 @@ $lang['mod_publication_category'] = [
 
     'errors' => [
         'record' => 'The specified record could not be found!',
+        'parent_selection_required' => 'Please select a parent category.',
+        'parent_language_mismatch' => 'Parent category language must match the category language.',
+        'parent_cycle' => 'A category cannot be moved under itself or one of its subcategories.',
+        'menu_parent_not_found' => 'Selected menu parent could not be found.',
+        'menu_language_mismatch' => 'Menu parent language must match the category language.',
+        'order_update_failed' => 'Category order could not be updated.',
+    ],
+
+    'parent_labels' => [
+        'system_root' => 'System root',
+        'language_root' => ':language root',
     ],
 
     'button' => [
@@ -115,6 +126,8 @@ $lang['mod_publication_category'] = [
         'save' => 'Save',
         'update' => 'Update',
         'remove' => 'Remove',
+        'unlock_reorder' => 'Unlock Reorder',
+        'lock_reorder' => 'Lock Reorder',
     ],
 
     // === System Messages ===
@@ -137,6 +150,10 @@ $lang['mod_publication_category'] = [
         'info' => [
             'edit_double_click' => 'Double-click the category you want to edit',
             'drag_reorder' => 'Drag and drop the category to reorder',
+            'mode_unlocked' => 'Mode: Reorder (Unlocked)',
+        ],
+        'warning' => [
+            'reorder' => 'Warning! You are changing the tree structure.',
         ],
     ],
 
@@ -249,11 +266,15 @@ $lang['mod_publication_category'] = [
             'description' => 'Description (for Search Engines)',
             'menu' => 'Send Category to Menu',
             'image' => 'Image',
+            'image_select' => 'Select Image',
             'acl_id' => 'Access Control',
         ],
-        'select_value' => [
-            'root_e' => 'Yes',
-            'root_h' => 'No',
+        'select_values' => [
+            'root_yes' => 'Yes',
+            'root_no' => 'No',
+        ],
+        'tooltips' => [
+            'acl_settings' => 'ACL Settings',
         ],
     ],
 
@@ -265,6 +286,7 @@ $lang['mod_publication_category'] = [
         'delete_multiple' => 'Are you sure you want to delete :count selected categories?',
         'make_root' => 'Are you sure you want to make this a root category?',
         'remove_root' => 'Are you sure you want to remove root category status?',
+        'reorder_single' => 'Do you want to move this category to its new location?',
     ],
 
     // === Success Messages ===

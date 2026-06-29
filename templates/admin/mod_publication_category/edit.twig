@@ -6,30 +6,46 @@
 {% set hide_navbar = true %}
 
 {% block title %}
-	{{ lang.mod_publication_category.edit|default('Biguhere') }}
+	{{ lang.mod_publication_category.edit }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_publication_category.edit|default('Biguhere') }}
+	{{ lang.mod_publication_category.edit }}
 {% endblock %}
 
-{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0) %}
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0, disable = false) %}
     {% if select_nested_parent_id_result[parent_id] is defined %}
         {% for entry in select_nested_parent_id_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %} {% if entry.id == self_id or disable %} disabled="disabled" {% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+            </option>
+            {% if select_nested_parent_id_result[parent_id_loop] is defined and select_nested_parent_id_result[parent_id_loop] is iterable and parent_id_loop != parent_id and level < 20 %}
+                {% set next_disable = disable or (entry.id == self_id) %}
+                {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id_loop, selected_id, self_id, level + 1, next_disable) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro select_nested_menu_function(select_nested_menu_result, parent_id, selected_id, level = 0) %}
+    {% if select_nested_menu_result[parent_id] is defined %}
+        {% for entry in select_nested_menu_result[parent_id] %}
             {% set sub_loop = entry.id %}
-            {% if entry.id != self_id %}
-                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
-                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
-                </option>
-                {% if select_nested_parent_id_result[sub_loop] is defined and select_nested_parent_id_result[sub_loop] is iterable and sub_loop != parent_id and level < 20 %}
-                    {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, sub_loop, selected_id, self_id, level + 1) }}
-                {% endif %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                 {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }}
+            </option>
+            {% if select_nested_menu_result[sub_loop] is defined and select_nested_menu_result[sub_loop] is iterable and sub_loop != parent_id and level < 20 %}
+                {{ _self.select_nested_menu_function(select_nested_menu_result, sub_loop, selected_id, level + 1) }}
             {% endif %}
         {% endfor %}
     {% endif %}
 {% endmacro %}
 
 {% block content %}
+    {% set selected_parent_id = category_selected_parent_id %}
+    {% set selected_menu_id = d.menu is defined ? d.menu : 0 %}
+    {% set selected_acl_id = d.acl_id is defined ? d.acl_id : 0 %}
 	<style>
 		.edit-container {
 			padding: 16px;
@@ -239,7 +255,7 @@
                         Swal.fire({
                             icon: 'warning',
                             html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes|default("Tamam") }}',
+                            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -258,7 +274,7 @@
                         Swal.fire({
                             icon: 'warning',
                             html: errorHtml,
-                            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes|default("Tamam") }}',
+                            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes }}',
                             confirmButtonColor: '#ba1a1a'
                         });
                     });
@@ -283,7 +299,7 @@
 					<div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="lang" id="lang" required>
                             {% for item in lang_lang %}
-                                <option value="{{ item.seo }}" {% if d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                <option value="{{ item.seo }}" {% if selected_lang|lower == item.seo|lower %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
                             {% endfor %}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_publication_category.admin.columns.language }}</label>
@@ -299,9 +315,14 @@
 
                 <div class="form-row">
                     <div class="m3-input-wrapper">
-                        <select class="m3-input-lg" name="parent_id" id="parent_id">
-                            <option value="0" {% if d.parent_id == '0' %} selected {% endif %}>{{ lang.mod_publication_category.form.parent_category|default('Kategoriya Jorîn') }} (Root)</option>
-                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, d.parent_id, d.id) }}
+                        <select class="m3-input-lg" name="parent_id" id="parent_id" required>
+                            {% if category_parent_root_id > 0 %}
+                                <option value="{{ category_parent_root_id }}" {% if selected_parent_id == category_parent_root_id %} selected {% endif %}>{{ category_language_root_label }}</option>
+                            {% endif %}
+                            {% if category_parent_root_id == 0 or category_allow_system_parent %}
+                                <option value="0" {% if selected_parent_id == 0 %} selected {% endif %}>{{ lang.mod_publication_category.parent_labels.system_root }}</option>
+                            {% endif %}
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, category_parent_root_id, selected_parent_id, d.id) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_publication_category.admin.columns.parent_id }}</label>
                     </div>
@@ -317,12 +338,12 @@
                     <div class="selection-grid">
                         <div class="selection-card {% if d.root == 'y' %} active {% endif %}" onclick="selectRootStatus(this, 'y')">
                             <i class="bi bi-folder-check" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_publication_category.admin.select_values.root_yes|default('Erê') }}</div>
+                            <div class="selection-label">{{ lang.mod_publication_category.admin.select_values.root_yes }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                         <div class="selection-card {% if d.root == 'n' %} active {% endif %}" onclick="selectRootStatus(this, 'n')">
                             <i class="bi bi-folder" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_publication_category.admin.select_values.root_no|default('Na') }}</div>
+                            <div class="selection-label">{{ lang.mod_publication_category.admin.select_values.root_no }}</div>
                             <i class="bi bi-check-circle-fill check-icon"></i>
                         </div>
                     </div>
@@ -337,7 +358,7 @@
                                 <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
                             {% else %}
                                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                                <p>{{ lang.mod_publication_category.admin.columns.image_select|default('Wêne Hilbijêre') }}</p>
+                                <p>{{ lang.mod_publication_category.admin.columns.image_select }}</p>
                             {% endif %}
                         </label>
                         <input type="file" name="image" id="editImgInput" style="display:none;" onchange="previewImage(this)">
@@ -348,12 +369,12 @@
 					<label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_publication_category.admin.columns.acl_id|raw }}</label>
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <select class="m3-input-lg" name="acl_id" id="acl_id" style="flex: 1;">
-                            <option value="0" {% if d.acl_id == 0 %}selected{% endif %}>-- {{ lang.mod_publication_category.choose_wish }} --</option>
+                            <option value="0" {% if selected_acl_id == 0 %}selected{% endif %}>{{ lang.mod_publication_category.choose_wish }}</option>
                             {% for item in mod_acl_acl_id %}
-                                <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                                <option value="{{ item.id }}" {% if selected_acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.saddress }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_publication_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
+                        <a href="{{ site.saddress }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_publication_category.admin.tooltips.acl_settings }}">
                             <i class="bi bi-gear" style="font-size: 20px;"></i>
                         </a>
                     </div>
@@ -362,15 +383,15 @@
                 <div class="form-row">
                     <div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="menu" id="menu">
-                            <option value="0" {% if d.menu == 0 %}selected{% endif %}>{{ lang.mod_publication_category.choose_wish }}</option>
-                            {{ _self.select_nested_parent_id_function(select_nested_menu_result, 0, d.menu, 0) }}
+                            <option value="0" {% if selected_menu_id == 0 %}selected{% endif %}>{{ lang.mod_publication_category.choose_wish }}</option>
+                            {{ _self.select_nested_menu_function(select_nested_menu_result, category_menu_root_id, selected_menu_id) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_publication_category.admin.columns.menu }}</label>
                     </div>
                 </div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_publication_category.form.seo_settings|default('SEO / Meta') }}</span>
+					<span>{{ lang.mod_publication_category.form.seo_settings }}</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -378,7 +399,7 @@
                     <div class="form-row">
                         <div class="m3-input-wrapper">
                             <input type="text" class="m3-input-lg" name="seo" id="seo" value="{{ d.seo }}" placeholder=" ">
-                            <label class="m3-floating-label">{{ lang.mod_publication_category.admin.columns.seo|default('SEO URL') }}</label>
+                            <label class="m3-floating-label">{{ lang.mod_publication_category.admin.columns.seo }}</label>
                         </div>
                     </div>
                     <div class="form-row">
@@ -461,11 +482,11 @@
 	<div class="m3-final-bar">
 		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_publication_category/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
-			{{ lang.mod_publication_category.buttons.cancel|default("Vazgeç") }}
+			{{ lang.mod_publication_category.buttons.cancel }}
 		</button>
 		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 			<i class="bi bi-check-lg"></i>
-			{{ lang.mod_publication_category.buttons.edit|default("Düzenle") }}
+			{{ lang.mod_publication_category.buttons.edit }}
 		</button>
 	</div>
 {% endblock %}
@@ -477,10 +498,56 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Tom Select Initialization
-        if (document.getElementById('parent_id')) new TomSelect('#parent_id', { create: false });
-        if (document.getElementById('acl_id')) new TomSelect('#acl_id', { create: false });
-        if (document.getElementById('menu')) new TomSelect('#menu', { create: false });
+        const langSelect = document.getElementById('lang');
+
+        function reloadForCategoryContext() {
+            if (!langSelect) {
+                return;
+            }
+
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', langSelect.value);
+            window.location.href = url.toString();
+        }
+
+        if (langSelect) {
+            langSelect.addEventListener('change', reloadForCategoryContext);
+        }
+
+        function initM3Select(selector, config) {
+            const element = document.querySelector(selector);
+            if (!element) {
+                return null;
+            }
+
+            return new TomSelect(selector, Object.assign({
+                create: false,
+                maxOptions: 200,
+                dropdownClass: 'm3-select-dropdown',
+                render: {
+                    item: function(data, escape) {
+                        return '<div class="m3-ts-selected-value" title="' + escape(data.text || '') + '">' + escape(data.text || '') + '</div>';
+                    },
+                    option: function(data, escape) {
+                        return '<div class="m3-ts-option-value">' + escape(data.text || '') + '</div>';
+                    }
+                }
+            }, config || {}));
+        }
+
+        initM3Select('#lang', {
+            searchField: ['text'],
+            sortField: [{ field: '$order' }]
+        });
+        initM3Select('#parent_id', {
+            searchField: ['text']
+        });
+        initM3Select('#menu', {
+            searchField: ['text']
+        });
+        initM3Select('#acl_id', {
+            searchField: ['text']
+        });
     });
 
     function temizle(veri) {
@@ -501,7 +568,6 @@
         const name = document.getElementById('name').value;
         const seoInput = document.getElementById('seo');
         
-        // Let's just update all dynamically since we simplified it.
         document.getElementById('seo').value = makeSeoValue(name);
         document.getElementById('title').value = temizle(name);
         document.getElementById('keywords').value = makeKeywordsValue(name);
@@ -539,13 +605,13 @@
     function removeImage() {
         const id = "{{ d.id }}";
         Swal.fire({
-            title: '{{ lang.mod_publication_category.confirmations.remove_image|default("Wêneyê jê bibe?") }}',
+            title: '{{ lang.mod_publication_category.confirmations.remove_image }}',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ba1a1a',
             cancelButtonColor: '#6e7881',
-            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes|default("Erê") }}',
-            cancelButtonText: '{{ lang.mod_publication_category.buttons.no|default("Na") }}'
+            confirmButtonText: '{{ lang.mod_publication_category.buttons.yes }}',
+            cancelButtonText: '{{ lang.mod_publication_category.buttons.no }}'
         }).then((result) => {
             if (result.isConfirmed) {
                 var formData = new URLSearchParams();
@@ -559,15 +625,15 @@
                 .then(r => r.text())
                 .then(data => {
                     if (data.trim() === 'Oke') {
-                        Swal.fire('{{ lang.mod_publication_category.oke|default("Serkeftî") }}', '{{ lang.mod_publication_category.messages.success.image_removed|default("Wêne hate jêbirin.") }}', 'success');
+                        Swal.fire('{{ lang.mod_publication_category.oke }}', '{{ lang.mod_publication_category.messages.success.image_removed }}', 'success');
                         const area = document.querySelector('.image-upload-area');
                         area.innerHTML = `
                             <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                            <p>{{ lang.mod_publication_category.buttons.add|default("Wêne Hilbijêre") }}</p>
+                            <p>{{ lang.mod_publication_category.admin.columns.image_select }}</p>
                         `;
                         document.getElementById('editImgInput').value = '';
                     } else {
-                        Swal.fire('{{ lang.mod_publication_category.hata|default("Çewtî!") }}', data, 'error');
+                        Swal.fire('{{ lang.mod_publication_category.hata }}', data, 'error');
                     }
                 });
             }

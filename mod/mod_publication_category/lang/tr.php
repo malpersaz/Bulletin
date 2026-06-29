@@ -48,6 +48,17 @@ $lang['mod_publication_category'] = [
 
     'errors' => [
         'record' => 'Belirtilen kayıt bulunamadı!',
+        'parent_selection_required' => 'Lütfen bir üst kategori seçin.',
+        'parent_language_mismatch' => 'Üst kategori dili, kategori diliyle aynı olmalıdır.',
+        'parent_cycle' => 'Bir kategori kendisinin veya alt kategorilerinden birinin altına taşınamaz.',
+        'menu_parent_not_found' => 'Seçilen menü üst kaydı bulunamadı.',
+        'menu_language_mismatch' => 'Menü üst kaydının dili, kategori diliyle aynı olmalıdır.',
+        'order_update_failed' => 'Kategori sırası güncellenemedi.',
+    ],
+
+    'parent_labels' => [
+        'system_root' => 'Sistem kökü',
+        'language_root' => ':language kökü',
     ],
 
     'button' => [
@@ -136,6 +147,7 @@ $lang['mod_publication_category'] = [
         'info' => [
             'edit_double_click' => 'Düzenlemek istediğiniz kategoriye çift tıklayın',
             'drag_reorder' => 'Sıralamayı değiştirmek için kategoriyi sürükleyip bırakın',
+            'mode_unlocked' => 'Mod: Sıralama (Açık)',
         ],
         'warning' => [
             'reorder' => 'Kategori sırası değiştirilsin mi?',
@@ -251,11 +263,15 @@ $lang['mod_publication_category'] = [
             'description' => 'SEO ayarları için açıklama (Description)',
             'menu' => 'Kategoriyi Menüye Gönder',
             'image' => 'Görsel',
+            'image_select' => 'Görsel seç',
             'acl_id' => 'Erişim Permissionsi',
         ],
         'select_values' => [
             'root_yes' => 'Evet',
             'root_no' => 'Hayır',
+        ],
+        'tooltips' => [
+            'acl_settings' => 'ACL ayarları',
         ],
     ],
 

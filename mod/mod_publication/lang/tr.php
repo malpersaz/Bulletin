@@ -329,6 +329,18 @@ $lang['mod_publication'] = [
             'category_select' => 'Kategori Seçiniz...',
             'change_image' => 'Görsel Değiştir',
         ],
+'image' => [
+            'drop_title' => 'Bir görseli buraya sürükleyin',
+            'drop_description' => 'Yükleyin, yapıştırın veya bir görsel bırakın.',
+            'upload_link' => 'dosya yükleyin',
+            'link_separator' => 'VEYA',
+            'link_placeholder' => 'Görsel bağlantısını yapıştırın',
+            'link_action' => 'İçe Aktar',
+            'hint_loading' => 'Görsel içe aktarılıyor...',
+            'hint_invalid_type' => 'Burada yalnızca görsel dosyaları desteklenir.',
+            'hint_no_drop_data' => 'Bırakılan içerikte kullanılabilir bir görsel bulunamadı.',
+            'hint_remote_failed' => 'Bu kaynaktaki görsel içe aktarılamadı.',
+        ],
         'messages' => [
             'success_sim' => 'Yayın başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',

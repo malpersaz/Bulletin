@@ -1,3 +1,8 @@
+## v1.0.60
+- Active version bucket derived from the current user request.
+- **Nûjenkirin û Senkronîzekirina Modulên Weşanê (mod_publication)**: Modula `mod_publication` a Rojnameyê bi temamî hate nûjenkirin da ku ji `BaseModuleController` mîras bigire û her weha taybetmendiya sliderê ya bi AJAX (`toggle_hero_slider`) û daneyên mock hatin parastin. Zimanên modulê hatin hevgirtin da ku bi beşa `image` ya uploaderê re li hev werin.
+- **Nûjenkirina Modula Kategoriyên Weşanê (mod_publication_category)**: Modula `mod_publication_category` bi guhertin û kontrolên validasyonê yên pêşketî (kontrolên zimanê dê û zarokan, astengkirina çerxên bêdawî di dara kategoriyan de, û senkronîzekirina menuyan) ji Business hate senkronîzekirin. Dara kategoriyan a pêşketî ya recursive bi alîkariya SortableJS hate nûjenkirin û hemû şablonên admin hatin rojanekirin û fallbackên `|default` hatin paqijkirin.
+
 ## v1.0.59
 - Active version bucket derived from the current user request.
 - **Nûjenkirina Modula mod_news li Repoya Rojname**: Modula `mod_news` bi temamî hate nûjenkirin da ku ji `BaseModuleController` mîras bigire û hemû boilerplateyên CRUD werin paqijkirin. Taybetmendiyên xweser ên wekî entegrasyona menuyan (`$menu_url_pattern`) û kontrolên sliderê hatin parastin. Zimanê Kurdî yê modulê li gorî rêgezan hate nûjenkirin û şablonên admin ji bo parzûnkirina zimanên aktîf hatin sererastkirin.

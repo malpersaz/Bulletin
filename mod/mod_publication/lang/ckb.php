@@ -306,6 +306,18 @@ $lang['mod_publication'] = [
             'category_select' => 'هاوپۆل هەڵبژێرە...',
             'change_image' => 'گۆڕینی وێنە',
         ],
+'image' => [
+            'drop_title' => 'وێنەیەک لێرە دابنێ یان',
+            'drop_description' => 'وێنەیەک باربکە، پێوە بکە یان لێرە بەری بدە.',
+            'upload_link' => 'بارکردنی پەڕگە',
+            'link_separator' => 'یان',
+            'link_placeholder' => 'بەستەری وێنە لێرە بنووسە',
+            'link_action' => 'هێنان',
+            'hint_loading' => 'وێنە دەهێنرێت...',
+            'hint_invalid_type' => 'تەنها پەڕگەی وێنە لێرەدا پشتگیری دەکرێت.',
+            'hint_no_drop_data' => 'هیچ وێنەیەکی بەکەڵک لە ناوەڕۆکی دابەزێندراودا نەدۆزرایەوە.',
+            'hint_remote_failed' => 'نەتوانرا وێنە لەو سەرچاوەیەوە بهێنرێت.',
+        ],
         'messages' => [
             'success_sim' => 'بڵاوکراوە بە سەرکەوتوویی دروستکرا! (Simulation)',
             'video_success_sim' => 'ڤیدیۆ بە سەرکەوتوویی زیادکرا! (Simulation)',

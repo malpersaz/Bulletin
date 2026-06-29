@@ -4,7 +4,6 @@
     let isReorderActive = false;
 
     document.addEventListener('DOMContentLoaded', function() {
-        // --- 1. Global Search Integration ---
         const globalSearchInput = document.getElementById('searchInput');
         if (globalSearchInput) {
             globalSearchInput.addEventListener('input', function(e) {
@@ -19,7 +18,6 @@
             }
         };
 
-        // --- 2. Sortable (Safe Reorder Mode) ---
         function initSortable(el) {
             if (!el || typeof Sortable === 'undefined') return;
             var s = new Sortable(el, {
@@ -28,24 +26,22 @@
                 fallbackOnBody: true,
                 swapThreshold: 0.65,
                 handle: '.drag-handle',
-                disabled: true, // LOCKED BY DEFAULT
+                disabled: true,
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
                 onEnd: function(evt) {
-                    // ASK USER CONFIRMATION
                     Swal.fire({
                         title: '{{ lang.mod_publication_category.messages.warning.reorder }}',
                         text: '{{ lang.mod_publication_category.confirmations.reorder_single }}',
                         icon: 'question',
                         showCancelButton: true,
-                        confirmButtonText: '{{ lang.mod_publication_category.options.yes|default("Erê") }}',
-                        cancelButtonText: '{{ lang.mod_publication_category.options.no|default("Na") }}',
+                        confirmButtonText: '{{ lang.mod_publication_category.options.yes }}',
+                        cancelButtonText: '{{ lang.mod_publication_category.options.no }}',
                         customClass: { popup: 'm3-swal-popup' }
                     }).then((result) => {
                         if (result.isConfirmed) {
                              updateOrder(evt);
                         } else {
-                            // Revert
                             location.reload();
                         }
                     });
@@ -58,7 +54,6 @@
         if(rootList) initSortable(rootList);
         document.querySelectorAll('.list-children').forEach(el => initSortable(el));
 
-        // --- Toggle Logic ---
         window.toggleReorderMode = function() {
             isReorderActive = !isReorderActive;
             var btn = document.getElementById('reorderToggleBtn');
@@ -71,13 +66,12 @@
                 text.innerText = '{{ lang.mod_publication_category.actions.lock_reorder }}';
                 btn.style.background = '#eaddff'; 
                 
-                // Enable Sortables
                 sortableInstances.forEach(s => s.option('disabled', false));
                 
                 const Toast = Swal.mixin({
                     toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
                 });
-                Toast.fire({ icon: 'info', title: '{{ lang.mod_publication_category.messages.info.mode_unlocked|default("Mode: Rêzkirin (Unlocked)") }}' });
+                Toast.fire({ icon: 'info', title: '{{ lang.mod_publication_category.messages.info.mode_unlocked }}' });
 
             } else {
                 document.body.classList.remove('reorder-active');
@@ -85,7 +79,6 @@
                 text.innerText = '{{ lang.mod_publication_category.actions.unlock_reorder }}';
                 btn.style.background = '#f3edf7';
                 
-                // Disable Sortables
                 sortableInstances.forEach(s => s.option('disabled', true));
             }
         };
@@ -101,35 +94,18 @@
                 if (wrapperNode) parentId = wrapperNode.dataset.id;
             }
 
-            const allIds = [];
-            // Scope query to direct children of the new container to get correct order for that level
-            // But dragging between lists might be tricky. The original code gathered ALL .category-node ids?
-            // Wait, original code: document.querySelectorAll('.category-node').forEach(node => { allIds.push(node.dataset.id); });
-            // This sends a flat list of ALL categories to the server?
-            // If the server expects a flat list of ALL categories to rebuild the tree or update order, that's fine.
-            // But usually nested sortable updates just the siblings. 
-            // Let's stick to the EXACT original logic for data gathering to avoid breaking backend.
-            /* Original:
-            document.querySelectorAll('.category-node').forEach(node => {
-                if (node.dataset.id) { allIds.push(node.dataset.id); }
-            });
-            */
-            // Actually, for nested sets or adjacency list, we usually send the NEW parent and the NEW order of siblings.
-            // The original code was sending 'sira[]' with ALL element IDs. This implies the backend might be re-indexing everything or just looking for the ID in the list.
-            // Let's assume the backend 'tasi' (move) function handles it.
-            
-            document.querySelectorAll('.category-node').forEach(node => {
-                if (node.dataset.id) { allIds.push(node.dataset.id); }
+            const siblingIds = [];
+            container.querySelectorAll(':scope > .category-node').forEach(node => {
+                if (node.dataset.id) { siblingIds.push(node.dataset.id); }
             });
 
-            // Visual feedback loop
             const card = itemEl.querySelector('.m3-list-card');
             if(card) card.style.opacity = "0.5";
 
             const formData = new URLSearchParams();
             formData.append('id', id);
             formData.append('parent_id', parentId);
-            allIds.forEach(sid => formData.append('order[]', sid));
+            siblingIds.forEach(sid => formData.append('order[]', sid));
 
             fetch(SITE_URL + 'mod_publication_category/move', {
                 method: 'POST',
@@ -145,7 +121,7 @@
                     });
                     Toast.fire({ icon: 'success', title: '{{ lang.mod_publication_category.messages.success.reordered }}' });
                 } else {
-                    Swal.fire({ icon: 'error', title: '{{ lang.mod_publication_category.error_messages.fatal|default("Oops...") }}', text: '{{ lang.mod_publication_category.error_messages.general|default("Çewtiyek çêbû: ") }}' + resp });
+                    Swal.fire({ icon: 'error', title: '{{ lang.mod_publication_category.error_messages.fatal }}', text: '{{ lang.mod_publication_category.error_messages.general }} ' + resp });
                 }
             })
             .catch(err => {
@@ -155,7 +131,6 @@
         }
     });
 
-    // --- 3. Premium Search Logic ---
     window.filterCategories = function(val) {
         const term = val.toLowerCase().trim();
         const nodes = document.querySelectorAll('.category-node');
@@ -191,7 +166,6 @@
         }
     };
 
-    // --- 4. Smooth Toggle ---
     window.toggleCategory = function(btn, event) {
         if (event) event.stopPropagation();
         const node = btn.closest('.category-node');
@@ -203,11 +177,9 @@
         }
     };
 
-    // --- 5. Premium Selection ---
     window.selectCategory = function(id, element) {
         const isCurrent = element.classList.contains('selected');
         
-        // Remove all selections
         document.querySelectorAll('.m3-list-card.selected').forEach(el => {
             el.classList.remove('selected');
         });
@@ -217,7 +189,6 @@
             selectedCategoryId = id;
             toggleToolbar(true);
             
-            // Haptic-like micro feedback
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         } else {
             selectedCategoryId = null;
@@ -243,7 +214,6 @@
         }
     }
 
-    // --- 6. Final Actions ---
     window.editSelected = function() {
         if (selectedCategoryId) {
             window.location.href = "{{ site.saddress }}mod_publication_category/edit/" + selectedCategoryId;
@@ -259,8 +229,8 @@
             showCancelButton: true,
             confirmButtonColor: '#ff4444',
             cancelButtonColor: '#999',
-            confirmButtonText: '{{ lang.mod_publication_category.button.delete|default(lang.mod_publication_category.button.delete) }}',
-            cancelButtonText: '{{ lang.mod_publication_category.button.cancel|default(lang.mod_publication_category.button.vazgec) }}',
+            confirmButtonText: '{{ lang.mod_publication_category.button.delete }}',
+            cancelButtonText: '{{ lang.mod_publication_category.actions.cancel }}',
             background: 'rgba(255,255,255,0.95)',
             backdrop: `rgba(0,0,10,0.5)`,
             customClass: {
@@ -279,15 +249,15 @@
                 .then(response => response.text())
                 .then(resp => {
                     if (resp.trim() === 'Oke') {
-                        Swal.fire({ icon: 'success', title: '{{ lang.mod_publication_category.messages.success.operation_completed|default("Serkeftî!") }}', timer: 1000, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: '{{ lang.mod_publication_category.success_messages.operation_completed }}', timer: 1000, showConfirmButton: false });
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        Swal.fire('{{ lang.mod_publication_category.error_messages.fatal|default("Çewtî") }}', resp, 'error');
+                        Swal.fire('{{ lang.mod_publication_category.error_messages.fatal }}', resp, 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Delete error:', err);
-                    Swal.fire('{{ lang.mod_publication_category.error_messages.fatal|default("Çewtî") }}', '{{ lang.mod_publication_category.error_messages.network|default("Çewtiya torê") }}', 'error');
+                    Swal.fire('{{ lang.mod_publication_category.error_messages.fatal }}', '{{ lang.mod_publication_category.error_messages.network }}', 'error');
                 });
             }
         });

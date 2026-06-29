@@ -669,6 +669,13 @@
 	<script>
         // Initialize Rich Editor
         document.addEventListener('DOMContentLoaded', () => {
+            const currentLang = '{{ d.lang|lower }}';
+            if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
+                adminLang.languages = adminLang.languages.filter((item) => item.status === 'y' || item.code === currentLang);
+            }
+            if (typeof wizardData !== 'undefined') {
+                wizardData.lang = currentLang;
+            }
             initRichEditor('#editContentTextarea', 400);
             initializeEditImageInteractions();
         });

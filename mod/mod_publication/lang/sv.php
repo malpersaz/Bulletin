@@ -329,6 +329,18 @@ $lang['mod_publication'] = [
             'change_image' => 'Ändra bild',
             'editor_placeholder' => 'Börja skriva din publikation här...',
         ],
+'image' => [
+            'drop_title' => 'Dra en bild hit',
+            'drop_description' => 'Ladda upp, klistra in eller släpp en bild.',
+            'upload_link' => 'ladda upp en fil',
+            'link_separator' => 'ELLER',
+            'link_placeholder' => 'Klistra in bildlänk',
+            'link_action' => 'Importera',
+            'hint_loading' => 'Importerar bild...',
+            'hint_invalid_type' => 'Endast bildfiler stöds här.',
+            'hint_no_drop_data' => 'Ingen användbar bild hittades i det släppta innehållet.',
+            'hint_remote_failed' => 'Bilden kunde inte importeras från den källan.',
+        ],
         'messages' => [
             'success_sim' => 'Publikation skapad! (Simulering)',
             'video_success_sim' => 'Video tillagd! (Simulering)',

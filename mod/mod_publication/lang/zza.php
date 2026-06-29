@@ -315,6 +315,18 @@ $lang['mod_publication'] = [
             'change_image' => 'Wêne biguherîne',
             'editor_placeholder' => 'Dest bi nivîsandina weşana xwe bikin...',
         ],
+'image' => [
+            'drop_title' => 'Wêneyekî kaşke ser vir an jî',
+            'drop_description' => 'Bar bike, pêve bike an jî wêneyekî berde vir.',
+            'upload_link' => 'pelekê bar bikin',
+            'link_separator' => 'AN JÎ',
+            'link_placeholder' => 'Lînka wêneyê binivîse',
+            'link_action' => 'Bîne',
+            'hint_loading' => 'Wêne tê anîn...',
+            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
+            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
+            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
+        ],
         'messages' => [
             'success_sim' => 'Weşan bi serketî hat afirandin! (Simulasyon)',
             'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
