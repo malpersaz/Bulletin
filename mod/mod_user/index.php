@@ -352,10 +352,12 @@ class mod_user_mod extends indexMain
         if ($this->password_reset_model->getSize() !== 0) {
             $this->password_reset_model->sync();
             $this->password_reset_model->code = $key;
+            $this->password_reset_model->created_at = date('Y-m-d H:i:s');
             $stored = $this->password_reset_model->update('email');
         } else {
             $this->password_reset_model->email = $this->model->email;
             $this->password_reset_model->code = $key;
+            $this->password_reset_model->created_at = date('Y-m-d H:i:s');
             $stored = $this->password_reset_model->save();
         }
 

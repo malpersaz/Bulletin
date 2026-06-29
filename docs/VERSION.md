@@ -1,3 +1,6 @@
+## v1.0.78
+- **Fix Password Reset Expiration Bug**: Resolved the password reset link expiration bug. Ensured `created_at` timestamp is updated in both INSERT and UPDATE paths during password reset token generation. Replaced the MySQL-side `TIMESTAMPDIFF` timezone-sensitive comparison with timezone-independent PHP `time()` and `strtotime()` validation checks to eliminate false expiration errors.
+
 ## v1.0.77
 - **Secure Password Requirements & Complexity Enforcements**: Upgraded password length requirements to min 8 and max 64 characters across password reset and register workflows. Added backend regex validations in `password_reset.validator.php` and `register.validator.php` to enforce uppercase, lowercase, numeric, and special character criteria. Added backend password mismatch check on registration.
 - **Modern Password Input & Strength Checkers**: Modernized password reset and registration interfaces with visibility toggles, dynamic rules checklists, password strength meters, and real-time password match indicators.
