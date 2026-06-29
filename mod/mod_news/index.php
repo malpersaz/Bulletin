@@ -326,7 +326,7 @@ class mod_news_mod extends BaseModuleController
         ]);
     }
 
-    private function _valid_date($data = '')
+    public function _valid_date($data = '')
     {
         return true;
     }

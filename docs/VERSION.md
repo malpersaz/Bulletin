@@ -1,3 +1,6 @@
+## v1.0.79
+- **Fix mod_news Visibility Compatibility**: Changed the visibility of the `_valid_date()` method in `mod_news_mod` from `private` to `public` to match the inheritance signature of `BaseModuleController`, resolving a fatal PHP incompatibility error under PHP 8.x/8.5.
+
 ## v1.0.78
 - **Fix Password Reset Expiration Bug**: Resolved the password reset link expiration bug. Ensured `created_at` timestamp is updated in both INSERT and UPDATE paths during password reset token generation. Replaced the MySQL-side `TIMESTAMPDIFF` timezone-sensitive comparison with timezone-independent PHP `time()` and `strtotime()` validation checks to eliminate false expiration errors.
 
