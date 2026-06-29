@@ -31,7 +31,7 @@ if ($isAjaxRequest) {
     ini_set('display_errors', 1);
 }
 ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('log_errors', TRUE);
 
 // Define a common error/exception logger

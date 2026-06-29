@@ -1,3 +1,10 @@
+## v1.0.67
+- **SwiftMailer Constructor Deprecation Fixes**: Resolved constructor deprecation warning in `Swift_Message` by replacing the `call_user_func_array` constructor reference with native `parent::__construct` and modern argument unpacking (`...`).
+- **SwiftMailer StreamBuffer Property Warning Fix**: Declared the private `$_sequence` property in `Swift_Transport_StreamBuffer` to eliminate PHP 8.x dynamic property warnings and undefined property errors.
+- **SwiftMailer AuthHandler Argument Casting Fix**: Cast the private `$_auth_mode` property to string in `Swift_Transport_Esmtp_AuthHandler` before passing it to `strtolower()` to prevent deprecation warnings when it is null.
+- **SwiftMailer SendEvent Property Alignment**: Renamed the declared `result` property to `_result` in `Swift_Events_SendEvent` to match the instance usage and eliminate PHP 8.x dynamic property warnings.
+- **Global Error Reporting Safeguard**: Excluded `E_DEPRECATED` from `error_reporting` in `index.php` to prevent minor legacy deprecation warnings in external libraries (like Twig and SwiftMailer) from being outputted and disrupting redirects or AJAX responses on the production site.
+
 ## v1.0.66
 - **Template Engine Fetch Method Support**: Added a `fetch($tpl)` method to `TwigTemplate` to support rendering Twig templates into string variables without immediate direct output. This resolves the fatal `Call to undefined method TwigTemplate::fetch()` error encountered during user password reset notifications.
 - **Twig Engine Post-Initialization Globals Safeguard**: Safeguarded variable assignment in `TwigTemplate::veri()`, `setGlobal()`, and `lang()` methods by storing variables in `assing_data` and catching Twig's `LogicException` thrown when trying to add globals after the environment is initialized. Passed `$this->assing_data` to all rendering pipelines (`fetch()`, `fetch_tpl()`) to ensure variable availability.
