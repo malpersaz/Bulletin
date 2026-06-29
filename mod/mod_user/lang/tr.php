@@ -161,6 +161,13 @@ $lang['mod_user'] = [
             'invalid_email_format' => 'Geçersiz e-posta formatı.',
             'email_not_registered' => 'E-posta kayıtlı değil.',
         ],
+        'js' => [
+            'invalid_email' => 'Lütfen geçerli bir e-posta adresi girin.',
+            'checking' => '⏳ Kontrol ediliyor...',
+            'email_found' => '✓ Kaydınız bulundu. Şifre sıfırlama linki gönderilecek.',
+            'email_not_found' => '❌ Bu e-posta adresi ile bir kayıt bulunamadı.',
+            'check_failed' => '⚠️ Kontrol yapılamadı',
+        ],
     ],
     'account_activation' => 'Hesap Aktifleştirme',
     'register' => [

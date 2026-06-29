@@ -161,6 +161,13 @@ $lang['mod_user'] = [
       'invalid_email_format' => 'Formata e-posteyî ne derbasdara.',
       'email_not_registered' => 'E-poste tomarnêbîya.',
     ],
+    'js' => [
+      'invalid_email' => 'Ji kerema xwe re navnîşaneke derbasdar a e-peyamê binivîsin.',
+      'checking' => '⏳ Kontrol beno...',
+      'email_found' => '✓ Qeydê şıme esto. Gıreyê sıfırlamışkerdışê şıfre şawiyeno.',
+      'email_not_found' => '❌ E-posteyê qeydkirî nêbi.',
+      'check_failed' => '⚠️ Kontrol nêbî',
+    ],
   ],
   'account_activation' => 'Hesap Aktifleştirme',
   'register' => [

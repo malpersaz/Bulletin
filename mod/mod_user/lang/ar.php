@@ -161,6 +161,13 @@ $lang['mod_user'] = [
             'invalid_email_format' => 'تنسيق البريد الإلكتروني غير صالح.',
             'email_not_registered' => 'البريد الإلكتروني غير مسجل.',
         ],
+        'js' => [
+            'invalid_email' => 'يرجى إدخال بريد إلكتروني صالح.',
+            'checking' => '⏳ جاري التحقق...',
+            'email_found' => '✓ تم العثور على حسابك. سيتم إرسال رابط إعادة تعيين كلمة المرور.',
+            'email_not_found' => '❌ لم يتم العثور على حساب بهذا البريد الإلكتروني.',
+            'check_failed' => '⚠️ فشل التحقق',
+        ],
     ],
     'account_activation' => 'Hesap Aktifleştirme',
     'register' => [

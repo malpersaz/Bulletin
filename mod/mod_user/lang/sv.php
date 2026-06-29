@@ -161,6 +161,13 @@ $lang['mod_user'] = [
             'invalid_email_format' => 'Ogiltigt e-postformat.',
             'email_not_registered' => 'E-postadressen är inte registrerad.',
         ],
+        'js' => [
+            'invalid_email' => 'Ange en giltig e-postadress.',
+            'checking' => '⏳ Kontrollerar...',
+            'email_found' => '✓ Konto hittat. En länk för att återställa lösenordet kommer att skickas.',
+            'email_not_found' => '❌ Inget konto hittades med denna e-postadress.',
+            'check_failed' => '⚠️ Kontroll kunde inte utföras',
+        ],
     ],
     'account_activation' => 'Hesap Aktifleştirme',
     'register' => [

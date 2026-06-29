@@ -73,9 +73,8 @@ class TwigTemplate
 
     public function veri($a, $b)
     {
-        // $this->twigLibs->ctx_add($a, $b);
         $this->twig->addGlobal($a, $b);
-        // $this->assing_data[$a] = $b;
+        $this->ctx_set($a, $b);
     }
 
     public function setGlobal($key, $value)

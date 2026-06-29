@@ -161,6 +161,13 @@ $lang['mod_user'] = [
             'invalid_email_format' => 'Format e-mail invalide.',
             'email_not_registered' => 'Cette adresse e-mail n’est pas enregistrée.',
         ],
+        'js' => [
+            'invalid_email' => 'Veuillez saisir une adresse e-mail valide.',
+            'checking' => '⏳ Vérification en cours...',
+            'email_found' => '✓ Compte trouvé. Un lien de réinitialisation de mot de passe sera envoyé.',
+            'email_not_found' => '❌ Aucun compte trouvé avec cette adresse e-mail.',
+            'check_failed' => '⚠️ Échec de la vérification',
+        ],
     ],
     'account_activation' => 'Hesap Aktifleştirme',
     'register' => [

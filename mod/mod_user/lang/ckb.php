@@ -161,6 +161,13 @@ $lang['mod_user'] = [
             'invalid_email_format' => 'فۆرماتی ئیمەیڵ نادروستە.',
             'email_not_registered' => 'ئیمەیڵەکە تۆمار نەکراوە.',
         ],
+        'js' => [
+            'invalid_email' => 'تکایە ناونیشانی ئیمەیڵی دروست بنووسە.',
+            'checking' => '⏳ لە حاڵەتی پشکنیندایە...',
+            'email_found' => '✓ ئەندامێتیت دۆزرایەوە. بەستەری گۆڕینی شێفرە دەنێردرێت.',
+            'email_not_found' => '❌ هیچ ئەندامێتییەک بەم ناونیشانی ئیمەیڵە نەدۆزرایەوە.',
+            'check_failed' => '⚠️ پشکنین ئەنجام نەدرا',
+        ],
     ],
     'account_activation' => 'Hesap Aktifleştirme',
     'register' => [

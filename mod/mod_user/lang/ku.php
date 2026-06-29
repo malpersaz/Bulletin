@@ -161,6 +161,13 @@ $lang['mod_user'] = [
       'invalid_email_format' => 'Awayê e-peyamê ne derbasdar e.',
       'email_not_registered' => 'Ev e-peyam nehatiye tomarkirin.',
     ],
+    'js' => [
+      'invalid_email' => 'Ji kerema xwe re navnîşaneke derbasdar a e-peyamê binivîse.',
+      'checking' => '⏳ Tê kontrolkirin...',
+      'email_found' => '✓ Endamtiya te heye. Dê daxwaza nûkirina şîfreyê ji e-peyama te re were şandin.',
+      'email_not_found' => '❌ Bi vê navnîşana e-peyamê qeydek nehate dîtin.',
+      'check_failed' => '⚠️ Kontrol nehate pêkanîn',
+    ],
   ],
   'account_activation' => 'Çalakirina Hesab',
   'register' => [

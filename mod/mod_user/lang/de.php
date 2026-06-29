@@ -413,7 +413,14 @@ $lang['mod_user']['forgot_password'] = [
         'email_required' => 'E-Mail-Adresse ist erforderlich.',
         'invalid_email_format' => 'Ungültiges E-Mail-Format.',
         'email_not_registered' => 'E-Mail ist nicht registriert.'
-    ]
+    ],
+    'js' => [
+        'invalid_email' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein.',
+        'checking' => '⏳ Prüfung läuft...',
+        'email_found' => '✓ Konto gefunden. Ein Link zum Zurücksetzen des Passworts wird gesendet.',
+        'email_not_found' => '❌ Es wurde kein Konto mit dieser E-Mail-Adresse gefunden.',
+        'check_failed' => '⚠️ Prüfung fehlgeschlagen',
+    ],
 ];
 
 $lang['mod_user']['password_reset'] = [

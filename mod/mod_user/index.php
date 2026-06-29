@@ -308,6 +308,9 @@ class mod_user_mod extends indexMain
         if ($this->_is_post_request()) {
             $this->_forgot_password();
         }
+        $this->captcha = Load::lib('Captcha');
+        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        
         $d['title'] = $this->lang['mod_user']['forgot_password']['forgot_password_title'];
         $this->apptemplate->veri('d', $d);
 
