@@ -1,3 +1,6 @@
+## v1.0.68
+- **Password Reset Redirect Enablement**: Uncommented and restored the automatic page redirection logic inside the forgot password Twig template. Configured it to route the user back to the login page (`login`) via the correct registry site address (`site.saddress`) after 3 seconds upon a successful submission, preventing the loading spinner from running endlessly.
+
 ## v1.0.67
 - **SwiftMailer Constructor Deprecation Fixes**: Resolved constructor deprecation warning in `Swift_Message` by replacing the `call_user_func_array` constructor reference with native `parent::__construct` and modern argument unpacking (`...`).
 - **SwiftMailer StreamBuffer Property Warning Fix**: Declared the private `$_sequence` property in `Swift_Transport_StreamBuffer` to eliminate PHP 8.x dynamic property warnings and undefined property errors.
