@@ -7,9 +7,9 @@ class forgot_password_validator
     public $errors = [];
 	function __construct()
 	{
-		// Validator Kütüphanesini Yükleyelim
+		// Load Validator Library
 		$this->valid = Load::lib('Validator');
-		// Dil Dosyası.
+		// Language File
 		$this->lang = Load::lang('mod_user');
 		$this->captcha = Load::lib('Captcha');
 	}
@@ -18,7 +18,7 @@ class forgot_password_validator
 
 
 		if ($this->captcha->check(Req::Post_Safe('captcha'))) {
-			$this->errors[] = $this->lang['mod_user']['forgot_password']['error']['email_not_registered_2'];
+			$this->errors[] = $this->lang['mod_user']['forgot_password']['error']['invalid_captcha'];
 		}
 
 		if ($this->_check() === True) {
@@ -28,12 +28,12 @@ class forgot_password_validator
 		// Email.
 		$this->valid->add(
 			[
-				'name' => 'email',
-				'func' => 'required',
-				'arg' => '',
-				'message' => $this->lang['mod_user']['forgot_password']['error']['invalid_email']
-			]
-		);
+					'name' => 'email',
+					'func' => 'required',
+					'arg' => '',
+					'message' => $this->lang['mod_user']['forgot_password']['error']['email_required']
+				]
+			);
 
 		if ($this->_check() === True) {
 			return True;
@@ -53,19 +53,8 @@ class forgot_password_validator
 		}
 
 
-		$u = Load::model('mod_user');
-		$u->Getemail(Req::Post_Safe('email'))->getResultOne(TRUE, TRUE);
-
-		if ($u->getSize() === 0) {
-			$this->errors[] = $this->lang['mod_user']['forgot_password']['error']['email_not_registered'];
+			return False;
 		}
-
-		if ($this->_check() === True) {
-			return True;
-		}
-
-		return False;
-	}
 
 	public function _check()
 	{

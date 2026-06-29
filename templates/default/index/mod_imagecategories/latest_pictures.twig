@@ -9,9 +9,9 @@
             <ul class="clearfix">
                 {% for image in latest_pictures %}
                     <li>
-                        <a href="{{ site.sadres }}rkat/{{ image.category_seo }}"
+                        <a href="{{ site.saddress }}rkat/{{ image.category_seo }}"
                            title="{% if image.name == '#' %}{{ image.category_ad }}{% else %}{{ image.name }}{% endif %}">
-                            <img src="{{ site.radres }}mod_gallery/{{ image.category_id }}/thumb/{{ image.url }}"
+                            <img src="{{ site.iaddress }}mod_gallery/{{ image.category_id }}/thumb/{{ image.url }}"
                                  parent_id="{{ image.name }},{{ image.keywords }}">
                         </a>
                     </li>

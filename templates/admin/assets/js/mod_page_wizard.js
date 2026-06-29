@@ -43,6 +43,24 @@
         return element.options[element.selectedIndex].text || fallback || '';
     }
 
+    function resetSelectValue(id, fallbackValue) {
+        var element = getById(id);
+        if (!element) {
+            return;
+        }
+
+        element.value = fallbackValue;
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function resetLanguageScopedFields() {
+        resetSelectValue('pageWizardParentId', '0');
+        resetSelectValue('pageWizardCategoryId', '0');
+        resetSelectValue('pageWizardMenuId', '__none__');
+        resetSelectValue('pageWizardGalleryId', '0');
+        resetSelectValue('pageWizardFileId', '0');
+    }
+
     function currentState() {
         return {
             step: currentStep,
@@ -50,14 +68,9 @@
                 lang: getById('pageWizardHiddenLang') ? getById('pageWizardHiddenLang').value : '',
                 name: getById('pageWizardNameInput') ? getById('pageWizardNameInput').value : '',
                 summary: getById('pageWizardSummaryInput') ? getById('pageWizardSummaryInput').value : '',
-                parent_id: getById('pageWizardParentId') ? getById('pageWizardParentId').value : '0',
-                category_id: getById('pageWizardCategoryId') ? getById('pageWizardCategoryId').value : '0',
-                menu: getById('pageWizardMenuId') ? getById('pageWizardMenuId').value : '0',
                 status: getById('pageWizardStatusHidden') ? getById('pageWizardStatusHidden').value : 'y',
                 root: getById('pageWizardRootSelect') ? getById('pageWizardRootSelect').value : 'n',
                 deck: getById('pageWizardDeckSelect') ? getById('pageWizardDeckSelect').value : 'n',
-                gallery_id: getById('pageWizardGalleryId') ? getById('pageWizardGalleryId').value : '0',
-                file_id: getById('pageWizardFileId') ? getById('pageWizardFileId').value : '0',
                 acl_id: getById('pageWizardAclId') ? getById('pageWizardAclId').value : '0',
                 seo: getById('pageWizardSeoInput') ? getById('pageWizardSeoInput').value : '',
                 title: getById('pageWizardTitleInput') ? getById('pageWizardTitleInput').value : '',
@@ -94,24 +107,18 @@
             }
 
             currentStep = state.step || 1;
-
-            if (getById('pageWizardHiddenLang') && state.data.lang) {
-                getById('pageWizardHiddenLang').value = state.data.lang;
+            var activeLang = config.initialLang || state.data.lang || 'tr';
+            if (getById('pageWizardHiddenLang')) {
+                getById('pageWizardHiddenLang').value = activeLang;
+            }
+            if (state.data.lang && state.data.lang.toLowerCase() !== activeLang.toLowerCase()) {
+                resetLanguageScopedFields();
             }
             if (getById('pageWizardNameInput')) {
                 getById('pageWizardNameInput').value = state.data.name || '';
             }
             if (getById('pageWizardSummaryInput')) {
                 getById('pageWizardSummaryInput').value = state.data.summary || '';
-            }
-            if (getById('pageWizardParentId')) {
-                getById('pageWizardParentId').value = state.data.parent_id || '0';
-            }
-            if (getById('pageWizardCategoryId')) {
-                getById('pageWizardCategoryId').value = state.data.category_id || '0';
-            }
-            if (getById('pageWizardMenuId')) {
-                getById('pageWizardMenuId').value = state.data.menu || '0';
             }
             if (getById('pageWizardStatusHidden')) {
                 getById('pageWizardStatusHidden').value = state.data.status || 'y';
@@ -121,12 +128,6 @@
             }
             if (getById('pageWizardDeckSelect')) {
                 getById('pageWizardDeckSelect').value = state.data.deck || 'n';
-            }
-            if (getById('pageWizardGalleryId')) {
-                getById('pageWizardGalleryId').value = state.data.gallery_id || '0';
-            }
-            if (getById('pageWizardFileId')) {
-                getById('pageWizardFileId').value = state.data.file_id || '0';
             }
             if (getById('pageWizardAclId')) {
                 getById('pageWizardAclId').value = state.data.acl_id || '0';
@@ -407,18 +408,11 @@
         }
 
         tinymce.init({
-            license_key: 'gpl',
-            smart_paste: false,
-            link_context_toolbar: false,
-            paste_webkit_styles: 'none',
-            paste_merge_formats: true,
-            paste_data_images: false,
-            invalid_styles: 'color font-family background-color font-size',
             selector: '#pageWizardContentTextarea',
             height: 320,
             menubar: false,
             plugins: [
-                'advlist', 'lists', 'link', 'image', 'charmap', 'preview',
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table', 'help', 'wordcount'
             ],
@@ -433,7 +427,7 @@
     }
 
     function bindInputs() {
-        ['pageWizardNameInput', 'pageWizardSummaryInput', 'pageWizardSeoInput', 'pageWizardTitleInput', 'pageWizardKeywordsInput', 'pageWizardDescriptionInput', 'pageWizardParentId', 'pageWizardCategoryId', 'pageWizardMenuId', 'pageWizardRootSelect', 'pageWizardDeckSelect', 'pageWizardGalleryId', 'pageWizardFileId', 'pageWizardAclId'].forEach(function (id) {
+        ['pageWizardNameInput', 'pageWizardSummaryInput', 'pageWizardSeoInput', 'pageWizardTitleInput', 'pageWizardKeywordsInput', 'pageWizardDescriptionInput', 'pageWizardParentId', 'pageWizardCategoryId', 'pageWizardMenuSlot', 'pageWizardMenuId', 'pageWizardRootSelect', 'pageWizardDeckSelect', 'pageWizardGalleryId', 'pageWizardFileId', 'pageWizardAclId'].forEach(function (id) {
             var element = getById(id);
             if (!element) {
                 return;
@@ -463,6 +457,17 @@
             summaryInput.addEventListener('input', function () {
                 generateSeoValues();
                 saveState();
+            });
+        }
+
+        var menuSlot = getById('pageWizardMenuSlot');
+        if (menuSlot) {
+            menuSlot.addEventListener('change', function () {
+                var hiddenLang = getById('pageWizardHiddenLang');
+                var url = new URL(window.location.href);
+                url.searchParams.set('lang', hiddenLang ? hiddenLang.value : (config.initialLang || ''));
+                url.searchParams.set('menu_slot', menuSlot.value);
+                window.location.href = url.toString();
             });
         }
     }
@@ -520,18 +525,24 @@
             card.classList.remove('active');
         });
         element.classList.add('active');
+        var nextLang = String(lang || '').toLowerCase();
+        var currentLang = String(config.initialLang || '').toLowerCase();
         if (getById('pageWizardHiddenLang')) {
-            getById('pageWizardHiddenLang').value = String(lang || '').toLowerCase();
+            getById('pageWizardHiddenLang').value = nextLang;
             getById('pageWizardHiddenLang').dispatchEvent(new Event('change', { bubbles: true }));
+        }
+        if (nextLang && nextLang !== currentLang) {
+            resetLanguageScopedFields();
         }
         updateSummary();
         saveState();
 
-        var currentLang = String(config.initialLang || '').toLowerCase();
-        var nextLang = String(lang || '').toLowerCase();
         if (nextLang && nextLang !== currentLang) {
             var url = new URL(window.location.href);
             url.searchParams.set('lang', nextLang);
+            if (getById('pageWizardMenuSlot')) {
+                url.searchParams.set('menu_slot', getById('pageWizardMenuSlot').value);
+            }
             window.location.href = url.toString();
         }
     }

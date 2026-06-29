@@ -131,6 +131,7 @@ class mod_news_helper extends indexBase
             $category_model->where_seo($category);
             $category_model->getResultOne();
             $category_model->sync();
+            $this->tema->ctx_set('category_record', $category_model->toArray());
 
             $categoryname = $category_model->name;
             $category_seo = $category_model->seo;
@@ -152,9 +153,9 @@ class mod_news_helper extends indexBase
         }
 
         if ($page != '1') {
-            $d['link'] = $this->site['sadres'] . 'newses/' . $category . '/' . $page;
+            $d['link'] = $this->site['saddress'] . 'newses/' . $category . '/' . $page;
         } else {
-            $d['link'] = $this->site['sadres'] . 'newses/' . $category;
+            $d['link'] = $this->site['saddress'] . 'newses/' . $category;
         }
 
         if ($page <= 1) {

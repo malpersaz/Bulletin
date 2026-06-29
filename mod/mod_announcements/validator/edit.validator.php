@@ -1,14 +1,14 @@
 <?php
-class duzenle_validator
+class edit_validator
 {
     public $valid;
     public $lang;
     public $hatalar = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File
         $this->lang = Load::lang('mod_announcements');
     }
     public function check($id)

@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'بڵاوکرایەوە لە %s',
     'home' => 'پەڕەی سەرەکی',
+    'navigation' => 'ڕێدۆزی',
     'download' => 'داگرتن',
     'login' => 'چوونەژوورەوە',
     'register' => 'تۆمارکردن',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'زمان',
     'messages' => 'پەیام',
     'my_account' => 'هەژمارەکەم',
+    'menu_title' => 'پێڕست',
     'change_avatar' => 'وێنە بگۆڕە',
     'logout' => 'دەرچوون',
     'dark_mode' => 'دۆخی تاریک',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'پەیوەندی',
     'info' => 'زانیاری',
     'find_us' => 'ئێمە بدۆزەرەوە',
+    'rss_feed' => 'RSS Feed',
+    'sitemap' => 'نەخشەی ماڵپەڕ',
+    'site_logo_alt' => 'لۆگۆی ماڵپەڕ',
+    'producer_logo_alt' => 'لۆگۆی AKM Software',
     'map_available_soon' => 'نەخشە بە زووەتی بەردەستە',
     'publish_date' => 'بەرواری بڵاوکردنەوە',
+    'category_label' => 'پۆل',
     'updated_date' => 'بەرواری نوێکردنەوە',
     'min_read' => 'خولەک خوێندنەوە',
     'enlarge_image' => 'گەورەکردنی وێنە',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'هاوبەشکردن',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'ئیمەیڵ',
+    'file_not_found' => 'پەڕگە نەدۆزرایەوە',
     'search' => [
         'searched_word' => 'وشەی گەڕان بنووسە!',
         'search' => 'گەڕان',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'هیچ وێنەیەک لەم پۆلەدا نەدۆزرایەوە!',
         'latest_pictures' => [
             1 => 'وێنەکان',
+            2 => 'نوێترین وێنەکان',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'سەرەکی',
         'about' => 'دەربارە',
         'contact' => 'پەیوەندی',
+        'footer_links' => 'بەستەرەکانی پێپەڕە',
         'language' => 'زمان',
         'messages' => 'نامەکان',
         'my_account' => 'هەژماری من',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'بارکردن',
     ],
     'copyright' => '© .هەموو مافێکی پارێزراوە',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'پێشانگای ڕووکارەکان',
         'desc' => 'پێشانگای ڕووکارەکان - دامەزراندن و کۆنترۆڵ',
@@ -290,9 +301,9 @@ $lang['index'] = [
             11 => 'کانوونی یەکەم',
         ],
         'latest_news' => [
-            1 => 'News',
-            2 => 'View All',
-            3 => 'No published news is available yet.',
+            1 => 'هەواڵەکان',
+            2 => 'بینینی هەموو',
+            3 => 'هێشتا هیچ هەواڵێکی بڵاوکراوە بەردەست نییە.',
         ],
     ],
     'mod_publication' => [
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'هەموو بڵاوکراوەکان',
             3 => 'هێشتا هیچ بڵاوکراوەیەکی بڵاوکراوە بەردەست نییە.',
         ],
+        'comments' => [
+            'title' => 'لێدوانەکان',
+            'add_title' => 'لێدوان زیاد بکە',
+            'placeholder' => 'لێدوانەکەت',
+            'full_name' => 'ناوی تەواو',
+            'submit' => 'لێدوان بنێرە',
+            'warning_label' => 'ئاگاداری',
+            'rules' => 'ئەو لێدوانانەی سووکایەتی، خراپ بەکارهێنان یان داڕشتنی ناخوێنراو لەخۆ دەگرن لەوانەیە پەسەند نەکرێن.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'نامە بنێرە',
+    ],
+    'error' => [
+        '1' => 'هەڵە',
+        'method' => ['ad' => 'ڕێگای نادروست', 'mesaj' => 'ڕێگای %s نەدۆزرایەوە'],
+        'mod' => ['ad' => 'هەڵەی مۆدیۆل', 'mesaj' => 'مۆدیۆلی %s نەدۆزرایەوە'],
+        'not' => ['ad' => 'پەڕە نەدۆزرایەوە', 'mesaj' => 'پەڕەی داواکراوی %s نەدۆزرایەوە'],
     ],
 ];

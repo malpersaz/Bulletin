@@ -2,6 +2,22 @@
 
 class mod_hero_slider_helper extends indexBase
 {
+    private function hasConfiguredDatabase()
+    {
+        $database = Kayit::getir('database');
+        $dbConfig = Kayit::getir('db_config');
+
+        if (!is_string($database) || $database === '') {
+            return false;
+        }
+
+        if (!is_array($dbConfig) || !isset($dbConfig[$database]) || !is_array($dbConfig[$database])) {
+            return false;
+        }
+
+        return isset($dbConfig[$database]['adapter'], $dbConfig[$database]['conf']) && is_array($dbConfig[$database]['conf']);
+    }
+
     public function __construct()
     {
         parent::__construct();
@@ -9,14 +25,17 @@ class mod_hero_slider_helper extends indexBase
 
     public function hero_slider($limit = 6)
     {
-        $limit = max(1, (int) $limit);
-        if (!$this->hasSliderColumn('mod_news') && !$this->hasSliderColumn('mod_publication')) {
+        if (!$this->hasConfiguredDatabase()) {
             return [];
         }
 
+        $limit = max(1, (int) $limit);
+
         $items = array_merge(
             $this->loadNewsItems(),
-            $this->loadPublicationItems()
+            $this->loadPublicationItems(),
+            $this->loadContentItems(),
+            $this->loadProductItems()
         );
 
         if (empty($items)) {
@@ -121,6 +140,55 @@ class mod_hero_slider_helper extends indexBase
         return array_values(array_filter($items));
     }
 
+    private function loadContentItems()
+    {
+        if (!$this->hasSliderColumn('mod_content')) {
+            return [];
+        }
+
+        $db = Load::lib('Database');
+        $rows = $db->fetch_array("
+            SELECT
+                c.id,
+                c.name,
+                c.seo,
+                c.image,
+                c.summary,
+                c.created_at,
+                c.lang,
+                c.user_id,
+                u.name AS u_name,
+                u.last_name AS u_last_name,
+                u.username AS username,
+                cat.name AS category_name,
+                cat.seo AS category_seo
+            FROM mod_content c
+            LEFT JOIN mod_category cat ON cat.id = c.category_id
+            LEFT JOIN mod_user u ON u.id = c.user_id
+            WHERE c.status = 'y'
+              AND c.slider = 'y'
+              AND c.lang = '" . Req::Clear($this->site['lang']) . "'
+            ORDER BY c.created_at DESC, c.id DESC
+        ")->getResult()->toArray();
+
+        if (!is_array($rows) || empty($rows)) {
+            return [];
+        }
+
+        $user_image_map = $this->loadUserImageMap($rows);
+        $items = [];
+
+        foreach ($rows as $row) {
+            $items[] = $this->normalizeItem(
+                'mod_content',
+                $row,
+                isset($user_image_map[(int) $row['user_id']]) ? $user_image_map[(int) $row['user_id']] : ''
+            );
+        }
+
+        return array_values(array_filter($items));
+    }
+
     private function loadUserImageMap(array $records)
     {
         $user_ids = [];
@@ -176,10 +244,27 @@ class mod_hero_slider_helper extends indexBase
             $author_name = 'Staff';
         }
 
-        $detail_path = $source_mod === 'mod_news' ? 'news/' : 'publication/';
-        $category_path = $source_mod === 'mod_news' ? 'newses/' : 'publications/';
-        $image_base = $source_mod === 'mod_news' ? 'mod_news/' : 'mod_publication/';
-        $thumb_base = $source_mod === 'mod_news' ? 'mod_news/thumb/' : 'mod_publication/thumb/';
+        $detail_path = 'news/';
+        $category_path = 'newses/';
+        $image_base = 'mod_news/';
+        $thumb_base = 'mod_news/thumb/';
+
+        if ($source_mod === 'mod_publication') {
+            $detail_path = 'publication/';
+            $category_path = 'publications/';
+            $image_base = 'mod_publication/';
+            $thumb_base = 'mod_publication/thumb/';
+        } elseif ($source_mod === 'mod_content') {
+            $detail_path = 'content/';
+            $category_path = 'category/';
+            $image_base = 'mod_content/';
+            $thumb_base = 'mod_content/thumb/';
+        } elseif ($source_mod === 'mod_product') {
+            $detail_path = 'product/';
+            $category_path = 'products/';
+            $image_base = 'mod_product/';
+            $thumb_base = 'mod_product/thumb/';
+        }
         $image = isset($record['image']) ? (string) $record['image'] : '';
         $category_seo = isset($record['category_seo']) ? (string) $record['category_seo'] : '';
         $created_at = isset($record['created_at']) ? (string) $record['created_at'] : '';
@@ -195,15 +280,15 @@ class mod_hero_slider_helper extends indexBase
             'published_ago' => $this->formatRelativeTime($created_at),
             'category_name' => $category_name,
             'category_seo' => $category_seo,
-            'category_url' => $category_seo !== '' ? $this->site['sadres'] . $category_path . $category_seo : '',
-            'detail_url' => $this->site['sadres'] . $detail_path . (isset($record['seo']) ? $record['seo'] : ''),
+            'category_url' => $category_seo !== '' ? $this->site['saddress'] . $category_path . $category_seo : '',
+            'detail_url' => $this->site['saddress'] . $detail_path . (isset($record['seo']) ? $record['seo'] : ''),
             'image' => $image,
-            'image_url' => $image !== '' ? $this->site['radres'] . $image_base . $image : '',
-            'thumb_url' => $image !== '' ? $this->site['radres'] . $thumb_base . $image : '',
+            'image_url' => $image !== '' ? $this->site['iaddress'] . $image_base . $image : '',
+            'thumb_url' => $image !== '' ? $this->site['iaddress'] . $thumb_base . $image : '',
             'author_name' => $author_name,
             'author_initials' => $this->buildAuthorInitials($author_name),
             'user_image' => $user_image,
-            'author_image_url' => $user_image !== '' ? $this->site['radres'] . 'mod_user/thumb/' . $user_image : '',
+            'author_image_url' => $user_image !== '' ? $this->site['iaddress'] . 'mod_user/thumb/' . $user_image : '',
         ];
     }
 
@@ -255,6 +340,10 @@ class mod_hero_slider_helper extends indexBase
 
     private function hasSliderColumn($table)
     {
+        if (!$this->hasConfiguredDatabase()) {
+            return false;
+        }
+
         $db = Load::lib('Database');
         if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
             $db->fetch_array("PRAGMA table_info('" . addslashes($table) . "')");
@@ -282,5 +371,70 @@ class mod_hero_slider_helper extends indexBase
         });
 
         return empty($clean_ids) ? '0' : implode(',', $clean_ids);
+    }
+
+    private function loadProductItems()
+    {
+        $db = Load::lib('Database');
+        
+        $table_check = false;
+        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='mod_product'");
+            $result = $db->toArray();
+            if (!empty($result)) {
+                $table_check = true;
+            }
+        } else {
+            $db->fetch_array("SHOW TABLES LIKE 'mod_product'");
+            $result = $db->getResult()->toArray();
+            if (!empty($result)) {
+                $table_check = true;
+            }
+        }
+
+        if (!$table_check) {
+            return [];
+        }
+
+        $rows = $db->fetch_array("
+            SELECT
+                p.id,
+                p.name,
+                p.seo,
+                p.image,
+                p.summary,
+                p.created_at,
+                p.lang,
+                p.user_id,
+                u.name AS u_name,
+                u.last_name AS u_last_name,
+                u.username AS username,
+                cat.name AS category_name,
+                cat.seo AS category_seo
+            FROM mod_product p
+            LEFT JOIN mod_product_category cat ON cat.id = p.category_id
+            LEFT JOIN mod_user u ON u.id = p.user_id
+            WHERE p.status = 'y'
+              AND p.show_on_homepage = 'y'
+              AND p.lang = '" . Req::Clear($this->site['lang']) . "'
+            ORDER BY p.created_at DESC, p.id DESC
+        ")->getResult()->toArray();
+
+        if (!is_array($rows) || empty($rows)) {
+            return [];
+        }
+
+        $user_image_map = $this->loadUserImageMap($rows);
+        $items = [];
+
+        foreach ($rows as $row) {
+            $items[] = $this->normalizeItem(
+                'mod_product',
+                $row,
+                isset($user_image_map[(int) $row['user_id']]) ? $user_image_map[(int) $row['user_id']] : ''
+            );
+        }
+
+        return array_values(array_filter($items));
     }
 }

@@ -15,5 +15,6 @@ class mod_video_model extends ORM
     public $flv;
     public $original;
     public $acl_id;
+    public $view_count;
     public $user_id;
 }

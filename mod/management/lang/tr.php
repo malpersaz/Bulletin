@@ -1,17 +1,26 @@
 <?php
 $lang['management']=[
     '1'=>'Kullanıcı Paneli',
-
-    // Main navigation menu
     'anasayfa' => 'Ana Sayfa',
     'dashboard' => 'Panel',
     'uyelik' => 'Üyelik',
+    'content_workspace' => 'İçerik Alanı',
     'content_and_page' => 'İçerik ve Sayfalar',
     'video_and_images' => 'Video ve Resimler',
-    
-    // User interface elements
-
-    // Membership submenu
+    'products_workspace' => 'Ürünler Alanı',
+    'products' => 'Ürün Yönetimi',
+    'services' => 'Hizmet Yönetimi',
+    'product_categories' => 'Ürün Kategorileri',
+    'service_categories' => 'Hizmet Kategorileri',
+    'clients' => 'Müşteri Yönetimi',
+    'references' => 'Referans Yönetimi',
+    'system_tools' => 'Sistem Araçları',
+    'recent_modules' => 'Son Açılan Modüller',
+    'pinned_modules' => 'Sabitlenen Modüller',
+    'module_search_placeholder' => 'Modül ara...',
+    'pin_module' => 'Modülü sabitle',
+    'unpin_module' => 'Modül sabitini kaldır',
+    'recent_workspace_empty' => 'Son kullanılan modüller burada görünecek',
     'uyeler' => 'Üyeler',
     'uye_gruplari' => 'Üye Grupları',
     'membership_setting' => 'Üyelik Ayarları',
@@ -20,16 +29,6 @@ $lang['management']=[
     'gallery_modulleri' => 'Galeri Modülleri',
     'dosya_modulleri' => 'Dosya Modülleri',
     'locale_management' => 'Yerelleştirme Yönetimi',
-    'system_tools' => 'Sistem Araçları',
-    'recent_modules' => 'Son Kullanılan Modüller',
-    'pinned_modules' => 'Sabitlenen Modüller',
-    'module_search_placeholder' => 'Modüllerde ara...',
-    'module_search_empty' => 'Modül bulunamadı',
-    'pin_module' => 'Modülü sabitle',
-    'unpin_module' => 'Sabitlemeyi kaldır',
-    'recent_workspace_empty' => 'Son kullanılan modüller burada görünecektir',
-
-    // Content and pages submenu
     'content_categories' => 'İçerik Kategorileri',
     'news_categories' => 'Haber Kategorileri',
     'publication_categories' => 'Yayın Kategorileri',
@@ -41,12 +40,12 @@ $lang['management']=[
     'news_management' => 'Haber Yönetimi',
     'publication_management' => 'Yayın Yönetimi',
     'menu_management' => 'Menü Yönetimi',
+    'redirect_management' => 'Yönlendirme Yönetimi',
+    'seo_and_redirects' => 'SEO ve Yönlendirmeler',
     'page_management' => 'Sayfa Yönetimi',
     'file_management' => 'Dosya Yönetimi',
     'service_guide' => 'Hizmet Rehberi',
     'survey_management' => 'Anket Yönetimi',
-
-    // Video and images submenu
     'videos' => 'Videolar',
     'remote_videos' => 'Uzak Videolar',
     'uzak_video_kategorisi' => 'Uzak Video Kategorisi',
@@ -54,12 +53,8 @@ $lang['management']=[
     'full_manset_yonetimi' => 'Full Manşet Yönetimi',
     'resim_gallery' => 'Resim Galerisi',
     'image_gallery' => 'Resim Galerisi',
-
-    // Announcement management submenu
     'announcement_management' => 'Announcement Yönetimi',
     'popup_announcements' => 'Popup Duyurular',
-
-    // Additional UI elements
     'settings' => 'Ayarlar',
     'management' => 'Yönetim',
     'admin_panel' => 'Yönetim Paneli',
@@ -100,6 +95,10 @@ $lang['management']=[
     'module_health_enable' => 'Etkinleştir',
     'module_health_disable' => 'Devre Dışı Bırak',
     'module_health_repair' => 'Onar',
+    'module_health_all_clear' => 'İzlenen tüm modüller hazır durumda.',
+    'module_health_attention' => 'dikkat gerektiriyor',
+    'module_health_ready_count' => 'hazır',
     'yes' => 'Evet',
-    'no' => 'Hayır'
+    'no' => 'Hayır',
+    'start_menu' => 'Başlangıç Menüsü'
 ];

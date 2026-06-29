@@ -10,5 +10,6 @@ CREATE TABLE mod_video (
     flv TEXT,
     original TEXT DEFAULT NULL,
     acl_id INTEGER DEFAULT 0,
+    view_count INTEGER NOT NULL DEFAULT 0,
     user_id INTEGER NOT NULL
 );

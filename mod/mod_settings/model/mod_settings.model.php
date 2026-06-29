@@ -28,4 +28,7 @@ class mod_settings_model extends ORM
     public $manifest_512;
     public $established_year;
     public $user_id;
+    public $site_icon;
+    public $logo_type;
+    public $logo_symbol;
 }

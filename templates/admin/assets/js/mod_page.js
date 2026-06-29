@@ -66,18 +66,11 @@
         }
 
         tinymce.init({
-            license_key: 'gpl',
-            smart_paste: false,
-            link_context_toolbar: false,
-            paste_webkit_styles: 'none',
-            paste_merge_formats: true,
-            paste_data_images: false,
-            invalid_styles: 'color font-family background-color font-size',
             selector: selector,
             height: 400,
             menubar: false,
             plugins: [
-                'advlist', 'lists', 'link', 'image', 'charmap', 'preview',
+                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table', 'help', 'wordcount'
             ],
@@ -94,15 +87,19 @@
         });
     }
 
-    function bindManualTracking(input, key, initialValues) {
+    function bindManualTracking(input, key, initialValues, mode) {
         if (!input) {
             return;
         }
 
         input.dataset.metaKey = key;
-        input.dataset.manuallyEdited = initialValues
-            ? ((input.value !== '' && input.value !== initialValues[key]) ? 'true' : 'false')
-            : (input.value !== '' ? 'true' : 'false');
+        if (mode === 'edit') {
+            input.dataset.manuallyEdited = 'false';
+        } else {
+            input.dataset.manuallyEdited = initialValues
+                ? ((input.value !== '' && input.value !== initialValues[key]) ? 'true' : 'false')
+                : (input.value !== '' ? 'true' : 'false');
+        }
 
         input.addEventListener('input', function () {
             input.dataset.manuallyEdited = 'true';
@@ -110,6 +107,7 @@
     }
 
     function initMetaAutofill() {
+        var config = window.MOD_PAGE_FORM || {};
         var nameInput = document.getElementById('name');
         var seoInput = document.getElementById('seo');
         var titleInput = document.getElementById('title');
@@ -117,10 +115,10 @@
         var descriptionInput = document.getElementById('description');
         var initialMetaValues = generatedMetaValues(nameInput ? nameInput.value : '');
 
-        bindManualTracking(seoInput, 'seo', initialMetaValues);
-        bindManualTracking(titleInput, 'title', initialMetaValues);
-        bindManualTracking(keywordsInput, 'keywords', initialMetaValues);
-        bindManualTracking(descriptionInput, 'description', initialMetaValues);
+        bindManualTracking(seoInput, 'seo', initialMetaValues, config.mode);
+        bindManualTracking(titleInput, 'title', initialMetaValues, config.mode);
+        bindManualTracking(keywordsInput, 'keywords', initialMetaValues, config.mode);
+        bindManualTracking(descriptionInput, 'description', initialMetaValues, config.mode);
 
         if (!nameInput) {
             return;
@@ -187,7 +185,7 @@
             Swal.fire({
                 icon: 'warning',
                 html: '<b><i class="bi bi-exclamation-triangle-fill"></i> ' + escapeHtml(config.errorMessage) + '</b>',
-                confirmButtonText: config.okText || 'Tamam',
+                confirmButtonText: config.okText || 'OK',
                 confirmButtonColor: '#ba1a1a'
             });
             return;
@@ -201,7 +199,7 @@
             Swal.fire({
                 icon: 'warning',
                 html: errorHtml,
-                confirmButtonText: config.okText || 'Tamam',
+                confirmButtonText: config.okText || 'OK',
                 confirmButtonColor: '#ba1a1a'
             });
         }

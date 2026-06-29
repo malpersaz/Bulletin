@@ -433,31 +433,27 @@
             <span>{{ lang.mod_attachment.admin[18] }}</span>
         </button>
 
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'">
             <i class="bi bi-speedometer2"></i>
             <span>{{ lang.mod_attachment.admin[44] }}</span>
         </button>
 
-        <button type="button" class="toolbar-fab" onclick="openAttachmentUpload()">
-            <i class="bi bi-plus-lg"></i>
-        </button>
-
-        <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
+        <button class="toolbar-item active" onclick="location.href='{{ site.saddress }}mod_attachment/list'">
             <i class="bi bi-card-list"></i>
             <span>{{ lang.mod_attachment.admin[14] }}</span>
         </button>
 
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}{{ mod_name }}/list'">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}{{ mod_name }}/list'">
             <i class="bi bi-chevron-left"></i>
             <span>{{ lang.mod_attachment.admin[12] }}</span>
         </button>
     {% else %}
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'">
             <i class="bi bi-speedometer2"></i>
             <span>{{ lang.mod_attachment.admin[44] }}</span>
         </button>
 
-        <button class="toolbar-item active" onclick="location.href='{{ site.sadres }}mod_attachment/list'">
+        <button class="toolbar-item active" onclick="location.href='{{ site.saddress }}mod_attachment/list'">
             <i class="bi bi-card-list"></i>
             <span>{{ lang.mod_attachment.admin[14] }}</span>
         </button>
@@ -468,6 +464,13 @@
         </button>
     {% endif %}
 </div>
+
+{% if not is_global_list %}
+    <!-- Main FAB Button -->
+    <button type="button" class="main-fab" id="mainFab" onclick="openAttachmentUpload()" aria-label="{{ lang.mod_attachment.add|default('Pela Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -610,7 +613,7 @@
             formData.append('sid', '{{ session.sid|default('') }}');
             formData.append('mod_name', '{{ mod_name|default('') }}');
 
-            fetch('{{ site.sadres }}mod_attachment/upload', {
+            fetch('{{ site.saddress }}mod_attachment/upload', {
                 method: 'POST',
                 body: formData
             })
@@ -698,7 +701,7 @@
         body.set('vid', recordId);
         body.set('mod_name', modName);
 
-        fetch('{{ site.sadres }}mod_attachment/edit', {
+        fetch('{{ site.saddress }}mod_attachment/edit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: body.toString()
@@ -743,7 +746,7 @@
             body.set('vid', recordId);
             body.set('mod_name', modName);
 
-            fetch('{{ site.sadres }}mod_attachment/delete', {
+            fetch('{{ site.saddress }}mod_attachment/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()

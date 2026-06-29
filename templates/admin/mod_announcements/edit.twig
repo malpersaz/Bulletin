@@ -1,0 +1,250 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_announcements.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_announcements.edit }}{% endblock %}
+
+{% block styles %}
+<style>
+    .announcements-form-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
+    .announcements-form-card { background: var(--md-sys-color-surface); border-radius: 20px; padding: 20px; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; }
+    .announcements-form-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); margin: 0; }
+    .form-status { border-radius: 16px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
+    .form-status.error { background: #fce8e6; color: #b3261e; }
+    .form-status.success { background: #e6f4ea; color: #1e4620; }
+    .m3-input-wrapper { position: relative; }
+    .m3-input-lg { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); box-sizing: border-box; outline: none; min-height: 54px; }
+    .m3-input-lg:focus { border-width: 2px; border-color: var(--md-sys-color-primary); padding: 15px; }
+    textarea.m3-input-lg { min-height: 100px; resize: vertical; }
+    .m3-floating-label { position: absolute; top: 16px; left: 16px; background: var(--md-sys-color-surface); padding: 0 6px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: all 0.2s ease; }
+    .m3-input-lg:focus + .m3-floating-label, .m3-input-lg:not(:placeholder-shown) + .m3-floating-label, select.m3-input-lg + .m3-floating-label, textarea.m3-input-lg:not(:placeholder-shown) + .m3-floating-label, input[type="datetime-local"].m3-input-lg + .m3-floating-label { top: -9px; left: 12px; font-size: 12px; color: var(--md-sys-color-primary); }
+    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .selection-card { border: 1px solid var(--md-sys-color-outline); border-radius: 16px; padding: 16px; display: grid; gap: 6px; cursor: pointer; }
+    .selection-card input { display: none; }
+    .selection-card.active { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
+    .selection-title { font-weight: 700; }
+    .selection-copy { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
+    .image-input-container { display: grid; gap: 8px; }
+    .image-note { font-size: 13px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; }
+    .announcements-bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)); }
+    .announcements-bottom-bar a, .announcements-bottom-bar button { flex: 1; min-height: 52px; border-radius: 999px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; cursor: pointer; }
+    .announcements-bottom-bar .cancel-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
+    .announcements-bottom-bar .save-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="announcements-form-shell">
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="announcementEditForm" class="announcements-form-shell" style="padding:0; gap:16px;">
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.information }}</h3>
+
+            <!-- Language -->
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="lang">
+                    {% set selected_lang = lang_value|default(d.lang) %}
+                    {% for item in lang_lang %}
+                        {% if item.status == 'y' or item.seo == selected_lang %}
+                            <option value="{{ item.seo }}" {% if item.seo == selected_lang %}selected{% endif %}>{{ item.ad }} ({{ item.seo|upper }})</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.language }}</label>
+            </div>
+
+            <!-- Title -->
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="name" id="announcement-name" value="{{ name|default(d.name) }}" placeholder=" " oninput="syncAnnouncementMeta()" required>
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.ad }}</label>
+            </div>
+
+            <!-- SEO URL -->
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="seo" id="announcement-seo" value="{{ seo|default(d.seo) }}" placeholder=" ">
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.seo }}</label>
+            </div>
+
+            <!-- Created At -->
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="datetime-local" name="created_at" id="announcement-created-at" value="{{ created_at|default(d.created_at)|replace({' ': 'T'}) }}" placeholder=" " required>
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.tarih }}</label>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.status }}</h3>
+            <div class="selection-grid" data-selection-group>
+                {% set current_status = status|default(d.status) %}
+                <label class="selection-card{% if current_status == 'y' %} active{% endif %}">
+                    <input type="radio" name="status" value="y" {% if current_status == 'y' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_announcements.admin.radio.publish_yes }}</div>
+                    <div class="selection-copy">{{ lang.mod_announcements.grid.publish.key }}</div>
+                </label>
+                <label class="selection-card{% if current_status == 'n' %} active{% endif %}">
+                    <input type="radio" name="status" value="n" {% if current_status == 'n' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_announcements.admin.radio.publish_no }}</div>
+                    <div class="selection-copy">{{ lang.mod_announcements.grid.unpublish.key }}</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.deck }}</h3>
+            <div class="selection-grid" data-selection-group>
+                {% set current_deck = deck|default(d.deck) %}
+                <label class="selection-card{% if current_deck == 'y' %} active{% endif %}">
+                    <input type="radio" name="deck" value="y" {% if current_deck == 'y' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_announcements.admin.radio.deck_yes }}</div>
+                </label>
+                <label class="selection-card{% if current_deck == 'n' %} active{% endif %}">
+                    <input type="radio" name="deck" value="n" {% if current_deck == 'n' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_announcements.admin.radio.deck_no }}</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.summary }}</h3>
+            <div class="m3-input-wrapper">
+                <textarea class="m3-input-lg" name="summary" placeholder=" ">{{ summary|default(d.summary) }}</textarea>
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.summary }}</label>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.content }}</h3>
+            <div class="m3-input-wrapper" style="min-height: 400px;">
+                <textarea id="announcement-content" name="content" placeholder=" ">{{ content|default(d.content) }}</textarea>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.image }}</h3>
+            
+            {% if d.image %}
+                <div class="announcement-current-image" style="display:flex; align-items:center; gap:16px; margin-bottom:12px;">
+                    <img src="{{ site.iaddress ~ 'mod_announcements/thumb/' ~ d.image }}" style="max-width:100px; border-radius:8px;" id="current-image-preview">
+                    <button type="button" class="btn btn-xs red" onclick="removeCurrentImage({{ d.id }})" style="background:#b3261e; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:700; cursor:pointer;">
+                        <i class="bi bi-trash"></i> {{ lang.mod_announcements.button.kaldir }}
+                    </button>
+                </div>
+            {% endif %}
+
+            <div class="image-input-container">
+                <input class="m3-input-lg" type="file" name="image" accept="image/*" style="padding:12px;">
+                <div class="image-note">{{ lang.mod_announcements.remove_image_oke|default('Resim Yükle') }}</div>
+            </div>
+        </div>
+
+        <div class="announcements-form-card">
+            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.acl_id }}</h3>
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="acl_id">
+                    {% set current_acl = acl_id|default(d.acl_id) %}
+                    <option value="0" {% if current_acl == 0 %}selected{% endif %}>{{ lang.mod_announcements.choose_wish }}</option>
+                    {% for item in mod_acl_acl_id %}
+                        <option value="{{ item.id }}" {% if current_acl == item.id %}selected{% endif %}>{{ item.ad }}</option>
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.acl_id }}</label>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if success is not defined %}
+    <div class="announcements-bottom-bar">
+        <a href="{{ site.saddress }}mod_announcements/list" class="cancel-btn">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_announcements.button.vazgec }}</span>
+        </a>
+        <button type="submit" form="announcementEditForm" name="edit" value="1" class="save-btn">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ lang.mod_announcements.button.edit }}</span>
+        </button>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+function syncAnnouncementMeta() {
+    const nameInput = document.getElementById('announcement-name');
+    const seoInput = document.getElementById('announcement-seo');
+    if (!nameInput || !seoInput) {
+        return;
+    }
+    if (!seoInput.dataset.touched) {
+        seoInput.value = nameInput.value
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+}
+
+async function removeCurrentImage(id) {
+    if (!confirm("{{ lang.mod_announcements.remove_image|e('js') }}")) return;
+    const formData = new FormData();
+    formData.append('id', id);
+    try {
+        const res = await fetch('{{ site.saddress }}mod_announcements/image_remove_image', {
+            method: 'POST',
+            body: formData
+        });
+        const text = await res.text();
+        if (text.trim() === 'OK') {
+            const preview = document.getElementById('current-image-preview');
+            if (preview) preview.closest('.announcement-current-image').remove();
+        } else {
+            alert(text);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const seoInput = document.getElementById('announcement-seo');
+    if (seoInput) {
+        seoInput.addEventListener('input', function () {
+            seoInput.dataset.touched = '1';
+        });
+    }
+
+    document.querySelectorAll('[data-selection-group]').forEach(function (group) {
+        group.addEventListener('change', function (event) {
+            if (event.target.type !== 'radio') return;
+            group.querySelectorAll('.selection-card').forEach(function (card) {
+                card.classList.toggle('active', card.contains(event.target));
+            });
+        });
+    });
+
+    if (typeof window.initRichEditor === 'function') {
+        window.initRichEditor('#announcement-content', 400);
+    }
+});
+</script>
+{% endblock %}

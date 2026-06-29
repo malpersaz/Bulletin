@@ -10,7 +10,18 @@ $lang['mod_page'] = [
   'remove_image' => 'Bu resmi kaldırmak istediğinize emin misiniz?',
   'remove_image_oke' => 'Resim Başarıyla Kaldırıldı',
   'choose_wish' => 'Dilerseniz Seçin',
+  'menu_options' => [
+    'none' => 'Menüye ekleme',
+    'top_level' => 'Üst seviye menü öğesi olarak ekle',
+    'slot_root' => 'Seçili menü yüzeyi altına ekle',
+  ],
+  'menu_slot_options' => [
+    'none' => 'Menü yüzeyi yok',
+    'header' => 'Üst Menü',
+    'footer' => 'Alt Menü',
+  ],
   'remove_record' => 'Bu kaydı silmek istediğinize emin misiniz?',
+  'seo_meta' => 'SEO Meta Verileri',
   'messages' => [
     'oke' => [
       'add' => 'Sayfa Başarıyla Eklendi',
@@ -42,6 +53,7 @@ $lang['mod_page'] = [
   ],
   'errors' => [
     'record' => 'Hata: Belirtilen kayıt bulunamadı',
+    'slot_branch_missing' => 'Seçilen menü yüzeyi bu dil için çözümlenemedi',
   ],
   'button' => [
     'add' => 'Ekle',
@@ -53,6 +65,8 @@ $lang['mod_page'] = [
     'hayir' => 'Hayır',
     'gallery' => 'Resim Galerisi',
     'file' => 'Dosya Yöneticisi',
+    'tamam' => 'Tamam',
+    'upload' => 'Yükle',
   ],
   'actions' => [
     'cancel' => 'Vazgeç',
@@ -80,6 +94,7 @@ $lang['mod_page'] = [
     'file' => 'Dosya Ekleyebilirmi?',
     'moderate_edit' => 'Kendisine Ait Olmayan Sayfa Kaydını Düzenleyebilir',
     'moderate_delete' => 'Kendisine Ait Olmayan Sayfa Kaydını Silebilir',
+    'approval' => 'Sayfaları Yayınlayabilir/Yayından Kaldırabilir mi?',
   ],
   'role_errors' =>
   [
@@ -91,6 +106,7 @@ $lang['mod_page'] = [
     'delete' => 'Sayfa Silmeye Permissionniz Yok',
     'gallery' => 'Galeri Eklemeye Permissionniz Yok',
     'file' => 'Dosya Eklemeye Yetniniz Yok',
+    'approval' => 'Sayfaları Yayınlamak/Yayından Kaldırmak İçin Yetkiniz Yok',
   ],
   'admin' =>
   [
@@ -117,6 +133,7 @@ $lang['mod_page'] = [
       'acl_id' => 'Bu Sayfayı Kimler Görüntüleyebilir?',
       'category_id' => 'ilişkili İçerik Kategorisi',
       'menu' => 'Sayfayı Menüye Gönder',
+      'menu_slot' => 'Menü Yüzeyi',
     ],
     'select_value' =>
     [
@@ -158,5 +175,13 @@ $lang['mod_page'] = [
     'page_summary' => 'Sayfa Özeti',
     'previous' => 'Önceki',
     'next' => 'Sonraki',
+  ],
+  'quick_unpublish_confirm' => 'Bu sayfayı yayından kaldırmak istediğinizden emin misiniz?',
+  'quick_publish_confirm' => 'Bu sayfayı yayınlamak istediğinizden emin misiniz?',
+  'published_msg' => 'Sayfa Başarıyla Yayınlandı',
+  'unpublished_msg' => 'Sayfa Başarıyla Yayından Kaldırıldı',
+  'status_badge' => [
+    'active' => 'Yayında',
+    'draft' => 'Taslak',
   ],
 ];

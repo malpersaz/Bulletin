@@ -36,7 +36,7 @@ class Captcha
 		}
 
 		if (preg_match('/(?i)msie [1-7]/', $_SERVER['HTTP_USER_AGENT'])) {
-			return $this->site['adres'] . "captcha.php?" . base64_encode(file_get_contents($this->file));
+			return $this->site['address'] . "captcha.php?" . base64_encode(file_get_contents($this->file));
 		}
         return "data:image/png;base64," . base64_encode(file_get_contents($this->file));
 		//return "data:image/png;base64,".base64_encode ( file_get_contents ( $this->file ) );

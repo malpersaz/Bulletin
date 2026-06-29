@@ -48,7 +48,7 @@ class mod_user extends installerbase implements installerbaseinterface
 
     public function install_finish()
     {
-        if ($this->install_sql_file('users.sql') === FALSE) {
+        if ($this->create_users_view() === FALSE) {
             $this->error($this->lang['mod_user']['installer']['sql_error']);
             return FALSE;
         }
@@ -99,8 +99,8 @@ class mod_user extends installerbase implements installerbaseinterface
     {
         $model = Load::model('mod_user');
         $model->id = 1;
-        $model->name = "Amed";
-        $model->last_name = "Framework";
+        $model->name = "Business";
+        $model->last_name = "CMS";
         $model->group_id = 1;
         $model->username = "admin";
         $model->password = md5("admin123");
@@ -127,7 +127,43 @@ class mod_user extends installerbase implements installerbaseinterface
             $this->warning(sprintf($this->lang['mod_user']['installer']['user_exists'], $model->username));
         }
 
+        return TRUE;
+    }
 
+    private function create_users_view()
+    {
+        $adapterType = (string) $this->db->getAdapterType();
+
+        if (strpos($adapterType, 'PDO_SQLITE') !== false) {
+            $dropSql = 'DROP VIEW IF EXISTS users';
+            $createSql = "CREATE VIEW users AS
+                SELECT
+                    u.id AS id,
+                    u.username AS username,
+                    u.updated_at AS updated_at,
+                    u.created_at AS created_at,
+                    u.ip AS ip,
+                    u.image AS image,
+                    u.city AS city,
+                    u.phone AS phone,
+                    u.email AS email,
+                    u.name AS name,
+                    u.last_name AS last_name,
+                    u.status AS status,
+                    u.group_id AS group_id,
+                    g.name AS group_name
+                FROM mod_user u
+                LEFT JOIN mod_user_group g
+                    ON u.group_id = g.group_id";
+
+            if ($this->db->query($dropSql) === FALSE) {
+                return FALSE;
+            }
+
+            return $this->db->query($createSql) !== FALSE;
+        }
+
+        return $this->install_sql_file('users.sql');
     }
 
 

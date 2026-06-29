@@ -56,7 +56,7 @@ class mod_user_pm_mod extends indexMain
 
     private function redirectTo($path)
     {
-        $target = $this->site['sadres'] . ltrim($path, '/');
+        $target = $this->site['saddress'] . ltrim($path, '/');
         header('Location: ' . $target);
         exit;
     }

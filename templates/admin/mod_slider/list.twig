@@ -1,6 +1,6 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
-{% set show_search = true %}
+{% set show_search = false %}
 {% set show_search_filter_button = false %}
 {% set search_placeholder = lang.mod_slider.search_placeholder %}
 {% extends 'admin/layout.twig' %}
@@ -9,6 +9,189 @@
 {% block headline %}{{ lang.mod_slider.list }}{% endblock %}
 
 {% block content %}
+<style>
+    /* Card Container */
+    .content-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+        padding-bottom: 96px; /* Space for bottom toolbar */
+    }
+
+    .content-card {
+        background: var(--md-sys-color-surface, #ffffff);
+        border-radius: 24px; /* var(--md-sys-shape-corner-large) */
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        cursor: pointer;
+        transition: 
+            opacity 0.3s ease-out,
+            translate 0.3s ease-out,
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .content-card:active {
+        transform: scale(0.98);
+    }
+
+    /* Thumbnail */
+    .card-thumbnail {
+        width: 88px;
+        height: 88px;
+        border-radius: 16px; /* var(--md-sys-shape-corner-medium) */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        flex-shrink: 0;
+    }
+
+    /* Card Body */
+    .card-body-col {
+        flex: 1;
+        padding-left: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0; /* Prevents overflow */
+    }
+
+    /* Top Row (Badge and Switch) */
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 6px;
+    }
+
+    /* Badge styling */
+    .module-badge {
+        background-color: var(--md-sys-color-outline-variant, #5d5d6a);
+        color: #ffffff;
+        border-radius: 8px;
+        font-size: 11px;
+        padding: 3px 8px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+    }
+
+    /* Toggle Switch with Label */
+    .switch-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .switch-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--md-sys-color-outline, #5d5d6a);
+    }
+
+    /* Title styling */
+    .card-title {
+        margin: 0 0 8px 0;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1.35;
+        color: var(--md-sys-color-on-surface, #1C1B1F);
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-align: left;
+    }
+
+    /* Meta metadata row */
+    .card-meta-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant, #707070);
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .meta-item i {
+        font-size: 12px;
+    }
+
+    /* Fade out animation for removed cards */
+    .content-card.fade-out {
+        opacity: 0;
+        translate: 0 -10px;
+        pointer-events: none;
+    }
+
+    /* Card Entry Starting Style */
+    @starting-style {
+        .content-card {
+            opacity: 0;
+            translate: 0 10px;
+        }
+    }
+
+    /* Bottom Toolbar & Start Button */
+    .bottom-toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-top: 1px solid rgba(var(--md-sys-color-outline-variant-rgb, 202, 196, 208), 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 990;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+        transition: background 0.3s ease, border-color 0.3s ease;
+    }
+
+    [data-theme="dark"] .bottom-toolbar {
+        background: rgba(30, 41, 59, 0.75);
+        border-top-color: rgba(var(--md-sys-color-outline-variant-rgb, 73, 69, 79), 0.3);
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .start-menu-btn {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: var(--md-sys-color-primary, #6750A4);
+        color: #ffffff;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(var(--md-sys-color-primary-rgb, 103, 80, 164), 0.35);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        bottom: 4px; /* Slightly floating upwards */
+    }
+
+    [data-theme="dark"] .start-menu-btn {
+        box-shadow: 0 4px 12px rgba(var(--md-sys-color-primary-rgb, 208, 188, 255), 0.35);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+</style>
+
 <!-- PULL TO REFRESH SPINNER -->
 <div id="ptr-spinner" class="ptr-spinner">
     <div class="spinner-track">
@@ -41,7 +224,7 @@
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
     
-    <!-- Search -->
+    <!-- Search / Filter inputs -->
     <input type="hidden" name="arama[name]" id="filterSearch" value="">
     <input type="hidden" name="arama[lang]" id="filterLang" value="">
     
@@ -52,31 +235,12 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_slider.button.edit }}</span>
-        </button>
-        
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-images"></i>
-            <span>{{ lang.mod_slider.button.gallery }}</span>
-        </button>
-
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_slider/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
-        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_slider.button.file }}</span>
-        </button>
-
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_slider.button.delete }}</span>
-        </button>
-    </div>
+<!-- Bottom Toolbar (Windows Start Menu like) -->
+<div class="bottom-toolbar">
+    <button class="start-menu-btn" type="button" onclick="toggleDrawer()" aria-label="Start Menu">
+        <i class="bi bi-list"></i>
+    </button>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -97,8 +261,10 @@
         yes: "{{ lang.mod_slider.button.yes|e('js') }}",
         no: "{{ lang.mod_slider.button.no|e('js') }}",
         empty_no_data: "{{ lang.mod_slider.empty.no_data|e('js') }}",
-        empty_no_search_results: "{{ lang.mod_slider.empty.no_search_results|e('js') }}"
+        empty_no_search_results: "{{ lang.mod_slider.empty.no_search_results|e('js') }}",
+        publish: "Biweşîne",
+        unpublish: "Meweşîne"
     };
 </script>
-<script src="{{ site.adres }}templates/admin/assets/js/mod_slider.js?v=1.1"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_slider.js?v=2.0"></script>
 {% endblock %}

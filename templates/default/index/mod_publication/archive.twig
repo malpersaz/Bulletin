@@ -55,7 +55,7 @@
         {% if publications is not empty %}
             <h4 class="alert alert-success">{{ lang.index.mod_publication.11 }}</h4>
             {% for publication in publications %}
-                <p>{{ publication.created_at|date("Y-m-d") }} - <a href="{{ site.sadres }}publication/{{ publication.seo }}" title="{{ publication.summary != '' ? publication.summary : publication.name }}">{{ publication.name }}</a></p>
+                <p>{{ publication.created_at|date("Y-m-d") }} - <a href="{{ site.saddress }}publication/{{ publication.seo }}" title="{{ publication.summary != '' ? publication.summary : publication.name }}">{{ publication.name }}</a></p>
             {% endfor %}
         {% endif %}
     </div>

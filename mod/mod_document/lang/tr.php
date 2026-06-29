@@ -1,224 +1,124 @@
 <?php
-/**
- * Advanced File Manager Module - Turkish Language File
- *
- * @package Rojname
- * @module  mod_document
- * @version 1.0.0
- * @author  AKM Software
- * @license Proprietary
- */
-
-// Prevent direct access
 if (!defined('AKM_LOADED')) {
     die('Direct access to this file is not allowed.');
 }
 
-/**
- * Advanced File Manager Module Language Translations
- */
 $lang['mod_document'] = [
-
-    // === Page Titles ===
-    'list' => 'Dosya Yönetimi',
-
-    // === Navigation & Actions ===
-    'actions' => [
-        'add' => 'Dosya Ekle',
-        'edit' => 'İçeriği Düzenle',
-        'list' => 'Dosya Listesi',
-        'delete' => 'Dosyayı Sil',
-        'cancel' => 'İptal',
-        'save' => 'Kaydet',
-        'update' => 'Güncelle',
-        'remove' => 'Kaldır',
-    ],
-
-    // === System Messages ===
+    'add' => 'Dosya Ekle',
+    'edit' => 'Dosya Düzenle',
+    'list' => 'Dosyalar',
+    'remove_image' => 'Bu resmi kaldırmak istediğinizden emin misiniz?',
+    'remove_record' => 'Bu dosyayı silmek istediğinizden emin misiniz?',
+    'empty_state' => 'Henüz hiç dosya eklenmemiş.',
     'message' => [
         'success' => [
-            'added' => 'Dosya başarıyla eklendi!',
-            'updated' => 'Dosya başarıyla güncellendi!',
-            'deleted' => 'Dosya başarıyla silindi!',
-            'image_removed' => 'Resim başarıyla kaldırıldı!',
-            'add' => 'Dosya Eklendi!',
-            'edit' => 'Dosya Düzenlendi!',
+            'add' => 'Dosya başarıyla eklendi.',
+            'edit' => 'Dosya başarıyla güncellendi.',
+            'delete' => 'Dosya başarıyla silindi.',
         ],
         'error' => [
-            'not_added' => 'Dosya eklenemedi!',
-            'not_updated' => 'Dosya güncellenemedi!',
-            'not_deleted' => 'Dosya silinemedi!',
-            'not_found' => 'Belirtilen dosya kaydı bulunamadı!',
-            'add' => 'Dosya Eklenemedi!',
-            'edit' => 'Dosya Düzenlenemedi!',
-        ],
-        'information' => [
-            'moderate' => 'Düzenlemek istediğiniz içeriği iki defa tıklayın',
-            'move' => 'Sırasını değiştirmek istediğiniz içeriği sürükleyip bırakın',
+            'add' => 'Dosya eklenemedi.',
+            'edit' => 'Dosya güncellenemedi.',
+            'delete' => 'Dosya silinemedi.',
         ],
     ],
-
-    // === Status Types ===
-    'status' => [
-        'published' => 'Yayınlandı',
-        'draft' => 'Taslak',
-        'archived' => 'Arşivlendi',
+    'errors' => [
+        'record' => 'Belirtilen dosya bulunamadı.',
+        'delete_failed' => 'Dosya silinemedi.',
     ],
-
-    // === Yes/No Options ===
-    'options' => [
-        'yes' => 'Evet',
-        'no' => 'Hayır',
-    ],
-
-    // === Confirmation Messages ===
-    'confirmations' => [
-        'remove_image' => 'Bu resmi kaldırmak istediğinize emin misiniz?',
-        'remove_record' => 'Bu kaydı silmek istediğinize emin misiniz?',
-        'delete_single' => 'Bu dosyayı silmek istediğinize emin misiniz?',
-        'delete_multiple' => 'Seçili :count dosyayı silmek istediğinize emin misiniz?',
-    ],
-
-    // === Buttons ===
-    'buttons' => [
+    'button' => [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'refresh' => 'Yenile',
         'delete' => 'Sil',
-        'gallery' => 'Resim Galerisi',
-        'file_manager' => 'Dosya Yöneticisi',
-        'cancel' => 'Vazgeç',
-        'remove' => 'Kaldır',
-        'yes' => 'Evet',
-        'no' => 'Hayır',
-        'add' => 'Ekle',
-        'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
-        'delete' => 'Sil',
-        'gallery' => 'Resim Galerisi',
-        'file' => 'Dosya Yöneticisi',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
+        'cancel' => 'İptal',
+        'save' => 'Kaydet',
+        'manage_gallery' => 'Galeriyi Yönet',
+        'manage_attachments' => 'Dosyaları Yönet',
     ],
-
-    // === Data Grid Messages ===
-    'grid' => [
-        'pagination' => '{total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor',
-        'page' => 'Sayfa',
-        'page_count' => 'Sayfa Sayısı',
-        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
-        'no_data' => 'Veri bulunamadı',
-        'connection_error' => 'Bağlantı Hatası',
-        'search' => 'Arama',
-        'select_at_least_one' => 'Lütfen en az bir satır seçin',
-        'select_only_one' => 'Lütfen sadece bir satır seçin',
-        0 => 'Toplam {total} Sonuçtan {from} den {to}\'a Kadar Olanlar Görüntüleniyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
-        4 => 'Hiçbir Veri Bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen En Az Bir Satır Seçin',
-        8 => 'Lütfen Sadece Bir Satır Seçin',
-    ],
-
-    // === Validation Messages ===
     'validator' => [
-        'required' => 'Lütfen %s alanını boş bırakmayın',
-        'length' => '%s en az %s en fazla %s karakterden oluşabilir',
-        'email' => '%s alanına lütfen geçerli bir e-posta adresi yazın',
-        'unique' => 'Girdiğiniz %s sistemde kayıtlı. Lütfen farklı bir %s belirtin!',
-        'inarray' => '%s alanı sadece \'%s\' değerleri alabilir',
-        'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-        'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-        'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-        'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
-        'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
+        'required' => 'Lütfen %s alanını boş bırakmayın.',
+        'length' => '%s alanı %s ile %s karakter arasında olmalıdır.',
+        'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
     ],
-
-    // === Access Control (ACL) ===
     'roll' => [
-        'title' => 'Dosya Yönetim Rolleri',
-        'add' => 'Dosya Ekleyebilir',
-        'edit' => 'Dosya Düzenleyebilir',
-        'delete' => 'Dosya Silebilir',
-        'list' => 'Dosya Yönetimini Görüntüleyebilir',
-        'attach_files' => 'İçeriğe dosya ekleyebilir mi?',
-        'edit_others' => 'Başkasına ait dosya kayıtlarını düzenleyebilir',
-        'delete_others' => 'Başkasına ait dosya kayıtlarını silebilir',
-        'ad' => 'Dosya Yönetim Rolleri',
-        'add' => 'Dosya Ekleyebilir',
-        'edit' => 'Dosya Düzenleyebilir',
-        'delete' => 'Dosya Silebilir',
-        'list' => 'Dosya Yönetimini Görüntüleyebilir',
-        'file' => 'İçeğe Dosya Ekleyebilirmi?',
-        'moderate_edit' => 'Kendisine Ait Olmayan Dosya Kaydını Düzenleyebilir',
-        'moderate_delete' => 'Kendisine Ait Olmayan Dosya Kaydını Düzenleyebilir',
+        'name' => 'Dosya Yönetimi Rolleri',
+        'add' => 'Dosya ekleyebilir',
+        'edit' => 'Dosya düzenleyebilir',
+        'delete' => 'Dosya silebilir',
+        'list' => 'Dosya yönetimini görüntüleyebilir',
+        'gallery' => 'Dosya galerilerini yönetebilir',
+        'file' => 'Dosya eklerini yönetebilir',
+        'moderate_edit' => 'Başkalarına ait dosyaları düzenleyebilir',
+        'moderate_delete' => 'Başkalarına ait dosyaları silebilir',
     ],
-
-    // === Permission Errors ===
     'role_errors' => [
-        'edit_others' => 'Başkasına ait dosya kayıtlarını düzenleyemezsiniz',
-        'delete_others' => 'Başkasına ait dosya kayıtlarını silemezsiniz',
-        'add' => 'Dosya ekleme permissionniz yok',
-        'edit' => 'Dosya düzenleme permissionniz yok',
-        'list' => 'Dosya yönetimini görüntüleme permissionniz yok',
-        'delete' => 'Dosya silme permissionniz yok',
-        'attach' => 'İçeriğe dosya ekleme permissionniz yok',
-        'moderate_edit' => 'Size Ait Olmayan Dosya Kaydını Düzenleyemezsiniz',
-        'moderate_delete' => 'Size Ait Olmayan Dosya Kaydını Silemezsiniz',
-        'add' => 'Dosya Eklemeye Permissionniz Yok',
-        'edit' => 'Dosya Düzenlemeye Permissionniz Yok',
-        'list' => 'Dosya Yönetimini Görüntülemeye Permissionniz Yok',
-        'delete' => 'Dosya Silmeye Permissionniz Yok',
-        'file' => 'İçeriğe Dosya Eklemeye Permissionniz Yok',
+        'add' => 'Dosya ekleme yetkiniz yok.',
+        'edit' => 'Dosya düzenleme yetkiniz yok.',
+        'delete' => 'Dosya silme yetkiniz yok.',
+        'list' => 'Dosya yönetimini görüntüleme yetkiniz yok.',
+        'gallery' => 'Dosya galerilerini yönetme yetkiniz yok.',
+        'file' => 'Dosya eklerini yönetme yetkiniz yok.',
+        'moderate_edit' => 'Diğer kullanıcılara ait dosyaları düzenleyemezsiniz.',
+        'moderate_delete' => 'Diğer kullanıcılara ait dosyaları silemezsiniz.',
     ],
-
-    // === Admin Panel Configuration ===
+    'status' => [
+        'published' => 'Yayında',
+        'draft' => 'Taslak',
+    ],
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'language' => 'Dil',
-            'name' => 'Dosya Kategori Adı',
-            'seo' => 'Dosya Kategori URL',
-            'published' => 'Yayınlansın mı?',
+            'lang' => 'Dil',
+            'name' => 'Dosya Adı',
+            'status' => 'Durum',
+            'seo' => 'SEO URL',
+            'title' => 'Meta Başlık',
+            'keywords' => 'Meta Anahtar Kelimeler',
+            'description' => 'Meta Açıklama',
             'image' => 'Resim',
-            'title' => 'Başlık (Arama Motorları İçin)',
-            'keywords' => 'Anahtar Kelimeler (Arama Motorları İçin)',
-            'description' => 'Açıklama (Arama Motorları İçin)',
-            'menu' => 'Dosyayı Menüye Gönder',
-            'id' => 'ID',
-            'language' => 'Dil',
-            'ad' => 'Dosya Kategori Adı',
-            'seo' => 'Dosya Kategori Bağlantısı',
-            'status' => 'Yayınlansın mı?',
-            'image' => 'Resim',
-            'title' => 'Title ( Arama Motorları İçin)',
-            'keywords' => 'Keywords ( Arama Motorları İçin)',
-            'aciklama' => 'Açıklama ( Arama Motorları İçin)',
-            'menu' => 'Dosyayı Menüye Gönder',
+            'menu' => 'Menüye Gönder',
         ],
         'radio' => [
-            'published_yes' => 'Evet',
-            'published_no' => 'Hayır',
-            'publish_yes' => 'Evet',
-            'publish_no' => 'Hayır',
+            'status_y' => 'Yayında',
+            'status_n' => 'Taslak',
+            'menu_y' => 'Menüye Gönder',
+            'menu_n' => 'Gönderme',
         ],
     ],
-
-    // === Additional Legacy Keys ===
-    'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ölümcül Hata Oluştu!',
-    'remove_image_oke' => 'Resim Kaldırıldı',
-    'choose_wish' => 'Dilerseniz Seçin',
-    'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-    'errors' => [
-        'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
+    'form' => [
+        'wizard' => [
+            'back' => 'Geri',
+            'next' => 'İleri',
+            'seo_meta' => 'SEO ve Meta',
+        ],
     ],
-
+    'list_ui' => [
+        'title' => 'Dosyalar',
+        'subtitle' => 'Kurumsal dosyaları ve belgeleri yönetin.',
+        'total_stat' => 'Toplam',
+        'live_stat' => 'Yayında',
+        'loading' => 'Dosyalar yükleniyor...',
+        'load_more' => 'Daha Fazla Yükle',
+        'image_title' => 'Dosya Resmi',
+        'image_drop_title' => 'Buraya bir resim bırakın',
+        'image_drop_description' => 'Yeni bir resim seçin, yapıştırın veya URL\'den aktarın.',
+        'image_upload_link' => 'Resim yükle',
+        'image_link_separator' => 'veya',
+        'image_link_placeholder' => 'Bir resim URL\'si yapıştırın',
+        'image_link_action' => 'URL\'den Aktar',
+        'image_hint_loading' => 'Resim aktarılıyor...',
+        'image_hint_invalid_type' => 'Lütfen geçerli bir resim dosyası seçin.',
+        'image_hint_no_drop_data' => 'Sürüklenen içerikte kullanılabilir bir resim bulunamadı.',
+        'image_hint_remote_failed' => 'Resim bu URL\'den aktarılamadı.',
+        'image_empty_name' => 'Resim seçilmedi',
+        'image_updated' => 'Dosya resmi başarıyla güncellendi.',
+        'image_remove_success' => 'Dosya resmi başarıyla kaldırıldı.',
+        'add_cta' => 'Yeni Dosya',
+        'edit_cta' => 'Düzenle',
+        'change_image' => 'Resmi Değiştir',
+        'delete_cta' => 'Sil',
+        'select_record' => 'Önce bir dosya seçin.',
+        'gallery_ready' => 'Galeri Hazır',
+        'file_ready' => 'Dosya Hazır',
+    ],
 ];

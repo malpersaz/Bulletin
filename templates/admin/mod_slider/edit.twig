@@ -152,7 +152,7 @@
         }
     </style>
 
-    <form id="editForm" method="POST" action="{{ site.sadres }}mod_slider/edit/{{ d.id }}" enctype="multipart/form-data">
+    <form id="editForm" method="POST" action="{{ site.saddress }}mod_slider/edit/{{ d.id }}" enctype="multipart/form-data">
         <input type="hidden" name="edit" value="{{ lang.mod_slider.button.edit }}">
 
         <div class="edit-container">
@@ -186,7 +186,7 @@
                 </div>
                 <script>
                     setTimeout(() => {
-                        window.location.href = "{{ site.sadres }}mod_slider/list";
+                        window.location.href = "{{ site.saddress }}mod_slider/list";
                     }, 2000);
                 </script>
             {% endif %}
@@ -198,7 +198,9 @@
                         <select class="m3-input-lg" name="lang" id="editLangSelect">
                             {% if lang_lang is defined %}
                                 {% for l in lang_lang %}
-                                    <option value="{{ l.seo }}" {% if d.lang == l.seo %}selected{% endif %}>{{ l.name }}</option>
+                                    {% if l.status == 'y' or d.lang == l.seo %}
+                                        <option value="{{ l.seo }}" {% if d.lang == l.seo %}selected{% endif %}>{{ l.name }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -247,7 +249,7 @@
                         <label class="filter-group-label" style="display:block; margin-bottom:8px; font-size:12px;">{{ lang.mod_slider.admin.columns.image_desktop }}</label>
                         <label for="imgInput" class="image-upload-area" id="areaDesk" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: {% if d.image %}0{% else %}12px{% endif %}; border: 2px dashed var(--md-sys-color-outline); border-radius: 8px; width: 160px; height: 90px !important; min-height: 0 !important; overflow: hidden; position: relative; box-sizing: border-box;">
                             {% if d.image %}
-                                <img src="{{ site.radres }}mod_slider/thumb/{{ d.image }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
+                                <img src="{{ site.iaddress }}mod_slider/thumb/{{ d.image }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
                                 <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage('desk')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>
                             {% else %}
                                 <i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
@@ -259,7 +261,7 @@
                         <label class="filter-group-label" style="display:block; margin-bottom:8px; font-size:12px;">{{ lang.mod_slider.admin.columns.image_mobile }}</label>
                         <label for="imgMobileInput" class="image-upload-area" id="areaMob" style="cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: {% if d.image_mobile %}0{% else %}12px{% endif %}; border: 2px dashed var(--md-sys-color-outline); border-radius: 8px; width: 68px; height: 90px !important; min-height: 0 !important; overflow: hidden; position: relative; box-sizing: border-box;">
                             {% if d.image_mobile %}
-                                <img src="{{ site.radres }}mod_slider/{{ d.image_mobile }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
+                                <img src="{{ site.iaddress }}mod_slider/{{ d.image_mobile }}" style="width:100%; height:100%; border-radius:6px; object-fit:cover;">
                                 <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeEditImage('mob')" style="position:absolute; top:4px; right:4px; z-index:10; background:var(--md-sys-color-error); color:white; border:none; width:24px; height:24px; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"><i class="bi bi-trash" style="font-size:12px;"></i></button>
                             {% else %}
                                 <i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
@@ -378,7 +380,7 @@
         }
     </style>
     <div class="m3-final-bar">
-        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
             <i class="bi bi-x-lg"></i>
             {{ lang.mod_slider.button.cancel }}
         </button>
@@ -390,9 +392,9 @@
 {% endblock %}
 
 {% block scripts %}
-    <link href="{{ site.tadres }}base_static/js/cropper/cropper.css" rel="stylesheet">
+    <link href="{{ site.taddress }}base_static/js/cropper/cropper.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="{{ site.tadres }}base_static/js/cropper/cropper.js"></script>
+    <script src="{{ site.taddress }}base_static/js/cropper/cropper.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function selectPublishStatus(el, val) {
@@ -536,7 +538,7 @@
                     formData.append('id', id);
                     if (type) formData.append('type', type);
 
-                    fetch('{{ site.sadres }}mod_slider/image_remove_image', {
+                    fetch('{{ site.saddress }}mod_slider/image_remove_image', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: formData

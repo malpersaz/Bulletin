@@ -150,10 +150,10 @@ class VideoManager {
 
             // Status Logic
             let statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.draft : "Draft";
-            let statusColor = "#FFAB00";
+            let statusColor = "#0B57D0";
             if (isPublished) {
                 statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.active : "Active";
-                statusColor = "var(--md-sys-color-primary)";
+                statusColor = "#2E7D32";
             }
 
             // Card Element
@@ -176,8 +176,8 @@ class VideoManager {
                     <div class="card-body-col">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span style="color:${statusColor}; font-weight:500;">${statusText}</span>
+                                <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
+                                    <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${statusText}</span>
                                 </div>
                                 <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
                              </div>
@@ -344,6 +344,10 @@ class VideoManager {
         // Publish/Unpublish button icon & text update
         const publishIcon = document.getElementById('toolbarPublishIcon');
         const publishText = document.getElementById('toolbarPublishText');
+        const publishBtn = document.getElementById('toolbarPublish');
+        if (publishBtn && active) {
+            publishBtn.classList.toggle('is-published', this.selectedStatus === 'y');
+        }
         if (publishIcon && publishText && active) {
             if (this.selectedStatus === 'y') {
                 // Currently published -> show "Unpublish"

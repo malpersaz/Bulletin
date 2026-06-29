@@ -3,214 +3,83 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
-    function __construct()
+    public $mod_imagecategories_model;
+    public $errors = [];
+
+    public function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
         $this->lang = Load::lang('mod_imagecategories');
     }
+
     public function check($id)
     {
-        #Check Required
-        // lang Required
-        $this->valid->ekle(
-            [
-                'name' => 'lang',
+        foreach (['lang', 'name', 'parent_id', 'seo', 'title', 'keywords', 'description'] as $field) {
+            $this->valid->ekle([
+                'name' => $field,
                 'fonk' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['language'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // name Required
-        $this->valid->ekle(
-            [
-                'name' => 'name',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['name'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // parent_id Required
-        $this->valid->ekle(
-            [
-                'name' => 'parent_id',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['parent_id'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // seo Required
-        $this->valid->ekle(
-            [
-                'name' => 'seo',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['seo'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // title Required
-        $this->valid->ekle(
-            [
-                'name' => 'title',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['title'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // keywords Required
-        $this->valid->ekle(
-            [
-                'name' => 'keywords',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['keywords'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // description Required
-        $this->valid->ekle(
-            [
-                'name' => 'description',
-                'fonk' => 'required',
-                'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns']['description'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
+                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns'][$field]),
+            ]);
+            if ($this->_check() === true) {
+                return true;
+            }
         }
 
-        #Check length
-        // name Length
-        $this->valid->ekle(
-            [
-                'name' => 'name',
+        $lengthRules = [
+            'name' => ['2', '255'],
+            'seo' => ['1', '255'],
+            'title' => ['1', '255'],
+            'keywords' => ['1', '255'],
+            'description' => ['1', '255'],
+        ];
+
+        foreach ($lengthRules as $field => $range) {
+            $this->valid->ekle([
+                'name' => $field,
                 'fonk' => 'length',
-                'arg' => [
-                    'min' => '2',
-                    'max' => '255'
-                ],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns']['name'], '2', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // seo Length
-        $this->valid->ekle(
-            [
-                'name' => 'seo',
-                'fonk' => 'length',
-                'arg' => [
-                    'min' => '1',
-                    'max' => '255'
-                ],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns']['seo'], '1', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // title Length
-        $this->valid->ekle(
-            [
-                'name' => 'title',
-                'fonk' => 'length',
-                'arg' => [
-                    'min' => '1',
-                    'max' => '255'
-                ],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns']['title'], '1', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // keywords Length
-        $this->valid->ekle(
-            [
-                'name' => 'keywords',
-                'fonk' => 'length',
-                'arg' => [
-                    'min' => '1',
-                    'max' => '255'
-                ],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns']['keywords'], '1', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
-        // description Length
-        $this->valid->ekle(
-            [
-                'name' => 'description',
-                'fonk' => 'length',
-                'arg' => [
-                    'min' => '1',
-                    'max' => '255'
-                ],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns']['description'], '1', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
+                'arg' => ['min' => $range[0], 'max' => $range[1]],
+                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns'][$field], $range[0], $range[1]),
+            ]);
+            if ($this->_check() === true) {
+                return true;
+            }
         }
 
-        #Check inarray
-        // root in Array
-        $this->valid->ekle(
-            [
-                'name' => 'root',
-                'fonk' => 'array',
-                'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['inarray'], $this->lang['mod_imagecategories']['admin']['columns']['root'], 'y,n')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
+        $this->valid->ekle([
+            'name' => 'root',
+            'fonk' => 'array',
+            'arg' => ['y', 'n'],
+            'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['inarray'], $this->lang['mod_imagecategories']['admin']['columns']['root'], 'y,n'),
+        ]);
+        if ($this->_check() === true) {
+            return true;
         }
 
-        #Check Email
+        if (intval(Req::Post_Safe('parent_id')) === intval($id)) {
+            $this->errors[] = $this->lang['mod_imagecategories']['errors']['parent_self'];
+            return true;
+        }
 
-        #Check Tcno
+        $this->mod_imagecategories_model = Load::model('mod_imagecategories');
+        $this->mod_imagecategories_model->where_seo_and_lang_and_not_id(html_entity_decode(trim(Req::Post('seo')), ENT_QUOTES, 'UTF-8'), Req::Post_Safe('lang'), $id);
+        if ($this->mod_imagecategories_model->limit(1)->gRo()->getSize() > 0) {
+            $this->errors[] = sprintf(
+                $this->lang['mod_imagecategories']['validator']['unique'],
+                $this->lang['mod_imagecategories']['admin']['columns']['seo'],
+                $this->lang['mod_imagecategories']['admin']['columns']['seo']
+            );
+        }
 
-        #Check Unique
-
-        #Check Unique with column düzenle
-
-        return False;
+        return $this->_check();
     }
 
     public function _check()
     {
-
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
-            return True;
-        }
-        return False;
+        return count($this->errors) > 0;
     }
 }

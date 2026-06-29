@@ -1,5 +1,3 @@
--- Users View
--- NOTE: g.name references mod_user_group.name (to be renamed in mod_user_group modernization)
 CREATE OR REPLACE VIEW users AS SELECT
         u.id AS id,
         u.username AS username,

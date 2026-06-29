@@ -1,34 +1,125 @@
-<?php 
+<?php
+if (!defined('AKM_LOADED')) {
+    die('Direct access to this file is not allowed.');
+}
+
 $lang['mod_imagecategories'] = [
-    'buttons' => [
-        'yes' => 'Erê',
-        'no' => 'Na',
+    'add' => 'Kategoriya Wêneyê Lê Zêde Bike',
+    'edit' => 'Kategoriya Wêneyê Sererast Bike',
+    'list' => 'Kategoriyên Wêneyê',
+    'remove_record' => 'Ma tu bi rastî dixwazî vê kategoriya wêneyê jê bibî?',
+    'remove_image' => 'Ma tu bi rastî dixwazî vê wêneyê rake?',
+    'empty_state' => 'Heta niha kategoriya wêneyê nehatiye zêdekirin.',
+    'message' => [
+        'success' => [
+            'add' => 'Kategoriya wêneyê bi serkeftî hate zêdekirin.',
+            'edit' => 'Kategoriya wêneyê bi serkeftî hate nûkirin.',
+            'delete' => 'Kategoriya wêneyê bi serkeftî hate jêbirin.',
+            'reordered' => 'Rêza kategoriya wêneyê hate nûkirin.',
+            'image_removed' => 'Wêneyê kategoriya wêneyê hate rakirin.',
+        ],
+        'error' => [
+            'add' => 'Kategoriya wêneyê nehate zêdekirin.',
+            'edit' => 'Kategoriya wêneyê nehate nûkirin.',
+        ],
     ],
-    'remove_record' => 'Tu bawer î ku dixwazî vê qeydê jêbibî?',
-    'ok' => 'Operasyon bi serkeftî qediya.',
+    'errors' => [
+        'record' => 'Kategoriya wêneyê ya diyarkirî nehate dîtin.',
+        'delete_failed' => 'Kategoriya wêneyê nehate jêbirin.',
+        'parent_self' => 'Kategoriyek nikare bibe jorê xwe.',
+        'parent_selection_required' => 'Ji kerema xwe re kategoriya jorîn hilbijêre.',
+        'language_root_parent_locked' => 'Kategoriyên koka zimanê divê li koka pergalê bimînin.',
+        'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
+        'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
+        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
+        'menu_language_mismatch' => 'Zimanê menuya jorîn divê bi zimanê kategoriyê re yek be.',
+        'order_update_failed' => 'Rêza kategoriyê nehate nûkirin.',
+        'image_remove_failed' => 'Wêneyê kategoriyê nehate rakirin.',
+    ],
+    'parent_labels' => [
+        'system_root' => 'Koka pergalê',
+        'language_root' => 'Koka :language',
+    ],
+    'button' => [
+        'add' => 'Lê Zêde Bike',
+        'edit' => 'Sererast Bike',
+        'delete' => 'Jê Bibe',
+        'cancel' => 'Betal',
+        'save' => 'Tomar Bike',
+        'remove' => 'Rake',
+    ],
+    'validator' => [
+        'required' => 'Ji kerema xwe re qada %s vala nehêle.',
+        'length' => '%s divê di navbera %s û %s tîpan de be.',
+        'unique' => 'Nirxa %s jixwe heye. Ji kerema xwe re %s-ek din hilbijêre.',
+        'inarray' => 'Qada %s tenê dikare van nirxan qebûl bike: %s.',
+    ],
+    'roll' => [
+        'ad' => 'Rolên Rêvebirina Kategoriya Wêneyê',
+        'add' => 'Dikare kategoriyên wêneyê lê zêde bike',
+        'edit' => 'Dikare kategoriyên wêneyê sererast bike',
+        'delete' => 'Dikare kategoriyên wêneyê jê bibe',
+        'list' => 'Dikare rêvebirina kategoriya wêneyê bibîne',
+        'moderate_edit' => 'Dikare kategoriyên wêneyê yên kesên din sererast bike',
+        'moderate_delete' => 'Dikare kategoriyên wêneyê yên kesên din jê bibe',
+    ],
+    'role_errors' => [
+        'add' => 'Destûra te ya zêdekirina kategoriyên wêneyê tune ye.',
+        'edit' => 'Destûra te ya sererastkirina kategoriyên wêneyê tune ye.',
+        'delete' => 'Destûra te ya jêbirina kategoriyên wêneyê tune ye.',
+        'list' => 'Destûra te ya dîtina rêvebirina kategoriya wêneyê tune ye.',
+        'moderate_edit' => 'Tu nikarî kategoriyên wêneyê yên kesên din sererast bikî.',
+        'moderate_delete' => 'Tu nikarî kategoriyên wêneyê yên kesên din jê bibî.',
+    ],
+    'status' => [
+        'root' => 'Kok',
+        'nested' => 'Bin-kategorî',
+    ],
+    'admin' => [
+        'columns' => [
+            'id' => 'ID',
+            'lang' => 'Ziman',
+            'name' => 'Navê Kategoriyê',
+            'content' => 'Danasîna Kurt',
+            'parent_id' => 'Kategoriya Jor',
+            'order' => 'Rêz',
+            'root' => 'Dîtina Kokê',
+            'seo' => 'SEO URL',
+            'title' => 'Sernavê Meta',
+            'keywords' => 'Peyvên Sereke yên Meta',
+            'description' => 'Danasîna Meta',
+            'image' => 'Wêne',
+            'menu' => 'Jorê Menüyê',
+            'acl_id' => 'Kontrola Gihiştinê',
+        ],
+        'radio' => [
+            'root_y' => 'Wekî Kokê Avahî bikar bîne',
+            'root_n' => 'Di lîsteyan de nîşan bide',
+        ],
+    ],
+    'form' => [
+        'basics' => 'Bingehên Kategoriyê',
+        'structure' => 'Avahî û Dîtin',
+        'seo' => 'Detayên SEO',
+        'publishing' => 'Têkiliyên Weşanê',
+        'image_help' => 'Ji bo lîsteyên wêneyê û menuyan wêneyekî kategoriyê bar bike.',
+        'parent_none' => 'Kategoriya asta jor',
+        'menu_none' => 'Tiştekî menuyê çêneke',
+        'acl_none' => 'Gihiştina gelemperî',
+    ],
+    'list_ui' => [
+        'add_cta' => 'Tevke',
+        'delete_cta' => 'Jê Bibe',
+        'empty_cta' => 'Kategoriya yekem biafirîne',
+        'select_record' => 'Pêşî kategoriyek hilbijêre.',
+        'delete_title' => 'Kategoriyê jê bibe',
+        'delete_confirm_button' => 'Erê, jê bibe',
+        'delete_cancel_button' => 'Betal',
+        'network_error' => 'Daxwaz nehat şandin. Ji kerema xwe têkiliya xwe kontrol bike.',
+        'unlock_reorder' => 'Rêzkirinê Veke',
+        'lock_reorder' => 'Rêzkirinê Bigire',
+        'mode_unlocked' => 'Moda rêzkirinê vebû.',
+        'reorder_title' => 'Rêza kategoriyê nû bike',
+        'reorder_confirm' => 'Tu dixwazî vê kategoriyê veguhêzî cihê wê yê nû?',
+    ],
 ];
-$lang['mod_imagecategories']['role_errors'] = [
-    'add' => 'Mafê te yê afirandina beşan tune ye.',
-    'edit' => 'Mafê te yê guhertina beşan tune ye.',
-    'delete' => 'Mafê te yê jêbirina beşan tune ye.',
-    'list' => 'Mafê te yê dîtina lîsteyê tune ye.',
-    'moderate_edit' => 'Mafê te yê guhertina beşên kesên din tune ye.',
-    'moderate_delete' => 'Mafê te yê jêbirina beşên kesên din tune ye.',
-];
-$lang['mod_imagecategories']['admin']['columns'] = [
-    'language' => 'Ziman',
-    'name' => 'Navê Galeriyê',
-    'parent_id' => 'Beşê Sereke',
-    'order' => 'Rêz',
-    'seo' => 'Lînka SEO',
-    'title' => 'Sernav (SEO)',
-    'keywords' => 'Mifteyên SEO',
-    'description' => 'Danasîn (SEO)',
-    'root' => 'Kategoriya Sereke',
-];
-$lang['mod_imagecategories']['validator'] = [
-    'required' => 'Tika ye, zeviya %s vala mehêle',
-    'length' => '%s divê di navbera %s û %s karakteran de be',
-    'inarray' => 'Zeviya %s tenê dikare nirxên \' %s \' qebûl bike',
-];
-?>

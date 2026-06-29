@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -65,6 +65,8 @@ $lang['mod_gallery_mod'] = [
         'kaldir' => 'Remove',
         'evet' => 'Yes',
         'hayir' => 'No',
+        'gallery' => 'Gallery',
+        'file' => 'Files',
     ],
 
     'grid' => [

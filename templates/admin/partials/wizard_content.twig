@@ -9,12 +9,12 @@
     {% set wizard_title_key = 'publication_title' %}
     {% set wizard_body_key = 'publication' %}
 {% endif %}
-<form id="addForm" method="POST" action="{{ site.sadres }}{{ wizard_lang_key }}/add" enctype="multipart/form-data">
+<form id="addForm" method="POST" action="{{ site.saddress }}{{ wizard_lang_key }}/add" enctype="multipart/form-data">
 <div id="contentWizard" class="wizard-overlay">
 
     <!-- Wizard Header -->
     <header class="wizard-header">
-        <button type="button" class="icon-btn" onclick="if(window.location.pathname.endsWith('/add')) { window.location.href='{{ site.sadres }}{{ wizard_lang_key }}/list'; } else { closeWizard(); }"><i class="bi bi-x-lg"></i></button>
+        <button type="button" class="icon-btn" onclick="if(window.location.pathname.endsWith('/add')) { window.location.href='{{ site.saddress }}{{ wizard_lang_key }}/list'; } else { closeWizard(); }"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
             <span id="wizardStepTitle">{{ wizard_lang.wizard.step.language }}</span>
             <span id="wizardStepCounter">1/8</span>
@@ -51,11 +51,13 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
-                    <div class="selection-icon">{{ item.seo|upper }}</div>
-                    <div class="selection-label">{{ item.name }}</div>
-                    <i class="bi bi-check-circle-fill check-icon"></i>
-                </div>
+                    {% if item.status == 'y' %}
+                    <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
+                        <div class="selection-icon">{{ item.seo|upper }}</div>
+                        <div class="selection-label">{{ item.name }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>
@@ -122,7 +124,7 @@
 
         <!-- Step 7: Image -->
         <div class="wizard-step" id="wizardStep7">
-            {% if wizard_lang_key == 'mod_news' %}
+            {% if wizard_lang_key == 'mod_news' or wizard_lang_key == 'mod_content' or wizard_lang_key == 'mod_publication' %}
                 {% include 'admin/partials/image_uploader.twig' with {
                     shell_id: 'wizardImageShell',
                     shell_class: '',

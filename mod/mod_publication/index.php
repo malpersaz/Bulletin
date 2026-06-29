@@ -529,13 +529,13 @@ class mod_publication_mod extends indexMain
                     echo json_encode([
                         'status' => 'success',
                         'message' => $this->lang['mod_publication']['message']['success']['add'],
-                        'redirect' => $this->site['sadres'] . 'mod_publication/list'
+                        'redirect' => $this->site['saddress'] . 'mod_publication/list'
                     ]);
                     exit;
                 }
                 
                 $this->_success_message($this->lang['mod_publication']['message']['success']['add']);
-                $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
+                $this->_redirect_now($this->site['saddress'] . 'mod_publication/list');
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -671,7 +671,7 @@ class mod_publication_mod extends indexMain
                 }
 
                 $this->_success_message($this->lang['mod_publication']['message']['success']['edit']);
-                $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
+                $this->_redirect_now($this->site['saddress'] . 'mod_publication/list');
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -698,7 +698,7 @@ class mod_publication_mod extends indexMain
                     echo 'Oke';
                 } else {
                     $this->_success_message($this->lang['mod_publication']['context_menu']['delete_success']);
-                    $this->_redirect_now($this->site['sadres'] . 'mod_publication/list');
+                    $this->_redirect_now($this->site['saddress'] . 'mod_publication/list');
                 }
             } else {
                 if ($isAjax) {
@@ -871,7 +871,7 @@ class mod_publication_mod extends indexMain
                         if (ob_get_level() > 0) ob_clean();
                         echo json_encode([
                             'status' => 'success',
-                            'url' => $this->site['radres'] . 'mod_publication/thumb/' . $new_image_url . '?v=' . time()
+                            'url' => $this->site['iaddress'] . 'mod_publication/thumb/' . $new_image_url . '?v=' . time()
                         ]);
                     } else {
                         if (ob_get_level() > 0) ob_clean();
@@ -1090,7 +1090,7 @@ class mod_publication_mod extends indexMain
                     $content['id'],
                     $content['name'],
                     '<div style="cursor:pointer;" onclick="mod_publication_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_publication']['upload_change_image'] . '">' .
-                    ($content['image'] ? '<img src="' . $this->site['radres'] . 'mod_publication/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_publication']['resim_add'] . '</span></button>') .
+                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_publication/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_publication']['resim_add'] . '</span></button>') .
                     '</div>',
                     $content['lang'],
                     $content['created_at'],

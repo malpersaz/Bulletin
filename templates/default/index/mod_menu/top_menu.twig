@@ -18,9 +18,9 @@
 	<div
 		class="container">
 		<!-- Brand/Logo -->
-		<a class="navbar-brand d-flex align-items-center {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}has-image-logo{% endif %}" href="{{ site.sadres }}" title="{{ site.title }}" aria-label="{{ site.title }} ana sayfa">
+		<a class="navbar-brand d-flex align-items-center {% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}has-image-logo{% endif %}" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }} ana sayfa">
 			{% if site.show_logo|default('y') == 'y' and site.logo_path is defined and site.logo_path is not empty %}
-				<img src="{{ site.radres }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" class="me-2 d-inline-block align-text-top logo-image" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #ffffff;">
+				<img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" class="me-2 d-inline-block align-text-top logo-image" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background-color: #ffffff;">
 			{% else %}
 				{% if site.show_logo|default('y') == 'y' %}
 					<span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle" style="width: 40px; height: 40px; font-family: 'Pirata One', system-ui; font-weight: bold; font-size: 1.2rem;">{{ site.title|slice(0, 1) }}</span>
@@ -45,7 +45,7 @@
 			</ul>
 
 			<!-- Search Form -->
-			<form class="search-form d-flex me-3" role="search" method="get" action="{{ site.sadres }}index/search/">
+			<form class="search-form d-flex me-3" role="search" method="get" action="{{ site.saddress }}index/search/">
 				<div class="search-wrapper w-100 position-relative">
 					<button class="search-btn" type="submit" aria-label="{{ lang.index.search.search }}" title="{{ lang.index.search.search }}">
 						<i class="bi bi-search"></i>
@@ -71,7 +71,7 @@
 								{% if site.available_languages is defined %}
 									{% for l in site.available_languages %}
 										<li>
-											<a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.adres }}{{ l.code }}">
+											<a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">
 												{{ l.name }}
 												{% if site.lang == l.code %}
 													<i class="bi bi-check2 float-end text-success"></i>
@@ -98,7 +98,7 @@
 						<button class="btn btn-link user-profile-btn p-0 border-0 bg-transparent" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" role="button">
 							<div class="user-avatar-container">
 								{% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
-									<img src="{{ site.adres }}static/mod_user/{{ session.image }}" alt="{{ session_username }}" class="user-avatar rounded-circle" width="32" height="32" style="object-fit: cover;">
+									<img src="{{ site.address }}static/mod_user/{{ session.image }}" alt="{{ session_username }}" class="user-avatar rounded-circle" width="32" height="32" style="object-fit: cover;">
 								{% else %}
 									<div class="user-avatar rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 32px; height: 32px; font-weight: 600; font-size: 16px;">
 										{{ session_display_name|slice(0, 1)|upper }}
@@ -118,7 +118,7 @@
 							<li class="dropdown-header">
 								<div class="d-flex align-items-center">
 									{% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
-										<img src="{{ site.adres }}static/mod_user/{{ session.image }}" alt="{{ session_username }}" class="rounded-circle me-2" width="24" height="24" style="object-fit: cover;">
+										<img src="{{ site.address }}static/mod_user/{{ session.image }}" alt="{{ session_username }}" class="rounded-circle me-2" width="24" height="24" style="object-fit: cover;">
 									{% else %}
 										<div class="rounded-circle me-2 d-flex align-items-center justify-content-center bg-primary text-white" style="width: 24px; height: 24px; font-weight: 600; font-size: 12px;">
 											{{ session_display_name|slice(0, 1)|upper }}
@@ -136,7 +136,7 @@
 							</li>
 							<li><hr class="dropdown-divider"></li>
 							<li>
-								<a class="dropdown-item" href="{{ site.sadres }}mod_user_pm/inbox">
+								<a class="dropdown-item" href="{{ site.saddress }}mod_user_pm/inbox">
 									<i class="bi bi-envelope me-2"></i>
 									{{ lang.index.messages }}
 									{% if session.okunmamis is defined and session.okunmamis > 0 %}
@@ -145,19 +145,19 @@
 								</a>
 							</li>
 							<li>
-								<a class="dropdown-item" href="{{ site.sadres }}mod_user/panel">
+								<a class="dropdown-item" href="{{ site.saddress }}mod_user/panel">
 									<i class="bi bi-person-circle me-2"></i>
 									{{ lang.index.my_account }}
 								</a>
 							</li>
 							<li>
-								<a class="dropdown-item" href="{{ site.sadres }}mod_news/add">
+								<a class="dropdown-item" href="{{ site.saddress }}mod_news/add">
 									<i class="bi bi-newspaper me-2"></i>
 									{{ lang.index.add_news }}
 								</a>
 							</li>
 							<li>
-								<a class="dropdown-item" href="{{ site.sadres }}mod_publication/add">
+								<a class="dropdown-item" href="{{ site.saddress }}mod_publication/add">
 									<i class="bi bi-journal-richtext me-2"></i>
 									{{ lang.index.add_publication }}
 								</a>
@@ -165,7 +165,7 @@
 							<li><hr class="dropdown-divider"></li>
 
 							<li>
-								<a class="dropdown-item text-danger" href="{{ site.sadres }}logout{% if session_logout_sid %}/{{ session_logout_sid }}{% endif %}">
+								<a class="dropdown-item text-danger" href="{{ site.saddress }}logout{% if session_logout_sid %}/{{ session_logout_sid }}{% endif %}">
 									<i class="bi bi-box-arrow-right me-2"></i>
 									{{ lang.index.logout }}
 								</a>
@@ -179,7 +179,7 @@
 							<i class="bi bi-box-arrow-in-right me-1"></i>
 							<span class="d-none d-sm-inline">{{ lang.index.login }}</span>
 						</button>
-						<a href="{{ site.sadres }}register" class="btn btn-primary btn-sm">
+						<a href="{{ site.saddress }}register" class="btn btn-primary btn-sm">
 							<i class="bi bi-person-plus me-1"></i>
 							<span class="d-none d-sm-inline">{{ lang.index.register }}</span>
 						</a>
@@ -207,7 +207,7 @@
 									</li>
 									{% if site.available_languages is defined %}
 										{% for l in site.available_languages %}
-											<li><a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.adres }}{{ l.code }}">{{ l.name }} {% if site.lang == l.code %}<i class="bi bi-check2 float-end"></i>{% endif %}</a></li>
+											<li><a class="dropdown-item {% if site.lang == l.code %}active{% endif %}" href="{{ site.address }}{{ l.code }}">{{ l.name }} {% if site.lang == l.code %}<i class="bi bi-check2 float-end"></i>{% endif %}</a></li>
 										{% endfor %}
 									{% endif %}
 								</ul>
@@ -243,7 +243,7 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{{ lang.index.modal.close }}"></button>
 				</div>
 				<div class="modal-body">
-					<form action="{{ site.sadres }}login" method="post" id="loginForm">
+					<form action="{{ site.saddress }}login" method="post" id="loginForm">
 						<!-- Step 1: Username -->
 						<div id="loginStep1" class="login-step">
 							<div class="mb-3">
@@ -285,7 +285,7 @@
 										{{ lang.index.modal.remember_me }}
 									</label>
 								</div>
-								<a href="{{ site.sadres }}forgot-password" class="text-decoration-none">
+								<a href="{{ site.saddress }}forgot-password" class="text-decoration-none">
 									{{ lang.index.modal.forgot_password }}
 								</a>
 							</div>
@@ -298,7 +298,7 @@
 					<div class="text-center mt-3">
 						<span class="text-muted">{{ lang.index.modal.no_account_question }}
 						</span>
-						<a href="{{ site.sadres }}register" class="text-decoration-none">{{ lang.index.modal.register_link_text }}</a>
+						<a href="{{ site.saddress }}register" class="text-decoration-none">{{ lang.index.modal.register_link_text }}</a>
 					</div>
 				</div>
 			</div>
@@ -307,11 +307,11 @@
 {% endif %}
 
 <!-- CSS -->
-<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/top-menu.css?v={{ "now"|date("U") }}">
-<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/login-modal.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/top-menu.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ "now"|date("U") }}">
 
 <!-- JavaScript -->
-<script src="{{ site.tadres }}{{ site.app_template }}/static/js/top-menu.js?v={{ "now"|date("U") }}"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ "now"|date("U") }}"></script>
 
 <!-- Login Modal Language Variables -->
 <script>
@@ -328,10 +328,10 @@
 		alternativeOptions: '{{ lang.index.modal.alternative_options }}',
 		showPassword: '{{ lang.index.modal.show_password }}',
 		hidePassword: '{{ lang.index.modal.hide_password }}',
-		checkUserUrl: '{{ site.sadres }}mod_user/checkUserExistence',
+		checkUserUrl: '{{ site.saddress }}mod_user/checkUserExistence',
 		userNotFound: '{{ lang.index.modal.user_not_found }}',
 		usernameRequired: '{{ lang.index.modal.username_required }}'
 	};
 </script>
 
-<script src="{{ site.tadres }}{{ site.app_template }}/static/js/login-modal.js?v=5"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v=5"></script>

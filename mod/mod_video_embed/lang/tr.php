@@ -2,7 +2,7 @@
 $lang['mod_video_embed'] = [
     'add' => 'Uzak Video Ekle',
     'edit' => 'Uzak Videoyu Düzenle',
-    'list' => 'Uzak Video',
+    'list' => 'Video Embed Yönetimi',
     'information' => 'Bilgi!',
     'oke' => 'İşlem Başarılı!',
     'hata' => 'Hata Oluştu!',
@@ -22,11 +22,12 @@ $lang['mod_video_embed'] = [
         'success' => 'Video bilgileri başarıyla içe aktarıldı.',
         'partial' => 'Kapak görseli ve temel bilgiler alındı. YouTube tüm metadata bilgilerini vermediyse kalan alanları elle doldurun.',
         'error' => 'Video bilgileri içe aktarılamadı.',
-        'permission_denied' => 'You do not have permission to fetch video details.',
-        'missing_source' => 'Paste a YouTube URL or embed code first.',
-        'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
-        'fetch_failed' => 'YouTube metadata could not be fetched.',
-        'download_failed' => 'Thumbnail image could not be downloaded.',
+        'permission_denied' => 'Video bilgilerini getirme yetkiniz yok.',
+        'missing_source' => 'Önce bir YouTube adresi veya embed kodu girin.',
+        'invalid_source' => 'Girilen içerikten geçerli bir YouTube videosu algılanamadı.',
+        'fetch_failed' => 'YouTube metadata bilgileri alınamadı.',
+        'download_failed' => 'Kapak görseli indirilemedi.',
+        'generic_error' => 'Video bilgileri alınırken bir hata oluştu.',
     ],
     'wizard' => [
         'step' => [
@@ -111,6 +112,8 @@ $lang['mod_video_embed'] = [
     ],
     'errors' => [
         'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
+        'image_upload_failed' => 'Görsel yüklenemedi.',
+        'image_delete_failed' => 'Görsel silinemedi.',
     ],
     'validator' => [
         'required' => 'Lütfen %s Alanını Boş Bırakmayın',
@@ -268,14 +271,14 @@ $lang['mod_video_embed'] = [
         ],
     ],
     'ajax' => [
-        'permission_denied' => 'You do not have permission to perform this action.',
-        'id_missing' => 'ID is missing.',
-        'db_update_failed' => 'Database could not be updated.',
-        'file_not_uploaded' => 'File was not uploaded.',
-        'content_permission_denied' => 'You do not have permission to edit this content.',
-        'success' => 'Operation successful!',
-        'error' => 'Error occurred!',
-        'fatal_error' => 'Fatal Error Occurred!',
+        'permission_denied' => 'Bu işlemi yapma yetkiniz yok.',
+        'id_missing' => 'ID eksik.',
+        'db_update_failed' => 'Veritabanı güncellenemedi.',
+        'file_not_uploaded' => 'Dosya yüklenmedi.',
+        'content_permission_denied' => 'Bu içeriği düzenleme yetkiniz yok.',
+        'success' => 'İşlem başarılı!',
+        'error' => 'Hata oluştu!',
+        'fatal_error' => 'Ölümcül hata oluştu!',
     ],
     'js_fallback' => [
         'video' => 'video',

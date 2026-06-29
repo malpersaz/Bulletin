@@ -1,7 +1,7 @@
 {% set hero_slider = hero_slider_items|default(ctx_get('hero_slider')) %}
 
 {% if hero_slider and hero_slider|length > 0 %}
-<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
 <style>
     .hero-slide__hitbox {
         position: absolute;
@@ -38,7 +38,7 @@
                              loading="{{ loop.first ? 'eager' : 'lazy' }}"
                              fetchpriority="{{ loop.first ? 'high' : 'auto' }}">
                     {% else %}
-                        <img src="{{ site.radres }}mod_settings/logo.png"
+                        <img src="{{ site.iaddress }}mod_settings/logo.png"
                              alt="{{ item.name }}"
                              loading="lazy">
                     {% endif %}

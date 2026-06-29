@@ -60,6 +60,7 @@ class mod_announcements_mod extends BaseModuleController
     }
 
     // All CRUD operations (add, edit, list, delete, image_remove_image) are now handled by BaseModuleController
+    // ACL authorization checks (hasPermission) are inherited from BaseModuleController
     // All bulk operations (publish, unpublish, activate, deactivate, enableDeck, disableDeck) are inherited
     // All image handling is handled automatically via image_fields configuration
     // All datatable_json is handled via DataTableService with getDatatableColumns() configuration

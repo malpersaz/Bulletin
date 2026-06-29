@@ -167,12 +167,46 @@ class InstallationState
         return (int) $statement->fetchColumn() > 0;
     }
 
-    private function buildIssue($code, $message, array $context = array())
+    private function getTableColumns(PDO $pdo, $adapter, array $conf, $table)
+    {
+        if ($adapter === 'PDO_SQLITE') {
+            $statement = $pdo->query('PRAGMA table_info(' . $this->quoteIdentifier($table, $adapter) . ')');
+            $rows = $statement->fetchAll();
+            $columns = array();
+
+            foreach ($rows as $row) {
+                if (isset($row['name'])) {
+                    $columns[] = $row['name'];
+                }
+            }
+
+            return $columns;
+        }
+
+        $database = (string) $conf['database'];
+        $statement = $pdo->prepare('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = :schema AND table_name = :table');
+        $statement->execute(array(':schema' => $database, ':table' => $table));
+
+        return array_map(function ($column) {
+            return is_array($column) && isset($column['COLUMN_NAME']) ? $column['COLUMN_NAME'] : null;
+        }, $statement->fetchAll());
+    }
+
+    private function quoteIdentifier($identifier, $adapter)
+    {
+        if ($adapter === 'PDO_SQLITE') {
+            return '"' . str_replace('"', '""', $identifier) . '"';
+        }
+
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+
+    private function buildIssue($key, $message, array $meta = array())
     {
         return array(
-            'code' => $code,
+            'key' => $key,
             'message' => $message,
-            'context' => $context,
+            'meta' => $meta,
         );
     }
 }

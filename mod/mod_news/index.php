@@ -639,13 +639,13 @@ class mod_news_mod extends indexMain
                     echo json_encode([
                         'status' => 'success',
                         'message' => $this->lang['mod_news']['message']['oke']['add'],
-                        'redirect' => $this->site['sadres'] . 'mod_news/list'
+                        'redirect' => $this->site['saddress'] . 'mod_news/list'
                     ]);
                     exit;
                 }
                 
                 $this->_success_message($this->lang['mod_news']['message']['oke']['add']);
-                Helper::yonlendir($this->site['sadres'] . 'mod_news/list', 1);
+                Helper::yonlendir($this->site['saddress'] . 'mod_news/list', 1);
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -781,7 +781,7 @@ class mod_news_mod extends indexMain
                 }
 
                 $this->_success_message($this->lang['mod_news']['message']['oke']['edit']);
-                Helper::yonlendir($this->site['sadres'] . 'mod_news/list', 1);
+                Helper::yonlendir($this->site['saddress'] . 'mod_news/list', 1);
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -957,7 +957,7 @@ class mod_news_mod extends indexMain
                         if (ob_get_level() > 0) ob_clean();
                         echo json_encode([
                             'status' => 'success',
-                            'url' => $this->site['radres'] . 'mod_news/thumb/' . $new_image_url . '?v=' . time()
+                            'url' => $this->site['iaddress'] . 'mod_news/thumb/' . $new_image_url . '?v=' . time()
                         ]);
                     } else {
                         if (ob_get_level() > 0) ob_clean();
@@ -1176,7 +1176,7 @@ class mod_news_mod extends indexMain
                     $content['id'],
                     $content['name'],
                     '<div style="cursor:pointer;" onclick="mod_news_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_news']['upload_image'] . '">' .
-                    ($content['image'] ? '<img src="' . $this->site['radres'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['add_image'] . '</span></button>') .
+                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['add_image'] . '</span></button>') .
                     '</div>',
                     $content['lang'],
                     $content['created_at'],

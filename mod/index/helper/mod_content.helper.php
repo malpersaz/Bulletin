@@ -51,12 +51,12 @@ class mod_content_helper extends indexBase
                 $this->_mod_video($content->video);
             }
             if (isset($content->gallery_id) && $content->gallery_id != 0) {
-                $this->_gallery_resimgetir('mod_content', $content->gallery_id);
+                $this->_exact_gallery($content->gallery_id);
             } else {
                 $this->_gallery_resimgetir('mod_content', $content->id);
             }
             if (isset($content->file_id) && $content->file_id != 0) {
-                $this->_mod_attachment('mod_content', $content->file_id);
+                $this->_exact_attachment($content->file_id);
             } else {
                 $this->_mod_attachment('mod_content', $content->id);
             }
@@ -136,9 +136,9 @@ class mod_content_helper extends indexBase
         }
 
         if ($page != '1') {
-            $d['link'] = $this->site['sadres'] . 'category/' . $category . '/' . $page;
+            $d['link'] = $this->site['saddress'] . 'category/' . $category . '/' . $page;
         } else {
-            $d['link'] = $this->site['sadres'] . 'category/' . $category;
+            $d['link'] = $this->site['saddress'] . 'category/' . $category;
         }
 
         if ($page <= 1) {

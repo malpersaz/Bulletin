@@ -294,7 +294,7 @@ abstract class BaseModuleController
     public function add()
     {
         // Check permission
-        if ($this->user->permissions($this->module_name, 'add', $this->lang[$this->module_name]['role_errors']['add'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'add', $this->lang[$this->module_name]['role_errors']['add'], 1) === false) {
             return false;
         }
 
@@ -320,7 +320,7 @@ abstract class BaseModuleController
     public function edit($id = null)
     {
         // Check permission
-        if ($this->user->permissions($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
             return false;
         }
 
@@ -337,7 +337,7 @@ abstract class BaseModuleController
         $d = $model->getResultOne()->toArray();
 
         // Check moderation permission
-        if ($this->user->permissions_varmi($this->module_name, 'moderate_edit', $d['user_id'], $this->lang[$this->module_name]['role_errors']['moderate_edit'], 1) === false) {
+        if ($this->user->checkPermission($this->module_name, 'moderate_edit', $d['user_id'], $this->lang[$this->module_name]['role_errors']['moderate_edit'], 1) === false) {
             return false;
         }
 
@@ -364,7 +364,7 @@ abstract class BaseModuleController
     public function list()
     {
         // Check permission
-        if ($this->user->permissions($this->module_name, 'list', $this->lang[$this->module_name]['role_errors']['list'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'list', $this->lang[$this->module_name]['role_errors']['list'], 1) === false) {
             return false;
         }
 
@@ -372,6 +372,12 @@ abstract class BaseModuleController
         $this->site['title'] = $this->lang[$this->module_name]['list'];
         $this->tema->tpl($this->module_name . '/list');
         $this->tema->veri('site', $this->site);
+
+        // Set additional form data for the integrated wizard
+        $form_data = $this->getFormData();
+        foreach ($form_data as $key => $value) {
+            $this->tema->veri($key, $value);
+        }
     }
 
     /**
@@ -380,13 +386,13 @@ abstract class BaseModuleController
     public function delete()
     {
         // Check permission
-        if ($this->user->permissions($this->module_name, 'delete', $this->lang[$this->module_name]['role_errors']['delete']) === false) {
+        if ($this->user->hasPermission($this->module_name, 'delete', $this->lang[$this->module_name]['role_errors']['delete']) === false) {
             return false;
         }
 
         if (Req::is_Post('delete')) {
             if ($this->_delete(Req::Post_Safe('delete'))) {
-                echo 'OK';
+                $this->echoSuccessResponse();
             } else {
                 echo 'ERROR';
             }
@@ -406,7 +412,7 @@ abstract class BaseModuleController
         }
 
         // Check permission
-        if ($this->user->permissions($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
             return false;
         }
 
@@ -422,7 +428,7 @@ abstract class BaseModuleController
         $model->sync();
 
         // Check moderation permission
-        if ($this->user->permissions_varmi($this->module_name, 'moderate_edit', $model->user_id, $this->lang[$this->module_name]['role_errors']['moderate_edit']) === false) {
+        if ($this->user->checkPermission($this->module_name, 'moderate_edit', $model->user_id, $this->lang[$this->module_name]['role_errors']['moderate_edit']) === false) {
             return false;
         }
 
@@ -460,7 +466,7 @@ abstract class BaseModuleController
             }
         }
 
-        echo 'OK';
+        echo 'Success';
     }
 
     /**
@@ -590,6 +596,12 @@ abstract class BaseModuleController
                 $model->$field_name = $imageService->getUploadedUrl();
                 return true;
             } else {
+                if ($this->isAjaxRequest()) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => $imageService->getLastError()
+                    ]);
+                }
                 $this->_error_message($imageService->getLastError());
                 return false;
             }
@@ -616,6 +628,12 @@ abstract class BaseModuleController
                 $model->$field_name = $image->url;
                 return true;
             } else {
+                if ($this->isAjaxRequest()) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => $image->error
+                    ]);
+                }
                 $this->_error_message($image->error);
                 return false;
             }
@@ -633,10 +651,18 @@ abstract class BaseModuleController
      */
     protected function _add()
     {
+        $isAjax = $this->isAjaxRequest();
         $validator_name = $this->module_name . '.add';
         $this->val = Load::validator($validator_name);
 
         if ($this->val->check()) {
+            if ($isAjax) {
+                $this->jsonResponse([
+                    'status' => 'error',
+                    'message' => implode(', ', $this->val->hatalar),
+                    'errors' => $this->val->hatalar
+                ]);
+            }
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
@@ -655,6 +681,12 @@ abstract class BaseModuleController
             // Execute pre-save callback
             $model = $this->executeBeforeSaveCallback($model);
             if ($model === false) {
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => 'Operation cancelled by callback'
+                    ]);
+                }
                 return false;
             }
 
@@ -663,8 +695,21 @@ abstract class BaseModuleController
                 // Execute post-save callback
                 $this->executeAfterSaveCallback($model);
 
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'success',
+                        'message' => $this->lang[$this->module_name]['message']['oke']['add'],
+                        'redirect' => $this->site['saddress'] . $this->module_name . '/list'
+                    ]);
+                }
                 $this->_oke_message($this->lang[$this->module_name]['message']['oke']['add']);
             } else {
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => $this->lang[$this->module_name]['message']['error']['add']
+                    ]);
+                }
                 $this->_error_message($this->lang[$this->module_name]['message']['error']['add']);
             }
         }
@@ -675,10 +720,18 @@ abstract class BaseModuleController
      */
     protected function _edit($id = null)
     {
+        $isAjax = $this->isAjaxRequest();
         $validator_name = $this->module_name . '.edit';
         $this->val = Load::validator($validator_name);
 
         if ($this->val->check($id)) {
+            if ($isAjax) {
+                $this->jsonResponse([
+                    'status' => 'error',
+                    'message' => implode(', ', $this->val->hatalar),
+                    'errors' => $this->val->hatalar
+                ]);
+            }
             foreach ($_POST as $key => $val) {
                 $this->tema->veri($key, Req::Post_Safe($key));
             }
@@ -703,6 +756,12 @@ abstract class BaseModuleController
             // Execute pre-update callback
             $model = $this->executeBeforeUpdateCallback($model, $id);
             if ($model === false) {
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => 'Operation cancelled by callback'
+                    ]);
+                }
                 return false;
             }
 
@@ -711,8 +770,21 @@ abstract class BaseModuleController
                 // Execute post-update callback
                 $this->executeAfterUpdateCallback($model, $id);
 
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'success',
+                        'message' => $this->lang[$this->module_name]['message']['oke']['edit'],
+                        'redirect' => $this->site['saddress'] . $this->module_name . '/list'
+                    ]);
+                }
                 $this->_oke_message($this->lang[$this->module_name]['message']['oke']['edit']);
             } else {
+                if ($isAjax) {
+                    $this->jsonResponse([
+                        'status' => 'error',
+                        'message' => $this->lang[$this->module_name]['message']['error']['edit']
+                    ]);
+                }
                 $this->_error_message($this->lang[$this->module_name]['message']['error']['edit']);
             }
         }
@@ -736,7 +808,7 @@ abstract class BaseModuleController
             $model->sync();
 
             // Check moderation permission
-            if ($this->user->permissions_varmi($this->module_name, 'moderate_delete', $model->user_id, $this->lang[$this->module_name]['role_errors']['moderate_delete']) === false) {
+            if ($this->user->checkPermission($this->module_name, 'moderate_delete', $model->user_id, $this->lang[$this->module_name]['role_errors']['moderate_delete']) === false) {
                 return false;
             }
 
@@ -865,6 +937,32 @@ abstract class BaseModuleController
     }
 
     // Common message methods
+    protected function isAjaxRequest()
+    {
+        return (
+            (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'))
+        );
+    }
+
+    protected function jsonResponse(array $payload)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($payload);
+        exit;
+    }
+
+    protected function echoSuccessResponse()
+    {
+        if (in_array($this->module_name, ['mod_news', 'mod_content', 'mod_publication'])) {
+            echo 'Success';
+        } elseif (in_array($this->module_name, ['mod_video'])) {
+            echo 'Oke';
+        } else {
+            echo 'OK';
+        }
+    }
+
     protected function _oke_message($message)
     {
         $this->tema->veri('ok', true);
@@ -907,7 +1005,7 @@ abstract class BaseModuleController
     protected function updateSingleColumn($column, $value, $ids, $permission_action = 'edit')
     {
         // Check permission
-        if ($this->user->permissions($this->module_name, $permission_action, $this->lang[$this->module_name]['role_errors'][$permission_action]) === false) {
+        if ($this->user->hasPermission($this->module_name, $permission_action, $this->lang[$this->module_name]['role_errors'][$permission_action]) === false) {
             return false;
         }
 
@@ -935,7 +1033,7 @@ abstract class BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'y', $query, 'publish')) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -948,7 +1046,7 @@ abstract class BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'n', $query, 'unpublish')) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -961,7 +1059,7 @@ abstract class BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'y', $query)) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -974,7 +1072,7 @@ abstract class BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn('status', 'n', $query)) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -987,7 +1085,7 @@ abstract class BaseModuleController
     {
         $ids = Req::Post_Safe('query');
         if ($this->updateSingleColumn('deck', 'y', $ids)) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -1000,7 +1098,7 @@ abstract class BaseModuleController
     {
         $ids = Req::Post_Safe('query');
         if ($this->updateSingleColumn('deck', 'n', $ids)) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }
@@ -1014,7 +1112,7 @@ abstract class BaseModuleController
     {
         $query = Req::Post_Safe('query');
         if ($this->updateSingleColumn($column, $value, $query)) {
-            echo 'OK';
+            $this->echoSuccessResponse();
         } else {
             echo 'ERROR';
         }

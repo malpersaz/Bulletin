@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'Veröffentlicht am %s',
     'home' => 'Startseite',
+    'navigation' => 'Navigation',
     'download' => 'Herunterladen',
     'login' => 'Anmelden',
     'register' => 'Registrieren',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'Sprache',
     'messages' => 'Nachrichten',
     'my_account' => 'Mein Konto',
+    'menu_title' => 'Menü',
     'change_avatar' => 'Avatar ändern',
     'logout' => 'Abmelden',
     'dark_mode' => 'Dunkler Modus',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'Kontakt',
     'info' => 'Info',
     'find_us' => 'Finden Sie uns',
+    'rss_feed' => 'RSS-Feed',
+    'sitemap' => 'Sitemap',
+    'site_logo_alt' => 'Website-Logo',
+    'producer_logo_alt' => 'AKM Software-Logo',
     'map_available_soon' => 'Karte bald verfügbar',
     'publish_date' => 'Veröffentlichungsdatum',
+    'category_label' => 'Kategorie',
     'updated_date' => 'Aktualisierungsdatum',
     'min_read' => 'Min. Lesezeit',
     'enlarge_image' => 'Bild vergrößern',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'Teilen',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'E-Mail',
+    'file_not_found' => 'Datei nicht gefunden',
     'search' => [
         'searched_word' => 'Bitte Suchbegriff eingeben!',
         'search' => 'Suchen',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'In dieser Kategorie wurde kein Foto gefunden!',
         'latest_pictures' => [
             1 => 'Fotos',
+            2 => 'Neueste Fotos',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'Startseite',
         'about' => 'Über uns',
         'contact' => 'Kontakt',
+        'footer_links' => 'Footer-Links',
         'language' => 'Sprache',
         'messages' => 'Nachrichten',
         'my_account' => 'Mein Konto',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'Hochladen',
     ],
     'copyright' => '© Alle Rechte vorbehalten.',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'Theme-Galerie',
         'desc' => 'Theme-Galerie - Einrichtung und Kontrolle',
@@ -290,9 +301,9 @@ $lang['index'] = [
             11 => 'Dezember',
         ],
         'latest_news' => [
-            1 => 'News',
-            2 => 'View All',
-            3 => 'No published news is available yet.',
+            1 => 'Nachrichten',
+            2 => 'Alle anzeigen',
+            3 => 'Bisher sind keine veröffentlichten Nachrichten verfügbar.',
         ],
     ],
     'mod_publication' => [
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'Alle Publikationen',
             3 => 'Es sind noch keine veroeffentlichten Inhalte verfuegbar.',
         ],
+        'comments' => [
+            'title' => 'Kommentare',
+            'add_title' => 'Kommentar hinzufügen',
+            'placeholder' => 'Ihr Kommentar',
+            'full_name' => 'Vollständiger Name',
+            'submit' => 'Kommentar senden',
+            'warning_label' => 'Hinweis',
+            'rules' => 'Kommentare mit Beleidigungen, Missbrauch oder unlesbarer Formatierung werden möglicherweise nicht freigegeben.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'Nachricht senden',
+    ],
+    'error' => [
+        '1' => 'Fehler',
+        'method' => ['ad' => 'Ungültige Methode', 'mesaj' => 'Methode %s nicht gefunden'],
+        'mod' => ['ad' => 'Modulfehler', 'mesaj' => 'Modul %s nicht gefunden'],
+        'not' => ['ad' => 'Seite nicht gefunden', 'mesaj' => 'Die angeforderte Seite %s wurde nicht gefunden'],
     ],
 ];

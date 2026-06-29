@@ -1,0 +1,68 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_seo.settings }}{% endblock %}
+{% block headline %}{{ lang.mod_seo.settings }}{% endblock %}
+
+{% block content %}
+<div class="settings-page" style="padding: 16px 0;">
+    <form action="{{ site.saddress }}seo/settings" method="post" enctype="multipart/form-data" id="seoSettingsForm">
+        
+        <!-- API Credentials Status Card -->
+        {% if has_credentials %}
+            <div class="m3-card" style="border-left: 5px solid #2E7D32; background: rgba(46, 125, 50, 0.08); color: #2E7D32; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 24px;"></i>
+                    <div>
+                        <h4 style="margin: 0; font-size: 15px; font-weight: 700;">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
+                        <span style="font-size: 13px; opacity: 0.9;">{{ lang.mod_seo.admin.labels.credentials_ok }}</span>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="m3-card" style="border-left: 5px solid var(--md-sys-color-error); background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <i class="bi bi-exclamation-circle-fill" style="font-size: 24px;"></i>
+                    <div>
+                        <h4 style="margin: 0; font-size: 15px; font-weight: 700;">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
+                        <span style="font-size: 13px; opacity: 0.9;">{{ lang.mod_seo.admin.labels.credentials_missing }}</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Form fields inside an MD3 card -->
+        <div class="m3-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Property URL Input -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label for="property_url" style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface-variant);">
+                    {{ lang.mod_seo.admin.labels.property_url }}
+                </label>
+                <input type="text" id="property_url" name="property_url" value="{{ property_url }}" class="m3-input" required placeholder="sc-domain:example.com">
+            </div>
+
+            <!-- JSON Upload Input -->
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <label for="json_file" style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface-variant);">
+                    {{ lang.mod_seo.admin.labels.json_file }}
+                </label>
+                <input type="file" id="json_file" name="json_file" accept=".json" class="m3-input" style="padding: 10px 16px;">
+            </div>
+        </div>
+        
+        <!-- Bottom Action Bar (sticky) -->
+        <div class="m3-final-bar">
+            <button type="button" class="m3-btn-half m3-btn-half-neutral" onclick="location.href='{{ site.saddress }}seo'">
+                <i class="bi bi-x-lg"></i>
+                <span>{{ lang.mod_seo.button.back }}</span>
+            </button>
+            <button type="submit" name="save" value="1" class="m3-btn-half m3-btn-half-primary">
+                <i class="bi bi-floppy-fill"></i>
+                <span>{{ lang.mod_seo.button.save }}</span>
+            </button>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

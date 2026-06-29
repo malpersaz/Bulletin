@@ -16,6 +16,22 @@ class Amed
     private $site;
     private $url;
 
+    private function hasConfiguredDatabase()
+    {
+        $database = Kayit::getir('database');
+        $dbConfig = Kayit::getir('db_config');
+
+        if (!is_string($database) || $database === '') {
+            return false;
+        }
+
+        if (!is_array($dbConfig) || !isset($dbConfig[$database]) || !is_array($dbConfig[$database])) {
+            return false;
+        }
+
+        return isset($dbConfig[$database]['adapter'], $dbConfig[$database]['conf']) && is_array($dbConfig[$database]['conf']);
+    }
+
     private function getBootstrapLanguageState()
     {
         $bootstrap = Kayit::getir('i18n_bootstrap');
@@ -57,6 +73,10 @@ class Amed
             'default_language' => $defaultLanguage,
             'available_languages' => array(),
         );
+
+        if (!$this->hasConfiguredDatabase()) {
+            return $state;
+        }
 
         try {
             $langModel = Load::model('lang');
@@ -109,6 +129,28 @@ class Amed
         Kayit::yenile('default_lang', $languageState['default_language']);
     }
 
+    private function mergeSettingsForLanguage($langCode)
+    {
+        if (!$this->hasConfiguredDatabase()) {
+            return;
+        }
+
+        $langCode = is_string($langCode) && $langCode !== ''
+            ? $langCode
+            : (isset($this->site['default_lang']) ? $this->site['default_lang'] : 'en');
+
+        try {
+            $settingsModel = Load::model('mod_settings');
+            $settingsModel->where_lang($langCode)->gRo();
+
+            if ($settingsModel->getSize() > 0) {
+                $settingsModel->sync();
+                $this->site = array_merge($this->site, $settingsModel->toArray());
+            }
+        } catch (Exception $exception) {
+        }
+    }
+
     public function __construct()
     {
         Load::lib('Session');
@@ -119,35 +161,31 @@ class Amed
         $this->site['lang'] = $languageState['default_language'];
         $this->publishLanguageRegistryState($languageState);
 
-        try {
-            $settings_model = Load::model('mod_settings');
-            $lang_code = isset($this->site['lang']) ? $this->site['lang'] : 'tr';
-            $settings_model->where_lang($lang_code)->gRo();
-
-            if ($settings_model->getSize() > 0) {
-                $settings_model->sync();
-                $db_settings = $settings_model->toArray();
-                $this->site = array_merge($this->site, $db_settings);
-            }
-
+        if ($this->hasConfiguredDatabase()) {
             try {
-                $lang_model = Load::model('lang');
-                $lang_model->all();
-                $available_langs = [];
-                $active_langs = Kayit::getir('active_langs');
-                if ($lang_model->getSize() > 0) {
-                    foreach ($lang_model->toArray() as $l) {
-                        if (is_array($active_langs) && in_array($l['seo'], $active_langs, TRUE)) {
-                            $available_langs[] = ['code' => $l['seo'], 'name' => $l['name']];
+                $this->mergeSettingsForLanguage($this->site['lang']);
+
+                try {
+                    $lang_model = Load::model('lang');
+                    $lang_model->all();
+                    $available_langs = [];
+                    $active_langs = Kayit::getir('active_langs');
+                    if ($lang_model->getSize() > 0) {
+                        foreach ($lang_model->toArray() as $l) {
+                            if (is_array($active_langs) && in_array($l['seo'], $active_langs, TRUE)) {
+                                $available_langs[] = ['code' => $l['seo'], 'name' => $l['name']];
+                            }
                         }
                     }
+                    $this->site['available_languages'] = $available_langs;
+                } catch (Exception $lang_e) {
                 }
-                $this->site['available_languages'] = $available_langs;
-            } catch (Exception $lang_e) {
-            }
 
-            Kayit::yenile('site_config', $this->site);
-        } catch (Exception $e) {
+                Kayit::yenile('site_config', $this->site);
+            } catch (Exception $e) {
+                Kayit::yenile('site_config', $this->site);
+            }
+        } else {
             Kayit::yenile('site_config', $this->site);
         }
 
@@ -155,15 +193,85 @@ class Amed
             $activeLangs = Kayit::getir('active_langs');
             if (is_array($activeLangs) && in_array($this->url->path['0'], $activeLangs, TRUE)) {
                 $this->site['lang'] = $this->url->path['0'];
-                $this->site['sadres'] = $this->site['adres'] . $this->url->path['0'] . '/';
+                $this->site['saddress'] = $this->site['address'] . $this->url->path['0'] . '/';
                 $lang_len = mb_strlen($this->url->path['0'], "UTF-8");
                 $this->url->link = substr($this->url->link, $lang_len + 1);
             } else {
                 $this->site['lang'] = isset($this->site['default_lang']) ? $this->site['default_lang'] : $this->site['lang'];
-                $this->site['sadres'] = $this->site['adres'] . $this->site['lang'] . '/';
+                $this->site['saddress'] = $this->site['address'] . $this->site['lang'] . '/';
             }
             Kayit::yenile('lang', $this->site['lang']);
-            Kayit::yenile('site_config', $this->site);
+        }
+
+        $this->mergeSettingsForLanguage($this->site['lang']);
+
+        $this->site['url'] = trim($this->url->link, '/');
+        Kayit::yenile('site_config', $this->site);
+
+        if ($this->hasConfiguredDatabase()) {
+            try {
+                $cleanRequestUrl = trim($this->url->link, '/');
+                $db = Load::lib('Database');
+                $tableExists = false;
+                $adapter = $db->getAdapterType();
+                if ($adapter && strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='mod_redirect'");
+                    $tableExists = $db->getSize() > 0;
+                } else {
+                    $db->fetch_array("SHOW TABLES LIKE 'mod_redirect'");
+                    $tableExists = $db->getSize() > 0;
+                }
+
+                if ($tableExists) {
+                    $safeUrl = addslashes($cleanRequestUrl);
+                    $db->fetch_array("SELECT * FROM mod_redirect WHERE old_url = '" . $safeUrl . "' OR old_url = '/" . $safeUrl . "' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $redirectRow = $db->toArray()[0];
+                        $target = $redirectRow['new_url'];
+                        $statusCode = (int)$redirectRow['status_code'];
+                        if ($statusCode !== 301 && $statusCode !== 302) {
+                            $statusCode = 301;
+                        }
+
+                        if (preg_match('#^https?://#i', $target)) {
+                            $redirectUrl = $target;
+                        } else {
+                            $targetHasLang = false;
+                            $activeLangs = Kayit::getir('active_langs');
+                            if (is_array($activeLangs)) {
+                                foreach ($activeLangs as $al) {
+                                    if (strpos($target, $al . '/') === 0 || $target === $al) {
+                                        $targetHasLang = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if ($targetHasLang) {
+                                $baseUrl = isset($this->site['address']) ? $this->site['address'] : '/';
+                            } else {
+                                $baseUrl = isset($this->site['saddress']) ? $this->site['saddress'] : (isset($this->site['address']) ? $this->site['address'] : '/');
+                                if (strpos($baseUrl, '/tr/') !== false && strpos($target, 'tr/') === 0) {
+                                    $target = substr($target, 3);
+                                } elseif (strpos($baseUrl, '/en/') !== false && strpos($target, 'en/') === 0) {
+                                    $target = substr($target, 3);
+                                }
+                            }
+                            $redirectUrl = rtrim($baseUrl, '/') . '/' . ltrim($target, '/');
+                        }
+
+                        if ($statusCode === 301) {
+                            header("HTTP/1.1 301 Moved Permanently");
+                        } else {
+                            header("HTTP/1.1 302 Found");
+                        }
+                        header("Location: " . $redirectUrl);
+                        exit;
+                    }
+                }
+            } catch (Exception $e) {
+                // Fail silently to prevent site crashes
+            }
         }
 
         if (is_array($url_config)) {
@@ -316,6 +424,9 @@ class Amed
                 $admintemplate = Load::lib('AdminTemplate');
                 if (isset($_SESSION)) {
                     $admintemplate->setGlobal('session', $_SESSION);
+                    if (isset($_SESSION['flash'])) {
+                        unset($_SESSION['flash']);
+                    }
                 }
                 if (isset($_COOKIE)) {
                     $admintemplate->setGlobal('cookie', $_COOKIE);

@@ -36,17 +36,20 @@ $url['page/(:any)']='index/page/$1';
 
 // Sitemaps
 $url['rss.xml'] = 'index/rss';
+$url['seo'] = 'mod_seo/index';
+$url['seo/settings'] = 'mod_seo/settings';
 $url['sitemap.xml'] = 'index/sitemapIndex';
 $url['newsSitemap.xml'] = 'index/newsSitemap';
 $url['publicationSitemap.xml'] = 'index/publicationSitemap';
 $url['categorySitemap.xml'] = 'index/categorySitemap';
 $url['pageSitemap.xml'] = 'index/pageSitemap';
+$url['announcementSitemap.xml'] = 'index/announcementSitemap';
+$url['videoSitemap.xml'] = 'index/videoSitemap';
+$url['gallerySitemap.xml'] = 'index/gallerySitemap';
 
 // Legacy Redirects
 $url['nuce/(:any)'] = 'index/legacyRedirect/$1';
 $url['tekst/(:any)'] = 'index/legacyRedirectPublication/$1';
-
-
 
 // mod_video_embed
 $url['video/(:num)-(:any)']='index/video/$1';
@@ -59,7 +62,12 @@ $url['videos/(:any)']='index/videos/$1';
 $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
 // Content and Category
-$url['article/(:any)']='index/news/$1';
+$url['article/(:any)']='index/content/$1';
+$url['contents']='index/contents';
+$url['contents/']='index/contents';
+$url['contents/(:any)']='index/contents/$1';
+$url['contents/(:any)/(:num)']='index/contents/$1/$2';
+
 $url['category']='index/newses';
 $url['category/']='index/newses';
 $url['category/(:any)']='index/newses/$1';
@@ -92,6 +100,13 @@ $url['download/(:num)']='mod_attachment/indir/$1';
 $url['avatar/upload']='mod_user/avatarUpload';
 $url['avatar/delete']='mod_user/avatarDelete';
 $url['avatar/(:any)']='mod_user/getAvatarUrl/$1';
+
+// mod_redirect routes
+$url['mod_redirect/list'] = 'mod_redirect/list';
+$url['mod_redirect/add'] = 'mod_redirect/add';
+$url['mod_redirect/edit'] = 'mod_redirect/edit';
+$url['mod_redirect/edit/(:any)'] = 'mod_redirect/edit/$1';
+$url['mod_redirect/delete'] = 'mod_redirect/delete';
 
 Kayit::ekle('url_config',$url);
 unset($url);

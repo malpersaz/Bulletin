@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -54,6 +54,8 @@ $lang['mod_gallery_mod'] = [
         'kaldir' => 'Rake',
         'evet' => 'Erê',
         'hayir' => 'Na',
+        'gallery' => 'Galeri',
+        'file' => 'Pel',
     ],
 
     'grid' => [

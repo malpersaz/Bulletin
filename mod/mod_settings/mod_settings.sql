@@ -23,5 +23,8 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `manifest_512` VARCHAR(255) DEFAULT NULL,
   `established_year` YEAR DEFAULT NULL,
   `user_id` INT(11) NOT NULL,
+  `site_icon` VARCHAR(500) DEFAULT NULL,
+  `logo_type` VARCHAR(50) NOT NULL DEFAULT 'rectangle',
+  `logo_symbol` VARCHAR(500) DEFAULT NULL,
   UNIQUE KEY `unique_lang` (`lang`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

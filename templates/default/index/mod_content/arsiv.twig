@@ -15,7 +15,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.homepage }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.homepage }}</a>
                 </li>
                 <li class="active">{{ lang.index.mod_content.6 }}</li>
             </ol>
@@ -87,7 +87,7 @@
                         {% for content in contents %}
                             <p>
                                 {{ content.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
-    href="{{ site.sadres }}article/{{ content.seo }}"
+    href="{{ site.saddress }}article/{{ content.seo }}"
     title="{% if content.summary != '' %}{{ content.summary }}{% else %}{{ content.name }}{% endif %}">{{ content.name }}</a>
                             </p>
                         {% endfor %}

@@ -15,9 +15,9 @@
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{{ site.sadres }}videos" class="list-group-item list-group-item-action">Tüm Videolar</a>
+                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action">Tüm Videolar</a>
                 {% for kat in kategoriler %}
-                    <a href="{{ site.sadres }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if d.category_seo == kat.seo %} active{% endif %}">
+                    <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if d.category_seo == kat.seo %} active{% endif %}">
                         {{ kat.name }}
                     </a>
                 {% endfor %}
@@ -31,9 +31,9 @@
             <div class="card-header bg-light">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="{{ site.sadres }}">{{ lang.index.home }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ site.sadres }}videos">{{ lang.index.mod_video_embed.1 }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ site.sadres }}videos/{{ d.category_seo }}">{{ d.categoryname }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ site.saddress }}">{{ lang.index.home }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ site.saddress }}videos">{{ lang.index.mod_video_embed.1 }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ site.saddress }}videos/{{ d.category_seo }}">{{ d.categoryname }}</a></li>
                         <li class="breadcrumb-item active" aria-current="page">{{ d.name }}</li>
                     </ol>
                 </nav>
@@ -59,7 +59,7 @@
 
                 <hr>
                 <p class="text-muted small">
-                    Yayınlanma Tarihi: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time> / Kategori: <a href="{{ site.sadres }}videos/{{ d.category_seo }}" title="{{ d.categoryname }}">{{ d.categoryname }}</a>
+                    Yayınlanma Tarihi: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time> / Kategori: <a href="{{ site.saddress }}videos/{{ d.category_seo }}" title="{{ d.categoryname }}">{{ d.categoryname }}</a>
                 </p>
             </div>
         </article>

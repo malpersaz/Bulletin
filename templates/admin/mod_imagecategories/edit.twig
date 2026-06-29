@@ -1,0 +1,33 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_imagecategories.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_imagecategories.edit }}{% endblock %}
+
+{% block content %}
+{% if fatal_error is defined %}
+    <div class="image-category-shell">
+        <div class="form-status error">{{ message }}</div>
+    </div>
+{% else %}
+    {% include 'admin/mod_imagecategories/_form.twig' with { mode: 'edit', form_id: 'imageCategoryEditForm', record: record } %}
+{% endif %}
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if success is not defined and fatal_error is not defined %}
+    <div class="image-category-bottom-bar">
+        <a href="{{ site.saddress }}mod_imagecategories/list" class="cancel-btn">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_imagecategories.button.cancel }}</span>
+        </a>
+        <button type="submit" form="imageCategoryEditForm" name="edit" value="1" class="save-btn">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ lang.mod_imagecategories.button.save }}</span>
+        </button>
+    </div>
+{% endif %}
+{% endblock %}

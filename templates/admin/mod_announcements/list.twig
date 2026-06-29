@@ -1,0 +1,106 @@
+{% set module_lang_key = 'mod_announcements' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_announcements.list }}{% endblock %}
+{% block headline %}{{ lang.mod_announcements.list }}{% endblock %}
+
+{% block styles %}
+<style>
+    .announcements-toolbar .toolbar-item {
+        min-width: 44px;
+    }
+    .empty-state {
+        background: var(--md-sys-color-surface);
+        border-radius: var(--af-radius-lg);
+        padding: 40px 20px;
+        margin: 0 16px 120px;
+        text-align: center;
+        box-shadow: var(--md-sys-elevation-1);
+        display: grid;
+        gap: 16px;
+        place-items: center;
+    }
+    .empty-state i {
+        font-size: 48px;
+        color: var(--md-sys-color-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+</div>
+
+<div id="announcements-list-container" class="content-list" style="padding: 16px 16px 120px;"></div>
+
+<div id="empty-state" class="empty-state" style="display:none;">
+    <i class="bi bi-megaphone"></i>
+    <strong>{{ lang.mod_announcements.grid[4] }}</strong>
+</div>
+
+<div id="infinite-loader" class="infinite-loader" style="display:none;">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+    <span>{{ lang.mod_announcements.grid[3] }}</span>
+</div>
+
+<form id="filterForm" style="display:none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar announcements-toolbar">
+    {% if session.permissions.mod_announcements.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_announcements.gallery is defined %}
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-images"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_announcements.file is defined %}
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-paperclip"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_announcements.edit is defined %}
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    {% endif %}
+</div>
+
+{% if session.permissions.mod_announcements.add is defined %}
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_announcements/add'" aria-label="{{ lang.mod_announcements.add|default('Daxuyaniyê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MODULE_URL = SITE_URL + "mod_announcements/";
+    const DATA_URL = SITE_URL + "mod_announcements/datatable_json";
+    const ANNOUNCEMENT_LANG = {
+        active: "{{ lang.mod_announcements.grid.publish.key|e('js') }}",
+        draft: "{{ lang.mod_announcements.grid.unpublish.key|e('js') }}",
+        delete_confirm: "{{ lang.mod_announcements.remove_record|e('js') }}"
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_announcements.js?v=1.0"></script>
+{% endblock %}

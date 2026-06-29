@@ -90,9 +90,9 @@ class mod_gallery_mod extends indexMain
         }
 
         $this->mod_info->getResultOne()->sync();
-        
+
         $this->mlang = Load::lang($mod);
-        
+
         // Check for permission in the target module
         if ($this->user->hasPermission($mod, 'gallery', $this->mlang[$mod]['role_errors']['gallery'], 1) === False) {
             return False;
@@ -121,10 +121,10 @@ class mod_gallery_mod extends indexMain
         if ($mod && $vid) {
             // Specific Gallery view (Images of a record)
             if ($this->_check_mod($mod, $vid) === FALSE) {
-                Helper::yonlendir($this->site['sadres'] . 'mod_gallery/list');
+                Helper::yonlendir($this->site['saddress'] . 'mod_gallery/list');
                 return;
             }
-            
+
             $this->mod_gallery_model = Load::model('mod_gallery');
             $this->mod_gallery_model->where_vid_and_mod_name($vid, $mod)->gR();
 
@@ -140,11 +140,12 @@ class mod_gallery_mod extends indexMain
                     $record_label = $resolved_label;
                 }
             }
-            
+
             $this->tema->veri('pictures', $this->mod_gallery_model->toArray());
             $this->tema->veri('mod_name', $mod);
             $this->tema->veri('vid', $vid);
             $this->tema->veri('record_label', $record_label);
+            $this->tema->veri('back_url', $this->site['saddress'] . 'mod_gallery/list');
             $this->tema->tpl('mod_gallery/list_images');
         } else {
             // General Gallery List view (Galleries from mod_gallery_mod)
@@ -161,34 +162,72 @@ class mod_gallery_mod extends indexMain
     public function ajax_list()
     {
         header('Content-Type: application/json; charset=utf-8');
-        
+
         if ($this->user->hasPermission('mod_gallery', 'list', $this->lang['mod_gallery']['role_errors']['list'], 1) === False) {
             echo json_encode(['data' => [], 'recordsTotal' => 0, 'recordsFiltered' => 0]);
             exit;
         }
 
-        $model = Load::model('mod_gallery_mod');
-        $search = trim((string) Req::Post_Safe('query'));
-
-        $model->where(['mod_name !' => ''])->order('id', 'DESC')->gR();
-        $items = $model->toArray();
-
-        // Get image counts for each gallery
         $db = new Database();
-        foreach ($items as &$item) {
-            $res = $db->query("SELECT COUNT(*) as total FROM mod_gallery WHERE mod_name = '{$item['mod_name']}' AND vid = '{$item['mod_key']}'")->fetch(PDO::FETCH_ASSOC);
-            $item['image_count'] = $res['total'];
+
+        // Fetch active galleries containing images from mod_gallery table
+        $galleries = $db->query("SELECT mod_name, vid, COUNT(*) as image_count FROM mod_gallery GROUP BY mod_name, vid ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch active media-capable module configurations from mod_gallery_mod table
+        $mod_infos = [];
+        $mod_info_model = Load::model('mod_gallery_mod');
+        $mod_info_model->where("mod_name != ''")->gR();
+        foreach ($mod_info_model->toArray() as $m_info) {
+            $mod_infos[$m_info['mod_name']] = $m_info;
         }
-        unset($item);
+
+        $items = [];
+        foreach ($galleries as $gal) {
+            $mod = $gal['mod_name'];
+            $vid = $gal['vid'];
+
+            // Bypass if module configuration does not exist
+            if (!isset($mod_infos[$mod])) {
+                continue;
+            }
+            $m_info = $mod_infos[$mod];
+
+            $record_label = $mod . ' / ' . $vid;
+            $target_model = Load::model($mod);
+            if ($target_model && $target_model->exists_id($vid)) {
+                $target_model->where_id($vid)->limit(1)->gRo();
+                if ($target_model->getSize() > 0) {
+                    $target_model->sync();
+                    $record = $target_model->toArray();
+                    $resolved_label = $this->_resolve_record_label($record, $m_info['mod_value']);
+                    if ($resolved_label !== false) {
+                        $record_label = $resolved_label;
+                    }
+                }
+            }
+
+            // Retrieve last 3 images for the preview stack
+            $stmt = $db->query("SELECT url FROM mod_gallery WHERE mod_name = '{$mod}' AND vid = '{$vid}' ORDER BY id DESC LIMIT 3");
+            $previews = $stmt ? $stmt->fetchAll(PDO::FETCH_COLUMN) : [];
+
+            $items[] = [
+                'id' => $vid,
+                'name' => $record_label,
+                'mod_name' => $mod,
+                'mod_key' => $vid, // Used for link generation
+                'image_count' => $gal['image_count'],
+                'preview_images' => $previews
+            ];
+        }
 
         $total = count($items);
+        $search = trim((string) Req::Post_Safe('query'));
         if ($search !== '') {
             $items = array_values(array_filter($items, function ($item) use ($search) {
                 $haystacks = [
                     $item['name'] ?? '',
                     $item['mod_name'] ?? '',
                     $item['mod_key'] ?? '',
-                    $item['mod_value'] ?? '',
                 ];
 
                 foreach ($haystacks as $haystack) {
@@ -218,10 +257,10 @@ class mod_gallery_mod extends indexMain
         header('Content-Type: application/json; charset=utf-8');
         $id = intval(Req::Post_Safe('id'));
         $name = Req::Post_Safe('name');
-        
+
         $this->r = Load::model('mod_gallery');
         $this->r->where_id($id)->gRo();
-        
+
         if ($this->r->getSize() === 0) {
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['errors']['record']]);
             exit;
@@ -262,7 +301,7 @@ class mod_gallery_mod extends indexMain
 
         $this->r = Load::model('mod_gallery');
         $this->r->where_id_and_vid_and_mod_name($id, $vid, $mod)->limit(1)->gRo();
-        
+
         if ($this->r->getSize() === 0) {
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['errors']['record']]);
             exit;
@@ -274,14 +313,36 @@ class mod_gallery_mod extends indexMain
         $image->mod = 'mod_gallery';
         $image->url = $this->r->url;
         $option = [
-            '/' . $mod . '/original/' => ['width' => NULL, 'height' => NULL, 'option' => 'original'],
-            '/' . $mod . '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width']
+            '/' . $mod . '/original/' => ['width' => 1920, 'height' => NULL, 'option' => 'width'],
+            '/' . $mod . '/thumb' => ['width' => 500, 'height' => NULL, 'option' => 'width']
         ];
 
         if ($image->_delete_files($option) && $this->r->delete()) {
             echo json_encode(['status' => 'success', 'message' => $this->lang['mod_gallery']['admin']['image_deleted']]);
         } else {
             echo json_encode(['status' => 'error', 'message' => $image->error ?: $this->lang['mod_gallery']['errors']['delete_failed']]);
+        }
+        exit;
+    }
+
+    /**
+     * Delete all images in a gallery (bulk remove)
+     */
+    public function sil_all()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        $vid = Req::Post_Safe('vid');
+        $mod = Req::Post_Safe('mod_name');
+
+        if ($this->_check_mod($mod, $vid) === FALSE) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['ajax']['error']]);
+            exit;
+        }
+
+        if ($this->_remove($mod, $vid)) {
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_gallery']['admin']['image_deleted']]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['errors']['delete_failed']]);
         }
         exit;
     }
@@ -311,13 +372,13 @@ class mod_gallery_mod extends indexMain
         $image->mod = 'mod_gallery';
         $image->name = $isim;
         $option = [
-            '/' . $mod . '/original/' => ['width' => NULL, 'height' => NULL, 'option' => 'original'],
-            '/' . $mod . '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width']
+            '/' . $mod . '/original/' => ['width' => 1920, 'height' => NULL, 'option' => 'width'],
+            '/' . $mod . '/thumb' => ['width' => 500, 'height' => NULL, 'option' => 'width']
         ];
 
         if ($image->_resize($option)) {
             $resim_link = $image->url;
-            
+
             $this->r = Load::model('mod_gallery');
             $this->r->name = "#"; // Initial name can be changed later
             $this->r->url = $resim_link;
@@ -362,8 +423,8 @@ class mod_gallery_mod extends indexMain
             $image->mod = 'mod_gallery';
             $image->url = $item['url'];
             $option = [
-                '/' . $mod . '/original/' => ['width' => NULL, 'height' => NULL, 'option' => 'original'],
-                '/' . $mod . '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width']
+                '/' . $mod . '/original/' => ['width' => 1920, 'height' => NULL, 'option' => 'width'],
+                '/' . $mod . '/thumb' => ['width' => 500, 'height' => NULL, 'option' => 'width']
             ];
             $image->_delete_files($option);
         }

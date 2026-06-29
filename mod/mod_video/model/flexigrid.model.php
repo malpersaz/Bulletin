@@ -14,7 +14,7 @@ class flexigrid_model
     {
         $valid_sort = ["asc", "desc"];
 
-        $colom = ['id', 'ad', 'sure', 'lang', 'tarih'];
+        $colom = ['id', 'name', 'duration', 'lang', 'created_at'];
 
         $rp = Req::is_Post('rp') ? Req::Post_Safe('rp') : 10;
         // ORDER BY ID ASC Gibi
@@ -56,7 +56,7 @@ class flexigrid_model
             }
         }
 
-        $this->mod_video_model->select("id,name,sure,lang,created_at")->gR();
+        $this->mod_video_model->select("id,name,duration,lang,created_at")->gR();
         $toplam = $this->mod_video_model->getSize();
         $this->json['total'] = $toplam;
         $this->json['page'] = $page;

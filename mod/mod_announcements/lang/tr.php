@@ -106,6 +106,7 @@
       'id' => 'ID',
       'language' => 'Dil',
       'ad' => 'Duyuru Adı',
+      'seo' => 'SEO URL',
       'tarih' => 'Tarih',
       'status' => 'Yayınlansın mı?',
       'deck' => 'Giriş Görüntülensin mi?',

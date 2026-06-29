@@ -2,7 +2,7 @@
 $lang['mod_slider']= [
   'add' => 'Add Slider',
   'edit' => 'Edit Slider',
-  'list' => 'Slider List',
+  'list' => 'Slider Management',
   'information' => 'Information!',
   'oke' => 'Operation Successful!',
   'hata' => 'An Error Occurred!',
@@ -143,4 +143,10 @@ $lang['mod_slider']= [
   'acl_all' => 'Public',
   'empty' => ['title' => 'No Records Found', 'no_data' => 'No sliders have been added yet.', 'no_search_results' => 'No sliders found matching your search criteria.'],
   'search_placeholder' => 'Search Sliders...',
+  'modules' => [
+    'news' => 'News',
+    'publication' => 'Publication',
+    'content' => 'Content',
+    'product' => 'Product',
+  ],
 ];

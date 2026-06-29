@@ -2,8 +2,9 @@
 
 {% set content_active = mod == 'mod_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}
 {% set media_active = mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' %}
-{% set membership_active = mod == 'mod_user' or mod == 'mod_user_group' or mod == 'mod_acl' or mod == 'mod_settings' %}
+{% set solutions_active = mod == 'mod_product' or mod == 'mod_product_category' or mod == 'mod_service' or mod == 'mod_service_category' or mod == 'mod_client' or mod == 'mod_reference' %}
 {% set announcements_active = mod == 'mod_announcements' or mod == 'mod_popup' %}
+{% set seo_active = mod == 'mod_seo' or mod == 'mod_redirect' %}
 
 <aside class="nav-drawer" id="navDrawer">
     <div class="drawer-header">
@@ -32,11 +33,11 @@
         <div class="drawer-search-empty" id="drawerSearchEmpty" hidden>{{ lang.management.module_search_empty }}</div>
 
         <div class="drawer-root-links">
-            <a href="{{ site.sadres }}mod_user/panel" class="nav-item nav-root-item {% if mod == 'mod_user' and (act is not defined or act == 'panel') %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user_panel" data-nav-label="{{ lang.management.dashboard }}">
+            <a href="{{ site.saddress }}mod_user/panel" class="nav-item nav-root-item {% if mod == 'mod_user' and (act is not defined or act == 'panel') %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user_panel" data-nav-label="{{ lang.management.dashboard }}">
                 <i class="bi bi-speedometer2 nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.dashboard }}</span>
             </a>
-            <a href="{{ site.sadres }}" target="_blank" class="nav-item nav-root-item" data-nav-track="0" data-nav-label="{{ lang.management.anasayfa }}">
+            <a href="{{ site.saddress }}" target="_blank" class="nav-item nav-root-item" data-nav-track="0" data-nav-label="{{ lang.management.anasayfa }}">
                 <i class="bi bi-house-door-fill nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.anasayfa }}</span>
             </a>
@@ -44,50 +45,6 @@
 
         <div class="nav-divider"></div>
 
-        <!-- 1. Group: Membership (Uyelik) -->
-        {% if session.permissions.mod_user.list is defined %}
-        <div class="nav-group{% if membership_active %} expanded{% endif %}" data-nav-group="membership">
-            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.uyelik }}">
-                <i class="bi bi-people-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.uyelik }}</span>
-                <i class="bi bi-chevron-down group-indicator"></i>
-            </button>
-            <div class="nav-group-items">
-                {% if session.permissions.mod_user.list is defined %}
-                <a href="{{ site.sadres }}mod_user/list" class="nav-item {% if mod == 'mod_user' and act == 'list' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user" data-nav-label="{{ lang.management.uyeler }}">
-                    <i class="bi bi-person nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.uyeler }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_user.setting is defined %}
-                <a href="{{ site.sadres }}mod_user/settings" class="nav-item {% if mod == 'mod_user' and act == 'settings' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user_settings" data-nav-label="{{ lang.management.membership_setting }}">
-                    <i class="bi bi-gear nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.membership_setting }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_user_group.list is defined %}
-                <a href="{{ site.sadres }}mod_user_group/list" class="nav-item {% if mod == 'mod_user_group' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user_group" data-nav-label="{{ lang.management.uye_gruplari }}">
-                    <i class="bi bi-people nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.uye_gruplari }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_user.acl is defined %}
-                <a href="{{ site.sadres }}mod_user/acl" class="nav-item {% if mod == 'mod_user' and act == 'acl' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_user_acl" data-nav-label="{{ lang.management.uye_permission_yonetimi_acl }}">
-                    <i class="bi bi-shield-lock nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.uye_permission_yonetimi_acl }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_acl.list is defined %}
-                <a href="{{ site.sadres }}mod_acl/list" class="nav-item {% if mod == 'mod_acl' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_acl" data-nav-label="{{ lang.management.acl }}">
-                    <i class="bi bi-database-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.acl }}</span>
-                </a>
-                {% endif %}
-            </div>
-        </div>
-        {% endif %}
-
-        <!-- 2. Group: Content & Page (Naverok u Rupel) -->
         <div class="nav-group{% if content_active %} expanded{% endif %}" data-nav-group="content">
             <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.content_and_page }}">
                 <i class="bi bi-rocket-takeoff-fill nav-item-icon"></i>
@@ -96,63 +53,57 @@
             </button>
             <div class="nav-group-items">
                 {% if session.permissions.mod_category.list is defined %}
-                <a href="{{ site.sadres }}mod_category/list" class="nav-item {% if mod == 'mod_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_category" data-nav-label="{{ lang.management.content_categories }}">
-                    <i class="bi bi-tags-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.content_categories }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_category/list" class="nav-item {% if mod == 'mod_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_category" data-nav-label="{{ lang.management.content_categories }}">
+                        <i class="bi bi-tags-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.content_categories }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_news_category.list is defined %}
-                <a href="{{ site.sadres }}mod_news_category/list" class="nav-item {% if mod == 'mod_news_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_news_category" data-nav-label="{{ lang.management.news_categories }}">
-                    <i class="bi bi-bookmarks-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.news_categories }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_content.list is defined %}
-                <a href="{{ site.sadres }}mod_content/list" class="nav-item {% if mod == 'mod_content' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_content" data-nav-label="{{ lang.management.content_management }}">
-                    <i class="bi bi-file-text-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.content_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_news_category/list" class="nav-item {% if mod == 'mod_news_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_news_category" data-nav-label="{{ lang.management.news_categories }}">
+                        <i class="bi bi-bookmarks-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.news_categories }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_publication_category.list is defined %}
-                <a href="{{ site.sadres }}mod_publication_category/list" class="nav-item {% if mod == 'mod_publication_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_publication_category" data-nav-label="{{ lang.management.publication_categories }}">
-                    <i class="bi bi-collection-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.publication_categories }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_publication_category/list" class="nav-item {% if mod == 'mod_publication_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_publication_category" data-nav-label="{{ lang.management.publication_categories }}">
+                        <i class="bi bi-collection-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.publication_categories }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_menu.list is defined %}
-                <a href="{{ site.sadres }}mod_menu/list" class="nav-item {% if mod == 'mod_menu' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_menu" data-nav-label="{{ lang.management.menu_management }}">
-                    <i class="bi bi-list nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.menu_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_menu/list" class="nav-item {% if mod == 'mod_menu' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_menu" data-nav-label="{{ lang.management.menu_management }}">
+                        <i class="bi bi-list nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.menu_management }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_page.list is defined %}
-                <a href="{{ site.sadres }}mod_page/list" class="nav-item {% if mod == 'mod_page' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_page" data-nav-label="{{ lang.management.page_management }}">
-                    <i class="bi bi-file-richtext nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.page_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_page/list" class="nav-item {% if mod == 'mod_page' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_page" data-nav-label="{{ lang.management.page_management }}">
+                        <i class="bi bi-file-richtext nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.page_management }}</span>
+                    </a>
                 {% endif %}
+
                 {% if session.permissions.mod_document.list is defined %}
-                <a href="{{ site.sadres }}mod_document/list" class="nav-item {% if mod == 'mod_document' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_document" data-nav-label="{{ lang.management.file_management }}">
-                    <i class="bi bi-folder-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.file_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_document/list" class="nav-item {% if mod == 'mod_document' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_document" data-nav-label="{{ lang.management.file_management }}">
+                        <i class="bi bi-folder-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.file_management }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_service_guide.list is defined %}
-                <a href="{{ site.sadres }}mod_service_guide/list" class="nav-item {% if mod == 'mod_service_guide' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service_guide" data-nav-label="{{ lang.management.service_guide }}">
-                    <i class="bi bi-bank nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.service_guide }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_service_guide/list" class="nav-item {% if mod == 'mod_service_guide' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service_guide" data-nav-label="{{ lang.management.service_guide }}">
+                        <i class="bi bi-bank nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.service_guide }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_survey.list is defined %}
-                <a href="{{ site.sadres }}mod_survey/list" class="nav-item {% if mod == 'mod_survey' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_survey" data-nav-label="{{ lang.management.survey_management }}">
-                    <i class="bi bi-ui-checks-grid nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.survey_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_survey/list" class="nav-item {% if mod == 'mod_survey' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_survey" data-nav-label="{{ lang.management.survey_management }}">
+                        <i class="bi bi-ui-checks-grid nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.survey_management }}</span>
+                    </a>
                 {% endif %}
             </div>
         </div>
 
-        <!-- 3. Group: Video & Images (Medya) -->
         <div class="nav-group{% if media_active %} expanded{% endif %}" data-nav-group="media">
             <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.video_and_images }}">
                 <i class="bi bi-camera-video-fill nav-item-icon"></i>
@@ -161,57 +112,96 @@
             </button>
             <div class="nav-group-items">
                 {% if session.permissions.mod_video.list is defined %}
-                <a href="{{ site.sadres }}mod_video/list" class="nav-item {% if mod == 'mod_video' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video" data-nav-label="{{ lang.management.videos }}">
-                    <i class="bi bi-camera-reels-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.videos }}</span>
-                </a>
-                {% endif %}
-                {% if session.permissions.mod_video_embed.list is defined %}
-                <a href="{{ site.sadres }}mod_video_embed/list" class="nav-item {% if mod == 'mod_video_embed' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video_embed" data-nav-label="{{ lang.management.remote_videos }}">
-                    <i class="bi bi-youtube nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.remote_videos }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_video/list" class="nav-item {% if mod == 'mod_video' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video" data-nav-label="{{ lang.management.videos }}">
+                        <i class="bi bi-camera-reels-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.videos }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_video_embed_category.list is defined %}
-                <a href="{{ site.sadres }}mod_video_embed_category/list" class="nav-item {% if mod == 'mod_video_embed_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video_embed_category" data-nav-label="{{ lang.management.uzak_video_kategorisi }}">
-                    <i class="bi bi-collection-play-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.uzak_video_kategorisi }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_video_embed_category/list" class="nav-item {% if mod == 'mod_video_embed_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video_embed_category" data-nav-label="{{ lang.management.uzak_video_kategorisi }}">
+                        <i class="bi bi-collection-play-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.uzak_video_kategorisi }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_slider.list is defined %}
-                <a href="{{ site.sadres }}mod_slider/list" class="nav-item {% if mod == 'mod_slider' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_slider" data-nav-label="{{ lang.management.manset_yonetimi }}">
-                    <i class="bi bi-card-image nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.manset_yonetimi }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_slider/list" class="nav-item {% if mod == 'mod_slider' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_slider" data-nav-label="{{ lang.management.manset_yonetimi }}">
+                        <i class="bi bi-card-image nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.manset_yonetimi }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_headline.list is defined %}
-                <a href="{{ site.sadres }}mod_headline/list" class="nav-item {% if mod == 'mod_headline' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_headline" data-nav-label="{{ lang.management.full_manset_yonetimi }}">
-                    <i class="bi bi-newspaper nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.full_manset_yonetimi }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_headline/list" class="nav-item {% if mod == 'mod_headline' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_headline" data-nav-label="{{ lang.management.full_manset_yonetimi }}">
+                        <i class="bi bi-layout-text-window-reverse nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.full_manset_yonetimi }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_imagecategories.list is defined %}
-                <a href="{{ site.sadres }}mod_imagecategories/list" class="nav-item {% if mod == 'mod_imagecategories' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_imagecategories" data-nav-label="{{ lang.management.image_gallery }}">
-                    <i class="bi bi-images nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.image_gallery }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_imagecategories/list" class="nav-item {% if mod == 'mod_imagecategories' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_imagecategories" data-nav-label="{{ lang.management.image_gallery }}">
+                        <i class="bi bi-image-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.image_gallery }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_gallery_mod.list is defined %}
-                <a href="{{ site.sadres }}mod_gallery_mod/list" class="nav-item {% if mod == 'mod_gallery_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_gallery_mod" data-nav-label="{{ lang.management.gallery_modulleri }}">
-                    <i class="bi bi-images nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.gallery_modulleri }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_gallery_mod/list" class="nav-item {% if mod == 'mod_gallery_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_gallery_mod" data-nav-label="{{ lang.management.gallery_modulleri }}">
+                        <i class="bi bi-images nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.gallery_modulleri }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_attachment_mod.list is defined %}
-                <a href="{{ site.sadres }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_attachment_mod" data-nav-label="{{ lang.management.dosya_modulleri }}">
-                    <i class="bi bi-paperclip nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.dosya_modulleri }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_attachment_mod" data-nav-label="{{ lang.management.dosya_modulleri }}">
+                        <i class="bi bi-paperclip nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.dosya_modulleri }}</span>
+                    </a>
                 {% endif %}
             </div>
         </div>
 
-        <!-- 4. Group: Announcements (Daxuyani) -->
+        <div class="nav-group{% if solutions_active %} expanded{% endif %}" data-nav-group="products">
+            <button type="button" class="nav-group-header nav-group-header-spotlight" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.products_workspace }}">
+                <i class="bi bi-diagram-3-fill nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.products_workspace }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </button>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_product.list is defined %}
+                    <a href="{{ site.saddress }}mod_product/list" class="nav-item {% if mod == 'mod_product' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_product" data-nav-label="{{ lang.management.products }}">
+                        <i class="bi bi-box-seam nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.products }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_service.list is defined %}
+                    <a href="{{ site.saddress }}mod_service/list" class="nav-item {% if mod == 'mod_service' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service" data-nav-label="{{ lang.management.services }}">
+                        <i class="bi bi-briefcase-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.services }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_reference.list is defined %}
+                    <a href="{{ site.saddress }}mod_reference/list" class="nav-item {% if mod == 'mod_reference' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_reference" data-nav-label="{{ lang.management.references }}">
+                        <i class="bi bi-journal-check nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.references }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_client.list is defined %}
+                    <a href="{{ site.saddress }}mod_client/list" class="nav-item {% if mod == 'mod_client' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_client" data-nav-label="{{ lang.management.clients }}">
+                        <i class="bi bi-people-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.clients }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_product_category.list is defined %}
+                    <a href="{{ site.saddress }}mod_product_category/list" class="nav-item {% if mod == 'mod_product_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_product_category" data-nav-label="{{ lang.management.product_categories }}">
+                        <i class="bi bi-diagram-2-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.product_categories }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_service_category.list is defined %}
+                    <a href="{{ site.saddress }}mod_service_category/list" class="nav-item {% if mod == 'mod_service_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service_category" data-nav-label="{{ lang.management.service_categories }}">
+                        <i class="bi bi-grid-3x3-gap-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.service_categories }}</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="nav-group{% if announcements_active %} expanded{% endif %}" data-nav-group="announcements">
             <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.announcement_management }}">
                 <i class="bi bi-megaphone-fill nav-item-icon"></i>
@@ -220,102 +210,47 @@
             </button>
             <div class="nav-group-items">
                 {% if session.permissions.mod_announcements.list is defined %}
-                <a href="{{ site.sadres }}mod_announcements/list" class="nav-item {% if mod == 'mod_announcements' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_announcements" data-nav-label="{{ lang.management.announcement_management }}">
-                    <i class="bi bi-volume-up-fill nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.announcement_management }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_announcements/list" class="nav-item {% if mod == 'mod_announcements' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_announcements" data-nav-label="{{ lang.management.announcement_management }}">
+                        <i class="bi bi-volume-up-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.announcement_management }}</span>
+                    </a>
                 {% endif %}
                 {% if session.permissions.mod_popup.list is defined %}
-                <a href="{{ site.sadres }}mod_popup/list" class="nav-item {% if mod == 'mod_popup' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_popup" data-nav-label="{{ lang.management.popup_announcements }}">
-                    <i class="bi bi-layout-wtf nav-item-icon"></i>
-                    <span class="nav-item-label">{{ lang.management.popup_announcements }}</span>
-                </a>
+                    <a href="{{ site.saddress }}mod_popup/list" class="nav-item {% if mod == 'mod_popup' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_popup" data-nav-label="{{ lang.management.popup_announcements }}">
+                        <i class="bi bi-layout-wtf nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.popup_announcements }}</span>
+                    </a>
                 {% endif %}
             </div>
         </div>
 
-        <div class="nav-divider"></div>
-
-        <!-- 5. Module Health Section -->
-        {% if shared_admin_module_health is defined and shared_admin_module_health is not empty %}
-            {% set health_labels = {
-                'mod_content': lang.management.content_management,
-                'mod_news': lang.management.news_management,
-                'mod_publication': lang.management.publication_management,
-                'mod_video_embed': lang.management.remote_videos,
-                'mod_category': lang.management.content_categories,
-                'mod_news_category': lang.management.news_categories,
-                'mod_publication_category': lang.management.publication_categories,
-                'mod_video_embed_category': lang.management.uzak_video_kategorisi
-            } %}
-            {% set health_modules = [
-                shared_admin_module_health.mod_content,
-                shared_admin_module_health.mod_news,
-                shared_admin_module_health.mod_publication,
-                shared_admin_module_health.mod_video_embed
-            ] %}
-            <section style="padding: 0 16px 24px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-                    <div style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase; color:#6d5f0f; font-weight:700;">
-                        {{ lang.management.module_health }}
-                    </div>
-                    <i class="bi bi-activity" style="font-size:14px; color:#7a7f87;"></i>
-                </div>
-                <div style="display:grid; gap:10px;">
-                    {% for item in health_modules %}
-                        {% set is_ready = item.ready %}
-                        {% set status_key = 'module_health_status_' ~ item.status %}
-                        <div style="border-radius:18px; padding:12px 13px; background:{% if is_ready %}linear-gradient(135deg, #edf9f0 0%, #e3f6e8 100%){% else %}linear-gradient(135deg, #fff4e8 0%, #ffe8d9 100%){% endif %}; border:1px solid {% if is_ready %}#c9e8d1{% else %}#f1d1b7{% endif %};">
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                                <div style="font-size:13px; font-weight:700; color:#1f2933;">
-                                    {{ attribute(health_labels, item.module) }}
-                                </div>
-                                <div style="font-size:11px; font-weight:700; padding:4px 8px; border-radius:999px; background:{% if is_ready %}#1f7a45{% else %}#b45309{% endif %}; color:#fff;">
-                                    {{ attribute(lang.management, status_key) }}
-                                </div>
-                            </div>
-                            {% if session.permissions.mod_user.acl is defined %}
-                                <div style="margin-top:10px; display:flex; justify-content:flex-end;">
-                                    {% if item.status == 'disabled' %}
-                                        <a href="{{ site.sadres }}management/module_status/{{ item.module }}/ready" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#1f7a45; color:#fff; font-size:11px; font-weight:700; text-decoration:none;">
-                                            {{ lang.management.module_health_enable }}
-                                        </a>
-                                    {% elseif not is_ready %}
-                                        <a href="{{ site.sadres }}management/module_repair/{{ item.module }}" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#fff; color:#265d3b; border:1px solid #9bcbac; font-size:11px; font-weight:700; text-decoration:none;">
-                                            {{ lang.management.module_health_repair }}
-                                        </a>
-                                    {% else %}
-                                        <a href="{{ site.sadres }}management/module_status/{{ item.module }}/disabled" style="display:inline-flex; align-items:center; justify-content:center; min-height:32px; padding:0 12px; border-radius:999px; background:#fff; color:#8a4b11; border:1px solid #dfb188; font-size:11px; font-weight:700; text-decoration:none;">
-                                            {{ lang.management.module_health_disable }}
-                                        </a>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                            {% if not is_ready %}
-                                {% if item.missing_modules is not empty %}
-                                    <div style="margin-top:8px; font-size:11px; line-height:1.4; color:#6b4423;">
-                                        <strong>{{ lang.management.module_health_missing_modules }}:</strong>
-                                        {% for module_name in item.missing_modules %}
-                                            {% if health_labels[module_name] is defined %}
-                                                {{ health_labels[module_name] }}
-                                            {% else %}
-                                                {{ module_name }}
-                                            {% endif %}{% if not loop.last %}, {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                                {% if item.missing_tables is not empty %}
-                                    <div style="margin-top:6px; font-size:11px; line-height:1.4; color:#6b4423;">
-                                        <strong>{{ lang.management.module_health_missing_tables }}:</strong>
-                                        {{ item.missing_tables|join(', ') }}
-                                    </div>
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    {% endfor %}
-                </div>
-            </section>
-        {% endif %}
+        <div class="nav-group{% if seo_active %} expanded{% endif %}" data-nav-group="seo">
+            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.seo_and_redirects }}">
+                <i class="bi bi-globe nav-item-icon"></i>
+                <span class="nav-item-label">{{ lang.management.seo_and_redirects }}</span>
+                <i class="bi bi-chevron-down group-indicator"></i>
+            </button>
+            <div class="nav-group-items">
+                {% if session.permissions.mod_seo.list is defined %}
+                    <a href="{{ site.saddress }}seo" class="nav-item {% if mod == 'mod_seo' and (act is not defined or act == 'index') %}active{% endif %}" data-nav-track="1" data-nav-id="mod_seo_list" data-nav-label="{{ lang.mod_seo.list }}">
+                        <i class="bi bi-google nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.mod_seo.list }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_seo.settings is defined %}
+                    <a href="{{ site.saddress }}seo/settings" class="nav-item {% if mod == 'mod_seo' and act == 'settings' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_seo_settings" data-nav-label="{{ lang.mod_seo.settings }}">
+                        <i class="bi bi-sliders2-vertical nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.mod_seo.settings }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_redirect.list is defined %}
+                    <a href="{{ site.saddress }}mod_redirect/list" class="nav-item {% if mod == 'mod_redirect' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_redirect" data-nav-label="{{ lang.management.redirect_management }}">
+                        <i class="bi bi-signpost-split-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.redirect_management }}</span>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
 
     </div>
 </aside>

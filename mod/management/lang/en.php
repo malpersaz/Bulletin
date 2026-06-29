@@ -1,17 +1,26 @@
 <?php
 $lang['management']=[
     '1'=>'User Panel',
-
-    // Main Navigation Menu
     'anasayfa' => 'Home',
     'dashboard' => 'Dashboard',
     'uyelik' => 'Membership',
+    'content_workspace' => 'Content Workspace',
     'content_and_page' => 'Content and Pages',
     'video_and_images' => 'Video and Images',
-  
-    // User Interface Elements
-
-    // Membership Submenu
+    'products_workspace' => 'Products Workspace',
+    'products' => 'Product Management',
+    'services' => 'Service Management',
+    'product_categories' => 'Product Categories',
+    'service_categories' => 'Service Categories',
+    'clients' => 'Client Management',
+    'references' => 'Reference Management',
+    'system_tools' => 'System Tools',
+    'recent_modules' => 'Recent Modules',
+    'pinned_modules' => 'Pinned Modules',
+    'module_search_placeholder' => 'Search modules...',
+    'pin_module' => 'Pin module',
+    'unpin_module' => 'Unpin module',
+    'recent_workspace_empty' => 'Recent modules will appear here',
     'uyeler' => 'Members',
     'uye_gruplari' => 'User Groups',
     'membership_setting' => 'Membership Settings',
@@ -20,16 +29,6 @@ $lang['management']=[
     'gallery_modulleri' => 'Gallery Modules',
     'dosya_modulleri' => 'File Modules',
     'locale_management' => 'Locale Management',
-    'system_tools' => 'System Tools',
-    'recent_modules' => 'Recent Modules',
-    'pinned_modules' => 'Pinned Modules',
-    'module_search_placeholder' => 'Search modules...',
-    'module_search_empty' => 'No modules found',
-    'pin_module' => 'Pin module',
-    'unpin_module' => 'Unpin module',
-    'recent_workspace_empty' => 'Recent modules will appear here',
-
-    // Content and Pages Submenu
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
     'publication_categories' => 'Publication Categories',
@@ -41,6 +40,8 @@ $lang['management']=[
     'news_management' => 'News Management',
     'publication_management' => 'Publication Management',
     'menu_management' => 'Menu Management',
+    'redirect_management' => 'Redirect Management',
+    'seo_and_redirects' => 'SEO and Redirects',
     'page_management' => 'Page Management',
     'file_management' => 'File Management',
     'service_guide' => 'Service Guide',
@@ -108,6 +109,10 @@ $lang['management']=[
     'module_health_enable' => 'Enable',
     'module_health_disable' => 'Disable',
     'module_health_repair' => 'Repair',
+    'module_health_all_clear' => 'All tracked modules are ready.',
+    'module_health_attention' => 'needs attention',
+    'module_health_ready_count' => 'ready',
     'yes' => 'Yes',
-    'no' => 'No'
+    'no' => 'No',
+    'start_menu' => 'Start Menu'
 ];

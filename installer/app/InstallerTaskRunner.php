@@ -79,7 +79,7 @@ class InstallerTaskRunner
             }
         }
 
-        $precomputedSampleResults = $this->enforceProjectSampleExclusions($selectedModules);
+        $precomputedSampleResults = $this->enforceProjectSampleExclusions($selectedModules, $sampleContent);
         $precomputedSampleResults = array_merge(
             $precomputedSampleResults,
             $this->enforceExplicitSampleChoice($selectedModules, $sampleContent)
@@ -339,8 +339,12 @@ class InstallerTaskRunner
         return $results;
     }
 
-    private function enforceProjectSampleExclusions(array $selectedModules)
+    private function enforceProjectSampleExclusions(array $selectedModules, $sampleContent)
     {
+        if ($sampleContent === 'yes') {
+            // If sample content is enabled, keep all default/sample content and category seeds.
+            return array();
+        }
         $selectedMap = array_fill_keys($selectedModules, true);
         $results = array();
         $db = new Database();
@@ -373,16 +377,16 @@ class InstallerTaskRunner
         $queries = array(
             "DELETE FROM mod_content WHERE user_id = '1' AND category_id IN (
                 SELECT child_rows.id FROM (
-                    SELECT child.id
-                    FROM mod_category AS child
-                    INNER JOIN mod_category AS root_rows
-                        ON child.parent_id = root_rows.id
-                    WHERE child.user_id = '1'
-                      AND child.root = 'n'
-                      AND root_rows.user_id = '1'
-                      AND root_rows.root = 'y'
-                      AND root_rows.seo = '#'
-                ) AS child_rows
+                     SELECT child.id
+                     FROM mod_category AS child
+                     INNER JOIN mod_category AS root_rows
+                         ON child.parent_id = root_rows.id
+                     WHERE child.user_id = '1'
+                       AND child.root = 'n'
+                       AND root_rows.user_id = '1'
+                       AND root_rows.root = 'y'
+                       AND root_rows.seo = '#'
+                 ) AS child_rows
             )",
         );
 
@@ -417,7 +421,7 @@ class InstallerTaskRunner
              WHERE user_id = '1'
                AND (
                     (root = 'y' AND seo IN ('English_Pages', 'Rûpelên_Kurdî', 'لاپەڕەکانی_کوردی', 'الصفحات_العربية', 'Deutsche_Seiten', 'Pages_Françaises', 'Svenska_Sidor', 'Türkçe_Sayfalar', 'Pelê_Zazakî'))
-                 OR (root = 'n' AND seo IN ('Contact', 'Têkilî', 'پەیوەندی', 'اتصل_بنا', 'Kontakt', 'İletişim', 'Îrtibat', 'About_Us', 'Derbarê_me', 'دەربارەی_ئێمە', 'من_نحن', 'Über_uns', 'À_propos', 'Om_oss', 'Hakkımızda', 'Ma_Heqa'))
+                 OR (root = 'n' AND seo IN ('about', 'contact', 'Contact', 'Têkilî', 'پەیوەندی', 'اتصل_بنا', 'Kontakt', 'İletişim', 'Îrtibat', 'About_Us', 'Derbarê_me', 'دەربarê_me', 'من_nuxn', 'Über_uns', 'À_propos', 'Om_oss', 'Hakkımızda', 'Ma_Heqa'))
                )",
         );
 

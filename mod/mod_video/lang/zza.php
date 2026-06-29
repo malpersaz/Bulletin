@@ -3,6 +3,7 @@
     'add' => 'Vîdeo Zêde Bike',
     'edit' => 'Vîdeoyê Biguhere',
     'list' => 'Lîsteya Vîdeoyan',
+    'video_management' => 'Rêveberiya Vîdewoyan',
     'information' => 'Agahdarî!',
     'oke' => 'Operasyon Serkeft!',
     'hata' => 'Çewtî Çêbû!',

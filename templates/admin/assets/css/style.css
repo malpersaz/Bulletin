@@ -373,6 +373,10 @@
   --md-sys-color-on-surface: #1C1B1F;
   --md-sys-color-on-surface-variant: #49454F;
   --md-sys-color-outline: #79747E;
+  --md-sys-color-blue: #0B57D0;
+  --md-sys-color-on-blue: #FFFFFF;
+  --md-sys-color-blue-container: #DCE8FF;
+  --md-sys-color-on-blue-container: #001D3A;
   --md-sys-elevation-1: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
   --nav-bar-height: 80px;
 }
@@ -423,9 +427,30 @@ body {
   z-index: 1;
   isolation: isolate;
   scroll-behavior: smooth;
-  scrollbar-width: none;
-  /* Hide scrollbar for mobile feel */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(103, 80, 164, 0.3) transparent;
 }
+
+/* Webkit Scrollbar styles for App Scroll Frame */
+.app-scroll-frame::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.app-scroll-frame::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.app-scroll-frame::-webkit-scrollbar-thumb {
+  background: rgba(103, 80, 164, 0.25);
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+.app-scroll-frame:hover::-webkit-scrollbar-thumb {
+  background: rgba(103, 80, 164, 0.5);
+}
+
 
 /* Explicit Mobile Overrides to prevent Simulator Leakage */
 @media (max-width: 1023px) {
@@ -493,6 +518,12 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 
+.site-title-font {
+  font-family: 'Marcellus', serif !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.02em;
+}
+
 .icon-btn {
   width: 48px;
   height: 48px;
@@ -509,7 +540,7 @@ body {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--primary-container, #EADDFF);
+  background: var(--md-sys-color-blue-container, #DCE8FF);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -621,8 +652,8 @@ body {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background: var(--md-sys-color-blue-container);
+  color: var(--md-sys-color-on-blue-container);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -636,8 +667,8 @@ body {
 }
 
 .fab-container.active .fab-large {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background: var(--md-sys-color-blue);
+  color: var(--md-sys-color-on-blue);
 }
 
 .fab-container.active #fabIcon {
@@ -1170,7 +1201,19 @@ body.selection-mode .card-checkbox {
   }
 }
 
-/* Legacy nav-item duplicate styles removed to prevent overrides */
+/* Making menu items taller and more touch-friendly */
+.nav-item {
+  min-height: 56px;
+  /* Taller touch target */
+  padding: 8px 16px;
+  border-radius: 12px;
+  /* Rouned corners */
+  margin-bottom: 4px;
+}
+
+.nav-item:active {
+  background-color: var(--md-sys-color-secondary-container);
+}
 
 .nav-drawer {
   position: fixed;
@@ -1184,10 +1227,10 @@ body.selection-mode .card-checkbox {
   z-index: 1100;
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-  border-radius: 0 16px 16px 0;
+  border-radius: 0 24px 24px 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 16px 0 40px rgba(10, 18, 28, 0.18);
   overflow: hidden;
 }
 
@@ -1206,8 +1249,10 @@ body.selection-mode .card-checkbox {
 }
 
 .drawer-title {
+  font-family: 'Marcellus', serif;
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   color: var(--md-sys-color-on-surface);
 }
 
@@ -1350,6 +1395,61 @@ body.selection-mode .card-checkbox {
   color: var(--md-sys-color-on-surface-variant);
 }
 
+.drawer-section {
+  margin-bottom: 16px;
+}
+
+.drawer-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+
+.drawer-shortcut-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.drawer-shortcut-card {
+  min-height: 82px;
+  padding: 12px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(245, 247, 250, 1) 100%);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface);
+  display: grid;
+  gap: 10px;
+  align-content: space-between;
+}
+
+.drawer-shortcut-card i {
+  font-size: 18px;
+  color: var(--md-sys-color-primary);
+}
+
+.drawer-shortcut-card span {
+  font-size: 13px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.drawer-shortcut-card.active {
+  background: linear-gradient(180deg, rgba(231, 239, 255, 1) 0%, rgba(214, 228, 255, 1) 100%);
+  border-color: rgba(76, 113, 255, 0.22);
+}
+
+.drawer-recent-list {
+  display: grid;
+  gap: 8px;
+}
+
 .drawer-root-links {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1390,8 +1490,7 @@ body.selection-mode .card-checkbox {
   border-radius: 16px;
   cursor: pointer;
   color: var(--md-sys-color-on-surface-variant);
-  font-weight: 700;
-  font-size: 14px;
+  font-weight: 500;
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
@@ -1473,7 +1572,6 @@ body.selection-mode .card-checkbox {
   color: var(--md-sys-color-on-surface-variant);
   text-align: left;
   font: inherit;
-  font-weight: 700;
 }
 
 .nav-group-header:active {
@@ -1512,17 +1610,52 @@ body.selection-mode .card-checkbox {
   margin-top: 2px;
 }
 
-/* Dark mode adjustments for gradients */
-[data-theme="dark"] .drawer-search-result {
-  background: linear-gradient(180deg, rgba(33, 31, 38, 0.98) 0%, rgba(28, 27, 31, 1) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2) !important;
+.drawer-health-card {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  background: var(--md-sys-color-surface);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-[data-theme="dark"] .drawer-root-links .nav-root-item {
-  background: linear-gradient(180deg, rgba(33, 31, 38, 0.96) 0%, rgba(28, 27, 31, 1) 100%) !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+.drawer-health-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 10px;
+}
+
+.drawer-health-list {
+  display: grid;
+  gap: 8px;
+}
+
+.drawer-health-pill {
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.drawer-health-pill strong {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.drawer-health-pill.is-ready {
+  background: #ecf8ef;
+  color: #1f6f3d;
+}
+
+.drawer-health-pill.is-warning {
+  background: #fff3e8;
+  color: #9a4d0e;
 }
 
 
@@ -1862,6 +1995,19 @@ body.selection-mode .card-checkbox {
   position: relative;
   overflow: hidden;
   padding: 8px;
+}
+
+.wizard-image-file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
 }
 
 .wizard-image-shell {
@@ -2959,6 +3105,95 @@ body.reorder-active .m3-list-card {
   font-weight: 700;
 }
 
+/* Floating Action Button (FAB) */
+.main-fab {
+  position: fixed;
+  bottom: 80px;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  right: 18px;
+  width: 58px;
+  height: 58px;
+  border-radius: 20px;
+  background-color: var(--md-sys-color-blue, #0B57D0);
+  color: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(11, 87, 208, 0.3);
+  z-index: 995;
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s, box-shadow 0.3s;
+}
+
+.main-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(11, 87, 208, 0.4);
+}
+
+.main-fab:active {
+  transform: translateY(0) scale(0.95);
+}
+
+/* Global Standard Toolbar Optimization (Phone-First) */
+.standard-toolbar .toolbar-item {
+  gap: 0;
+  min-width: 44px;
+  padding: 8px 4px;
+}
+
+.standard-toolbar .toolbar-item span {
+  display: none;
+}
+
+.standard-toolbar #toolbarDelete.active {
+  color: #b3261e !important;
+  background: rgba(179, 38, 30, 0.12) !important;
+}
+
+.standard-toolbar #toolbarDelete.active i {
+  filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24)) !important;
+}
+
+/* Windows Start Button inside standard-toolbar */
+.standard-toolbar .toolbar-start-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary, #6750a4);
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(103, 80, 164, 0.3);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .standard-toolbar .toolbar-start-btn {
+  box-shadow: 0 3px 8px rgba(208, 188, 255, 0.35);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.standard-toolbar .toolbar-start-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(103, 80, 164, 0.4);
+}
+
+.standard-toolbar .toolbar-start-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 2px 4px rgba(103, 80, 164, 0.2);
+}
+
+/* Alignment correction for top headline when hamburger is removed globally */
+.top-app-bar .headline {
+  margin-left: 0 !important;
+}
+
 /* Selected card highlight for mod_content cards */
 .m3-card.content-card.selected,
 .content-card.selected {
@@ -3152,7 +3387,7 @@ body.reorder-active .m3-list-card {
 
 #user-menu-sheet .context-action-item .context-icon {
   background: transparent;
-  color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-blue);
   width: 24px;
   height: 24px;
 }
@@ -3166,8 +3401,8 @@ body.reorder-active .m3-list-card {
   height: 48px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
+  background: var(--md-sys-color-blue-container);
+  color: var(--md-sys-color-on-blue-container);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -2,7 +2,7 @@
 /**
  * Featured Content/Headline Management - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_headline
  * @version 1.0.0
  * @author  AKM Software

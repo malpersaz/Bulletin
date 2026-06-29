@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'Published on %s',
     'home' => 'Homepage',
+    'navigation' => 'Navigation',
     'download' => 'Download',
     'login' => 'Login',
     'register' => 'Register',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'Language',
     'messages' => 'Messages',
     'my_account' => 'My Account',
+    'menu_title' => 'Menu',
     'change_avatar' => 'Change Avatar',
     'logout' => 'Logout',
     'dark_mode' => 'Dark Mode',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'Contact',
     'info' => 'Info',
     'find_us' => 'Find Us',
+    'rss_feed' => 'RSS Feed',
+    'sitemap' => 'Sitemap',
+    'site_logo_alt' => 'Site logo',
+    'producer_logo_alt' => 'AKM Software logo',
     'map_available_soon' => 'Map Available Soon',
     'publish_date' => 'Publish Date',
+    'category_label' => 'Category',
     'updated_date' => 'Updated Date',
     'min_read' => 'min read',
     'enlarge_image' => 'Enlarge image',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'Share',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'Email',
+    'file_not_found' => 'File not found',
 ];
 
 # Search
@@ -118,7 +127,8 @@ $lang['index']['mod_pictures'] = [
 ];
 
 $lang['index']['mod_pictures']['latest_pictures'] = [
-    '1' => 'Photos'
+    '1' => 'Photos',
+    '2' => 'Latest Pictures'
 ];
 
 $lang['index']['mod_attachment'] = [
@@ -180,7 +190,7 @@ $lang['index']['mod_gallery'] = [
     '6' => 'Full Screen View'
 ];
 
-# colorbox plugini
+# colorbox plugin
 $lang['index']['colorbox'] = [
     '1' => 'Showing {current} of {total} images.',
     '2' => 'Back',
@@ -196,6 +206,7 @@ $lang['index']['menu'] = [
     'home' => 'Homepage',
     'about' => 'About',
     'contact' => 'Contact',
+    'footer_links' => 'Footer Links',
     'language' => 'Language',
     'messages' => 'Messages',
     'my_account' => 'My Account',
@@ -277,7 +288,7 @@ $lang['index']['avatar_modal'] = [
 ];
 
 $lang['index']['copyright'] = '© All Rights Reserved.';
-$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>';
+$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>';
 # template.php
 $lang['index']['template'] = [
     'title' => 'Theme Gallery',
@@ -346,6 +357,22 @@ $lang['index']['mod_publication']['latest_publications'] = [
     '2' => 'All Publications',
     '3' => 'No published content is available yet.',
 ];
+$lang['index']['mod_publication']['comments'] = [
+    'title' => 'Comments',
+    'add_title' => 'Add Comment',
+    'placeholder' => 'Your comment',
+    'full_name' => 'Full name',
+    'submit' => 'Submit Comment',
+    'warning_label' => 'Warning',
+    'rules' => 'Comments containing insults, abuse, or unreadable formatting may not be approved.',
+];
 $lang['index']['mod_user_pm'] = [
     'send_message' => 'Send Message',
+];
+
+$lang['index']['error'] = [
+    '1' => 'Error',
+    'method' => ['ad' => 'Invalid Method', 'mesaj' => 'Method %s not found'],
+    'mod' => ['ad' => 'Module Error', 'mesaj' => 'Module %s not found'],
+    'not' => ['ad' => 'Page Not Found', 'mesaj' => 'Requested page %s not found'],
 ];

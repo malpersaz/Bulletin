@@ -7,7 +7,7 @@
 {% set username = ctx_get('username') %}
 {% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
 {% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
-{% set author_url = site.sadres ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') %}
+{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') %}
 {% set author_description = (author.about is defined and author.about is not empty ? author.about|striptags|trim : '') %}
 {% if author_description == '' and d is defined and d.description is defined and d.description is not empty %}
     {% set author_description = d.description|striptags|trim %}
@@ -15,13 +15,13 @@
 {% if author_description == '' %}
     {% set author_description = site.description %}
 {% endif %}
-{% set author_share_image = site.radres ~ 'mod_settings/logo.png' %}
+{% set author_share_image = site.iaddress ~ 'mod_settings/logo.png' %}
 {% if author.user_image is defined and author.user_image is not empty %}
-    {% set author_share_image = site.radres ~ 'mod_user/' ~ author.user_image %}
+    {% set author_share_image = site.iaddress ~ 'mod_user/' ~ author.user_image %}
 {% endif %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.sadres }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
+    <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
 {% endblock %}
 
 {% block title %}
@@ -56,7 +56,7 @@
 
 {% block css_custom %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/author.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/author.css?v={{ "now"|date("U") }}">
 {% endblock %}
 
 
@@ -65,11 +65,11 @@
     <div class="container author-shell">
         <ol class="author-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
             <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.sadres }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
                 <meta itemprop="position" content="1" />
             </li>
             <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.sadres }}authors"><span itemprop="name">{{ lang.index.mod_publication.authors }}</span></a>
+                <a itemprop="item" href="{{ site.saddress }}authors"><span itemprop="name">{{ lang.index.mod_publication.authors }}</span></a>
                 <meta itemprop="position" content="2" />
             </li>
             <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -84,7 +84,7 @@
                     <div class="author-identity-inner">
                         <div class="author-avatar">
                             {% if author.user_image is defined and author.user_image is not empty %}
-                                <img src="{{ site.radres }}mod_user/{{ author.user_image }}" alt="{{ author_name }}" loading="lazy">
+                                <img src="{{ site.iaddress }}mod_user/{{ author.user_image }}" alt="{{ author_name }}" loading="lazy">
                             {% else %}
                                 <span>{{ author_initials }}</span>
                             {% endif %}
@@ -104,7 +104,7 @@
                                 </span>
                                 {% if username is not empty %}
                                     <span class="meta-divider">·</span>
-                                    <a class="author-social-link author-pm" href="{{ site.sadres }}dm/{{ username|url_encode }}">
+                                    <a class="author-social-link author-pm" href="{{ site.saddress }}dm/{{ username|url_encode }}">
                                         <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message }}</span>
                                     </a>
                                 {% endif %}
@@ -131,11 +131,11 @@
                                         <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
                                     </span>
                                     {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty %}
-                                        <a class="publication-category" href="{{ site.sadres }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
+                                        <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
                                     {% endif %}
                                 </div>
                                 <h2 class="publication-title">
-                                    <a href="{{ site.sadres }}publication/{{ publication.seo }}">{{ publication_title }}</a>
+                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication_title }}</a>
                                 </h2>
                             </article>
                         {% endfor %}
@@ -154,11 +154,11 @@
                                             </li>
                                         {% elseif s == 1 %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ site.sadres }}author/{{ username }}">{{ s }}</a>
+                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}">{{ s }}</a>
                                             </li>
                                         {% else %}
                                             <li class="page-item">
-                                                <a class="page-link" href="{{ site.sadres }}author/{{ username }}/{{ s }}">{{ s }}</a>
+                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}/{{ s }}">{{ s }}</a>
                                             </li>
                                         {% endif %}
                                     {% endfor %}

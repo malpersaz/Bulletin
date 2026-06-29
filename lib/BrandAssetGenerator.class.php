@@ -5,7 +5,7 @@ class BrandAssetGenerator
     private $output_dir;
 
     private $generated_files = [
-        'logo_path' => 'logo.png',
+        'site_icon' => 'logo_square.png',
         'favicon_path' => 'favicon.ico',
         'favicon_96' => 'favicon-96x96.png',
         'apple_touch_icon' => 'apple-touch-icon.png',
@@ -40,7 +40,25 @@ class BrandAssetGenerator
             throw new Exception('invalid_uploaded_file');
         }
 
-        $source = new Imagick($file['tmp_name']);
+        return $this->_generate($file['tmp_name'], $site_meta, $existing_files);
+    }
+
+    public function generateFromLocalFile($filePath, array $site_meta = [], array $existing_files = [])
+    {
+        if (!extension_loaded('imagick')) {
+            throw new Exception('requires_imagick');
+        }
+
+        if (!file_exists($filePath)) {
+            throw new Exception('missing_upload');
+        }
+
+        return $this->_generate($filePath, $site_meta, $existing_files);
+    }
+
+    private function _generate($sourcePath, array $site_meta = [], array $existing_files = [])
+    {
+        $source = new Imagick($sourcePath);
         $source->setImageBackgroundColor(new ImagickPixel('transparent'));
         $source = $source->mergeImageLayers(Imagick::LAYERMETHOD_MERGE);
 
@@ -54,7 +72,7 @@ class BrandAssetGenerator
         $this->ensureOutputDirectory();
         $this->deleteManagedFiles($existing_files);
 
-        $this->writeLogoPng($source);
+        $this->writeSquarePng($source, 512, $this->generated_files['site_icon']);
         $this->writeSquarePng($source, 96, $this->generated_files['favicon_96']);
         $this->writeSquarePng($source, 180, $this->generated_files['apple_touch_icon']);
         $this->writeSquarePng($source, 192, $this->generated_files['manifest_192']);
@@ -94,22 +112,6 @@ class BrandAssetGenerator
         if (!is_writable($this->output_dir)) {
             throw new Exception('output_dir_not_writable');
         }
-    }
-
-    private function writeLogoPng(Imagick $source)
-    {
-        $logo = clone $source;
-        $logo->setImageFormat('png');
-        $logo->setImageAlphaChannel(Imagick::ALPHACHANNEL_SET);
-
-        $max_dimension = 1024;
-        if ($logo->getImageWidth() > $max_dimension || $logo->getImageHeight() > $max_dimension) {
-            $logo->thumbnailImage($max_dimension, $max_dimension, true, true);
-        }
-
-        $logo->writeImage($this->output_dir . $this->generated_files['logo_path']);
-        $logo->clear();
-        $logo->destroy();
     }
 
     private function writeSquarePng(Imagick $source, $size, $file_name)

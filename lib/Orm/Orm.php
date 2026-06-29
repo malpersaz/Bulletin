@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
+ * Koberz Content Management System
  * Web: www.koberz.com
  * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 13.04.2011 - 20:33
+ * User: Kobim
+ * Date: 13.04.2011 - 20:33
  */
 
 interface Orm_interface
@@ -99,8 +99,8 @@ abstract class ORM extends Database implements Orm_interface
                 return $this;
             }
             throw new OrmException(
-                "'" . $name . "' Fonksiyon Not Found\n" .
-                    "'" . $name . "' Fonksiyonu Bulunamadı!"
+                "'" . $name . "' Function Not Found\n" .
+                    "'" . $name . "' Function Not Found!"
             );
         } catch (OrmException $e) {
             $e->show();
@@ -117,8 +117,8 @@ abstract class ORM extends Database implements Orm_interface
     private function _call_exists($result, $value)
     {
         /*try {
-            // COlom içinde _ olunca problem çıkıyor
-            // user_id gibi escape etmek için
+            // Column names with underscores need escaping.
+            // Escape names such as user_id before building the condition.
             $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), Obuilder::$valid_after_key, $this->_orm_coloms));
             $d = '#_((' . $wdesen . ')+)#';
             $cikti = preg_replace($d, '\_$1', $result[2]);
@@ -142,12 +142,12 @@ abstract class ORM extends Database implements Orm_interface
     private function _call_where($result, $value)
     {
         try {
-            // COlom içinde _ olunca problem çıkıyor
-            // user_id gibi escape etmek için
+            // Column names with underscores need escaping.
+            // Escape names such as user_id before building the condition.
             $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), Obuilder::$valid_after_key, $this->_orm_coloms));
             $d = '#_?((' . $wdesen . ')+)#';
             $cikti = preg_replace($d, '\_$1', $result[2]);
-            // Eğer Başında \_ Olursa sorun çıkmasın diye \_ ile başlayanları siliyoruz.
+            // Remove a leading escaped underscore so the condition remains valid.
             $dd = '#^\\\_(.)#';
             $cikti = preg_replace($dd, '$1', $cikti);
             $where = Obuilder::where($cikti, $value, $this->_orm_coloms, $this->_orm_table);
@@ -160,7 +160,7 @@ abstract class ORM extends Database implements Orm_interface
                 try {
 
 
-                    // COlom içinde _ olunca problem çıkıyor
+                    // Column names with underscores need escaping.
                     $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), $this->_orm_coloms));
 
                     $cikti=preg_replace("@(".$wdesen.")@", '$1\\', $result['2']);
@@ -209,7 +209,7 @@ abstract class ORM extends Database implements Orm_interface
         return false;
     }
 
-    // Eğer getResultOne ile çekilen bir veri varsa
+    // Sync the current object when getResultOne has loaded a record.
     public function sync($results = false)
     {
         if ($results === false) {
@@ -217,7 +217,7 @@ abstract class ORM extends Database implements Orm_interface
                 logla(print_r($this, true), "sync");
                 throw new OrmException(
                     "Result Not Found in Sync\n" .
-                        "Sync Edilecek Sonuç Bulunamadı!"
+                        "Result to be synced not found!"
                 );
             }
             foreach ($this->_orm_coloms as $value) {
@@ -230,7 +230,7 @@ abstract class ORM extends Database implements Orm_interface
             logla(print_r($this, true), "sync1");
             throw new OrmException(
                 "Result Not Found in Sync\n" .
-                    "Sync Edilecek Sonuç Bulunamadı!"
+                    "Result to be synced not found!"
             );
         }
         foreach ($this->_orm_coloms as $value) {
@@ -299,7 +299,7 @@ abstract class ORM extends Database implements Orm_interface
     }
 
 
-    #Save Fonksiyonu
+    // Save the current ORM record.
     public function save($sync = false)
     {
         //OrmEvent::run('_before_insert');
@@ -323,7 +323,7 @@ abstract class ORM extends Database implements Orm_interface
         return false;
     }
 
-    #Update Fonksiyonu
+    // Update the current ORM record.
     public function update($key = null)
     {
         /*if ($key === NULL) {
@@ -331,8 +331,8 @@ abstract class ORM extends Database implements Orm_interface
         }*/
 
         if ($key !== null) {
-            // if $key  check key is exists?
-            // $key tanımlanmışmı?
+            // if $key check key is exists?
+            // Is $key defined?
             try {
                 Obuilder::check_key_exists($key, $this->_orm_coloms);
             } catch (OrmException $e) {
@@ -404,6 +404,7 @@ abstract class ORM extends Database implements Orm_interface
         foreach ($this->_orm_coloms as $key) {
             $this->$key = null;
         }
+        return $this;
     }
 
     public function check_object_exists($key)
@@ -411,7 +412,7 @@ abstract class ORM extends Database implements Orm_interface
         if (isset($this->$key) === false) {
             throw new OrmException(
                 " $key object is Undefined! - Update Key Not Found!\n" .
-                    " $key Objesi tanımlanmamış - Update Key'i bulunamadı!"
+                    " $key object is undefined - Update Key not found!"
             );
             return false;
         }

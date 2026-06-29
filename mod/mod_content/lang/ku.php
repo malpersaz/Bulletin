@@ -2,7 +2,7 @@
 /**
  * Content Management Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_content
  * @version 1.0.0
  * @author  AKM Software
@@ -317,6 +317,18 @@ $lang['mod_content'] = [
             'change_image' => 'Wêne biguherîne',
             'editor_placeholder' => 'Dest bi nivîsandina naveroka xwe bikin...',
         ],
+        'image' => [
+            'drop_title' => 'Wêneyekî kaşke ser vir an jî',
+            'drop_description' => 'Bar bike, pêve bike an jî wêneyekî berde vir.',
+            'upload_link' => 'lê bar bike',
+            'link_separator' => 'AN JÎ',
+            'link_placeholder' => 'Lînka wêne binivîse',
+            'link_action' => 'Bîne',
+            'hint_loading' => 'Wêne tê anîn...',
+            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
+            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
+            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
+        ],
         'messages' => [
             'success_sim' => 'Naverok bi serketî hat afirandin! (Simulasyon)',
             'video_success_sim' => 'Vîdeo bi serketî hat zêdekirin! (Simulasyon)',
@@ -343,6 +355,7 @@ $lang['mod_content'] = [
         'edit' => 'Biguhere',
         'gallery' => 'Operasyonên Galeriyê',
         'files' => 'Operasyonên Pelan',
+        'video' => 'Vîdeo li Naverokê Zêde Bike',
         'status' => 'Rewşê Biguherîne',
         'delete' => 'Rake',
         'publish' => 'Biweşîne',
@@ -359,20 +372,22 @@ $lang['mod_content'] = [
         'delete_success' => 'Naverok hat jêbirin!',
     ],
 
-    'mock' => [
-        'titles' => [
-            "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",
-            "Bernameya Festîvala Çand û Hunerê ya Amedê hat eşkerekirin",
-            "Komxebata Rojnamegeriya Herêmî bi dawî bû",
-            "Nîşeyên li ser Têkiliya Aqilê Çêkirî û Medyayê",
-            "Derbasbûna ji Rojnamegeriya Kevneşopî bo Medyaya Dijîtal",
-            "Amarên Bikaranîna Medyaya Civakî 2024",
-            "Kurteya Teknolojiya Heftane: Çi Qewimî?",
-            "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
-            "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a Rojname hat nûkirin"
-        ],
-        'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
-        'authors' => [],
+    'hero_slider_add' => 'Bişîne Sliderê',
+    'hero_slider_remove' => 'Ji Sliderê Rake',
+    'hero_slider_added' => 'Naverok bi serkeftî bo Slider hate şandin.',
+    'hero_slider_removed' => 'Naverok ji Slider hate rakirin.',
+    'hero_slider_error' => 'Rewşa Slider nehat nûkirin!',
+    'hero_slider_badge' => 'Slider',
+    'hero_slider_unavailable' => 'Sitûna sliderê hîna nehatiye sazkirin.',
+
+    'picker' => [
+        'file' => 'Pelê Heyî Hilbijêre',
+    ],
+
+    'ajax' => [
+        'database_error' => 'Çewtiya Database',
+        'record_not_found' => 'Naverok nehat dîtin!',
+        'unknown_type' => 'Cureyê peywendiya nenas',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûkirin',
     ],
 ];

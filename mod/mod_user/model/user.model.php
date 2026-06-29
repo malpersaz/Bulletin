@@ -42,18 +42,26 @@ class user_model extends ORM
         $this->lang = Load::lang('mod_user');
         // Theme
         $this->tema = Load::lib('AdminTemplate');
+        // Site
+        $this->site = Kayit::getir('site_config');
     }
 
     // Login
     public function login($username, $password)
     {
         $usermodel = Load::model('mod_user');
-        $usermodel->select(['id', 'username', 'password', 'group_id', 'status', 'email', 'name', 'last_name', 'image', 'sid'])->where_username_and_password($username, md5($password))->limit(1);
+        $usermodel->select(['id', 'username', 'password', 'group_id', 'status', 'email', 'name', 'last_name', 'image', 'sid'])->where_username($username)->limit(1);
         $usermodel->getResultOne(TRUE, TRUE);
         // If user exists
         if ($usermodel->getSize() !== 0) {
             // Sync data
             $usermodel->sync();
+            if (!$this->_password_matches($password, $usermodel->password)) {
+                $this->_hata_log($username);
+                return False;
+            }
+
+            $this->_upgrade_password_hash($usermodel, $password);
             // If user status is 'y' (yes/active)
             if ($usermodel->status === 'y') {
                 // If user IP protection is enabled (only specific IP can login)
@@ -99,8 +107,54 @@ class user_model extends ORM
             $this->errors[] = $this->lang['mod_user']['error']['account_not_active'];
             return False;
         }
-        $this->_hata_log($username, $password);
+        $this->_hata_log($username);
         return False;
+    }
+
+    private function _password_matches($plain_password, $stored_password)
+    {
+        if (!is_string($plain_password) || $plain_password === '') {
+            return False;
+        }
+
+        $stored_password = is_string($stored_password) ? $stored_password : '';
+        if ($stored_password === '') {
+            return False;
+        }
+
+        if (function_exists('password_get_info') && function_exists('password_verify')) {
+            $info = password_get_info($stored_password);
+            if (!empty($info['algo'])) {
+                return password_verify($plain_password, $stored_password);
+            }
+        }
+
+        $legacy_hash = md5($plain_password);
+        if (function_exists('hash_equals')) {
+            return hash_equals((string)$stored_password, $legacy_hash);
+        }
+
+        return (string)$stored_password === $legacy_hash;
+    }
+
+    private function _upgrade_password_hash($usermodel, $plain_password)
+    {
+        if (!function_exists('password_hash') || !function_exists('password_get_info')) {
+            return;
+        }
+
+        $stored_password = is_string($usermodel->password) ? $usermodel->password : '';
+        if ($stored_password === '') {
+            return;
+        }
+
+        $info = password_get_info($stored_password);
+        if (!empty($info['algo'])) {
+            return;
+        }
+
+        $usermodel->password = password_hash($plain_password, PASSWORD_DEFAULT);
+        $usermodel->update('id');
     }
 
     // Set unread PMs as cookies
@@ -119,11 +173,11 @@ class user_model extends ORM
     }
 
     // Log failed login
-    private function _hata_log($username = NULL, $password = NULL)
+    private function _hata_log($username = NULL)
     {
         $log = Load::model('mod_user.log');
         $log->username = $username;
-        $log->password = $password;
+        $log->password = '';
         $log->ip = $_SERVER['REMOTE_ADDR'];
         $log->error = 'y';
         $log->save();
@@ -163,11 +217,10 @@ class user_model extends ORM
         unset($db);
     }
 
-    // Set roles as session
     private function _setPermissions($roll)
     {
+        $val = [];
         if (is_array($roll)) {
-            $val = [];
             foreach ($roll as $rol) {
                 $val[$rol['mod_name']][$rol['roll_name']] = True;
             }
@@ -246,6 +299,12 @@ class user_model extends ORM
     public function hasPermission($mod, $permission, $mesaj, $nasil = NULL)
     {
         if (Roll::hasPermission($mod, $permission) === False) {
+            if ($this->session->has('group_id')) {
+                $this->_loadPermissions($this->session->get('group_id'));
+                if (Roll::hasPermission($mod, $permission) === True) {
+                    return True;
+                }
+            }
             $this->error = $mesaj;
             $this->hatamesaj($nasil);
             return False;
@@ -256,6 +315,11 @@ class user_model extends ORM
     // Return error message
     private function hatamesaj($nasil = NUll)
     {
+        if ($this->checklogin() === False) {
+            Helper::yonlendir($this->site['address'], 0);
+            return;
+        }
+
         if ($nasil == '1') {
             $this->_hata();
         } elseif ($nasil == '2') {

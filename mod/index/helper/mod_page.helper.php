@@ -25,7 +25,7 @@ class mod_page_helper extends indexBase
             // Hejmara xwendinê zêde bike (IP Bazlı)
             $this->_update_view_count('mod_page', $sayfa->id);
 
-            $this->_parent_id_pages($page->id);
+            $this->_parent_id_pages($sayfa->id);
 
 
             if ($sayfa->category_id !== 0) {
@@ -46,7 +46,7 @@ class mod_page_helper extends indexBase
 
 
             //print_r($sayfa);
-            $this->_mod_ust_list('mod_page', $sayfa->parent_id, ['id', 'name', 'seo', 'order', 'lang'], 'order');
+            $this->_mod_ust_list('mod_page', $sayfa->parent_id, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
         } else {
             return $this->_404();
         }

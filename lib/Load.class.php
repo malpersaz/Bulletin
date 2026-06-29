@@ -2,14 +2,14 @@
 
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/23/11 - 7:12 PM
- * Telif Hakkı:AKM Software
+ * User: a.k.mutlu
+ * Date: 4/23/11 - 7:12 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Sınıfı: Load
+ * Class: Load
  * File: Load.class.php
- * Açıklama:  Model,Helper,Model Loader
+ * Description: Model, helper, and module loader
  */
 
 class LoadFileException extends Exception
@@ -26,10 +26,34 @@ class LoadFileException extends Exception
 
     public function show()
     {
+        $indexLang = $this->loadIndexLanguage();
+        if (!isset($indexLang['index']['file_not_found'])) {
+            throw new RuntimeException('Missing index language key: index.file_not_found');
+        }
+
         echo sprintf($this->mesaj, $this->type);
         echo "<br>";
-        echo "File Not Found:\n";
+        echo $indexLang['index']['file_not_found'] . ":\n";
         echo "<b>" . $this->filePath . "</b>";
+    }
+
+    private function loadIndexLanguage()
+    {
+        if (Kayit::varmi('index-lang') !== False) {
+            return Kayit::getir('index-lang');
+        }
+
+        $currentLang = Kayit::getir('lang');
+        $file = mod_dir . 'index' . DS . lang_dir . $currentLang . '.php';
+
+        if (file_exists($file) === FALSE) {
+            throw new RuntimeException('Missing index language file: ' . $file);
+        }
+
+        require($file);
+        Kayit::ekle('index-lang', $lang);
+
+        return $lang;
     }
 }
 
@@ -61,9 +85,9 @@ class ModException extends Exception
 
     public function show()
     {
-        header("HTTP/1.1 404 Not Found");
-        echo "<h2>Mod Exception</h2>";
-        echo $this->getMessage();
+        require_once(lib_dir . 'AmedError.class.php');
+        $modName = str_replace(['_mod', ' Class Not Found!'], '', $this->getMessage());
+        AmedError::mod($modName);
     }
 }
 
@@ -72,7 +96,7 @@ class Load
 {
 
 
-    // Model Helper Yükler
+    // Loads a helper file.
     public static function helperfile($val)
     {
 
@@ -159,7 +183,7 @@ class Load
         if (in_array($val, $tmp) === FALSE) {
             $file = lib_dir . $val . '.class.php';
             try {
-                self::loadfile($file, 'Kütüphane');
+                self::loadfile($file, 'Library');
             } catch (LoadFileException $e) {
                 $e->show();
                 exit();
@@ -167,8 +191,8 @@ class Load
             $tmp[] = $val;
             Kayit::yenile('libfile', $tmp);
             if (!class_exists($val)) {
-                throw new ClassException($val, 'Kütüphane', $file);
-                exit("<h2>Class Exception</h2>Kütüphane File <b>" . $val . "</b> Class Not Defined<br>
+                throw new ClassException($val, 'Library', $file);
+                exit("<h2>Class Exception</h2>Library File <b>" . $val . "</b> Class Not Defined<br>
                 File:<b>" . $file . "</b>");
             }
         }
@@ -179,7 +203,7 @@ class Load
         unset($file);
     }
 
-    // Kütüphane Loader
+    // Library Loader
     public static function lib($val)
     {
         if (Kayit::varmi($val . '-lib') === False) {
@@ -247,14 +271,15 @@ class Load
         if (Kayit::varmi($val . '-mod') === False) {
             $file = mod_dir . $val . DS . 'index.php';
             try {
-                self::loadfile($file, 'Modül');
+                self::loadfile($file, 'Module');
             } catch (LoadFileException $e) {
-                $e->show();
+                require_once(lib_dir . 'AmedError.class.php');
+                AmedError::mod($val);
                 exit();
             }
             $class = $val . '_mod';
             if (!class_exists($class)) {
-                throw new ModException($class . " Sınıfı Bulunamadı!");
+                throw new ModException($class . " Class Not Found!");
                 return FALSE;
             }
             $sonuc = new $class();
@@ -277,16 +302,36 @@ class Load
         }
     }
 
-    // Loads Library File
+    // Loads Language File
     public static function lang($val)
     {
+        global $lang;
         if (Kayit::varmi($val . '-lang') === False) {
             $tmp = Kayit::varmi('langfile') === FALSE ? [] : Kayit::getir('langfile');
             if (in_array($val, $tmp) === FALSE) {
                 $file = mod_dir . $val . DS . lang_dir . Kayit::getir('lang') . '.php';
+                
+                // Fallback to default lang or English if requested language file is missing
                 if (file_exists($file) === FALSE) {
-                    exit(sprintf(" %s File Not Found %s", "Dil", $file));
+                    $defaultLang = Kayit::varmi('default_lang') ? Kayit::getir('default_lang') : 'en';
+                    $file = mod_dir . $val . DS . lang_dir . $defaultLang . '.php';
+                    
+                    if (file_exists($file) === FALSE) {
+                        $file = mod_dir . $val . DS . lang_dir . 'en.php';
+                        
+                        if (file_exists($file) === FALSE) {
+                            $langFiles = glob(mod_dir . $val . DS . lang_dir . '*.php');
+                            if (!empty($langFiles)) {
+                                $file = $langFiles[0];
+                            } else {
+                                require_once(lib_dir . 'AmedError.class.php');
+                                AmedError::lang($file);
+                                exit();
+                            }
+                        }
+                    }
                 }
+                
                 require_once($file);
                 $tmp[] = $val;
                 Kayit::yenile('langfile', $tmp);
@@ -319,8 +364,7 @@ class Load
             require_once $file;
             return TRUE;
         }
-        // throw new Exception(" %s File Not Found %s", "Dil", $file);
-        throw new LoadFileException(" %s File Not Found", $type, $file);
+        throw new LoadFileException("%s", $type, $file);
         return FALSE;
     }
 

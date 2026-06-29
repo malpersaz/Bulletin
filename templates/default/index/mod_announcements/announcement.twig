@@ -9,10 +9,10 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.home }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
                 </li>
                 <li>
-                    <a href="{{ site.sadres }}announcements"
+                    <a href="{{ site.saddress }}announcements"
                        title="{{ lang.index.mod_announcements.1 }}">{{ lang.index.mod_announcements.1 }}</a>
                 </li>
                 <li class="active">{{ d.name }}</li>
@@ -25,18 +25,18 @@
                         <div class="col-md-6 col-md-6 col-12">{{ include("index/paylas.twig") }}</div>
                         <div class="col-md-6 col-md-6 col-12">
                             <div class="akm_tools">
-                                <a href="{{ site.sadres }}tools/saveHtml/mod_announcements/{{ d.id }}"
+                                <a href="{{ site.saddress }}tools/saveHtml/mod_announcements/{{ d.id }}"
                                    class="saveHtml"
                                    data-bs-toggle="tooltip"
                                    data-placement="top"
                                    title="{{ lang.index.mod_gallery.1 }}"></a>
-                                <a href="{{ site.sadres }}tools/saveText/mod_announcements/{{ d.id }}"
+                                <a href="{{ site.saddress }}tools/saveText/mod_announcements/{{ d.id }}"
                                    class="saveText"
                                    data-bs-toggle="tooltip"
                                    data-placement="top"
                                    title="{{ lang.index.mod_gallery.2 }}"></a>
                                 {% if res is not empty %}
-                                    <a href="{{ site.sadres }}tools/saveAll/mod_announcements/{{ d.id }}/{{ res.id }}"
+                                    <a href="{{ site.saddress }}tools/saveAll/mod_announcements/{{ d.id }}/{{ res.id }}"
                                        class="saveAll"
                                        data-bs-toggle="tooltip"
                                        data-placement="top"
@@ -62,7 +62,7 @@
                         {% endif %}
                         {% if d.image != '' %}
                             <div class="thumbnail">
-                                <img src="{{ site.radres }}mod_announcements/{{ d.image }}"
+                                <img src="{{ site.iaddress }}mod_announcements/{{ d.image }}"
                                      parent_id="{{ d.name }},{{ d.keywords }}">
                             </div>
                         {% endif %}
@@ -83,18 +83,18 @@
                                         <div class="owl-carousel">
                                             {% for r in res %}
                                                 <div class="item">
-                                                    <a href="{{ site.radres }}mod_gallery/mod_announcements/original/{{ r.url }}"
+                                                    <a href="{{ site.iaddress }}mod_gallery/mod_announcements/original/{{ r.url }}"
                                                        data-bs-toggle="lightbox"
                                                        data-gallery="multiimages"
                                                        data-title="{{ r.name }}"
                                                        data-parent="#mod_gallery">
-                                                        <img src="{{ site.radres }}mod_gallery/mod_announcements/thumb/{{ r.url }}"
+                                                        <img src="{{ site.iaddress }}mod_gallery/mod_announcements/thumb/{{ r.url }}"
                                                              parent_id="{{ r.name }}">
                                                     </a>
-                                                    <a href="{{ site.adres }}tools/gallery_image_save/mod_announcements/{{ d.id }}/{{ r.id }}"
+                                                    <a href="{{ site.address }}tools/gallery_image_save/mod_announcements/{{ d.id }}/{{ r.id }}"
                                                        class="dll"
                                                        title="{{ lang.index.mod_gallery.5 }}"></a>
-                                                    <a href="{{ site.radres }}mod_gallery/mod_announcements/original/{{ r.url }}"
+                                                    <a href="{{ site.iaddress }}mod_gallery/mod_announcements/original/{{ r.url }}"
                                                        class="tdll"
                                                        data-bs-toggle="lightbox"
                                                        data-gallery="multiimages"
@@ -114,7 +114,7 @@
                                     <span class="glyphicon glyphicon-download" aria-hidden="true"></span> {{ lang.index.mod_announcements.9 }}
                                 </p>
                                 {% for do in dosya %}
-                                    <a href="{{ site.adres }}tools/saveFile/mod_announcements/{{ d.id }}/{{ do.id }}"
+                                    <a href="{{ site.address }}tools/saveFile/mod_announcements/{{ d.id }}/{{ do.id }}"
                                        class="list-group-item">{{ do.original_name }}</a>
                                 {% endfor %}
                             </div>

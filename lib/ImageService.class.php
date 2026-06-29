@@ -250,6 +250,6 @@ class ImageService
         
         // Construct image path based on module structure
         $site = Kayit::getir('site_config');
-        return $site['radres'] . $module_name . $size . $image_url;
+        return $site['iaddress'] . $module_name . $size . $image_url;
     }
 }

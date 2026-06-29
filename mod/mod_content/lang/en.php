@@ -2,7 +2,7 @@
 /**
  * Content Management Module - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_content
  * @version 1.0.0
  * @author  AKM Software
@@ -323,6 +323,18 @@ $lang['mod_content'] = [
             'change_image' => 'Change Image',
             'editor_placeholder' => 'Start writing your content here...',
         ],
+        'image' => [
+            'drop_title' => 'Drag an image here',
+            'drop_description' => 'Upload, paste, or drop an image.',
+            'upload_link' => 'upload a file',
+            'link_separator' => 'OR',
+            'link_placeholder' => 'Paste image link',
+            'link_action' => 'Import',
+            'hint_loading' => 'Importing image...',
+            'hint_invalid_type' => 'Only image files are supported here.',
+            'hint_no_drop_data' => 'No usable image was found in the dropped content.',
+            'hint_remote_failed' => 'The image could not be imported from that source.',
+        ],
         'messages' => [
             'success_sim' => 'Content successfully created! (Simulation)',
             'video_success_sim' => 'Video successfully added! (Simulation)',
@@ -348,6 +360,7 @@ $lang['mod_content'] = [
         'edit' => 'Edit',
         'gallery' => 'Gallery Actions',
         'files' => 'File Actions',
+        'video' => 'Add Video to Content',
         'status' => 'Change Status',
         'delete' => 'Delete',
         'delete_error' => 'Deletion failed!',
@@ -368,20 +381,22 @@ $lang['mod_content'] = [
         'delete_success' => 'Content deleted!',
     ],
 
-    'mock' => [
-        'titles' => [
-            "New Era Begins in Kurdish Press",
-            "Diyarbakir Culture and Arts Festival Schedule Announced",
-            "Local Journalism Workshop Concluded",
-            "Notes on AI and Media Relationship",
-            "Transition from Traditional Journalism to Digital Media",
-            "Social Media Usage Statistics 2024",
-            "Weekly Tech Summary: What Happened?",
-            "Writers Union Elects New Board",
-            "Photography Workshop Registrations Started",
-            "Rojname Mobile App Updated"
-        ],
-        'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
-        'authors' => [],
+    'hero_slider_add' => 'Send to Slider',
+    'hero_slider_remove' => 'Remove from Slider',
+    'hero_slider_added' => 'Sent to slider.',
+    'hero_slider_removed' => 'Removed from slider.',
+    'hero_slider_error' => 'Slider update failed.',
+    'hero_slider_badge' => 'Slider',
+    'hero_slider_unavailable' => 'Slider column is not installed yet.',
+
+    'picker' => [
+        'file' => 'Select Existing File',
+    ],
+
+    'ajax' => [
+        'database_error' => 'Database Error',
+        'record_not_found' => 'Content item not found!',
+        'unknown_type' => 'Unknown relation type',
+        'relation_updated' => 'Relation successfully updated',
     ],
 ];

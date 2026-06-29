@@ -2,7 +2,9 @@
 class Url {
 	public $path, $link, $segments, $host, $url;
 	function __construct() {
-		$this->link = Req::Url_Clear ( $_SERVER ['REQUEST_URI'] );
+		$requestUri = $_SERVER ['REQUEST_URI'] ?? '';
+		$requestPath = parse_url ( $requestUri, PHP_URL_PATH );
+		$this->link = Req::Url_Clear ( $requestPath );
 		$this->link = preg_replace ( "|" . sub_dir . "(.*)|", "\\1", str_replace ( "//", "/", $this->link ) );
 		$this->path = explode ( '/', $this->link );
 		$this->host = isset ( $_SERVER ['HTTP_HOST'] ) ? "http://" . Req::Url_Clear ( $_SERVER ['HTTP_HOST'] ) : "https://" . Req::Url_Clear ( $_SERVER ['HTTPS_HOST'] );

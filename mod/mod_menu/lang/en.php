@@ -2,7 +2,7 @@
 /**
  * Menu Module - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software
@@ -25,6 +25,18 @@ $lang['mod_menu'] = [
     'edit' => 'Edit Menu',
     'information' => 'Information',
 
+    // === Legacy Message Keys (used by index.php) ===
+    'message' => [
+        'oke' => [
+            'add' => 'Menu successfully added!',
+            'edit' => 'Menu successfully updated!',
+        ],
+        'error' => [
+            'add' => 'Failed to add menu!',
+            'edit' => 'Failed to update menu!',
+        ],
+    ],
+
     // === Navigation & Actions ===
     'actions' => [
         'add' => 'Add',
@@ -41,6 +53,9 @@ $lang['mod_menu'] = [
         'bulk_actions' => 'Bulk Actions',
         'gallery' => 'Gallery',
         'file' => 'Files',
+        'unlock_reorder' => 'Unlock Reorder Mode',
+        'lock_reorder' => 'Lock Reorder Mode',
+        'publish_toggle' => 'Publish Status',
     ],
 
     // === System Messages ===
@@ -50,12 +65,18 @@ $lang['mod_menu'] = [
             'updated' => 'Menu successfully updated!',
             'deleted' => 'Menu successfully deleted!',
             'reordered' => 'Menu order updated!',
+            'published' => 'Menu successfully published!',
+            'unpublished' => 'Menu successfully unpublished!',
         ],
         'error' => [
             'not_added' => 'Failed to add menu!',
             'not_updated' => 'Failed to update menu!',
             'not_deleted' => 'Failed to delete menu!',
             'not_found' => 'The specified menu record could not be found!',
+        ],
+        'warning' => [
+            'delete' => 'Are you sure you want to delete this menu?',
+            'reorder' => 'Are you sure you want to change the menu order?',
         ],
         'info' => [
             'edit_double_click' => 'Double-click the menu you want to edit',
@@ -115,13 +136,40 @@ $lang['mod_menu'] = [
         'language' => 'Language',
         'name' => 'Menu Name',
         'url' => 'URL',
-        'parent_menu' => 'Parent Menu',
+        'parent_menu' => 'Submenu',
         'order' => 'Order',
         'target' => 'Target',
         'status' => 'Status',
         'icon' => 'Icon',
         'access_level' => 'Access Level',
         'actions' => 'Actions',
+        'parent_id' => 'Submenu',
+        'html' => 'HTML',
+        'acl_id' => 'Access Permission',
+        'file' => 'File',
+    ],
+
+    'admin' => [
+        'columns' => [
+            'language' => 'Language',
+            'name' => 'Menu Name',
+            'url' => 'URL',
+            'file' => 'File',
+            'parent_id' => 'Submenu',
+            'target' => 'Open Mode',
+            'status' => 'Publish Status',
+            'html' => 'HTML',
+            'icon' => 'Icon',
+            'acl_id' => 'Access Permission',
+        ],
+        'select_value' => [
+            'target_e' => 'New Window (_blank)',
+            'target_h' => 'Same Window (_self)',
+        ],
+        'radio' => [
+            'publish_yes' => 'Published',
+            'publish_no' => 'Draft',
+        ],
     ],
 
 
@@ -165,6 +213,7 @@ $lang['mod_menu'] = [
         'delete_multiple' => 'Are you sure you want to delete :count selected menus?',
         'publish' => 'Are you sure you want to publish this menu?',
         'unpublish' => 'Are you sure you want to unpublish this menu?',
+        'reorder_single' => 'Do you want to move this menu to its new location?',
     ],
 
     // === Helper Text ===
@@ -178,11 +227,11 @@ $lang['mod_menu'] = [
 
     // === Placeholders ===
     'placeholders' => [
-        'menu_name' => 'Enter menu name...',
-        'menu_url' => 'https://example.com or /page',
-        'menu_description' => 'Menu description (optional)',
-        'html_class' => 'CSS class names',
-        'icon_class' => 'Bootstrap icon class',
+        'menu_name' => 'Type the menu name',
+        'menu_url' => '/sample-link or https://example.com',
+        'menu_file' => 'menu-partial.twig',
+        'menu_html' => 'Custom HTML content',
+        'icon_class' => 'bi-house',
     ],
 
     // === Empty States ===
@@ -210,6 +259,9 @@ $lang['mod_menu'] = [
         'general' => 'An error occurred. Please try again.',
         'network' => 'Network error. Please check your internet connection.',
         'server' => 'Server error. Please try again later.',
+        'record' => 'The specified menu record could not be found.',
+        'parent_selection_required' => 'You must choose which menu this item will be attached to.',
+        'parent_language_mismatch' => 'Parent menu language must match the menu language.',
     ],
 
     // === AJAX Response Messages ===
@@ -239,4 +291,13 @@ $lang['mod_menu'] = [
         'moderate_edit' => 'You do not have permission to edit other users\' menus',
         'moderate_delete' => 'You do not have permission to delete other users\' menus',
     ],
+];
+$lang['mod_menu']['slots'] = [
+    'header' => 'Header Menu',
+    'footer' => 'Footer Menu',
+];
+$lang['mod_menu']['parent_labels'] = [
+    'select_parent' => 'Select parent menu',
+    'language_root' => 'Top level under :language',
+    'system_root' => 'System root',
 ];

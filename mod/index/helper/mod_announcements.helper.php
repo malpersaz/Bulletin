@@ -61,7 +61,15 @@ class mod_announcements_helper extends indexBase
     public function announcements()
     {
         $announcement = Load::model('mod_announcements');
-        $sql = "SELECT YEAR(MAX(created_at))  AS max_yil,YEAR(MIN(created_at))  AS min_yil FROM `mod_announcements` WHERE 1";
+        $db = Load::lib('Database');
+        $isSqlite = ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false);
+
+        if ($isSqlite) {
+            $sql = "SELECT strftime('%Y', MAX(created_at)) AS max_yil, strftime('%Y', MIN(created_at)) AS min_yil FROM `mod_announcements` WHERE 1";
+        } else {
+            $sql = "SELECT YEAR(MAX(created_at))  AS max_yil,YEAR(MIN(created_at))  AS min_yil FROM `mod_announcements` WHERE 1";
+        }
+
         $announcement->fetch_array($sql);
         $announcement->getResultOne();
         $this->tema->ctx_set('arsiv_yil', $announcement->toArray());
@@ -72,7 +80,6 @@ class mod_announcements_helper extends indexBase
 
         $d['description'] = $this->lang['index']['mod_announcements']['5'];
         $this->tema->ctx_set('d', $d);
-        $this->tema->tpl('index/mod_announcements/announcements');
 
 
         if (Req::is_Post('yil') and Req::is_Post('ay')) {
@@ -89,26 +96,51 @@ class mod_announcements_helper extends indexBase
             }
             $announcement->select('id,name,created_at,summary');
             if ($yil !== NULL && $ay !== NULL) {
-                $announcement->where(
-                    "YEAR(created_at)='" . $yil . "' AND
-                 MONTH(created_at) ='" . $ay . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'"
-                );
+                if ($isSqlite) {
+                    $announcement->where(
+                        "strftime('%Y', created_at)='" . $yil . "' AND
+                        cast(strftime('%m', created_at) as integer)=" . intval($ay) . " AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                } else {
+                    $announcement->where(
+                        "YEAR(created_at)='" . $yil . "' AND
+                        MONTH(created_at) ='" . $ay . "' AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                }
                 $announcement->gR();
             } elseif ($yil !== NULL) {
-                $announcement->where(
-                    "YEAR(created_at)='" . $yil . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'"
-                );
+                if ($isSqlite) {
+                    $announcement->where(
+                        "strftime('%Y', created_at)='" . $yil . "' AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                } else {
+                    $announcement->where(
+                        "YEAR(created_at)='" . $yil . "' AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                }
                 $announcement->gR();
             } elseif ($ay !== NULL) {
-                $announcement->where(
-                    "MONTH(created_at) ='" . $ay . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'"
-                );
+                if ($isSqlite) {
+                    $announcement->where(
+                        "cast(strftime('%m', created_at) as integer)=" . intval($ay) . " AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                } else {
+                    $announcement->where(
+                        "MONTH(created_at) ='" . $ay . "' AND
+                        lang='" . $this->site['lang'] . "' AND
+                        status = 'y'"
+                    );
+                }
                 $announcement->gR();
             } else {
                 $announcement->where_status_and_lang('y', $this->site['lang']);
@@ -120,7 +152,7 @@ class mod_announcements_helper extends indexBase
                 $this->tema->ctx_set('bulunamadi', True);
             }
 
-            // Ay ve yılı temaya gönderelim
+            // Send month and year to template
             if ($yil !== NULL) {
                 $this->tema->ctx_set('yil', $yil);
             }

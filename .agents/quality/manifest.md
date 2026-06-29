@@ -15,6 +15,8 @@ It is the operational companion to:
 - `naming-guard`
 - `template-guard`
 - `cleanup-guard`
+- `modernization-guard`
+- `parity-guard`
 - `policy-gate`
 
 ## Source Prompts
@@ -25,6 +27,8 @@ It is the operational companion to:
 - `/.agents/quality/prompts/naming-guard.md`
 - `/.agents/quality/prompts/template-guard.md`
 - `/.agents/quality/prompts/cleanup-guard.md`
+- `/.agents/quality/prompts/modernization-guard.md`
+- `/.agents/quality/prompts/parity-guard.md`
 - `/.agents/quality/prompts/policy-gate.md`
 
 ## Scope Model
@@ -79,7 +83,9 @@ The following are usually `Warning` conditions:
 4. `naming-guard` reviews naming in the diff.
 5. `template-guard` reviews UI-layer strings.
 6. `cleanup-guard` reviews leftovers.
-7. `policy-gate` consolidates final findings.
+7. `modernization-guard` reviews alignment with the modernization standard.
+8. `parity-guard` reviews synchronization and parity with sibling repositories.
+9. `policy-gate` consolidates final findings.
 
 ## Standard Decision Rule
 

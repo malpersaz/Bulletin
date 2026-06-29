@@ -13,6 +13,5 @@ class mod_document_model extends ORM
         public $title;
         public $keywords;
         public $description;
-        public $menu;
         public $user_id;
     }

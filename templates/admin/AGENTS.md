@@ -2,9 +2,9 @@
 
 Inherit the repository root `AGENTS.md` and `templates/AGENTS.md`.
 
-## Admin Surface
+## Product Surface
 
-The admin panel is a phone-only admin surface.
+The admin panel is a phone-only product surface.
 
 - Design for phone-sized app shells only.
 - Validate admin UI only in phone-sized viewports or the repository phone simulator shell.

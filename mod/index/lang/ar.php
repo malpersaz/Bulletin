@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'نشر في %s',
     'home' => 'الصفحة الرئيسية',
+    'navigation' => 'التنقل',
     'download' => 'تحميل',
     'login' => 'تسجيل الدخول',
     'register' => 'التسجيل',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'اللغة',
     'messages' => 'الرسائل',
     'my_account' => 'حسابي',
+    'menu_title' => 'القائمة',
     'change_avatar' => 'تغيير الصورة الرمزية',
     'logout' => 'تسجيل الخروج',
     'dark_mode' => 'الوضع الليلي',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'اتصل',
     'info' => 'معلومات',
     'find_us' => 'اعثر علينا',
+    'rss_feed' => 'خلاصة RSS',
+    'sitemap' => 'خريطة الموقع',
+    'site_logo_alt' => 'شعار الموقع',
+    'producer_logo_alt' => 'شعار AKM Software',
     'map_available_soon' => 'الخريطة متاحة قريباً',
     'publish_date' => 'تاريخ النشر',
+    'category_label' => 'الفئة',
     'updated_date' => 'تاريخ التحديث',
     'min_read' => 'دقائق قراءة',
     'enlarge_image' => 'تكبير الصورة',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'مشاركة',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'البريد الإلكتروني',
+    'file_not_found' => 'لم يتم العثور على الملف',
     'search' => [
         'searched_word' => 'أدخل الكلمة المطلوب البحث عنها!',
         'search' => 'بحث',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'لم يتم العثور على صور في هذه الفئة!',
         'latest_pictures' => [
             1 => 'الصور',
+            2 => 'أحدث الصور',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'الصفحة الرئيسية',
         'about' => 'حول',
         'contact' => 'اتصل',
+        'footer_links' => 'روابط التذييل',
         'language' => 'اللغة',
         'messages' => 'الرسائل',
         'my_account' => 'حسابي',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'رفع',
     ],
     'copyright' => '© .جميع الحقوق محفوظة',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'معرض القوالب',
         'desc' => 'معرض القوالب - الإعداد والتحكم',
@@ -290,9 +301,9 @@ $lang['index'] = [
             11 => 'ديسمبر',
         ],
         'latest_news' => [
-            1 => 'News',
-            2 => 'View All',
-            3 => 'No published news is available yet.',
+            1 => 'الأخبار',
+            2 => 'عرض الكل',
+            3 => 'لا توجد أخبار منشورة متاحة حالياً.',
         ],
     ],
     'mod_publication' => [
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'جميع المنشورات',
             3 => 'لا يوجد محتوى منشور متاح حالياً.',
         ],
+        'comments' => [
+            'title' => 'التعليقات',
+            'add_title' => 'إضافة تعليق',
+            'placeholder' => 'تعليقك',
+            'full_name' => 'الاسم الكامل',
+            'submit' => 'إرسال التعليق',
+            'warning_label' => 'تنبيه',
+            'rules' => 'قد لا تتم الموافقة على التعليقات التي تحتوي على إساءة أو إهانات أو تنسيق غير مقروء.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'إرسال رسالة',
+    ],
+    'error' => [
+        '1' => 'خطأ',
+        'method' => ['ad' => 'طريقة غير صالحة', 'mesaj' => 'الطريقة %s غير موجودة'],
+        'mod' => ['ad' => 'خطأ في الموديول', 'mesaj' => 'الموديول %s غير موجود'],
+        'not' => ['ad' => 'الصفحة غير موجودة', 'mesaj' => 'الصفحة المطلوبة %s غير موجودة'],
     ],
 ];

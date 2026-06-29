@@ -1,34 +1,125 @@
-<?php 
+<?php
+if (!defined('AKM_LOADED')) {
+    die('Direct access to this file is not allowed.');
+}
+
 $lang['mod_imagecategories'] = [
-    'buttons' => [
-        'yes' => 'Erê',
-        'no' => 'Na',
+    'add' => 'Kategoriyê Resim Cı Zêde Kere',
+    'edit' => 'Kategoriyê Resim Vurnêne',
+    'list' => 'Kategoriyê Resim',
+    'remove_record' => 'Şıma ra qebul o ke ena kategoriyê resim besternê?',
+    'remove_image' => 'Şıma ra qebul o ke ena resim ra birêne?',
+    'empty_state' => 'Heta niya kategoriyê resim cı zêde nêbiyo.',
+    'message' => [
+        'success' => [
+            'add' => 'Kategoriyê resim bi serkewtiş cı zêde biyo.',
+            'edit' => 'Kategoriyê resim bi serkewtiş nû biyo.',
+            'delete' => 'Kategoriyê resim bi serkewtiş besteriyo.',
+            'reordered' => 'Rêza kategoriyê resim nû biya.',
+            'image_removed' => 'Resimê kategoriyê resim racnê.',
+        ],
+        'error' => [
+            'add' => 'Kategoriyê resim cı zêde nêbiyo.',
+            'edit' => 'Kategoriyê resim nû nêbiyo.',
+        ],
     ],
-    'remove_record' => 'Tu bawer î ku dixwazî vê qeydê jêbibî?',
-    'ok' => 'Operasyon bi serkeftî qediya.',
+    'errors' => [
+        'record' => 'Kategoriyê resim ya diyarkerdışi nêvine.',
+        'delete_failed' => 'Kategoriyê resim besterne nêbiyo.',
+        'parent_self' => 'Kategoriyek nêşkeno xo bibo serkategorî.',
+        'parent_selection_required' => 'Kerem kerê yew serkategori weçine.',
+        'language_root_parent_locked' => 'Kategoriyê koka ziwan gereke koka pergalê de bimano.',
+        'parent_language_mismatch' => 'Ziwanê serkategori gereke ziwanê kategori ra yew bıbo.',
+        'parent_cycle' => 'Kategori nêşkena binê xo ya binê binkategoriyanê xo de bışiyo.',
+        'menu_parent_not_found' => 'Serê menuyê weçinite peyda nêbiyo.',
+        'menu_language_mismatch' => 'Ziwanê serê menu gereke ziwanê kategori ra yew bıbo.',
+        'order_update_failed' => 'Rêza kategori nû nêbiya.',
+        'image_remove_failed' => 'Resimê kategori nêracnê.',
+    ],
+    'parent_labels' => [
+        'system_root' => 'Koka pergalê',
+        'language_root' => 'Koka :language',
+    ],
+    'button' => [
+        'add' => 'Cı Zêde Kere',
+        'edit' => 'Vurnêne',
+        'delete' => 'Bestere',
+        'cancel' => 'Bıtexelne',
+        'save' => 'Qeyd Kere',
+        'remove' => 'Racne',
+    ],
+    'validator' => [
+        'required' => 'Qadê %s ra venga meke.',
+        'length' => '%s gerek o ke miyanê %s u %s karakteran de bibo.',
+        'unique' => 'Erzişê %s xora est. Kerem ke %sê bîn hilweçine.',
+        'inarray' => 'Qadê %s tenya nê erzişan qebul keno: %s.',
+    ],
+    'roll' => [
+        'ad' => 'Rolê İdarekerdışê Kategoriyê Resim',
+        'add' => 'Şıma şenê kategoriyê resim cı zêde bikerê',
+        'edit' => 'Şıma şenê kategoriyê resim vurnayê',
+        'delete' => 'Şıma şenê kategoriyê resim besterê',
+        'list' => 'Şıma şenê idarekerdışê kategoriyê resim bıvinê',
+        'moderate_edit' => 'Şıma şenê kategoriyê resim yê kesê bîn vurnayê',
+        'moderate_delete' => 'Şıma şenê kategoriyê resim yê kesê bîn besterê',
+    ],
+    'role_errors' => [
+        'add' => 'Destûrê to yê cı zêdekerdışê kategoriyê resim çıniyo.',
+        'edit' => 'Destûrê to yê vurnayışê kategoriyê resim çıniyo.',
+        'delete' => 'Destûrê to yê besterkerdışê kategoriyê resim çıniyo.',
+        'list' => 'Destûrê to yê dîtışê idarekerdışê kategoriyê resim çıniyo.',
+        'moderate_edit' => 'Tu nêşkenî kategoriyê resim yê kesê bîn vurnayî.',
+        'moderate_delete' => 'Tu nêşkenî kategoriyê resim yê kesê bîn besterî.',
+    ],
+    'status' => [
+        'root' => 'Kok',
+        'nested' => 'Bınkategorî',
+    ],
+    'admin' => [
+        'columns' => [
+            'id' => 'ID',
+            'lang' => 'Ziwan',
+            'name' => 'Namey Kategoriyî',
+            'content' => 'Şınasnayışê Kılm',
+            'parent_id' => 'Kategoriya Ser',
+            'order' => 'Rêz',
+            'root' => 'Dımayışê Kokî',
+            'seo' => 'SEO URL',
+            'title' => 'Sernamey Meta',
+            'keywords' => 'Kelimey Meta',
+            'description' => 'Şınasnayışê Meta',
+            'image' => 'Resim',
+            'menu' => 'Serê Menuyî',
+            'acl_id' => 'Kontrolê Gihiştişî',
+        ],
+        'radio' => [
+            'root_y' => 'Weke kokê avakerdışi bıkar bıne',
+            'root_n' => 'Listayan de bımocne',
+        ],
+    ],
+    'form' => [
+        'basics' => 'Bingehê Kategoriyî',
+        'structure' => 'Avakerdış u Dımayış',
+        'seo' => 'Detayê SEO',
+        'publishing' => 'Têkiliyê Weşanî',
+        'image_help' => 'Bo listayê resim u menuyan resimê kategori barkerê.',
+        'parent_none' => 'Kategoriyê asta ser',
+        'menu_none' => 'Tıştek menu çê meke',
+        'acl_none' => 'Gihiştişê umumî',
+    ],
+    'list_ui' => [
+        'add_cta' => 'Bıerzê',
+        'delete_cta' => 'Bestere',
+        'empty_cta' => 'Kategoriyê averên cı bıvıraze',
+        'select_record' => 'Verê kategoriya yew hilweçine.',
+        'delete_title' => 'Kategoriyê bestere',
+        'delete_confirm_button' => 'Erê, bestere',
+        'delete_cancel_button' => 'Bıtexelne',
+        'network_error' => 'Daxwaz nehat şandin. Kerem ke girêdayışê xo kontrol ke.',
+        'unlock_reorder' => 'Rêzkırdışi Ake',
+        'lock_reorder' => 'Rêzkırdışi Kilit Ke',
+        'mode_unlocked' => 'Moda rêzkırdışi akerde biya.',
+        'reorder_title' => 'Rêza kategori nû ke',
+        'reorder_confirm' => 'To wazenê na kategoriya caê newey ra bibere?',
+    ],
 ];
-$lang['mod_imagecategories']['role_errors'] = [
-    'add' => 'Mafê te yê afirandina beşan tune ye.',
-    'edit' => 'Mafê te yê guhertina beşan tune ye.',
-    'delete' => 'Mafê te yê jêbirina beşan tune ye.',
-    'list' => 'Mafê te yê dîtina lîsteyê tune ye.',
-    'moderate_edit' => 'Mafê te yê guhertina beşên kesên din tune ye.',
-    'moderate_delete' => 'Mafê te yê jêbirina beşên kesên din tune ye.',
-];
-$lang['mod_imagecategories']['admin']['columns'] = [
-    'language' => 'Ziman',
-    'name' => 'Navê Galeriyê',
-    'parent_id' => 'Beşê Sereke',
-    'order' => 'Rêz',
-    'seo' => 'Lînka SEO',
-    'title' => 'Sernav (SEO)',
-    'keywords' => 'Mifteyên SEO',
-    'description' => 'Danasîn (SEO)',
-    'root' => 'Kategoriya Sereke',
-];
-$lang['mod_imagecategories']['validator'] = [
-    'required' => 'Tika ye, zeviya %s vala mehêle',
-    'length' => '%s divê di navbera %s û %s karakteran de be',
-    'inarray' => 'Zeviya %s tenê dikare nirxên \' %s \' qebûl bike',
-];
-?>

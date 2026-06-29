@@ -1,5 +1,5 @@
 <!-- Footer CSS -->
-<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/footer.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ "now"|date("U") }}">
 
 <footer class="site-footer mt-auto py-5">
 	<div class="container">
@@ -8,16 +8,16 @@
 			<div class="col-md-5 col-lg-4">
 				<h5 class="fw-bold mb-3 d-flex align-items-center">
                     {% if site.logo_path is defined and site.logo_path is not empty %}
-                        <img src="{{ site.radres }}mod_settings/{{ site.logo_path }}" alt="Logo" height="30" class="me-2 d-inline-block">
+                        <img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" alt="Logo" height="30" class="me-2 d-inline-block">
                     {% endif %}
                     <span class="brand-text-gothic" style="font-size: 1.5rem !important;">{{ site.title }}</span>
                 </h5>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
                 <div class="mt-4 d-flex gap-3 feeds-area">
-                    <a href="{{ site.adres }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="RSS Feed">
+                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="RSS Feed">
                         <i class="bi bi-rss-fill text-warning"></i> RSS
                     </a>
-                    <a href="{{ site.adres }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="Sitemap">
+                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="Sitemap">
                         <i class="bi bi-diagram-3-fill text-info"></i> Sitemap
                     </a>
                 </div>

@@ -352,11 +352,11 @@ class VideoManager {
             if (this.selectedStatus === 'y') {
                 // Currently published -> show "Unpublish"
                 publishIcon.className = 'bi bi-eye-slash-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.unpublish : 'Unpublish';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.unpublish : 'Neweşîne';
             } else {
                 // Currently draft -> show "Publish"
                 publishIcon.className = 'bi bi-eye-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.publish : 'Publish';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.publish : 'Biweşîne';
             }
         }
     }
@@ -401,8 +401,8 @@ window.deleteSelected = function () {
         showCancelButton: true,
         confirmButtonColor: '#ba1a1a',
         cancelButtonColor: '#6e7881',
-        confirmButtonText: VIDEO_LANG.confirm_yes || 'Yes',
-        cancelButtonText: VIDEO_LANG.confirm_no || 'No'
+        confirmButtonText: VIDEO_LANG.confirm_yes || 'Erê',
+        cancelButtonText: VIDEO_LANG.confirm_no || 'Na'
     }).then((result) => {
         if (result.isConfirmed) {
             const formData = new FormData();
@@ -446,8 +446,8 @@ window.handleContextAction = function (action) {
                 showCancelButton: true,
                 confirmButtonColor: '#ba1a1a',
                 cancelButtonColor: '#6e7881',
-                confirmButtonText: VIDEO_LANG.confirm_yes || 'Yes',
-                cancelButtonText: VIDEO_LANG.confirm_no || 'No'
+                confirmButtonText: VIDEO_LANG.confirm_yes || 'Erê',
+                cancelButtonText: VIDEO_LANG.confirm_no || 'Na'
             }).then((result) => {
                 if (result.isConfirmed) {
                     const formData = new FormData();
@@ -498,8 +498,8 @@ window.toggleVideoStatus = function (id, currentStatus) {
         showCancelButton: true,
         confirmButtonColor: '#6750a4',
         cancelButtonColor: '#6e7881',
-        confirmButtonText: VIDEO_LANG.confirm_yes || 'Yes',
-        cancelButtonText: VIDEO_LANG.confirm_no || 'No'
+        confirmButtonText: VIDEO_LANG.confirm_yes || 'Erê',
+        cancelButtonText: VIDEO_LANG.confirm_no || 'Na'
     }).then((result) => {
         if (result.isConfirmed) {
             const formData = new FormData();

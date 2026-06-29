@@ -152,7 +152,7 @@
 			</div>
 			<script>
 				setTimeout(() => {
-					window.location.href = "{{ site.sadres }}mod_user/panel";
+					window.location.href = "{{ site.saddress }}mod_user/panel";
 				}, 2000);
 			</script>
 		{% else %}
@@ -260,7 +260,7 @@
 						<div class="image-preview-container" id="avatarPreviewContainer">
 							{% if d.image is defined and d.image != '' %}
 								<div id="image-container" style="display: flex; flex-direction: column; align-items: center;">
-									<img src="{{ site.radres }}mod_user/{{ d.image }}" id="avatarPreview" alt="Avatar">
+									<img src="{{ site.iaddress }}mod_user/{{ d.image }}" id="avatarPreview" alt="Avatar">
 									<div style="text-align: center;">
 										<button type="button" class="m3-btn-outlined" onclick="deleteImage('{{ d.id }}')" style="color: var(--md-sys-color-error); border-color: var(--md-sys-color-error); font-size: 18px; padding: 8px; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
 											<i class="bi bi-trash"></i>
@@ -350,7 +350,7 @@
 	</style>
 	{% if oke is not defined %}
 		<div class="m3-final-bar">
-				<a href="{{ site.sadres }}mod_user/panel" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+				<a href="{{ site.saddress }}mod_user/panel" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 					<i class="bi bi-x-lg"></i>
 					<span class="sr-only">{{ lang.mod_user.button.cancel }}</span>
 				</a>
@@ -411,7 +411,7 @@
                     const formData = new FormData();
                     formData.append('id', id);
 
-                    fetch("{{ site.adres }}mod_user/delete_image", {
+                    fetch("{{ site.address }}mod_user/delete_image", {
                         method: "POST",
                         body: formData
                     })

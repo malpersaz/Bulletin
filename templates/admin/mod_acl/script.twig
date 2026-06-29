@@ -7,12 +7,12 @@ mod_acl_table_ajax.grid={};
 mod_acl_table_ajax.akm = {
     {% if session.permissions.mod_acl.gallery is defined %}
     processGallery: function (id) {
-        window.location = '{{site.adres}}mod_gallery/list/mod_acl/' + id;
+        window.location = '{{site.address}}mod_gallery/list/mod_acl/' + id;
     },
     {% endif %}
     {% if session.permissions.mod_acl.file is defined %}
     processFile: function (id) {
-        window.location = '{{site.adres}}mod_attachment/list/mod_acl/' + id;
+        window.location = '{{site.address}}mod_attachment/list/mod_acl/' + id;
     },
     {% endif %}
     {% if session.permissions.mod_acl.sil is defined %}
@@ -37,7 +37,7 @@ mod_acl_table_ajax.akm = {
                         // Send Request
                         $.ajax({
                             type: "POST",
-                            url: "{{site.adres}}mod_acl/delete",
+                            url: "{{site.address}}mod_acl/delete",
                             data: deteleString,
                             success: function (msg) {
                                 if (msg == 'Oke') {
@@ -66,7 +66,7 @@ mod_acl_table_ajax.akm = {
 
     {% if session.permissions.mod_acl.edit is defined %}
     processEdit: function (id) {
-        window.location = '{{site.adres}}mod_acl/edit/' + id;
+        window.location = '{{site.address}}mod_acl/edit/' + id;
     },
     {% endif %}
 
@@ -155,13 +155,13 @@ mod_acl_table_ajax.gridAction = {
                 ],
                 "pageLength": 10, // default record count per page
                 "ajax": {
-                    "url": "{{site.adres}}mod_acl/datatable_json" // ajax source
+                    "url": "{{site.address}}mod_acl/datatable_json" // ajax source
                 },
                 "order": [
                     [1, "desc"]
                 ],// set first column as a default sort by asc
                 "tableTools": {
-                    "sSwfPath": "{{ site.tadres }}/admin/management/assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
+                    "sSwfPath": "{{ site.taddress }}/admin/management/assets/global/plugins/datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf",
                     "aButtons": [{
                         "sExtends": "pdf",
                         "sButtonText": "PDF"

@@ -2,7 +2,7 @@
 /**
  * Menu Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software
@@ -55,6 +55,7 @@ $lang['mod_menu'] = [
         'file' => 'Dosyalar',
         'unlock_reorder' => 'Sürükle-Bırak Modunu Aç',
         'lock_reorder' => 'Sürükle-Bırak Modunu Kapat',
+        'publish_toggle' => 'Yayın Durumu',
     ],
 
     // === System Messages ===
@@ -64,6 +65,8 @@ $lang['mod_menu'] = [
             'updated' => 'Güncelleme başarılı!',
             'deleted' => 'Silme başarılı!!',
             'reordered' => 'Sıralama başarılı!',
+            'published' => 'Menü başarıyla yayınlandı!',
+            'unpublished' => 'Menü yayından kaldırıldı!',
         ],
         'error' => [
             'not_added' => 'Ekleme hatası!',
@@ -133,13 +136,40 @@ $lang['mod_menu'] = [
         'language' => 'Dil',
         'name' => 'Menü Adı',
         'url' => 'Bağlantı',
-        'parent_menu' => 'Üst Menü',
+        'parent_menu' => 'Alt Menü',
         'order' => 'Sıra',
         'target' => 'Hedef',
         'status' => 'Durum',
         'icon' => 'İkon',
         'access_level' => 'Erişim Seviyesi',
         'actions' => 'İşlemler',
+        'parent_id' => 'Alt Menü',
+        'html' => 'HTML',
+        'acl_id' => 'Erişim İzni',
+        'file' => 'Dosya',
+    ],
+
+    'admin' => [
+        'columns' => [
+            'language' => 'Dil',
+            'name' => 'Menü Adı',
+            'url' => 'Bağlantı',
+            'file' => 'Dosya',
+            'parent_id' => 'Alt Menü',
+            'target' => 'Açılma Şekli',
+            'status' => 'Yayın Durumu',
+            'html' => 'HTML',
+            'icon' => 'İkon',
+            'acl_id' => 'Erişim İzni',
+        ],
+        'select_value' => [
+            'target_e' => 'Yeni Pencerede (_blank)',
+            'target_h' => 'Aynı Pencerede (_self)',
+        ],
+        'radio' => [
+            'publish_yes' => 'Yayında',
+            'publish_no' => 'Taslak',
+        ],
     ],
 
 
@@ -197,11 +227,11 @@ $lang['mod_menu'] = [
 
     // === Placeholders ===
     'placeholders' => [
-        'menu_name' => 'Menü adını girin...',
-        'menu_url' => 'https://example.com veya /sayfa',
-        'menu_description' => 'Menü açıklaması (opsiyonel)',
-        'html_class' => 'CSS sınıf adları',
-        'icon_class' => 'Bootstrap ikon sınıfı',
+        'menu_name' => 'Menü adını yazın',
+        'menu_url' => '/ornek-baglanti veya https://example.com',
+        'menu_file' => 'menu-parcasi.twig',
+        'menu_html' => 'Özel HTML içeriği',
+        'icon_class' => 'bi-house',
     ],
 
     // === Empty States ===
@@ -230,6 +260,8 @@ $lang['mod_menu'] = [
         'network' => 'Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.',
         'server' => 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
         'record' => 'Kayıt bulunamadı!',
+        'parent_selection_required' => 'Bağlanacağı menüyü seçmelisiniz.',
+        'parent_language_mismatch' => 'Üst menünün dili, menü diliyle aynı olmalıdır.',
     ],
 
     // === ACL Roles ===
@@ -253,4 +285,13 @@ $lang['mod_menu'] = [
         'moderate_delete' => 'Başkasına Ait Menüleri Silme Permissionniz Yok',
     ],
 
+];
+$lang['mod_menu']['slots'] = [
+    'header' => 'Üst Menü',
+    'footer' => 'Alt Menü',
+];
+$lang['mod_menu']['parent_labels'] = [
+    'select_parent' => 'Üst menüyü seçin',
+    'language_root' => ':language altında üst seviye',
+    'system_root' => 'Sistem kökü',
 ];

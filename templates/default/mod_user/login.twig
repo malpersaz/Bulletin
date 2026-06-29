@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.sadres }}login" />
+    <link rel="canonical" href="{{ site.saddress }}login" />
 {% endblock %}
 
 {% block head %}
@@ -73,7 +73,7 @@
                 formData.append('login', 'login');
                 formData.append('ajax_request', 'true');
 
-                fetch('{{ site.sadres }}login', {
+                fetch('{{ site.saddress }}login', {
                     method: 'POST',
                     body: formData,
                     credentials: 'same-origin',
@@ -93,7 +93,7 @@
                     if (data.success) {
                         showAlert(data.message, 'success');
                         setTimeout(() => {
-                            window.location.href = data.redirect || '{{ site.sadres }}';
+                            window.location.href = data.redirect || '{{ site.saddress }}';
                         }, 500);
                     } else {
                         let errorHtml = '<ul class="mb-0">';
@@ -170,7 +170,7 @@
 
                     <div id="login-alerts"></div>
 
-                    <form method="post" action="{{ site.sadres }}login" id="login-form">
+                    <form method="post" action="{{ site.saddress }}login" id="login-form">
                             <div class="mb-3">
                                 <label class="form-label" for="username">{{ lang.mod_user.username }}</label>
                                 <input type="text"

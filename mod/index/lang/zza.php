@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => '%s de amî weşandene',
     'home' => 'Serepel',
+    'navigation' => 'Rêvebiriye',
     'download' => 'Warone',
     'login' => 'Kuwe cî',
     'register' => 'Bibe Endam',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'Ziwan',
     'messages' => 'Mesajî',
     'my_account' => 'Hesabê mi',
+    'menu_title' => 'Pêşek',
     'change_avatar' => 'Avatar bivurne',
     'logout' => 'Vejîye',
     'dark_mode' => 'Modo tarî',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'Têkiliye',
     'info' => 'Agahî',
     'find_us' => 'Ma bivîne',
+    'rss_feed' => 'RSS Feed',
+    'sitemap' => 'Xeritaya malperî',
+    'site_logo_alt' => 'Logoya malperî',
+    'producer_logo_alt' => 'Logoya AKM Software',
     'map_available_soon' => 'Xerita nêzdî de na ro',
     'publish_date' => 'Wextê Weşayîşî',
+    'category_label' => 'Kategori',
     'updated_date' => 'Wextê Serastkerdişî',
     'min_read' => 'deqîqa wendene',
     'enlarge_image' => 'Resim pîl bike',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'Pare bike',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'E-name',
+    'file_not_found' => 'Pel nehat dîtin',
     'search' => [
         'searched_word' => 'Peyva lêgerînê binivîse!',
         'search' => 'Bibîne',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'Ji bo vê kategoriyê wêne nehat dîtin!',
         'latest_pictures' => [
             1 => 'Wêne',
+            2 => 'Resımo Peyên',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'Serûpel',
         'about' => 'Li ser xwe',
         'contact' => 'Têikilî',
+        'footer_links' => 'Menuya Jêr',
         'language' => 'Ziman',
         'messages' => 'Peyam',
         'my_account' => 'Hesabê min',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'Lêbarke',
     ],
     'copyright' => '© Hemû maf parastî ne.',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'Galeriya Temayan',
         'desc' => 'Galeriya Temayan - Sazkerdış u Kontrol',
@@ -290,9 +301,9 @@ $lang['index'] = [
             11 => 'Kanun',
         ],
         'latest_news' => [
-            1 => 'News',
-            2 => 'View All',
-            3 => 'No published news is available yet.',
+            1 => 'Xeberi',
+            2 => 'Pêro Bıvêne',
+            3 => 'Hêna xebera weşiyaye amade niyo.',
         ],
     ],
     'mod_publication' => [
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'Pêro Weşan',
             3 => 'Hêna naverokê weşiyaye amade niyo.',
         ],
+        'comments' => [
+            'title' => 'Şîroveyî',
+            'add_title' => 'Şîrove Deke',
+            'placeholder' => 'Şîroveya to',
+            'full_name' => 'Nameyo temam',
+            'submit' => 'Şîrove bişîne',
+            'warning_label' => 'Hişyarî',
+            'rules' => 'Şîroveyê ke heqaret, xerabkari yan formatê nêwendişi tede esto, beno ke qebul nêbibo.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'Peyam Bişîne',
+    ],
+    'error' => [
+        '1' => 'Xeta',
+        'method' => ['ad' => 'Metodo Çewt', 'mesaj' => 'Metodê %s nêdiya'],
+        'mod' => ['ad' => 'Xetaya Moduli', 'mesaj' => 'Modulê %s nêdiya'],
+        'not' => ['ad' => 'Pele Nêdiye', 'mesaj' => 'Pela ke waziye %s nêdiye'],
     ],
 ];

@@ -74,6 +74,18 @@ class ModuleRegistry
             'modules' => ['mod_publication_category', 'mod_gallery', 'mod_user'],
             'tables' => ['mod_publication_category', 'mod_gallery', 'mod_user'],
         ],
+        'mod_product' => [
+            'modules' => ['mod_product_category', 'mod_gallery', 'mod_user'],
+            'tables' => ['mod_product_category', 'mod_gallery', 'mod_user'],
+        ],
+        'mod_service' => [
+            'modules' => ['mod_service_category', 'mod_gallery', 'mod_user'],
+            'tables' => ['mod_service_category', 'mod_gallery', 'mod_user'],
+        ],
+        'mod_reference' => [
+            'modules' => ['mod_client', 'mod_product', 'mod_service', 'mod_gallery', 'mod_user'],
+            'tables' => ['mod_client', 'mod_product', 'mod_service', 'mod_gallery', 'mod_user'],
+        ],
         'mod_video_embed' => [
             'modules' => ['mod_video_embed_category', 'mod_user'],
             'tables' => ['mod_video_embed_category', 'mod_user'],
@@ -84,6 +96,11 @@ class ModuleRegistry
         'mod_category' => ['mod_content'],
         'mod_news_category' => ['mod_news'],
         'mod_publication_category' => ['mod_publication'],
+        'mod_client' => ['mod_reference'],
+        'mod_product_category' => ['mod_product'],
+        'mod_service_category' => ['mod_service'],
+        'mod_product' => ['mod_reference'],
+        'mod_service' => ['mod_reference'],
         'mod_video_embed_category' => ['mod_video_embed'],
     ];
 

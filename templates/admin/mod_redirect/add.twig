@@ -1,0 +1,203 @@
+{% set hide_navbar = true %}
+{% extends "admin/layout.twig" %}
+{% set hide_fab = true %}
+{% set hide_search = true %}
+
+{% block title %}{{ lang.mod_redirect.add }}{% endblock %}
+{% block headline %}{{ lang.mod_redirect.add }}{% endblock %}
+
+{% block styles %}
+<style>
+    .edit-container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        padding-bottom: 120px;
+    }
+    .edit-card {
+        background: var(--md-sys-color-surface);
+        border-radius: var(--af-radius-md, 16px);
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--md-sys-color-outline-variant);
+    }
+    .form-row {
+        margin-bottom: 20px;
+    }
+    .m3-input-wrapper {
+        position: relative;
+        margin-bottom: 4px;
+    }
+    .m3-input-lg {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--md-sys-color-outline);
+        background: transparent;
+        color: var(--md-sys-color-on-surface);
+        font-size: 16px;
+        outline: none;
+        box-sizing: border-box;
+    }
+    .m3-input-lg:focus {
+        border-color: var(--md-sys-color-primary);
+        border-width: 2px;
+        padding: 11px 15px;
+    }
+    .m3-floating-label {
+        position: absolute;
+        top: 12px;
+        left: 16px;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 16px;
+        pointer-events: none;
+        transition: all 0.2s;
+        z-index: 10;
+    }
+    .m3-input-lg:focus ~ .m3-floating-label,
+    .m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label,
+    select.m3-input-lg ~ .m3-floating-label {
+        top: -10px;
+        left: 12px;
+        font-size: 12px;
+        color: var(--md-sys-color-on-surface-variant);
+        background: var(--md-sys-color-surface);
+        padding: 0 4px;
+    }
+    .m3-input-lg:focus ~ .m3-floating-label,
+    select.m3-input-lg:focus ~ .m3-floating-label {
+        color: var(--md-sys-color-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<form id="redirectAddForm" method="POST" action="">
+    <div class="edit-container">
+        {% if error is defined %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({
+                        icon: 'warning',
+                        html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                        confirmButtonText: '{{ lang.mod_redirect.button.yes }}',
+                        confirmButtonColor: '#ba1a1a'
+                    });
+                });
+            </script>
+        {% endif %}
+
+        {% if hatalar is defined %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    let errorHtml = '<div style="text-align: left;">';
+                    {% for hata in hatalar %}
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                    {% endfor %}
+                    errorHtml += '</div>';
+
+                    Swal.fire({
+                        icon: 'warning',
+                        html: errorHtml,
+                        confirmButtonText: '{{ lang.mod_redirect.button.yes }}',
+                        confirmButtonColor: '#ba1a1a'
+                    });
+                });
+            </script>
+        {% endif %}
+
+        <div class="edit-card">
+            <!-- Source URL -->
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="old_url" id="old_url" placeholder=" " autocomplete="off" value="{{ old_url is defined ? old_url : '' }}" required>
+                    <label class="m3-floating-label">{{ lang.mod_redirect.admin.columns.old_url }}</label>
+                </div>
+            </div>
+
+            <!-- Target URL -->
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="new_url" id="new_url" placeholder=" " autocomplete="off" value="{{ new_url is defined ? new_url : '' }}" required>
+                    <label class="m3-floating-label">{{ lang.mod_redirect.admin.columns.new_url }}</label>
+                </div>
+            </div>
+
+            <!-- Status Code -->
+            <div class="form-row">
+                <div class="m3-input-wrapper">
+                    <select class="m3-input-lg" name="status_code" id="status_code" required>
+                        <option value="301" {% if status_code is defined and status_code == 301 %} selected {% endif %}>301 - Permanent Redirect</option>
+                        <option value="302" {% if status_code is defined and status_code == 302 %} selected {% endif %}>302 - Temporary Redirect</option>
+                    </select>
+                    <label class="m3-floating-label">{{ lang.mod_redirect.admin.columns.status_code }}</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+    {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
+        'cancel_url': site.saddress ~ 'mod_redirect/list',
+        'cancel_label': lang.mod_redirect.button.cancel,
+        'form_id': 'redirectAddForm',
+        'submit_label': lang.mod_redirect.button.add
+    } %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('redirectAddForm');
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            submitRedirectForm();
+        });
+
+        document.querySelectorAll('[required]').forEach(input => {
+            input.addEventListener('input', () => input.setCustomValidity(''));
+            input.addEventListener('change', () => input.setCustomValidity(''));
+        });
+    });
+
+    function submitRedirectForm() {
+        const form = document.getElementById('redirectAddForm');
+        if (!form) return;
+
+        const inputs = form.querySelectorAll('[required]');
+        inputs.forEach(input => input.setCustomValidity(''));
+
+        if (!form.checkValidity()) {
+            inputs.forEach(input => {
+                if (!input.validity.valid) {
+                    let message = "";
+                    if (input.id === 'old_url') {
+                        message = "{{ lang.mod_redirect.validator.required|format(lang.mod_redirect.admin.columns.old_url)|e('js') }}";
+                    } else if (input.id === 'new_url') {
+                        message = "{{ lang.mod_redirect.validator.required|format(lang.mod_redirect.admin.columns.new_url)|e('js') }}";
+                    } else {
+                        message = "Required field";
+                    }
+                    input.setCustomValidity(message);
+                }
+            });
+            form.reportValidity();
+            return;
+        }
+
+        if (!form.querySelector('input[name="add"]')) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'add';
+            hidden.value = '1';
+            form.appendChild(hidden);
+        }
+        form.submit();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,237 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_document.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_document.edit }}{% endblock %}
+
+{% block content %}
+<style>
+    .document-form-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
+    .document-form-card { background: var(--md-sys-color-surface); border-radius: var(--af-radius-lg); padding: 20px; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; }
+    .document-wizard-hero { background: var(--md-sys-color-surface); border-radius: var(--af-radius-lg); padding: 18px 20px 16px; display: grid; gap: 12px; box-shadow: var(--md-sys-elevation-1); }
+    .document-wizard-headline { margin: 0; font-size: 20px; line-height: 1.3; color: var(--md-sys-color-on-surface); }
+    .document-wizard-progress { display: grid; gap: 8px; }
+    .document-wizard-progress-meta { display: flex; align-items: center; justify-content: flex-end; gap: 12px; font-size: 12px; color: var(--md-sys-color-on-surface-variant); }
+    .document-wizard-progress-bar { position: relative; height: 8px; border-radius: var(--af-radius-full); background: color-mix(in srgb, var(--md-sys-color-outline) 20%, transparent); overflow: hidden; }
+    .document-wizard-progress-value { position: absolute; inset: 0 auto 0 0; width: 0%; border-radius: inherit; background: var(--md-sys-color-primary); transition: width 0.25s ease; }
+    .document-step-panel { display: grid; gap: 16px; }
+    .document-step-panel[hidden] { display: none !important; }
+    .form-status { border-radius: var(--af-radius-md); padding: 14px 16px; font-size: 14px; line-height: 1.5; }
+    .form-status.error { background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); }
+    .form-status.success { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
+    .m3-input-wrapper { position: relative; }
+    .m3-input-lg { width: 100%; padding: 16px; border-radius: var(--af-radius-md); border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); box-sizing: border-box; outline: none; min-height: 54px; }
+    .m3-input-lg:focus { border-width: 2px; border-color: var(--md-sys-color-primary); padding: 15px; }
+    textarea.m3-input-lg { min-height: 128px; resize: vertical; }
+    .m3-floating-label { position: absolute; top: 16px; left: 16px; background: var(--md-sys-color-surface); padding: 0 6px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: all 0.2s ease; }
+    .m3-input-lg:focus + .m3-floating-label, .m3-input-lg:not(:placeholder-shown) + .m3-floating-label, select.m3-input-lg + .m3-floating-label, textarea.m3-input-lg:not(:placeholder-shown) + .m3-floating-label { top: -9px; left: 12px; font-size: 12px; color: var(--md-sys-color-primary); }
+    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .selection-card { border: 1px solid var(--md-sys-color-outline); border-radius: var(--af-radius-md); padding: 16px; display: grid; gap: 6px; cursor: pointer; }
+    .selection-card input { display: none; }
+    .selection-card.active { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
+    .selection-title { font-weight: 700; }
+    .selection-copy { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
+    .document-bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline); }
+    .document-bottom-bar button { flex: 1; min-height: 52px; border-radius: var(--af-radius-full); border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 700; cursor: pointer; }
+    .document-bottom-bar .cancel-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
+    .document-bottom-bar .save-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+</style>
+
+<div class="document-form-shell">
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+        <script>
+            setTimeout(function () {
+                window.location.href = {{ (site.saddress ~ 'mod_document/list')|json_encode|raw }};
+            }, 1200);
+        </script>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="documentEditForm" class="document-form-shell" style="padding:0; gap:16px;">
+        <div class="document-wizard-hero">
+            <h2 class="document-wizard-headline" id="documentWizardHeadline">{{ lang.mod_document.admin.columns.lang }}</h2>
+            <div class="document-wizard-progress">
+                <div class="document-wizard-progress-meta">
+                    <span id="documentWizardStepCounter">1/5</span>
+                </div>
+                <div class="document-wizard-progress-bar">
+                    <div class="document-wizard-progress-value" id="documentWizardProgressValue"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 0: Language -->
+        <section class="document-step-panel" data-step-panel="0">
+            <div class="document-form-card">
+                <div class="m3-input-wrapper">
+                    <select class="m3-input-lg" name="lang">
+                        {% for item in lang_lang %}
+                            <option value="{{ item.seo }}" {% if item.seo == d.lang %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                        {% endfor %}
+                    </select>
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.lang }}</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 1: Name -->
+        <section class="document-step-panel" data-step-panel="1" hidden>
+            <div class="document-form-card">
+                <div class="m3-input-wrapper">
+                    <input class="m3-input-lg" type="text" name="name" id="doc-name" value="{{ d.name }}" placeholder=" ">
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.name }}</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 2: Status -->
+        <section class="document-step-panel" data-step-panel="2" hidden>
+            <div class="document-form-card">
+                <div class="selection-grid" data-selection-group>
+                    <label class="selection-card{% if d.status == 'y' %} active{% endif %}">
+                        <input type="radio" name="status" value="y" {% if d.status == 'y' %}checked{% endif %}>
+                        <div class="selection-title">{{ lang.mod_document.admin.radio.status_y }}</div>
+                        <div class="selection-copy">{{ lang.mod_document.status.published }}</div>
+                    </label>
+                    <label class="selection-card{% if d.status == 'n' %} active{% endif %}">
+                        <input type="radio" name="status" value="n" {% if d.status == 'n' %}checked{% endif %}>
+                        <div class="selection-title">{{ lang.mod_document.admin.radio.status_n }}</div>
+                        <div class="selection-copy">{{ lang.mod_document.status.draft }}</div>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 3: SEO -->
+        <section class="document-step-panel" data-step-panel="3" hidden>
+            <div class="document-form-card">
+                <div class="m3-input-wrapper">
+                    <input class="m3-input-lg" type="text" name="seo" id="doc-seo" value="{{ d.seo }}" placeholder=" ">
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.seo }}</label>
+                </div>
+                <div class="m3-input-wrapper">
+                    <input class="m3-input-lg" type="text" name="title" id="doc-title" value="{{ d.title }}" placeholder=" ">
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.title }}</label>
+                </div>
+                <div class="m3-input-wrapper">
+                    <input class="m3-input-lg" type="text" name="keywords" id="doc-keywords" value="{{ d.keywords }}" placeholder=" ">
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.keywords }}</label>
+                </div>
+                <div class="m3-input-wrapper">
+                    <textarea class="m3-input-lg" name="description" id="doc-description" placeholder=" ">{{ d.description }}</textarea>
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.description }}</label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Step 4: Image -->
+        <section class="document-step-panel" data-step-panel="4" hidden>
+            <div class="document-form-card">
+                {% if d.image %}
+                    <div style="text-align:center;">
+                        <img src="{{ site.iaddress }}mod_document/{{ d.image }}" style="max-width:100%; border-radius:var(--af-radius-md); margin-bottom:12px;">
+                    </div>
+                {% endif %}
+                <div class="m3-input-wrapper">
+                    <input class="m3-input-lg" type="file" name="image" accept="image/*" style="padding:12px;">
+                    <label class="m3-floating-label">{{ lang.mod_document.admin.columns.image }}</label>
+                </div>
+            </div>
+        </section>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if success is not defined %}
+    <button type="submit" form="documentEditForm" name="edit" value="1" id="documentEditSubmitter" hidden></button>
+    <div class="document-bottom-bar">
+        <button type="button" class="cancel-btn" id="wizardBackButton">
+            <i class="bi bi-arrow-left"></i>
+            <span id="wizardBackLabel">{{ lang.mod_document.button.cancel }}</span>
+        </button>
+        <button type="button" class="save-btn" id="wizardNextButton">
+            <i class="bi bi-arrow-right-circle" id="wizardNextIcon"></i>
+            <span id="wizardNextLabel">{{ lang.mod_document.form.wizard.next }}</span>
+        </button>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+const WIZARD_LANG = {
+    steps: [
+        { title: "{{ lang.mod_document.admin.columns.lang|e('js') }}" },
+        { title: "{{ lang.mod_document.admin.columns.name|e('js') }}" },
+        { title: "{{ lang.mod_document.admin.columns.status|e('js') }}" },
+        { title: "{{ lang.mod_document.form.wizard.seo_meta|e('js') }}" },
+        { title: "{{ lang.mod_document.admin.columns.image|e('js') }}" }
+    ],
+    back: "{{ lang.mod_document.form.wizard.back|e('js') }}",
+    cancel: "{{ lang.mod_document.button.cancel|e('js') }}",
+    next: "{{ lang.mod_document.form.wizard.next|e('js') }}",
+    submit: "{{ lang.mod_document.button.save|e('js') }}",
+    requiredName: "{{ lang.mod_document.validator.required|replace({'%s': lang.mod_document.admin.columns.name})|e('js') }}"
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    let currentStep = 0;
+    const steps = document.querySelectorAll('[data-step-panel]');
+    const progress = document.getElementById('documentWizardProgressValue');
+    const headline = document.getElementById('documentWizardHeadline');
+    const counter = document.getElementById('documentWizardStepCounter');
+    const backBtn = document.getElementById('wizardBackButton');
+    const backLabel = document.getElementById('wizardBackLabel');
+    const nextBtn = document.getElementById('wizardNextButton');
+    const nextLabel = document.getElementById('wizardNextLabel');
+    const nextIcon = document.getElementById('wizardNextIcon');
+
+    function showStep(idx) {
+        steps.forEach((s, i) => s.hidden = (i !== idx));
+        currentStep = idx;
+        progress.style.width = ((idx + 1) / steps.length * 100) + '%';
+        headline.textContent = WIZARD_LANG.steps[idx].title;
+        counter.textContent = (idx + 1) + '/' + steps.length;
+        
+        backLabel.textContent = idx === 0 ? WIZARD_LANG.cancel : WIZARD_LANG.back;
+        nextLabel.textContent = idx === steps.length - 1 ? WIZARD_LANG.submit : WIZARD_LANG.next;
+        nextIcon.className = idx === steps.length - 1 ? 'bi bi-check2-circle' : 'bi bi-arrow-right-circle';
+        window.scrollTo(0, 0);
+    }
+
+    backBtn.onclick = () => {
+        if (currentStep === 0) location.href = '{{ site.saddress }}mod_document/list';
+        else showStep(currentStep - 1);
+    };
+
+    nextBtn.onclick = () => {
+        if (currentStep === 1 && !document.getElementById('doc-name').value.trim()) {
+            alert(WIZARD_LANG.requiredName);
+            return;
+        }
+        if (currentStep === steps.length - 1) document.getElementById('documentEditSubmitter').click();
+        else showStep(currentStep + 1);
+    };
+
+    document.querySelectorAll('[data-selection-group] input').forEach(input => {
+        input.onchange = (e) => {
+            const group = e.target.closest('[data-selection-group]');
+            group.querySelectorAll('.selection-card').forEach(c => c.classList.toggle('active', c.contains(e.target)));
+        };
+    });
+
+    showStep(0);
+});
+</script>
+{% endblock %}

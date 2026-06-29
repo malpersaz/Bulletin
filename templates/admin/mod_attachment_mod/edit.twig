@@ -1,7 +1,7 @@
 {% set show_navbar = false %}
 {% set show_fab = false %}
 {% set show_search = false %}
-{% set show_sidebar = false %}
+{% set show_sidebar = true %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -158,10 +158,11 @@
 {% block fixed_bottom %}
 {% if oke is not defined %}
     {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
-        cancel_url: site.sadres ~ 'mod_attachment_mod/list',
+        cancel_url: site.saddress ~ 'mod_attachment_mod/list',
         cancel_label: lang.mod_attachment_mod.button.cancel,
         form_id: 'editAttachmentModForm',
-        submit_label: lang.mod_attachment_mod.button.edit
+        submit_label: lang.mod_attachment_mod.button.edit,
+        reset_label: lang.mod_attachment_mod.button.refresh
     } %}
 {% endif %}
 {% endblock %}

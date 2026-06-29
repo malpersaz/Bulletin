@@ -142,11 +142,8 @@ class mod_settings_mod extends indexMain
     public function duzenle($lang = NULL)
     {
         return $this->edit($lang);
-    }
-
-    /**
+    }    /**
      * Private method to handle the POST logic for updating settings.
-     * (To be fully implemented)
      */
     private function _edit()
     {
@@ -184,6 +181,96 @@ class mod_settings_mod extends indexMain
             $setting->lang = $selected_lang;
         }
 
+        $run_generation = false;
+        $source_path = null;
+
+        // Handle cropped symbol base64 upload
+        $cropped_symbol = Req::post('cropped_symbol');
+        if (!empty($cropped_symbol) && strpos($cropped_symbol, 'data:image/png;base64,') === 0) {
+            $data = base64_decode(substr($cropped_symbol, strlen('data:image/png;base64,')));
+            $dest_dir = root_dir . 'static' . DS . 'mod_settings' . DS;
+            if (!is_dir($dest_dir)) {
+                mkdir($dest_dir, 0755, true);
+            }
+            $symbol_path = $dest_dir . 'logo_symbol.png';
+            file_put_contents($symbol_path, $data);
+
+            $setting->logo_symbol = 'logo_symbol.png';
+            $this->db->query("UPDATE mod_settings SET logo_symbol = 'logo_symbol.png'");
+            $source_path = $symbol_path;
+            $run_generation = true;
+        }
+
+        // Handle cropped square base64 upload
+        $cropped_square = Req::post('cropped_square');
+        if (!empty($cropped_square) && strpos($cropped_square, 'data:image/png;base64,') === 0) {
+            $data = base64_decode(substr($cropped_square, strlen('data:image/png;base64,')));
+            $dest_dir = root_dir . 'static' . DS . 'mod_settings' . DS;
+            if (!is_dir($dest_dir)) {
+                mkdir($dest_dir, 0755, true);
+            }
+            $square_path = $dest_dir . 'logo_square.png';
+            file_put_contents($square_path, $data);
+
+            $setting->site_icon = 'logo_square.png';
+            $this->db->query("UPDATE mod_settings SET site_icon = 'logo_square.png'");
+
+            // Only use square logo as source if symbol was not just uploaded and doesn't exist
+            if (!$run_generation) {
+                if (empty($setting->logo_symbol) || !file_exists($dest_dir . $setting->logo_symbol)) {
+                    $source_path = $square_path;
+                    $run_generation = true;
+                }
+            }
+        }
+
+        // If logo_symbol or site_icon already exists, regenerate assets automatically on save
+        if (!$run_generation) {
+            $dest_dir = root_dir . 'static' . DS . 'mod_settings' . DS;
+            if (!empty($setting->logo_symbol) && file_exists($dest_dir . $setting->logo_symbol)) {
+                $source_path = $dest_dir . $setting->logo_symbol;
+                $run_generation = true;
+            } elseif (!empty($setting->site_icon) && file_exists($dest_dir . $setting->site_icon)) {
+                $source_path = $dest_dir . $setting->site_icon;
+                $run_generation = true;
+            }
+        }
+
+        if ($run_generation && !empty($source_path)) {
+            try {
+                $generator = Load::lib('BrandAssetGenerator');
+                $generated_fields = $generator->generateFromLocalFile(
+                    $source_path,
+                    [
+                        'title' => isset($setting->title) ? $setting->title : '',
+                        'description' => isset($setting->description) ? $setting->description : '',
+                    ],
+                    $this->_current_asset_files($setting)
+                );
+                foreach ($generated_fields as $field => $file_name) {
+                    $setting->$field = $file_name;
+                }
+            } catch (Exception $e) {
+                $this->_form_error($this->_resolve_asset_generator_error($e->getMessage()));
+                return;
+            }
+        }
+
+        // Handle cropped rect base64 upload
+        $cropped_rect = Req::post('cropped_rect');
+        if (!empty($cropped_rect) && strpos($cropped_rect, 'data:image/png;base64,') === 0) {
+            $data = base64_decode(substr($cropped_rect, strlen('data:image/png;base64,')));
+            $dest_dir = root_dir . 'static' . DS . 'mod_settings' . DS;
+            if (!is_dir($dest_dir)) {
+                mkdir($dest_dir, 0755, true);
+            }
+            $rect_path = $dest_dir . 'logo.png';
+            file_put_contents($rect_path, $data);
+
+            $setting->logo_path = 'logo.png';
+            $this->db->query("UPDATE mod_settings SET logo_path = 'logo.png'");
+        }
+
         if ($this->_has_uploaded_file('logo_' . $selected_lang)) {
             try {
                 $this->_generate_assets_for_setting($selected_lang, $setting);
@@ -219,6 +306,7 @@ class mod_settings_mod extends indexMain
             'google_analytics' => trim(Req::Post('google_analytics')),
             'meta_tags' => trim(Req::Post('meta_tags')),
             'show_logo' => trim(Req::Post('show_logo')),
+            'logo_type' => trim(Req::Post('logo_type')),
         ];
     }
 
@@ -239,6 +327,7 @@ class mod_settings_mod extends indexMain
             'google_analytics' => trim((string) ($values['google_analytics'] ?? '')),
             'meta_tags' => trim((string) ($values['meta_tags'] ?? '')),
             'show_logo' => (isset($values['show_logo']) && $values['show_logo'] == 'y') ? 'y' : 'n',
+            'logo_type' => trim((string) ($values['logo_type'] ?? 'rectangle')),
         ];
     }
 
@@ -286,11 +375,15 @@ class mod_settings_mod extends indexMain
 
         $save_result = $settings_model->getSize() > 0 ? $setting->update('lang') : $setting->save();
         if ($save_result) {
-            // Global synchronization: show_logo applies to all languages
-            if (isset($normalized_values['show_logo'])) {
-                $global_fields = [
-                    'show_logo' => $normalized_values['show_logo']
-                ];
+            // Global synchronization: show_logo and logo_type apply to all languages
+            if (isset($normalized_values['show_logo']) || isset($normalized_values['logo_type'])) {
+                $global_fields = [];
+                if (isset($normalized_values['show_logo'])) {
+                    $global_fields['show_logo'] = $normalized_values['show_logo'];
+                }
+                if (isset($normalized_values['logo_type'])) {
+                    $global_fields['logo_type'] = $normalized_values['logo_type'];
+                }
                 $this->_sync_asset_fields($global_fields);
             }
             
@@ -321,7 +414,122 @@ class mod_settings_mod extends indexMain
 
         $this->_json_response([
             'status' => 'success',
-            'message' => $this->lang['mod_settings']['messages']['success']['updated'] ?? 'Mîheng hate tomarkirin',
+            'message' => $this->lang['mod_settings']['messages']['success']['updated'] ?? 'Setting has been updated',
+        ]);
+    }
+
+    public function upload_cropped_logo_ajax()
+    {
+        if ($this->user->hasPermission('mod_settings', 'edit', $this->lang['mod_settings']['permission_errors']['settings_edit'], 1) === false) {
+            $this->_json_response([
+                'status' => 'error',
+                'message' => $this->lang['mod_settings']['permission_errors']['settings_edit'],
+            ]);
+            return;
+        }
+
+        $selected_lang = Req::post('lang');
+        $step = intval(Req::post('step'));
+        $image_data = Req::post('image');
+
+        if (empty($selected_lang) || empty($image_data) || strpos($image_data, 'data:image/png;base64,') !== 0) {
+            $this->_json_response([
+                'status' => 'error',
+                'message' => $this->lang['mod_settings']['invalid_params'] ?? 'Invalid parameters.',
+            ]);
+            return;
+        }
+
+        $settings_model = Load::model('mod_settings');
+        $settings_model->where_lang($selected_lang)->gRo();
+        if ($settings_model->getSize() > 0) {
+            $settings_model->sync();
+            $setting = $settings_model->getResultOne();
+        } else {
+            $setting = Load::model('mod_settings');
+            $setting->lang = $selected_lang;
+        }
+
+        $data = base64_decode(substr($image_data, strlen('data:image/png;base64,')));
+        $dest_dir = root_dir . 'static' . DS . 'mod_settings' . DS;
+        if (!is_dir($dest_dir)) {
+            mkdir($dest_dir, 0755, true);
+        }
+
+        $run_generation = false;
+        $source_path = null;
+
+        if ($step === 3) {
+            // Emblem / Symbol Logo
+            $symbol_path = $dest_dir . 'logo_symbol.png';
+            file_put_contents($symbol_path, $data);
+            $setting->logo_symbol = 'logo_symbol.png';
+            $this->db->query("UPDATE mod_settings SET logo_symbol = 'logo_symbol.png'");
+            $source_path = $symbol_path;
+            $run_generation = true;
+        } elseif ($step === 1) {
+            // Square Logo
+            $square_path = $dest_dir . 'logo_square.png';
+            file_put_contents($square_path, $data);
+            $setting->site_icon = 'logo_square.png';
+            $this->db->query("UPDATE mod_settings SET site_icon = 'logo_square.png'");
+
+            // Priority: Symbol Logo is used if available, otherwise Square Logo
+            if (!empty($setting->logo_symbol) && file_exists($dest_dir . $setting->logo_symbol)) {
+                $source_path = $dest_dir . $setting->logo_symbol;
+            } else {
+                $source_path = $square_path;
+            }
+            $run_generation = true;
+        } elseif ($step === 2) {
+            // Rectangle Logo
+            $rect_path = $dest_dir . 'logo.png';
+            file_put_contents($rect_path, $data);
+            $setting->logo_path = 'logo.png';
+            $this->db->query("UPDATE mod_settings SET logo_path = 'logo.png'");
+        }
+
+        $generated_fields = [];
+        if ($run_generation && !empty($source_path)) {
+            try {
+                $generator = Load::lib('BrandAssetGenerator');
+                $generated_fields = $generator->generateFromLocalFile(
+                    $source_path,
+                    [
+                        'title' => isset($setting->title) ? $setting->title : '',
+                        'description' => isset($setting->description) ? $setting->description : '',
+                    ],
+                    $this->_current_asset_files($setting)
+                );
+                foreach ($generated_fields as $field => $file_name) {
+                    $setting->$field = $file_name;
+                }
+            } catch (Exception $e) {
+                $this->_json_response([
+                    'status' => 'error',
+                    'message' => $this->_resolve_asset_generator_error($e->getMessage()),
+                ]);
+                return;
+            }
+        }
+
+        $save_result = $settings_model->getSize() > 0 ? $setting->update('lang') : $setting->save();
+
+        if (!$save_result) {
+            $this->_json_response([
+                'status' => 'error',
+                'message' => $this->lang['mod_settings']['save_error'] ?? 'Save error.',
+            ]);
+            return;
+        }
+
+        $this->_json_response([
+            'status' => 'success',
+            'message' => $this->lang['mod_settings']['messages']['success']['updated'] ?? 'Setting has been updated.',
+            'fields' => $generated_fields,
+            'logo_path' => $setting->logo_path,
+            'logo_symbol' => $setting->logo_symbol,
+            'site_icon' => $setting->site_icon,
         ]);
     }
 
@@ -395,8 +603,6 @@ class mod_settings_mod extends indexMain
     {
         $input_name = $field . '_' . $lang;
         
-
-        
         if (isset($_FILES[$input_name]['name']) && !empty($_FILES[$input_name]['name'])) {
             // Delete old file
             if (!empty($setting->$field)) {
@@ -418,17 +624,9 @@ class mod_settings_mod extends indexMain
                     $this->db->query("UPDATE mod_settings SET $field = '" . $image->url . "'");
                 } else {
                      $this->_error_message($this->lang_mgmt['management']['logo_upload_error'] . ' (' . $field . ') ' . $image->error);
-                     // Proceed or return? usage in main code returns.
-                     // But here I can't return from the caller easily. 
-                     // I will just set error message. Caller should check? 
-                     // This is a helper method. 
-                     // Ideally I should throw exception or handle it.
-                     // I'll leave the error message but continue processing other fields.
-
                 }
             } catch (Exception $e) {
                 $msg = $e->getMessage();
-
 
                  if (strpos($msg, 'invalid_extension|') === 0) {
                     $ext = explode('|', $msg)[1];
@@ -450,7 +648,6 @@ class mod_settings_mod extends indexMain
         };
 
         return array_filter([
-            $get_value('logo_path'),
             $get_value('favicon_path'),
             $get_value('favicon_96'),
             $get_value('apple_touch_icon'),
@@ -532,7 +729,7 @@ class mod_settings_mod extends indexMain
             $this->session->ekle('mod_settings_flash_success', $message);
         }
 
-        header('Location: ' . $this->site['sadres'] . 'mod_settings/edit/' . Req::Url_Clear($selected_lang));
+        header('Location: ' . $this->site['saddress'] . 'mod_settings/edit/' . Req::Url_Clear($selected_lang));
         exit;
     }
 
@@ -573,7 +770,7 @@ class mod_settings_mod extends indexMain
         $lang = Req::post('lang');
         $field = Req::post('field');
 
-        if (empty($lang) || !in_array($field, ['logo_path', 'favicon_path', 'favicon_96', 'apple_touch_icon', 'site_webmanifest', 'manifest_192', 'manifest_512'])) {
+        if (empty($lang) || !in_array($field, ['logo_path', 'logo_symbol', 'site_icon', 'favicon_path', 'favicon_96', 'apple_touch_icon', 'site_webmanifest', 'manifest_192', 'manifest_512'])) {
             echo $this->lang['mod_settings']['error'] . ': ' . $this->lang['mod_settings']['invalid_params'];
             return;
         }
@@ -598,12 +795,38 @@ class mod_settings_mod extends indexMain
         
         $delete_options = ['/' => []];
         
-        // Handle custom deletion for webmanifest which is not managed by image mod
+        // Handle custom deletion for logo_path (Rectangle Logo)
         if ($field === 'logo_path') {
+             $file_path = root_dir . 'static' . DS . 'mod_settings' . DS . 'logo.png';
+             if (file_exists($file_path)) {
+                 @unlink($file_path);
+             }
+             $setting->logo_path = '';
+             $this->db->query("UPDATE mod_settings SET logo_path = ''");
+             $setting->update('lang');
+             echo 'Oke';
+             return;
+        }
+
+        // Handle custom deletion for logo_symbol (Logo Symbol / Icon)
+        if ($field === 'logo_symbol') {
+             $file_path = root_dir . 'static' . DS . 'mod_settings' . DS . 'logo_symbol.png';
+             if (file_exists($file_path)) {
+                 @unlink($file_path);
+             }
+             $setting->logo_symbol = '';
+             $this->db->query("UPDATE mod_settings SET logo_symbol = ''");
+             $setting->update('lang');
+             echo 'Oke';
+             return;
+        }
+
+        // Handle custom deletion for site_icon (Square Logo and all generated icons)
+        if ($field === 'site_icon') {
              $generator = Load::lib('BrandAssetGenerator');
              $generator->deleteManagedFiles($this->_current_asset_files($setting->toArray()));
              $asset_fields = [
-                 'logo_path',
+                 'site_icon',
                  'favicon_path',
                  'favicon_96',
                  'apple_touch_icon',

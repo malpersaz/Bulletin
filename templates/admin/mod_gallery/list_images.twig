@@ -24,11 +24,12 @@
         gap: 10px;
     }
     .gallery-context {
-        padding: 12px 14px;
-        border-radius: 22px;
-        background: linear-gradient(135deg, var(--md-sys-color-surface-container-high) 0%, var(--md-sys-color-surface) 100%);
-        border: 1px solid var(--md-sys-color-outline-variant);
-        box-shadow: var(--md-sys-elevation-level1);
+        padding: 4px 0 16px 0;
+        border-radius: 0;
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        box-shadow: none;
         display: grid;
         gap: 10px;
     }
@@ -225,8 +226,10 @@
         inset: 0;
         z-index: 12010;
         display: none;
-        align-items: flex-end;
+        align-items: center;
         justify-content: center;
+        background: rgba(18, 15, 23, 0.98);
+        backdrop-filter: blur(20px);
     }
     .gallery-detail-sheet.active {
         display: flex;
@@ -234,101 +237,210 @@
     .gallery-detail-sheet__scrim {
         position: absolute;
         inset: 0;
-        background: rgba(0, 0, 0, 0.42);
-        backdrop-filter: blur(4px);
+        background: transparent;
     }
     .gallery-detail-sheet__content {
         position: relative;
         width: 100%;
+        height: 100%;
         max-width: 412px;
-        max-height: min(52vh, 460px);
-        overflow-y: auto;
-        border-radius: 28px 28px 0 0;
-        background: linear-gradient(180deg, var(--md-sys-color-surface-container-low) 0%, var(--md-sys-color-surface) 100%);
-        box-shadow: var(--md-sys-elevation-level4);
-        transform: translateY(100%);
-        transition: transform 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background: transparent;
+        box-shadow: none;
+        padding: 0;
+        box-sizing: border-box;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.3s ease;
     }
     .gallery-detail-sheet.active .gallery-detail-sheet__content {
-        transform: translateY(0);
+        transform: scale(1);
+        opacity: 1;
     }
-    .gallery-detail-sheet__handle {
-        width: 52px;
-        height: 5px;
-        border-radius: 999px;
-        background: var(--md-sys-color-outline-variant);
-        margin: 12px auto 4px;
-    }
-    .gallery-detail__inner {
-        display: grid;
-        gap: 14px;
-        padding: 16px;
-    }
-    .gallery-detail__eyebrow {
-        display: inline-flex;
+    .gallery-detail__top-bar {
+        display: flex;
         align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        font-size: 12px;
-        font-weight: 700;
-        color: var(--md-sys-color-primary);
-        background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+        gap: 12px;
+        padding: 16px;
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+        color: #ffffff;
+        z-index: 3;
     }
-    .gallery-detail__preview {
-        aspect-ratio: 16 / 10;
-        border-radius: 18px;
-        overflow: hidden;
-        background: var(--md-sys-color-surface-container);
-        border: 1px solid var(--md-sys-color-outline-variant);
+    .gallery-detail__top-bar .close-btn {
+        background: rgba(255, 255, 255, 0.08);
+        border: none;
+        color: #ffffff;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
+        transition: background 0.2s;
+        box-shadow: none;
     }
-    .gallery-detail__preview img {
+    .gallery-detail__top-bar .close-btn:hover {
+        background: rgba(255, 255, 255, 0.16);
+    }
+    .gallery-detail__title-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+    }
+    .gallery-detail__title-section .title {
+        font-size: 16px;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #ffffff;
+        margin: 0;
+    }
+    .gallery-detail__title-section .subtitle {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+        margin: 2px 0 0 0;
+    }
+    .gallery-detail__preview-container {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 12px;
+        z-index: 2;
+        min-height: 0;
+    }
+    .gallery-detail__preview {
         width: 100%;
         height: 100%;
+        max-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .gallery-detail__preview img {
+        max-width: 100%;
+        max-height: 100%;
         object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .gallery-detail__empty {
         padding: 28px 20px;
         text-align: center;
-        color: var(--md-sys-color-on-surface-variant);
+        color: rgba(255, 255, 255, 0.5);
     }
-    .gallery-detail__meta {
-        display: grid;
-        gap: 8px;
-    }
-    .gallery-detail__meta-row {
+    .nav-overlay-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
         display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 14px;
-        padding: 10px 12px;
-        border-radius: 14px;
-        background: var(--md-sys-color-surface);
-        border: 1px solid var(--md-sys-color-outline-variant);
-    }
-    .gallery-detail__meta-row strong {
-        font-size: 12px;
-        color: var(--md-sys-color-on-surface-variant);
-        font-weight: 700;
-    }
-    .gallery-detail__meta-row span {
-        text-align: right;
-        color: var(--md-sys-color-on-surface);
-        word-break: break-word;
-    }
-    .gallery-detail__actions,
-    .gallery-detail__nav {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .gallery-detail__actions > *,
-    .gallery-detail__nav > * {
-        flex: 1 1 100%;
+        align-items: center;
         justify-content: center;
+        cursor: pointer;
+        z-index: 5;
+        transition: background 0.2s, transform 0.2s;
+        backdrop-filter: blur(4px);
+        box-shadow: none;
+    }
+    .nav-overlay-btn:active {
+        transform: translateY(-50%) scale(0.9);
+    }
+    .nav-overlay-btn.prev {
+        left: 16px;
+    }
+    .nav-overlay-btn.next {
+        right: 16px;
+    }
+    .gallery-detail__bottom-panel {
+        padding: 20px 16px 32px 16px;
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        z-index: 3;
+    }
+    .gallery-detail__meta-summary {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        padding: 0 8px;
+    }
+    .gallery-detail__meta-summary .meta-filename {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 250px;
+    }
+    .gallery-detail__meta-summary .meta-divider {
+        opacity: 0.3;
+    }
+    .gallery-detail__meta-summary strong {
+        color: #ffffff;
+    }
+    .gallery-detail__actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        width: 100%;
+    }
+    .detail-action-btn {
+        flex: 1;
+        max-width: 120px;
+        height: 40px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: #e3e3e3;
+        font-size: 12px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+        backdrop-filter: blur(4px);
+        box-shadow: none;
+    }
+    .detail-action-btn:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    .detail-action-btn i {
+        font-size: 14px;
+    }
+    .detail-action-btn.delete-btn {
+        background: rgba(179, 38, 30, 0.15);
+        color: #f2b8b5;
+        border-color: rgba(179, 38, 30, 0.3);
+    }
+    .detail-action-btn.delete-btn:hover {
+        background: rgba(179, 38, 30, 0.25);
+        color: #ffffff;
+        border-color: rgba(179, 38, 30, 0.5);
     }
     .gallery-board__hint {
         display: flex;
@@ -342,49 +454,50 @@
     }
     .gallery-grid {
         display: grid;
-        grid-template-columns: minmax(0, 1fr);
-        gap: 16px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
         padding: 12px;
     }
     .gallery-item {
         position: relative;
-        aspect-ratio: auto;
-        border-radius: 0;
-        overflow: visible;
-        background: var(--md-sys-color-surface);
+        border-radius: 12px;
+        overflow: hidden;
+        background: var(--md-sys-color-surface-container-low);
         border: 1px solid var(--md-sys-color-outline-variant);
-        transition: border-color 0.2s ease;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
         cursor: pointer;
     }
     .gallery-item:hover {
         border-color: var(--md-sys-color-primary-container);
+        transform: translateY(-2px);
+        box-shadow: var(--md-sys-elevation-level1);
     }
     .gallery-item.is-selected {
-        border-color: var(--md-sys-color-primary);
-        box-shadow: none;
+        outline: 2px solid var(--md-sys-color-primary);
+        outline-offset: 2px;
     }
     .gallery-item.is-active {
-        border-color: var(--md-sys-color-secondary);
-        box-shadow: none;
+        border-color: var(--md-sys-color-primary);
+        box-shadow: var(--md-sys-elevation-level1);
     }
     .gallery-item.is-hidden {
         display: none;
     }
     .gallery-item__select {
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 8px;
+        right: 8px;
         z-index: 2;
-        width: 44px;
-        height: 44px;
+        width: 32px;
+        height: 32px;
         border: 0;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.9);
         color: var(--md-sys-color-on-surface);
         display: none;
         align-items: center;
         justify-content: center;
-        box-shadow: none;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
     }
     .gallery-board.is-selection-mode .gallery-item__select {
         display: inline-flex;
@@ -395,15 +508,18 @@
     }
     .gallery-item__media {
         position: relative;
+        aspect-ratio: 1 / 1;
         overflow: hidden;
-        background: var(--md-sys-color-surface);
+        background: var(--md-sys-color-surface-container-high);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .gallery-item img {
         display: block;
         width: 100%;
-        height: auto;
-        object-fit: contain;
-        background: var(--md-sys-color-surface);
+        height: 100%;
+        object-fit: cover;
     }
     .gallery-item:hover img {
         transform: none;
@@ -502,36 +618,85 @@
         color: var(--md-sys-color-outline);
     }
     .gallery-bottom-bar {
-        position: absolute;
-        left: 12px;
-        right: 12px;
-        bottom: 16px;
-        z-index: 60;
-        display: flex;
-        justify-content: center;
-        gap: 12px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: color-mix(in srgb, var(--md-sys-color-surface) 92%, transparent);
-        border: 1px solid var(--md-sys-color-outline-variant);
-        box-shadow: var(--md-sys-elevation-level3);
-        backdrop-filter: blur(18px);
+        z-index: 1000;
         transition: transform 0.2s ease, opacity 0.2s ease;
     }
     .gallery-bottom-bar.is-hidden {
         opacity: 0;
         pointer-events: none;
-        transform: translateY(120%);
+        transform: translateY(120%) !important;
     }
-    .gallery-bottom-bar__button {
-        flex: 0 0 48px;
-        width: 48px;
-        min-width: 48px;
-        height: 48px;
-        min-height: 48px;
-        padding: 0;
+    .gallery-upload-section {
+        padding: 10px 10px 0;
+        background: transparent;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin: 10px 10px 0;
+    }
+    .upload-dropzone {
+        padding: 10px 8px;
+        text-align: center;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .m3-btn-browse {
+        display: inline-flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--md-sys-color-surface-container-high);
+        color: var(--md-sys-color-on-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
         border-radius: 999px;
+        padding: 6px 6px 6px 18px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        gap: 12px;
+        transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+        outline: none;
+        height: 40px;
+        box-sizing: border-box;
+    }
+    .m3-btn-browse__icon-wrapper {
+        width: 28px;
+        height: 28px;
+        background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
+        color: var(--md-sys-color-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
         justify-content: center;
+        transition: all 0.25s;
+        flex-shrink: 0;
+    }
+    .m3-btn-browse .m3-btn-browse__icon-wrapper i {
+        font-size: 16px !important;
+        color: inherit !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .m3-btn-browse:hover {
+        background: var(--md-sys-color-surface-container-highest);
+        color: var(--md-sys-color-primary);
+        border-color: var(--md-sys-color-primary);
+    }
+    .m3-btn-browse:hover .m3-btn-browse__icon-wrapper {
+        background: var(--md-sys-color-primary);
+        color: var(--md-sys-color-on-primary);
+    }
+    .upload-dropzone-subtitle {
+        font-size: 11px;
+        color: var(--md-sys-color-outline);
+        margin: 0;
     }
     .upload-sheet {
         position: fixed;
@@ -800,24 +965,47 @@
         }
         .gallery-context,
         .gallery-board {
-            border-radius: 24px;
+            border-radius: 20px;
         }
         .gallery-grid {
-            grid-template-columns: minmax(0, 1fr);
-            gap: 12px;
-            padding: 12px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 10px;
         }
-        .gallery-detail__actions > *,
-        .gallery-detail__nav > * {
-            flex-basis: 100%;
+        .gallery-item__actions {
+            display: none !important;
         }
         .upload-sheet__content {
             padding: 24px 18px;
             max-height: 94vh;
             gap: 14px;
+            border-radius: 20px 20px 0 0;
         }
         .upload-sheet__footer {
             gap: 12px;
+        }
+        .nav-overlay-btn {
+            width: 38px;
+            height: 38px;
+        }
+        .nav-overlay-btn.prev {
+            left: 8px;
+        }
+        .nav-overlay-btn.next {
+            right: 8px;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .gallery-detail-sheet,
+        .gallery-tools-sheet,
+        .gallery-selection-sheet {
+            position: absolute !important;
+        }
+        .gallery-detail-sheet.active,
+        .gallery-tools-sheet.active,
+        .gallery-selection-sheet.active {
+            display: flex !important;
         }
     }
 </style>
@@ -832,17 +1020,71 @@
             <i class="bi bi-images"></i>
             <span>{{ lang.mod_gallery.admin.title }}</span>
         </div>
-        <div class="gallery-context__meta">
-            <div class="gallery-context__chip">
+        <div class="gallery-context__meta" style="font-size: 13px; font-weight: 500; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; color: var(--md-sys-color-on-surface-variant);">
+            <span>{{ lang.mod_gallery.admin.meta_mod }}: <strong style="color: var(--md-sys-color-on-surface);">{{ mod_name }}</strong></span>
+            <span>{{ lang.mod_gallery.admin.meta_id }}: <strong style="color: var(--md-sys-color-on-surface);">{{ vid }}</strong></span>
+            <span>{{ lang.mod_gallery.admin.meta_relation }}: <strong style="color: #2E7D32;">{{ lang.mod_gallery.admin.meta_relation_exists }}</strong></span>
+            <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px;" class="gallery-context__chip">
                 <i class="bi bi-collection"></i>
                 <strong id="galleryVisibleCount">{{ lang.mod_gallery.admin.images_summary|format(image_count) }}</strong>
-            </div>
-            <div class="gallery-context__chip">
-                <i class="bi bi-diagram-3"></i>
-                <span>{{ mod_name }}</span>
-            </div>
+            </span>
         </div>
     </section>
+
+    <!-- EMBEDDED UPLOAD SECTION -->
+    <div id="uploadSheet" class="gallery-upload-section">
+        <div
+            id="uploadArea"
+            class="upload-dropzone"
+            onclick="document.getElementById('fileInput').click()"
+            ondragenter="GalleryManager.setUploadDragState(true)"
+            ondragover="event.preventDefault(); GalleryManager.setUploadDragState(true)"
+            ondragleave="GalleryManager.setUploadDragState(false)"
+            ondrop="GalleryManager.handleDrop(event)"
+        >
+            <button type="button" class="m3-btn-browse">
+                <span>{{ lang.mod_gallery.admin.browse_description }}</span>
+                <span class="m3-btn-browse__icon-wrapper">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                </span>
+            </button>
+            <p class="upload-dropzone-subtitle" style="margin-top: 8px;">{{ lang.mod_gallery.admin.upload_hint }}</p>
+        </div>
+
+        <input type="file" id="fileInput" multiple hidden accept="image/*" onchange="GalleryManager.handleFileSelect(this)">
+
+        <div id="uploadPreview" class="upload-sheet__queue" aria-live="polite" style="display: none; width: 100%;">
+            <div class="upload-sheet__queue-header" style="margin-top: 10px;">
+                <div>
+                    <h4 style="margin: 0; font-size: 14px; font-weight: 700;">{{ lang.mod_gallery.admin.upload_queue_title }}</h4>
+                    <p id="uploadQueueSummary" style="margin: 2px 0 0; font-size: 11px; color: var(--md-sys-color-outline);">{{ lang.mod_gallery.admin.queue_ready|format(0) }}</p>
+                </div>
+            </div>
+
+            <div id="uploadOverall" class="upload-sheet__overall" hidden style="margin-top: 8px;">
+                <div id="uploadOverallTitle" class="upload-sheet__overall-title">{{ lang.mod_gallery.admin.upload_status_ready }}</div>
+                <div id="uploadOverallMeta" class="upload-sheet__overall-meta">{{ lang.mod_gallery.admin.upload_progress|format(0, 0) }}</div>
+                <div class="upload-sheet__overall-progress">
+                    <div id="uploadOverallBar" class="upload-sheet__overall-bar"></div>
+                </div>
+            </div>
+
+            <div id="uploadSafetyBanner" class="upload-sheet__safety" hidden style="margin-top: 8px;">
+                <div id="uploadSafetyTitle" class="upload-sheet__safety-title">{{ lang.mod_gallery.admin.upload_status_active }}</div>
+                <div id="uploadSafetyText" class="upload-sheet__safety-text">{{ lang.mod_gallery.admin.upload_sheet_lock }}</div>
+            </div>
+
+            <div id="uploadQueueList" class="upload-sheet__queue-list" style="margin-top: 8px;"></div>
+
+            <div class="upload-sheet__footer" style="margin-top: 10px; display: flex; justify-content: flex-end;">
+                <button class="m3-btn-text" type="button" data-upload-close onclick="closeUploadSheet()" style="color: var(--md-sys-color-error); font-weight: 700;">
+                    {{ lang.mod_gallery.admin.cancel }}
+                </button>
+                <button id="uploadBtn" class="m3-btn-filled" type="button" style="display: none;" disabled onclick="GalleryManager.startUpload()">
+                </button>
+            </div>
+        </div>
+    </div>
 
     <section id="galleryBoard" class="gallery-board">
         {% if pictures is defined and pictures|length > 0 %}
@@ -855,8 +1097,8 @@
 
                     <div id="galleryGrid" class="gallery-grid">
                         {% for picture in pictures %}
-                            {% set original_url = site.adres ~ 'static/mod_gallery/' ~ mod_name ~ '/original/' ~ picture.url %}
-                            {% set thumb_url = site.adres ~ 'static/mod_gallery/' ~ mod_name ~ '/thumb/' ~ picture.url %}
+                            {% set original_url = site.address ~ 'static/mod_gallery/' ~ mod_name ~ '/original/' ~ picture.url %}
+                            {% set thumb_url = site.address ~ 'static/mod_gallery/' ~ mod_name ~ '/thumb/' ~ picture.url %}
                             <article
                                 class="gallery-item"
                                 id="image-{{ picture.id }}"
@@ -997,17 +1239,23 @@
 <div id="galleryDetailSheet" class="gallery-detail-sheet">
     <div class="gallery-detail-sheet__scrim" onclick="GalleryManager.closeDetailSheet()"></div>
     <div class="gallery-detail-sheet__content">
-        <div class="gallery-detail-sheet__handle"></div>
-        <div class="gallery-detail__inner">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                <div class="gallery-detail__eyebrow">
-                    <i class="bi bi-layout-sidebar-inset"></i>
-                    <span>{{ lang.mod_gallery.admin.detail_title }}</span>
-                </div>
-                <button class="m3-icon-btn" type="button" onclick="GalleryManager.closeDetailSheet()">
-                    <i class="bi bi-x-lg"></i>
-                </button>
+        <!-- Sernavê Top-Bar -->
+        <div class="gallery-detail__top-bar">
+            <button class="close-btn" type="button" onclick="GalleryManager.closeDetailSheet()" aria-label="Girtin">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+            <div class="gallery-detail__title-section">
+                <h4 id="galleryDetailTitle" class="title">-</h4>
+                <span id="galleryDetailPosition" class="subtitle">-</span>
             </div>
+            <div style="width: 40px;"></div>
+        </div>
+
+        <!-- Pêşdîtin bi Bişkojên Aliyan -->
+        <div class="gallery-detail__preview-container">
+            <button class="nav-overlay-btn prev" type="button" onclick="GalleryManager.showPreviousImage()" aria-label="Wêneya berê">
+                <i class="bi bi-chevron-left"></i>
+            </button>
 
             <div class="gallery-detail__preview">
                 <img id="galleryDetailImage" src="" alt="{{ lang.mod_gallery.admin.preview_alt }}" style="display: none;">
@@ -1016,42 +1264,29 @@
                 </div>
             </div>
 
-            <div class="gallery-detail__meta">
-                <div class="gallery-detail__meta-row">
-                    <strong>{{ lang.mod_gallery.admin.detail_filename }}</strong>
-                    <span id="galleryDetailFilename">-</span>
-                </div>
-                <div class="gallery-detail__meta-row">
-                    <strong>{{ lang.mod_gallery.admin.detail_image_id }}</strong>
-                    <span id="galleryDetailId">-</span>
-                </div>
-                <div class="gallery-detail__meta-row">
-                    <strong>{{ lang.mod_gallery.admin.detail_position }}</strong>
-                    <span id="galleryDetailPosition">-</span>
-                </div>
-            </div>
+            <button class="nav-overlay-btn next" type="button" onclick="GalleryManager.showNextImage()" aria-label="Wêneya paş">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
 
-            <div class="gallery-detail__nav">
-                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.showPreviousImage()">
-                    <i class="bi bi-arrow-left"></i>
-                    <span>{{ lang.mod_gallery.admin.previous_image }}</span>
-                </button>
-                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.showNextImage()">
-                    <span>{{ lang.mod_gallery.admin.next_image }}</span>
-                    <i class="bi bi-arrow-right"></i>
-                </button>
+        <!-- Agahî û Bişkokên Minimalist ên Jêrîn -->
+        <div class="gallery-detail__bottom-panel">
+            <div class="gallery-detail__meta-summary">
+                <span class="meta-label">ID: <strong id="galleryDetailId">-</strong></span>
+                <span class="meta-divider">|</span>
+                <span class="meta-filename" id="galleryDetailFilename">-</span>
             </div>
 
             <div class="gallery-detail__actions">
-                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.viewActiveImageOriginal()">
+                <button class="detail-action-btn view-btn" type="button" onclick="GalleryManager.viewActiveImageOriginal()" title="{{ lang.mod_gallery.admin.view_original }}">
                     <i class="bi bi-arrows-fullscreen"></i>
                     <span>{{ lang.mod_gallery.admin.view_original }}</span>
                 </button>
-                <button class="m3-btn-outlined" type="button" onclick="GalleryManager.editActiveImageName()">
+                <button class="detail-action-btn rename-btn" type="button" onclick="GalleryManager.editActiveImageName()" title="{{ lang.mod_gallery.admin.rename_image }}">
                     <i class="bi bi-pencil"></i>
                     <span>{{ lang.mod_gallery.admin.rename_image }}</span>
                 </button>
-                <button class="m3-btn-filled" type="button" onclick="GalleryManager.deleteActiveImage()">
+                <button class="detail-action-btn delete-btn" type="button" onclick="GalleryManager.deleteActiveImage()" title="{{ lang.mod_gallery.admin.remove_image }}">
                     <i class="bi bi-trash"></i>
                     <span>{{ lang.mod_gallery.admin.remove_image }}</span>
                 </button>
@@ -1059,95 +1294,51 @@
         </div>
     </div>
 </div>
-
-<div id="uploadSheet" class="upload-sheet">
-    <div class="upload-sheet__scrim" onclick="closeUploadSheet()"></div>
-    <div class="upload-sheet__content">
-        <header class="upload-sheet__header">
-            <div>
-                <h3 style="margin: 0; font-size: 22px; font-weight: 500;">{{ lang.mod_gallery.admin.area_title }}</h3>
-                <p class="upload-sheet__subtitle">{{ lang.mod_gallery.admin.upload_area_for|format(record_label) }}</p>
-            </div>
-            <button id="uploadSheetCloseBtn" class="m3-icon-btn" type="button" data-upload-close onclick="closeUploadSheet()">
-                <i class="bi bi-x-lg"></i>
-            </button>
-        </header>
-
-        <div id="uploadOverall" class="upload-sheet__overall" hidden>
-            <div id="uploadOverallTitle" class="upload-sheet__overall-title">{{ lang.mod_gallery.admin.upload_status_ready }}</div>
-            <div id="uploadOverallMeta" class="upload-sheet__overall-meta">{{ lang.mod_gallery.admin.upload_progress|format(0, 0) }}</div>
-            <div class="upload-sheet__overall-progress">
-                <div id="uploadOverallBar" class="upload-sheet__overall-bar"></div>
-            </div>
-        </div>
-
-        <div id="uploadSafetyBanner" class="upload-sheet__safety" hidden>
-            <div id="uploadSafetyTitle" class="upload-sheet__safety-title">{{ lang.mod_gallery.admin.upload_status_active }}</div>
-            <div id="uploadSafetyText" class="upload-sheet__safety-text">{{ lang.mod_gallery.admin.upload_sheet_lock }}</div>
-        </div>
-
-        <div
-            id="uploadArea"
-            class="image-upload-area"
-            onclick="document.getElementById('fileInput').click()"
-            ondragenter="GalleryManager.setUploadDragState(true)"
-            ondragover="event.preventDefault(); GalleryManager.setUploadDragState(true)"
-            ondragleave="GalleryManager.setUploadDragState(false)"
-            ondrop="GalleryManager.handleDrop(event)"
-        >
-            <i class="bi bi-cloud-arrow-up"></i>
-            <div>
-                <p style="margin: 0; font-size: 16px; font-weight: 500;">{{ lang.mod_gallery.admin.browse_description }}</p>
-                <p style="margin: 8px 0 0; font-size: 13px; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.ctrl_select_hint|raw }}</p>
-            </div>
-        </div>
-
-        <input type="file" id="fileInput" multiple hidden accept="image/*" onchange="GalleryManager.handleFileSelect(this)">
-
-        <div id="uploadPreview" class="upload-sheet__queue" aria-live="polite">
-            <div class="upload-sheet__queue-header">
-                <div>
-                    <h4>{{ lang.mod_gallery.admin.upload_queue_title }}</h4>
-                    <p id="uploadQueueSummary">{{ lang.mod_gallery.admin.queue_ready|format(0) }}</p>
-                </div>
-            </div>
-            <div id="uploadQueueList" class="upload-sheet__queue-list"></div>
-        </div>
-
-        <div class="upload-sheet__footer">
-            <button class="m3-btn-text" type="button" style="flex: 1;" data-upload-close onclick="closeUploadSheet()">
-                {{ lang.mod_gallery.admin.cancel }}
-            </button>
-            <button id="uploadBtn" class="m3-btn-filled" type="button" style="flex: 2;" disabled onclick="GalleryManager.startUpload()">
-                <i class="bi bi-cloud-upload"></i>
-                <span>{{ lang.mod_gallery.admin.upload_button }}</span>
-            </button>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="gallery-bottom-bar">
-    <button id="gallerySelectionToggle" class="m3-btn-outlined gallery-bottom-bar__button" type="button" onclick="GalleryManager.toggleSelectionMode()" title="{{ lang.mod_gallery.admin.select_mode }}" aria-label="{{ lang.mod_gallery.admin.select_mode }}">
+<div class="standard-toolbar gallery-bottom-bar">
+    <!-- Toolbar Item: Veger (Back) -->
+    <a
+        class="toolbar-item"
+        href="{{ back_url is defined and back_url ? back_url : (site.saddress ~ 'mod_gallery/list') }}"
+        title="{{ lang.mod_gallery.admin.back }}"
+        aria-label="{{ lang.mod_gallery.admin.back }}"
+    >
+        <i class="bi bi-arrow-left"></i>
+    </a>
+
+    <!-- Hidden element to prevent JS from breaking -->
+    <button id="gallerySelectionToggle" class="toolbar-item" type="button" style="display: none;" onclick="GalleryManager.toggleSelectionMode()">
         <i class="bi bi-check2-square"></i>
     </button>
-    <button class="m3-btn-filled gallery-bottom-bar__button" type="button" onclick="openUploadSheet()" title="{{ lang.mod_gallery.admin.add_images }}" aria-label="{{ lang.mod_gallery.admin.add_images }}">
+
+    <!-- Symmetrical Center Start Button -->
+    <button type="button" class="toolbar-start-btn" onclick="if(typeof toggleDrawer==='function')toggleDrawer();" title="{{ lang.management.start_menu }}" aria-label="{{ lang.management.start_menu }}">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Hidden element to prevent JS from breaking -->
+    <button class="toolbar-item" type="button" style="display: none;" disabled onclick="GalleryManager.startUpload()">
         <i class="bi bi-plus-lg"></i>
     </button>
-    <button class="m3-btn-outlined gallery-bottom-bar__button" type="button" onclick="GalleryManager.openToolsSheet()" title="{{ lang.mod_gallery.admin.sort_label }}" aria-label="{{ lang.mod_gallery.admin.sort_label }}">
+
+    <button class="toolbar-item" type="button" style="display: none;" onclick="GalleryManager.openToolsSheet()">
         <i class="bi bi-sliders"></i>
     </button>
+
+    <!-- Symmetrical Right Placeholder -->
+    <div style="width: 48px; visibility: hidden;"></div>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.adres }}templates/admin/assets/js/mod_gallery.js?v=8"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_gallery.js?v=8"></script>
 <script>
     GalleryManager.init({
         vid: '{{ vid }}',
         mod_name: '{{ mod_name }}',
-        baseUrl: '{{ site.sadres }}mod_gallery/',
+        baseUrl: '{{ site.saddress }}mod_gallery/',
         lang: {
             uploading: '{{ lang.mod_gallery.admin.uploading }}',
             delete_title: '{{ lang.mod_gallery.admin.delete_title }}',

@@ -19,9 +19,11 @@ class ContentManager {
         this.isLoading = false;
         this.hasMore = true;
         this.selectedContentId = null;
+        this.selectedInHeroSlider = false;
         this.imageUploadContentId = null;
         this.imageUploader = null;
         this.imageUploaderBound = false;
+        this.imageUploadInProgress = false;
         this.imageModalState = {
             hasExistingImage: false,
             existingImageSrc: '',
@@ -88,6 +90,9 @@ class ContentManager {
             this.container.innerHTML = '';
             this.hasMore = true;
             this.draw = 1;
+            this.selectedContentId = null;
+            this.selectedInHeroSlider = false;
+            this.updateToolbar(false);
             this.emptyState.style.display = 'none';
             this.loader.style.display = 'flex';
             if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
@@ -179,6 +184,7 @@ class ContentManager {
             const categoryId = item[7] || 0;
             const statusRaw = item[8] || 'n';
             const authorName = this.stripHtml(item[9] || '');
+            const inHeroSlider = String(item[10] || '0') === '1';
 
             // Extract Text Title
             const tempDiv = document.createElement('div');
@@ -196,14 +202,15 @@ class ContentManager {
             card.dataset.id = id;
             card.dataset.imageSrc = imgSrc || '';
             card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : '';
+            card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
             card.onclick = () => window.contentManager.selectContent(id, card);
 
             // Status Logic
             let statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.draft : "Draft";
-            let statusColor = "#FFAB00"; // Orange
+            let statusColor = "#0B57D0"; // Blue
             if (statusRaw === 'y') {
                 statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.active : "Active";
-                statusColor = "var(--md-sys-color-primary)"; // Purple/Primary
+                statusColor = "#2E7D32"; // Green
             }
 
             // Category Logic
@@ -218,46 +225,43 @@ class ContentManager {
             const safeLang = this.escapeHtml(lang);
             const safeDate = this.escapeHtml(date);
             const safeAuthorName = this.escapeHtml(authorName);
+            const safeSliderBadge = this.escapeHtml(CONTENT_LANG.hero_slider_badge);
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
-                <div class="card-content-layout">
-                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
+                <div class="card-content-layout" style="display:flex; gap:12px;">
+                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f8f2fa;'}; flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px;">
                         ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
-                    <div class="card-body-col">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                             <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
-                                    <span>•</span>
-                                    <span>${safeCategoryName}</span>
+                    <div class="card-body-col" style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                             <div style="flex:1; min-width:0;">
+                                <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
+                                    <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
+                                        <i class="bi bi-stars"></i> ${safeSliderBadge}
+                                    </span>
+                                    <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${safeStatusText}</span>
                                 </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
+                                <h3 style="margin:4px 0; font-size:16px; font-weight:700; color: var(--md-sys-color-on-surface); word-break:break-word; line-height:1.2; text-align: left;">${safeTitleText}</h3>
                              </div>
-                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
+                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" aria-label="More actions">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
-
-                        <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
-                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
-                        </div>
                     </div>
+                </div>
+
+                <div class="meta-row" style="margin-top:12px; display:flex; align-items:center; width:100%; font-size:12px; color: var(--md-sys-color-on-surface-variant); border-top: 1px solid var(--md-sys-color-outline-variant, #EADDFF); padding-top: 8px;">
+                     <span style="display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
+                     <span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
+                     ${safeAuthorName ? `<span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-person" style="font-size:11px;"></i> ${safeAuthorName}</span>` : ''}
+                     <span style="margin-left: auto; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-diagram-2" style="font-size:11px;"></i> ${safeCategoryName}</span>
                 </div>
             `;
 
             const thumbnail = card.querySelector('.card-thumbnail');
             if (thumbnail) {
-                if (imgSrc) {
-                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
-                    thumbnail.style.backgroundSize = 'cover';
-                    thumbnail.style.backgroundPosition = 'center';
-                }
-
                 thumbnail.addEventListener('click', (event) => {
                     event.stopPropagation();
                     this.processImageUpload(id);
@@ -393,6 +397,9 @@ class ContentManager {
                         this.imageModalState.existingImageName = name;
                     }
                     this.updateImageModalActions(source, file);
+                    if (file && source !== 'existing' && source !== 'reset') {
+                        this.submitListImageUpload();
+                    }
                 }
             });
         }
@@ -450,6 +457,7 @@ class ContentManager {
 
         document.body.classList.remove('news-image-modal-open');
         this.imageUploadContentId = null;
+        this.imageUploadInProgress = false;
         this.imageModalState = {
             hasExistingImage: false,
             existingImageSrc: '',
@@ -490,8 +498,8 @@ class ContentManager {
         const hasPendingFile = Boolean(file) && source !== 'existing';
 
         if (this.imageSaveBtn) {
-            this.imageSaveBtn.hidden = !hasPendingFile;
-            this.imageSaveBtn.disabled = !hasPendingFile;
+            this.imageSaveBtn.hidden = true;
+            this.imageSaveBtn.disabled = true;
         }
         if (this.imageMeta) {
             this.imageMeta.hidden = !hasPendingFile;
@@ -571,6 +579,10 @@ class ContentManager {
     }
 
     async submitListImageUpload() {
+        if (this.imageUploadInProgress) {
+            return;
+        }
+
         const fileData = this.imageUploader?.getSelectedFile();
         if (!this.imageUploadContentId || !fileData) {
             this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
@@ -581,10 +593,10 @@ class ContentManager {
         formData.append('image', fileData);
         formData.append('id', this.imageUploadContentId);
 
+        this.imageUploadInProgress = true;
         if (this.imageSaveBtn) {
-            this.imageSaveBtn.hidden = false;
+            this.imageSaveBtn.hidden = true;
             this.imageSaveBtn.disabled = true;
-            this.imageSaveBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${CONTENT_LANG.loading}`;
         }
 
         this.loader.style.display = 'flex';
@@ -609,16 +621,15 @@ class ContentManager {
             this.imageUploader?.showFeedback(CONTENT_LANG.error_upload, 'error');
             showSnackbar(CONTENT_LANG.error_upload, 'error');
         } finally {
+            this.imageUploadInProgress = false;
             this.loader.style.display = 'none';
             if (this.imageSaveBtn) {
-                const hasPendingFile = !!this.imageUploader?.getSelectedFile();
-                this.imageSaveBtn.hidden = !hasPendingFile;
-                this.imageSaveBtn.disabled = !hasPendingFile;
+                this.imageSaveBtn.hidden = true;
+                this.imageSaveBtn.disabled = true;
                 this.imageSaveBtn.innerHTML = CONTENT_LANG.save_image;
             }
         }
     }
-
     openActionSheet(id, title, status) {
         const titleEl = document.getElementById('contextMenuTitle');
         if (titleEl) titleEl.textContent = title;
@@ -627,10 +638,9 @@ class ContentManager {
 
         const isPublished = (status === 'y');
         if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, isPublished);
+            openContextMenu(id, title, isPublished, ['video']);
         }
     }
-
     // --- Card Selection & Toolbar ---
     selectContent(id, cardElement) {
         const isCurrent = cardElement.classList.contains('selected');
@@ -643,16 +653,18 @@ class ContentManager {
         if (!isCurrent) {
             cardElement.classList.add('selected');
             this.selectedContentId = id;
+            this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
             this.updateToolbar(true);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         } else {
             this.selectedContentId = null;
+            this.selectedInHeroSlider = false;
             this.updateToolbar(false);
         }
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete'];
+        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarVideo'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -666,6 +678,72 @@ class ContentManager {
                 btn.style.opacity = '0.3';
             }
         });
+        this.syncSliderToolbarState(active);
+    }
+
+    syncSliderToolbarState(active) {
+        const sliderBtn = document.getElementById('toolbarSlider');
+        if (!sliderBtn) return;
+
+        const label = active && this.selectedInHeroSlider
+            ? CONTENT_LANG.hero_slider_remove
+            : CONTENT_LANG.hero_slider_add;
+
+        sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
+        sliderBtn.title = label;
+        sliderBtn.setAttribute('aria-label', label);
+    }
+
+    getSelectedCard() {
+        if (!this.selectedContentId) return null;
+        return document.querySelector(`.content-card[data-id="${this.selectedContentId}"]`);
+    }
+
+    applyHeroSliderState(card, inHeroSlider) {
+        if (!card) return;
+
+        card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
+        const badge = card.querySelector('.hero-slider-badge');
+        const dot = card.querySelector('.hero-slider-dot');
+
+        if (badge) {
+            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+        if (dot) {
+            dot.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+    }
+
+    async toggleHeroSlider() {
+        if (!this.selectedContentId) return;
+
+        const formData = new URLSearchParams();
+        formData.append('id', this.selectedContentId);
+
+        try {
+            const response = await fetch(`${MODULE_URL}toggle_hero_slider`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || CONTENT_LANG.hero_slider_error, 'error');
+                return;
+            }
+
+            this.selectedInHeroSlider = Boolean(result.in_hero_slider);
+            this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
+            this.syncSliderToolbarState(true);
+            showSnackbar(
+                result.message || (this.selectedInHeroSlider ? CONTENT_LANG.hero_slider_added : CONTENT_LANG.hero_slider_removed),
+                'success'
+            );
+        } catch (error) {
+            console.error('Hero slider toggle error:', error);
+            showSnackbar(CONTENT_LANG.hero_slider_error, 'error');
+        }
     }
 }
 
@@ -692,7 +770,21 @@ window.gallerySelected = function () {
 window.filesSelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
-        window.location.href = SITE_URL + 'mod_attachment/list/mod_content/' + mgr.selectedContentId;
+        openMediaRelationPicker(mgr.selectedContentId, 'files');
+    }
+};
+
+window.videoSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        openMediaRelationPicker(mgr.selectedContentId, 'video');
+    }
+};
+
+window.sliderSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        mgr.toggleHeroSlider();
     }
 };
 
@@ -798,8 +890,9 @@ window.handleContextAction = function (action) {
             window.location.href = `${SITE_URL}mod_gallery/list/mod_content/${id}`;
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_content/${id}`;
-            break;
+            closeContextMenu();
+            openMediaRelationPicker(id, 'files');
+            return;
         case 'status':
             // Call the existing toggleStatus logic
             // We need the current status 'e' or 'h'. We can get it from the UI or pass it.
@@ -811,6 +904,151 @@ window.handleContextAction = function (action) {
     }
     closeContextMenu();
 } // End function
+
+document.addEventListener('click', function(e) {
+    if (e.target.matches('#select-picker-overlay') || e.target.closest('.m3-btn-text')) {
+        const btn = document.getElementById('selectPickerAddBtn');
+        if (btn) {
+            btn.style.display = 'none';
+        }
+    }
+});
+
+window.openMediaRelationPicker = function(contentId, type) {
+    let endpoint = '';
+    let title = '';
+    let addUrl = '';
+
+    if (type === 'files') {
+        endpoint = `${MODULE_URL}ajax_get_files`;
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Select Existing File';
+        addUrl = `${SITE_URL}mod_attachment/list/mod_content/${contentId}`;
+    } else if (type === 'video') {
+        endpoint = `${MODULE_URL}all_video`;
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.video : 'Select Existing Video';
+        addUrl = `${SITE_URL}mod_video_embed/add`;
+    } else {
+        return;
+    }
+
+    window.currentMediaPickerAddUrl = addUrl;
+
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    if (addBtn) {
+        addBtn.style.display = 'block';
+    }
+
+    const pickerData = new FormData();
+    pickerData.append('q', '');
+    pickerData.append('ajax_request', '1');
+
+    const currentData = new FormData();
+    currentData.append('id', contentId);
+    currentData.append('ajax_request', '1');
+
+    Promise.all([
+        fetch(endpoint, {
+            method: 'POST',
+            body: pickerData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then((response) => response.json()),
+        fetch(`${MODULE_URL}ajax_get_current_media`, {
+            method: 'POST',
+            body: currentData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        }).then((response) => response.json())
+    ])
+        .then(([data, currentMedia]) => {
+            let select = document.getElementById('dynamicMediaSelect');
+            if (!select) {
+                select = document.createElement('select');
+                select.id = 'dynamicMediaSelect';
+                select.style.display = 'none';
+                document.body.appendChild(select);
+
+                select.addEventListener('change', function() {
+                    const val = this.value;
+                    if (val === undefined || val === null) {
+                        return;
+                    }
+
+                    const fd = new FormData();
+                    fd.append('id', window.currentMediaPickerContentId);
+                    fd.append('type', window.currentMediaPickerType);
+                    fd.append('value', val);
+                    fd.append('ajax_request', '1');
+
+                    fetch(`${MODULE_URL}ajax_update_relation`, {
+                        method: 'POST',
+                        body: fd,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    })
+                        .then((response) => response.json())
+                        .then((result) => {
+                            if (result.status === 'success') {
+                                showSnackbar(result.message, 'success');
+                                if (window.contentManager) {
+                                    window.contentManager.loadData(true);
+                                }
+                                if (typeof closeSelectPickerSheet === 'function') {
+                                    closeSelectPickerSheet();
+                                }
+                            } else {
+                                showSnackbar(result.message || CONTENT_LANG.error_general, 'error');
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Update Error:', error);
+                            showSnackbar(CONTENT_LANG.error_general, 'error');
+                        });
+                });
+            }
+
+            window.currentMediaPickerContentId = contentId;
+            window.currentMediaPickerType = type;
+
+            const pickerTitleEl = document.getElementById('selectPickerTitle');
+            const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');
+            if (pickerTitleEl) {
+                pickerTitleEl.textContent = title;
+            }
+            if (pickerSubtitleEl) {
+                pickerSubtitleEl.textContent = '';
+            }
+
+            select.innerHTML = '';
+            data.forEach((item) => {
+                const opt = document.createElement('option');
+                opt.value = item.value || item.id;
+                opt.textContent = item.name || item.text || item.title || String(item.id);
+                select.appendChild(opt);
+            });
+
+            let currentValue = '0';
+            if (type === 'files' && currentMedia.file_id) {
+                currentValue = currentMedia.file_id.toString();
+            } else if (type === 'video' && Array.isArray(currentMedia.video)) {
+                currentValue = '0';
+            }
+
+            select.value = currentValue;
+            select.dataset.pickerTitle = title;
+
+            if (typeof openSelectPickerSheet === 'function') {
+                openSelectPickerSheet('dynamicMediaSelect');
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            showSnackbar(CONTENT_LANG.error_general, 'error');
+        });
+};
+
+window.handleSelectPickerAdd = function() {
+    if (window.currentMediaPickerAddUrl) {
+        window.location.href = window.currentMediaPickerAddUrl;
+    }
+};
 
 /**
  * Ported from legacy script.twig: Quick Publish/Unpublish

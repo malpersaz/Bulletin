@@ -3,7 +3,7 @@
 
 -- 1. Update existing image column (varchar(20) -> varchar(255))
 ALTER TABLE `mod_user`
-MODIFY COLUMN `image` varchar(255) COLLATE utf8_unicode_ci NULL DEFAULT NULL;
+MODIFY COLUMN `image` varchar(255) NULL DEFAULT NULL;
 
 -- 2. Add avatar system fields
 ALTER TABLE `mod_user`

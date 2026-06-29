@@ -66,6 +66,19 @@ Use it to quickly locate:
 - `/.agents/skills/lang-refactor/SKILL.md`
   - language-key refactoring helper for descriptive English key migrations
 
+- `/.agents/skills/module-modernization-check/SKILL.md`
+  - Internal Modernization Check: module modernization standards, SQLite compatibility, and validation rules
+
+- `/.agents/skills/sibling-parity-check/SKILL.md`
+  - Sibling Repositories Parity Check: checklist to verify cross-repository synchronization and parity
+
+- `/.agents/skills/task-validation/SKILL.md`
+  - Task Completion & Release Validation: version logging in VERSION.md and running project quality guards before release
+
+- `/.agents/skills/admin-mobile-check/SKILL.md`
+  - Admin Mobile Layout Check: audit admin templates/assets for mobile layout compliance
+
+
 ## Prompt Set
 
 - `/.agents/quality/prompts/shared-diff-scope.md`
@@ -85,6 +98,12 @@ Use it to quickly locate:
 
 - `/.agents/quality/prompts/cleanup-guard.md`
   - cleanup and leftover detection prompt
+
+- `/.agents/quality/prompts/modernization-guard.md`
+  - modernization and refactoring standard validation guard prompt
+
+- `/.agents/quality/prompts/parity-guard.md`
+  - sibling repository parity and synchronization guard prompt
 
 - `/.agents/quality/prompts/policy-gate.md`
   - final review consolidation prompt

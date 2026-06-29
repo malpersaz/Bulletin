@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'Publicerad den %s',
     'home' => 'Hemsida',
+    'navigation' => 'Navigering',
     'download' => 'Ladda ner',
     'login' => 'Logga in',
     'register' => 'Registrera',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'Språk',
     'messages' => 'Meddelanden',
     'my_account' => 'Mitt konto',
+    'menu_title' => 'Meny',
     'change_avatar' => 'Byt avatar',
     'logout' => 'Logga ut',
     'dark_mode' => 'Mörkt läge',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'Kontakt',
     'info' => 'Info',
     'find_us' => 'Hitta oss',
+    'rss_feed' => 'RSS-flode',
+    'sitemap' => 'Webbplatskarta',
+    'site_logo_alt' => 'Webbplatslogotyp',
+    'producer_logo_alt' => 'AKM Software-logotyp',
     'map_available_soon' => 'Karta tillgänglig snart',
     'publish_date' => 'Publiceringsdatum',
+    'category_label' => 'Kategori',
     'updated_date' => 'Uppdaterad den',
     'min_read' => 'min läsning',
     'enlarge_image' => 'Förstora bilden',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'Dela',
     'copy_link' => 'Copy Link',
     'link_copied' => 'Link Copied!',
+    'email' => 'E-post',
+    'file_not_found' => 'Filen hittades inte',
     'search' => [
         'searched_word' => 'Ange sökord!',
         'search' => 'Sök',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'Inget foto hittades i denna kategori!',
         'latest_pictures' => [
             1 => 'Foton',
+            2 => 'Senaste Bilder',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'Hem',
         'about' => 'Om oss',
         'contact' => 'Kontakt',
+        'footer_links' => 'Sidfotslänkar',
         'language' => 'Språk',
         'messages' => 'Meddelanden',
         'my_account' => 'Mitt konto',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'Ladda upp',
     ],
     'copyright' => '© Alla rättigheter förbehållna.',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'Temagalleri',
         'desc' => 'Temagalleri - Inställning och kontroll',
@@ -290,9 +301,9 @@ $lang['index'] = [
             11 => 'December',
         ],
         'latest_news' => [
-            1 => 'News',
-            2 => 'View All',
-            3 => 'No published news is available yet.',
+            1 => 'Nyheter',
+            2 => 'Visa alla',
+            3 => 'Inga publicerade nyheter är tillgängliga än.',
         ],
     ],
     'mod_publication' => [
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'Alla publikationer',
             3 => 'Det finns inget publicerat innehall an.',
         ],
+        'comments' => [
+            'title' => 'Kommentarer',
+            'add_title' => 'Lägg till kommentar',
+            'placeholder' => 'Din kommentar',
+            'full_name' => 'Fullständigt namn',
+            'submit' => 'Skicka kommentar',
+            'warning_label' => 'Varning',
+            'rules' => 'Kommentarer som innehåller förolämpningar, missbruk eller oläslig formatering kanske inte godkänns.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'Skicka meddelande',
+    ],
+    'error' => [
+        '1' => 'Fel',
+        'method' => ['ad' => 'Ogiltig metod', 'mesaj' => 'Metod %s hittades inte'],
+        'mod' => ['ad' => 'Modulfel', 'mesaj' => 'Modul %s hittades inte'],
+        'not' => ['ad' => 'Sidan hittades inte', 'mesaj' => 'Den begärda sidan %s hittades inte'],
     ],
 ];

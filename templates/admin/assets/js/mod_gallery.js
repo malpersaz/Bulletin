@@ -552,26 +552,147 @@ const GalleryManager = {
     },
 
     renderCard: function(item) {
-        return `
-            <div class="gallery-card" onclick="location.href='${this.config.baseUrl}list/${this.escapeHtml(item.mod_name)}/${this.escapeHtml(item.mod_key)}'">
-                <div class="gallery-card__header">
-                    <div class="gallery-card__info">
-                        <h4 class="gallery-card__title">${this.escapeHtml(item.name)}</h4>
-                        <div class="gallery-card__subtitle">${this.escapeHtml(item.mod_name)} / ${this.escapeHtml(item.mod_key)}</div>
-                    </div>
-                    <div class="stat-badge">
+        const previews = Array.isArray(item.preview_images) ? item.preview_images : [];
+        let layersHtml = '';
+
+        for (let i = 0; i < 3; i++) {
+            const previewIndex = 2 - i;
+            const imgUrl = previews[previewIndex];
+            if (imgUrl) {
+                const fullImgUrl = `${this.config.siteAdres}static/mod_gallery/${this.escapeHtml(item.mod_name)}/thumb/${this.escapeHtml(imgUrl)}`;
+                layersHtml += `<div class="image-stack-layer" style="background-image: url('${fullImgUrl}');"></div>`;
+            } else {
+                if (i === 2) {
+                    layersHtml += `<div class="image-stack-layer" style="display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-outline); font-size: 24px;">
                         <i class="bi bi-image"></i>
-                        <span>${this.escapeHtml(item.image_count)} ${this.escapeHtml(this.config.lang.images)}</span>
-                    </div>
+                    </div>`;
+                } else {
+                    layersHtml += `<div class="image-stack-layer"></div>`;
+                }
+            }
+        }
+
+        const isPublished = Number(item.image_count) > 0;
+        const statusClass = isPublished ? 'active' : 'draft';
+        const statusLabel = isPublished ? this.config.lang.status_active : this.config.lang.status_draft;
+
+        return `
+            <div class="gallery-card" id="gallery-card-${this.escapeHtml(item.mod_name)}-${this.escapeHtml(item.mod_key)}" onclick="GalleryManager.selectCard(this, '${this.escapeJsString(item.mod_name)}', '${this.escapeJsString(item.mod_key)}')" ondblclick="location.href='${this.config.baseUrl}list/${this.escapeHtml(item.mod_name)}/${this.escapeHtml(item.mod_key)}'">
+                <div class="image-stack-container">
+                    ${layersHtml}
                 </div>
-                <div class="gallery-card__actions">
-                    <button type="button" class="m3-btn-tonal action-btn">
-                        <i class="bi bi-eye"></i>
-                        <span>${this.escapeHtml(this.config.lang.view_images)}</span>
-                    </button>
+                <div class="card-details">
+                    <div class="card-header-row">
+                        <h4 class="card-title">${this.escapeHtml(item.name)}</h4>
+                    </div>
+                    <div class="card-meta">${this.escapeHtml(item.mod_name)} / ${this.escapeHtml(item.mod_key)}</div>
+                    <div class="badge-row">
+                        <span class="status-badge ${statusClass}">${this.escapeHtml(statusLabel)}</span>
+                        <span class="count-badge">
+                            <i class="bi bi-image"></i> ${this.escapeHtml(item.image_count)} ${this.escapeHtml(this.config.lang.images)}
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
+    },
+
+    selectedCard: null,
+
+    selectCard: function(element, mod, vid) {
+        const isSelected = element.classList.contains('selected');
+
+        // Clear previous selections
+        document.querySelectorAll('.gallery-card').forEach((c) => c.classList.remove('selected'));
+
+        if (!isSelected) {
+            element.classList.add('selected');
+            this.selectedCard = { mod: mod, vid: vid };
+            this.updateToolbarState(true);
+
+            // Micro-vibration support
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(10);
+            }
+
+            // Sync status badge to status button if needed
+            const isPublished = element.querySelector('.status-badge').classList.contains('active');
+            const statusBtn = document.getElementById('toolbarStatus');
+            if (statusBtn) {
+                statusBtn.classList.toggle('is-published', isPublished);
+            }
+        } else {
+            this.selectedCard = null;
+            this.updateToolbarState(false);
+        }
+    },
+
+    updateToolbarState: function(active) {
+        const ids = ['toolbarManage', 'toolbarStatus', 'toolbarDelete'];
+        ids.forEach((btnId) => {
+            const btn = document.getElementById(btnId);
+            if (!btn) {
+                return;
+            }
+
+            if (active) {
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            } else {
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.3';
+                btn.classList.remove('is-published');
+            }
+        });
+    },
+
+    toolbarManage: function() {
+        if (!this.selectedCard) {
+            return;
+        }
+        location.href = `${this.config.baseUrl}list/${encodeURIComponent(this.selectedCard.mod)}/${encodeURIComponent(this.selectedCard.vid)}`;
+    },
+
+    toolbarStatus: function() {
+        if (!this.selectedCard) {
+            return;
+        }
+        this.notify('Statûya wênedankê li gorî hejmara wêneyan (Active/Draft) bixweber tê kontrolkirin.', 'info');
+    },
+
+    toolbarDelete: function() {
+        if (!this.selectedCard) {
+            return;
+        }
+
+        if (!confirm('Gelo tu dixwazî hemû wêneyên di vê wênedankê de jê bibî? Ev kiryar nayê vegerandin.')) {
+            return;
+        }
+
+        const self = this;
+        fetch(`${this.config.baseUrl}sil_all`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: new URLSearchParams({
+                mod_name: this.selectedCard.mod,
+                vid: this.selectedCard.vid
+            }).toString()
+        })
+        .then((response) => response.json())
+        .then((result) => {
+            if (result.status === 'success') {
+                self.notify(result.message, 'success');
+                self.selectedCard = null;
+                self.updateToolbarState(false);
+                self.loadGalleries();
+            } else {
+                self.notify(result.message, 'error');
+            }
+        })
+        .catch((err) => {
+            console.error('Delete all failed', err);
+            self.notify('Jêbirin nehat kirin!', 'error');
+        });
     },
 
     search: function(query) {

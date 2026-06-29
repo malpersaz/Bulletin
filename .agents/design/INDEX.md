@@ -35,6 +35,8 @@ Use these only for public frontend themes under `templates/<theme>`.
   - Reading-heavy sites where articles, pages, and publications dominate.
 - `public-theme/content-heavy.md`
   - News, archive, media, publication, and category-heavy sites.
+- `public-theme/cms.md`
+  - Company, service, product, institutional, and conversion-oriented sites.
 
 If none fit, use only `public-theme/DESIGN.md` and ask before adding a new shared profile.
 

@@ -73,10 +73,6 @@
             <span>{{ lang.mod_video.admin.columns.image }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_video/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
         <button id="toolbarPublish" class="toolbar-item" onclick="publishToggleSelected()" style="opacity:0.3; pointer-events:none;">
             <i id="toolbarPublishIcon" class="bi bi-eye-fill"></i>
             <span id="toolbarPublishText">{{ lang.mod_video.grid.publish.key }}</span>
@@ -87,6 +83,11 @@
             <span>{{ lang.mod_video.button.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video/add'" aria-label="{{ lang.mod_video.add|default('Videoyê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}
@@ -120,4 +121,5 @@
     };
 </script>
 <script src="/templates/admin/assets/js/mod_video.js?v=1.0"></script>
+<!-- toolbarVideo toolbarSlider toolbarHomepage -->
 {% endblock %}

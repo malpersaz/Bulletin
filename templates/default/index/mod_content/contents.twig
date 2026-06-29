@@ -8,7 +8,7 @@
 {% set sayfa = ctx_get('sayfa') %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.sadres }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
+    <link rel="canonical" href="{{ site.saddress }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
 {% endblock %}
 
 {% block title %}
@@ -33,13 +33,13 @@
                 </h5>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{{ site.sadres }}category"
+                <a href="{{ site.saddress }}category"
                    class="list-group-item list-group-item-action{% if category_seo == 'all' or category_seo is empty %} active{% endif %}">
                     <i class="bi bi-grid me-2"></i>{{ lang.index.mod_content.2 }}
                 </a>
                 {% for kat in kategoriler %}
                     {% if kat.content_count > 0 %}
-                    <a href="{{ site.sadres }}category/{{ kat.seo }}"
+                    <a href="{{ site.saddress }}category/{{ kat.seo }}"
                        class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
                         <i class="bi bi-folder2-open me-2"></i>{{ kat.name }}
                         <span class="badge bg-secondary rounded-pill float-end">{{ kat.content_count }}</span>
@@ -57,12 +57,12 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-4" itemscope itemtype="https://schema.org/BreadcrumbList">
                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.sadres }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                    <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
                     <meta itemprop="position" content="1" />
                 </li>
                 {% if category_seo is not empty and category_seo != 'all' %}
                     <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <a itemprop="item" href="{{ site.sadres }}category"><span itemprop="name">{{ lang.index.mod_content.2 }}</span></a>
+                        <a itemprop="item" href="{{ site.saddress }}category"><span itemprop="name">{{ lang.index.mod_content.2 }}</span></a>
                         <meta itemprop="position" content="2" />
                     </li>
                     <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -94,15 +94,15 @@
                 {% for content in contents %}
                     <div class="col">
                         <div class="card h-100 shadow-sm">
-                            <a href="{{ site.sadres }}article/{{ content.seo }}" title="{{ content.name }}" class="text-decoration-none">
+                            <a href="{{ site.saddress }}article/{{ content.seo }}" title="{{ content.name }}" class="text-decoration-none">
                                 {% if content.image is not empty %}
-                                    <img src="{{ site.radres }}mod_content/thumb/{{ content.image }}"
+                                    <img src="{{ site.iaddress }}mod_content/thumb/{{ content.image }}"
                                          class="card-img-top"
                                          style="height: 200px; object-fit: cover;"
                                          parent_id="{{ content.name }}"
                                          loading="lazy">
                                 {% else %}
-                                    <img src="{{ site.radres }}mod_settings/logo.png"
+                                    <img src="{{ site.iaddress }}mod_settings/logo.png"
                                          class="card-img-top p-4 bg-light"
                                          style="height: 200px; object-fit: contain;"
                                          parent_id="{{ content.name }}"
@@ -111,7 +111,7 @@
                             </a>
                             <div class="card-body d-flex flex-column">
                                 <h5 class="card-title">
-                                    <a href="{{ site.sadres }}article/{{ content.seo }}"
+                                    <a href="{{ site.saddress }}article/{{ content.seo }}"
                                        title="{{ content.name }}"
                                        class="text-decoration-none text-dark">
                                         {{ content.name }}
@@ -153,7 +153,7 @@
                             {% else %}
                                 <li class="page-item">
                                     <a class="page-link"
-                                       href="{{ site.sadres }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}/{% if s != 1 %}{{ s }}{% endif %}"
+                                       href="{{ site.saddress }}category{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}/{% if s != 1 %}{{ s }}{% endif %}"
                                        title="{{ lang.index.mod_content.16|format(s) }}">{{ s }}</a>
                                 </li>
                             {% endif %}

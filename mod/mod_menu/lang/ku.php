@@ -2,7 +2,7 @@
 /**
  * Menu Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software
@@ -43,6 +43,7 @@ $lang['mod_menu'] = [
         'file' => 'Pel',
         'unlock_reorder' => 'Moda Kaşkirinê Veke',
         'lock_reorder' => 'Moda Kaşkirinê Bigire',
+        'publish_toggle' => 'Rewşa Weşanê',
     ],
 
     // === System Messages ===
@@ -53,6 +54,8 @@ $lang['mod_menu'] = [
             'deleted' => 'Menû bi serkeftî hate jêbirin!',
             'reordered' => 'Rêza menû hate guhertin!',
             'delete' => 'Menû hate jêbirin!',
+            'published' => 'Menû bi serkeftî hate weşandin!',
+            'unpublished' => 'Menû ji weşanê hate rakirin!',
         ],
         'error' => [
             'not_added' => 'Zêdekirina menû biserneket!',
@@ -121,7 +124,7 @@ $lang['mod_menu'] = [
         'language' => 'Ziman',
         'name' => 'Navê Pêşekê',
         'url' => 'URL',
-        'parent_menu' => 'Serpêşek',
+        'parent_menu' => 'Menûya Jêr',
         'order' => 'Rêz',
         'target' => 'Bila çawa vebe?',
         'status' => 'Rewş',
@@ -129,7 +132,7 @@ $lang['mod_menu'] = [
         'access_level' => 'Destûra Dîtinê',
         'actions' => 'Çalakî',
         'name' => 'Navê Menûyê',
-        'parent_id' => 'Serpêşek',
+        'parent_id' => 'Menûya Jêr',
         'status' => 'Weşandin',
         'html' => 'HTML',
         'acl_id' => 'Destûra Têketinê',
@@ -142,7 +145,7 @@ $lang['mod_menu'] = [
             'name' => 'Nav',
             'url' => 'URL',
             'file' => 'Pel',
-            'parent_id' => 'Serpêşek',
+            'parent_id' => 'Menûya Jêr',
             'target' => 'Hedef',
             'status' => 'Rewşa Weşanê',
             'html' => 'HTML',
@@ -277,6 +280,8 @@ $lang['mod_menu'] = [
         'network' => 'Çewtiya torê. Ji kerema xwe girêdana înternetê xwe kontrol bike.',
         'server' => 'Çewtiya serverê. Ji kerema xwe paşê dîsa biceribîne.',
         'record' => 'Tomar Nehat Dîtin',
+        'parent_selection_required' => 'Divê menûya ku ev tomara nû dê tê de be hilbijêrî.',
+        'parent_language_mismatch' => 'Zimanê menûya dayîk divê bi zimanê menûyê re wekhev be.',
     ],
     
     // === ACL Roles ===
@@ -300,4 +305,13 @@ $lang['mod_menu'] = [
         'moderate_delete' => 'Destûra te ji bo jêbirina menûyên kesên din tune',
     ],
 
+];
+$lang['mod_menu']['slots'] = [
+    'header' => 'Menûya Jor',
+    'footer' => 'Menûya Jêr',
+];
+$lang['mod_menu']['parent_labels'] = [
+    'select_parent' => 'Menûya dayîk hilbijêre',
+    'language_root' => 'Asta jor di bin :language de',
+    'system_root' => 'Koka pergalê',
 ];

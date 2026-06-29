@@ -19,20 +19,20 @@ class mod_imagecategories extends installerbase implements installerbaseinterfac
 
     public function install()
     {
-		  // Tabloları Oluşturalım
-	        if ($this->create_tables() === FALSE) {
-	            return FALSE;
-	        }
-	        // Modülü Ekleyelim
-	        if ($this->insert_mods() === FALSE) {
-	            return FALSE;
-	        }
-	        // Roller ve Permleri Ekleyelim
-	        if ($this->insert_roll() === FALSE) {
-	            return FALSE;
-	        }
+        if ($this->create_tables() === FALSE) {
+            return FALSE;
+        }
+        if ($this->insert_mods() === FALSE) {
+            return FALSE;
+        }
+        if ($this->insert_roll() === FALSE) {
+            return FALSE;
+        }
+        if ($this->installer_seed_category_bootstrap('mod_imagecategories') === FALSE) {
+            return FALSE;
+        }
 
-	        return TRUE;
+        return TRUE;
     }
 
 

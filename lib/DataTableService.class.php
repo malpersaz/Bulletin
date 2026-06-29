@@ -482,7 +482,7 @@ class DataTableService
 
             case 'image':
                 if (!empty($value)) {
-                    return '<img src="' . $this->site['radres'] . $this->module_name . '/thumb/' . $value . '" style="max-width: 50px; max-height: 50px;">';
+                    return '<img src="' . $this->site['iaddress'] . $this->module_name . '/thumb/' . $value . '" style="max-width: 50px; max-height: 50px;">';
                 }
                 return '<span class="text-muted">No image</span>';
 

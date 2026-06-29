@@ -109,7 +109,7 @@
             formData.append('group_id', groupId);
             formData.append('parent_id', parentId);
             
-            fetch('{{ site.sadres }}mod_user_group/move', {
+            fetch('{{ site.saddress }}mod_user_group/move', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
@@ -120,7 +120,7 @@
                     const orderData = new URLSearchParams();
                     allIds.forEach(sid => orderData.append('order[]', sid));
                     
-                    return fetch('{{ site.sadres }}mod_user_group/order', {
+                    return fetch('{{ site.saddress }}mod_user_group/order', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                         body: orderData
@@ -236,7 +236,7 @@
 
     window.editSelected = function() {
         if (selectedUserGroupId) {
-            window.location.href = "{{ site.sadres }}mod_user_group/edit/" + selectedUserGroupId;
+            window.location.href = "{{ site.saddress }}mod_user_group/edit/" + selectedUserGroupId;
         }
     };
 
@@ -254,7 +254,7 @@
             customClass: { popup: 'premium-swal-popup' }
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch('{{ site.sadres }}mod_user_group/delete', {
+                fetch('{{ site.saddress }}mod_user_group/delete', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: new URLSearchParams({ group_id: selectedUserGroupId }).toString()

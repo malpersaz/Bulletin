@@ -2,7 +2,7 @@
 /**
  * Content Management Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_content
  * @version 1.0.0
  * @author  AKM Software
@@ -325,6 +325,18 @@ $lang['mod_content'] = [
             'category_select' => 'Kategori Seçiniz...',
             'change_image' => 'Görsel Değiştir',
         ],
+        'image' => [
+            'drop_title' => 'Bir görseli buraya sürükleyin',
+            'drop_description' => 'Yükleyin, yapıştırın veya bir görsel bırakın.',
+            'upload_link' => 'dosya yükleyin',
+            'link_separator' => 'VEYA',
+            'link_placeholder' => 'Görsel bağlantısını yapıştırın',
+            'link_action' => 'İçe Aktar',
+            'hint_loading' => 'Görsel içe aktarılıyor...',
+            'hint_invalid_type' => 'Burada yalnızca görsel dosyaları desteklenir.',
+            'hint_no_drop_data' => 'Bırakılan içerikte kullanılabilir bir görsel bulunamadı.',
+            'hint_remote_failed' => 'Bu kaynaktaki görsel içe aktarılamadı.',
+        ],
         'messages' => [
             'success_sim' => 'İçerik başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
@@ -350,6 +362,7 @@ $lang['mod_content'] = [
         'edit' => 'Düzenle',
         'gallery' => 'Galeri İşlemleri',
         'files' => 'Dosya İşlemleri',
+        'video' => 'İçeriğe Video Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
         'publish' => 'Yayınla',
@@ -366,20 +379,22 @@ $lang['mod_content'] = [
         'delete_success' => 'İçerik silindi!',
     ],
 
-    'mock' => [
-        'titles' => [
-            "Kürt Basınında Yeni Dönem Başlıyor",
-            "Diyarbakır Kültür Sanat Festivali Takvimi Açıklandı",
-            "Yerel Gazetecilik Çalıştayı Sona Erdi",
-            "Yapay Zeka ve Medya İlişkisi Üzerine Notlar",
-            "Geleneksel Gazetecilikten Dijital Medyaya Geçiş",
-            "Sosyal Medya Kullanım İstatistikleri 2024",
-            "Haftalık Teknoloji Özeti: Neler Oldu?",
-            "Yazarlar Birliği Yeni Yönetimini Seçti",
-            "Fotoğrafçılık Atölyesi Kayıtları Başladı",
-            "Rojname Mobil Uygulaması Güncellendi"
-        ],
-        'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
-        'authors' => [],
+    'hero_slider_add' => 'Slidera Gönder',
+    'hero_slider_remove' => 'Sliderdan Kaldır',
+    'hero_slider_added' => 'İçerik slidera gönderildi.',
+    'hero_slider_removed' => 'İçerik sliderdan kaldırıldı.',
+    'hero_slider_error' => 'Slider güncellemesi başarısız oldu.',
+    'hero_slider_badge' => 'Slider',
+    'hero_slider_unavailable' => 'Slider sütunu henüz kurulmamış.',
+
+    'picker' => [
+        'file' => 'Mevcut Dosyayı Seç',
+    ],
+
+    'ajax' => [
+        'database_error' => 'Veritabanı Hatası',
+        'record_not_found' => 'İçerik kaydı bulunamadı!',
+        'unknown_type' => 'Bilinmeyen ilişki türü',
+        'relation_updated' => 'İlişki başarıyla güncellendi',
     ],
 ];

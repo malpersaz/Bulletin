@@ -6,17 +6,50 @@
 {% block headline %}{{ lang.mod_page.list }}{% endblock %}
 
 {% block styles %}
+<style>
+    .page-toolbar .toolbar-item {
+        gap: 0;
+        min-width: 44px;
+        padding: 8px 4px;
+    }
+    .page-toolbar .toolbar-item span {
+        display: none;
+    }
+    .page-toolbar #toolbarDelete.active {
+        color: #b3261e !important;
+        background: rgba(179, 38, 30, 0.12);
+    }
+    .page-toolbar #toolbarDelete.active i {
+        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
+    }
+    .page-toolbar #toolbarApprove.active {
+        color: #0b57d0 !important;
+        background: rgba(11, 87, 208, 0.12);
+    }
+    .page-toolbar #toolbarApprove.active.is-unpublished {
+        color: #2e7d32 !important;
+        background: rgba(46, 125, 50, 0.12);
+    }
+    .page-toolbar #toolbarGallery.active {
+        color: #06b6d4 !important;
+        background: rgba(6, 182, 212, 0.12);
+    }
+    .page-toolbar #toolbarFiles.active {
+        color: #f97316 !important;
+        background: rgba(249, 115, 22, 0.12);
+    }
+</style>
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
     {% if items[parent_id] is defined %}
         {% for entry in items[parent_id] %}
             <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.name|lower }}">
-                <div class="m3-list-card" onclick="selectMenu('{{ entry.id }}', this)">
+                <div class="m3-list-card" data-status="{{ entry.status }}" onclick="selectMenu('{{ entry.id }}', this)">
                     <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
                     
                     {% if items[entry.id] is defined %}
-                        <button class="toggle-btn" onclick="toggleMenu(this, event)">
+                        <button class="toggle-btn collapsed" onclick="toggleMenu(this, event)">
                             <i class="bi bi-chevron-down"></i>
                         </button>
                     {% else %}
@@ -25,7 +58,7 @@
 
                     <div class="card-thumb">
                         {% if entry.image %}
-                            <img src="{{ site.radres }}mod_page/thumb/{{ entry.image }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="{{ site.iaddress }}mod_page/thumb/{{ entry.image }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
                         {% else %}
                             <i class="bi bi-file-text"></i>
                         {% endif %}
@@ -35,13 +68,16 @@
                         <div class="card-title">{{ entry.name }}</div>
                         <div class="card-meta">
                             <span class="meta-badge">{{ entry.lang|upper }}</span>
+                            {% if entry.status == 'n' %}
+                                <span class="meta-badge draft" style="background: rgba(234, 179, 8, 0.12); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.2); font-weight: 700; font-size: 10px;">{{ lang.mod_page.status_badge.draft|upper }}</span>
+                            {% endif %}
                             <span class="meta-id">#{{ entry.id }}</span>
                         </div>
                     </div>
                 </div>
                 
                 {% if items[entry.id] is defined %}
-                    <div class="list-children">
+                    <div class="list-children collapsed">
                         {{ _self.render_tree(items, entry.id, level + 1) }}
                     </div>
                 {% endif %}
@@ -72,7 +108,7 @@
                  <i class="bi bi-file-text"></i>
             </div>
             <h2 style="font-weight: 800;">{{ lang.mod_page.empty.no_pages }}</h2>
-            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_page/add'">
+            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_page/add'">
                 <i class="bi bi-plus-lg"></i>
             </div>
         </div>
@@ -81,21 +117,37 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_page.button.edit|default('Biguhere') }}</span>
-        </button>
-
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_page/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
+    <div class="standard-toolbar page-toolbar">
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
             <span>{{ lang.mod_page.button.delete|default('Jê bibe') }}</span>
         </button>
+
+        <button id="toolbarApprove" class="toolbar-item" onclick="approveSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-eye-fill" id="approveIcon"></i>
+            <span id="approveText">{{ lang.mod_page.radio.publish_yes|default('Biweşîne') }}</span>
+        </button>
+
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_page.button.gallery }}">
+            <i class="bi bi-image"></i>
+            <span>{{ lang.mod_page.button.gallery }}</span>
+        </button>
+
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_page.button.file }}">
+            <i class="bi bi-paperclip"></i>
+            <span>{{ lang.mod_page.button.file }}</span>
+        </button>
+
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+            <span>{{ lang.mod_page.button.edit|default('Biguhere') }}</span>
+        </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_page/add'" aria-label="{{ lang.mod_page.add|default('Rûpelê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}

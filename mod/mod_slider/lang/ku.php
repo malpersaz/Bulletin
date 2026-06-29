@@ -2,7 +2,7 @@
 $lang['mod_slider'] = [
   'add' => 'Slaydirekê Zêde Bike',
   'edit' => 'Slaydirê Serast Bike',
-  'list' => 'Lîsteya Slaydir',
+  'list' => 'Rêveberiya Slaydiran',
   'information' => 'Agahî!',
   'oke' => 'Kar Serkeftî ye!',
   'hata' => 'Çewtî derket!',
@@ -141,4 +141,10 @@ $lang['mod_slider'] = [
     'no_search_results' => 'Li gorî pîvanên lêgerîna te encamek nehat dîtin.',
   ],
   'search_placeholder' => 'Li Slayderan Bigere...',
+  'modules' => [
+    'news' => 'Nûçe',
+    'publication' => 'Weşan',
+    'content' => 'Naverok',
+    'product' => 'Hilber',
+  ],
 ];

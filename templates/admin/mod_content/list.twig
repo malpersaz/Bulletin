@@ -2,6 +2,7 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
 {% set show_search = true %}
+{% set wizard_module = 'mod_content' %}
 {% extends 'admin/layout.twig' %}
 {% block title %}{{ lang.mod_content.list }}{% endblock %}
 
@@ -9,6 +10,29 @@
 
 {% block styles %}
 <style>
+    .news-toolbar .toolbar-item {
+        gap: 0;
+        min-width: 44px;
+        padding: 8px 4px;
+    }
+    .news-toolbar .toolbar-item span {
+        display: none;
+    }
+    .news-toolbar #toolbarDelete.active {
+        color: #b3261e !important;
+        background: rgba(179, 38, 30, 0.12);
+    }
+    .news-toolbar #toolbarDelete.active i {
+        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
+    }
+    .news-toolbar #toolbarSlider.active {
+        color: #0b57d0 !important;
+        background: rgba(11, 87, 208, 0.12);
+    }
+    .news-toolbar #toolbarSlider.is-selected {
+        color: #2e7d32 !important;
+        background: rgba(46, 125, 50, 0.12);
+    }
     .news-image-modal {
         position: fixed;
         inset: 0;
@@ -187,9 +211,9 @@
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
-    <input type="hidden" name="arama[name]" id="filterSearch" value="">
-    <input type="hidden" name="arama[lang]" id="filterLang" value="">
-    <input type="hidden" name="arama[category_id]" id="filterCategory" value="">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+    <input type="hidden" name="search[category_id]" id="filterCategory" value="">
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
@@ -205,7 +229,6 @@
                 <span id="newsImageModalTitle">{{ lang.mod_content.wizard.step.image }}</span>
                 <span id="newsImageModalSubtitle" hidden></span>
             </div>
-            <button type="button" id="newsImageSaveBtn" class="m3-btn-text news-image-save" onclick="window.contentManager?.submitListImageUpload()" disabled hidden>{{ lang.mod_content.wizard.button.save }}</button>
         </header>
 
         <div class="wizard-progress-bar">
@@ -267,31 +290,36 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+    <div class="standard-toolbar news-toolbar">
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.hero_slider_add }}">
+            <i class="bi bi-stars"></i>
+        </button>
+
+        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.context_menu.video }}">
+            <i class="bi bi-camera-video"></i>
+        </button>
+
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.context_menu.gallery }}">
+            <i class="bi bi-image"></i>
+        </button>
+
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.context_menu.files }}">
+            <i class="bi bi-paperclip"></i>
+        </button>
+
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.context_menu.edit }}">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_content.button.edit }}</span>
         </button>
 
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-images"></i>
-            <span>{{ lang.mod_content.button.gallery }}</span>
-        </button>
-
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_content/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
-        <button id="toolbarFile" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-file-earmark-text-fill"></i>
-            <span>{{ lang.mod_content.button.file }}</span>
-        </button>
-
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_content.context_menu.delete }}">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_content.button.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_content/add'" aria-label="{{ lang.mod_content.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}
@@ -326,11 +354,21 @@
         image_remove_confirm_text: "{{ lang.mod_content.button.evet|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_content.button.hayir|e('js') }}",
         image_remove_success: "{{ lang.mod_content.remove_image_oke|e('js') }}",
+        hero_slider_add: "{{ lang.mod_content.hero_slider_add|e('js') }}",
+        hero_slider_remove: "{{ lang.mod_content.hero_slider_remove|e('js') }}",
+        hero_slider_added: "{{ lang.mod_content.hero_slider_added|e('js') }}",
+        hero_slider_removed: "{{ lang.mod_content.hero_slider_removed|e('js') }}",
+        hero_slider_error: "{{ lang.mod_content.hero_slider_error|e('js') }}",
+        hero_slider_badge: "{{ lang.mod_content.hero_slider_badge|e('js') }}",
+        picker: {
+            file: "{{ lang.mod_content.picker.file|e('js') }}",
+            video: "{{ lang.mod_content.context_menu.video|e('js') }}"
+        },
         loading: "{{ lang.mod_content.datatable.loadingRecords|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_content.grid.load_more|e('js') }}"
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_content.js?v=3.2"></script>
+<script src="/templates/admin/assets/js/mod_content.js?v=3.5"></script>
 {% endblock %}

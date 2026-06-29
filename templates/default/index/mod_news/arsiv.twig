@@ -15,7 +15,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.home }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
                 </li>
                 <li class="active">{{ lang.index.mod_news.6 }}</li>
             </ol>
@@ -87,7 +87,7 @@
                         {% for news in newses %}
                             <p>
                                 {{ news.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
-    href="{{ site.sadres }}news/{{ news.seo }}"
+    href="{{ site.saddress }}news/{{ news.seo }}"
     title="{% if news.summary != '' %}{{ news.summary }}{% else %}{{ news.name }}{% endif %}">{{ news.name }}</a>
                             </p>
                         {% endfor %}

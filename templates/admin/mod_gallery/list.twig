@@ -9,118 +9,270 @@
 
 {% block styles %}
 <style>
-    .gallery-cards {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        gap: 16px;
-        padding: 16px;
+    :root {
+        --md-sys-color-surface-container-low: #F7F2FA;
+        --md-sys-color-surface-container-high: #ECE6F0;
     }
-    .gallery-card {
-        background: var(--md-sys-color-surface-container-low);
-        border: 1px solid var(--md-sys-color-outline-variant);
-        border-radius: 24px;
-        padding: 20px;
+    .gallery-cards {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-        transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
-        cursor: pointer;
-        position: relative;
+        gap: 12px;
+        padding: 12px;
     }
-    .gallery-card:hover {
-        background: var(--md-sys-color-surface-container-high);
-        transform: translateY(-4px);
-        box-shadow: var(--md-sys-elevation-level2);
-        border-color: var(--md-sys-color-primary-container);
-    }
-    .gallery-card__header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-    }
-    .gallery-card__info {
-        flex: 1;
-    }
-    .gallery-card__title {
-        font-size: 18px;
-        font-weight: 500;
-        color: var(--md-sys-color-on-surface);
-        margin: 0;
-        line-height: 1.2;
-    }
-    .gallery-card__subtitle {
-        font-size: 12px;
-        color: var(--md-sys-color-on-surface-variant);
-        margin-top: 4px;
-    }
-    .gallery-card__stats {
+    .gallery-card {
+        background: var(--md-sys-color-surface-container-low) !important;
+        border: 1px solid var(--md-sys-color-outline-variant) !important;
+        border-radius: 16px;
+        padding: 12px;
         display: flex;
         gap: 12px;
-        margin-top: 8px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+        position: relative;
+        box-shadow: none !important;
     }
-    .stat-badge {
+    .gallery-card:hover {
+        background: var(--md-sys-color-surface-container-high) !important;
+        transform: translateY(-2px);
+        box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3) !important;
+        border-color: var(--md-sys-color-outline-variant) !important;
+    }
+
+    /* Stacked Image Preview Effect */
+    .image-stack-container {
+        width: 80px;
+        height: 80px;
+        position: relative;
+        flex-shrink: 0;
+    }
+    .image-stack-layer {
+        position: absolute;
+        width: 72px;
+        height: 72px;
+        border-radius: 8px;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        background: var(--md-sys-color-surface-container-high);
+        background-size: cover;
+        background-position: center;
+    }
+    .image-stack-layer:nth-child(1) {
+        top: 6px;
+        left: 6px;
+        z-index: 1;
+        opacity: 0.4;
+        transform: scale(0.9);
+    }
+    .image-stack-layer:nth-child(2) {
+        top: 3px;
+        left: 3px;
+        z-index: 2;
+        opacity: 0.7;
+        transform: scale(0.95);
+    }
+    .image-stack-layer:nth-child(3) {
+        top: 0;
+        left: 0;
+        z-index: 3;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Card Details Layout */
+    .card-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-width: 0;
+    }
+    .card-header-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+    .card-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--md-sys-color-on-surface);
+        margin: 0;
+        line-height: 1.3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-meta {
+        font-size: 11px;
+        color: var(--md-sys-color-outline);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Badges */
+    .badge-row {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+    }
+    .status-badge {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+        height: 18px;
+        box-sizing: border-box;
+        display: inline-flex;
+        align-items: center;
+    }
+    .status-badge.active {
+        background: rgba(46, 125, 50, 0.12);
+        color: #2E7D32;
+        border: 1px solid #2E7D32;
+    }
+    .status-badge.draft {
+        background: rgba(11, 87, 208, 0.12);
+        color: #0B57D0;
+        border: 1px solid #0B57D0;
+    }
+    .count-badge {
         background: var(--md-sys-color-secondary-container);
         color: var(--md-sys-color-on-secondary-container);
-        padding: 4px 12px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 500;
+        font-size: 10px;
+        font-weight: 600;
+        padding: 2px 8px;
+        border-radius: 4px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 1px solid var(--md-sys-color-outline-variant);
+        height: 18px;
+        box-sizing: border-box;
+    }
+
+    /* Search Bar */
+    .search-container {
         display: flex;
         align-items: center;
-        gap: 6px;
+        background: var(--md-sys-color-surface-container-high);
+        border-radius: 28px;
+        padding: 0 16px;
+        height: 48px;
+        margin: 12px 12px 0 12px;
     }
-    .gallery-card__actions {
-        display: flex;
-        gap: 8px;
-        margin-top: auto;
+    .search-container i {
+        color: var(--md-sys-color-outline);
+        margin-right: 12px;
     }
-    .gallery-card__actions .action-btn {
-        flex: 1;
-        height: 40px;
-        border-radius: 12px;
-        font-size: 13px;
+    .search-container input {
+        border: none;
+        background: transparent;
+        outline: none;
+        width: 100%;
+        font-size: 14px;
+        color: var(--md-sys-color-on-surface);
+    }
+
+
+
+    /* Floating bottom toolbar matching mockup plan 100% */
+    .gallery-bottom-bar {
+        position: fixed !important;
+        bottom: 12px !important;
+        left: 12px !important;
+        right: 12px !important;
+        height: 64px !important;
+        border-radius: 24px !important;
+        background: rgba(255, 255, 255, 0.78) !important;
+        backdrop-filter: blur(28px) saturate(1.6) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(1.6) !important;
+        z-index: 1000 !important;
+        box-shadow: 0 4px 24px rgba(103, 80, 164, 0.08), 0 1px 4px rgba(0, 0, 0, 0.06) !important;
+        border: 1px solid rgba(103, 80, 164, 0.1) !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-around !important;
+        padding: 0 6px !important;
+    }
+
+    /* Selected card outline to match mockup selection */
+    .gallery-card.selected {
+        outline: 2px solid var(--md-sys-color-primary) !important;
+        outline-offset: 2px !important;
+        background: var(--md-sys-color-surface-container-high) !important;
+        box-shadow: 0px 4px 16px rgba(103, 80, 164, 0.12) !important;
+        border-color: var(--md-sys-color-outline-variant) !important;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="m3-card" style="margin: 16px; border-radius: 24px; overflow: hidden;">
-    <!-- Toolbar -->
-    <div style="padding: 16px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant);">
-        <div class="m3-search-bar" style="flex: 1;">
-            <i class="bi bi-search"></i>
-            <input type="text" id="gallerySearch" placeholder="{{ lang.mod_gallery.admin.search_placeholder }}" onkeyup="GalleryManager.search(this.value)">
-        </div>
-        <a href="{{ site.sadres }}mod_gallery_mod/add" class="m3-btn-filled" style="border-radius: 16px;">
-            <i class="bi bi-plus-lg"></i>
-            <span>{{ lang.mod_gallery.admin.create_gallery }}</span>
-        </a>
-    </div>
+<!-- Search Bar -->
+<div class="search-container">
+    <i class="bi bi-search"></i>
+    <input type="text" id="gallerySearch" placeholder="{{ lang.mod_gallery.admin.search_placeholder }}" onkeyup="GalleryManager.search(this.value)">
+</div>
 
-    <!-- Gallery Grid -->
-    <div id="galleryGrid" class="gallery-cards">
-        <!-- Loaded via AJAX -->
-        <div class="loading-state" style="grid-column: 1/-1; padding: 100px; text-align: center;">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p style="margin-top: 16px; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.loading_galleries }}</p>
-        </div>
+<!-- Gallery Grid -->
+<div id="galleryGrid" class="gallery-cards">
+    <!-- Loaded via AJAX -->
+    <div class="loading-state" style="grid-column: 1/-1; padding: 100px; text-align: center;">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p style="margin-top: 16px; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.loading_galleries }}</p>
     </div>
+</div>
+
+
+{% endblock %}
+{% block fixed_bottom %}
+<div class="standard-toolbar gallery-bottom-bar">
+    <!-- Toolbar Item: Back -->
+    <button type="button" class="toolbar-item" onclick="history.back()" title="{{ lang.mod_gallery.admin.back }}" aria-label="{{ lang.mod_gallery.admin.back }}">
+        <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <!-- Toolbar Item: Toggle Status (Publish/Draft) -->
+    <button type="button" id="toolbarStatus" class="toolbar-item" onclick="GalleryManager.toolbarStatus()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_status }}">
+        <i class="bi bi-eye"></i>
+    </button>
+
+    <!-- Symmetrical Center Start Button -->
+    <button type="button" class="toolbar-start-btn" onclick="if(typeof toggleDrawer==='function')toggleDrawer();" title="{{ lang.mod_gallery.admin.toolbar_start }}">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <!-- Toolbar Item: Manage Images -->
+    <button type="button" id="toolbarManage" class="toolbar-item" onclick="GalleryManager.toolbarManage()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_manage }}">
+        <i class="bi bi-images"></i>
+    </button>
+
+    <!-- Toolbar Item: Delete -->
+    <button type="button" id="toolbarDelete" class="toolbar-item" onclick="GalleryManager.toolbarDelete()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_delete }}">
+        <i class="bi bi-trash-fill"></i>
+    </button>
 </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.adres }}templates/admin/assets/js/mod_gallery.js"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_gallery.js"></script>
 <script>
     GalleryManager.init({
-        baseUrl: '{{ site.sadres }}mod_gallery/',
-        listUrl: '{{ site.sadres }}mod_gallery/ajax_list',
+        baseUrl: '{{ site.saddress }}mod_gallery/',
+        listUrl: '{{ site.saddress }}mod_gallery/ajax_list',
+        siteAdres: '{{ site.address }}',
         lang: {
             images: '{{ lang.mod_gallery.grid.image_count }}',
             no_galleries: '{{ lang.mod_gallery.admin.no_galleries }}',
             no_results: '{{ lang.mod_gallery.admin.no_results }}',
             load_failed: '{{ lang.mod_gallery.errors.load_failed }}',
             view_images: '{{ lang.mod_gallery.admin.add_images }}',
-            delete: '{{ lang.mod_gallery.admin.remove_image }}'
+            delete: '{{ lang.mod_gallery.admin.remove_image }}',
+            status_active: '{{ lang.mod_gallery.admin.status_active }}',
+            status_draft: '{{ lang.mod_gallery.admin.status_draft }}',
+            meta_mod: '{{ lang.mod_gallery.admin.meta_mod }}',
+            meta_id: '{{ lang.mod_gallery.admin.meta_id }}'
         }
     });
 

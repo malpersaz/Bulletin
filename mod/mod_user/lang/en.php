@@ -2,7 +2,7 @@
 /**
  * User Module - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -42,6 +42,7 @@ $lang['mod_user'] = [
         'password_complex_req' => 'Upper, lower case and numbers',
     ],
     'error_fatal' => 'Fatal Error Occurred!',
+    'database_error' => 'The record could not be saved. Please try again.',
     'remove_image' => 'Are you sure you want to remove this image?',
     'remove_image_oke' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
@@ -160,6 +161,19 @@ $lang['mod_user'] = [
         'user_error' => '-----<b>%s</b> - User could not be added to database!',
         'user_exists' => '----- <b>%s</b> - User already exists in database',
     ]
+];
+
+$lang['mod_user']['email_templates'] = [
+    'greeting' => 'Hello <b>%s %s</b>',
+    'click_here' => 'Click here',
+    'copy_link_notice' => 'If you cannot click the link, copy and paste the link below into your browser.',
+    'account_activation_intro' => 'Please open the link below to complete your membership application at %s.',
+    'password_reset_intro' => 'Please open the link below to reset the password for your account at %s.',
+    'password_reset_followup' => 'After opening the link, choose a new password to complete the reset.',
+    'password_reset_request_ip' => 'IP address of the password reset request: <b>%s</b>',
+    'password_reset_completed' => 'The password for your account at %s has been reset.',
+    'login_after_reset' => 'to log in to your account.',
+    'new_password_label' => 'Your new password',
 ];
 
 $lang['mod_user']['admin'] = [
@@ -324,9 +338,13 @@ $lang['mod_user']['register'] = [
         'validation_required_name' => 'Please enter your name',
         'validation_required_surname' => 'Please enter your surname',
         'validation_required_username' => 'Please enter a username',
+        'validation_username_short' => 'Username must be at least 2 characters',
+        'validation_username_long' => 'Username must not exceed 20 characters',
+        'validation_required_email' => 'Please enter your email address',
         'validation_invalid_email' => 'Please enter a valid email address',
         'validation_required_password' => 'Please enter a password',
         'validation_password_short' => 'Password must be at least 6 characters',
+        'validation_password_long' => 'Password must not exceed 20 characters',
         'validation_confirm_password' => 'Please confirm your password',
         'validation_required_phone' => 'Please enter your phone number',
         'validation_required_captcha' => 'Please enter the security code'
@@ -375,16 +393,23 @@ $lang['mod_user']['resend_activation'] = [
 ];
 
 $lang['mod_user']['forgot_password'] = [
-    'info_1' => 'We sent an email with instructions to reset your password.',
-    'info_2' => 'Enter your registered email address to reset your password.',
+    'info_1' => 'If the email address matches an account, password reset instructions will be sent shortly.',
+    'info_2' => 'Enter your account email address. We will send a reset link if the account can use password recovery.',
     'title' => 'Password Reset',
     'email' => 'E-mail',
+    'email_placeholder' => 'name@example.com',
     'security_code' => 'Security Code',
+    'captcha_placeholder' => 'Enter the code',
+    'captcha_refresh' => 'Refresh security code',
     'send_button' => 'Send',
+    'back_to_login' => 'Back to login',
     'forgot_password_title' => 'Forgot Password',
+    'security_note' => 'For your security, reset links can be used once.',
+    'redirecting' => 'Checking your request...',
     'error' => [
         'reset_code_send_error' => 'Error occurred while sending reset code.',
         'invalid_captcha' => 'Security code is incorrect.',
+        'captcha_required' => 'Security code is required.',
         'email_required' => 'Email address is required.',
         'invalid_email_format' => 'Invalid email format.',
         'email_not_registered' => 'Email is not registered.'
@@ -393,15 +418,16 @@ $lang['mod_user']['forgot_password'] = [
 
 $lang['mod_user']['password_reset'] = [
     'title' => 'Password Reset',
-    'info' => 'Enter your reset code to generate a new password.',
+    'info' => 'Choose a new password to complete your password reset.',
     'activation_code' => 'Activation Code',
     'security_code' => 'Security Code',
     'send_button' => 'Send',
-    'success_message' => 'Congratulations! Your new password has been sent to your email.',
+    'success_message' => 'Your password has been reset. You can now sign in with your new password.',
     'error' => [
         'invalid_captcha' => 'Security code is incorrect.',
         'code_required' => 'Reset code is required.',
         'invalid_code' => 'Invalid reset code.',
+        'expired_code' => 'This reset link has expired. Please request a new password reset link.',
         'email_send_error' => 'Error occurred while sending password email.'
     ]
 ];
@@ -416,19 +442,42 @@ $lang['mod_user']['panel'] = [
     'goto_content' => 'Go to Content',
     'search_placeholder' => 'Search...',
     'quick_access' => 'Quick Access',
-    'home_title' => 'Home',
-    'admin_brand' => 'Rojname Admin',
+    'products_metrics_title' => 'Products Snapshot',
+    'metrics_active' => '%s active records',
+    'metrics_products' => '%s product records',
+    'metrics_clients' => '%s client records',
+    'metrics_homepage' => '%s homepage records',
+    'metrics_references' => '%s reference records',
+    'metrics_product_categories' => '%s product category records',
+    'family_quick_access' => 'Workspace Access',
+    'products_spotlight_title' => 'Products Workspace',
+    'products_spotlight_copy' => 'Manage products, client proof, and the supporting taxonomy from one family surface.',
+    'pinned_modules' => 'Pinned Modules',
     'recent_workspace' => 'Recent Workspace',
+    'add_product' => 'Add Product',
+    'add_reference' => 'Add Reference',
+    'add_client' => 'Add Client',
+    'add_service' => 'Add Service',
+    'manage_product_categories' => 'Open Category Workspace',
+    'manage_service_categories' => 'Open Service Categories',
+    'workspace_nav_dashboard' => 'Dashboard',
+    'workspace_nav_content' => 'Content',
     'workspace_nav_media' => 'Media',
-    'workspace_nav_videos' => 'Video Management',
+    'workspace_nav_products' => 'Products',
     'workspace_nav_more' => 'More',
     'more_sheet_title' => 'More Tools',
     'more_sheet_copy' => 'Open lower-frequency system and administration surfaces without crowding the main workspace bar.',
-    'more_sheet_open_drawer' => 'Open full module directory'
+    'more_sheet_open_drawer' => 'Open full module directory',
+    'home_title' => 'Home',
+    'admin_brand' => 'AKM Business Admin'
 ];
 
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Add Announcement',
+    'add_product' => 'Add Product',
+    'add_service' => 'Add Service',
+    'add_page' => 'Add Page',
+    'add_video_embed' => 'Add Video Embed',
     'add_video' => 'Add Video',
     'add_content' => 'Add News',
     'add_publication' => 'Add Publication',

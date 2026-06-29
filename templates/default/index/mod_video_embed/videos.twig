@@ -1,7 +1,7 @@
 {% extends "layouts/base.twig" %}
 
 {% block css_custom %}
-    <link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/content.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ "now"|date("U") }}">
 {% endblock %}
 
 {% block content %}
@@ -21,9 +21,9 @@
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>
             <div class="list-group list-group-flush">
-                <a href="{{ site.sadres }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">Tüm Videolar</a>
+                <a href="{{ site.saddress }}videos" class="list-group-item list-group-item-action{% if category_seo is empty or category_seo == 'all' %} active{% endif %}">Tüm Videolar</a>
                 {% for kat in kategoriler %}
-                    <a href="{{ site.sadres }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
+                    <a href="{{ site.saddress }}videos/{{ kat.seo }}" class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
                         {{ kat.name }}
                     </a>
                 {% endfor %}
@@ -35,9 +35,9 @@
     <div class="col-lg-9 order-lg-2">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="{{ site.sadres }}">{{ lang.index.home }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ site.saddress }}">{{ lang.index.home }}</a></li>
                 {% if category_seo is not empty and category_seo != 'all' %}
-                    <li class="breadcrumb-item"><a href="{{ site.sadres }}videos">{{ lang.index.mod_video_embed.1 }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ site.saddress }}videos">{{ lang.index.mod_video_embed.1 }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ categoryname }}</li>
                 {% else %}
                     <li class="breadcrumb-item active" aria-current="page">{{ lang.index.mod_video_embed.1 }}</li>
@@ -55,13 +55,13 @@
                                        data-bs-toggle="lightbox"
                                        data-gallery="videos"
                                        data-title="{{ video.name }}">
-                                        <div class="video-poster" style="background-image: url('{{ site.radres }}mod_video_embed/{{ video.image }}');">
+                                        <div class="video-poster" style="background-image: url('{{ site.iaddress }}mod_video_embed/{{ video.image }}');">
                                             <i class="bi bi-play-circle-fill play-icon"></i>
                                         </div>
                                     </a>
                                     <div class="card-body">
                                         <p class="card-text fw-bold">
-                                            <a href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|legacy_seo }}" title="{{ video.name }}">
+                                            <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}" title="{{ video.name }}">
                                                 {{ video.name }}
                                             </a>
                                         </p>
@@ -79,7 +79,7 @@
                             {% elseif s == sayfa %}
                                 <li class="page-item active" aria-current="page"><span class="page-link">{{ s }}</span></li>
                             {% else %}
-                                <li class="page-item"><a class="page-link" href="{{ site.sadres }}videos/{{ category_seo|default('all') }}/{{ s }}">{{ s }}</a></li>
+                                <li class="page-item"><a class="page-link" href="{{ site.saddress }}videos/{{ category_seo|default('all') }}/{{ s }}">{{ s }}</a></li>
                             {% endif %}
                         {% endfor %}
                     </ul>

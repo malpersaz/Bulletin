@@ -15,7 +15,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.home }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
                 </li>
                 <li class="active">{{ d.name }}</li>
             </ol>
@@ -34,7 +34,7 @@
                                     {% else %}
                                         {% if l.lang == site.lang %}
                                             <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
-                                                <a href="{{ site.sadres }}page/{{ l.seo }}">{{ l.name }}</a>
+                                                <a href="{{ site.saddress }}page/{{ l.seo }}">{{ l.name }}</a>
                                             </p>
                                         {% endif %}
                                     {% endif %}
@@ -48,7 +48,7 @@
                                         {% else %}
                                             {% if l.lang == site.lang %}
                                                 <p class="list-group-item{% if d.seo == l.seo %} active{% endif %}">
-                                                    <a href="{{ site.sadres }}page/{{ l.seo }}">{{ l.name }}</a>
+                                                    <a href="{{ site.saddress }}page/{{ l.seo }}">{{ l.name }}</a>
                                                 </p>
                                             {% endif %}
                                         {% endif %}
@@ -65,18 +65,18 @@
                             <div class="col-md-6 col-md-6 col-12">{% include "default/partials/share.twig" %}</div>
                             <div class="col-md-6 col-md-6 col-12">
                                 <div class="akm_tools">
-                                    <a href="{{ site.sadres }}tools/saveHtml/mod_page/{{ d.id }}"
+                                    <a href="{{ site.saddress }}tools/saveHtml/mod_page/{{ d.id }}"
                                        class="saveHtml"
                                        data-bs-toggle="tooltip"
                                        data-placement="top"
                                        title="{{ lang.index.mod_gallery.1 }}"></a>
-                                    <a href="{{ site.sadres }}tools/saveText/mod_page/{{ d.id }}"
+                                    <a href="{{ site.saddress }}tools/saveText/mod_page/{{ d.id }}"
                                        class="saveText"
                                        data-bs-toggle="tooltip"
                                        data-placement="top"
                                        title="{{ lang.index.mod_gallery.2 }}"></a>
                                     {% if res is not empty %}
-                                        <a href="{{ site.sadres }}tools/saveAll/mod_page/{{ d.id }}"
+                                        <a href="{{ site.saddress }}tools/saveAll/mod_page/{{ d.id }}"
                                            class="saveAll"
                                            data-bs-toggle="tooltip"
                                            data-placement="top"
@@ -102,7 +102,7 @@
                             {% endif %}
                             {% if d.image != '' %}
                                 <div class="thumbnail">
-                                    <img src="{{ site.radres }}mod_page/{{ d.image }}"
+                                    <img src="{{ site.iaddress }}mod_page/{{ d.image }}"
                                          parent_id="{{ d.name }},{{ d.keywords }}">
                                 </div>
                             {% endif %}
@@ -121,18 +121,18 @@
                                             <div class="owl-carousel">
                                                 {% for r in res %}
                                                     <div class="item">
-                                                        <a href="{{ site.radres }}mod_gallery/mod_page/original/{{ r.url }}"
+                                                        <a href="{{ site.iaddress }}mod_gallery/mod_page/original/{{ r.url }}"
                                                            data-bs-toggle="lightbox"
                                                            data-gallery="multiimages"
                                                            data-title="{{ r.name }}"
                                                            data-parent="#mod_gallery">
-                                                            <img src="{{ site.radres }}mod_gallery/mod_page/thumb/{{ r.url }}"
+                                                            <img src="{{ site.iaddress }}mod_gallery/mod_page/thumb/{{ r.url }}"
                                                                  parent_id="{{ r.name }}">
                                                         </a>
-                                                        <a href="{{ site.adres }}tools/gallery_image_save/mod_page/{{ d.id }}/{{ r.id }}"
+                                                        <a href="{{ site.address }}tools/gallery_image_save/mod_page/{{ d.id }}/{{ r.id }}"
                                                            class="dll"
                                                            title="{{ lang.index.mod_gallery.5 }}"></a>
-                                                        <a href="{{ site.radres }}mod_gallery/mod_page/original/{{ r.url }}"
+                                                        <a href="{{ site.iaddress }}mod_gallery/mod_page/original/{{ r.url }}"
                                                            class="tdll"
                                                            data-bs-toggle="lightbox"
                                                            data-gallery="multiimages"
@@ -153,7 +153,7 @@
                                     </p>
                                     {% for do in dosya %}
                                         <p class="list-group-item">
-                                            <a href="{{ site.adres }}tools/saveFile/mod_page/{{ d.id }}/{{ do.id }}">{{ do.original_name }}</a>
+                                            <a href="{{ site.address }}tools/saveFile/mod_page/{{ d.id }}/{{ do.id }}">{{ do.original_name }}</a>
                                         </p>
                                     {% endfor %}
                                 </div>
@@ -166,7 +166,7 @@
                                     </p>
                                     {% for sayfa in altsayfalar %}
                                         <p class="list-group-item">
-                                            <a href="{{ site.sadres }}page/{{ sayfa.seo }}"
+                                            <a href="{{ site.saddress }}page/{{ sayfa.seo }}"
                                                title="{% if sayfa.summary != '' %}{{ sayfa.summary }}{% else %}{{ sayfa.name }}{% endif %}"
                                                data-bs-toggle="tooltip">{{ sayfa.name }}</a>
                                         </p>
@@ -182,7 +182,7 @@
                                     </p>
                                     {% for content in contents %}
                                         <p class="list-group-item">
-                                            <a href="{{ site.sadres }}article/{{ content.seo }}"
+                                            <a href="{{ site.saddress }}article/{{ content.seo }}"
                                                title="{% if content.summary == '' %}{{ content.summary }}{% else %}{{ content.name }}{% endif %}"
                                                target="_blank"
                                                data-bs-toggle="tooltip">{{ content.name }}</a>

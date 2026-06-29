@@ -1,0 +1,385 @@
+{% set show_navbar = false %}
+{% set show_fab = false %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set show_sidebar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_gallery_mod.list }}{% endblock %}
+{% block headline %}{{ lang.mod_gallery_mod.list }}{% endblock %}
+
+{% block styles %}
+<style>
+    .gallery-mod-shell {
+        padding: 12px 16px 16px;
+        display: grid;
+        gap: 14px;
+        padding-bottom: 120px;
+        background:
+            radial-gradient(circle at top left, rgba(187, 93, 24, 0.12), transparent 24%),
+            radial-gradient(circle at bottom right, rgba(24, 99, 86, 0.14), transparent 28%),
+            linear-gradient(180deg, #fff7ef 0%, #eef8f5 100%);
+    }
+    .gallery-mod-list {
+        display: grid;
+        gap: 12px;
+    }
+    .gallery-mod-card,
+    .gallery-mod-empty {
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        box-shadow: 0 12px 30px rgba(22, 30, 52, 0.06);
+    }
+    .gallery-mod-card {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+        cursor: pointer;
+        transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .gallery-mod-card.selected {
+        border-color: #bb5d18;
+        box-shadow: 0 18px 36px rgba(187, 93, 24, 0.14);
+        transform: translateY(-1px);
+    }
+    .gallery-mod-top {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+    }
+    .gallery-mod-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #ffe1cf, #d9f3ec);
+        color: #8a4316;
+        font-size: 21px;
+    }
+    .gallery-mod-title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 800;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    .gallery-mod-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 4px;
+        color: var(--md-sys-color-on-surface-variant);
+        font-size: 12px;
+    }
+    .gallery-mod-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 24px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: #fff0e5;
+        color: #8b3e1f;
+        font-weight: 700;
+    }
+    .gallery-mod-grid {
+        display: grid;
+        gap: 8px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .gallery-mod-field {
+        border-radius: 16px;
+        padding: 12px;
+        background: rgba(0, 0, 0, 0.03);
+    }
+    .gallery-mod-field label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    .gallery-mod-field div {
+        word-break: break-word;
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .gallery-mod-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 56px 28px;
+        text-align: center;
+    }
+    .gallery-mod-empty p {
+        margin: 0;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+    @media (max-width: 767px) {
+        .gallery-mod-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="gallery-mod-shell">
+    <div id="galleryModList" class="gallery-mod-list"></div>
+    <section id="galleryModEmpty" class="gallery-mod-empty" style="display:none;">
+        <div class="empty-icon-box"><i class="bi bi-images"></i></div>
+        <h3>{{ lang.mod_gallery_mod.grid[4] }}</h3>
+        <p>{{ lang.mod_gallery_mod.information }}</p>
+    </section>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar">
+    <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+        <i class="bi bi-pencil-fill"></i>
+        <span>{{ lang.mod_gallery_mod.button.edit }}</span>
+    </button>
+
+    <button id="toolbarOpenGallery" class="toolbar-item" onclick="openGallerySelected()" style="opacity:0.3; pointer-events:none;">
+        <i class="bi bi-images"></i>
+        <span>{{ lang.mod_gallery_mod.button.gallery }}</span>
+    </button>
+
+    <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+        <i class="bi bi-trash3-fill"></i>
+        <span>{{ lang.mod_gallery_mod.button.delete }}</span>
+    </button>
+</div>
+
+<!-- Main FAB Button -->
+<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_gallery_mod/add'" aria-label="{{ lang.mod_gallery_mod.add|default('Pêveka Galeriyê Lêzêde Bike') }}">
+    <i class="bi bi-plus-lg"></i>
+</button>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let galleryModSelectedId = null;
+    let galleryModSelectedModule = null;
+    let galleryModSelectedKey = null;
+    let galleryModRecords = [];
+
+    function renderGalleryModCard(row) {
+        const id = row[1];
+        const name = row[2];
+        const modName = row[3];
+        const modKey = row[4];
+        const modValue = row[5];
+        const searchText = [id, name, modName, modKey, modValue].join(' ').toLowerCase();
+
+        return `
+            <article class="gallery-mod-card" id="gallery-mod-${id}" data-id="${id}" data-mod-name="${modName}" data-mod-key="${modKey}" data-search="${searchText}" onclick="selectGalleryMod(this)">
+                <div class="gallery-mod-top">
+                    <div class="gallery-mod-icon"><i class="bi bi-collection"></i></div>
+                    <div>
+                        <h3 class="gallery-mod-title">${name}</h3>
+                        <div class="gallery-mod-meta">
+                            <span class="gallery-mod-badge">#${id}</span>
+                            <span>${modName}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="gallery-mod-grid">
+                    <div class="gallery-mod-field">
+                        <label>{{ lang.mod_gallery_mod.admin.columns.mod_name|e('js') }}</label>
+                        <div>${modName}</div>
+                    </div>
+                    <div class="gallery-mod-field">
+                        <label>{{ lang.mod_gallery_mod.admin.columns.mod_key|e('js') }}</label>
+                        <div>${modKey}</div>
+                    </div>
+                    <div class="gallery-mod-field">
+                        <label>{{ lang.mod_gallery_mod.admin.columns.mod_value|e('js') }}</label>
+                        <div>${modValue}</div>
+                    </div>
+                    <div class="gallery-mod-field">
+                        <label>{{ lang.mod_gallery_mod.admin.columns.name|e('js') }}</label>
+                        <div>${name}</div>
+                    </div>
+                </div>
+            </article>
+        `;
+    }
+
+    function updateGalleryModToolbar(active) {
+        ['toolbarEdit', 'toolbarOpenGallery', 'toolbarDelete'].forEach((id) => {
+            const button = document.getElementById(id);
+            if (!button) {
+                return;
+            }
+
+            button.style.pointerEvents = active ? 'auto' : 'none';
+            button.style.opacity = active ? '1' : '0.3';
+            button.classList.toggle('active', active);
+        });
+    }
+
+    async function loadGalleryModRecords() {
+        const list = document.getElementById('galleryModList');
+        const empty = document.getElementById('galleryModEmpty');
+        if (!list || !empty) {
+            return;
+        }
+
+        const body = new URLSearchParams();
+        body.set('start', '0');
+        body.set('length', '100');
+        body.set('draw', '1');
+
+        try {
+            const response = await fetch('{{ site.saddress }}mod_gallery_mod/datatable_json', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            });
+
+            const payload = await response.json();
+            galleryModRecords = payload.data || [];
+            galleryModSelectedId = null;
+            galleryModSelectedModule = null;
+            galleryModSelectedKey = null;
+            updateGalleryModToolbar(false);
+
+            if (!galleryModRecords.length) {
+                list.innerHTML = '';
+                empty.style.display = 'flex';
+                return;
+            }
+
+            empty.style.display = 'none';
+            list.innerHTML = galleryModRecords.map(renderGalleryModCard).join('');
+            filterGalleryModCards(document.getElementById('searchInput')?.value || '');
+        } catch (error) {
+            showSnackbar(String(error.message || error), 'error');
+        }
+    }
+
+    function selectGalleryMod(card) {
+        const id = card.dataset.id;
+        const modName = card.dataset.modName;
+        const modKey = card.dataset.modKey;
+
+        document.querySelectorAll('.gallery-mod-card.selected').forEach((element) => {
+            element.classList.remove('selected');
+        });
+
+        if (galleryModSelectedId === id) {
+            galleryModSelectedId = null;
+            galleryModSelectedModule = null;
+            galleryModSelectedKey = null;
+            updateGalleryModToolbar(false);
+            return;
+        }
+
+        galleryModSelectedId = id;
+        galleryModSelectedModule = modName;
+        galleryModSelectedKey = modKey;
+        document.getElementById('gallery-mod-' + id)?.classList.add('selected');
+        updateGalleryModToolbar(true);
+    }
+
+    function editSelected() {
+        if (!galleryModSelectedId) {
+            return;
+        }
+
+        location.href = '{{ site.saddress }}mod_gallery_mod/edit/' + galleryModSelectedId;
+    }
+
+    function openGallerySelected() {
+        if (!galleryModSelectedModule || !galleryModSelectedKey) {
+            return;
+        }
+
+        location.href = '{{ site.saddress }}mod_gallery/list/' + galleryModSelectedModule + '/' + galleryModSelectedKey;
+    }
+
+    function deleteSelected() {
+        if (!galleryModSelectedId) {
+            return;
+        }
+
+        Swal.fire({
+            icon: 'warning',
+            text: '{{ lang.mod_gallery_mod.remove_record|e('js') }}',
+            showCancelButton: true,
+            confirmButtonText: '{{ lang.mod_gallery_mod.button.evet|e('js') }}',
+            cancelButtonText: '{{ lang.mod_gallery_mod.button.hayir|e('js') }}'
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            const body = new URLSearchParams();
+            body.append('delete[]', galleryModSelectedId);
+
+            fetch('{{ site.saddress }}mod_gallery_mod/sil', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body.toString()
+            })
+                .then((response) => response.text())
+                .then((payload) => {
+                    if (payload.trim().toLowerCase() === 'oke') {
+                        showSnackbar('{{ lang.mod_gallery_mod.oke|e('js') }}');
+                        loadGalleryModRecords();
+                        return;
+                    }
+
+                    showSnackbar(payload || '{{ lang.mod_gallery_mod.hata|e('js') }}', 'error');
+                })
+                .catch((error) => {
+                    showSnackbar(String(error.message || error), 'error');
+                });
+        });
+    }
+
+    function filterGalleryModCards(query) {
+        const normalizedQuery = String(query || '').trim().toLowerCase();
+        let visibleCount = 0;
+
+        document.querySelectorAll('.gallery-mod-card').forEach((card) => {
+            const matches = normalizedQuery === '' || card.dataset.search.includes(normalizedQuery);
+            card.style.display = matches ? 'grid' : 'none';
+            if (matches) {
+                visibleCount += 1;
+            }
+        });
+
+        const empty = document.getElementById('galleryModEmpty');
+        if (!empty) {
+            return;
+        }
+
+        empty.style.display = visibleCount === 0 ? 'flex' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGalleryModRecords();
+
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', (event) => {
+                filterGalleryModCards(event.target.value);
+            });
+        }
+    });
+</script>
+{% endblock %}

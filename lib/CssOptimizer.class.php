@@ -119,7 +119,7 @@ class CssOptimizer
         $data = str_replace($k1, 'url(', $data);
         $data = str_replace($k2, ')', $data);
         $desen = '#url\((.*?)\)#';
-        $replace = 'url("' . $this->site['tadres'] . $dizin . '$1")';
+        $replace = 'url("' . $this->site['taddress'] . $dizin . '$1")';
         $desen1 = '#\w+\/\.\.\/#';
         $replace1 = '';
         $data = preg_replace($desen, $replace, $data);

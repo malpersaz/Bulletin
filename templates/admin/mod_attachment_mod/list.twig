@@ -152,10 +152,6 @@
         <span>{{ lang.mod_attachment_mod.button.edit }}</span>
     </button>
 
-    <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_attachment_mod/add'">
-        <i class="bi bi-plus-lg"></i>
-    </div>
-
     <button id="toolbarAttachment" class="toolbar-item" onclick="openFilesSelected()" style="opacity:0.3; pointer-events:none;">
         <i class="bi bi-paperclip"></i>
         <span>{{ lang.mod_attachment_mod.button.file }}</span>
@@ -166,6 +162,11 @@
         <span>{{ lang.mod_attachment_mod.button.delete }}</span>
     </button>
 </div>
+
+<!-- Main FAB Button -->
+<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_attachment_mod/add'" aria-label="{{ lang.mod_attachment_mod.add|default('Pêveka Modulê Lêzêde Bike') }}">
+    <i class="bi bi-plus-lg"></i>
+</button>
 {% endblock %}
 
 {% block scripts %}
@@ -240,7 +241,7 @@
         body.set('draw', '1');
 
         try {
-            const response = await fetch('{{ site.sadres }}mod_attachment_mod/datatable_json', {
+            const response = await fetch('{{ site.saddress }}mod_attachment_mod/datatable_json', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
@@ -285,14 +286,14 @@
         if (!attachmentModSelectedId) {
             return;
         }
-        location.href = '{{ site.sadres }}mod_attachment_mod/edit/' + attachmentModSelectedId;
+        location.href = '{{ site.saddress }}mod_attachment_mod/edit/' + attachmentModSelectedId;
     }
 
     function openFilesSelected() {
         if (!attachmentModSelectedId) {
             return;
         }
-        location.href = '{{ site.sadres }}mod_attachment/list/mod_attachment_mod/' + attachmentModSelectedId;
+        location.href = '{{ site.saddress }}mod_attachment/list/mod_attachment_mod/' + attachmentModSelectedId;
     }
 
     function deleteSelected() {
@@ -314,7 +315,7 @@
             const body = new URLSearchParams();
             body.append('delete[]', attachmentModSelectedId);
 
-            fetch('{{ site.sadres }}mod_attachment_mod/delete', {
+            fetch('{{ site.saddress }}mod_attachment_mod/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()

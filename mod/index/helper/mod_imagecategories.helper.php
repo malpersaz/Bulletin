@@ -10,12 +10,13 @@ class mod_imagecategories_helper extends indexBase
 
     public function _latest_pictures($limit, $select)
     {
+        // Ji bo lihevhatina bi şablonên Twig re, em stûnên modela 'pictures' bi aliasan araste dikin:
+        $selectMapped = "gallery_url AS url, name, id AS category_id, name AS kat_ad, seo AS kat_seo, keywords";
 
-        $m = Load::model('mod_imagecategories')->select($select)->where_lang_and_parent_id($this->site['lang'], 2)->limit($limit)->order('order', 'DESC');
+        $m = Load::model('mod_imagecategories.pictures')->select($selectMapped)->where_lang_and_parent_id($this->site['lang'], 2)->limit($limit)->order('order', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
             return  $m->toArray();
-            // $this->tema->ctx_set('latest_pictures', $m->toArray());
         }
         unset($m);
         return false;

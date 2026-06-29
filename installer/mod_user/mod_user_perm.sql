@@ -1,4 +1,3 @@
--- User Permissions
 CREATE TABLE `mod_user_perm` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `group_id` int(11) NOT NULL,

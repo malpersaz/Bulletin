@@ -62,8 +62,8 @@
                 <article class="col-12 nyt-article">
                     {% if news.image is not empty %}
                         <div class="nyt-article-img-wrapper">
-                            <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
-                                <img src="{{ site.radres }}mod_news/{{ news.image }}"
+                            <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}">
+                                <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
                                      class="nyt-article-img"
                                      alt="{{ news.name }}"
                                      loading="lazy">
@@ -71,7 +71,7 @@
                         </div>
                     {% endif %}
                     <h3 class="nyt-article-title">
-                        <a href="{{ site.sadres }}news/{{ news.seo }}">{{ news.name }}</a>
+                        <a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
                     </h3>
                     
                     {# Reading Time Calculation #}

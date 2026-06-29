@@ -250,7 +250,7 @@
         }
 	</style>
 
-	<form id="editForm" method="POST" action="{{ site.sadres }}mod_content/edit/{{ d.id }}" enctype="multipart/form-data">
+	<form id="editForm" method="POST" action="{{ site.saddress }}mod_content/edit/{{ d.id }}" enctype="multipart/form-data">
 		<input type="hidden" name="edit" value="{{ lang.mod_content.button.edit }}">
 		<input type="hidden" name="lang" id="editLang" value="{{ d.lang|lower }}">
 		<input type="hidden" name="category_id" id="editCategoryId" value="{{ d.category_id }}">
@@ -308,7 +308,7 @@
                 </div>
                 <script>
                     setTimeout(() => {
-                        window.location.href = "{{ site.sadres }}mod_content/list";
+                        window.location.href = "{{ site.saddress }}mod_content/list";
                     }, 2000);
                 </script>
             {% endif %}
@@ -444,10 +444,10 @@
                             'data-empty-name': lang.mod_content.wizard.summary.selected_none,
                             'data-empty-meta': lang.mod_content.wizard.image.drop_description,
                             'data-existing-image': d.image ? 'true' : 'false',
-                            'data-existing-src': d.image ? (site.radres ~ 'mod_content/thumb/' ~ d.image) : '',
+                            'data-existing-src': d.image ? (site.iaddress ~ 'mod_content/thumb/' ~ d.image) : '',
                             'data-existing-name': d.image ? d.image : '',
                             'data-existing-meta': lang.mod_content.admin.columns.image,
-                            'data-remove-url': site.sadres ~ 'mod_content/image_remove_image',
+                            'data-remove-url': site.saddress ~ 'mod_content/image_remove_image',
                             'data-remove-id': d.id,
                             'data-remove-title': lang.mod_content.remove_image,
                             'data-remove-confirm': lang.mod_content.context_menu.delete_confirm,
@@ -469,7 +469,7 @@
                         preview_img_id: 'editImgPreview',
                         preview_alt: lang.mod_content.wizard.step.image,
                         preview_hidden: d.image ? false : true,
-                        preview_src: d.image ? (site.radres ~ 'mod_content/thumb/' ~ d.image) : '',
+                        preview_src: d.image ? (site.iaddress ~ 'mod_content/thumb/' ~ d.image) : '',
                         meta_id: 'editImageMeta',
                         meta_hidden: true,
                         file_name_id: 'editImageFileName',
@@ -653,7 +653,7 @@
 		}
 	</style>
 	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_content/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_content/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
 			{{ lang.mod_content.button.vazgec }}
 		</button>
@@ -669,6 +669,13 @@
 	<script>
         // Initialize Rich Editor
         document.addEventListener('DOMContentLoaded', () => {
+            const currentLang = '{{ d.lang|lower }}';
+            if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
+                adminLang.languages = adminLang.languages.filter((item) => item.status === 'y' || item.code === currentLang);
+            }
+            if (typeof wizardData !== 'undefined') {
+                wizardData.lang = currentLang;
+            }
             initRichEditor('#editContentTextarea', 400);
             initializeEditImageInteractions();
         });

@@ -2,7 +2,7 @@
 $lang['mod_slider'] = [
   'add' => 'Slider Ekle',
   'edit' => 'Slider Düzenle',
-  'list' => 'Slider Listesi',
+  'list' => 'Rêveberiya Slaydirê',
   'information' => 'Bilgi!',
   'oke' => 'İşlem Başarılı!',
   'hata' => 'Hata Oluştu!',
@@ -145,4 +145,10 @@ $lang['mod_slider'] = [
     'no_search_results' => 'No sliders found matching your search criteria.',
   ],
   'search_placeholder' => 'Search Sliders...',
+  'modules' => [
+    'news' => 'Xabere',
+    'publication' => 'Weşan',
+    'content' => 'Zerey',
+    'product' => 'Hilber',
+  ],
 ];

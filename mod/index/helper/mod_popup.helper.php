@@ -11,7 +11,7 @@ class mod_popup_helper extends indexBase
     public function getLast()
     {
         $time = date('Y-m-d H:i:s', time());
-        $sql = "SELECT id,name,content,link,sure,image,video FROM mod_popup WHERE status = 'y' AND created_at < '" . $time . "' AND etarih > '" . $time . "' AND lang='" . $this->site['lang'] . "' LIMIT 1";
+        $sql = "SELECT id,name,content,link,duration,image,video FROM mod_popup WHERE status = 'y' AND publish_at < '" . $time . "' AND expired_at > '" . $time . "' AND lang='" . $this->site['lang'] . "' LIMIT 1";
         $pop = Load::model('mod_popup');
         $pop->fetch_array($sql);
         if ($pop->getSize() != 0) {

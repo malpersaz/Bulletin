@@ -1,5 +1,5 @@
 <!-- NEW: Video Embed Wizard -->
-<form id="videoAddFormWizard" method="POST" action="{{ site.sadres }}mod_video_embed/ekle" enctype="multipart/form-data">
+<form id="videoAddFormWizard" method="POST" action="{{ site.saddress }}mod_video_embed/ekle" enctype="multipart/form-data">
 <div id="videoEmbedWizard" class="wizard-overlay">
     <!-- Wizard Header -->
     <header class="wizard-header">
@@ -35,11 +35,13 @@
             <p class="step-subhead" id="videoEmbedWizardStepSubhead1">{{ lang.mod_video_embed.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
-                    <div class="selection-icon">{{ item.seo|upper }}</div>
-                    <div class="selection-label">{{ item.name }}</div>
-                    <i class="bi bi-check-circle-fill check-icon"></i>
-                </div>
+                    {% if item.status == 'y' %}
+                    <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
+                        <div class="selection-icon">{{ item.seo|upper }}</div>
+                        <div class="selection-label">{{ item.name }}</div>
+                        <i class="bi bi-check-circle-fill check-icon"></i>
+                    </div>
+                    {% endif %}
                 {% endfor %}
             </div>
         </div>

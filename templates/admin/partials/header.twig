@@ -1,13 +1,12 @@
 <!-- TOP APP BAR -->
 <header class="top-app-bar top-app-bar-default">
-    <button class="icon-btn" onclick="toggleDrawer()"><i class="bi bi-list" style="font-size:24px;"></i></button>
-    <div class="headline">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
+    <div class="headline{% if page_headline is not defined or page_headline is empty %} site-title-font{% endif %}">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
     <div class="user-menu-wrapper" style="position: relative; display: inline-flex; justify-content: center; align-items: center; padding-right: 4px;">
         <div class="avatar-small" style="cursor:pointer;" onclick="openUserMenuSheet()" title="{{ lang.management.user_menu_title }}">
             {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
-                <img src="{{ site.radres }}mod_user/{{ session.image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
             {% else %}
-                <span style="font-size: 16px; font-weight: 600; color: var(--md-sys-color-on-primary-container, #21005D);">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
+                <span style="font-size: 16px; font-weight: 600; color: var(--md-sys-color-on-blue-container, #001D3A);">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
             {% endif %}
         </div>
     </div>
@@ -19,9 +18,9 @@
     <div class="context-menu-header">
         <div class="user-menu-avatar-large">
             {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
-                <img src="{{ site.radres }}mod_user/{{ session.image }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
             {% else %}
-                <span style="font-size: 36px; font-weight: 600; color: var(--md-sys-color-on-primary-container, #21005D); display: flex; align-items: center; justify-content: center; height: 100%;">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
+                <span style="font-size: 36px; font-weight: 600; color: var(--md-sys-color-on-blue-container, #001D3A); display: flex; align-items: center; justify-content: center; height: 100%;">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
             {% endif %}
         </div>
         <div class="user-menu-header-info">
@@ -31,11 +30,11 @@
     </div>
     
     <div id="user-menu-main" style="padding: 4px 0;">
-        <a href="{{ site.sadres }}mod_user/info" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/info" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-person"></i></div>
             <span class="context-action-label">{{ lang.management.edit_profile_menu }}</span>
         </a>
-        <a href="{{ site.sadres }}mod_user/change_password" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/change_password" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-key"></i></div>
             <span class="context-action-label">{{ lang.management.change_password_menu }}</span>
         </a>
@@ -62,31 +61,31 @@
         
         <div class="context-divider" style="margin: 4px 0;"></div>
         
-        <a href="{{ site.sadres }}mod_user/logout" class="context-action-item action-danger" style="text-decoration:none; margin-bottom:16px;">
+        <a href="{{ site.saddress }}mod_user/logout" class="context-action-item action-danger" style="text-decoration:none; margin-bottom:16px;">
             <div class="context-icon icon-delete"><i class="bi bi-box-arrow-right"></i></div>
             <span class="context-action-label">{{ lang.management.logout_menu }}</span>
         </a>
     </div>
 
     <div id="user-menu-pm" style="display: none; padding: 4px 0;">
-        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-primary);">
+        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-blue);">
             <div class="context-icon" style="background: transparent; justify-content: flex-start; margin-left: -8px;"><i class="bi bi-chevron-left" style="font-size: 20px;"></i></div>
         </div>
         <div class="context-divider" style="margin: 4px 0;"></div>
-        <a href="{{ site.sadres }}mod_user_pm/inbox" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_pm/inbox" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-envelope-open"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.inbox_link_label }}</span>
             {% if session.okunmamis is defined and session.okunmamis > 0 %}
                 <span class="badge" style="background: var(--md-sys-color-error); color: white; border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; margin-left: auto;">{{ session.okunmamis }}</span>
             {% endif %}
         </a>
-        <a href="{{ site.sadres }}mod_user_pm/sent" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_pm/sent" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-send"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.sent_title }}</span>
         </a>
         
         {% if session.permissions.mod_user_pm.send is defined %}
-        <a href="{{ site.sadres }}mod_user_pm/send" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_pm/send" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-pencil-square"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.new_message_action }}</span>
         </a>
@@ -94,56 +93,56 @@
     </div>
 
     <div id="user-menu-admin" style="display: none; padding: 4px 0;">
-        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-primary);">
+        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-blue);">
            <div class="context-icon" style="background: transparent; justify-content: flex-start; margin-left: -8px;"><i class="bi bi-chevron-left" style="font-size: 20px;"></i></div>
         </div>
         <div class="context-divider" style="margin: 4px 0;"></div>
         
         {% if session.permissions.mod_user.list is defined %}
-        <a href="{{ site.sadres }}mod_user/list" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-people"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.list }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_user_group.list is defined %}
-        <a href="{{ site.sadres }}mod_user_group/list" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_group/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-collection"></i></div>
             <span class="context-action-label">{{ lang.mod_user_group.admin.list }}</span>
         </a>
         {% endif %}
 
         {% if session.permissions.mod_user.acl is defined %}
-        <a href="{{ site.sadres }}mod_user/acl" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/acl" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-shield-lock"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.acl }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_acl.list is defined %}
-        <a href="{{ site.sadres }}mod_acl/list" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_acl/list" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-shield-check"></i></div>
             <span class="context-action-label">{{ lang.mod_acl.admin.list }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_user.setting is defined %}
-        <a href="{{ site.sadres }}mod_user/settings" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/settings" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-person-gear"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.membership_settings }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_settings.edit is defined %}
-        <a href="{{ site.sadres }}lang/panel" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}lang/panel" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-translate"></i></div>
             <span class="context-action-label">{{ lang.management.language_management_menu }}</span>
         </a>
-        <a href="{{ site.sadres }}mod_settings/social_media" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_settings/social_media" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-share"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.social_media }}</span>
         </a>
-        <a href="{{ site.sadres }}mod_settings/edit" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_settings/edit" class="context-action-item" style="text-decoration:none;">
             <div class="context-icon"><i class="bi bi-sliders"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.site_settings }}</span>
         </a>

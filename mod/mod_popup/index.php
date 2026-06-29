@@ -549,7 +549,7 @@ class mod_popup_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<img src="' . $this->site['radres'] . 'mod_popup/thumb/' . $content['image'] . '">',
+                    '<img src="' . $this->site['iaddress'] . 'mod_popup/thumb/' . $content['image'] . '">',
                     $content['lang'],
                     $content['created_at'],
                     $content['etarih'],

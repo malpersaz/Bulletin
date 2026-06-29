@@ -1,66 +1,124 @@
 <?php
-/**
- * Advanced File Manager Module - English Language File
- */
 if (!defined('AKM_LOADED')) {
     die('Direct access to this file is not allowed.');
 }
 
 $lang['mod_document'] = [
-    'list' => 'File Management',
-    'add' => 'Add File',
-    'edit' => 'Edit File',
-    'delete' => 'Delete',
-    'ad' => 'Name',
-    'aciklama' => 'Description',
-    'status' => 'Published',
-    'publish_yes' => 'Yes',
-    'publish_no' => 'No',
-    'oke' => 'Success!',
-    'hata' => 'Error!',
-    'error' => 'Fatal Error!',
-    'remove_record' => 'Are you sure you want to delete this record?',
-
-    'role_errors' => [
-        'list' => 'You do not have permission to view file management',
-        'add' => 'You do not have permission to add files',
-        'edit' => 'You do not have permission to edit files',
-        'delete' => 'You do not have permission to delete files',
-    ],
-
-    'roll' => [
-        'ad' => 'File Management Permissions',
-        'add' => 'Can Add Files',
-        'edit' => 'Can Edit Files',
-        'delete' => 'Can Delete Files',
-        'list' => 'Can View File Management',
-        'moderate_edit' => 'Can edit file records belonging to others',
-        'moderate_delete' => 'Can delete file records belonging to others',
-        'file' => 'Can Upload Files',
-    ],
-
-    'admin' => [
-        'columns' => [
-            'id' => 'ID',
-            'language' => 'Language',
-            'ad' => 'File Name',
-            'seo' => 'File URL',
-            'status' => 'Published?',
-            'image' => 'Image',
-            'title' => 'Title',
-            'keywords' => 'Keywords',
-            'aciklama' => 'Description',
-            'menu' => 'Send to Menu',
+    'add' => 'Add Document',
+    'edit' => 'Edit Document',
+    'list' => 'Documents',
+    'remove_image' => 'Are you sure you want to remove this image?',
+    'remove_record' => 'Are you sure you want to delete this document?',
+    'empty_state' => 'No documents have been added yet.',
+    'message' => [
+        'success' => [
+            'add' => 'Document added successfully.',
+            'edit' => 'Document updated successfully.',
+            'delete' => 'Document deleted successfully.',
         ],
-        'radio' => [
-            'publish_yes' => 'Yes',
-            'publish_no' => 'No',
+        'error' => [
+            'add' => 'Document could not be added.',
+            'edit' => 'Document could not be updated.',
+            'delete' => 'Document could not be deleted.',
         ],
     ],
-
-    'buttons' => [
+    'errors' => [
+        'record' => 'The specified document could not be found.',
+        'delete_failed' => 'The document could not be deleted.',
+    ],
+    'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
         'delete' => 'Delete',
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'manage_gallery' => 'Manage Gallery',
+        'manage_attachments' => 'Manage Files',
+    ],
+    'validator' => [
+        'required' => 'Please do not leave the %s field empty.',
+        'length' => '%s must be between %s and %s characters.',
+        'unique' => 'The %s value already exists. Please choose another %s.',
+    ],
+    'roll' => [
+        'name' => 'Document Management Roles',
+        'add' => 'Can add documents',
+        'edit' => 'Can edit documents',
+        'delete' => 'Can delete documents',
+        'list' => 'Can view document management',
+        'gallery' => 'Can manage document galleries',
+        'file' => 'Can manage document attachments',
+        'moderate_edit' => 'Can edit documents owned by others',
+        'moderate_delete' => 'Can delete documents owned by others',
+    ],
+    'role_errors' => [
+        'add' => 'You do not have permission to add documents.',
+        'edit' => 'You do not have permission to edit documents.',
+        'delete' => 'You do not have permission to delete documents.',
+        'list' => 'You do not have permission to view document management.',
+        'gallery' => 'You do not have permission to manage document galleries.',
+        'file' => 'You do not have permission to manage document attachments.',
+        'moderate_edit' => 'You cannot edit documents owned by other users.',
+        'moderate_delete' => 'You cannot delete documents owned by other users.',
+    ],
+    'status' => [
+        'published' => 'Published',
+        'draft' => 'Draft',
+    ],
+    'admin' => [
+        'columns' => [
+            'id' => 'ID',
+            'lang' => 'Language',
+            'name' => 'Document Name',
+            'status' => 'Status',
+            'seo' => 'SEO URL',
+            'title' => 'Meta Title',
+            'keywords' => 'Meta Keywords',
+            'description' => 'Meta Description',
+            'image' => 'Image',
+            'menu' => 'Send to Menu',
+        ],
+        'radio' => [
+            'status_y' => 'Published',
+            'status_n' => 'Draft',
+            'menu_y' => 'Send to Menu',
+            'menu_n' => 'Do not Send',
+        ],
+    ],
+    'form' => [
+        'wizard' => [
+            'back' => 'Back',
+            'next' => 'Next',
+            'seo_meta' => 'SEO & Meta',
+        ],
+    ],
+    'list_ui' => [
+        'title' => 'Documents',
+        'subtitle' => 'Manage institutional documents and files.',
+        'total_stat' => 'Total',
+        'live_stat' => 'Published',
+        'loading' => 'Loading documents...',
+        'load_more' => 'Load More',
+        'image_title' => 'Document Image',
+        'image_drop_title' => 'Drop a document image here',
+        'image_drop_description' => 'Choose a new image, paste one, or import it from a URL.',
+        'image_upload_link' => 'Upload image',
+        'image_link_separator' => 'or',
+        'image_link_placeholder' => 'Paste an image URL',
+        'image_link_action' => 'Import from URL',
+        'image_hint_loading' => 'Importing image...',
+        'image_hint_invalid_type' => 'Please choose a valid image file.',
+        'image_hint_no_drop_data' => 'No usable image was found in the dropped content.',
+        'image_hint_remote_failed' => 'The image could not be imported from that URL.',
+        'image_empty_name' => 'No image selected',
+        'image_updated' => 'Document image updated successfully.',
+        'image_remove_success' => 'Document image removed successfully.',
+        'add_cta' => 'New Document',
+        'edit_cta' => 'Edit',
+        'change_image' => 'Change Image',
+        'delete_cta' => 'Delete',
+        'select_record' => 'Select a document first.',
+        'gallery_ready' => 'Gallery Ready',
+        'file_ready' => 'File Ready',
     ],
 ];

@@ -8,32 +8,43 @@
 {% block title %}{{ lang.mod_video_embed.edit }}{% endblock %}
 {% block headline %}{{ lang.mod_video_embed.edit }}{% endblock %}
 
-{% macro select_nested_category_id_function(parent_id, level, d) %}
+{% macro select_nested_category_id_function(parent_id, level, d, allowed_langs) %}
     {% for entry in attribute(select_nested_category_id_result, parent_id) %}
         {% set parent_id = entry.id %}
-        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
-            <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
-        {% else %}
-            <option
-                value="{{ entry.id }}"
-                {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
-                data-trigger-label="{{ entry.name|e('html_attr') }}"
-                {% if d is defined and d.category_id is defined and d.category_id == entry.id %} selected {% endif %}
-            >
-                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
-                {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
-            </option>
+        {% set entry_lang = entry.lang is defined ? entry.lang|lower : '' %}
+        {% set is_allowed = entry_lang == '' or entry_lang in allowed_langs %}
+        {% if is_allowed %}
+            {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+                <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
+            {% else %}
+                <option
+                    value="{{ entry.id }}"
+                    {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
+                    data-trigger-label="{{ entry.name|e('html_attr') }}"
+                    {% if d is defined and d.category_id is defined and d.category_id == entry.id %} selected {% endif %}
+                >
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                    {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+                </option>
+            {% endif %}
         {% endif %}
         {% if attribute(select_nested_category_id_result, parent_id) is not empty and attribute(select_nested_category_id_result, parent_id) is iterable %}
-            {{ _self.select_nested_category_id_function(parent_id, level + 1, d) }}
+            {{ _self.select_nested_category_id_function(parent_id, level + 1, d, allowed_langs) }}
         {% endif %}
-        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+        {% if is_allowed and ((entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#')) %}
             </optgroup>
         {% endif %}
     {% endfor %}
 {% endmacro %}
 
 {% block content %}
+{% set selected_lang = d.lang is defined ? d.lang : site.lang %}
+{% set allowed_langs = [] %}
+{% for item in lang_lang %}
+    {% if item.status == 'y' or item.seo == selected_lang %}
+        {% set allowed_langs = allowed_langs|merge([item.seo|lower]) %}
+    {% endif %}
+{% endfor %}
 <div class="form-container">
     {% if error is defined %}
         <script>
@@ -56,7 +67,7 @@
                     confirmButtonText: '{{ lang.mod_video_embed.list }}',
                     confirmButtonColor: '#2e7d32'
                 }).then(function(result) {
-                    window.location.href = '{{ site.sadres }}mod_video_embed/list';
+                    window.location.href = '{{ site.saddress }}mod_video_embed/list';
                 });
             });
         </script>
@@ -103,7 +114,7 @@
         <div class="m3-card">
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
-                <input type="text" name="name" id="nameInput" value="{{ d.name|default('') }}" class="form-input" required>
+                <input type="text" name="name" id="nameInput" value="{{ d.name|default('') }}" class="form-input" autocomplete="off" required>
             </div>
 
             <div class="form-group">
@@ -129,7 +140,9 @@
                     <div class="select-wrapper">
                         <select name="lang" id="langSelect" class="form-select" required>
                             {% for item in lang_lang %}
-                                <option value="{{ item.seo }}" {% if d.lang is defined and d.lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                {% if item.status == 'y' or item.seo == selected_lang %}
+                                    <option value="{{ item.seo }}" {% if selected_lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -158,7 +171,7 @@
                         data-picker-lang-source="langSelect"
                     >
                         <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
-                        {{ _self.select_nested_category_id_function(0, 0, d|default({})) }}
+                        {{ _self.select_nested_category_id_function(0, 0, d|default({}), allowed_langs) }}
                     </select>
                     <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="categorySelect">
                         <span class="select-picker-label">{{ lang.mod_video_embed.choose_wish }}</span>
@@ -178,7 +191,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <a href="{{ site.sadres }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
+                    <a href="{{ site.saddress }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
                         <i class="bi bi-gear" style="font-size: 20px;"></i>
                     </a>
                 </div>
@@ -196,7 +209,7 @@
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.image }}</label>
                 <label class="image-upload-area" id="imageUploadArea" onclick="handleImageUpdate()">
                     {% if d is defined and d.image is defined and d.image != '' %}
-                        <img id="editImgPreview" src="{{ site.radres }}mod_video_embed/thumb/{{ d.image }}" class="current-image">
+                        <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ d.image }}" class="current-image">
                         <button type="button" class="remove-img-btn" onclick="event.preventDefault(); event.stopPropagation(); removeExistingImage('{{ d.id }}')"><i class="bi bi-trash"></i></button>
                     {% else %}
                         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
@@ -237,7 +250,7 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button class="toolbar-item active" onclick="window.location.href='{{ site.sadres }}mod_video_embed/list'">
+        <button class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video_embed/list'">
             <i class="bi bi-x-lg"></i>
             <span>{{ lang.mod_video_embed.button.cancel }}</span>
         </button>
@@ -354,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const seoPreviewInput = document.getElementById('seoPreviewInput');
         if (!seoPreviewInput || !nameInput) return;
         const slug = slugifyVideoName(nameInput.value);
-        seoPreviewInput.value = '{{ site.sadres }}video/{{ d.id }}-' + slug;
+        seoPreviewInput.value = '{{ site.saddress }}video/{{ d.id }}-' + slug;
     }
 
     if (embedInput) {
@@ -497,7 +510,7 @@ function removeExistingImage(id) {
             const formData = new URLSearchParams();
             formData.append('id', id);
 
-            fetch('{{ site.sadres }}mod_video_embed/image_remove_image', {
+            fetch('{{ site.saddress }}mod_video_embed/image_remove_image', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData

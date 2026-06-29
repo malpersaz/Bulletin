@@ -14,9 +14,9 @@
       <a href="{{ slide.url }}" title="{{ slide.description }}" {% if slide.target != 'y' %}target="_blank"{% endif %}>
         <picture>
           {% if slide.image_mobile %}
-          <source media="(max-width: 767px)" srcset="{{ site.radres }}mod_slider/{{ slide.image_mobile }}">
+          <source media="(max-width: 767px)" srcset="{{ site.iaddress }}mod_slider/{{ slide.image_mobile }}">
           {% endif %}
-          <img src="{{ site.radres }}mod_slider/{{ slide.image }}" class="d-block w-100" alt="{{ slide.name }}" loading="lazy">
+          <img src="{{ site.iaddress }}mod_slider/{{ slide.image }}" class="d-block w-100" alt="{{ slide.name }}" loading="lazy">
         </picture>
         <div class="carousel-caption">
           <h5>{{ slide.name|raw }}</h5>

@@ -259,6 +259,42 @@ function installer_result_list_text(array $entries, array $ui)
     return implode(' ', $parts);
 }
 
+function installer_normalize_contact_number($number, $countryCode = '')
+{
+    $number = trim((string) $number);
+    $countryCode = trim((string) $countryCode);
+
+    if ($number === '') {
+        return '';
+    }
+
+    if (strpos($number, '+') === 0) {
+        $digits = preg_replace('/\D+/', '', $number);
+        return $digits === '' ? '' : '+' . $digits;
+    }
+
+    $digits = preg_replace('/\D+/', '', $number);
+    if ($digits === '') {
+        return '';
+    }
+
+    if (strpos($digits, '00') === 0) {
+        $digits = substr($digits, 2);
+        return $digits === '' ? '' : '+' . $digits;
+    }
+
+    $countryDigits = preg_replace('/\D+/', '', $countryCode);
+    if ($countryDigits === '') {
+        return $digits;
+    }
+
+    if (strpos($digits, '0') === 0) {
+        $digits = ltrim($digits, '0');
+    }
+
+    return '+' . $countryDigits . $digits;
+}
+
 Load::lib('Session');
 $stateStore = new InstallerStateStore();
 $catalog = new InstallerModuleCatalog();
@@ -268,6 +304,17 @@ $taskRunner = new InstallerTaskRunner();
 $availableInstallerLanguages = installer_available_languages();
 $projectLanguages = installer_project_languages();
 $state = $stateStore->getState();
+installer_capture_project_setup_state($state);
+
+if ($state['step'] === 'finish') {
+    // Heke pergal ne sazkirî be lê di sessionê de rewş wekî 'finish' xuya bike,
+    // em rewşê paqij dikin da ku Sazker ji nû ve dest pê bike.
+    $state = $stateStore->reset();
+}
+
+if ($state['step'] === 'modules') {
+    $state = $stateStore->merge(array('step' => 'sample'));
+}
 
 if (empty($state['requested_modules'])) {
     $selection = $resolver->buildSelection($catalog->getDefaultRequestedModules(), $catalog);
@@ -286,18 +333,19 @@ $ui = $lang['installer_mobile'];
 $checks = $environment->run();
 $isBlocked = $environment->hasBlockingFailures($checks);
 $errorMessage = '';
+$buildConfigMissing = installer_site_build_name() === '';
+
+if ($buildConfigMissing) {
+    $errorMessage = $ui['errors']['missing_build_config'];
+    $state = $stateStore->merge(array('step' => 'language'));
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = isset($_POST['action']) ? $_POST['action'] : '';
 
-    if ($action === 'reset_setup') {
-        $state = $stateStore->reset();
-        $selection = $resolver->buildSelection($catalog->getDefaultRequestedModules(), $catalog);
-        $state = $stateStore->merge(array(
-            'requested_modules' => $selection['requested'],
-            'resolved_modules' => $selection['resolved'],
-        ));
-        Kayit::yenile('lang', $state['installer_language']);
+    if ($buildConfigMissing && $action !== 'preview_language' && $action !== 'save_language' && $action !== 'go_language') {
+        $errorMessage = $ui['errors']['missing_build_config'];
+        $action = '';
     }
 
     if ($action === 'go_language') {
@@ -315,6 +363,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'installer_language_confirmed' => true,
             'step' => 'environment',
         ));
+        installer_capture_project_setup_state($state);
         Kayit::yenile('lang', $installerLanguage);
         InstallerLang::reset($installerLanguage);
         $lang = InstallerLang::load($installerLanguage);
@@ -334,6 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'installer_language_confirmed' => false,
             'step' => 'language',
         ));
+        installer_capture_project_setup_state($state);
         Kayit::yenile('lang', $installerLanguage);
         InstallerLang::reset($installerLanguage);
         $lang = InstallerLang::load($installerLanguage);
@@ -401,6 +451,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'save_setup') {
         $projectName = isset($_POST['project_name']) ? trim($_POST['project_name']) : installer_site_build_name();
         $projectLanguage = isset($_POST['project_default_language']) ? $_POST['project_default_language'] : 'ku';
+        $projectDescription = isset($_POST['project_description']) ? trim($_POST['project_description']) : '';
+        $projectOwnerName = isset($_POST['project_owner_name']) ? trim($_POST['project_owner_name']) : '';
+        $projectEstablishedYear = isset($_POST['project_established_year']) ? trim($_POST['project_established_year']) : '';
+        $projectPhoneCountryCode = isset($_POST['project_phone_country_code']) ? trim($_POST['project_phone_country_code']) : '+90';
+        $projectWhatsappCountryCode = isset($_POST['project_whatsapp_country_code']) ? trim($_POST['project_whatsapp_country_code']) : '+90';
+        $projectPhone = installer_normalize_contact_number(isset($_POST['project_phone']) ? $_POST['project_phone'] : '', $projectPhoneCountryCode);
+        $projectWhatsapp = installer_normalize_contact_number(isset($_POST['project_whatsapp']) ? $_POST['project_whatsapp'] : '', $projectWhatsappCountryCode);
+        $projectEmail = isset($_POST['project_email']) ? trim($_POST['project_email']) : '';
+        $projectOfficeAddress = isset($_POST['project_office_address']) ? trim($_POST['project_office_address']) : '';
+        $projectWorkAddress = isset($_POST['project_work_address']) ? trim($_POST['project_work_address']) : '';
+        $projectAddress = isset($_POST['project_address']) ? trim($_POST['project_address']) : '';
+        if ($projectAddress !== '') {
+            $projectAddress = rtrim($projectAddress, '/') . '/';
+        }
 
         if (!isset($projectLanguages[$projectLanguage])) {
             $projectLanguage = 'ku';
@@ -410,41 +474,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $projectName = installer_site_build_name();
         }
 
+        $selection = $resolver->buildSelection($catalog->getDefaultRequestedModules(), $catalog);
         $state = $stateStore->merge(array(
             'project_name' => $projectName,
             'project_default_language' => $projectLanguage,
-            'step' => 'modules',
+            'project_description' => $projectDescription,
+            'project_owner_name' => $projectOwnerName,
+            'project_established_year' => $projectEstablishedYear,
+            'project_phone' => $projectPhone,
+            'project_phone_country_code' => $projectPhoneCountryCode,
+            'project_whatsapp' => $projectWhatsapp,
+            'project_whatsapp_country_code' => $projectWhatsappCountryCode,
+            'project_email' => $projectEmail,
+            'project_office_address' => $projectOfficeAddress,
+            'project_work_address' => $projectWorkAddress,
+            'project_address' => $projectAddress,
+            'requested_modules' => $selection['requested'],
+            'resolved_modules' => $selection['resolved'],
+            'install_result' => null,
+            'step' => 'sample',
         ));
+        installer_capture_project_setup_state($state);
     }
 
     if ($action === 'go_back_to_environment') {
         $state = $stateStore->merge(array('step' => 'environment'));
     }
 
-    if ($action === 'save_modules') {
-        $requestedModules = isset($_POST['modules']) && is_array($_POST['modules']) ? $_POST['modules'] : array();
-        $selection = $resolver->buildSelection($requestedModules, $catalog);
-        $state = $stateStore->merge(array(
-            'requested_modules' => $selection['requested'],
-            'resolved_modules' => $selection['resolved'],
-            'install_result' => null,
-            'step' => 'sample',
-        ));
-    }
-
     if ($action === 'go_back_to_setup') {
         $state = $stateStore->merge(array('step' => 'setup'));
-    }
-
-    if ($action === 'edit_modules') {
-        $state = $stateStore->merge(array('step' => 'modules'));
-    }
-
-    if ($action === 'exit_failure') {
-        $state = $stateStore->merge(array(
-            'install_result' => null,
-            'step' => 'modules',
-        ));
     }
 
     if ($action === 'run_install' || $action === 'retry_install') {
@@ -460,42 +518,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ));
         } else {
             $selection = $resolver->buildSelection($state['requested_modules'], $catalog);
+            $state = $stateStore->merge(array(
+                'sample_content' => $sampleContent,
+                'resolved_modules' => $selection['resolved'],
+            ));
+            installer_capture_project_setup_state($state);
             $installer = new installer();
             $previousResult = array();
             if ($action === 'retry_install' && is_array($state['install_result'])) {
                 $previousResult = $state['install_result'];
             }
             $result = $taskRunner->run($installer, $selection['resolved'], $catalog, $sampleContent, $previousResult);
+            if (!empty($result['success'])) {
+                $projectAddress = isset($state['project_address']) ? $state['project_address'] : '';
+                if ($projectAddress !== '') {
+                    $projectAddress = rtrim($projectAddress, '/') . '/';
+                    $localConfigFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'site.config.local.php';
+                    $localConfigContent = "<?php\n\n";
+                    $localConfigContent .= "/**\n * Amed Framework - Site Local Configuration\n";
+                    $localConfigContent .= " * Generated by Installer\n";
+                    $localConfigContent .= " * Date: " . date('Y-m-d H:i:s') . "\n */\n\n";
+                    $localConfigContent .= "if (defined('root_dir') === False) exit(':)');\n\n";
+                    $localConfigContent .= "\$site_local = array(\n";
+                    $localConfigContent .= "    'address' => '" . addslashes($projectAddress) . "',\n";
+                    $localConfigContent .= "    'saddress' => '" . addslashes($projectAddress) . "',\n";
+                    $localConfigContent .= "    'iaddress' => '" . addslashes($projectAddress) . "static/',\n";
+                    $localConfigContent .= "    'taddress' => '" . addslashes($projectAddress) . "templates/',\n";
+                    $localConfigContent .= ");\n";
+                    @file_put_contents($localConfigFile, $localConfigContent);
+                }
+            }
             $state = $stateStore->merge(array(
-                'sample_content' => $sampleContent,
-                'resolved_modules' => $selection['resolved'],
                 'install_result' => $result,
-                'step' => 'progress',
+                'step' => !empty($result['success']) ? 'finish' : 'progress',
             ));
         }
     }
 
-    if ($action === 'go_back_to_modules') {
-        $state = $stateStore->merge(array('step' => 'modules'));
-    }
-
-    if ($action === 'view_review') {
-        $result = isset($state['install_result']) ? $state['install_result'] : null;
-        if ($result && !empty($result['success'])) {
-            $state = $stateStore->merge(array('step' => 'post_install'));
-        }
-    }
-
-    if ($action === 'go_back_to_progress') {
-        $state = $stateStore->merge(array('step' => 'progress'));
-    }
-
-    if ($action === 'continue_to_finish') {
-        $result = isset($state['install_result']) ? $state['install_result'] : null;
-        if ($result && !empty($result['success'])) {
-            $state = $stateStore->merge(array('step' => 'finish'));
-        }
-    }
 }
 
 $state = $stateStore->getState();
@@ -509,6 +568,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title><?php echo htmlspecialchars($ui['hero']['badge'], ENT_QUOTES, 'UTF-8'); ?></title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/css/intlTelInput.css">
     <style>
         :root {
             --bg: #f4efe6;
@@ -858,7 +918,8 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
         }
 
         .field input,
-        .field select {
+        .field select,
+        .field textarea {
             width: 100%;
             min-height: 48px;
             border-radius: 16px;
@@ -867,6 +928,60 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             padding: 12px 14px;
             color: var(--ink);
             font-size: 15px;
+        }
+
+        .phone-field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .phone-shell {
+            position: relative;
+            width: 100%;
+            min-height: 48px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            padding: 8px 12px;
+        }
+
+        .phone-shell .iti {
+            width: 100%;
+        }
+
+        .phone-shell .iti--allow-dropdown {
+            width: 100%;
+        }
+
+        .phone-shell .iti__country-list {
+            background: var(--surface-strong);
+            color: var(--ink);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .phone-shell .iti__selected-country-primary {
+            height: 32px;
+            border-radius: 10px;
+        }
+
+        .phone-shell .iti__flag-container {
+            top: 8px;
+            bottom: 8px;
+            left: 4px;
+        }
+
+        .phone-shell input[type="tel"] {
+            border: 0;
+            background: transparent;
+            min-height: 32px;
+            padding: 0 0 0 52px;
+        }
+
+        .phone-shell input[type="tel"]:focus {
+            outline: none;
+            box-shadow: none;
         }
 
         .module-card {
@@ -1022,7 +1137,9 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
         <div class="hero">
             <div class="eyebrow"><?php echo htmlspecialchars($ui['hero']['badge'], ENT_QUOTES, 'UTF-8'); ?></div>
             <h1><?php echo htmlspecialchars($ui['hero']['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
-            <p><?php echo htmlspecialchars($ui['hero']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php if (!empty($ui['hero']['body'])): ?>
+                <p><?php echo htmlspecialchars($ui['hero']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <?php endif; ?>
         </div>
 
         <div class="steps">
@@ -1030,10 +1147,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <div class="<?php echo installer_step_class($state['step'], 'environment'); ?>"><?php echo htmlspecialchars($ui['steps']['checks'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'database'); ?>"><?php echo htmlspecialchars($ui['steps']['database'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'setup'); ?>"><?php echo htmlspecialchars($ui['steps']['setup'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'modules'); ?>"><?php echo htmlspecialchars($ui['steps']['modules'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'sample'); ?>"><?php echo htmlspecialchars($ui['steps']['sample'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'progress'); ?>"><?php echo htmlspecialchars($ui['steps']['progress'], ENT_QUOTES, 'UTF-8'); ?></div>
-            <div class="<?php echo installer_step_class($state['step'], 'post_install'); ?>"><?php echo htmlspecialchars($ui['steps']['review'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'finish'); ?>"><?php echo htmlspecialchars($ui['steps']['finish'], ENT_QUOTES, 'UTF-8'); ?></div>
         </div>
 
@@ -1180,8 +1294,54 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        <div class="field">
+                            <label for="project_address"><?php echo htmlspecialchars($ui['setup']['project_address_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input id="project_address" name="project_address" type="url" value="<?php echo htmlspecialchars($state['project_address'], ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="project_description"><?php echo htmlspecialchars($ui['setup']['project_description_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea id="project_description" name="project_description"><?php echo htmlspecialchars($state['project_description'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="project_owner_name"><?php echo htmlspecialchars($ui['setup']['project_owner_name_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input id="project_owner_name" name="project_owner_name" type="text" value="<?php echo htmlspecialchars($state['project_owner_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="project_established_year"><?php echo htmlspecialchars($ui['setup']['project_established_year_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input id="project_established_year" name="project_established_year" type="number" inputmode="numeric" value="<?php echo htmlspecialchars($state['project_established_year'], ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="project_phone"><?php echo htmlspecialchars($ui['setup']['project_phone_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <div class="phone-field">
+                                <input type="hidden" id="project_phone_country_code" name="project_phone_country_code" value="<?php echo htmlspecialchars($state['project_phone_country_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="phone-shell">
+                                    <input id="project_phone" name="project_phone" type="tel" value="<?php echo htmlspecialchars($state['project_phone'], ENT_QUOTES, 'UTF-8'); ?>" data-phone-store-mode="full" data-country-target-id="project_phone_country_code" autocomplete="tel" inputmode="tel">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="project_whatsapp"><?php echo htmlspecialchars($ui['setup']['project_whatsapp_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <div class="phone-field">
+                                <input type="hidden" id="project_whatsapp_country_code" name="project_whatsapp_country_code" value="<?php echo htmlspecialchars($state['project_whatsapp_country_code'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <div class="phone-shell">
+                                    <input id="project_whatsapp" name="project_whatsapp" type="tel" value="<?php echo htmlspecialchars($state['project_whatsapp'], ENT_QUOTES, 'UTF-8'); ?>" data-phone-store-mode="full" data-country-target-id="project_whatsapp_country_code" autocomplete="tel" inputmode="tel">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label for="project_email"><?php echo htmlspecialchars($ui['setup']['project_email_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <input id="project_email" name="project_email" type="email" value="<?php echo htmlspecialchars($state['project_email'], ENT_QUOTES, 'UTF-8'); ?>">
+                        </div>
+                        <div class="field">
+                            <label for="project_office_address"><?php echo htmlspecialchars($ui['setup']['project_office_address_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea id="project_office_address" name="project_office_address"><?php echo htmlspecialchars($state['project_office_address'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
+                        <div class="field">
+                            <label for="project_work_address"><?php echo htmlspecialchars($ui['setup']['project_work_address_label'], ENT_QUOTES, 'UTF-8'); ?></label>
+                            <textarea id="project_work_address" name="project_work_address"><?php echo htmlspecialchars($state['project_work_address'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                        </div>
                         <div class="actions">
-                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_modules'], ENT_QUOTES, 'UTF-8'); ?></button>
+                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
                         </div>
                     </form>
                     <form method="post" class="actions">
@@ -1191,104 +1351,9 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                 </div>
             <?php endif; ?>
 
-            <?php if ($state['step'] === 'modules'): ?>
-                <div class="panel">
-                    <h2><?php echo htmlspecialchars($ui['module_selection']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                </div>
-
-                <div class="group-panel">
-                    <h3><?php echo htmlspecialchars($ui['module_selection']['required_title'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                    <div class="module-list">
-                        <?php foreach ($selection['required_modules'] as $module): ?>
-                            <div class="module-item">
-                                <div class="module-top">
-                                    <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                    <div class="chip is-accent"><?php echo htmlspecialchars($ui['module_selection']['required_chip'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                                <?php if (!empty($selection['module_states'][$module]['required_by'])): ?>
-                                    <div class="module-detail">
-                                        <?php echo htmlspecialchars(sprintf($ui['module_selection']['required_by_label'], installer_module_list($selection['module_states'][$module]['required_by'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                </div>
-
-                <form method="post">
-                    <input type="hidden" name="action" value="save_modules">
-                    <?php foreach ($selection['optional_groups'] as $group => $modules): ?>
-                        <div class="group-panel">
-                            <h3><?php echo htmlspecialchars($ui['groups'][$group], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <div class="module-grid">
-                                <?php foreach ($modules as $module): ?>
-                                    <?php $moduleState = $selection['module_states'][$module]; ?>
-                                    <label class="module-checkbox">
-                                        <input
-                                            type="checkbox"
-                                            name="modules[]"
-                                            value="<?php echo htmlspecialchars($module, ENT_QUOTES, 'UTF-8'); ?>"
-                                            <?php echo $moduleState['selected'] ? 'checked' : ''; ?>
-                                            <?php echo $moduleState['locked'] ? 'disabled' : ''; ?>
-                                        >
-                                        <span class="module-card">
-                                            <span class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></span>
-                                            <span class="chip-row">
-                                                <span class="chip is-neutral"><?php echo htmlspecialchars($ui['module_selection']['optional_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                                <?php if ($moduleState['auto_selected']): ?>
-                                                    <span class="chip is-warning"><?php echo htmlspecialchars($ui['module_selection']['auto_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                                <?php endif; ?>
-                                                <?php if ($moduleState['project_specific']): ?>
-                                                    <span class="chip is-warning"><?php echo htmlspecialchars($ui['module_selection']['project_specific_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                                <?php endif; ?>
-                                                <?php if ($moduleState['supports_sample_content']): ?>
-                                                    <span class="chip is-accent"><?php echo htmlspecialchars($ui['module_selection']['sample_chip'], ENT_QUOTES, 'UTF-8'); ?></span>
-                                                <?php endif; ?>
-                                            </span>
-                                            <?php if (!empty($moduleState['dependencies'])): ?>
-                                                <div class="module-detail">
-                                                    <?php echo htmlspecialchars(sprintf($ui['module_selection']['dependencies_label'], installer_module_list($moduleState['dependencies'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                            <?php if (!empty($moduleState['required_by'])): ?>
-                                                <div class="module-detail">
-                                                    <?php echo htmlspecialchars(sprintf($ui['module_selection']['required_by_label'], installer_module_list($moduleState['required_by'], $ui)), ENT_QUOTES, 'UTF-8'); ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </span>
-                                    </label>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-
-                    <div class="actions">
-                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
-                    </div>
-                </form>
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="go_back_to_setup">
-                    <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
-            <?php endif; ?>
-
             <?php if ($state['step'] === 'sample'): ?>
                 <div class="panel">
                     <h2><?php echo htmlspecialchars($ui['sample']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <div class="summary-list">
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['sample']['summary_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['sample']['summary_detail'], (int) $summary['required'], (int) $summary['optional'], (int) $summary['total']), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['sample']['sample_ready_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['sample']['sample_ready_detail'], (int) $summary['sample_content_capable']), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                    </div>
                     <form method="post">
                         <input type="hidden" name="action" value="run_install">
                         <div class="field">
@@ -1304,211 +1369,99 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 </label>
                             </div>
                         </div>
-                        <div class="warning-box"><?php echo htmlspecialchars($ui['sample']['sample_content_warning'], ENT_QUOTES, 'UTF-8'); ?></div>
                         <div class="actions">
                             <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['run_installer'], ENT_QUOTES, 'UTF-8'); ?></button>
                         </div>
                     </form>
                     <form method="post" class="actions">
-                        <input type="hidden" name="action" value="go_back_to_modules">
+                        <input type="hidden" name="action" value="go_back_to_setup">
                         <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
                 </div>
             <?php endif; ?>
 
-            <?php if ($state['step'] === 'progress'): ?>
+            <?php if ($state['step'] === 'progress' && $result): ?>
                 <div class="panel">
-                    <h2><?php echo htmlspecialchars($result && !empty($result['success']) ? $ui['progress']['success_title'] : $ui['progress']['failure_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($result && !empty($result['success']) ? $ui['progress']['success_body'] : $ui['progress']['failure_body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <h2><?php echo htmlspecialchars($ui['progress']['failure_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <p><?php echo htmlspecialchars($ui['progress']['failure_body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="summary-list">
                         <div class="summary-item">
                             <div class="summary-top">
                                 <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['current_state_label'], ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($result ? installer_runtime_state_label($result['lifecycle_state'], $ui) : installer_runtime_state_label('pending', $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(installer_runtime_state_label($result['lifecycle_state'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
-                        <?php if ($result && !empty($result['failed_module'])): ?>
+                        <?php if (!empty($result['failed_module'])): ?>
                             <div class="summary-item">
                                 <div class="summary-top">
                                     <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['failed_module_label'], ENT_QUOTES, 'UTF-8'); ?></div>
                                 </div>
                                 <div class="summary-detail"><?php echo htmlspecialchars(installer_module_label($result['failed_module'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
-                            <div class="summary-item">
-                                <div class="summary-top">
-                                    <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['failure_reason_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                                <div class="summary-detail"><?php echo htmlspecialchars(installer_failure_reason_label($result, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                        <?php endif; ?>
-                        <?php if ($result && !empty($result['resumed_modules'])): ?>
-                            <div class="summary-item">
-                                <div class="summary-top">
-                                    <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['resume_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                                <div class="summary-detail"><?php echo htmlspecialchars(sprintf($ui['progress']['resume_detail'], count($result['resumed_modules']), installer_module_list($result['resumed_modules'], $ui)), ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
                         <?php endif; ?>
                         <div class="summary-item">
                             <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div class="summary-label"><?php echo htmlspecialchars($ui['progress']['failure_reason_label'], ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(isset($result['sample_content_note']) ? installer_result_text($result['sample_content_note'], $ui) : $ui['progress']['no_logs'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="summary-detail"><?php echo htmlspecialchars(installer_failure_reason_label($result, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
-                    </div>
-                    <div class="module-list">
-                        <?php if ($result && !empty($result['modules'])): ?>
-                            <?php foreach ($result['modules'] as $module => $moduleResult): ?>
-                                <div class="module-item is-<?php echo htmlspecialchars($moduleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
-                                    <div class="module-top">
-                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                        <div class="module-state is-<?php echo htmlspecialchars($moduleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <?php echo htmlspecialchars(installer_runtime_state_label($moduleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
-                                        </div>
-                                    </div>
-                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($moduleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                    <details class="details">
-                                        <summary><?php echo htmlspecialchars($ui['progress']['logs_label'], ENT_QUOTES, 'UTF-8'); ?></summary>
-                                        <div class="details-list">
-                                            <?php if (!empty($moduleResult['logs'])): ?>
-                                                <?php foreach ($moduleResult['logs'] as $line): ?>
-                                                    <div class="detail-log"><?php echo htmlspecialchars(installer_result_text($line, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                                <?php endforeach; ?>
-                                            <?php else: ?>
-                                                <div class="detail-log"><?php echo htmlspecialchars($ui['progress']['no_logs'], ENT_QUOTES, 'UTF-8'); ?></div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </details>
+                        <?php if (!empty($result['warnings'])): ?>
+                            <div class="summary-item">
+                                <div class="summary-top">
+                                    <div class="summary-label"><?php echo htmlspecialchars($ui['finish']['warnings_label'], ENT_QUOTES, 'UTF-8'); ?></div>
                                 </div>
-                            <?php endforeach; ?>
+                                <div class="summary-detail"><?php echo htmlspecialchars(installer_result_list_text($result['warnings'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
                         <?php endif; ?>
                     </div>
-                    <?php if ($result && !empty($result['sample_content_results'])): ?>
-                        <div class="module-list">
-                            <?php foreach ($result['sample_content_results'] as $module => $sampleResult): ?>
-                                <div class="module-item">
-                                    <div class="module-top">
-                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                        <div class="module-state is-<?php echo htmlspecialchars($sampleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <?php echo htmlspecialchars(installer_runtime_state_label($sampleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
-                                        </div>
-                                    </div>
-                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($sampleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
+
+                    <?php if (!empty($result['failed_module']) && !empty($result['modules'][$result['failed_module']]['logs'])): ?>
+                        <details class="details">
+                            <summary><?php echo htmlspecialchars($ui['progress']['logs_label'], ENT_QUOTES, 'UTF-8'); ?></summary>
+                            <div class="details-list">
+                                <?php foreach ($result['modules'][$result['failed_module']]['logs'] as $line): ?>
+                                    <div class="detail-log"><?php echo htmlspecialchars(installer_result_text($line, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
+                                <?php endforeach; ?>
+                            </div>
+                        </details>
                     <?php endif; ?>
                 </div>
 
-                <?php if ($result && !empty($result['success'])): ?>
+                <?php if (!empty($result['failure_recoverable'])): ?>
                     <form method="post" class="actions">
-                        <input type="hidden" name="action" value="view_review">
-                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['view_review'], ENT_QUOTES, 'UTF-8'); ?></button>
-                    </form>
-                <?php else: ?>
-                    <?php if ($result && !empty($result['failure_recoverable'])): ?>
-                        <form method="post" class="actions">
-                            <input type="hidden" name="action" value="retry_install">
-                            <input type="hidden" name="sample_content" value="<?php echo htmlspecialchars($state['sample_content'], ENT_QUOTES, 'UTF-8'); ?>">
-                            <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['retry_install'], ENT_QUOTES, 'UTF-8'); ?></button>
-                        </form>
-                    <?php endif; ?>
-                    <form method="post" class="actions">
-                        <input type="hidden" name="action" value="<?php echo htmlspecialchars(!empty($result['failure_recoverable']) ? 'edit_modules' : 'exit_failure', ENT_QUOTES, 'UTF-8'); ?>">
-                        <button type="submit" class="button button-secondary"><?php echo htmlspecialchars(!empty($result['failure_recoverable']) ? $ui['actions']['edit_modules'] : $ui['actions']['exit_failure'], ENT_QUOTES, 'UTF-8'); ?></button>
+                        <input type="hidden" name="action" value="retry_install">
+                        <input type="hidden" name="sample_content" value="<?php echo htmlspecialchars($state['sample_content'], ENT_QUOTES, 'UTF-8'); ?>">
+                        <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['retry_install'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
                 <?php endif; ?>
-            <?php endif; ?>
-
-            <?php if ($state['step'] === 'post_install' && $result && !empty($result['success'])): ?>
-                <div class="panel">
-                    <h2><?php echo htmlspecialchars($ui['post_install']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['post_install']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <div class="summary-list">
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['installed_modules_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(installer_module_list($result['completed_modules'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['skipped_modules_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(installer_module_list($result['skipped_modules'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['sample_content_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars(installer_result_text($result['sample_content_note'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['post_install']['warnings_label'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail">
-                                <?php echo htmlspecialchars(!empty($result['warnings']) ? installer_result_list_text($result['warnings'], $ui) : $ui['post_install']['no_warnings'], ENT_QUOTES, 'UTF-8'); ?>
-                            </div>
-                        </div>
-                    </div>
-                    <?php if (!empty($result['sample_content_results'])): ?>
-                        <div class="module-list">
-                            <?php foreach ($result['sample_content_results'] as $module => $sampleResult): ?>
-                                <div class="module-item">
-                                    <div class="module-top">
-                                        <div class="module-label"><?php echo htmlspecialchars(installer_module_label($module, $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                        <div class="module-state is-<?php echo htmlspecialchars($sampleResult['state'], ENT_QUOTES, 'UTF-8'); ?>">
-                                            <?php echo htmlspecialchars(installer_runtime_state_label($sampleResult['state'], $ui), ENT_QUOTES, 'UTF-8'); ?>
-                                        </div>
-                                    </div>
-                                    <div class="module-detail"><?php echo htmlspecialchars(installer_result_text($sampleResult['message'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-
                 <form method="post" class="actions">
-                    <input type="hidden" name="action" value="continue_to_finish">
-                    <button type="submit" class="button button-primary"><?php echo htmlspecialchars($ui['actions']['continue_to_finish'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="go_back_to_progress">
+                    <input type="hidden" name="action" value="go_back_to_setup">
                     <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
                 </form>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'finish' && $result && !empty($result['success'])): ?>
                 <div class="panel finish-panel">
-                    <h2><?php echo htmlspecialchars($ui['finish']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['finish']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
-                    <div class="summary-list">
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['setup']['project_name_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    <h2><?php echo htmlspecialchars($ui['finish']['success_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                    <?php if (!empty($result['warnings'])): ?>
+                        <div class="summary-list">
+                            <div class="summary-item">
+                                <div class="summary-top">
+                                    <div class="summary-label"><?php echo htmlspecialchars($ui['finish']['warnings_label'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                </div>
+                                <div class="summary-detail"><?php echo htmlspecialchars(installer_result_list_text($result['warnings'], $ui), ENT_QUOTES, 'UTF-8'); ?></div>
                             </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($state['project_name'], ENT_QUOTES, 'UTF-8'); ?></div>
                         </div>
-                        <div class="summary-item">
-                            <div class="summary-top">
-                                <div class="summary-label"><?php echo htmlspecialchars($ui['finish']['reminder_title'], ENT_QUOTES, 'UTF-8'); ?></div>
-                            </div>
-                            <div class="summary-detail"><?php echo htmlspecialchars($ui['finish']['reminder_body'], ENT_QUOTES, 'UTF-8'); ?></div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="actions">
                     <a class="button-link" href="../mod_user/panel"><?php echo htmlspecialchars($ui['actions']['open_admin'], ENT_QUOTES, 'UTF-8'); ?></a>
                 </div>
-                <form method="post" class="actions">
-                    <input type="hidden" name="action" value="reset_setup">
-                    <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['reset_state'], ENT_QUOTES, 'UTF-8'); ?></button>
-                </form>
             <?php endif; ?>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/intlTelInput.min.js"></script>
     <script>
         (function () {
             var languageForm = document.getElementById('language-form');
@@ -1522,6 +1475,89 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                     languageForm.submit();
                 });
             }
+        }());
+
+        (function () {
+            function initInstallerPhoneInput(inputId) {
+                var input = document.getElementById(inputId);
+                if (!input || input.dataset.intlReady === '1') {
+                    return;
+                }
+
+                var hiddenInput = document.getElementById(input.dataset.countryTargetId);
+                var form = input.closest('form');
+                var iti = window.intlTelInput(input, {
+                    initialCountry: 'tr',
+                    preferredCountries: ['tr', 'iq', 'de', 'gb', 'us'],
+                    separateDialCode: true,
+                    strictMode: true,
+                    autoPlaceholder: 'aggressive'
+                });
+
+                function syncCountryCode() {
+                    if (!hiddenInput) {
+                        return;
+                    }
+
+                    var countryData = iti.getSelectedCountryData();
+                    if (countryData && countryData.dialCode) {
+                        hiddenInput.value = '+' + countryData.dialCode;
+                    }
+                }
+
+                if (input.value.trim() !== '') {
+                    iti.setNumber(input.value.trim());
+                }
+
+                syncCountryCode();
+
+                input.addEventListener('input', function () {
+                    var value = input.value.trim();
+                    if (value.indexOf('0') === 0) {
+                        input.value = value.replace(/^0+/, '');
+                    }
+                });
+
+                input.addEventListener('countrychange', function () {
+                    syncCountryCode();
+                });
+
+                if (form && form.dataset.installerPhoneSubmitBound !== '1') {
+                    form.addEventListener('submit', function () {
+                        var phoneInputs = form.querySelectorAll('input[data-phone-store-mode="full"]');
+
+                        for (var i = 0; i < phoneInputs.length; i += 1) {
+                            var phoneInput = phoneInputs[i];
+                            var phoneIti = window.intlTelInput.getInstance(phoneInput);
+                            var countryTarget = document.getElementById(phoneInput.dataset.countryTargetId);
+
+                            if (!phoneIti) {
+                                continue;
+                            }
+
+                            var countryData = phoneIti.getSelectedCountryData();
+                            if (countryTarget && countryData && countryData.dialCode) {
+                                countryTarget.value = '+' + countryData.dialCode;
+                            }
+
+                            var digits = phoneInput.value.replace(/\D/g, '');
+                            if (countryData && countryData.dialCode) {
+                                digits = digits.replace(/^0+/, '');
+                                phoneInput.value = '+' + countryData.dialCode + digits;
+                            } else {
+                                phoneInput.value = digits;
+                            }
+                        }
+                    });
+
+                    form.dataset.installerPhoneSubmitBound = '1';
+                }
+
+                input.dataset.intlReady = '1';
+            }
+
+            initInstallerPhoneInput('project_phone');
+            initInstallerPhoneInput('project_whatsapp');
         }());
     </script>
 </body>

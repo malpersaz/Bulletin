@@ -37,7 +37,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for item in news %}
-                            <a href="{{ site.sadres }}news/{{ item.seo }}" 
+                            <a href="{{ site.saddress }}news/{{ item.seo }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ item.name }}">
@@ -67,7 +67,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for item in publications %}
-                            <a href="{{ site.sadres }}publication/{{ item.seo }}" 
+                            <a href="{{ site.saddress }}publication/{{ item.seo }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ item.name }}">
@@ -97,7 +97,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for announcement in announcements %}
-                            <a href="{{ site.sadres }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}" 
+                            <a href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ announcement.name }}">
@@ -120,7 +120,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for sayfa in sayfalar %}
-                            <a href="{{ site.sadres }}page/{{ sayfa.seo }}" 
+                            <a href="{{ site.saddress }}page/{{ sayfa.seo }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ sayfa.name }}">
@@ -143,7 +143,7 @@
                     </div>
                     <div class="list-group list-group-flush">
                         {% for video in videos %}
-                            <a href="{{ site.sadres }}video/{{ video.id }}-{{ video.name|legacy_seo }}" 
+                            <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
                                target="_blank"
                                title="{{ video.name }}">

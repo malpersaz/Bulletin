@@ -61,8 +61,9 @@ foreach ($langFiles as $file) {
 // 2. Update Code Usage (Recursive Search & Replace)
 $searchDirs = [
     "{$rootDir}/mod/{$module}",
-    "{$rootDir}/templates/admin/{$module}",
-    "{$rootDir}/templates/admin/mod_{$module}" // some follow this pattern
+    "{$rootDir}/templates",
+    "{$rootDir}/config",
+    "{$rootDir}/lib"
 ];
 
 foreach ($searchDirs as $dir) {

@@ -7,7 +7,7 @@
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * File: db.config.local.php
+ * File: db.config.example.php
  * Description: Database Connection Information
  */
 if (defined('root_dir') === False) exit(':)');
@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/sqlite/AKMbusiness.sqlite',
+            'database_path' => root_dir . 'data/sqlite/data.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),
@@ -54,9 +54,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'AKMbusiness_user',
-            'pass' => 'AKMbusiness_password',
-            'database' => 'AKMbusiness_db',
+            'user' => 'rojname_user',
+            'pass' => 'rojname_password',
+            'database' => 'rojname_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional

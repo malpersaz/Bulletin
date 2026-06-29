@@ -15,7 +15,7 @@ Inherit the repository root `AGENTS.md`.
 - Use `.agents/theme/prompts/frontend-theme-agent.md` only when the user explicitly requests a dedicated theme agent.
 - For new durable visual themes or substantial redesigns, use `.agents/design/INDEX.md`, load only the public theme baseline and one matching profile, and create or update `templates/<theme>/DESIGN.md`.
 - Keep public theme includes active-theme-relative. Do not pin copied templates to `default/` unless that dependency is intentional and documented.
-- Use `{{ site.tadres }}{{ site.app_template }}/...` for theme-owned assets.
+- Use `{{ site.taddress }}{{ site.app_template }}/...` for theme-owned assets.
 - Put theme-owned assets under `templates/<theme>/static/`.
 
 ## Admin Work

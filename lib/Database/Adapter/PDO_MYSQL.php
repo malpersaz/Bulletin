@@ -175,10 +175,10 @@ class Adapter_PDO_MYSQL
     public function error()
     {
         $errorInfo = $this->_con->errorInfo();
-        if ($errorInfo[0] !== '00000') {
-            printf("Database error: %s\n", $errorInfo[2]);
-            exit();
+        if (isset($errorInfo[2]) && $errorInfo[2] !== null) {
+            return $errorInfo[2];
         }
+        return "Unknown MySQL Error (Check PDOException traces)";
     }
 
     /**

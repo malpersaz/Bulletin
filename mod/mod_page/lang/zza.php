@@ -23,7 +23,18 @@ $lang['mod_page'] = [
     'remove_image' => 'Bi rastî jî dixwazî vê wêneyê rakî?',
     'remove_image_oke' => 'Wêne Bi Serkeftin Hate Rakirin',
     'choose_wish' => 'Ji kerema xwe re, ger bixwazî hilbijêre',
+    'menu_options' => [
+        'none' => 'Meni de cı nêke',
+        'top_level' => 'Wek hêmana sero menu de ke',
+        'slot_root' => 'Bınê rûye menuye ke bıser',
+    ],
+    'menu_slot_options' => [
+        'none' => 'Rûye menu niyo',
+        'header' => 'Menuya Cor',
+        'footer' => 'Menuya Bın',
+    ],
     'remove_record' => 'Bi rastî jî dixwazî vê tomarê rakî?',
+    'seo_meta' => 'Daneyê SEO',
 
     // === System Messages ===
     'messages' => [
@@ -63,6 +74,7 @@ $lang['mod_page'] = [
     // === Peyamên Çewtiyê ===
     'errors' => [
         'record' => 'Tomara ku hate nîşankirin nehate dîtin',
+        'slot_branch_missing' => 'Rûye menuye ke zımanê nê de çareser nêbiyo',
     ],
 
     // === Etîketên Bişkojan ===
@@ -76,6 +88,8 @@ $lang['mod_page'] = [
         'hayir' => 'Na',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberiya Pelan',
+        'tamam' => 'Temam',
+        'upload' => 'Bar Ke',
     ],
 
     // === Actions ===
@@ -107,6 +121,7 @@ $lang['mod_page'] = [
         'file' => 'Dikare Pel Zêde Bike?',
         'moderate_edit' => 'Dikare Tomara Rûpelên Ku Ne Xwe Ne Biguhere',
         'moderate_delete' => 'Dikare Tomara Rûpelên Ku Ne Xwe Ne Rake',
+        'approval' => 'Şeno Rûpelan Bıweşîno/Nêweşîno?',
     ],
 
     // === Çewtiyên Destûran ===
@@ -119,6 +134,7 @@ $lang['mod_page'] = [
         'delete' => 'Destûra Te Ji Bo Rakirina Rûpelan Tune',
         'gallery' => 'Destûra Te Ji Bo Zêdekirina Galeriyê Tune',
         'file' => 'Destûra Te Ji Bo Zêdekirina Pelan Tune',
+        'approval' => 'Destura Şıma Qandê Weşanayışê Rûpelan Çıniya',
     ],
 
     // === Panela Rêveber ===
@@ -145,6 +161,7 @@ $lang['mod_page'] = [
             'acl_id' => 'Kî Dikare Vê Rûpelê Bibîne?',
             'category_id' => 'Kategoriya Naveroka Têkildar',
             'menu' => 'Rûpelê Bişîne Menûyê',
+            'menu_slot' => 'Rûye Menuyi',
         ],
         'select_value' => [
             'root_e' => 'Erê',
@@ -181,5 +198,13 @@ $lang['mod_page'] = [
         'page_summary' => 'Kurteya Rûpelî',
         'previous' => 'Peyser',
         'next' => 'Pêser',
+    ],
+    'quick_unpublish_confirm' => 'Şıma bi raştî wazenê nê rûpelî weşan ra wedarê?',
+    'quick_publish_confirm' => 'Şıma bi raştî wazenê nê rûpelî bıweşînê?',
+    'published_msg' => 'Rûpel Bi Serkeftin Hate Weşandin',
+    'unpublished_msg' => 'Rûpel Ji Weşanê Hate Rakirin',
+    'status_badge' => [
+        'active' => 'Weşandî',
+        'draft' => 'Pêşnûma',
     ],
 ];

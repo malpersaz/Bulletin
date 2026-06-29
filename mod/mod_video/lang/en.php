@@ -12,6 +12,7 @@ $lang['mod_video'] = [
     'add' => 'Add Video',
     'edit' => 'Edit Video',
     'list' => 'Video List',
+    'video_management' => 'Video Management',
 
     // System Messages
     'information' => 'Information',

@@ -83,6 +83,27 @@ class mod_attachment_mod extends installerbase implements installerbaseinterface
                 'mod_key' => 'id',
                 'mod_value' => 'name',
                 'user_id' => 1
+            ),
+            array(
+                'name' => 'Video Files',
+                'mod_name' => 'mod_video_embed',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Product Files',
+                'mod_name' => 'mod_product',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Service Files',
+                'mod_name' => 'mod_service',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
             )
 
         );

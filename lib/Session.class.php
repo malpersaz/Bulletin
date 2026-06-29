@@ -110,20 +110,32 @@ class Session
         return $this->get($name) == $val;
     }
 
+    /**
+     * Store a one-time flash message.
+     * @param string $type success, error, warning, info
+     * @param string $message
+     */
+    public function setFlash($type, $message)
+    {
+        $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+    }
+
+    /**
+     * Read and clear the one-time flash message.
+     * @return array|false
+     */
+    public function getFlash()
+    {
+        if (isset($_SESSION['flash'])) {
+            $flash = $_SESSION['flash'];
+            unset($_SESSION['flash']);
+            return $flash;
+        }
+        return false;
+    }
+
     public function dump()
     {
         var_dump($_SESSION);
     }
 }
-
-/*
-$s = new Session();
-$s->name = 'amidanews';
-$s->path = dirname(__FILE__) . '/session/';
-$s->sid = '5b6bd037e6bc9874a83f176c901686e6';
-$s->check_ip = true;
-//$s->check_agent = true;
-$s->start();
-
-$s->dump();
-*/

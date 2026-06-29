@@ -63,13 +63,13 @@ class mod_publication_helper extends indexBase
         }
 
         if (isset($publication->gallery_id) && $publication->gallery_id != 0) {
-            $this->_gallery_resimgetir('mod_publication', $publication->gallery_id);
+            $this->_exact_gallery($publication->gallery_id);
         } else {
             $this->_gallery_resimgetir('mod_publication', $publication->id);
         }
 
         if (isset($publication->file_id) && $publication->file_id != 0) {
-            $this->_mod_attachment('mod_publication', $publication->file_id);
+            $this->_exact_attachment($publication->file_id);
         } else {
             $this->_mod_attachment('mod_publication', $publication->id);
         }
@@ -147,9 +147,9 @@ class mod_publication_helper extends indexBase
         }
 
         if ($page != '1') {
-            $d['link'] = $this->site['sadres'] . 'publications/' . $category . '/' . $page;
+            $d['link'] = $this->site['saddress'] . 'publications/' . $category . '/' . $page;
         } else {
-            $d['link'] = $this->site['sadres'] . 'publications/' . $category;
+            $d['link'] = $this->site['saddress'] . 'publications/' . $category;
         }
 
         if ($page <= 1) {

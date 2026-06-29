@@ -106,6 +106,7 @@ $lang['mod_announcements'] = array (
       'id' => 'ID',
       'language' => 'Ziman',
       'ad' => 'Sernavê Daxûyaniyê',
+      'seo' => 'SEO URL',
       'tarih' => 'Dîrok',
       'status' => 'Rewşa Weşanê',
       'deck' => 'Ma Di Destpêkê De Biweşe?',

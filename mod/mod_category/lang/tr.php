@@ -2,7 +2,7 @@
 /**
  * Category Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_category
  * @version 1.0.0
  * @author  AKM Software
@@ -29,6 +29,7 @@ $lang['mod_category'] = [
     'error' => 'Kritik Hata Oluştu',
     'remove_record' => 'Bu kaydı silmek istediğinizden emin misiniz?',
     'choose_wish' => 'Seçiniz',
+    'remove_image' => 'Bu görseli kaldırmak istediğinizden emin misiniz?',
 
     // === Message Structure ===
     'message' => [
@@ -48,6 +49,12 @@ $lang['mod_category'] = [
 
     'errors' => [
         'record' => 'Belirtilen kayıt bulunamadı!',
+        'parent_selection_required' => 'Lütfen bir üst kategori seçin.',
+        'parent_language_mismatch' => 'Üst kategori dili, kategori diliyle aynı olmalıdır.',
+        'parent_cycle' => 'Bir kategori kendisinin veya alt kategorilerinden birinin altına taşınamaz.',
+        'menu_parent_not_found' => 'Seçilen menü üst kaydı bulunamadı.',
+        'menu_language_mismatch' => 'Seçilen menünün dili kategori diliyle aynı olmalıdır.',
+        'order_update_failed' => 'Kategori sırası güncellenemedi.',
     ],
 
     'button' => [
@@ -61,6 +68,8 @@ $lang['mod_category'] = [
         'hayir' => 'Hayır',
         'save' => 'Kaydet',
         'remove' => 'Kaldır',
+        'gallery' => 'Galeri',
+        'file' => 'Dosya',
     ],
 
     'grid' => [
@@ -136,9 +145,10 @@ $lang['mod_category'] = [
         'info' => [
             'edit_double_click' => 'Düzenlemek istediğiniz kategoriye çift tıklayın',
             'drag_reorder' => 'Sıralamayı değiştirmek için kategoriyi sürükleyip bırakın',
+            'mode_unlocked' => 'Mod: Sıralama (Açık)',
         ],
         'warning' => [
-            'reorder' => 'Kategori sırası değiştirilsin mi?',
+            'reorder' => 'Kategori sıralamasını değiştirmek istediğinize emin misiniz?',
         ],
     ],
 
@@ -169,6 +179,11 @@ $lang['mod_category'] = [
         'image' => 'Kategori Görseli',
         'description' => 'Kategori Açıklaması',
         'access_control' => 'Erişim Kontrolü',
+    ],
+
+    'parent_labels' => [
+        'language_root' => ':language kökü',
+        'system_root' => 'Üst seviye',
     ],
 
     // === Table Columns ===
@@ -251,11 +266,15 @@ $lang['mod_category'] = [
             'description' => 'SEO ayarları için açıklama (Description)',
             'menu' => 'Kategoriyi Menüye Gönder',
             'image' => 'Görsel',
+            'image_select' => 'Görsel Seç',
             'acl_id' => 'Erişim Permissionsi',
         ],
         'select_values' => [
             'root_yes' => 'Evet',
             'root_no' => 'Hayır',
+        ],
+        'tooltips' => [
+            'acl_settings' => 'ACL Ayarları',
         ],
     ],
 
@@ -358,6 +377,11 @@ $lang['mod_category'] = [
         'bulk_unpublish' => 'Seçilenlerin Yayınını Kaldır',
         'select_all' => 'Tümünü Seç',
         'deselect_all' => 'Tümünün Seçimini Kaldır',
+    ],
+
+    'ajax' => [
+        'success' => 'Başarılı',
+        'error' => 'Hata',
     ],
 
     // === Response Codes (for AJAX/PHP responses) ===

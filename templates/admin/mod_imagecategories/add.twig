@@ -1,0 +1,27 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_imagecategories.add }}{% endblock %}
+{% block headline %}{{ lang.mod_imagecategories.add }}{% endblock %}
+
+{% block content %}
+{% include 'admin/mod_imagecategories/_form.twig' with { mode: 'add', form_id: 'imageCategoryAddForm', record: record } %}
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if success is not defined %}
+    <div class="image-category-bottom-bar">
+        <a href="{{ site.saddress }}mod_imagecategories/list" class="cancel-btn">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_imagecategories.button.cancel }}</span>
+        </a>
+        <button type="submit" form="imageCategoryAddForm" name="add" value="1" class="save-btn">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ lang.mod_imagecategories.button.add }}</span>
+        </button>
+    </div>
+{% endif %}
+{% endblock %}

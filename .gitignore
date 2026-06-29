@@ -21,9 +21,17 @@ db_data/
 Thumbs.db
 
 # Project configs and runtime databases
-config/db.config.local.php
+config/*.local.php
 data/*.sqlite
 data/sqlite/*.sqlite
+data/*.json
+
+# Runtime-generated static uploads and test artifacts
+static/mod_*/**
 
 # Codex local metadata
 .codex
+
+# Agent / MCP temporary files
+.playwright-mcp/
+page-*.yml

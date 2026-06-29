@@ -1,6 +1,9 @@
 <?php
 class add_validator
 {
+    private const MENU_SELECTION_NONE = '__none__';
+    private const MENU_SELECTION_TOP = '__top__';
+
     public $valid;
     public $lang;
     public $mod_page_model;
@@ -35,6 +38,34 @@ class add_validator
         }
 
         return (int) $value;
+    }
+
+    private function validateMenuField($field, $label)
+    {
+        $value = trim((string) Req::Post_Safe($field));
+        if ($value === '' || $value === self::MENU_SELECTION_NONE) {
+            return [
+                'include' => FALSE,
+                'parent_id' => 0,
+            ];
+        }
+
+        if ($value === self::MENU_SELECTION_TOP) {
+            return [
+                'include' => TRUE,
+                'parent_id' => 0,
+            ];
+        }
+
+        if (!Req::isNumeric((string) $value)) {
+            $this->addInvalidValueError($label);
+            return FALSE;
+        }
+
+        return [
+            'include' => TRUE,
+            'parent_id' => (int) $value,
+        ];
     }
 
     private function validateReferenceExists($modelName, $id, $label, $lang = '')
@@ -288,7 +319,7 @@ class add_validator
         $lang = Req::Post_Safe('lang');
         $parentId = $this->validateNumericField('parent_id', $this->lang['mod_page']['admin']['columns']['parent_id']);
         $categoryId = $this->validateNumericField('category_id', $this->lang['mod_page']['admin']['columns']['category_id']);
-        $menuId = $this->validateNumericField('menu', $this->lang['mod_page']['admin']['columns']['menu']);
+        $menuSelection = $this->validateMenuField('menu', $this->lang['mod_page']['admin']['columns']['menu']);
         $aclId = $this->validateNumericField('acl_id', $this->lang['mod_page']['admin']['columns']['acl_id']);
         $galleryId = $this->validateNumericField('gallery_id', $this->lang['mod_page']['admin']['columns']['gallery_id']);
         $fileId = $this->validateNumericField('file_id', $this->lang['mod_page']['admin']['columns']['file_id']);
@@ -298,8 +329,10 @@ class add_validator
         }
 
         $this->validateReferenceExists('mod_page', $parentId, $this->lang['mod_page']['admin']['columns']['parent_id'], $lang);
-        $this->validateReferenceExists('mod_news_category', $categoryId, $this->lang['mod_page']['admin']['columns']['category_id'], $lang);
-        $this->validateReferenceExists('mod_menu', $menuId, $this->lang['mod_page']['admin']['columns']['menu'], $lang);
+        $this->validateReferenceExists('mod_category', $categoryId, $this->lang['mod_page']['admin']['columns']['category_id'], $lang);
+        if ($menuSelection !== FALSE && $menuSelection['parent_id'] > 0) {
+            $this->validateReferenceExists('mod_menu', $menuSelection['parent_id'], $this->lang['mod_page']['admin']['columns']['menu'], $lang);
+        }
         $this->validateReferenceExists('mod_acl', $aclId, $this->lang['mod_page']['admin']['columns']['acl_id']);
         $this->validateReferenceExists('mod_page', $galleryId, $this->lang['mod_page']['admin']['columns']['gallery_id'], $lang);
         $this->validateReferenceExists('mod_page', $fileId, $this->lang['mod_page']['admin']['columns']['file_id'], $lang);

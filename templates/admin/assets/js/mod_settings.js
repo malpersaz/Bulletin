@@ -2,7 +2,6 @@
     const config = window.modSettingsConfig || null;
     const form = document.getElementById('settingsForm');
     const langSelect = document.getElementById('selectedLang');
-    const generateButton = document.getElementById('generateAssetsButton');
     const assetsSection = document.getElementById('assetsSection');
 
     if (!config || !form) {
@@ -136,49 +135,6 @@
 
             this.value = config.selectedLang;
         });
-    }
-
-    async function generateAssets() {
-        if (!generateButton) {
-            return;
-        }
-
-        const formData = new FormData(form);
-        generateButton.disabled = true;
-
-        try {
-            const response = await fetch(config.generateUrl, {
-                method: 'POST',
-                body: formData
-            });
-
-            const payload = await response.json();
-            if (!payload || payload.status !== 'success') {
-                throw new Error(payload && payload.message ? payload.message : config.messages.genericError);
-            }
-
-            await Swal.fire({
-                icon: 'success',
-                text: payload.message,
-                confirmButtonText: config.messages.confirm
-            });
-
-            window.location.hash = 'assetsSection';
-            window.location.reload();
-        } catch (error) {
-            await Swal.fire({
-                icon: 'error',
-                text: String(error.message || error),
-                confirmButtonText: config.messages.confirm
-            });
-
-            if (assetsSection) {
-                assetsSection.open = true;
-                assetsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
-        } finally {
-            generateButton.disabled = false;
-        }
     }
 
     const updateFileLabel = (field, input, previewType, label) => {
@@ -335,10 +291,6 @@
         });
     });
 
-    if (generateButton) {
-        generateButton.addEventListener('click', generateAssets);
-    }
-
     const showLogoToggle = document.getElementById('show_logo');
     if (showLogoToggle && config.toggleLogoUrl) {
         showLogoToggle.addEventListener('change', async function() {
@@ -359,7 +311,7 @@
                         showSnackbar(payload.message, 'success');
                     }
                     
-                    // Update the baseline snapshot so "unsaved changes" warning doesn't appear 
+                    // Update the baseline snapshot so "unsaved changes" warning doesn't appear
                     // just because of this checkbox since it's already saved.
                      userEditedForm = false;
                      captureBaseline();
@@ -537,8 +489,6 @@
             }
         }
 
-
-
         async toggleStatus(id, isActive) {
             const body = new URLSearchParams();
             body.set('id', id);
@@ -567,5 +517,338 @@
     if (config && config.socialListUrl) {
         window.socialManager = new SocialManager();
     }
+
+    // Exposure to window for Twig integration
+    window.setHeaderDisplayStyle = (styleVal) => {
+        const input = document.getElementById('logoTypeInput');
+        if (input) {
+            input.value = styleVal;
+            userEditedForm = true;
+        }
+
+        document.querySelectorAll('.selection-card[id^="opt-style-"]').forEach((row) => {
+            row.classList.remove('active');
+        });
+
+        const activeId = {
+            'square': 'opt-style-1',
+            'rectangle': 'opt-style-2',
+            'square_name': 'opt-style-3',
+            'rectangle_name': 'opt-style-4'
+        }[styleVal] || 'opt-style-2';
+
+        const activeRow = document.getElementById(activeId);
+        if (activeRow) {
+            activeRow.classList.add('active');
+        }
+    };
+
+    window.processSelectedImage = (input, step) => {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const src = e.target.result;
+                const aspect = (step === 1 || step === 3) ? 1/1 : 3/1;
+                const titleText = (step === 1) ? config.messages.cropSquare : (step === 3 ? config.messages.cropSymbol : config.messages.cropRect);
+
+                Swal.fire({
+                    title: titleText,
+                    html: `
+                        <div class="swal2-cropper-container">
+                            <img id="swalCropperImage" src="${src}">
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: config.messages.confirm,
+                    cancelButtonText: config.messages.cancel,
+                    confirmButtonColor: '#6750A4',
+                    cancelButtonColor: '#79747E',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        const imageEl = document.getElementById('swalCropperImage');
+                        const startCropper = () => {
+                            window.cropperInstance = new Cropper(imageEl, {
+                                aspectRatio: aspect,
+                                viewMode: 1,
+                                autoCropArea: 0.95,
+                                dragMode: 'move',
+                                restore: false,
+                                center: true,
+                                highlight: false,
+                                cropBoxResizable: true,
+                                toggleDragModeOnDblclick: false
+                            });
+                        };
+                        if (imageEl.complete) { startCropper(); } else { imageEl.onload = startCropper; }
+                    },
+                    preConfirm: () => {
+                        return new Promise((resolve) => {
+                            if (window.cropperInstance) {
+                                const widthDest = (step === 1 || step === 3) ? 512 : 900;
+                                const heightDest = (step === 1 || step === 3) ? 512 : 300;
+                                const canvas = window.cropperInstance.getCroppedCanvas({
+                                    width: widthDest,
+                                    height: heightDest
+                                });
+                                if (canvas) {
+                                    resolve({
+                                        dataUrl: canvas.toDataURL('image/png'),
+                                        filename: input.files[0].name
+                                    });
+                                } else {
+                                    Swal.showValidationMessage(config.messages.genericError);
+                                    resolve(false);
+                                }
+                            } else {
+                                resolve(false);
+                            }
+                        });
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        applyCroppedLogo(result.value.dataUrl, result.value.filename, step);
+                    }
+                    input.value = ''; // Reset file input so change event can fire again
+                });
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    };
+
+    const applyCroppedLogo = (dataUrl, filename, step) => {
+        userEditedForm = true;
+        
+        Swal.fire({
+            title: config.messages.loadingMessage || 'Loading...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const body = new URLSearchParams();
+        body.set('lang', config.selectedLang);
+        body.set('step', step);
+        body.set('image', dataUrl);
+
+        fetch(config.uploadCroppedUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: body.toString()
+        })
+        .then((response) => response.json())
+        .then((payload) => {
+            if (!payload || payload.status !== 'success') {
+                throw new Error(payload && payload.message ? payload.message : config.messages.genericError);
+            }
+
+            const t = Date.now();
+            const baseUrl = window.location.origin + '/static/mod_settings/';
+
+            if (step === 1) {
+                // Square Logo
+                const areaSquare = document.getElementById('areaSquare');
+                if (areaSquare) {
+                    areaSquare.style.padding = '0';
+                    areaSquare.innerHTML = `
+                        <img src="${baseUrl}${payload.site_icon}?t=${t}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                        <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('site_icon');">
+                            <i class="bi bi-trash" style="font-size:12px;"></i>
+                        </button>
+                    `;
+                }
+            } else if (step === 3) {
+                // Logo Symbol / Icon
+                const areaSymbol = document.getElementById('areaSymbol');
+                if (areaSymbol) {
+                    areaSymbol.style.padding = '0';
+                    areaSymbol.innerHTML = `
+                        <img src="${baseUrl}${payload.logo_symbol}?t=${t}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                        <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('logo_symbol');">
+                            <i class="bi bi-trash" style="font-size:12px;"></i>
+                        </button>
+                    `;
+                }
+            } else {
+                // Rectangle Logo
+                const areaRect = document.getElementById('areaRect');
+                if (areaRect) {
+                    areaRect.style.padding = '0';
+                    areaRect.innerHTML = `
+                        <img src="${baseUrl}${payload.logo_path}?t=${t}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">
+                        <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('logo_path');">
+                            <i class="bi bi-trash" style="font-size:12px;"></i>
+                        </button>
+                    `;
+                }
+            }
+
+            // Update generated icons dynamically if square or symbol was uploaded
+            if ((step === 1 || step === 3) && payload.fields) {
+                const fields = payload.fields;
+
+                const updateIconRow = (thumbId, statusId, fileName, isManifest) => {
+                    const thumb = document.getElementById(thumbId);
+                    const status = document.getElementById(statusId);
+                    if (status) {
+                        status.textContent = config.messages.confirm;
+                        status.classList.add('ready');
+                    }
+                    if (thumb && fileName) {
+                        if (isManifest) {
+                            thumb.innerHTML = `<i class="bi bi-file-earmark-code-fill" style="font-size:12px; color:#22c55e;"></i>`;
+                        } else {
+                            thumb.innerHTML = `<img src="${baseUrl}${fileName}?t=${t}" style="width:100%; height:100%; object-fit:contain;">`;
+                        }
+                    }
+                };
+
+                updateIconRow('iconThumbFavicon', 'statusFavicon', fields.favicon_path, false);
+                updateIconRow('iconThumbFavicon96', 'statusFavicon96', fields.favicon_96, false);
+                updateIconRow('iconThumbApple', 'statusApple', fields.apple_touch_icon, false);
+                updateIconRow('iconThumbManifest192', 'statusManifest192', fields.manifest_192, false);
+                updateIconRow('iconThumbManifest512', 'statusManifest512', fields.manifest_512, false);
+                updateIconRow('iconThumbWebManifest', 'statusWebManifest', fields.site_webmanifest, true);
+            }
+
+            Swal.close();
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(payload.message, 'success');
+            }
+
+            userEditedForm = false;
+            captureBaseline();
+        })
+        .catch((error) => {
+            Swal.close();
+            Swal.fire({
+                icon: 'error',
+                text: String(error.message || error),
+                confirmButtonText: config.messages.confirm
+            });
+        });
+    };
+
+    window.removeAsset = (field) => {
+        Swal.fire({
+            icon: 'warning',
+            text: config.messages.confirmDelete,
+            showCancelButton: true,
+            confirmButtonText: config.messages.delete,
+            cancelButtonText: config.messages.cancel
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            userEditedForm = true;
+
+            // If it's a freshly cropped but not yet saved logo on the client side, just clear it locally
+            const isLocalSquare = field === 'site_icon' && document.getElementById('croppedSquare').value !== '';
+            const isLocalRect = field === 'logo_path' && document.getElementById('croppedRect').value !== '';
+            const isLocalSymbol = field === 'logo_symbol' && document.getElementById('croppedSymbol').value !== '';
+
+            if (isLocalSquare || isLocalRect || isLocalSymbol) {
+                if (field === 'site_icon') {
+                    document.getElementById('croppedSquare').value = '';
+                    const areaSquare = document.getElementById('areaSquare');
+                    if (areaSquare) {
+                        areaSquare.style.padding = '';
+                        areaSquare.innerHTML = `<i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                    }
+                } else if (field === 'logo_symbol') {
+                    document.getElementById('croppedSymbol').value = '';
+                    const areaSymbol = document.getElementById('areaSymbol');
+                    if (areaSymbol) {
+                        areaSymbol.style.padding = '';
+                        areaSymbol.innerHTML = `<i class="bi bi-circle-square" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                    }
+                } else {
+                    document.getElementById('croppedRect').value = '';
+                    const areaRect = document.getElementById('areaRect');
+                    if (areaRect) {
+                        areaRect.style.padding = '';
+                        areaRect.innerHTML = `<i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                    }
+                }
+                showSnackbar(config.messages.deleteSuccess, 'success');
+                return;
+            }
+
+            // Otherwise, make an AJAX request to delete from database/disk
+            const body = new URLSearchParams();
+            body.set('lang', config.selectedLang);
+            body.set('field', field);
+
+            fetch(config.removeUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: body.toString()
+            })
+                .then((response) => response.text())
+                .then((text) => {
+                    if (text.trim() !== 'Oke') {
+                        throw new Error(text);
+                    }
+
+                    if (field === 'logo_path') {
+                        const areaRect = document.getElementById('areaRect');
+                        if (areaRect) {
+                            areaRect.style.padding = '';
+                            areaRect.innerHTML = `<i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                        }
+                    } else if (field === 'logo_symbol') {
+                        const areaSymbol = document.getElementById('areaSymbol');
+                        if (areaSymbol) {
+                            areaSymbol.style.padding = '';
+                            areaSymbol.innerHTML = `<i class="bi bi-circle-square" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                        }
+                        // Reset statuses and thumbnails of generated icons
+                        document.querySelectorAll('.generated-asset-list .status-badge').forEach((badge) => {
+                            badge.textContent = config.messages.notUploaded;
+                            badge.classList.remove('ready');
+                        });
+                        document.querySelectorAll('.generated-asset-list span[id^="iconThumb"]').forEach((span) => {
+                            if (span.id === 'iconThumbWebManifest') {
+                                span.innerHTML = `<i class="bi bi-file-earmark-code" style="font-size:10px; color:#94a3b8;"></i>`;
+                            } else {
+                                span.innerHTML = `<i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>`;
+                            }
+                        });
+                    } else if (field === 'site_icon') {
+                        const areaSquare = document.getElementById('areaSquare');
+                        if (areaSquare) {
+                            areaSquare.style.padding = '';
+                            areaSquare.innerHTML = `<i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>`;
+                        }
+                        // Reset statuses and thumbnails of generated icons (only if logo_symbol is also empty)
+                        // But since we want to be safe, let's reset them here too if symbol is not loaded
+                        const isSymbolSaved = document.getElementById('current-logo_symbol') && document.getElementById('current-logo_symbol').value !== '';
+                        const isSymbolCropped = document.getElementById('croppedSymbol') && document.getElementById('croppedSymbol').value !== '';
+                        if (!isSymbolSaved && !isSymbolCropped) {
+                            document.querySelectorAll('.generated-asset-list .status-badge').forEach((badge) => {
+                                badge.textContent = config.messages.notUploaded;
+                                badge.classList.remove('ready');
+                            });
+                            document.querySelectorAll('.generated-asset-list span[id^="iconThumb"]').forEach((span) => {
+                                if (span.id === 'iconThumbWebManifest') {
+                                    span.innerHTML = `<i class="bi bi-file-earmark-code" style="font-size:10px; color:#94a3b8;"></i>`;
+                                } else {
+                                    span.innerHTML = `<i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>`;
+                                }
+                            });
+                        }
+                    }
+
+                    showSnackbar(config.messages.deleteSuccess, 'success');
+                    window.setTimeout(() => window.location.reload(), 300);
+                })
+                .catch((error) => {
+                    showSnackbar(`${config.messages.deleteError} ${String(error.message || error)}`, 'error');
+                });
+        });
+    };
 
 })();

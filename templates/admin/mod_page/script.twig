@@ -94,7 +94,7 @@
             formData.append('parent_id', parent_id);
             order.forEach(function(sid) { formData.append('order[]', sid); });
             
-            fetch('{{ site.sadres }}mod_page/tasi', {
+            fetch('{{ site.saddress }}mod_page/tasi', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
@@ -177,14 +177,20 @@
         } else {
             card.classList.add('selected');
             selectedMenuId = id;
-            updateToolbar(true);
+            var status = card.getAttribute('data-status');
+            updateToolbar(true, status);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         }
     };
 
-    function updateToolbar(active) {
+    function updateToolbar(active, status) {
         var editBtn = document.getElementById('toolbarEdit');
         var delBtn = document.getElementById('toolbarDelete');
+        var galleryBtn = document.getElementById('toolbarGallery');
+        var filesBtn = document.getElementById('toolbarFiles');
+        var approveBtn = document.getElementById('toolbarApprove');
+        var approveIcon = document.getElementById('approveIcon');
+        var approveText = document.getElementById('approveText');
         
         if (active) {
             editBtn.style.pointerEvents = 'auto';
@@ -192,18 +198,120 @@
             
             delBtn.style.pointerEvents = 'auto';
             delBtn.classList.add('active');
+            
+            galleryBtn.style.pointerEvents = 'auto';
+            galleryBtn.classList.add('active');
+            
+            filesBtn.style.pointerEvents = 'auto';
+            filesBtn.classList.add('active');
+            
+            approveBtn.style.pointerEvents = 'auto';
+            approveBtn.classList.add('active');
+            
+            if (status === 'y') {
+                approveIcon.className = 'bi bi-eye-slash-fill';
+                approveText.innerText = '{{ lang.mod_page.radio.publish_no|default("Neweşîne") }}';
+                approveBtn.classList.add('is-unpublished');
+            } else {
+                approveIcon.className = 'bi bi-eye-fill';
+                approveText.innerText = '{{ lang.mod_page.radio.publish_yes|default("Biweşîne") }}';
+                approveBtn.classList.remove('is-unpublished');
+            }
         } else {
             editBtn.style.pointerEvents = 'none';
             editBtn.classList.remove('active');
             
             delBtn.style.pointerEvents = 'none';
             delBtn.classList.remove('active');
+            
+            galleryBtn.style.pointerEvents = 'none';
+            galleryBtn.classList.remove('active');
+            
+            filesBtn.style.pointerEvents = 'none';
+            filesBtn.classList.remove('active');
+            
+            approveBtn.style.pointerEvents = 'none';
+            approveBtn.classList.remove('active');
+            approveBtn.classList.remove('is-unpublished');
+            
+            approveIcon.className = 'bi bi-eye-fill';
+            approveText.innerText = '{{ lang.mod_page.radio.publish_yes|default("Biweşîne") }}';
         }
     }
 
     window.editSelected = function() {
         if (selectedMenuId) {
-            window.location.href = '{{ site.sadres }}mod_page/edit/' + selectedMenuId;
+            window.location.href = '{{ site.saddress }}mod_page/edit/' + selectedMenuId;
+        }
+    };
+
+    window.approveSelected = function() {
+        if (!selectedMenuId) return;
+
+        var selectedCard = document.querySelector('.m3-list-card.selected');
+        if (!selectedCard) return;
+
+        var currentStatus = selectedCard.getAttribute('data-status');
+        var isPublishing = currentStatus !== 'y';
+
+        var titleMsg = isPublishing 
+            ? '{{ lang.mod_page.quick_publish_confirm }}' 
+            : '{{ lang.mod_page.quick_unpublish_confirm }}';
+
+        var successMsg = isPublishing 
+            ? '{{ lang.mod_page.published_msg }}' 
+            : '{{ lang.mod_page.unpublished_msg }}';
+
+        Swal.fire({
+            title: titleMsg,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '{{ lang.mod_page.options.yes }}',
+            cancelButtonText: '{{ lang.mod_page.options.no }}',
+            confirmButtonColor: isPublishing ? '#2e7d32' : '#e65100',
+            cancelButtonColor: '#6750a4',
+            customClass: { popup: 'm3-swal-popup' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var formData = new URLSearchParams();
+                formData.append('query[]', selectedMenuId);
+
+                var endpoint = isPublishing ? 'approve' : 'unapprove';
+
+                fetch('{{ site.saddress }}mod_page/' + endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData
+                })
+                .then(r => r.text())
+                .then(data => {
+                    if (data.trim() === 'Success') {
+                        Swal.fire({
+                            title: '{{ lang.mod_page.oke }}',
+                            text: successMsg,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire('{{ lang.mod_page.error }}', data, 'error');
+                    }
+                });
+            }
+        });
+    };
+
+    window.gallerySelected = function() {
+        if (selectedMenuId) {
+            window.location.href = '{{ site.saddress }}mod_gallery/list/mod_page/' + selectedMenuId;
+        }
+    };
+
+    window.filesSelected = function() {
+        if (selectedMenuId) {
+            window.location.href = '{{ site.saddress }}mod_attachment/list/mod_page/' + selectedMenuId;
         }
     };
 
@@ -226,7 +334,7 @@
                 var formData = new URLSearchParams();
                 formData.append('delete', selectedMenuId);
 
-                fetch('{{ site.sadres }}mod_page/dragdrop_delete', {
+                fetch('{{ site.saddress }}mod_page/dragdrop_delete', {
                     method: 'POST',
                      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                     body: formData

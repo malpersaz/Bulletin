@@ -134,7 +134,7 @@
         .image-upload-area { position: relative; }
     </style>
 
-    <form id="addForm" method="POST" action="{{ site.sadres }}mod_slider/add" enctype="multipart/form-data">
+    <form id="addForm" method="POST" action="{{ site.saddress }}mod_slider/add" enctype="multipart/form-data">
         <input type="hidden" name="add" value="{{ lang.mod_slider.button.add }}">
         <input type="hidden" name="lang" id="editLang" value="{{ site.lang }}">
 
@@ -169,7 +169,7 @@
                 </div>
                 <script>
                     setTimeout(() => {
-                        window.location.href = "{{ site.sadres }}mod_slider/list";
+                        window.location.href = "{{ site.saddress }}mod_slider/list";
                     }, 2000);
                 </script>
             {% endif %}
@@ -181,7 +181,9 @@
                         <select class="m3-input-lg" name="lang" id="editLangSelect">
                             {% if lang_lang is defined %}
                                 {% for l in lang_lang %}
-                                    <option value="{{ l.seo }}">{{ l.name }}</option>
+                                    {% if l.status == 'y' or l.seo == site.lang %}
+                                        <option value="{{ l.seo }}" {% if l.seo == site.lang %}selected{% endif %}>{{ l.name }}</option>
+                                    {% endif %}
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -351,7 +353,7 @@
         }
     </style>
     <div class="m3-final-bar">
-        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
             <i class="bi bi-x-lg"></i>
             {{ lang.mod_slider.button.cancel }}
         </button>
@@ -363,9 +365,9 @@
 {% endblock %}
 
 {% block scripts %}
-    <link href="{{ site.tadres }}base_static/js/cropper/cropper.css" rel="stylesheet">
+    <link href="{{ site.taddress }}base_static/js/cropper/cropper.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="{{ site.tadres }}base_static/js/cropper/cropper.js"></script>
+    <script src="{{ site.taddress }}base_static/js/cropper/cropper.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         function selectPublishStatus(el, val) {

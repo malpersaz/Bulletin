@@ -6,17 +6,48 @@
 {% block headline %}{{ lang.mod_menu.list }}{% endblock %}
 
 {% block styles %}
-    {# Styles moved to global admin/assets/css/style.css #}
+    <style>
+        .list-children-empty {
+            min-height: 48px;
+            border: 2px dashed rgba(103, 80, 164, 0.4);
+            border-radius: 12px;
+            margin-top: 8px;
+            margin-left: 24px;
+            display: none;
+        }
+        body.reorder-active .list-children-empty {
+            display: block;
+        }
+        /* Two-line layout for menu items to prevent truncation of titles on mobile */
+        .m3-list-card .card-info {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 4px;
+        }
+        .m3-list-card .card-title {
+            white-space: normal;
+            word-break: break-word;
+            width: 100%;
+        }
+        .list-children {
+            padding-left: 20px; /* Reduced from 32px to save horizontal space */
+        }
+        .list-children::before {
+            left: 11px; /* Align hierarchy dotted line with the new padding */
+        }
+    </style>
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
     {% for entry in items[parent_id] %}
-        <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.name|lower }}">
+        {% set is_container = entry.url is defined and entry.url == '##' %}
+        {% set display_name = entry.display_name %}
+        <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}" data-status="{{ entry.status }}">
             <div class="m3-list-card" onclick="selectMenu('{{ entry.id }}', this)">
                 <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
                 
-                {% if items[entry.id] is defined %}
-                    <button class="toggle-btn" onclick="toggleMenu(this, event)">
+                {% if items[entry.id] is defined or is_container %}
+                    <button class="toggle-btn collapsed" onclick="toggleMenu(this, event)">
                         <i class="bi bi-chevron-down"></i>
                     </button>
                 {% else %}
@@ -32,17 +63,24 @@
                 </div>
 
                 <div class="card-info">
-                    <div class="card-title">{{ entry.name }}</div>
+                    <div class="card-title">{{ display_name }}</div>
                     <div class="card-meta">
                         <span class="meta-badge">{{ entry.lang|upper }}</span>
                         <span class="meta-id">#{{ entry.id }}</span>
+                        {% if entry.status == 'y' %}
+                            <span class="meta-status" style="margin-left: 8px; color: #2e7d32;"><i class="bi bi-eye-fill"></i></span>
+                        {% else %}
+                            <span class="meta-status" style="margin-left: 8px; color: #b3261e; opacity: 0.7;"><i class="bi bi-eye-slash-fill"></i></span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             
-            {% if items[entry.id] is defined and entry.id != parent_id and level < 20 %}
-                <div class="list-children">
-                    {{ _self.render_tree(items, entry.id, level + 1) }}
+            {% if entry.id != parent_id and level < 20 %}
+                <div class="list-children collapsed{% if items[entry.id] is not defined %} list-children-empty{% endif %}">
+                    {% if items[entry.id] is defined %}
+                        {{ _self.render_tree(items, entry.id, level + 1) }}
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -71,7 +109,7 @@
                  <i class="bi bi-diagram-3"></i>
             </div>
             <h2 style="font-weight: 800;">{{ lang.mod_menu.empty.no_menus }}</h2>
-            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_menu/add'">
+            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_menu/add'">
                 <i class="bi bi-plus-lg"></i>
             </div>
         </div>
@@ -80,21 +118,27 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
+    <div class="standard-toolbar menu-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_menu.actions.edit }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_menu/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
+        <button id="toolbarEye" class="toolbar-item" onclick="toggleStatusSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-eye-fill"></i>
+            <span>{{ lang.mod_menu.actions.publish_toggle }}</span>
+        </button>
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
             <span>{{ lang.mod_menu.actions.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_menu/add'" aria-label="{{ lang.mod_menu.add|default('Menuyê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}

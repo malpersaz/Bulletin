@@ -174,7 +174,7 @@
         <span>{{ lang.mod_attachment.admin[12] }}</span>
     </button>
 
-    <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
+    <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
         <i class="bi bi-folder2-open"></i>
         <span>{{ lang.mod_attachment.admin[14] }}</span>
     </button>
@@ -188,7 +188,7 @@
         <span>{{ lang.mod_attachment.admin[38] }}</span>
     </button>
 
-    <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
+    <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_attachment/list/{{ mod_name }}/{{ vid }}'">
         <i class="bi bi-list-ul"></i>
         <span>{{ lang.mod_attachment.admin[14] }}</span>
     </button>
@@ -235,7 +235,7 @@
             formData.append('mod_name', '{{ mod_name }}');
 
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '{{ site.sadres }}mod_attachment/upload');
+            xhr.open('POST', '{{ site.saddress }}mod_attachment/upload');
 
             xhr.upload.addEventListener('progress', (event) => {
                 if (!event.lengthComputable) {

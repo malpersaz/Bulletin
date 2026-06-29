@@ -10,7 +10,7 @@
         {% else %}
             {% if keto == rk.id %}
                 <p class="list-group-item active">
-                    <a href="{{ site.sadres }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
+                    <a href="{{ site.saddress }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
                 </p>
             {% else %}
                 {% if rk.seo == '#' %}
@@ -19,7 +19,7 @@
                         -->
                 {% else %}
                     <p class="list-group-item">
-                        <a href="{{ site.sadres }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
+                        <a href="{{ site.saddress }}rkat/{{ rk.seo }}">{{ rk.name }}</a>
                     </p>
                 {% endif %}
             {% endif %}
@@ -47,7 +47,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.homepage }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.homepage }}</a>
                 </li>
                 {% if d.name is not empty %}
                     <li>
@@ -73,13 +73,13 @@
                                 {% for image in res %}
                                     <li class="col-md-4">
                                         <div class="thumbnail">
-                                            <a href="{{ site.radres }}mod_gallery/mod_imagecategories/original/{{ image.url }}"
+                                            <a href="{{ site.iaddress }}mod_gallery/mod_imagecategories/original/{{ image.url }}"
                                                title="{{ image.name }}"
                                                data-bs-toggle="lightbox"
                                                data-gallery="multiimages"
                                                data-title="{{ image.name }}"
                                                data-parent="#gallery_resim">
-                                                <img src="{{ site.radres }}mod_gallery/mod_imagecategories/thumb/{{ image.url }}"
+                                                <img src="{{ site.iaddress }}mod_gallery/mod_imagecategories/thumb/{{ image.url }}"
                                                      parent_id="{{ image.name }}">
                                             </a>
                                         </div>

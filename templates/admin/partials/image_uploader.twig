@@ -15,7 +15,7 @@
             <div class="wizard-image-empty-copy">
                 <p class="wizard-image-empty-line">
                     <span class="wizard-image-empty-text">{{ drop_title }}</span>
-                    <button type="button" class="wizard-image-inline-link" onclick="event.stopPropagation(); {{ trigger_picker_js }}">{{ upload_link }}</button>
+                    <button type="button" class="wizard-image-inline-link" onclick="event.preventDefault(); event.stopPropagation(); {{ trigger_picker_js }}">{{ upload_link }}</button>
                 </p>
             </div>
         </div>
@@ -28,7 +28,7 @@
                     {% if remove_btn_id is defined and remove_btn_id %} id="{{ remove_btn_id }}"{% endif %}
                     aria-label="{{ remove_button_label is defined ? remove_button_label : '' }}"
                     title="{{ remove_button_label is defined ? remove_button_label : '' }}"
-                    onclick="event.stopPropagation(); {{ remove_action_js }}"
+                    onclick="event.preventDefault(); event.stopPropagation(); {{ remove_action_js }}"
                 >
                     <i class="bi bi-trash-fill"></i>
                 </button>
@@ -64,7 +64,7 @@
         type="file"
         name="{{ input_name is defined ? input_name : 'image' }}"
         id="{{ file_input_id }}"
-        hidden
+        class="wizard-image-file-input"
         accept="image/*"
         {% if file_input_onchange is defined and file_input_onchange %}
             onchange="{{ file_input_onchange }}"

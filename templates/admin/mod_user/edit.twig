@@ -156,7 +156,7 @@
 			</div>
 			<script>
 				setTimeout(() => {
-					window.location.href = "{{ site.sadres }}mod_user/list";
+					window.location.href = "{{ site.saddress }}mod_user/list";
 				}, 2000);
 			</script>
 		{% else %}
@@ -308,7 +308,7 @@
 						<label class="filter-group-label">{{ lang.mod_user.profile_picture }}</label>
 						<label for="image" class="image-upload-area" id="image-upload-area">
 							{% if d.image %}
-								<img id="editImgPreview" src="{{ site.radres }}mod_user/{{ d.image }}">
+								<img id="editImgPreview" src="{{ site.iaddress }}mod_user/{{ d.image }}">
 								<button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeUserImage('{{ d.id }}')">
 									<i class="bi bi-trash"></i>
 								</button>
@@ -393,7 +393,7 @@
 	</style>
 	{% if oke is not defined %}
 		<div class="m3-final-bar">
-			<a href="{{ site.sadres }}mod_user/list" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+			<a href="{{ site.saddress }}mod_user/list" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 				<i class="bi bi-x-lg"></i>
 				{{ lang.mod_user.button.cancel }}
 			</a>
@@ -525,7 +525,7 @@
                     const formData = new FormData();
                     formData.append('id', id);
 
-                    fetch("{{ site.adres }}mod_user/delete_image", {
+                    fetch("{{ site.address }}mod_user/delete_image", {
                         method: "POST",
                         body: formData
                     })
@@ -593,7 +593,7 @@
 
 					Swal.fire('{{ lang.mod_user.ajax.success }}', data.message || '{{ lang.mod_user.admin.updated }}', 'success');
 					setTimeout(() => {
-						window.location.href = data.redirect || '{{ site.sadres }}mod_user/list';
+						window.location.href = data.redirect || '{{ site.saddress }}mod_user/list';
 					}, 1200);
 				} catch (error) {
 					showErrors('{{ lang.mod_user.ajax.connection_error }}', [error.message || '{{ lang.mod_user.ajax.connection_error }}']);

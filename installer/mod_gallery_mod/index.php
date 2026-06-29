@@ -46,28 +46,63 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
                 'name' => 'Content Galleries',
                 'mod_name' => 'mod_content',
                 'mod_key' => 'id',
-                'mod_value' => 'gallery_id',
+                'mod_value' => 'name',
                 'user_id' => 1
             ),
             array(
                 'name' => 'Page Galleries',
                 'mod_name' => 'mod_page',
                 'mod_key' => 'id',
-                'mod_value' => 'gallery_id',
+                'mod_value' => 'name',
                 'user_id' => 1
             ),
             array(
                 'name' => 'Announcement Galleries',
                 'mod_name' => 'mod_announcements',
                 'mod_key' => 'id',
-                'mod_value' => 'gallery_id',
+                'mod_value' => 'name',
                 'user_id' => 1
             ),
             array(
                 'name' => 'Video Galleries',
                 'mod_name' => 'mod_video_embed',
                 'mod_key' => 'id',
-                'mod_value' => 'gallery_id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'News Galleries',
+                'mod_name' => 'mod_news',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Publication Galleries',
+                'mod_name' => 'mod_publication',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Product Galleries',
+                'mod_name' => 'mod_product',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Service Galleries',
+                'mod_name' => 'mod_service',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
+            ),
+            array(
+                'name' => 'Reference Galleries',
+                'mod_name' => 'mod_reference',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
                 'user_id' => 1
             )
         );

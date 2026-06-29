@@ -161,6 +161,62 @@ class index_mod extends indexBase
         unset($publication);
     }
 
+    public function product($seo = null)
+    {
+        $product = Load::helper("index.mod_product");
+        $product->product($seo);
+        unset($product);
+    }
+
+    public function products($category = null, $page = 1)
+    {
+        $product = Load::helper("index.mod_product");
+        $product->products($category, $page);
+        unset($product);
+    }
+
+    public function service($seo = null)
+    {
+        $service = Load::helper("index.mod_service");
+        $service->service($seo);
+        unset($service);
+    }
+
+    public function services($category = null, $page = 1)
+    {
+        $service = Load::helper("index.mod_service");
+        $service->services($category, $page);
+        unset($service);
+    }
+
+    public function client($seo = null)
+    {
+        $client = Load::helper("index.mod_client");
+        $client->client($seo);
+        unset($client);
+    }
+
+    public function clients()
+    {
+        $client = Load::helper("index.mod_client");
+        $client->clients();
+        unset($client);
+    }
+
+    public function reference($seo = null)
+    {
+        $reference = Load::helper("index.mod_reference");
+        $reference->reference($seo);
+        unset($reference);
+    }
+
+    public function references($page = 1)
+    {
+        $reference = Load::helper("index.mod_reference");
+        $reference->references($page);
+        unset($reference);
+    }
+
     public function announcement($id = null)
     {
         $announcement = Load::helper("index.mod_announcements");
@@ -185,15 +241,76 @@ class index_mod extends indexBase
 
     public function _latest_videos($t, $limit, $select)
     {
-        if (!$this->isFeatureReady('video_embed.latest')) {
-            $t->ctx_set('latest_videos', []);
-            return;
+        $latest = [];
+
+        // 1. Fetch from Local Videos (mod_video) if the module is active
+        $video_model = Load::model('mod_video');
+        $video_model->select('id, name, image, duration, lang, created_at, status, description, flv');
+        $video_model->where_lang_and_status($this->site['lang'], 'y');
+        $video_model->limit($limit)->order('created_at', 'DESC');
+        $video_model->gR();
+
+        if ($video_model->getSize() > 0) {
+            foreach ($video_model->toArray() as $row) {
+                $latest[] = [
+                    'id' => $row['id'],
+                    'name' => html_entity_decode($row['name'], ENT_QUOTES, 'UTF-8'),
+                    'image' => '../../mod_video/image/' . $row['image'],
+                    'content' => isset($row['description']) ? html_entity_decode($row['description'], ENT_QUOTES, 'UTF-8') : '',
+                    'keywords' => html_entity_decode($row['name'], ENT_QUOTES, 'UTF-8'),
+                    'duration' => $row['duration'],
+                    'created_at' => $row['created_at'],
+                    'is_local' => true,
+                    'flv' => $row['flv'],
+                    'embed' => '',
+                    'original' => ''
+                ];
+            }
+        }
+        unset($video_model);
+
+        // 2. Fetch from Embedded Videos (mod_video_embed) if enabled and we need more records
+        if (count($latest) < $limit && $this->isFeatureReady('video_embed.latest')) {
+            $helper = Load::helper('index.mod_video_embed');
+            $select_embed = $select;
+            if (is_string($select_embed)) {
+                if (strpos($select_embed, 'created_at') === false) {
+                    $select_embed .= ',created_at';
+                }
+                $select_embed .= ',embed,original';
+            }
+            
+            $embed_results = $helper->_latest_videos($limit - count($latest), $select_embed);
+            unset($helper);
+
+            foreach ($embed_results as $row) {
+                $latest[] = [
+                    'id' => $row['id'],
+                    'name' => html_entity_decode($row['name'], ENT_QUOTES, 'UTF-8'),
+                    'image' => $row['image'],
+                    'content' => isset($row['content']) ? html_entity_decode($row['content'], ENT_QUOTES, 'UTF-8') : '',
+                    'keywords' => isset($row['keywords']) ? html_entity_decode($row['keywords'], ENT_QUOTES, 'UTF-8') : '',
+                    'duration' => isset($row['duration']) ? $row['duration'] : '',
+                    'created_at' => isset($row['created_at']) ? $row['created_at'] : null,
+                    'is_local' => false,
+                    'embed' => isset($row['embed']) ? $row['embed'] : '',
+                    'original' => isset($row['original']) ? $row['original'] : '',
+                    'flv' => ''
+                ];
+            }
         }
 
-        $helper = Load::helper('index.mod_video_embed');
-        $result = $helper->_latest_videos($limit, $select);
-        unset($helper);
-        $t->ctx_set('latest_videos', $result);
+        // Sort combined results by created_at DESC safely
+        usort($latest, function($a, $b) {
+            $dateA = isset($a['created_at']) ? (string)$a['created_at'] : '';
+            $dateB = isset($b['created_at']) ? (string)$b['created_at'] : '';
+            return strcmp($dateB, $dateA);
+        });
+
+        // Limit final combined results
+        $latest = array_slice($latest, 0, $limit);
+
+        $t->ctx_set('latest_videos', $latest);
     }
 
     public function _latest_pictures($t, $limit, $select)
@@ -246,6 +363,12 @@ class index_mod extends indexBase
         $menu = Load::helper("index.mod_menu");
         $result = $menu->menu();
         $t->ctx_set('menu', $result);
+        $headerBranch = $menu->menuBranch('header');
+        $footerBranch = $menu->menuBranch('footer');
+        $t->ctx_set('menu_header', $headerBranch['tree']);
+        $t->ctx_set('menu_header_root_id', $headerBranch['root_id']);
+        $t->ctx_set('menu_footer', $footerBranch['tree']);
+        $t->ctx_set('menu_footer_root_id', $footerBranch['root_id']);
     }
 
     public function _slider($t, $limit)
@@ -315,6 +438,38 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _latest_products($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_product');
+        $result = $helper->_latest_products($limit, $select);
+        $t->ctx_set('latest_products', $result);
+        unset($helper);
+    }
+
+    public function _latest_services($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_service');
+        $result = $helper->_latest_services($limit, $select);
+        $t->ctx_set('latest_services', $result);
+        unset($helper);
+    }
+
+    public function _latest_clients($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_client');
+        $result = $helper->_latest_clients($limit, $select);
+        $t->ctx_set('latest_clients', $result);
+        unset($helper);
+    }
+
+    public function _latest_references($t, $limit, $select)
+    {
+        $helper = Load::helper('index.mod_reference');
+        $result = $helper->_latest_references($limit, $select);
+        $t->ctx_set('latest_references', $result);
+        unset($helper);
+    }
+
     public function _latest_authors($t, $limit)
     {
         if (!$this->isFeatureReady('publication.authors')) {
@@ -369,18 +524,18 @@ class index_mod extends indexBase
         <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
         <channel>
             <title>' . htmlspecialchars($this->site['title']) . '</title>
-            <link>' . $this->site['adres'] . $this->site['lang'] . '</link>
+            <link>' . $this->site['address'] . $this->site['lang'] . '</link>
             <description>' . htmlspecialchars($this->site['description']) . '</description>
             <language>' . $this->site['lang'] . '</language>
             <lastBuildDate>' . date(DATE_RSS) . '</lastBuildDate>
-            <atom:link href="' . $this->site['adres'] . $this->site['lang'] . '/rss.xml" rel="self" type="application/rss+xml" />';
+            <atom:link href="' . $this->site['address'] . $this->site['lang'] . '/rss.xml" rel="self" type="application/rss+xml" />';
 
         if ($news->getSize() != 0) {
             foreach ($news->toArray() as $o) {
-                $link = $this->site['adres'] . $o['lang'] . '/news/' . $o['seo'];
+                $link = $this->site['address'] . $o['lang'] . '/news/' . $o['seo'];
                 $imageUrl = "";
                 if (!empty($o['image'])) {
-                    $imageUrl = $this->site['radres'] . 'mod_news/thumb/' . $o['image'];
+                    $imageUrl = $this->site['iaddress'] . 'mod_news/thumb/' . $o['image'];
                 }
                 
                 echo '
@@ -402,6 +557,7 @@ class index_mod extends indexBase
         echo '
         </channel>
         </rss>';
+        exit;
     }
 
     public function sitemapIndex()
@@ -418,25 +574,45 @@ class index_mod extends indexBase
         foreach ($active_langs as $l) {
             if ($this->isFeatureReady('news.latest')) {
                 echo '<sitemap>
-                        <loc>' . $this->site['adres'] . $l . '/newsSitemap.xml</loc>
+                        <loc>' . $this->site['address'] . $l . '/newsSitemap.xml</loc>
                       </sitemap>';
             }
             if ($this->isFeatureReady('publication.latest')) {
                 echo '<sitemap>
-                        <loc>' . $this->site['adres'] . $l . '/publicationSitemap.xml</loc>
-                      </sitemap>';
-            }
-            if ($this->isFeatureReady('news.front') || $this->isFeatureReady('publication.front')) {
-                echo '<sitemap>
-                        <loc>' . $this->site['adres'] . $l . '/categorySitemap.xml</loc>
+                        <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
                       </sitemap>';
             }
             echo '<sitemap>
-                    <loc>' . $this->site['adres'] . $l . '/pageSitemap.xml</loc>
+                    <loc>' . $this->site['address'] . $l . '/productSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/serviceSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/referenceSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/clientSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/videoSitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/gallerySitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/categorySitemap.xml</loc>
+                  </sitemap>';
+            echo '<sitemap>
+                    <loc>' . $this->site['address'] . $l . '/pageSitemap.xml</loc>
                   </sitemap>';
         }
         
         echo '</sitemapindex>';
+        exit;
     }
 
     public function newsSitemap($page = 1)
@@ -462,12 +638,13 @@ class index_mod extends indexBase
         if ($news->getSize() != 0) {
             foreach ($news->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/news/' . $o['seo'] . '</loc>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/news/' . $o['seo'] . '</loc>
                           <priority>0.80</priority>
                     </url>';
             }
         }
         echo '</urlset>';
+        exit;
     }
 
     public function publicationSitemap($page = 1)
@@ -493,12 +670,238 @@ class index_mod extends indexBase
         if ($pub->getSize() != 0) {
             foreach ($pub->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/publication/' . $o['seo'] . '</loc>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/publication/' . $o['seo'] . '</loc>
                           <priority>0.80</priority>
                     </url>';
             }
         }
         echo '</urlset>';
+        exit;
+    }
+
+    public function productSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_product');
+        $model->where_status_and_lang('y', $this->site['lang']);
+        $model->order('created_at', 'DESC');
+        $model->select(['seo', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/product/' . $o['seo'] . '</loc>
+                          <priority>0.85</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function serviceSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_service');
+        $model->where_status_and_lang('y', $this->site['lang']);
+        $model->order('created_at', 'DESC');
+        $model->select(['seo', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/service/' . $o['seo'] . '</loc>
+                          <priority>0.85</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function referenceSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_reference');
+        $model->where_status_and_lang('y', $this->site['lang']);
+        $model->order('created_at', 'DESC');
+        $model->select(['seo', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/reference/' . $o['seo'] . '</loc>
+                          <priority>0.70</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function clientSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_client');
+        $model->where_status_and_lang('y', $this->site['lang']);
+        $model->order('created_at', 'DESC');
+        $model->select(['seo', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/client/' . $o['seo'] . '</loc>
+                          <priority>0.70</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function announcementSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_announcements');
+        $model->where_status_and_lang('y', $this->site['lang']);
+        $model->order('created_at', 'DESC');
+        $model->select(['id', 'name', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                $slug = Helper::sefurl($o['name']);
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/announcement/' . $o['id'] . '-' . $slug . '</loc>
+                          <priority>0.70</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
+
+    public function videoSitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 25000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
+        // 1. Local videos
+        $model_local = Load::model('mod_video');
+        $model_local->where_status_and_lang('y', $this->site['lang']);
+        $model_local->order('created_at', 'DESC');
+        $model_local->select(['id', 'name', 'lang']);
+        $model_local->limit($page_limit, $offset);
+        $model_local->gR();
+        if ($model_local->getSize() != 0) {
+            foreach ($model_local->toArray() as $o) {
+                $slug = Helper::sefurl($o['name']);
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                          <priority>0.65</priority>
+                    </url>';
+            }
+        }
+
+        // 2. Embedded videos
+        if ($this->isFeatureReady('video_embed.latest')) {
+            $model_embed = Load::model('mod_video_embed');
+            $model_embed->where_status_and_lang('y', $this->site['lang']);
+            $model_embed->order('created_at', 'DESC');
+            $model_embed->select(['id', 'name', 'lang']);
+            $model_embed->limit($page_limit, $offset);
+            $model_embed->gR();
+            if ($model_embed->getSize() != 0) {
+                foreach ($model_embed->toArray() as $o) {
+                    $slug = Helper::sefurl($o['name']);
+                    echo '<url>
+                              <loc>' . $this->site['address'] . $o['lang'] . '/video/' . $o['id'] . '-' . $slug . '</loc>
+                              <priority>0.65</priority>
+                        </url>';
+                }
+            }
+        }
+
+        echo '</urlset>';
+        exit;
+    }
+
+    public function gallerySitemap($page = 1)
+    {
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+        
+        $model = Load::model('mod_imagecategories');
+        $model->where_root_and_lang('n', $this->site['lang']);
+        $model->order('order', 'ASC');
+        $model->select(['seo', 'lang']);
+        $model->limit($page_limit, $offset);
+        $model->gR();
+        
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        
+        echo '<url>
+                  <loc>' . $this->site['address'] . $this->site['lang'] . '/gallery</loc>
+                  <priority>0.70</priority>
+            </url>';
+            
+        if ($model->getSize() != 0) {
+            foreach ($model->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/gallery/' . $o['seo'] . '</loc>
+                          <priority>0.65</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
     }
 
     public function categorySitemap($page = 1)
@@ -514,10 +917,12 @@ class index_mod extends indexBase
             $cat_news->gR();
             if ($cat_news->getSize() != 0) {
                 foreach ($cat_news->toArray() as $o) {
-                    echo '<url>
-                              <loc>' . $this->site['adres'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
-                              <priority>0.60</priority>
-                        </url>';
+                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                        echo '<url>
+                                  <loc>' . $this->site['address'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
+                                  <priority>0.60</priority>
+                            </url>';
+                    }
                 }
             }
         }
@@ -528,8 +933,38 @@ class index_mod extends indexBase
             $cat_pub->gR();
             if ($cat_pub->getSize() != 0) {
                 foreach ($cat_pub->toArray() as $o) {
+                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                        echo '<url>
+                                  <loc>' . $this->site['address'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                                  <priority>0.60</priority>
+                            </url>';
+                    }
+                }
+            }
+        }
+
+        $cat_prod = Load::model('mod_product_category');
+        $cat_prod->where_lang($this->site['lang'])->select(['seo', 'lang']);
+        $cat_prod->gR();
+        if ($cat_prod->getSize() != 0) {
+            foreach ($cat_prod->toArray() as $o) {
+                if ($o['seo'] !== '#' && $o['seo'] !== '') {
                     echo '<url>
-                              <loc>' . $this->site['adres'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                              <loc>' . $this->site['address'] . $o['lang'] . '/products/' . $o['seo'] . '</loc>
+                              <priority>0.60</priority>
+                        </url>';
+                }
+            }
+        }
+
+        $cat_serv = Load::model('mod_service_category');
+        $cat_serv->where_lang($this->site['lang'])->select(['seo', 'lang']);
+        $cat_serv->gR();
+        if ($cat_serv->getSize() != 0) {
+            foreach ($cat_serv->toArray() as $o) {
+                if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                    echo '<url>
+                              <loc>' . $this->site['address'] . $o['lang'] . '/services/' . $o['seo'] . '</loc>
                               <priority>0.60</priority>
                         </url>';
                 }
@@ -537,6 +972,7 @@ class index_mod extends indexBase
         }
 
         echo '</urlset>';
+        exit;
     }
 
     public function pageSitemap($page = 1)
@@ -557,7 +993,7 @@ class index_mod extends indexBase
 
         if ($this->site['lang'] == Kayit::getir('default_lang')) {
             echo '<url>
-                      <loc>' . $this->site['adres'] . '</loc>
+                      <loc>' . $this->site['address'] . '</loc>
                       <priority>1.0</priority>
                 </url>';
         }
@@ -565,23 +1001,24 @@ class index_mod extends indexBase
         if ($pages->getSize() != 0) {
             foreach ($pages->toArray() as $o) {
                 echo '<url>
-                          <loc>' . $this->site['adres'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
                           <priority>0.50</priority>
                     </url>';
             }
         }
         echo '</urlset>';
+        exit;
     }
 
     public function legacyRedirect($seo = null)
     {
         if ($seo) {
             header("HTTP/1.1 301 Moved Permanently");
-            header("Location: " . $this->site['adres'] . 'news/' . $seo);
+            header("Location: " . $this->site['address'] . 'news/' . $seo);
             exit();
         }
         header("HTTP/1.1 301 Moved Permanently");
-        header("Location: " . $this->site['adres']);
+        header("Location: " . $this->site['address']);
         exit();
     }
 
@@ -589,11 +1026,11 @@ class index_mod extends indexBase
     {
         if ($seo) {
             header("HTTP/1.1 301 Moved Permanently");
-            header("Location: " . $this->site['adres'] . 'publication/' . $seo);
+            header("Location: " . $this->site['address'] . 'publication/' . $seo);
             exit();
         }
         header("HTTP/1.1 301 Moved Permanently");
-        header("Location: " . $this->site['adres']);
+        header("Location: " . $this->site['address']);
         exit();
     }
 }

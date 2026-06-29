@@ -3,6 +3,7 @@
 $lang['index'] = [
     'publish' => 'Roja %s hate weşandin',
     'home' => 'Serûpel',
+    'navigation' => 'Rêvebirî',
     'download' => 'Daxistin',
     'login' => 'Têkevê',
     'register' => 'Bibe Endam',
@@ -10,6 +11,7 @@ $lang['index'] = [
     'language' => 'Ziman',
     'messages' => 'Peyam',
     'my_account' => 'Hesabê min',
+    'menu_title' => 'Pêşek',
     'change_avatar' => 'Avatar biguherîne',
     'logout' => 'Derkeve',
     'dark_mode' => 'Şêweya tarî',
@@ -18,8 +20,13 @@ $lang['index'] = [
     'contact' => 'Têkilî',
     'info' => 'Agahî',
     'find_us' => 'Me bibîne',
+    'rss_feed' => 'RSS Feed',
+    'sitemap' => 'Nexşeya malperê',
+    'site_logo_alt' => 'Logoya malperê',
+    'producer_logo_alt' => 'Logoya AKM Software',
     'map_available_soon' => 'Nexşê zû de heye',
     'publish_date' => 'Dema Weşanê',
+    'category_label' => 'Kategorî',
     'updated_date' => 'Dema Serastkirinê',
     'min_read' => 'deqîqe xwendin',
     'enlarge_image' => 'Wêne mezin bike',
@@ -29,6 +36,8 @@ $lang['index'] = [
     'share' => 'Parve bike',
     'copy_link' => 'Lînkê jiber bigire',
     'link_copied' => 'Lînk hat jibergirtin!',
+    'email' => 'E-name',
+    'file_not_found' => 'Pel nehat dîtin',
     'search' => [
         'searched_word' => 'Peyva lêgerînê binivîse!',
         'search' => 'Bibîne',
@@ -103,6 +112,7 @@ $lang['index'] = [
         2 => 'Ji bo vê kategoriyê wêne nehat dîtin!',
         'latest_pictures' => [
             1 => 'Wêne',
+            2 => 'Wêneyên Dawî',
         ],
     ],
     'mod_attachment' => [
@@ -165,6 +175,7 @@ $lang['index'] = [
         'home' => 'Serûpel',
         'about' => 'Li ser xwe',
         'contact' => 'Têikilî',
+        'footer_links' => 'Menuya Jêr',
         'language' => 'Ziman',
         'messages' => 'Peyam',
         'my_account' => 'Hesabê min',
@@ -237,7 +248,7 @@ $lang['index'] = [
         'upload_button' => 'Lêbarke',
     ],
     'copyright' => '© Hemû maf parastî ne.',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">Rojname v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
     'template' => [
         'title' => 'Pêşangeha Dirban',
         'desc' => 'Pêşangeha Dirban - Lêkirin û Sazkirin',
@@ -343,8 +354,23 @@ $lang['index'] = [
             2 => 'Hemû Weşan',
             3 => 'Hêj tu weşana weşandî tune.',
         ],
+        'comments' => [
+            'title' => 'Şîrove',
+            'add_title' => 'Şîroveyekê Zêde Bike',
+            'placeholder' => 'Şîroveya te',
+            'full_name' => 'Nav û paşnav',
+            'submit' => 'Şîroveyê Bişîne',
+            'warning_label' => 'Hişyarî',
+            'rules' => 'Şîroveyên ku heqaret, xerabkarî an şêwekariya nexwendinbar dihewînin dikarin neyên pejirandin.',
+        ],
     ],
     'mod_user_pm' => [
         'send_message' => 'Peyam Bişîne',
+    ],
+    'error' => [
+        '1' => 'Çewtî',
+        'method' => ['ad' => 'Metoda Nepejirandî', 'mesaj' => 'Metoda %s nehate dîtin'],
+        'mod' => ['ad' => 'Çewtiya Modulê', 'mesaj' => 'Modula %s nehate dîtin'],
+        'not' => ['ad' => 'Rûpel Nehate Dîtin', 'mesaj' => 'Rûpela ku hat daxwazkirin %s nehate dîtin'],
     ],
 ];

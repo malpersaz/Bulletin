@@ -18,7 +18,7 @@ class mod_video_embed_helper extends indexBase
         $mod_category_nested = Load::model('mod_video_embed_category');
         $mod_category_nested->where_lang_and_root($this->site['lang'], 'n');
         $mod_category_nested->order('order', 'ASC')->gR();
-        $this->tema->ctx_set('categories', $mod_category_nested->toArray());
+        $this->tema->ctx_set('categories', $this->normalizeCategoryRows($mod_category_nested->toArray()));
     }
 
     public function video($id)
@@ -46,8 +46,7 @@ class mod_video_embed_helper extends indexBase
 
             $this->_update_view_count('mod_video_embed', $video->id);
 
-            $category =
-                $this->tema->ctx_set('d', $video->toArray());
+            $this->tema->ctx_set('d', $this->normalizeVideoRow($video->toArray()));
             if (isset($video->gallery_id) && $video->gallery_id != 0) {
                 $this->_gallery_resimgetir('mod_video_embed', $video->gallery_id);
             } else {
@@ -60,7 +59,52 @@ class mod_video_embed_helper extends indexBase
                 $this->_mod_attachment('mod_video_embed', $video->id);
             }
         } else {
-            return $this->_404();
+            $localVideo = Load::model('mod_video');
+            $localVideo->where_id_and_status_and_lang($id, 'y', $this->site['lang']);
+            $localVideo->limit(1);
+            $localVideo->gRo();
+
+            if ($localVideo->getSize() !== 0) {
+                $localVideo->sync();
+                if ($this->_permission_kontrol($localVideo->acl_id)) {
+                    return;
+                }
+
+                $this->_update_view_count('mod_video', $localVideo->id);
+
+                $video_path = $this->site['iaddress'] . 'mod_video/flv/' . $localVideo->flv;
+                
+                $poster_attr = '';
+                if (!empty($localVideo->image)) {
+                    $poster_path = $this->site['iaddress'] . 'mod_video/image/' . $localVideo->image;
+                    $poster_attr = ' poster="' . $poster_path . '"';
+                }
+
+                // Build modern, clean HTML5 video player instead of standard YouTube iframe embed
+                $embed_code = '<video class="w-100 rounded shadow" controls preload="metadata"' . $poster_attr . ' style="max-height: 500px; background: #000;">';
+                $embed_code .= '<source src="' . $video_path . '" type="video/mp4" />';
+                $embed_code .= '</video>';
+
+                $d = [
+                    'id' => $localVideo->id,
+                    'name' => html_entity_decode($localVideo->name, ENT_QUOTES, 'UTF-8'),
+                    'embed' => $embed_code,
+                    'content' => isset($localVideo->description) ? html_entity_decode($localVideo->description, ENT_QUOTES, 'UTF-8') : '',
+                    'deck' => 'n',
+                    'summary' => '',
+                    'categoryname' => $this->lang['index']['mod_video_embed']['2'] ?? 'Vîdyo',
+                    'category_seo' => 'all',
+                    'created_at' => $localVideo->created_at,
+                    'is_local' => true,
+                    'image' => $localVideo->image
+                ];
+
+                $this->tema->ctx_set('d', $d);
+                $this->tema->ctx_set('gallery', []);
+                $this->tema->ctx_set('attachment', []);
+            } else {
+                return $this->_404();
+            }
         }
         $this->tema->tpl('index/mod_video_embed/video');
         $this->_index();
@@ -102,7 +146,8 @@ class mod_video_embed_helper extends indexBase
                         $v['youtube_url'] = $matches[1] ?? '';
                     }
                 }
-                $this->tema->ctx_set('videos', $videos);
+                unset($v);
+                $this->tema->ctx_set('videos', $this->normalizeVideoRows($videos));
             }
             $category_seo = 'all';
             $categoryname = $this->lang['index']['mod_video_embed']['2'];
@@ -115,7 +160,7 @@ class mod_video_embed_helper extends indexBase
             $total_item = $video->getSize();
             $video->getLimit($page_limit, $offset);
             if ($video->getSize() !== 0) {
-                $this->tema->ctx_set('videos', $video->toArray());
+                $this->tema->ctx_set('videos', $this->normalizeVideoRows($video->toArray()));
             }
             $category_model->where_seo($category);
             $category_model->getResultOne();
@@ -141,9 +186,9 @@ class mod_video_embed_helper extends indexBase
         }
 
         if ($page != '1') {
-            $d['link'] = $this->site['sadres'] . 'category/' . $category . '/' . $page;
+            $d['link'] = $this->site['saddress'] . 'category/' . $category . '/' . $page;
         } else {
-            $d['link'] = $this->site['sadres'] . 'category/' . $category;
+            $d['link'] = $this->site['saddress'] . 'category/' . $category;
         }
 
         if ($page <= 1) {
@@ -172,9 +217,42 @@ class mod_video_embed_helper extends indexBase
         $m = Load::model('mod_video_embed')->select($select)->where_lang_and_status($this->site['lang'], 'y')->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
-            return $m->toArray();
+            return $this->normalizeVideoRows($m->toArray());
         }
         unset($m);
         return [];
+    }
+
+    private function normalizeVideoRows(array $rows)
+    {
+        foreach ($rows as &$row) {
+            $row = $this->normalizeVideoRow($row);
+        }
+        unset($row);
+
+        return $rows;
+    }
+
+    private function normalizeVideoRow(array $row)
+    {
+        foreach (['name', 'title', 'keywords', 'description', 'categoryname', 'category_name'] as $field) {
+            if (isset($row[$field]) && is_string($row[$field])) {
+                $row[$field] = html_entity_decode($row[$field], ENT_QUOTES, 'UTF-8');
+            }
+        }
+
+        return $row;
+    }
+
+    private function normalizeCategoryRows(array $rows)
+    {
+        foreach ($rows as &$row) {
+            if (isset($row['name']) && is_string($row['name'])) {
+                $row['name'] = html_entity_decode($row['name'], ENT_QUOTES, 'UTF-8');
+            }
+        }
+        unset($row);
+
+        return $rows;
     }
 }

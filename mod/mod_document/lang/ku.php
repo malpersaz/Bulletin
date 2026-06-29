@@ -1,224 +1,124 @@
 <?php
-/**
- * Advanced File Manager Module - Kurdish Language File
- *
- * @package Rojname
- * @module  mod_document
- * @version 1.0.0
- * @author  AKM Software
- * @license Proprietary
- */
-
-// Prevent direct access
 if (!defined('AKM_LOADED')) {
     die('Direct access to this file is not allowed.');
 }
 
-/**
- * Advanced File Manager Module Language Translations
- */
 $lang['mod_document'] = [
-
-    // === Page Titles ===
-    'list' => 'Rêveberîya Pelan',
-
-    // === Navigation & Actions ===
-    'actions' => [
-        'add' => 'Dosya Zêde Bike',
-        'edit' => 'İçeriği Biguhere',
-        'list' => 'Lîsteya Pelan',
-        'delete' => 'Dosyayê Jê Bibe',
-        'cancel' => 'Betal',
-        'save' => 'Tomar Bike',
-        'update' => 'Rojane Bike',
-        'remove' => 'Rake',
-    ],
-
-    // === System Messages ===
+    'add' => 'Dosya Zêde Bike',
+    'edit' => 'Dosyayê Serast Bike',
+    'list' => 'Dosya û Dokument',
+    'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî rake?',
+    'remove_record' => 'Ma tu bawer î ku dixwazî vê dosyayê jê bibe?',
+    'empty_state' => 'Hîn tu dosya nehatine zêdekirin.',
     'message' => [
         'success' => [
-            'added' => 'Dosya bi serkeftî hat zêdekirin!',
-            'updated' => 'Dosya bi serkeftî hat rojanekirin!',
-            'deleted' => 'Dosya bi serkeftî hat jêbirin!',
-            'image_removed' => 'Wêne bi serkeftî hat rakirin!',
-            'add' => 'Dosya Zêde Bikendi!',
-            'edit' => 'Dosya Biguherendi!',
+            'add' => 'Dosya bi serkeftî hat zêdekirin.',
+            'edit' => 'Dosya bi serkeftî hat rojanekirin.',
+            'delete' => 'Dosya bi serkeftî hat jêbirin.',
         ],
         'error' => [
-            'not_added' => 'Dosya nehat zêdekirin!',
-            'not_updated' => 'Dosya nehat rojanekirin!',
-            'not_deleted' => 'Dosya nehat jêbirin!',
-            'not_found' => 'Pelê ku texîs kirî nehat dîtin!',
-            'add' => 'Dosya Zêde Bikenemedi!',
-            'edit' => 'Dosya Biguherenemedi!',
-        ],
-        'information' => [
-            'moderate' => 'Ji bo sererastkirina naverokê ku dixwazin du caran bitikînin',
-            'move' => 'Naverokê ku dixwazin rêzê wê biguherînin bikşînin û berdin',
+            'add' => 'Dosya nehat zêdekirin.',
+            'edit' => 'Dosya nehat rojanekirin.',
+            'delete' => 'Dosya nehat jêbirin.',
         ],
     ],
-
-    // === Status Types ===
+    'errors' => [
+        'record' => 'Dosyaya diyarkirî nehat dîtin.',
+        'delete_failed' => 'Dosya nehat jêbirin.',
+    ],
+    'button' => [
+        'add' => 'Zêde Bike',
+        'edit' => 'Serast Bike',
+        'delete' => 'Jê Bibe',
+        'cancel' => 'Betal Bike',
+        'save' => 'Tomar Bike',
+        'manage_gallery' => 'Galeriyê Birêve Bibe',
+        'manage_attachments' => 'Pelan Birêve Bibe',
+    ],
+    'validator' => [
+        'required' => 'Ji kerema xwe qada %s vala nehêlin.',
+        'length' => '%s divê di navbera %s û %s karakteran de be.',
+        'unique' => 'Nirxê %s berê heye. Ji kerema xwe %yekî din hilbijêrin.',
+    ],
+    'roll' => [
+        'name' => 'Rolên Birêvebirina Dosyayan',
+        'add' => 'Dikare dosya zêde bike',
+        'edit' => 'Dikare dosya serast bike',
+        'delete' => 'Dikare dosya jê bibe',
+        'list' => 'Dikare rêveberiya dosyayan bibîne',
+        'gallery' => 'Dikare galeriya dosyayan birêve bibe',
+        'file' => 'Dikare pelên dosyayan birêve bibe',
+        'moderate_edit' => 'Dikare dosyayên kesên din serast bike',
+        'moderate_delete' => 'Dikare dosyayên kesên din jê bibe',
+    ],
+    'role_errors' => [
+        'add' => 'Destûra te tune ku tu dosya zêde bikî.',
+        'edit' => 'Destûra te tune ku tu dosya serast bikî.',
+        'delete' => 'Destûra te tune ku tu dosya jê bibî.',
+        'list' => 'Destûra te tune ku tu rêveberiya dosyayan bibînî.',
+        'gallery' => 'Destûra te tune ku tu galeriya dosyayan birêve bibî.',
+        'file' => 'Destûra te tune ku tu pelên dosyayan birêve bibî.',
+        'moderate_edit' => 'Tu nikarî dosyayên kesên din serast bikî.',
+        'moderate_delete' => 'Tu nikarî dosyayên kesên din jê bibî.',
+    ],
     'status' => [
         'published' => 'Hate Weşandin',
-        'draft' => 'Mışorî',
-        'archived' => 'Arşîvkirî',
+        'draft' => 'Mişorî',
     ],
-
-    // === Yes/No Options ===
-    'options' => [
-        'yes' => 'Erê',
-        'no' => 'Na',
-    ],
-
-    // === Confirmation Messages ===
-    'confirmations' => [
-        'remove_image' => 'Ma tu bawer î, ku dixwazî vî wêneyî jêbibî?',
-        'remove_record' => 'Ma tu bawer î, ku dixwazî vê tomariyê jêbibî?',
-        'delete_single' => 'Ma tu bawer î, ku dixwazî vê pelê jêbibî?',
-        'delete_multiple' => 'Ma tu bawer î, ku dixwazî pela :count a hilbijartî jêbibî?',
-    ],
-
-    // === Buttons ===
-    'buttons' => [
-        'add' => 'Zêde Bike',
-        'edit' => 'Biguhere',
-        'refresh' => 'Nû Bike',
-        'delete' => 'Jê Bibe',
-        'gallery' => 'Wêne Galerisi',
-        'file_manager' => 'Pel Yöneticisi',
-        'cancel' => 'Betal',
-        'remove' => 'Rake',
-        'yes' => 'Erê',
-        'no' => 'Na',
-        'add' => 'Zêde Bike',
-        'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
-        'delete' => 'Jê Bibe',
-        'gallery' => 'Wêne Galerisi',
-        'file' => 'Pel Yöneticisi',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
-    ],
-
-    // === Data Grid Messages ===
-    'grid' => [
-        'pagination' => 'Ji {total} encamên {from} heta {to} tên nîşandan',
-        'page' => 'Rûpel',
-        'page_count' => 'Hejmara Rûpelan',
-        'loading' => 'Daney tên barkirin, ji kerema xwe re benda xwe bin...',
-        'no_data' => 'Daneyê nehat dîtin',
-        'connection_error' => 'Çewtiya Girêdanê',
-        'search' => 'Lêbigerin',
-        'select_at_least_one' => 'Ji kerema xwe re herî kêm yek rêzik hilbijêrin',
-        'select_only_one' => 'Ji kerema xwe re tenê yek rêzik hilbijêrin',
-        0 => 'Toplam {total} Sonuçtan {from} den {to}\'a Kadar Olanlar Görüntüleniyor.',
-        1 => 'Rûpel',
-        2 => 'Rûpel Sayısı',
-        3 => 'Veriler Yükleniyor, Lütfen BZêde Bikeyin ...',
-        4 => 'Hiçbir Veri Ne Hate Dîtin',
-        5 => 'Bağlantı Çewtîsı',
-        6 => 'Lêbigerema',
-        7 => 'Lütfen En Az Bir Satır Hilbijêre',
-        8 => 'Lütfen Sadece Bir Satır Hilbijêre',
-    ],
-
-    // === Validation Messages ===
-    'validator' => [
-        'required' => 'Ji kerema xwe re qada %s vala nekin',
-        'length' => '%s divê di navbera %s û %s karakteran de be',
-        'email' => 'Ji kerema xwe re di qada %s de navnîşana e-postaya derbasdar binivîsin',
-        'unique' => '%s ku nivîsandî di pergalê de hate tomar. Ji kerema xwe re %yeke din hilbijêrin!',
-        'inarray' => 'Qada %s tenê nirxên \'%s\' dipejirîne',
-        'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
-        'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-        'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
-        'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
-        'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',
-    ],
-
-    // === Access Control (ACL) ===
-    'roll' => [
-        'title' => 'Roleyên Rêveberîya Pelan',
-        'add' => 'Dikare Pelan Zêde Bike',
-        'edit' => 'Dikare Pelan Biguhere',
-        'delete' => 'Dikare Pelan Jê Bibe',
-        'list' => 'Dikare Rêveberîya Pelan Bibîne',
-        'attach_files' => 'Dikare pelên naverokê bike?',
-        'edit_others' => 'Dikare tomarên pelên yên yên din Biguhere',
-        'delete_others' => 'Dikare tomarên pelên yên yên din jê bibe',
-        'ad' => 'Dosya Rêveberî Rolleri',
-        'add' => 'Dosya Zêde Bikeyebilir',
-        'edit' => 'Dosya Biguhereyebilir',
-        'delete' => 'Dosya Jê Bibeebilir',
-        'list' => 'Dosya Rêveberîni Görüntüleyebilir',
-        'file' => 'İçeğe Dosya Zêde Bikeyebilirmi?',
-        'moderate_edit' => 'Kendisine Ait Olmayan Dosya Kaydını Biguhereyebilir',
-        'moderate_delete' => 'Kendisine Ait Olmayan Dosya Kaydını Biguhereyabilir',
-    ],
-
-    // === Permission Errors ===
-    'role_errors' => [
-        'edit_others' => 'Nikaribin tomarên pelên yên yên din sererast bikin',
-        'delete_others' => 'Nikaribin tomarên pelên yên yên din jê bibin',
-        'add' => 'Destûra zêdekirina pelan tune',
-        'edit' => 'Destûra sererastkirina pelan tune',
-        'list' => 'Destûra dîtina rêveberîya pelan tune',
-        'delete' => 'Destûra jêbirina pelan tune',
-        'attach' => 'Destûra zêdekirina pelan naverokê tune',
-        'moderate_edit' => 'Size Ait Olmayan Dosya Kaydını Biguhereyemezsiniz',
-        'moderate_delete' => 'Size Ait Olmayan Dosya Kaydını Jê Bibeemezsiniz',
-        'add' => 'Dosya Zêde Bikemeye Permissionniz Yok',
-        'edit' => 'Dosya Biguheremeye Permissionniz Yok',
-        'list' => 'Dosya Rêveberîni Görüntülemeye Permissionniz Yok',
-        'delete' => 'Dosya Jê Bibemeye Permissionniz Yok',
-        'file' => 'İçeriğe Dosya Zêde Bikemeye Permissionniz Yok',
-    ],
-
-    // === Admin Panel Configuration ===
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'language' => 'Ziman',
-            'name' => 'Navê Kategorîya Pelan',
-            'seo' => 'URLya Kategorîya Pelan',
-            'published' => 'Were Weşandin?',
+            'lang' => 'Ziman',
+            'name' => 'Navê Dosyayê',
+            'status' => 'Rewş',
+            'seo' => 'SEO URL',
+            'title' => 'Meta Title',
+            'keywords' => 'Meta Keywords',
+            'description' => 'Meta Description',
             'image' => 'Wêne',
-            'title' => 'Sernav (Ji Bo Motora Lêgerînê)',
-            'keywords' => 'Nimûneyên Calak (Ji Bo Motora Lêgerînê)',
-            'description' => 'Rave (Ji Bo Motora Lêgerînê)',
-            'menu' => 'Dosyayê Bişîne Menûyê',
-            'id' => 'ID',
-            'language' => 'Dil',
-            'ad' => 'Dosya Kategori Nav',
-            'seo' => 'Pel Kategori Bağlantısı',
-            'status' => 'Yayınlansın mı?',
-            'image' => 'Wêne',
-            'title' => 'Title ( Lêbigerema Motorları İçin)',
-            'keywords' => 'Keywords ( Lêbigerema Motorları İçin)',
-            'aciklama' => 'Rave ( Arama Motorları İçin)',
-            'menu' => 'Dosyayı Menüye Bişîne',
+            'menu' => 'Bişîne Menûyê',
         ],
         'radio' => [
-            'published_yes' => 'Erê',
-            'published_no' => 'Na',
-            'publish_yes' => 'Erê',
-            'publish_no' => 'Na',
+            'status_y' => 'Hate Weşandin',
+            'status_n' => 'Mişorî',
+            'menu_y' => 'Bişîne Menûyê',
+            'menu_n' => 'Neyi Bişîne',
         ],
     ],
-
-    // === Additional Legacy Keys ===
-    'information' => 'Agahî!',
-    'oke' => 'İşlem Serkeftî!',
-    'hata' => 'Çewtî Oluştu!',
-    'error' => 'Ölümcül Çewtî Oluştu!',
-    'remove_image_oke' => 'Wêne Kaldırıldı',
-    'choose_wish' => 'Beşekê Hilbijêre',
-    'remove_record' => 'Bu Kaydı Jê Bibemek İstediğinize Eminmisiniz?',
-    'errors' => [
-        'record' => 'Belirttiğiniz Kayıt Ne Hate Dîtin!',
+    'form' => [
+        'wizard' => [
+            'back' => 'Paşve',
+            'next' => 'Pêşve',
+            'seo_meta' => 'SEO û Meta',
+        ],
     ],
-
+    'list_ui' => [
+        'title' => 'Dosya û Dokument',
+        'subtitle' => 'Dosya û dokumentên saziyê birêve bibe.',
+        'total_stat' => 'Giştî',
+        'live_stat' => 'Hate Weşandin',
+        'loading' => 'Dosya tên barkirin...',
+        'load_more' => 'Zêdetir Barke',
+        'image_title' => 'Wêneya Dosyayê',
+        'image_drop_title' => 'Wêneyekî li vir deyne',
+        'image_drop_description' => 'Wêneyekî nû hilbijêre, linkekî deyne an jî ji URL\'ê bîne.',
+        'image_upload_link' => 'Wêne barke',
+        'image_link_separator' => 'an jî',
+        'image_link_placeholder' => 'Linkê wêneyê deyne',
+        'image_link_action' => 'Ji URL\'ê bîne',
+        'image_hint_loading' => 'Wêne tê anîn...',
+        'image_hint_invalid_type' => 'Ji kerema xwe pelê wêneyê yê derbasdar hilbijêre.',
+        'image_hint_no_drop_data' => 'Wêneyekî guncav nehat dîtin.',
+        'image_hint_remote_failed' => 'Wêne ji vî linkî nehat anîn.',
+        'image_empty_name' => 'Wêne nehat hilbijartin',
+        'image_updated' => 'Wêneya dosyayê bi serkeftî hat rojanekirin.',
+        'image_remove_success' => 'Wêneya dosyayê bi serkeftî hat rakirin.',
+        'add_cta' => 'Dosyaya Nû',
+        'edit_cta' => 'Serast Bike',
+        'change_image' => 'Wêne Biguhere',
+        'delete_cta' => 'Jê Bibe',
+        'select_record' => 'Pêşî dosyayakê hilbijêrin.',
+        'gallery_ready' => 'Galerî Amade ye',
+        'file_ready' => 'Pel Amade ye',
+    ],
 ];

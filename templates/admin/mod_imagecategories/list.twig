@@ -1,0 +1,375 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_imagecategories.list }}{% endblock %}
+{% block headline %}{{ lang.mod_imagecategories.list }}{% endblock %}
+
+{% macro render_tree(items, parent_id, level) %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            {% set has_children = items[entry.id] is defined %}
+            <div class="image-category-node category-node level-{{ level }}" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.display_name|lower }}">
+                <article class="image-category-card m3-list-card" data-id="{{ entry.id }}" onclick="selectCategory('{{ entry.id }}', this)">
+                    <div class="drag-handle" onclick="event.stopPropagation()"><i class="bi bi-grip-vertical"></i></div>
+                    {% if has_children %}
+                        <button type="button" class="toggle-btn collapsed" onclick="toggleCategory(this, event)">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% else %}
+                        <div class="toggle-spacer"></div>
+                    {% endif %}
+                    <div class="image-category-card-head">
+                        <div class="image-category-thumb">
+                            {% if entry.image %}
+                                <img src="{{ site.iaddress ~ 'mod_imagecategories/thumb/' ~ entry.image }}" alt="{{ entry.display_name }}">
+                            {% else %}
+                                <i class="bi bi-images"></i>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h3 class="image-category-name">{{ entry.display_name }}</h3>
+                            <div class="image-category-meta">
+                                <span class="image-category-chip">{{ entry.lang|upper }}</span>
+                                <span class="image-category-chip">#{{ entry.id }}</span>
+                                <span class="image-category-chip">{{ entry.seo }}</span>
+                                <span class="image-category-chip {% if entry.root == 'y' %}is-root{% endif %}">
+                                    {% if entry.root == 'y' %}{{ lang.mod_imagecategories.status.root }}{% else %}{{ lang.mod_imagecategories.status.nested }}{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="image-category-summary">{{ entry.description }}</div>
+                    <button type="button" class="image-category-edit-btn" onclick="editCategory('{{ entry.id }}', event)">
+                        <i class="bi bi-pencil-square"></i>
+                        <span>{{ lang.mod_imagecategories.button.edit }}</span>
+                    </button>
+                </article>
+                <div class="image-category-children list-children collapsed{% if not has_children %} list-children-empty{% endif %}">
+                    {% if has_children %}
+                        {{ _self.render_tree(items, entry.id, level + 1) }}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+<style>
+    .image-category-list-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
+    .reorder-controller { display: flex; justify-content: flex-end; }
+    .reorder-toggle { border-radius: 12px; padding: 8px 16px; display: inline-flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 700; min-height: 44px; }
+    .image-category-node { display: grid; gap: 12px; }
+    .image-category-node.level-1 { margin-left: 14px; }
+    .image-category-node.level-2 { margin-left: 28px; }
+    .image-category-node.level-3 { margin-left: 42px; }
+    .image-category-card { background: var(--md-sys-color-surface); border-radius: 20px; padding: 16px; box-shadow: var(--md-sys-elevation-1); display: grid; grid-template-columns: 28px 28px 1fr; gap: 10px; border: 2px solid transparent; cursor: pointer; }
+    .image-category-card.active, .image-category-card.selected { border-color: var(--md-sys-color-primary); background: color-mix(in srgb, var(--md-sys-color-primary-container) 32%, white); }
+    .drag-handle { display: none; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant); min-height: 48px; }
+    body.reorder-active .drag-handle { display: flex; }
+    .toggle-btn { border: none; background: transparent; color: var(--md-sys-color-on-surface-variant); min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 0; }
+    .toggle-btn.collapsed i { transform: rotate(-90deg); }
+    .toggle-spacer { width: 28px; }
+    .image-category-card-head { display: grid; grid-template-columns: 60px 1fr; gap: 14px; align-items: center; }
+    .image-category-thumb { width: 60px; height: 60px; border-radius: 18px; overflow: hidden; background: #f1edf7; display: flex; align-items: center; justify-content: center; }
+    .image-category-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .image-category-thumb i { font-size: 24px; color: var(--md-sys-color-primary); }
+    .image-category-name { margin: 0; font-size: 18px; line-height: 1.2; }
+    .image-category-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+    .image-category-chip { border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 700; background: #f1edf7; color: #513f73; }
+    .image-category-chip.is-root { background: #dce8ff; color: #0b57d0; }
+    .image-category-summary { grid-column: 3; color: var(--md-sys-color-on-surface-variant); font-size: 14px; line-height: 1.55; }
+    .image-category-edit-btn { grid-column: 3; min-height: 44px; justify-self: start; border: none; border-radius: 999px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; background: #f1edf7; color: #513f73; }
+    .image-category-children { display: grid; gap: 12px; }
+    .list-children.collapsed { display: none; }
+    .list-children-empty { min-height: 48px; border: 2px dashed rgba(103, 80, 164, 0.4); border-radius: 12px; margin-left: 40px; display: none; }
+    body.reorder-active .list-children-empty { display: block; }
+    .empty-state { background: var(--md-sys-color-surface); border-radius: 24px; padding: 32px 20px; text-align: center; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; }
+    .empty-state i { font-size: 36px; color: var(--md-sys-color-primary); }
+    .image-category-toolbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)); }
+    .image-category-toolbar button, .image-category-toolbar a { flex: 1; min-height: 52px; border-radius: 999px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; cursor: pointer; }
+    .image-category-toolbar .secondary-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
+    .image-category-toolbar .primary-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+</style>
+
+<div class="image-category-list-shell" id="categoryRootList">
+    <div class="reorder-controller">
+        <button id="reorderToggleBtn" type="button" class="reorder-toggle" onclick="toggleReorderMode()">
+            <i class="bi bi-lock-fill" id="reorderIcon"></i>
+            <span id="reorderText">{{ lang.mod_imagecategories.list_ui.unlock_reorder }}</span>
+        </button>
+    </div>
+
+    {% if category_tree[0] is defined %}
+        {{ _self.render_tree(category_tree, 0, 0) }}
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-images"></i>
+            <strong>{{ lang.mod_imagecategories.empty_state }}</strong>
+            <a href="{{ site.saddress }}mod_imagecategories/add" class="primary-btn" style="justify-self:center; min-width:220px;">{{ lang.mod_imagecategories.list_ui.empty_cta }}</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="image-category-toolbar">
+    <button type="button" class="secondary-btn" onclick="deleteSelectedCategory()">
+        <i class="bi bi-trash3-fill"></i>
+        <span>{{ lang.mod_imagecategories.list_ui.delete_cta }}</span>
+    </button>
+    <button type="button" class="secondary-btn" onclick="editSelectedCategory()">
+        <i class="bi bi-pencil-square"></i>
+        <span>{{ lang.mod_imagecategories.button.edit }}</span>
+    </button>
+    <a href="{{ site.saddress }}mod_imagecategories/add" class="primary-btn">
+        <i class="bi bi-plus-lg"></i>
+        <span>{{ lang.mod_imagecategories.list_ui.add_cta }}</span>
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script>
+let selectedImageCategoryId = null;
+let imageCategorySortables = [];
+let imageCategoryReorderActive = false;
+
+document.addEventListener('DOMContentLoaded', function () {
+    function initSortable(element) {
+        if (!element || typeof Sortable === 'undefined') {
+            return;
+        }
+
+        const sortable = new Sortable(element, {
+            group: 'image-category-tree',
+            animation: 220,
+            fallbackOnBody: true,
+            swapThreshold: 0.65,
+            handle: '.drag-handle',
+            draggable: '.category-node',
+            disabled: true,
+            ghostClass: 'sortable-ghost',
+            dragClass: 'sortable-drag',
+            onEnd: function (event) {
+                Swal.fire({
+                    title: {{ lang.mod_imagecategories.list_ui.reorder_title|json_encode|raw }},
+                    text: {{ lang.mod_imagecategories.list_ui.reorder_confirm|json_encode|raw }},
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: {{ lang.mod_imagecategories.button.save|json_encode|raw }},
+                    cancelButtonText: {{ lang.mod_imagecategories.button.cancel|json_encode|raw }}
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        updateCategoryOrder(event);
+                        return;
+                    }
+
+                    window.location.reload();
+                });
+            }
+        });
+        imageCategorySortables.push(sortable);
+    }
+
+    initSortable(document.getElementById('categoryRootList'));
+    document.querySelectorAll('.list-children').forEach(initSortable);
+});
+
+function selectedCategoryNode() {
+    if (!selectedImageCategoryId) {
+        return null;
+    }
+
+    return document.querySelector('.image-category-node[data-id="' + selectedImageCategoryId + '"]');
+}
+
+function clearSelectedCategory() {
+    selectedImageCategoryId = null;
+    document.querySelectorAll('.image-category-card').forEach(function (card) {
+        card.classList.remove('active', 'selected');
+    });
+}
+
+function selectCategory(id, element) {
+    document.querySelectorAll('.image-category-card').forEach(function (card) {
+        card.classList.remove('active', 'selected');
+    });
+    element.classList.add('active', 'selected');
+    selectedImageCategoryId = id;
+}
+
+function editCategory(id, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+    window.location.href = '{{ site.saddress }}mod_imagecategories/edit/' + id;
+}
+
+function editSelectedCategory() {
+    if (!selectedImageCategoryId) {
+        showSnackbar({{ lang.mod_imagecategories.list_ui.select_record|json_encode|raw }}, 'warning');
+        return;
+    }
+
+    editCategory(selectedImageCategoryId);
+}
+
+function toggleCategory(button, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const node = button.closest('.category-node');
+    const children = node ? node.querySelector('.list-children') : null;
+    if (!children) {
+        return;
+    }
+
+    children.classList.toggle('collapsed');
+    button.classList.toggle('collapsed');
+}
+
+function toggleReorderMode() {
+    imageCategoryReorderActive = !imageCategoryReorderActive;
+    const button = document.getElementById('reorderToggleBtn');
+    const icon = document.getElementById('reorderIcon');
+    const text = document.getElementById('reorderText');
+
+    document.body.classList.toggle('reorder-active', imageCategoryReorderActive);
+    imageCategorySortables.forEach(function (sortable) {
+        sortable.option('disabled', !imageCategoryReorderActive);
+    });
+
+    if (imageCategoryReorderActive) {
+        icon.className = 'bi bi-unlock-fill';
+        text.innerText = {{ lang.mod_imagecategories.list_ui.lock_reorder|json_encode|raw }};
+        button.style.background = '#eaddff';
+        showSnackbar({{ lang.mod_imagecategories.list_ui.mode_unlocked|json_encode|raw }}, 'info');
+        return;
+    }
+
+    icon.className = 'bi bi-lock-fill';
+    text.innerText = {{ lang.mod_imagecategories.list_ui.unlock_reorder|json_encode|raw }};
+    button.style.background = '#f3edf7';
+}
+
+function updateCategoryOrder(event) {
+    const item = event.item;
+    const container = event.to;
+    const id = item.dataset.id;
+    let parentId = 0;
+
+    if (container.classList.contains('list-children')) {
+        const parentNode = container.closest('.category-node');
+        if (parentNode) {
+            parentId = parentNode.dataset.id;
+        }
+    }
+
+    const body = new URLSearchParams();
+    body.append('id', id);
+    body.append('parent_id', parentId);
+    container.querySelectorAll(':scope > .category-node').forEach(function (node) {
+        body.append('order[]', node.dataset.id);
+    });
+
+    fetch('{{ site.saddress }}mod_imagecategories/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+        body: body.toString()
+    }).then(function (response) {
+        return response.text();
+    }).then(function (text) {
+        if (text.trim() === 'Oke') {
+            showSnackbar({{ lang.mod_imagecategories.message.success.reordered|json_encode|raw }}, 'success');
+            return;
+        }
+
+        Swal.fire({ icon: 'error', text: text }).then(function () {
+            window.location.reload();
+        });
+    }).catch(function () {
+        Swal.fire({ icon: 'error', text: {{ lang.mod_imagecategories.list_ui.network_error|json_encode|raw }} }).then(function () {
+            window.location.reload();
+        });
+    });
+}
+
+function restoreEmptyStateIfNeeded() {
+    if (document.querySelector('.category-node') || document.querySelector('.empty-state')) {
+        return;
+    }
+
+    const rootList = document.getElementById('categoryRootList');
+    if (!rootList) {
+        return;
+    }
+
+    rootList.insertAdjacentHTML('beforeend', [
+        '<div class="empty-state">',
+        '<i class="bi bi-images"></i>',
+        '<strong>{{ lang.mod_imagecategories.empty_state|e('js') }}</strong>',
+        '<a href="{{ site.saddress }}mod_imagecategories/add" class="primary-btn" style="justify-self:center; min-width:220px;">{{ lang.mod_imagecategories.list_ui.empty_cta|e('js') }}</a>',
+        '</div>'
+    ].join(''));
+}
+
+async function deleteSelectedCategory() {
+    if (!selectedImageCategoryId) {
+        showSnackbar({{ lang.mod_imagecategories.list_ui.select_record|json_encode|raw }}, 'warning');
+        return;
+    }
+
+    const selectedCard = selectedCategoryNode();
+    if (!selectedCard) {
+        clearSelectedCategory();
+        showSnackbar({{ lang.mod_imagecategories.list_ui.select_record|json_encode|raw }}, 'warning');
+        return;
+    }
+
+    const confirmation = await Swal.fire({
+        icon: 'warning',
+        title: {{ lang.mod_imagecategories.list_ui.delete_title|json_encode|raw }},
+        text: {{ lang.mod_imagecategories.remove_record|json_encode|raw }},
+        showCancelButton: true,
+        confirmButtonText: {{ lang.mod_imagecategories.list_ui.delete_confirm_button|json_encode|raw }},
+        cancelButtonText: {{ lang.mod_imagecategories.list_ui.delete_cancel_button|json_encode|raw }},
+        reverseButtons: true,
+        focusCancel: true
+    });
+
+    if (!confirmation.isConfirmed) {
+        return;
+    }
+
+    const body = new URLSearchParams();
+    body.append('query[]', selectedImageCategoryId);
+
+    try {
+        const response = await fetch('{{ site.saddress }}mod_imagecategories/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString()
+        });
+
+        const text = await response.text();
+        if (text.trim() === 'Oke') {
+            selectedCard.remove();
+            clearSelectedCategory();
+            restoreEmptyStateIfNeeded();
+            showSnackbar({{ lang.mod_imagecategories.message.success.delete|json_encode|raw }}, 'success');
+            return;
+        }
+
+        Swal.fire({ icon: 'error', text: text });
+    } catch (error) {
+        showSnackbar({{ lang.mod_imagecategories.list_ui.network_error|json_encode|raw }}, 'error');
+    }
+}
+</script>
+{% endblock %}

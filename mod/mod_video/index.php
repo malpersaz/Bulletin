@@ -8,32 +8,38 @@
 
 
 
-class mod_video_mod extends indexMain
+class mod_video_mod extends BaseModuleController
 {
     public $grid;
     public $mod_video_model;
 
-    function __construct()
-    {
+    protected $has_gallery = true;
+    protected $has_files = true;
 
-        parent::__construct();
-        // Load Template Library
-        $this->tema = Load::lib('AdminTemplate');
-        // Load Database Library
-        $this->db = Load::lib('Database');
-        // Get site settings
-        //$this->site = Kayit::getir('site_config');
-        // Load Language File
-        $this->lang = Load::lang('mod_video');
-        // Send Language File to Template
-        $this->tema->lang($this->lang);
+    protected $need_simple_data = [
+        'lang' => 'lang_lang',
+        'mod_acl' => 'mod_acl_acl_id'
+    ];
+
+    protected $image_fields = [];
+
+    public function __construct()
+    {
+        parent::__construct('mod_video');
         if (Req::is_Post('sid')) {
             Kayit::ekle('session_sid', Req::Post_Safe('sid'));
         }
-        // Session Library
-        $this->session = Load::lib('Session');
-        // User Model
-        $this->user = Load::model('mod_user.user');
+    }
+
+    protected function getDatatableColumns()
+    {
+        return [
+            'id',
+            'name|bold',
+            'image|image',
+            'lang|badge',
+            'status|badge'
+        ];
     }
 
     public function _emesaj($komut, $mesaj)
@@ -492,7 +498,7 @@ class mod_video_mod extends indexMain
     }
 
     // Add Function
-    private function _add()
+    protected function _add()
     {
         $this->val = Load::validator('mod_video.add');
         if ($this->val->check()) {
@@ -606,7 +612,7 @@ class mod_video_mod extends indexMain
     }
 
     // Edit Function
-    private function _edit($id = NULL)
+    protected function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_video.edit');
         if ($this->val->check($id)) {
@@ -729,7 +735,7 @@ class mod_video_mod extends indexMain
                     if ($update_model->update('id')) {
                         echo json_encode([
                             'status' => 'success',
-                            'url' => $this->site['radres'] . 'mod_video/image/' . $new_image_url . '?v=' . time()
+                            'url' => $this->site['iaddress'] . 'mod_video/image/' . $new_image_url . '?v=' . time()
                         ]);
                     } else {
                         echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video']['ajax']['db_update_failed']]);
@@ -773,7 +779,7 @@ class mod_video_mod extends indexMain
         }
     }
 
-    public function _delete($delete_ids)
+    protected function _delete($delete_ids)
     {
         $this->mod_video_model = Load::model('mod_video');
         foreach ($delete_ids as $s) {
@@ -948,7 +954,7 @@ class mod_video_mod extends indexMain
 
                 $last = "";
                 if (Roll::hasPermission('mod_video', 'edit')) {
-                    $last .= '<button onclick="window.location.href=\''. $this->site['sadres'] .'mod_video/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
+                    $last .= '<button onclick="window.location.href=\''. $this->site['saddress'] .'mod_video/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_video']['button']['edit'] . ' </button>';
                 }
                 if (Roll::hasPermission('mod_video',  'delete')) {
@@ -969,7 +975,7 @@ class mod_video_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    $content['image'] ? '<img src="' . $this->site['radres'] . 'mod_video/image/' . $content['image'] . '?v=' . time() . '" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--md-sys-color-outline-variant);">' : '<span style="display: inline-block; width: 50px; height: 35px; background: rgba(0,0,0,0.05); border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); text-align: center; line-height: 35px; color: #999;"><i class="fa fa-video-camera"></i></span>',
+                    $content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_video/image/' . $content['image'] . '?v=' . time() . '" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px; border: 1px solid var(--md-sys-color-outline-variant);">' : '<span style="display: inline-block; width: 50px; height: 35px; background: rgba(0,0,0,0.05); border-radius: 4px; border: 1px solid rgba(0,0,0,0.08); text-align: center; line-height: 35px; color: #999;"><i class="fa fa-video-camera"></i></span>',
                     $content['duration'],
                     $content['lang'],
                     $content['created_at'],
@@ -984,7 +990,7 @@ class mod_video_mod extends indexMain
             'recordsFiltered' => $getCount,
             'recordsTotal' => $ii->getCount(),
             // 'customActionStatus'=>'OK',
-            // 'customActionMessage'=>'Is it ok now?'
+            ///'customActionMessage'=>'Oldumu Şimdi?'
         ]);
     }
 
@@ -1062,7 +1068,7 @@ class mod_video_mod extends indexMain
     /**
      * Success Message
      */
-    private function _oke_message($mesaj)
+    protected function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
@@ -1071,7 +1077,7 @@ class mod_video_mod extends indexMain
     /**
      * Error Message
      */
-    private function _error_message($mesaj)
+    protected function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
@@ -1080,7 +1086,7 @@ class mod_video_mod extends indexMain
     /**
      * Error Message
      */
-    private function _error($mesaj)
+    protected function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);
         $this->tema->veri('mesaj', $mesaj);

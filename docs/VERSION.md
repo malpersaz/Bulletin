@@ -1,3 +1,7 @@
+## v1.0.58
+- Active version bucket derived from the current user request.
+- **Senkronîzekirina Guhertinên Bingehîn ên Config û Pelên Têkildar**: Hemû guhertinên bingehîn ên mîna veguhertina keyên konfigurasyonê ('adres' -> 'address', 'sadres' -> 'saddress', 'radres' -> 'iaddress', 'tadres' -> 'taddress') ji repoya Business bi %100 li ser repoya Rojname hatin senkronîzekirin. Stûnên logo û sembolan li ser database MySQL a Rojname hatin zêdekirin.
+
 ## v1.0.57
 - Active version bucket derived from the current user request.
 - **Senkronîzekirin û Paqijkirina mod_news_category**: Modula kategoriyên nûçeyan (`mod_news_category`) û sazkerê (installer) wê di navbera projeyên `Rojname` û `Business` de hatin senkronîzekirin.

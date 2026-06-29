@@ -120,10 +120,13 @@ class Adapter_Mysqli
 
     public function error()
     {
-        if ($this->_con->connect_errno) {
-            printf("Connect failed: %s\n", $this->_con->connect_error);
-            exit();
+        if (isset($this->_con) && $this->_con->error) {
+            return $this->_con->error;
         }
+        if (isset($this->_con) && $this->_con->connect_error) {
+            return "Connect failed: " . $this->_con->connect_error;
+        }
+        return "Unknown MySQLi Error (Check DatabaseException traces)";
     }
 
     public function __destruct()

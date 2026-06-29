@@ -6,37 +6,48 @@
 {% block headline %}{{ lang.mod_category.list }}{% endblock %}
 
 {% block styles %}
-    {# Styles moved to global admin/assets/css/style.css #}
+    <style>
+        .list-children-empty {
+            min-height: 48px;
+            border: 2px dashed rgba(103, 80, 164, 0.4);
+            border-radius: 12px;
+            margin-top: 8px;
+            margin-left: 24px;
+            display: none;
+        }
+        body.reorder-active .list-children-empty {
+            display: block;
+        }
+    </style>
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
-    {% for entry in items %}
-        {% set is_child = false %}
-        {% if parent_id == 0 %}
-            {% if entry.parent_id is empty or entry.parent_id == 0 or entry.parent_id == '0' %} {% set is_child = true %} {% endif %}
-        {% else %}
-            {% if entry.parent_id == parent_id %} {% set is_child = true %} {% endif %}
-        {% endif %}
-
-        {% if is_child %}
-            <div class="category-node" data-id="{{ entry.id }}" data-parent="{{ entry.parent_id }}" data-name="{{ entry.name|lower }}">
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            {% set display_name = entry.display_name %}
+            {% set has_children = items[entry.id] is defined %}
+            <div class="category-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}">
                 <div class="m3-list-card" onclick="selectCategory('{{ entry.id }}', this)">
                     <div class="drag-handle" onclick="event.stopPropagation()"><i class="bi bi-grip-vertical"></i></div>
                     
-                    <button class="toggle-btn" onclick="toggleCategory(this, event)">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
+                    {% if has_children %}
+                        <button class="toggle-btn collapsed" onclick="toggleCategory(this, event)">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% else %}
+                        <div style="width:24px; margin-right:4px;"></div>
+                    {% endif %}
 
                     <div class="card-thumb">
                         {% if entry.image %}
-                            <img src="{{ site.sadres }}static/mod_category/thumb/{{ entry.image }}" style="width:100%; height:100%; object-fit:cover;">
+                            <img src="{{ site.saddress }}static/mod_category/thumb/{{ entry.image }}" style="width:100%; height:100%; object-fit:cover;">
                         {% else %}
                             <i class="bi bi-folder2-fill"></i>
                         {% endif %}
                     </div>
 
                     <div class="card-info">
-                        <div class="card-title">{{ entry.name }}</div>
+                        <div class="card-title">{{ display_name }}</div>
                         <div class="card-meta">
                             {% if entry.lang %} <span class="meta-badge">{{ entry.lang|upper }}</span> {% endif %}
                             <span class="meta-id">#{{ entry.id }}</span>
@@ -45,13 +56,15 @@
                 </div>
                 
                 {% if entry.id != parent_id and level < 20 %}
-                <div class="list-children">
-                    {{ _self.render_tree(items, entry.id, level + 1) }}
+                <div class="list-children collapsed{% if not has_children %} list-children-empty{% endif %}">
+                    {% if has_children %}
+                        {{ _self.render_tree(items, entry.id, level + 1) }}
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
-        {% endif %}
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
 
 {% block content %}
@@ -67,15 +80,15 @@
             </button>
         </div>
 
-        {% if all_categories is defined and all_categories|length > 0 %}
-             {{ _self.render_tree(all_categories, 0, 0) }}
+        {% if category_tree[0] is defined %}
+             {{ _self.render_tree(category_tree, 0, 0) }}
         {% else %}
             <div class="empty-state-container">
                 <div class="empty-icon-box">
                     <i class="bi bi-folder2-open"></i>
                 </div>
                 <h2 style="font-weight: 800;">{{ lang.mod_category.empty.no_categories }}</h2>
-                <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_category/add'">
+                <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_category/add'">
                     <i class="bi bi-plus-lg"></i>
                 </div>
             </div>
@@ -87,18 +100,19 @@
     <div class="standard-toolbar">
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_category.button.edit|default('Biguhere') }}</span>
+            <span>{{ lang.mod_category.button.edit }}</span>
         </button>
-        
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_category/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_category.button.delete|default('Jê bibe') }}</span>
+            <span>{{ lang.mod_category.button.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_category/add'" aria-label="{{ lang.mod_category.add|default('Beşê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}

@@ -30,14 +30,10 @@ class search_helper extends indexBase
 
 
         $like_keyword = "%" . $kelime . "%";
-
-        // Cache Kütüphanesi
         Load::libfile('Cache');
-        // Cache Süresi
         Cache::$sure = 60 * 60;
 
 
-        # mod_news arama
         if (Cache::exists_cache($kelime . "-arama-mod_news")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
@@ -55,7 +51,6 @@ class search_helper extends indexBase
         }
 
 
-        # mod_publication arama
         if (Cache::exists_cache($kelime . "-arama-mod_publication")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
@@ -73,7 +68,6 @@ class search_helper extends indexBase
         }
 
 
-        # mod_announcements arama
         if (Cache::exists_cache($kelime . "-arama-mod_announcements")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
@@ -90,10 +84,106 @@ class search_helper extends indexBase
             Cache::set($announcement->toArray(), $kelime . "-arama-mod_announcements");
         }
 
+        if (Cache::exists_cache($kelime . "-arama-mod_product")) {
+            $cached_data = Cache::get_cache();
+            if ($cached_data !== FALSE) {
+                $this->tema->veri('products', $cached_data);
+            }
+        } else {
+            $db = Load::lib('Database');
+            $products = $db->fetch_array("
+                SELECT name, seo, summary
+                FROM mod_product
+                WHERE lang = '" . $this->site['lang'] . "'
+                  AND status = 'y'
+                  AND (
+                    content LIKE '" . addslashes($like_keyword) . "'
+                    OR summary LIKE '" . addslashes($like_keyword) . "'
+                    OR name LIKE '" . addslashes($like_keyword) . "'
+                  )
+                ORDER BY created_at DESC, id DESC
+            ")->getResult()->toArray();
+            if (!empty($products)) {
+                $this->tema->veri('products', $products);
+            }
+            Cache::set($products, $kelime . "-arama-mod_product");
+        }
 
+        if (Cache::exists_cache($kelime . "-arama-mod_client")) {
+            $cached_data = Cache::get_cache();
+            if ($cached_data !== FALSE) {
+                $this->tema->veri('clients', $cached_data);
+            }
+        } else {
+            $db = Load::lib('Database');
+            $clients = $db->fetch_array("
+                SELECT name, seo, description
+                FROM mod_client
+                WHERE lang = '" . $this->site['lang'] . "'
+                  AND status = 'y'
+                  AND (
+                    content LIKE '" . addslashes($like_keyword) . "'
+                    OR description LIKE '" . addslashes($like_keyword) . "'
+                    OR name LIKE '" . addslashes($like_keyword) . "'
+                  )
+                ORDER BY created_at DESC, id DESC
+            ")->getResult()->toArray();
+            if (!empty($clients)) {
+                $this->tema->veri('clients', $clients);
+            }
+            Cache::set($clients, $kelime . "-arama-mod_client");
+        }
 
+        if (Cache::exists_cache($kelime . "-arama-mod_service")) {
+            $cached_data = Cache::get_cache();
+            if ($cached_data !== FALSE) {
+                $this->tema->veri('services', $cached_data);
+            }
+        } else {
+            $db = Load::lib('Database');
+            $services = $db->fetch_array("
+                SELECT name, seo, summary
+                FROM mod_service
+                WHERE lang = '" . $this->site['lang'] . "'
+                  AND status = 'y'
+                  AND (
+                    content LIKE '" . addslashes($like_keyword) . "'
+                    OR summary LIKE '" . addslashes($like_keyword) . "'
+                    OR name LIKE '" . addslashes($like_keyword) . "'
+                  )
+                ORDER BY created_at DESC, id DESC
+            ")->getResult()->toArray();
+            if (!empty($services)) {
+                $this->tema->veri('services', $services);
+            }
+            Cache::set($services, $kelime . "-arama-mod_service");
+        }
 
-        # mod_page arama
+        if (Cache::exists_cache($kelime . "-arama-mod_reference")) {
+            $cached_data = Cache::get_cache();
+            if ($cached_data !== FALSE) {
+                $this->tema->veri('references', $cached_data);
+            }
+        } else {
+            $db = Load::lib('Database');
+            $references = $db->fetch_array("
+                SELECT name, seo, description
+                FROM mod_reference
+                WHERE lang = '" . $this->site['lang'] . "'
+                  AND status = 'y'
+                  AND (
+                    content LIKE '" . addslashes($like_keyword) . "'
+                    OR description LIKE '" . addslashes($like_keyword) . "'
+                    OR name LIKE '" . addslashes($like_keyword) . "'
+                  )
+                ORDER BY created_at DESC, id DESC
+            ")->getResult()->toArray();
+            if (!empty($references)) {
+                $this->tema->veri('references', $references);
+            }
+            Cache::set($references, $kelime . "-arama-mod_reference");
+        }
+
         if (Cache::exists_cache($kelime . "-arama-mod_page")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
@@ -111,7 +201,6 @@ class search_helper extends indexBase
         }
 
 
-        # mod_video_embed arama
         if (Cache::exists_cache($kelime . "-arama-mod_video_embed")) {
             $cached_data = Cache::get_cache();
             if ($cached_data !== FALSE) {
@@ -127,6 +216,10 @@ class search_helper extends indexBase
             }
             Cache::set($vid->toArray(), $kelime . "-arama-mod_video_embed");
         }
+        $this->tema->veri('product_lang', Load::lang('mod_product'));
+        $this->tema->veri('client_lang', Load::lang('mod_client'));
+        $this->tema->veri('service_lang', Load::lang('mod_service'));
+        $this->tema->veri('reference_lang', Load::lang('mod_reference'));
         $this->tema->veri('kelime', $kelime);
         $this->tema->tpl('index/search');
         $this->_index();

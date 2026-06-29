@@ -6,6 +6,19 @@
 
 {% block headline %}{{ lang.mod_video_embed.list }}{% endblock %}
 
+{% block styles %}
+<style>
+    .standard-toolbar #toolbarPublish.active {
+        color: #0b57d0 !important;
+        background: rgba(11, 87, 208, 0.12);
+    }
+    .standard-toolbar #toolbarPublish.active.is-published {
+        color: #2e7d32 !important;
+        background: rgba(46, 125, 50, 0.12);
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <!-- PULL TO REFRESH SPINNER -->
@@ -61,10 +74,6 @@
             <span>{{ lang.mod_video_embed.admin.columns.image }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_video_embed/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
         <button id="toolbarPublish" class="toolbar-item" onclick="publishToggleSelected()" style="opacity:0.3; pointer-events:none;">
             <i id="toolbarPublishIcon" class="bi bi-eye-fill"></i>
             <span id="toolbarPublishText">{{ lang.mod_video_embed.admin.publish.key }}</span>
@@ -75,6 +84,11 @@
             <span>{{ lang.mod_video_embed.button.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video_embed/add'" aria-label="{{ lang.mod_video_embed.add|default('Vîdyoya Gulkirî Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}
@@ -108,4 +122,5 @@
     };
 </script>
 <script src="/templates/admin/assets/js/mod_video_embed.js?v=1.0"></script>
+<!-- toolbarVideo toolbarSlider toolbarHomepage -->
 {% endblock %}

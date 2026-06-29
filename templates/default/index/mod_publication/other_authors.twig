@@ -8,10 +8,10 @@
                 {% set side_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
                 {% set side_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
                 {% set side_publication_title = author.title is defined and author.title is not empty ? author.title : author.name %}
-                <a class="author-side-item" href="{{ site.sadres }}author/{{ author.username }}">
+                <a class="author-side-item" href="{{ site.saddress }}author/{{ author.username }}">
                     <span class="author-side-avatar">
                         {% if author.user_image is defined and author.user_image is not empty %}
-                            <img src="{{ site.radres }}mod_user/thumb/{{ author.user_image }}" alt="{{ side_author_name }}" loading="lazy">
+                            <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}" alt="{{ side_author_name }}" loading="lazy">
                         {% else %}
                             <span>{{ side_author_initials }}</span>
                         {% endif %}

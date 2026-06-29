@@ -36,13 +36,24 @@ class mod_gallery_mod_mod extends indexMain
         if ($this->user->hasPermission('mod_gallery_mod', 'add', $this->lang['mod_gallery_mod']['role_errors']['add'], 1) === False) {
             return False;
         }
+
+        // Handle Cancel URL Referer tracking
+        $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false) {
+            if (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false) {
+                $this->session->set('gallery_mod_cancel_url', $referer);
+            }
+        }
+        $cancel_url = $this->session->get('gallery_mod_cancel_url') ?: $this->site['saddress'] . 'mod_gallery_mod/list';
+
         if (Req::is_Post('add')) {
             $this->_add();
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_gallery_mod']['add'];
-        $this->tema->tpl('mod_gallery_mod/ekle');
+        $this->tema->tpl('mod_gallery_mod/add');
         $this->tema->veri('site', $this->site);
+        $this->tema->veri('cancel_url', $cancel_url);
     }
 
     // Edit page.
@@ -57,7 +68,7 @@ class mod_gallery_mod_mod extends indexMain
         if ($this->mod_gallery_mod_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_gallery_mod']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_gallery_mod/duzenle');
+            $this->tema->tpl('mod_gallery_mod/edit');
             return;
         }
 
@@ -68,6 +79,15 @@ class mod_gallery_mod_mod extends indexMain
             return False;
         }
 
+        // Handle Cancel URL Referer tracking
+        $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false) {
+            if (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false) {
+                $this->session->set('gallery_mod_cancel_url', $referer);
+            }
+        }
+        $cancel_url = $this->session->get('gallery_mod_cancel_url') ?: $this->site['saddress'] . 'mod_gallery_mod/list';
+
         if (Req::is_Post('edit')) {
             $this->_edit($id);
         }
@@ -77,7 +97,8 @@ class mod_gallery_mod_mod extends indexMain
         $this->site['title'] = $this->lang['mod_gallery_mod']['edit'];
         $this->tema->veri('site', $this->site);
         $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_gallery_mod/duzenle');
+        $this->tema->tpl('mod_gallery_mod/edit');
+        $this->tema->veri('cancel_url', $cancel_url);
     }
 
     // List page.

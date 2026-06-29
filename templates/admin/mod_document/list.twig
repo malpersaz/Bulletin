@@ -1,0 +1,131 @@
+{% set module_lang_key = 'mod_document' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_document.list }}{% endblock %}
+{% block headline %}{{ lang.mod_document.list_ui.title }}{% endblock %}
+
+{% block styles %}
+<style>
+    .document-list-shell {
+        padding: 0 16px 16px;
+        display: grid;
+        gap: 12px;
+        margin-bottom: 8px;
+    }
+    .empty-state {
+        background: var(--md-sys-color-surface);
+        border-radius: var(--af-radius-lg);
+        padding: 40px 20px;
+        margin: 0 16px 120px;
+        text-align: center;
+        box-shadow: var(--md-sys-elevation-1);
+        display: grid;
+        gap: 16px;
+        place-items: center;
+    }
+    .empty-state i {
+        font-size: 48px;
+        color: var(--md-sys-color-primary);
+    }
+    .document-toolbar .toolbar-item {
+        min-width: 44px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Quick Stats -->
+<div style="padding: 0 16px 16px 16px; display: flex; gap: 12px; margin-bottom: 8px;">
+    <div class="stat-card" style="flex: 1; background: var(--md-sys-color-surface-container); padding: 16px; border-radius: var(--af-radius-md); text-align: center;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.total }}</div>
+        <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 500;">{{ lang.mod_document.list_ui.total_stat }}</div>
+    </div>
+    <div class="stat-card" style="flex: 1; background: var(--md-sys-color-surface-container); padding: 16px; border-radius: var(--af-radius-md); text-align: center;">
+        <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.live }}</div>
+        <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 500;">{{ lang.mod_document.list_ui.live_stat }}</div>
+    </div>
+</div>
+
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+</div>
+
+<div id="document-list-container" class="content-list" style="padding: 0 16px 120px;"></div>
+
+<div id="empty-state" class="empty-state" style="display:none;">
+    <i class="bi bi-file-earmark-text"></i>
+    <strong>{{ lang.mod_document.empty_state }}</strong>
+</div>
+
+<div id="infinite-loader" class="infinite-loader" style="display:none;">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+    <span>{{ lang.mod_document.list_ui.loading }}</span>
+</div>
+
+<form id="filterForm" style="display:none;">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar document-toolbar">
+    {% if session.permissions.mod_document.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_document.gallery is defined %}
+        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-images"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_document.file is defined %}
+        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-paperclip"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_document.edit is defined %}
+        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    {% endif %}
+</div>
+
+{% if session.permissions.mod_document.add is defined %}
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_document/add'" aria-label="{{ lang.mod_document.add|default('Belgeyê Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MODULE_URL = SITE_URL + "mod_document/";
+    const DATA_URL = SITE_URL + "mod_document/datatable_json";
+    const DOCUMENT_LANG = {
+        active: "{{ lang.mod_document.status.published|e('js') }}",
+        draft: "{{ lang.mod_document.status.draft|e('js') }}",
+        edit: "{{ lang.mod_document.list_ui.edit_cta|e('js') }}",
+        delete_confirm: "{{ lang.mod_document.remove_record|e('js') }}",
+        select_record: "{{ lang.mod_document.list_ui.select_record|e('js') }}",
+        loading: "{{ lang.mod_document.list_ui.loading|e('js') }}",
+        load_more: "{{ lang.mod_document.list_ui.load_more|e('js') }}",
+        gallery_ready: "{{ lang.mod_document.list_ui.gallery_ready|e('js') }}",
+        file_ready: "{{ lang.mod_document.list_ui.file_ready|e('js') }}",
+        delete_failed: "{{ lang.mod_document.errors.delete_failed|e('js') }}"
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_document.js?v=1.2"></script>
+{% endblock %}

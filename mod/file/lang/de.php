@@ -2,7 +2,7 @@
 /**
  * Datei-Verwaltungsmodul - Deutsche Sprachdatei
  *
- * @package Rojname
+ * @package AKM Business
  * @module  dosya
  * @version 1.0.0
  * @author  AKM Software

@@ -2,7 +2,7 @@
 /**
  * Popup/Modal Management Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_popup
  * @version 1.0.0
  * @author  AKM Software

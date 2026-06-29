@@ -1,17 +1,30 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="{{ site.lang|default('en') }}">
 <head>
     <meta charset="UTF-8">
-    <base href="{{ site.sadres }}">
+    <base href="{{ site.saddress }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>{% block title %}{{ site.title }} Admin{% if site.version is defined and site.version %} v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}{% endif %}{% endblock %}</title>
+    <title>{% block title %}{{ site.title }} {{ lang.management.admin_panel }}{% if site.version is defined and site.version %} v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}{% endif %}{% endblock %}</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Manrope:wght@600;700;800&family=Grenze+Gotisch:wght@100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Manrope:wght@600;700;800&family=Marcellus&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- CSS Assets (Absolute Path) -->
-<link rel="stylesheet" href="/templates/admin/assets/css/style.css?v=4.4">
+<link rel="stylesheet" href="/templates/admin/assets/css/style.css?v=4.11">
+    <style>
+        :root {
+            --af-radius-xs: 4px;
+            --af-radius-sm: 8px;
+            --af-radius-md: 12px;
+            --af-radius-lg: 20px;
+            --af-radius-full: 999px;
+            --md-sys-color-error: #B3261E;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #F9DEDC;
+            --md-sys-color-on-error-container: #410E0B;
+        }
+    </style>
     {% block styles %}{% endblock %}
 </head>
 <body class="{% if hide_navbar %}hide-navbar{% endif %} {% if hide_search %}hide-search{% endif %}">
@@ -79,7 +92,8 @@
 
     <!-- CORE SCRIPTS (Absolute Path) -->
     <script>
-        const SITE_URL = '{{ site.sadres }}';
+        const SITE_URL = '{{ site.saddress }}';
+        const START_MENU_LABEL = '{{ lang.management.start_menu|default("Start Menu")|e("js") }}';
         const WIZARD_MODULE = {{ wizard_module is defined ? ('"' ~ wizard_module ~ '"')|raw : 'null' }};
         const adminLang = {
             {% if wizard_module is defined %}
@@ -105,7 +119,10 @@
                     finish: '{{ wizard_lang.wizard.step.finish|e("js") }}'
                 },
                 messages: {
-                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|e("js") }}'
+                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|e("js") }}',
+                    error: '{% if wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}',
+                    invalid_json: '{% if wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}',
+                    network_error: '{% if wizard_lang.grid is defined and attribute(wizard_lang.grid, 5) is defined %}{{ attribute(wizard_lang.grid, 5)|e("js") }}{% elseif wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}'
                 },
                 label: {
                     change_image: '{{ wizard_lang.wizard.label.change_image|e("js") }}'
@@ -127,6 +144,9 @@
             video_embed: {
                 messages: {
                     success: '{{ lang.mod_video_embed.message.oke.add|e("js") }}',
+                    error: '{{ lang.mod_video_embed.hata|e("js") }}',
+                    invalid_json: '{{ lang.mod_video_embed.hata|e("js") }}',
+                    network_error: '{{ lang.mod_video_embed.ajax.ajax_error|e("js") }}',
                     embed_error: '{{ lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.namemin.columns.embed})|e("js") }}',
                     title_error: '{{ lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.namemin.columns.name, "%s": 3, "%s": 255})|e("js") }}'
                 },
@@ -185,15 +205,11 @@
                 active: '{{ active_module_lang.status_badge.active|e("js") }}',
                 draft: '{{ active_module_lang.status_badge.draft|e("js") }}'
             },
-            mock: {
-                titles: {{ active_module_lang.mock.titles|json_encode|raw }},
-                categories: {{ active_module_lang.mock.categories|json_encode|raw }},
-                authors: {{ active_module_lang.mock.authors|json_encode|raw }}
-            },
             context_menu: {
                 edit: '{{ active_module_lang.context_menu.edit|e("js") }}',
                 publish: '{{ active_module_lang.context_menu.publish|e("js") }}',
                 unpublish: '{{ active_module_lang.context_menu.unpublish|e("js") }}',
+                video: '{{ active_module_lang.context_menu.video|e("js") }}',
                 published_msg: '{{ active_module_lang.context_menu.published_msg|e("js") }}',
                 unpublished_msg: '{{ active_module_lang.context_menu.unpublished_msg|e("js") }}',
                 confirm: '{{ active_module_lang.context_menu.confirm|e("js") }}',
@@ -222,7 +238,6 @@
             {% else %}
             general: null,
             status: null,
-            mock: null,
             context_menu: null,
             filter: null,
             ui: null,
@@ -238,14 +253,35 @@
             languages: [
                 {% if lang_lang is defined and lang_lang is not empty %}
                     {% for l in lang_lang %}
-                        { code: '{{ l.seo|lower }}', name: '{{ l.name|e("js") }}' },
+                        { code: '{{ l.seo|lower }}', name: '{{ l.name|e("js") }}', status: '{{ (l.status is defined ? l.status : "y")|e("js") }}' },
                     {% endfor %}
                 {% endif %}
             ]
         };
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.5.1/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="/templates/admin/assets/js/script.js?v=1.54"></script>
+    <script src="/templates/admin/assets/js/script.js?v=1.70"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle Flash Messages from Session
+            {% if session.flash is defined and session.flash %}
+                showSnackbar('{{ session.flash.message|e("js") }}', '{{ session.flash.type|e("js") }}');
+            {% endif %}
+
+            // Handle Direct Template Messages (Validation errors, etc.)
+            {% if success is defined and success %}
+                showSnackbar('{{ message|e("js") }}', 'success');
+            {% elseif error is defined and error %}
+                showSnackbar('{{ message|e("js") }}', 'error');
+            {% elseif fatal_error is defined and fatal_error %}
+                showSnackbar('{{ message|e("js") }}', 'error');
+            {% elseif errors is defined and errors|length > 0 %}
+                {% for err in errors %}
+                    showSnackbar('{{ err|e("js") }}', 'error');
+                {% endfor %}
+            {% endif %}
+        });
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -9,14 +9,8 @@ class RunException extends Exception{
         $this->method=$method;
     }
     public function show(){
-        $lang = Kayit::getir('lang');
-        if ($lang == 'ku') {
-            echo "Metoda <b>".$this->method."</b> ya Modûla " . $this->mod . " Nehat Dîtin";
-        } elseif ($lang == 'tr') {
-             echo $this->mod." Modülünün <b>".$this->method."</b> Methodu Bulunamadı";
-        } else {
-             echo "Method <b>".$this->method."</b> of Module " . $this->mod . " Not Found";
-        }
+        require_once(lib_dir . 'AmedError.class.php');
+        AmedError::method($this->mod . '/' . $this->method);
     }
 }
 class Run

@@ -8,5 +8,6 @@ CREATE TABLE  `mod_video` (
 `description` TEXT DEFAULT NULL ,
 `image` VARCHAR(20),
 `acl_id` VARCHAR(255)  DEFAULT NULL ,
+`view_count` INT(11) NOT NULL DEFAULT 0,
 `user_id` INT(11) NOT NULL
 ) ;

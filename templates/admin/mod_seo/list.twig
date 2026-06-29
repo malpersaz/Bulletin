@@ -1,0 +1,284 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_seo.admin.columns.name %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_seo.list }}{% endblock %}
+{% block headline %}{{ lang.mod_seo.list }}{% endblock %}
+
+{% block styles %}
+<style>
+    .seo-dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin-top: 12px;
+    }
+    .seo-stat-box {
+        display: flex;
+        flex-direction: column;
+    }
+    .seo-stat-value {
+        font-size: 24px;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .seo-stat-label {
+        font-size: 12px;
+        opacity: 0.8;
+        margin-top: 2px;
+    }
+    .seo-url-card {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .seo-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .seo-card-title {
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 1.3;
+        color: var(--md-sys-color-on-surface);
+    }
+    .seo-card-badge {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 8px;
+        white-space: nowrap;
+    }
+    .seo-card-url {
+        font-size: 13px;
+        font-family: monospace;
+        word-break: break-all;
+    }
+    .seo-card-url a {
+        text-decoration: none;
+        color: var(--md-sys-color-primary);
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .seo-metrics-divider {
+        border-top: 1px solid var(--md-sys-color-outline-variant);
+        margin: 6px 0;
+    }
+    .seo-metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        text-align: center;
+    }
+    .seo-metric-value {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--md-sys-color-on-surface);
+    }
+    .seo-metric-label {
+        font-size: 11px;
+        color: var(--md-sys-color-on-surface-variant);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if error_message and not has_credentials %}
+    <!-- Error State: Credentials missing or invalid -->
+    <div class="m3-card" style="border-left: 5px solid var(--md-sys-color-error); background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container);">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size: 24px; color: var(--md-sys-color-error);"></i>
+            <div>
+                <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700;">{{ lang.mod_seo.admin.labels.credentials_status }}</h3>
+                <p style="margin: 0; font-size: 14px; line-height: 1.4;">{{ error_message }}</p>
+                <button onclick="location.href='{{ site.saddress }}seo/settings'" class="btn-m3-tonal" style="margin-top: 12px; border: none; background: var(--md-sys-color-error); color: white; padding: 8px 16px; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="bi bi-gear-fill"></i> {{ lang.mod_seo.settings }}
+                </button>
+            </div>
+        </div>
+    </div>
+{% elseif error_message %}
+    <!-- General API Query Error -->
+    <div class="m3-card" style="border-left: 5px solid var(--md-sys-color-error); background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container);">
+        <div style="display: flex; align-items: flex-start; gap: 12px;">
+            <i class="bi bi-exclamation-octagon-fill" style="font-size: 24px; color: var(--md-sys-color-error);"></i>
+            <div>
+                <h3 style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700;">{{ lang.mod_seo.messages.error }}</h3>
+                <p style="margin: 0; font-size: 14px; line-height: 1.4;">{{ error_message }}</p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+{% if has_credentials and site_urls is not empty %}
+    <!-- Metrics calculations for general dashboard header -->
+    {% set total_clicks = 0 %}
+    {% set total_impressions = 0 %}
+    {% set sum_ctr = 0 %}
+    {% set sum_pos = 0 %}
+    {% set matched_count = 0 %}
+    {% for item in site_urls %}
+        {% set total_clicks = total_clicks + item.clicks %}
+        {% set total_impressions = total_impressions + item.impressions %}
+        {% if item.clicks > 0 or item.impressions > 0 %}
+            {% set sum_ctr = sum_ctr + item.ctr %}
+            {% if item.position != '-' %}
+                {% set sum_pos = sum_pos + item.position %}
+                {% set matched_count = matched_count + 1 %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    {% set avg_ctr = matched_count > 0 ? (sum_ctr / matched_count)|round(2) : 0 %}
+    {% set avg_pos = matched_count > 0 ? (sum_pos / matched_count)|round(1) : '-' %}
+
+    <!-- Mini Dashboard Summary Card -->
+    <div class="m3-card" style="background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); border: none;">
+        <div style="font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; margin-bottom: 8px; word-break: break-all;">
+            {{ property_url }}
+        </div>
+        <div class="seo-dashboard-grid">
+            <div class="seo-stat-box">
+                <div class="seo-stat-value">{{ total_clicks }}</div>
+                <div class="seo-stat-label">{{ lang.mod_seo.admin.columns.clicks }}</div>
+            </div>
+            <div class="seo-stat-box">
+                <div class="seo-stat-value">{{ total_impressions }}</div>
+                <div class="seo-stat-label">{{ lang.mod_seo.admin.columns.impressions }}</div>
+            </div>
+            <div class="seo-stat-box">
+                <div class="seo-stat-value">{{ avg_ctr }}%</div>
+                <div class="seo-stat-label">{{ lang.mod_seo.admin.columns.ctr }}</div>
+            </div>
+            <div class="seo-stat-box">
+                <div class="seo-stat-value">{{ avg_pos }}</div>
+                <div class="seo-stat-label">{{ lang.mod_seo.admin.columns.position }}</div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+<!-- Url Listings -->
+<div class="content-list" id="seoUrlsList">
+    {% for item in site_urls %}
+        <div class="m3-card seo-url-card" data-name="{{ item.name|lower }}" data-path="{{ item.path|lower }}">
+            <div class="seo-card-header">
+                <div class="seo-card-title">{{ item.name }}</div>
+                
+                {% set badge_style = '' %}
+                {% if item.type == 'Page' %}
+                    {% set badge_style = 'background: #EADDFF; color: #21005D;' %}
+                {% elseif item.type == 'News' %}
+                    {% set badge_style = 'background: #FFE0B2; color: #E65100;' %}
+                {% elseif item.type == 'Product' %}
+                    {% set badge_style = 'background: #C8E6C9; color: #1B5E20;' %}
+                {% elseif item.type == 'Service' %}
+                    {% set badge_style = 'background: #B3E5FC; color: #0D47A1;' %}
+                {% elseif item.type == 'Reference' %}
+                    {% set badge_style = 'background: #B2DFDB; color: #004D40;' %}
+                {% endif %}
+                
+                <span class="seo-card-badge" style="{{ badge_style }}">
+                    {{ item.type }}
+                </span>
+            </div>
+            
+            <div class="seo-card-url">
+                <a href="{{ item.full_url }}" target="_blank">
+                    {{ item.path }} <i class="bi bi-box-arrow-up-right" style="font-size: 11px;"></i>
+                </a>
+            </div>
+            
+            <div class="seo-metrics-divider"></div>
+            
+            <div class="seo-metrics-grid">
+                <div>
+                    <div class="seo-metric-value">{{ item.clicks }}</div>
+                    <div class="seo-metric-label">{{ lang.mod_seo.admin.columns.clicks }}</div>
+                </div>
+                <div>
+                    <div class="seo-metric-value">{{ item.impressions }}</div>
+                    <div class="seo-metric-label">{{ lang.mod_seo.admin.columns.impressions }}</div>
+                </div>
+                <div>
+                    <div class="seo-metric-value">{{ item.ctr }}%</div>
+                    <div class="seo-metric-label">{{ lang.mod_seo.admin.columns.ctr }}</div>
+                </div>
+                <div>
+                    <div class="seo-metric-value">{{ item.position }}</div>
+                    <div class="seo-metric-label">{{ lang.mod_seo.admin.columns.position }}</div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        {% if not error_message %}
+            <div class="empty-state-container">
+                <div class="empty-icon-box">
+                     <i class="bi bi-search"></i>
+                </div>
+                <h2 style="font-weight: 800;">{{ lang.management.no_records_found|default('No records found') }}</h2>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-house-door-fill"></i>
+            <span>{{ lang.management.anasayfa }}</span>
+        </button>
+        
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}seo/settings'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-gear-fill"></i>
+            <span>{{ lang.mod_seo.settings }}</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.reload()" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span>Nûjen Bike</span>
+        </button>
+
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_seo.button.back }}</span>
+        </button>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.seo-url-card');
+                cards.forEach(card => {
+                    const title = card.getAttribute('data-name');
+                    const path = card.getAttribute('data-path');
+                    if (title.includes(term) || path.includes(term)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+
+    window.clearSearch = function() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+        const cards = document.querySelectorAll('.seo-url-card');
+        cards.forEach(card => card.style.display = 'flex');
+    };
+</script>
+{% endblock %}

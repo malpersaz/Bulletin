@@ -2,8 +2,7 @@
 $lang['mod_video_embed'] = [
     'add' => 'Add Remote Video',
     'edit' => 'Edit Remote Video',
-    'list' => 'Remote Video List',
-    'list' => 'Remote Video',
+    'list' => 'Video Embed Management',
     'information' => 'Information!',
     'oke' => 'Operation Successful!',
     'hata' => 'Error Occurred!',
@@ -28,6 +27,7 @@ $lang['mod_video_embed'] = [
         'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
         'fetch_failed' => 'YouTube metadata could not be fetched.',
         'download_failed' => 'Thumbnail image could not be downloaded.',
+        'generic_error' => 'An error occurred while fetching video details.',
     ],
     'ajax' => [
         'permission_denied' => 'You do not have permission to perform this action.',
@@ -127,6 +127,8 @@ $lang['mod_video_embed'] = [
     ],
     'errors' => [
         'record' => 'Record Not Found!',
+        'image_upload_failed' => 'Image could not be uploaded.',
+        'image_delete_failed' => 'Image could not be deleted.',
     ],
     'validator' => [
         'required' => 'Please do not leave %s field empty',

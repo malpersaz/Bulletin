@@ -57,13 +57,20 @@ class TwigLibs extends AbstractExtension
         return $this->ctx->get($key);
     }
 
+    public function lang($a)
+    {
+        if (Kayit::varmi('TwigTemplate-lib')) {
+            Kayit::getir('TwigTemplate-lib')->lang($a);
+        }
+    }
+
     public function ctx_export(string $key, $remove = false, $flush = false)
     {
         if (!$key || $key === '') {
             throw new \InvalidArgumentException("key is required.");
         }
         $result = "";
-        // İçeriği Yazalım
+        // Iterate through the stored context items and append them to the output string
         foreach ($this->ctx->get($key) as $n) {
             if (is_array($remove)) {
                 $result .= str_replace($remove, '', $n) . "\n";
@@ -71,7 +78,7 @@ class TwigLibs extends AbstractExtension
                 $result . $n . "\n";
             }
         }
-        // Flush İstenmişse Temizleyelim
+        // Delete the context key from storage if flush option is enabled
         if ($flush) {
             $this->ctx->delete($key);
         }
@@ -204,7 +211,7 @@ class TwigLibs extends AbstractExtension
                         echo '<link rel="stylesheet" type="text/css" href="' . $css . '?v=' . $version . '">';
                         echo "\n";
                     } else {
-                        echo '<link rel="stylesheet" type="text/css" href="' . $site['tadres'] . $css . '?v=' . $version . '">';
+                        echo '<link rel="stylesheet" type="text/css" href="' . $site['taddress'] . $css . '?v=' . $version . '">';
                         echo "\n";
                     }
                 }
@@ -235,7 +242,7 @@ class TwigLibs extends AbstractExtension
                 }
                 echo '</style>';
             } else {
-                echo '<link rel="stylesheet" type="text/css" href="' . $site['tadres'] . 'cache/css/' . $css_cache_file . '?v=' . $version . '">';
+                echo '<link rel="stylesheet" type="text/css" href="' . $site['address'] . 'cache/css/' . $css_cache_file . '?v=' . $version . '">';
             }
         }
     }
@@ -299,7 +306,7 @@ class TwigLibs extends AbstractExtension
                         echo '<script src="' . $js . '?v=' . $version . '" type="text/javascript"></script>';
                         echo "\n";
                     } else {
-                        echo '<script src="' . $site['tadres'] . $js . '?v=' . $version . '" type="text/javascript"></script>';
+                        echo '<script src="' . $site['taddress'] . $js . '?v=' . $version . '" type="text/javascript"></script>';
                         echo "\n";
                     }
                 }
@@ -326,7 +333,7 @@ class TwigLibs extends AbstractExtension
                 echo '//]]>';
                 echo '</script>';
             } else {
-                echo '<script src="' . $site['tadres'] . 'cache/js/' . $js_cache_file . '?v=' . $version . '" type="text/javascript"></script>';
+                echo '<script src="' . $site['address'] . 'cache/js/' . $js_cache_file . '?v=' . $version . '" type="text/javascript"></script>';
             }
         }
     }

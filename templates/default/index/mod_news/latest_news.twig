@@ -95,7 +95,7 @@
                 <article class="col-md-6 nyt-article">
                     {% if news.image is not empty %}
                         <div class="nyt-article-img-wrapper">
-                            <a href="{{ site.sadres }}news/{{ news.seo }}" title="{{ news.name }}">
+                            <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}">
                                 {% if news.published_ago is not empty %}
                                     <span class="nyt-article-timeago"
                                           data-published-at="{{ news.created_at|e('html_attr') }}">
@@ -103,7 +103,7 @@
                                         <span class="nyt-article-timeago-text">{{ news.published_ago }}</span>
                                     </span>
                                 {% endif %}
-                                <img src="{{ site.radres }}mod_news/{{ news.image }}"
+                                <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
                                      class="nyt-article-img"
                                      alt="{{ news.name }}"
                                      loading="lazy">
@@ -111,7 +111,7 @@
                         </div>
                     {% endif %}
                     <h3 class="nyt-article-title">
-                        <a href="{{ site.sadres }}news/{{ news.seo }}">{{ news.name }}</a>
+                        <a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
                     </h3>
                     
                     {# Reading Time Calculation #}

@@ -4,28 +4,36 @@
  * mod_video_embed Module Page
  * mod/mod_video_embed/index.php
  */
-class mod_video_embed_mod extends indexMain
+class mod_video_embed_mod extends BaseModuleController
 {
     public $mod_video_embed_model;
     private const VIDEO_IMAGE_WIDTH = 1280;
     private const VIDEO_THUMB_WIDTH = 640;
-    function __construct()
+
+    protected $has_gallery = true;
+    protected $has_files = true;
+
+    protected $need_simple_data = [
+        'lang' => 'lang_lang',
+        'mod_acl' => 'mod_acl_acl_id'
+    ];
+
+    protected $image_fields = [];
+
+    public function __construct()
     {
-        parent::__construct();
-        // Load the template library.
-        $this->tema = Load::lib('AdminTemplate');
-        // Load the database library.
-        $this->db = Load::lib('Database');
-        // Site settings remain available through shared state when needed.
-        //$this->site = Kayit::getir('site_config');
-        // Load the module language file.
-        $this->lang = Load::lang('mod_video_embed');
-        // Pass language data to the template layer.
-        $this->tema->lang($this->lang);
-        // Load the session library.
-        $this->session = Load::lib('Session');
-        // Load the user model.
-        $this->user = Load::model('mod_user.user');
+        parent::__construct('mod_video_embed');
+    }
+
+    protected function getDatatableColumns()
+    {
+        return [
+            'id',
+            'name|bold',
+            'image|image',
+            'lang|badge',
+            'status|badge'
+        ];
     }
     // Render the add form.
     public function add()
@@ -34,7 +42,7 @@ class mod_video_embed_mod extends indexMain
         if ($this->user->hasPermission('mod_video_embed', 'add', $this->lang['mod_video_embed']['role_errors']['add'], 1) === False) {
             return False;
         }
-        if (Req::is_Post('add')) {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $this->_add();
         }
         Run::import('management', '_index');
@@ -74,7 +82,7 @@ class mod_video_embed_mod extends indexMain
             return False;
         }
 
-        if (Req::is_Post('edit')) {
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $this->_edit($id);
         }
 
@@ -148,7 +156,7 @@ class mod_video_embed_mod extends indexMain
             if (!empty($metadata['thumbnail_url'])) {
                 $imageFile = $this->_importRemoteThumbnail($metadata['thumbnail_url']);
                 if ($imageFile !== '') {
-                    $imageUrl = $this->site['radres'] . 'mod_video_embed/thumb/' . $imageFile . '?v=' . time();
+                    $imageUrl = $this->site['iaddress'] . 'mod_video_embed/thumb/' . $imageFile . '?v=' . time();
                 }
             }
 
@@ -172,9 +180,10 @@ class mod_video_embed_mod extends indexMain
                 ],
             ]);
         } catch (Throwable $e) {
+            $message = $this->_autofillThrowableMessage($e);
             $this->_jsonResponse([
                 'status' => 'error',
-                'message' => $e->getMessage() ?: $this->_autofillMessage('generic_error'),
+                'message' => $message,
             ]);
         }
     }
@@ -231,16 +240,16 @@ class mod_video_embed_mod extends indexMain
                     if ($update_model->update('id')) {
                         echo json_encode([
                             'status' => 'success',
-                            'url' => $this->site['radres'] . 'mod_video_embed/thumb/' . $new_image_url . '?v=' . time()
+                            'url' => $this->site['iaddress'] . 'mod_video_embed/thumb/' . $new_image_url . '?v=' . time()
                         ]);
                     } else {
                         echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['db_update_failed']]);
                     }
                 } else {
-                    echo json_encode(['status' => 'error', 'message' => $image->error]);
+                    echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['image_upload_failed']]);
                 }
             } catch (Throwable $e) {
-                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+                echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['image_upload_failed']]);
             }
         } else {
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['file_not_uploaded']]);
@@ -280,7 +289,7 @@ class mod_video_embed_mod extends indexMain
                 $this->mod_video_embed_model->update('id');
                 echo $this->lang['mod_video_embed']['ajax']['success'];
             } else {
-                echo $image->error;
+                echo $this->lang['mod_video_embed']['errors']['image_delete_failed'];
                 return FALSE;
             }
         } else {
@@ -289,7 +298,7 @@ class mod_video_embed_mod extends indexMain
     }
 
     // Handle add form submission.
-    private function _add()
+    protected function _add()
     {
         $isAjax = $this->_isAjaxRequest();
         $autofillImage = Req::Post_Safe('autofill_image');
@@ -338,10 +347,10 @@ class mod_video_embed_mod extends indexMain
                 } else {
                 if ($isAjax) {
                     header('Content-Type: application/json; charset=utf-8');
-                    echo json_encode(['status' => 'error', 'message' => $image->error]);
+                    echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['image_upload_failed']]);
                     exit;
                 }
-                $this->_error_message($image->error);
+                $this->_error_message($this->lang['mod_video_embed']['errors']['image_upload_failed']);
                 return FALSE;
                 }
             } elseif ($autofillImage !== '') {
@@ -358,7 +367,7 @@ class mod_video_embed_mod extends indexMain
                     echo json_encode([
                         'status' => 'success',
                         'message' => $this->lang['mod_video_embed']['message']['oke']['add'],
-                        'redirect' => $this->site['sadres'] . 'mod_video_embed/list'
+                        'redirect' => $this->site['saddress'] . 'mod_video_embed/list'
                     ]);
                     exit;
                 }
@@ -383,7 +392,7 @@ class mod_video_embed_mod extends indexMain
     }
 
     // Handle edit form submission.
-    private function _edit($id = NULL)
+    protected function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_video_embed.edit');
         if ($this->val->check($id)) {
@@ -431,7 +440,7 @@ class mod_video_embed_mod extends indexMain
                     }
                     $this->mod_video_embed_model->image = $new_image_url;
                 } else {
-                    $this->_error_message($image->error);
+                    $this->_error_message($this->lang['mod_video_embed']['errors']['image_upload_failed']);
                     return FALSE;
                 }
             } else {
@@ -472,7 +481,7 @@ class mod_video_embed_mod extends indexMain
         }
     }
 
-    public function _delete($delete)
+    protected function _delete($delete)
     {
         $this->mod_video_embed_model = Load::model('mod_video_embed');
         foreach ($delete as $s) {
@@ -507,7 +516,7 @@ class mod_video_embed_mod extends indexMain
                 $image->url = $this->mod_video_embed_model->image;
                 $option = $this->_videoImageOptions();
                 if ($image->_delete_files($option) !== TRUE) {
-                    echo $image->error;
+                    echo $this->lang['mod_video_embed']['errors']['image_delete_failed'];
                 }
                 $this->_deleteVideoImageArtifacts($this->mod_video_embed_model->image);
             }
@@ -665,7 +674,7 @@ class mod_video_embed_mod extends indexMain
 
                 $last = "";
                 if (Roll::hasPermission('mod_video_embed', 'edit')) {
-                    $last .= '<button onclick="window.location.href=\''. $this->site['sadres'] .'mod_video_embed/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
+                    $last .= '<button onclick="window.location.href=\''. $this->site['saddress'] .'mod_video_embed/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_video_embed']['button']['edit'] . ' </button>';
                 }
                 if (Roll::hasPermission('mod_video_embed',  'delete')) {
@@ -686,7 +695,7 @@ class mod_video_embed_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="'. $content['id'] .'">',
                     $content['id'],
                     $content['name'],
-                    '<img src="' . $this->site['radres'] . 'mod_video_embed/thumb/' . $content['image'] . '?v=' . time() . '">',
+                    '<img src="' . $this->site['iaddress'] . 'mod_video_embed/thumb/' . $content['image'] . '?v=' . time() . '">',
                     $content['duration'],
                     $content['lang'],
                     $content['created_at'],
@@ -772,21 +781,21 @@ class mod_video_embed_mod extends indexMain
     }
 
     // Store a success message for the template.
-    private function _oke_message($mesaj)
+    protected function _oke_message($mesaj)
     {
         $this->tema->veri('oke', True);
         $this->tema->veri('mesaj', $mesaj);
     }
 
     // Store a validation error message for the template.
-    private function _error_message($mesaj)
+    protected function _error_message($mesaj)
     {
         $this->tema->veri('hata', True);
         $this->tema->veri('hatalar', [$mesaj]);
     }
 
     // Store a fatal error message for the template.
-    private function _error($mesaj)
+    protected function _error($mesaj)
     {
         $this->tema->veri('error', TRUE);
         $this->tema->veri('mesaj', $mesaj);
@@ -815,7 +824,19 @@ class mod_video_embed_mod extends indexMain
 
     private function _autofillMessage($key)
     {
-        return $this->lang['mod_video_embed']['autofill'][$key] ?? $this->lang['mod_video_embed']['autofill']['generic_error'];
+        $messages = $this->lang['mod_video_embed']['autofill'];
+        return $messages[$key] ?? $messages['generic_error'];
+    }
+
+    private function _autofillThrowableMessage(Throwable $e)
+    {
+        $message = $e->getMessage();
+        $messages = $this->lang['mod_video_embed']['autofill'];
+        if ($message !== '' && in_array($message, $messages, true)) {
+            return $message;
+        }
+
+        return $messages['generic_error'];
     }
 
     private function _extractYouTubeVideoId($input)
@@ -890,6 +911,41 @@ class mod_video_embed_mod extends indexMain
                 $metadata['title'] = trim((string) ($oembed['title'] ?? ''));
                 $metadata['thumbnail_url'] = trim((string) ($oembed['thumbnail_url'] ?? ''));
                 $metadata['source'] = 'youtube_oembed';
+            }
+        }
+
+        // Scrape watch page if duration is not resolved yet
+        if ($metadata['duration'] === '') {
+            $watchUrl = 'https://www.youtube.com/watch?v=' . $videoId;
+            $watchResponse = $this->_httpRequest($watchUrl);
+            if (!empty($watchResponse['body'])) {
+                $html = $watchResponse['body'];
+
+                // 1. Try itemprop="duration" content="..." (ISO 8601 format like PT3M34S)
+                if (preg_match('/itemprop="duration"\s+content="([^"]+)"/i', $html, $matches)) {
+                    $metadata['duration'] = $this->_formatIso8601Duration($matches[1]);
+                }
+
+                // 2. Try "lengthSeconds":"..." as fallback
+                if ($metadata['duration'] === '' && preg_match('/"lengthSeconds"\s*:\s*"(\d+)"/i', $html, $matches)) {
+                    $seconds = (int) $matches[1];
+                    $h = floor($seconds / 3600);
+                    $m = floor(($seconds % 3600) / 60);
+                    $s = $seconds % 60;
+                    if ($h > 0) {
+                        $metadata['duration'] = sprintf('%02d:%02d:%02d', $h, $m, $s);
+                    } else {
+                        $metadata['duration'] = sprintf('%02d:%02d', $m, $s);
+                    }
+                }
+
+                // 3. Fallback for title/description if still empty
+                if ($metadata['title'] === '' && preg_match('/<meta\s+name="title"\s+content="([^"]+)"/i', $html, $matches)) {
+                    $metadata['title'] = html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8');
+                }
+                if ($metadata['description'] === '' && preg_match('/<meta\s+name="description"\s+content="([^"]+)"/i', $html, $matches)) {
+                    $metadata['description'] = html_entity_decode($matches[1], ENT_QUOTES, 'UTF-8');
+                }
             }
         }
 
@@ -1084,7 +1140,7 @@ class mod_video_embed_mod extends indexMain
             $option = $this->_videoImageOptions();
 
             if (!$image->_resize($option)) {
-                throw new Exception($image->error ?: $this->_autofillMessage('download_failed'));
+                throw new Exception($this->_autofillMessage('download_failed'));
             }
 
             return (string) $image->url;

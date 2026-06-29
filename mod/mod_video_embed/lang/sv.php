@@ -2,7 +2,7 @@
 $lang['mod_video_embed'] = [
     'add' => 'Lägg till Fjärrvideo',
     'edit' => 'Redigera Fjärrvideo',
-    'list' => 'Lista över Fjärrvideor',
+    'list' => 'Video-embed-hantering',
     'information' => 'Information!',
     'oke' => 'Operationen Lyckades!',
     'hata' => 'Ett Fel Uppstod!',
@@ -22,11 +22,12 @@ $lang['mod_video_embed'] = [
         'success' => 'Videodetaljer importerades.',
         'partial' => 'Omslagsbild och grundläggande uppgifter importerades. Fyll i återstående fält om YouTube inte exponerade all metadata.',
         'error' => 'Videodetaljer kunde inte importeras.',
-        'permission_denied' => 'You do not have permission to fetch video details.',
-        'missing_source' => 'Paste a YouTube URL or embed code first.',
-        'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
-        'fetch_failed' => 'YouTube metadata could not be fetched.',
-        'download_failed' => 'Thumbnail image could not be downloaded.',
+        'permission_denied' => 'Du har inte behörighet att hämta videodetaljer.',
+        'missing_source' => 'Klistra först in en YouTube-URL eller inbäddningskod.',
+        'invalid_source' => 'Ingen giltig YouTube-video kunde identifieras från den angivna källan.',
+        'fetch_failed' => 'YouTube-metadata kunde inte hämtas.',
+        'download_failed' => 'Omslagsbilden kunde inte hämtas.',
+        'generic_error' => 'Ett fel uppstod när videodetaljerna skulle hämtas.',
     ],
     'wizard' => [
         'step' => [
@@ -111,6 +112,8 @@ $lang['mod_video_embed'] = [
     ],
     'errors' => [
         'record' => 'Posten hittades inte!',
+        'image_upload_failed' => 'Bilden kunde inte laddas upp.',
+        'image_delete_failed' => 'Bilden kunde inte tas bort.',
     ],
     'validator' => [
         'required' => 'Vänligen lämna inte fältet %s tomt',
@@ -268,14 +271,14 @@ $lang['mod_video_embed'] = [
         ],
     ],
     'ajax' => [
-        'permission_denied' => 'You do not have permission to perform this action.',
-        'id_missing' => 'ID is missing.',
-        'db_update_failed' => 'Database could not be updated.',
-        'file_not_uploaded' => 'File was not uploaded.',
-        'content_permission_denied' => 'You do not have permission to edit this content.',
-        'success' => 'Operation successful!',
-        'error' => 'Error occurred!',
-        'fatal_error' => 'Fatal Error Occurred!',
+        'permission_denied' => 'Du har inte behörighet att utföra den här åtgärden.',
+        'id_missing' => 'ID saknas.',
+        'db_update_failed' => 'Databasen kunde inte uppdateras.',
+        'file_not_uploaded' => 'Filen laddades inte upp.',
+        'content_permission_denied' => 'Du har inte behörighet att redigera detta innehåll.',
+        'success' => 'Åtgärden slutfördes!',
+        'error' => 'Ett fel uppstod!',
+        'fatal_error' => 'Ett allvarligt fel uppstod!',
     ],
     'js_fallback' => [
         'video' => 'video',

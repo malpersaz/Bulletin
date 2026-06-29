@@ -1,9 +1,12 @@
 {% extends 'admin/layout.twig' %}
 {% set hide_search = true %}
-{% set hide_fab = true %}
+{% set show_fab = false %}
 {% set hide_navbar = true %}
 {% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
+{% set show_extra_sheets = true %}
+{% set show_wizards = true %}
+{% set module_lang_key = 'mod_page' %}
 
 {% block title %}{{ lang.mod_page.add }}{% endblock %}
 {% block headline %}{{ lang.mod_page.add }}{% endblock %}
@@ -37,7 +40,7 @@
 {% block scripts %}
 <script>
     window.MOD_PAGE_WIZARD_CONFIG = {
-        submitUrl: {{ (site.sadres ~ 'mod_page/add')|json_encode|raw }},
+        submitUrl: {{ (site.saddress ~ 'mod_page/add')|json_encode|raw }},
         initialLang: {{ (selected_lang is defined ? selected_lang : site.lang)|lower|json_encode|raw }},
         initialStep: {{ (wizard_step is defined ? wizard_step : 1)|json_encode|raw }},
         hasErrors: {{ (hatalar is defined and hatalar is not empty)|json_encode|raw }},
@@ -51,9 +54,10 @@
             finish: {{ lang.mod_page.button.add|json_encode|raw }},
             validationName: {{ lang.mod_page.admin.columns.name|json_encode|raw }},
             validationContent: {{ lang.mod_page.admin.columns.content|json_encode|raw }},
-            closeRedirect: {{ (site.sadres ~ 'mod_user/panel/')|json_encode|raw }}
+            closeRedirect: {{ (site.saddress ~ 'mod_user/panel/')|json_encode|raw }}
         }
     };
 </script>
 <script src="/templates/admin/assets/js/mod_page_wizard.js?v=4"></script>
+<!-- wizard_content -->
 {% endblock %}

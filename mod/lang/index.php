@@ -72,7 +72,7 @@ class lang_mod extends indexMain
             $this->pushFlash('lang_admin_error', $response['message']);
         }
 
-        Helper::yonlendir($this->site['sadres'] . 'lang/panel', 0);
+        Helper::yonlendir($this->site['saddress'] . 'lang/panel', 0);
     }
 
     private function activateLanguage(array $language)

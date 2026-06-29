@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
+ * Koberz Content Management System
  * Web: www.koberz.com
  * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 08.04.2011 - 18:55
+ * User: Kobim
+ * Date: 08.04.2011 - 18:55
  */
 if (defined('lib_dir') === false) {
     exit(':)');
@@ -55,30 +55,30 @@ class Database
             $r = array_keys($database);
             $database = $r[0];
         }
-        // Eğer Parametre İle Gönderilen $database NULL değilse
+        // If the $database parameter passed is not NULL
         self::$database = $database != null ? $database : Kayit::getir('database');
 
-        // Eğer bu database daha önce çağrılmışsa.
+        // If this database has been called before.
         if (array_key_exists(self::$database, self::$_instances)) {
             $this->_db[self::$database] = self::$_instances[self::$database];
             return true;
         }
 
-        // Adapteri instance et config'teki adapter varmı bak
+        // Instantiate the adapter and check if it exists in the config
         try {
             $_adapter = Adapter::getInstance();
         } catch (AdapterException $e) {
             $e->show();
             exit();
         }
-        // Adapteri getir
+        // Get the adapter
         try {
             $this->_db[self::$database] = $_adapter->getAdapter(self::$database);
         } catch (AdapterException $e) {
             $e->show();
             exit();
         }
-        // _instances nesnesine ekle
+        // Add to _instances object
         self::$_instances[self::$database] = $this->_db[self::$database];
 
         // symbol
@@ -88,7 +88,7 @@ class Database
 
 
     /*
-    * Check Database Exists İn Db_Config
+    * Check Database Exists In Db_Config
     * @access public
     * @return mixed
     */
@@ -109,7 +109,7 @@ class Database
     }
 
     /*
-    * Check Database Exists İn Db_Config
+    * Check Database Exists In Db_Config
     * @access private
     * @return bool
     */
@@ -117,7 +117,7 @@ class Database
     {
         $this->_query_count++;
         try {
-            // Log'a ekleyelim
+            // Add to log
             self::$_sql_querys[] = [
                 'time' => time(),
                 'sql' => $this->_sql_text
@@ -251,7 +251,7 @@ class Database
 
     /*
     * Make SQL insert
-    * Sql insert Fonksiyonu
+    * Sql insert Function
     * @param string $table
     * @param array $array
     * @param bool $bool
@@ -295,32 +295,32 @@ class Database
 
     public function getLimit($limit, $offset = 0)
     {
-        // Temp Bir Dizi  Oluşturalım
+        // Create a Temp Array
         $temp_result = [];
-        // Result Kaç Tane Ona Bakalım
+        // Check How Many Results
         // var_dump($this->_result);
         $size = $this->_result == NULL ? 0 : count($this->_result);
-        // temp bir değer oluşturalım
+        // Create a temp value
         $count = 0;
 
-        // Eğer Offset dizi değeri yoksa resultu nulle
+        // Nullify result if Offset array value is missing
         if (!isset($this->_result[$offset])) {
             $this->_result = null;
             return $this;
         }
-        // For döngüsü Yapalım $i değişkenine offset değerini verelim.
+        // Loop and assign offset value to $i
         for ($i = $offset; $i <= $size; $i++) {
-            // Eğer temp_result'a İstenilen limit kadar veri eklenmişse  break
+            // Break if desired limit of data is added to temp_result
             if ($count == $limit) {
                 break;
             }
-            // Eğer _resulttta belirtilen index varsa temp_result'a Ekle
+            // Add to temp_result if the specified index exists in _result
             if (isset($this->_result[$i])) {
                 $temp_result[] = $this->_result[$i];
                 $count++;
                 continue;
             }
-            // yoksa break
+            // otherwise break
             break;
         }
         $this->_result = $temp_result;
@@ -373,7 +373,12 @@ class Database
     {
         $this->build();
         $this->query($this->_sql_text);
-        return $this->_db[self::$database]->num_rows($this->_query_result[self::$database][$this->_sql_text]);
+        $res = $this->_query_result[self::$database][$this->_sql_text];
+        $count = $this->_db[self::$database]->num_rows($res);
+        // Free the database query resource and clear the cached result to prevent SQLite PDO memory leaks.
+        $this->_free_result($res);
+        unset($this->_query_result[self::$database][$this->_sql_text]);
+        return $count;
     }
 
     public function affected_rows()
@@ -630,11 +635,12 @@ class Database
         $this->_limit = null;
         $this->_order = null;
         $this->_table = null;
+        return $this;
     }
 
     /*
     *  Converter
-    *  Dönüştürücüler
+    *  Converters
     */
     public function toObject()
     {

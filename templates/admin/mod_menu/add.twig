@@ -16,8 +16,9 @@
     {% if select_nested_parent_id_result[parent_id] is defined %}
         {% for entry in select_nested_parent_id_result[parent_id] %}
             {% set parent_id_loop = entry.id %}
+            {% set display_name = entry.display_name %}
             <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %} {% if entry.id == self_id or disable %} disabled="disabled" {% endif %}>
-                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ display_name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
             </option>
             {% if select_nested_parent_id_result[parent_id_loop] is defined and select_nested_parent_id_result[parent_id_loop] is iterable and parent_id_loop != parent_id and level < 20 %}
                 {% set next_disable = disable or (entry.id == self_id) %}
@@ -28,6 +29,7 @@
 {% endmacro %}
 
 {% block content %}
+    {% set selected_parent_id = menu_selected_parent_id is defined ? menu_selected_parent_id : (parent_id is defined and parent_id != '' ? parent_id : menu_parent_default_id) %}
 	<style>
 		.edit-container {
 			padding: 16px;
@@ -83,6 +85,11 @@
 			border-width: 2px;
 			padding: 11px 15px;
 		}
+        textarea.m3-input-lg {
+            min-height: 112px;
+            resize: vertical;
+            line-height: 1.4;
+        }
 		.m3-floating-label {
 			position: absolute;
 			top: 12px;
@@ -117,16 +124,104 @@
         .ts-wrapper.m3-input-lg .ts-control {
             border-radius: 8px;
             border: 1px solid var(--md-sys-color-outline);
-            background: transparent;
+            background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,246,252,0.96) 100%);
             padding: 12px 16px;
             min-height: 48px;
             font-size: 16px;
             box-shadow: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, transform 0.2s;
+        }
+        .ts-wrapper.m3-input-lg .ts-control,
+        .ts-wrapper.m3-input-lg .ts-control input,
+        .ts-wrapper.m3-input-lg.single .ts-control > .item,
+        .ts-wrapper.m3-input-lg.multi .ts-control > .item {
+            color: var(--md-sys-color-on-surface) !important;
+            -webkit-text-fill-color: var(--md-sys-color-on-surface) !important;
+            opacity: 1 !important;
+        }
+        .ts-wrapper.m3-input-lg.single .ts-control > .item {
+            display: block !important;
+            visibility: visible !important;
+            max-width: calc(100% - 18px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .ts-wrapper.m3-input-lg.has-items .ts-control > input {
+            opacity: 0 !important;
+        }
+        .m3-ts-selected-value,
+        .m3-ts-option-value {
+            color: var(--md-sys-color-on-surface) !important;
+            -webkit-text-fill-color: var(--md-sys-color-on-surface) !important;
+        }
+        .m3-ts-selected-value {
+            display: block;
+            max-width: calc(100% - 18px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 500;
         }
         .ts-wrapper.m3-input-lg.focus .ts-control {
             border-color: var(--md-sys-color-primary);
             border-width: 2px;
             padding: 11px 15px;
+            box-shadow: 0 10px 24px rgba(103, 80, 164, 0.14);
+            transform: translateY(-1px);
+        }
+        .ts-wrapper.single .ts-control:after {
+            border-color: var(--md-sys-color-on-surface-variant) transparent transparent transparent;
+            border-width: 6px 5px 0 5px;
+            margin-top: -3px;
+            right: 14px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .ts-wrapper.single.dropdown-active .ts-control:after {
+            transform: rotate(180deg);
+            border-color: var(--md-sys-color-primary) transparent transparent transparent;
+        }
+        .ts-dropdown {
+            border: 1px solid rgba(103, 80, 164, 0.16);
+            border-radius: 18px;
+            box-shadow: 0 18px 38px rgba(34, 24, 64, 0.16);
+            overflow: hidden;
+            padding: 8px;
+            margin-top: 8px;
+            background: rgba(255, 252, 255, 0.98);
+            backdrop-filter: blur(14px);
+        }
+        .ts-dropdown .ts-dropdown-content {
+            max-height: 280px;
+            padding: 0;
+        }
+        .ts-dropdown .option,
+        .ts-dropdown .create {
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 14px;
+            line-height: 1.35;
+            color: var(--md-sys-color-on-surface);
+            transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+        }
+        .ts-dropdown .option:hover,
+        .ts-dropdown .option.active,
+        .ts-dropdown .create:hover {
+            background: rgba(103, 80, 164, 0.10);
+            color: var(--md-sys-color-primary);
+            transform: translateX(1px);
+        }
+        .ts-dropdown .optgroup-header {
+            padding: 10px 14px 6px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        .ts-wrapper.plugin-dropdown_input.focus.dropdown-active .ts-control,
+        .ts-wrapper.dropdown-active .ts-control {
+            border-color: var(--md-sys-color-primary);
         }
         .selection-grid {
             display: grid;
@@ -195,6 +290,13 @@
             font-size: 14px;
             color: var(--md-sys-color-primary);
         }
+        .m3-field-label {
+            display: block;
+            margin: 0 0 8px 4px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface-variant);
+        }
 	</style>
 
 	<form id="addForm" method="POST" action="">
@@ -237,25 +339,25 @@
 					<div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="lang" id="lang" required>
                             {% for item in lang_lang %}
-                                <option value="{{ item.seo }}">{{ item.name }} ({{ item.seo|upper }})</option>
+                                <option value="{{ item.seo }}" {% if (selected_lang is defined ? selected_lang : site.lang)|lower == item.seo|lower %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
                             {% endfor %}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.language }}</label>
                     </div>
 				</div>
 
-				<div class="form-row">
-					<div class="m3-input-wrapper">
-						<input type="text" class="m3-input-lg" name="name" id="name" placeholder=" " autocomplete="off" value="{{ name }}" required>
-						<label class="m3-floating-label">{{ lang.mod_menu.admin.columns.name }}</label>
-					</div>
+					<div class="form-row">
+                        <label class="m3-field-label" for="name">{{ lang.mod_menu.admin.columns.name }}</label>
+						<div class="m3-input-wrapper">
+							<input type="text" class="m3-input-lg" name="name" id="name" placeholder="{{ lang.mod_menu.placeholders.menu_name }}" autocomplete="off" value="{{ name }}" required>
+						</div>
 				</div>
 
                 <div class="form-row">
                     <div class="m3-input-wrapper">
-                        <select class="m3-input-lg" name="parent_id" id="parent_id">
-                            <option value="0" selected>{{ lang.mod_menu.columns.parent_menu }} (Root)</option>
-                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, 0, 0, 0) }}
+                        <select class="m3-input-lg" name="parent_id" id="parent_id" required>
+                            <option value="{{ menu_parent_default_id }}" {% if selected_parent_id is same as(menu_parent_default_id) %}selected{% endif %} disabled>{{ lang.mod_menu.parent_labels.select_parent }}</option>
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, menu_parent_root_id, selected_parent_id, 0) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.parent_id }}</label>
                     </div>
@@ -266,38 +368,34 @@
 			<div class="edit-card">
 
                 <div class="form-row">
+                    <label class="m3-field-label" for="url">{{ lang.mod_menu.admin.columns.url }}</label>
                     <div class="m3-input-wrapper">
-                        <input type="text" class="m3-input-lg" name="url" id="url" placeholder=" " value="{{ url }}">
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.url }}</label>
+                        <input type="text" class="m3-input-lg" name="url" id="url" placeholder="{{ lang.mod_menu.placeholders.menu_url }}" value="{{ url }}">
                     </div>
-                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.url }}</div>
                 </div>
 
                 <div class="form-row">
+                    <label class="m3-field-label" for="file">{{ lang.mod_menu.admin.columns.file }}</label>
                     <div class="m3-input-wrapper">
-                        <input type="text" class="m3-input-lg" name="file" id="file" placeholder=" " value="{{ file }}">
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.file }}</label>
+                        <input type="text" class="m3-input-lg" name="file" id="file" placeholder="{{ lang.mod_menu.placeholders.menu_file }}" value="{{ file }}">
                     </div>
-                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.file }}</div>
                 </div>
 
                 <div class="form-row">
+                    <label class="m3-field-label" for="icon">{{ lang.mod_menu.admin.columns.icon }}</label>
                     <div class="m3-input-wrapper icon-input-group">
-                        <input type="text" class="m3-input-lg pr-5" name="icon" id="icon" placeholder=" " value="{{ icon }}">
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.icon }}</label>
+                        <input type="text" class="m3-input-lg pr-5" name="icon" id="icon" placeholder="{{ lang.mod_menu.placeholders.icon_class }}" value="{{ icon }}">
                         <div class="icon-preview-box" id="iconPreview">
                             <i class="bi bi-question"></i>
                         </div>
                     </div>
-                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.icon }}</div>
                 </div>
 
                 <div class="form-row">
+                    <label class="m3-field-label" for="html">{{ lang.mod_menu.admin.columns.html }}</label>
                     <div class="m3-input-wrapper">
-                        <textarea class="m3-input-lg" name="html" id="html" rows="3" placeholder=" ">{{ html }}</textarea>
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.html }}</label>
+                        <textarea class="m3-input-lg" name="html" id="html" rows="3" placeholder="{{ lang.mod_menu.placeholders.menu_html }}">{{ html }}</textarea>
                     </div>
-                    <div class="m3-help-text"><i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.html }}</div>
                 </div>
             </div>
 
@@ -346,7 +444,7 @@
                                 <option value="{{ item.id }}">{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_menu.form.acl_settings }}">
+                        <a href="{{ site.saddress }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_menu.form.acl_settings }}">
                             <i class="bi bi-gear" style="font-size: 20px;"></i>
                         </a>
                         <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.acl_id|raw }}</label>
@@ -411,11 +509,11 @@
 		}
 	</style>
 	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_menu/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_menu/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
 			{{ lang.mod_menu.actions.cancel }}
 		</button>
-		<button type="submit" form="addForm" name="add" value="1" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+		<button type="button" onclick="submitAddForm('addForm')" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
 			<i class="bi bi-plus-lg"></i>
 			{{ lang.mod_menu.actions.add }}
 		</button>
@@ -423,14 +521,60 @@
 {% endblock %}
 
 {% block scripts %}
+{{ parent() }}
 <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('parent_id')) new TomSelect('#parent_id', { create: false });
-        if (document.getElementById('acl_id')) new TomSelect('#acl_id', { create: false });
+        var langSelect = document.getElementById('lang');
+
+        function reloadForMenuContext() {
+            if (!langSelect) {
+                return;
+            }
+
+            var url = new URL(window.location.href);
+            url.searchParams.set('lang', langSelect.value);
+            window.location.href = url.toString();
+        }
+
+        if (langSelect) {
+            langSelect.addEventListener('change', reloadForMenuContext);
+        }
+
+        function initM3Select(selector, config) {
+            var element = document.querySelector(selector);
+            if (!element) {
+                return null;
+            }
+
+            return new TomSelect(selector, Object.assign({
+                create: false,
+                maxOptions: 200,
+                dropdownClass: 'm3-select-dropdown',
+                render: {
+                    item: function(data, escape) {
+                        return '<div class="m3-ts-selected-value" title="' + escape(data.text || '') + '">' + escape(data.text || '') + '</div>';
+                    },
+                    option: function(data, escape) {
+                        return '<div class="m3-ts-option-value">' + escape(data.text || '') + '</div>';
+                    }
+                }
+            }, config || {}));
+        }
+
+        initM3Select('#lang', {
+            searchField: ['text'],
+            sortField: [{ field: '$order' }]
+        });
+        initM3Select('#parent_id', {
+            searchField: ['text']
+        });
+        initM3Select('#acl_id', {
+            searchField: ['text']
+        });
 
         // Icon Preview functionality
         const iconInput = document.getElementById('icon');
@@ -461,6 +605,12 @@
                 }, 150);
             });
         }
+
+        // Clear custom validity on input
+        document.querySelectorAll('[required]').forEach(input => {
+            input.addEventListener('input', () => input.setCustomValidity(''));
+            input.addEventListener('change', () => input.setCustomValidity(''));
+        });
     });
 
     function selectTargetStatus(el, val) {
@@ -475,11 +625,41 @@
         document.getElementById('statusHidden').value = val;
     }
 
-    function submitEditForm(formId) {
+    function submitAddForm(formId) {
         const form = document.getElementById(formId);
+        if (!form) return;
+
+        // Clear current validation state.
+        const inputs = form.querySelectorAll('[required]');
+        inputs.forEach(input => input.setCustomValidity(''));
+
         if (!form.checkValidity()) {
+            inputs.forEach(input => {
+                if (!input.validity.valid) {
+                    let msg = "";
+                    if (input.id === 'parent_id') {
+                        msg = "{{ lang.mod_menu.errors.parent_selection_required|e('js') }}";
+                    } else if (input.id === 'name') {
+                        msg = "{{ lang.mod_menu.validation.required|replace({':field': lang.mod_menu.admin.columns.name})|e('js') }}";
+                    } else if (input.id === 'lang') {
+                        msg = "{{ lang.mod_menu.validation.required|replace({':field': lang.mod_menu.admin.columns.language})|e('js') }}";
+                    } else {
+                        msg = "{{ lang.mod_menu.errors.general|e('js') }}";
+                    }
+                    input.setCustomValidity(msg);
+                }
+            });
             form.reportValidity();
             return;
+        }
+
+        // Add hidden field for 'add' button since we changed from type="submit"
+        if (!form.querySelector('input[name="add"]')) {
+            const hidden = document.createElement('input');
+            hidden.type = 'hidden';
+            hidden.name = 'add';
+            hidden.value = '1';
+            form.appendChild(hidden);
         }
         form.submit();
     }

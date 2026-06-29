@@ -47,9 +47,9 @@
                     cancelButtonColor: '#6750a4'
                 }).then(function(result) {
                     if (result.isConfirmed) {
-                        window.location.href = '{{ site.sadres }}mod_video/list';
+                        window.location.href = '{{ site.saddress }}mod_video/list';
                     } else {
-                        window.location.href = '{{ site.sadres }}mod_video/edit/{{ d.id }}';
+                        window.location.href = '{{ site.saddress }}mod_video/edit/{{ d.id }}';
                     }
                 });
             });
@@ -77,8 +77,8 @@
         
         <!-- VIDEO PLAYER CARD -->
         <div class="m3-card" style="padding: 12px; background: #000; overflow: hidden; border-radius: 12px;">
-            <video id="video-{{ d.id }}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%" height="220" {% if d.image %}poster="{{ site.radres }}mod_video/image/{{ d.image }}"{% endif %} data-setup='{"example_option":true}' style="border-radius: 8px;">
-                <source src="{{ site.radres }}mod_video/flv/{{ d.flv }}" type='video/mp4'/>
+            <video id="video-{{ d.id }}" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto" width="100%" height="220" {% if d.image %}poster="{{ site.iaddress }}mod_video/image/{{ d.image }}"{% endif %} data-setup='{"example_option":true}' style="border-radius: 8px;">
+                <source src="{{ site.iaddress }}mod_video/flv/{{ d.flv }}" type='video/mp4'/>
                 <p class="vjs-no-js">
                     {{ lang.mod_video.js_enable }}
                 </p>
@@ -140,7 +140,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <a href="{{ site.sadres }}mod_acl/list" class="acl-settings-btn" title="ACL" style="background: rgba(0,0,0,0.04); border-radius: 100px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface);">
+                    <a href="{{ site.saddress }}mod_acl/list" class="acl-settings-btn" title="ACL" style="background: rgba(0,0,0,0.04); border-radius: 100px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface);">
                         <i class="bi bi-gear" style="font-size: 20px;"></i>
                     </a>
                 </div>
@@ -185,7 +185,7 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button type="button" class="toolbar-item active" onclick="window.location.href='{{ site.sadres }}mod_video/list'">
+        <button type="button" class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video/list'">
             <i class="bi bi-x-lg"></i>
             <span>{{ lang.mod_video.button.vazgec }}</span>
         </button>
@@ -225,7 +225,7 @@ function removeImage(id) {
         if (result.isConfirmed) {
             $.ajax({
                 type: "POST",
-                url: "{{ site.sadres }}mod_video/image_remove_image",
+                url: "{{ site.saddress }}mod_video/image_remove_image",
                 data: { id: id },
                 success: function (msg) {
                     if (msg == 'Oke') {

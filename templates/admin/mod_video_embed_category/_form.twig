@@ -1,0 +1,281 @@
+{% macro nested_options(items, parent_id, selected_id, level, self_id, disable = false) %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            <option value="{{ entry.id }}" {% if entry.id == selected_id %}selected{% endif %} {% if entry.id == self_id or disable %}disabled{% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }} ({{ entry.lang|upper }})
+            </option>
+            {% if items[entry.id] is defined %}
+                {% set next_disable = disable or (entry.id == self_id) %}
+                {{ _self.nested_options(items, entry.id, selected_id, level + 1, self_id, next_disable) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro menu_options(items, parent_id, selected_id, level) %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            <option value="{{ entry.id }}" {% if entry.id == selected_id %}selected{% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }}
+            </option>
+            {{ _self.menu_options(items, entry.id, selected_id, level + 1) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+<style>
+    .video-category-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
+    .video-category-card { background: var(--md-sys-color-surface); border-radius: 20px; padding: 20px; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; }
+    .video-category-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); margin: 0; }
+    .form-status { border-radius: 16px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
+    .form-status.error { background: #fce8e6; color: #b3261e; }
+    .form-status.success { background: #e6f4ea; color: #1e4620; }
+    .m3-input-wrapper { position: relative; }
+    .m3-input-lg { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-on-surface); box-sizing: border-box; outline: none; min-height: 54px; }
+    .m3-input-lg:focus { border-width: 2px; border-color: var(--md-sys-color-primary); padding: 15px; }
+    textarea.m3-input-lg { min-height: 124px; resize: vertical; }
+    .m3-floating-label { position: absolute; top: 16px; left: 16px; background: var(--md-sys-color-surface); padding: 0 6px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: all 0.2s ease; }
+    .m3-input-lg:focus + .m3-floating-label, .m3-input-lg:not(:placeholder-shown) + .m3-floating-label, select.m3-input-lg + .m3-floating-label, textarea.m3-input-lg:not(:placeholder-shown) + .m3-floating-label { top: -9px; left: 12px; font-size: 12px; color: var(--md-sys-color-primary); }
+    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .selection-card { border: 1px solid var(--md-sys-color-outline); border-radius: 16px; padding: 16px; display: grid; gap: 6px; cursor: pointer; }
+    .selection-card input { display: none; }
+    .selection-card.active { border-color: var(--md-sys-color-primary); background: var(--md-sys-color-primary-container); }
+    .selection-title { font-weight: 700; }
+    .selection-copy { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
+    .image-note { font-size: 13px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; }
+    .current-image { display: grid; gap: 10px; }
+    .current-image img { width: 100%; max-width: 180px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); }
+    .image-remove-btn { min-height: 44px; justify-self: start; border: none; border-radius: 999px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; font-weight: 700; background: #fce8e6; color: #b3261e; }
+    .video-category-bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)); }
+    .video-category-bottom-bar a, .video-category-bottom-bar button { flex: 1; min-height: 52px; border-radius: 999px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; cursor: pointer; }
+    .video-category-bottom-bar .cancel-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
+    .video-category-bottom-bar .save-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+</style>
+
+<div class="video-category-shell">
+    {% set current_lang = form_lang is defined ? form_lang : selected_lang %}
+    {% set selected_parent = parent_id is defined ? parent_id : category_selected_parent_id %}
+    {% set selected_root = root is defined ? root : record.root %}
+    {% set selected_menu = menu is defined ? menu : record.menu %}
+    {% set selected_acl = acl_id is defined ? acl_id : record.acl_id %}
+
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if fatal_error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="{{ form_id }}" class="video-category-shell" style="padding:0; gap:16px;">
+        <div class="video-category-card">
+            <h3 class="video-category-title">{{ lang.mod_video_embed_category.form.basics }}</h3>
+
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="lang" id="video-category-lang" required>
+                    {% for item in lang_lang %}
+                        <option value="{{ item.seo }}" {% if item.seo == current_lang %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.lang }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="name" id="video-category-name" value="{{ name is defined ? name : record.name }}" placeholder=" " oninput="syncVideoCategoryMeta()">
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.name }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="seo" id="video-category-seo" value="{{ seo is defined ? seo : record.seo }}" placeholder=" ">
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.seo }}</label>
+            </div>
+        </div>
+
+        <div class="video-category-card">
+            <h3 class="video-category-title">{{ lang.mod_video_embed_category.form.structure }}</h3>
+
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="parent_id" required>
+                    {% if category_parent_root_id > 0 %}
+                        <option value="{{ category_parent_root_id }}" {% if selected_parent == category_parent_root_id %}selected{% endif %}>{{ category_language_root_label }}</option>
+                    {% endif %}
+                    {% if category_parent_root_id == 0 or category_allow_system_parent %}
+                        <option value="0" {% if selected_parent == 0 or selected_parent == '0' %}selected{% endif %}>{{ lang.mod_video_embed_category.parent_labels.system_root }}</option>
+                    {% endif %}
+                    {{ _self.nested_options(select_nested_parent_id_result, category_parent_root_id, selected_parent, 0, mode == 'edit' ? record.id : 0) }}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.parent_id }}</label>
+            </div>
+
+            <div class="selection-grid" data-selection-group>
+                <label class="selection-card{% if selected_root == 'y' %} active{% endif %}">
+                    <input type="radio" name="root" value="y" {% if selected_root == 'y' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_video_embed_category.admin.radio.root_y }}</div>
+                    <div class="selection-copy">{{ lang.mod_video_embed_category.status.root }}</div>
+                </label>
+                <label class="selection-card{% if selected_root == 'n' %} active{% endif %}">
+                    <input type="radio" name="root" value="n" {% if selected_root == 'n' %}checked{% endif %}>
+                    <div class="selection-title">{{ lang.mod_video_embed_category.admin.radio.root_n }}</div>
+                    <div class="selection-copy">{{ lang.mod_video_embed_category.status.nested }}</div>
+                </label>
+            </div>
+        </div>
+
+        <div class="video-category-card">
+            <h3 class="video-category-title">{{ lang.mod_video_embed_category.form.seo }}</h3>
+
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="title" id="video-category-title" value="{{ title is defined ? title : record.title }}" placeholder=" ">
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.title }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <input class="m3-input-lg" type="text" name="keywords" id="video-category-keywords" value="{{ keywords is defined ? keywords : record.keywords }}" placeholder=" ">
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.keywords }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <textarea class="m3-input-lg" name="description" id="video-category-description" placeholder=" ">{{ description is defined ? description : record.description }}</textarea>
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.description }}</label>
+            </div>
+        </div>
+
+        <div class="video-category-card">
+            <h3 class="video-category-title">{{ lang.mod_video_embed_category.form.publishing }}</h3>
+
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="menu">
+                    <option value="0" {% if selected_menu == 0 or selected_menu == '0' %}selected{% endif %}>{{ lang.mod_video_embed_category.form.menu_none }}</option>
+                    {{ _self.menu_options(select_nested_menu_result, category_menu_root_id, selected_menu, 0) }}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.menu }}</label>
+            </div>
+
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="acl_id">
+                    <option value="0" {% if selected_acl == 0 or selected_acl == '0' %}selected{% endif %}>{{ lang.mod_video_embed_category.form.acl_none }}</option>
+                    {% for acl in mod_acl_acl_id %}
+                        <option value="{{ acl.id }}" {% if acl.id == selected_acl %}selected{% endif %}>{{ acl.name }}</option>
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_video_embed_category.admin.columns.acl_id }}</label>
+            </div>
+
+            {% if mode == 'edit' and record.image %}
+                <div class="current-image" id="video-category-current-image">
+                    <img src="{{ site.iaddress ~ 'mod_video_embed_category/thumb/' ~ record.image }}" alt="{{ record.name }}">
+                    <button type="button" class="image-remove-btn" onclick="removeVideoCategoryImage('{{ record.id }}')">
+                        <i class="bi bi-x-circle"></i>
+                        <span>{{ lang.mod_video_embed_category.button.remove }}</span>
+                    </button>
+                </div>
+            {% endif %}
+
+            <input class="m3-input-lg" type="file" name="image" accept="image/*" style="padding:12px;">
+            <div class="image-note">{{ lang.mod_video_embed_category.form.image_help }}</div>
+        </div>
+    </form>
+</div>
+
+<script>
+function syncVideoCategoryMeta() {
+    const nameInput = document.getElementById('video-category-name');
+    const seoInput = document.getElementById('video-category-seo');
+    const titleInput = document.getElementById('video-category-title');
+    const keywordsInput = document.getElementById('video-category-keywords');
+    const descriptionInput = document.getElementById('video-category-description');
+    if (!nameInput || !seoInput || !titleInput || !keywordsInput || !descriptionInput) {
+        return;
+    }
+    if (!seoInput.dataset.touched) {
+        seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(nameInput.value) : nameInput.value;
+    }
+    if (!titleInput.dataset.touched) {
+        titleInput.value = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+    }
+    if (!keywordsInput.dataset.touched) {
+        keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(nameInput.value) : nameInput.value;
+    }
+    if (!descriptionInput.dataset.touched) {
+        const cleanedValue = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+        descriptionInput.value = cleanedValue.substring(0, 255);
+    }
+}
+
+async function removeVideoCategoryImage(id) {
+    const confirmation = await Swal.fire({
+        icon: 'warning',
+        text: {{ lang.mod_video_embed_category.remove_image|json_encode|raw }},
+        showCancelButton: true,
+        confirmButtonText: {{ lang.mod_video_embed_category.button.remove|json_encode|raw }},
+        cancelButtonText: {{ lang.mod_video_embed_category.button.cancel|json_encode|raw }},
+        reverseButtons: true,
+        focusCancel: true
+    });
+
+    if (!confirmation.isConfirmed) {
+        return;
+    }
+
+    const body = new URLSearchParams();
+    body.append('id', id);
+
+    try {
+        const response = await fetch('{{ site.saddress }}mod_video_embed_category/image_remove_image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString()
+        });
+        const text = await response.text();
+        if (text.trim() === 'Oke') {
+            const currentImage = document.getElementById('video-category-current-image');
+            if (currentImage) {
+                currentImage.remove();
+            }
+            showSnackbar({{ lang.mod_video_embed_category.message.success.image_removed|json_encode|raw }}, 'success');
+            return;
+        }
+
+        Swal.fire({ icon: 'error', text: text });
+    } catch (error) {
+        showSnackbar({{ lang.mod_video_embed_category.list_ui.network_error|json_encode|raw }}, 'error');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const langSelect = document.getElementById('video-category-lang');
+    if (langSelect) {
+        langSelect.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', langSelect.value);
+            window.location.href = url.toString();
+        });
+    }
+
+    const seoInput = document.getElementById('video-category-seo');
+    const titleInput = document.getElementById('video-category-title');
+    const keywordsInput = document.getElementById('video-category-keywords');
+    const descriptionInput = document.getElementById('video-category-description');
+    [seoInput, titleInput, keywordsInput, descriptionInput].forEach(function (input) {
+        if (!input) return;
+        input.addEventListener('input', function () {
+            input.dataset.touched = '1';
+        });
+    });
+    syncVideoCategoryMeta();
+    document.querySelectorAll('[data-selection-group]').forEach(function (group) {
+        group.addEventListener('change', function (event) {
+            if (event.target.type !== 'radio') return;
+            group.querySelectorAll('.selection-card').forEach(function (card) {
+                card.classList.toggle('active', card.contains(event.target));
+            });
+        });
+    });
+});
+</script>

@@ -158,10 +158,6 @@
             <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate_confirm.key }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="window.location.href='{{ site.sadres }}mod_user/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
-
         <button class="toolbar-item" id="toolbarAcl" style="pointer-events: none; opacity: 0.3;" onclick="aclSelected()">
             <i class="bi bi-shield-lock-fill"></i>
             <span>{{ lang.management.acl }}</span>
@@ -172,14 +168,19 @@
             <span>{{ lang.mod_user.button.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="window.location.href='{{ site.saddress }}mod_user/add'" aria-label="{{ lang.mod_user.add|default('Bakarhêner Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-const DATA_URL = '{{ site.sadres }}mod_user/datatable_json';
-const MODULE_URL = '{{ site.sadres }}mod_user/';
-const RADRES_URL = '{{ site.radres }}';
+const DATA_URL = '{{ site.saddress }}mod_user/datatable_json';
+const MODULE_URL = '{{ site.saddress }}mod_user/';
+const RADRES_URL = '{{ site.iaddress }}';
 const USER_LANG = {
     confirm_delete: '{{ lang.mod_user.remove_record }}',
     confirm_activate: '{{ lang.mod_user.grid.status.value }}',
@@ -435,7 +436,7 @@ class UserManager {
 
     openActionSheet(id, title, status) {
         if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, status === 'y', ['gallery', 'files']);
+            openContextMenu(id, title, status === 'y', ['gallery', 'files', 'video']);
 
             // Override shared context menu labels with mod_user terms
             setTimeout(() => {

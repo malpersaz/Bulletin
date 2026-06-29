@@ -1,96 +1,123 @@
 <?php
-                $lang['mod_video_embed_category']= [
-  'add' => 'Video Kategorisi Ekle',
-  'edit' => 'Video Kategorini Düzenle',
-  'list' => 'Video Kategori Listesi',
-  'information' => 'Bilgi!',
-  'ok' => 'İşlem Başarılı!',
-  'hata' => 'Hata Oluştu!',
-  'error' => 'Ölümcül Hata Oluştu!',
-  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
-  'remove_image_ok' => 'Resim Kaldırıldı',
-  'choose_wish' => 'Dilerseniz Seçin',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-  'message' => 
-   [
-    'ok' => 
-     [
-      'add' => 'Video Kategorisi Eklendi!',
-      'edit' => 'Video Kategorisi Düzenlendi!',
+if (!defined('AKM_LOADED')) {
+    die('Direct access to this file is not allowed.');
+}
+
+$lang['mod_video_embed_category'] = [
+    'add' => 'Video Kategorisi Ekle',
+    'edit' => 'Video Kategorisini Düzenle',
+    'list' => 'Video Kategorileri',
+    'remove_record' => 'Bu video kategorisini silmek istediğinize emin misiniz?',
+    'remove_image' => 'Bu görseli kaldırmak istediğinize emin misiniz?',
+    'empty_state' => 'Henüz video kategorisi eklenmedi.',
+    'message' => [
+        'success' => [
+            'add' => 'Video kategorisi başarıyla eklendi.',
+            'edit' => 'Video kategorisi başarıyla güncellendi.',
+            'delete' => 'Video kategorisi başarıyla silindi.',
+            'reordered' => 'Video kategorisi sırası güncellendi.',
+            'image_removed' => 'Video kategorisi görseli kaldırıldı.',
+        ],
+        'error' => [
+            'add' => 'Video kategorisi eklenemedi.',
+            'edit' => 'Video kategorisi güncellenemedi.',
+        ],
     ],
-    'error' => 
-     [
-      'add' => 'Video Kategorisi Eklenemedi!',
-      'edit' => 'Video Kategorisi Düzenlenemedi!',
+    'errors' => [
+        'record' => 'Belirtilen video kategorisi bulunamadı.',
+        'delete_failed' => 'Video kategorisi silinemedi.',
+        'parent_self' => 'Bir kategori kendisinin üst kategorisi olamaz.',
+        'parent_selection_required' => 'Lütfen bir üst kategori seçin.',
+        'parent_language_mismatch' => 'Üst kategori dili, kategori diliyle aynı olmalıdır.',
+        'parent_cycle' => 'Bir kategori kendisinin veya alt kategorilerinden birinin altına taşınamaz.',
+        'menu_parent_not_found' => 'Seçilen menü üst kaydı bulunamadı.',
+        'menu_language_mismatch' => 'Menü üst kaydının dili, kategori diliyle aynı olmalıdır.',
+        'order_update_failed' => 'Kategori sırası güncellenemedi.',
+        'image_remove_failed' => 'Kategori görseli kaldırılamadı.',
     ],
-    'information' => 
-     [
-      'moderate' => 'Düzenlemek İstediğiniz Video Kategorisine İki Defa Tıklayın',
-      'move' => 'Sırasını Değiştirmek İstediğiniz Video Kategorini Sürükleyip Bırakın',
+    'parent_labels' => [
+        'system_root' => 'Sistem kökü',
+        'language_root' => ':language kökü',
     ],
-  ],
-  'errors' => 
-   [
-    'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
-  ],
-  'button' => 
-   [
-    'add' => 'Ekle',
-    'edit' => 'Düzenle',
-    'delete' => 'Sil',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Evet',
-    'hayir' => 'Hayır',
-  ],
-  'validator' => 
-   [
-    'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
-    'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
-  ],
-  'roll' => 
-   [
-    'ad' => 'Video Kategori Yönetim Rolleri',
-    'add' => 'Video Kategorisi Ekleyebilir',
-    'edit' => 'Video Kategorisi Düzenleyebilir',
-    'delete' => 'Video Kategorisi Silebilir',
-    'list' => 'Video Kategori Yönetimini Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan Video Kategori Kaydını Düzenleyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Video Kategori Kaydını Silebilir',
-  ],
-  'role_errors' => 
-   [
-    'moderate_edit' => 'Size Ait Olmayan Video Kategori Kaydını Düzenleyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan Video Kategori Kaydını Silemezsiniz',
-    'add' => 'Video Kategorisi Eklemeye Permissionniz Yok',
-    'edit' => 'Video Kategorisi Düzenlemeye Permissionniz Yok',
-    'list' => 'Video Kategori Yönetimini Görüntülemeye Permissionniz Yok',
-    'delete' => 'Video Kategorisi Silmeye Permissionniz Yok',
-  ],
-  'admin' => 
-   [
-    'columns' => 
-     [
-      'id' => 'ID',
-      'language' => 'Video Kategorisinin Görüntüleneceği Dil',
-      'name' => 'Video Kategori Adı',
-      'parent_id' => 'Alt Video Kategorisi',
-      'order' => 'Sıra',
-      'root' => 'Görüntülenmemesi Gereken Ana Kategorimi?',
-      'seo' => 'Video Kategori Bağlantısı',
-      'title' => 'Title ( Arama Motorları İçin)',
-      'keywords' => 'Keywords ( Arama Motorları İçin)',
-      'description' => 'Açıklama ( Arama Motorları İçin)',
-      'menu' => 'Kategoriyi Menüye Gönder',
-      'image' => 'Resim',
+    'button' => [
+        'add' => 'Ekle',
+        'edit' => 'Düzenle',
+        'delete' => 'Sil',
+        'cancel' => 'Vazgeç',
+        'save' => 'Kaydet',
+        'remove' => 'Kaldır',
     ],
-    'select_value' => 
-     [
-      'root_e' => 'Evet',
-      'root_h' => 'Hayır',
+    'validator' => [
+        'required' => 'Lütfen %s alanını boş bırakmayın.',
+        'length' => '%s alanı %s ile %s karakter arasında olmalıdır.',
+        'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
+        'inarray' => '%s alanı yalnızca şu değerleri kabul edebilir: %s.',
     ],
-  ],
+    'roll' => [
+        'ad' => 'Video Kategorisi Yönetim Rolleri',
+        'add' => 'Video kategorisi ekleyebilir',
+        'edit' => 'Video kategorisi düzenleyebilir',
+        'delete' => 'Video kategorisi silebilir',
+        'list' => 'Video kategorisi yönetimini görüntüleyebilir',
+        'moderate_edit' => 'Başkalarına ait video kategorilerini düzenleyebilir',
+        'moderate_delete' => 'Başkalarına ait video kategorilerini silebilir',
+    ],
+    'role_errors' => [
+        'add' => 'Video kategorisi ekleme yetkiniz yok.',
+        'edit' => 'Video kategorisi düzenleme yetkiniz yok.',
+        'delete' => 'Video kategorisi silme yetkiniz yok.',
+        'list' => 'Video kategorisi yönetimini görüntüleme yetkiniz yok.',
+        'moderate_edit' => 'Başkalarına ait video kategorilerini düzenleyemezsiniz.',
+        'moderate_delete' => 'Başkalarına ait video kategorilerini silemezsiniz.',
+    ],
+    'status' => [
+        'root' => 'Kök',
+        'nested' => 'Alt Kategori',
+    ],
+    'admin' => [
+        'columns' => [
+            'id' => 'ID',
+            'lang' => 'Dil',
+            'name' => 'Kategori Adı',
+            'parent_id' => 'Üst Kategori',
+            'order' => 'Sıra',
+            'root' => 'Kök Görünümü',
+            'seo' => 'SEO URL',
+            'title' => 'Meta Başlık',
+            'keywords' => 'Meta Anahtar Kelimeler',
+            'description' => 'Meta Açıklama',
+            'image' => 'Görsel',
+            'menu' => 'Menü Üst Öğesi',
+            'acl_id' => 'Erişim Kontrolü',
+        ],
+        'radio' => [
+            'root_y' => 'Yapısal Kök Olarak Kullan',
+            'root_n' => 'Listelerde Göster',
+        ],
+    ],
+    'form' => [
+        'basics' => 'Kategori Temeli',
+        'structure' => 'Yapı ve Görünürlük',
+        'seo' => 'SEO Detayları',
+        'publishing' => 'Yayın Entegrasyonları',
+        'image_help' => 'Video listeleri ve menüler için kategori kapağı yükleyin.',
+        'parent_none' => 'Üst seviye kategori',
+        'menu_none' => 'Menü öğesi oluşturma',
+        'acl_none' => 'Herkese açık erişim',
+    ],
+    'list_ui' => [
+        'add_cta' => 'Ekle',
+        'delete_cta' => 'Sil',
+        'empty_cta' => 'İlk kategoriyi oluştur',
+        'select_record' => 'Önce bir kategori seçin.',
+        'delete_title' => 'Kategoriyi sil',
+        'delete_confirm_button' => 'Evet, sil',
+        'delete_cancel_button' => 'Vazgeç',
+        'network_error' => 'İstek gönderilemedi. Lütfen bağlantınızı kontrol edin.',
+        'unlock_reorder' => 'Sıralamayı Aç',
+        'lock_reorder' => 'Sıralamayı Kilitle',
+        'mode_unlocked' => 'Sıralama modu açıldı.',
+        'reorder_title' => 'Kategori sırasını güncelle',
+        'reorder_confirm' => 'Bu kategoriyi yeni konumuna taşımak istiyor musunuz?',
+    ],
 ];

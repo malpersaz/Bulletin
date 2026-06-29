@@ -61,7 +61,7 @@ $(document).ready(function() {
                             <div class="col-md-4 category-column">
                                 <div class="category-homepage-section h-100 p-4">
                                     <h2 class="nyt-news-heading">
-                                        <a href="{{ site.sadres }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
+                                        <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
                                     </h2>
                                     {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo, is_column: true } %}
                                 </div>

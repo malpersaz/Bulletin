@@ -1,5 +1,5 @@
 /**
- * Rojname - Private Messaging (mod_user_pm)
+ * AKM Business - Private Messaging (mod_user_pm)
  * Modernization with M3 Design & Infinite Scroll
  * @date 2026-03-12
  */

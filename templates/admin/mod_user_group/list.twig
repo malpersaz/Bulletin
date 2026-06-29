@@ -17,7 +17,7 @@
                     <div class="drag-handle" onclick="event.stopPropagation()"><i class="bi bi-grip-vertical"></i></div>
 
                     {% if items[entry.group_id] is defined %}
-                        <button class="toggle-btn" onclick="toggleUserGroup(this, event)">
+                        <button class="toggle-btn collapsed" onclick="toggleUserGroup(this, event)">
                             <i class="bi bi-chevron-down"></i>
                         </button>
                     {% else %}
@@ -38,7 +38,7 @@
                 </div>
 
                 {% if items[entry.group_id] is defined %}
-                    <div class="list-children">
+                    <div class="list-children collapsed">
                         {{ _self.render_tree(items, entry.group_id, level + 1) }}
                     </div>
                 {% endif %}
@@ -68,7 +68,7 @@
                     <i class="bi bi-diagram-3"></i>
                 </div>
                 <h2 style="font-weight: 800;">{{ lang.mod_user_group[17] }}</h2>
-                <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
+                <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_user_group/add'">
                     <i class="bi bi-plus-lg"></i>
                 </div>
             </div>
@@ -82,16 +82,17 @@
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_user_group.buttons.edit }}</span>
         </button>
-        
-        <div class="toolbar-fab" onclick="location.href='{{ site.sadres }}mod_user_group/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
 
         <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-trash3-fill"></i>
             <span>{{ lang.mod_user_group.buttons.delete }}</span>
         </button>
     </div>
+
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_user_group/add'" aria-label="{{ lang.mod_user_group.add|default('Koma Bakarhêneran Lêzêde Bike') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 {% endblock %}
 
 {% block scripts %}

@@ -3,6 +3,7 @@
     'add' => 'Video Ekle',
     'edit' => 'Videoyu Düzenle',
     'list' => 'Video Listesi',
+    'video_management' => 'Video Yönetimi',
     'information' => 'Bilgi!',
     'oke' => 'İşlem Başarılı!',
     'hata' => 'Hata Oluştu!',

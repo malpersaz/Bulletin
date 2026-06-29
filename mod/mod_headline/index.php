@@ -550,7 +550,7 @@ class mod_headline_mod extends indexMain
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<img src="' . $this->site['radres'] . 'mod_headline/thumb/' . $content['image'] . '">',
+                    '<img src="' . $this->site['iaddress'] . 'mod_headline/thumb/' . $content['image'] . '">',
                     $content['lang'],
                     $content['created_at'],
                     '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>',

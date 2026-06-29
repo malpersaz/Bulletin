@@ -301,7 +301,7 @@
                                 <option value="{{ item.id }}">{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.sadres }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_publication_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
+                        <a href="{{ site.saddress }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_publication_category.admin.tooltips.acl_settings|default('ACL Settings') }}">
                             <i class="bi bi-gear" style="font-size: 20px;"></i>
                         </a>
                     </div>
@@ -418,7 +418,7 @@
 		}
 	</style>
 	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.sadres }}mod_publication_category/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_publication_category/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
 			<i class="bi bi-x-lg"></i>
 			{{ lang.mod_publication_category.buttons.cancel|default("Vazgeç") }}
 		</button>

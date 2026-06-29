@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block canonical %}
-	<link rel="canonical" href="{{ site.sadres }}register"/>
+	<link rel="canonical" href="{{ site.saddress }}register"/>
 {% endblock %}
 
 {% block head %}
@@ -94,7 +94,7 @@ console.warn('Cookie access check failed:', e);
 credentialsMode = 'omit';
 }
 
-fetch('{{ site.sadres }}mod_user/checkUsernameAvailability', {
+fetch('{{ site.saddress }}mod_user/checkUsernameAvailability', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/x-www-form-urlencoded'
@@ -162,7 +162,7 @@ console.warn('Cookie access check failed:', e);
 credentialsMode = 'omit';
 }
 
-fetch('{{ site.sadres }}mod_user/check_email', {
+fetch('{{ site.saddress }}mod_user/check_email', {
 method: 'POST',
 headers: {
 'Content-Type': 'application/x-www-form-urlencoded'
@@ -587,7 +587,7 @@ firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
 							</div>
 						{% endif %}
 
-						<form method="post" action="{{ site.sadres }}register" id="register" novalidate>
+						<form method="post" action="{{ site.saddress }}register" id="register" novalidate>
 							<div class="row">
 								<div class="col-md-6 mb-3">
 									<label class="form-label" for="name">{{ lang.mod_user.register.your_name }}</label>
@@ -663,7 +663,7 @@ firstInvalid.scrollIntoView({behavior: 'smooth', block: 'center'});
 								<label class="form-label" for="captcha">{{ lang.mod_user.register.security_code }}</label>
 								<div class="input-group">
 									<input type="text" class="form-control" id="captcha" name="captcha" value="" required minlength="5" maxlength="5" placeholder="{{ lang.mod_user.register.security_code|lower }}" style="max-width: 150px;">
-									<img src="{{ site.sadres }}mod_user/captcha" alt="{{ lang.mod_user.register.security_code }}" style="height: 38px; cursor: pointer;" onclick="this.src='{{ site.sadres }}mod_user/captcha?'+Math.random()">
+									<img src="{{ site.saddress }}mod_user/captcha" alt="{{ lang.mod_user.register.security_code }}" style="height: 38px; cursor: pointer;" onclick="this.src='{{ site.saddress }}mod_user/captcha?'+Math.random()">
 								</div>
 								<small class="text-muted">{{ lang.mod_user.register.captcha_refresh }}</small>
 							</div>

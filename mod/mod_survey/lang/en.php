@@ -2,7 +2,7 @@
 /**
  * Poll/Survey Module - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_survey
  * @version 1.0.0
  * @author  AKM Software

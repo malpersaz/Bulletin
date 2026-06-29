@@ -73,10 +73,10 @@ input:checked + .m3-modern-slider:before {
 <script>
     window.modSettingsConfig = window.modSettingsConfig || {};
     Object.assign(window.modSettingsConfig, {
-        socialListUrl: '{{ site.sadres }}mod_settings/ajax_social_list',
-        socialSaveUrl: '{{ site.sadres }}mod_settings/ajax_social_save',
-        socialToggleUrl: '{{ site.sadres }}mod_settings/ajax_social_toggle_status',
-        socialReorderUrl: '{{ site.sadres }}mod_settings/ajax_social_reorder',
+        socialListUrl: '{{ site.saddress }}mod_settings/ajax_social_list',
+        socialSaveUrl: '{{ site.saddress }}mod_settings/ajax_social_save',
+        socialToggleUrl: '{{ site.saddress }}mod_settings/ajax_social_toggle_status',
+        socialReorderUrl: '{{ site.saddress }}mod_settings/ajax_social_reorder',
     });
     window.modSettingsConfig.messages = window.modSettingsConfig.messages || {};
     Object.assign(window.modSettingsConfig.messages, {
@@ -92,17 +92,17 @@ input:checked + .m3-modern-slider:before {
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
             <i class="bi bi-house-door-fill"></i>
             <span>{{ lang.management.anasayfa }}</span>
         </button>
         
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_user/info'" style="opacity: 1; pointer-events: auto;">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/info'" style="opacity: 1; pointer-events: auto;">
             <i class="bi bi-person-fill"></i>
             <span>{{ lang.management.profil }}</span>
         </button>
 
-        <button class="toolbar-item" onclick="location.href='{{ site.sadres }}mod_settings/edit'" style="opacity: 1; pointer-events: auto;">
+        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_settings/edit'" style="opacity: 1; pointer-events: auto;">
             <i class="bi bi-gear-fill"></i>
             <span>{{ lang.management.settings }}</span>
         </button>

@@ -1,0 +1,379 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_redirect.admin.search_placeholder %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_redirect.list }}{% endblock %}
+{% block headline %}{{ lang.mod_redirect.list }}{% endblock %}
+
+{% block styles %}
+<style>
+    .dashboard-card {
+        background: var(--md-sys-color-primary-container);
+        border-radius: var(--af-radius-lg, 24px);
+        padding: 18px;
+        color: var(--md-sys-color-on-primary-container);
+        box-shadow: 0 4px 12px rgba(103, 80, 164, 0.05);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: 12px;
+        border: 1px solid rgba(103, 80, 164, 0.1);
+    }
+    .dashboard-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .stat-label {
+        font-size: 13px;
+        opacity: 0.88;
+        font-weight: 500;
+        letter-spacing: 0.15px;
+    }
+    .stat-val {
+        font-size: 28px;
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+    .stat-subval {
+        font-size: 13px;
+        font-weight: 500;
+        opacity: 0.85;
+        display: block;
+        margin-top: 1px;
+        letter-spacing: 0.1px;
+    }
+
+    /* Redirect List Item Card */
+    .redirect-card {
+        background-color: var(--md-sys-color-surface);
+        border: 1px solid var(--md-sys-color-outline-variant);
+        border-radius: var(--af-radius-md, 12px);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+        position: relative;
+    }
+    .redirect-card:hover {
+        background-color: var(--md-sys-color-surface-container-low);
+        border-color: var(--md-sys-color-outline);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.04);
+    }
+    .redirect-card.is-selected {
+        background-color: color-mix(in srgb, var(--md-sys-color-primary) 8%, var(--md-sys-color-surface));
+        border-color: var(--md-sys-color-primary);
+        box-shadow: 0 6px 12px rgba(103, 80, 164, 0.06);
+        transform: translateY(0) scale(0.99);
+    }
+    .redirect-card-urls {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 24px;
+    }
+
+    /* Selection Indicator */
+    .select-indicator {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        color: var(--md-sys-color-primary);
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+    }
+    .redirect-card.is-selected .select-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+    .url-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        font-size: 14px;
+    }
+    .url-row i {
+        font-size: 16px;
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+    .url-row span {
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        white-space: normal;
+        line-height: 1.45;
+    }
+    .url-row.source {
+        color: var(--md-sys-color-on-surface);
+        font-weight: 600;
+    }
+    .url-row.target {
+        color: var(--md-sys-color-on-surface-variant);
+    }
+
+    .card-divider {
+        border-top: 1px solid var(--md-sys-color-outline-variant);
+        margin-top: 4px;
+        padding-top: 8px;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+    .redirect-card.is-selected .card-divider {
+        border-top-color: rgba(103, 80, 164, 0.2);
+    }
+
+    /* Premium Badges */
+    .badge-status {
+        height: 18px;
+        border-radius: 4px;
+        padding: 0 6px;
+        font-size: 10px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-transform: uppercase;
+        color: #ffffff;
+    }
+    .badge-301 {
+        background-color: #2E7D32; /* Success green */
+    }
+    .badge-302 {
+        background-color: #0B57D0; /* Info blue */
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Mini Dashboard Summary Card -->
+<div class="dashboard-card">
+    <div class="dashboard-stat">
+        <span class="stat-label">{{ lang.mod_redirect.admin.dashboard.active_redirects }}</span>
+        <span class="stat-val" id="totalRedirectsCount">{{ redirects|length }}</span>
+    </div>
+    <div class="dashboard-stat">
+        <span class="stat-label">{{ lang.mod_redirect.admin.dashboard.standard_type }}</span>
+        <span class="stat-val">301 <span class="stat-subval">(Permanent)</span></span>
+    </div>
+</div>
+
+<!-- Redirect Listings -->
+<div class="content-list" id="redirectsList" style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+    {% for item in redirects %}
+        <div class="redirect-card" data-id="{{ item.id }}" data-name="{{ item.old_url|lower }}" data-target="{{ item.new_url|lower }}" onclick="selectRedirectCard(this, {{ item.id }})" ondblclick="location.href='{{ site.saddress }}mod_redirect/edit?id={{ item.id }}'">
+            <div class="select-indicator">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="redirect-card-urls">
+                <div class="url-row source">
+                    <i class="bi bi-box-arrow-right" style="color: var(--md-sys-color-primary);"></i>
+                    <span>{{ item.old_url }}</span>
+                </div>
+                <div class="url-row target">
+                    <i class="bi bi-arrow-right-short" style="color: var(--md-sys-color-outline);"></i>
+                    <span>{{ item.new_url }}</span>
+                </div>
+            </div>
+            <div class="card-divider">
+                <span class="badge-status {{ item.status_code == 302 ? 'badge-302' : 'badge-301' }}">
+                    {{ item.status_code }}
+                </span>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state-container">
+            <div class="empty-icon-box">
+                 <i class="bi bi-search"></i>
+            </div>
+            <h2 style="font-weight: 800;">{{ lang.mod_redirect.admin.empty_description }}</h2>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar">
+    <!-- Delete Selected (dynamically activated) -->
+    <button type="button" class="toolbar-item" id="toolbarDelete" onclick="deleteSelectedRedirect()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_redirect.button.delete }}">
+        <i class="bi bi-trash3-fill"></i>
+    </button>
+
+    <!-- Edit Selected (dynamically activated) -->
+    <button type="button" class="toolbar-item" id="toolbarEdit" onclick="editSelectedRedirect()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_redirect.button.edit }}">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+</div>
+
+<!-- Main FAB Button -->
+<a href="{{ site.saddress }}mod_redirect/add" class="main-fab" id="mainFab" title="{{ lang.mod_redirect.button.add }}" aria-label="{{ lang.mod_redirect.button.add }}">
+    <i class="bi bi-plus-lg"></i>
+</a>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let activeSelectedRedirectId = null;
+
+    function selectRedirectCard(element, id) {
+        const isAlreadySelected = element.classList.contains('is-selected');
+        
+        // Remove selection from all cards
+        document.querySelectorAll('.redirect-card').forEach(card => {
+            card.classList.remove('is-selected');
+        });
+
+        if (isAlreadySelected) {
+            activeSelectedRedirectId = null;
+            updateToolbarState(false);
+        } else {
+            element.classList.add('is-selected');
+            activeSelectedRedirectId = id;
+            updateToolbarState(true);
+        }
+    }
+
+    function updateToolbarState(active) {
+        const deleteBtn = document.getElementById('toolbarDelete');
+        const editBtn = document.getElementById('toolbarEdit');
+
+        if (active) {
+            if (deleteBtn) {
+                deleteBtn.style.opacity = '1';
+                deleteBtn.style.pointerEvents = 'auto';
+                deleteBtn.classList.add('active');
+            }
+            if (editBtn) {
+                editBtn.style.opacity = '1';
+                editBtn.style.pointerEvents = 'auto';
+                editBtn.classList.add('active');
+            }
+        } else {
+            if (deleteBtn) {
+                deleteBtn.style.opacity = '0.3';
+                deleteBtn.style.pointerEvents = 'none';
+                deleteBtn.classList.remove('active');
+            }
+            if (editBtn) {
+                editBtn.style.opacity = '0.3';
+                editBtn.style.pointerEvents = 'none';
+                editBtn.classList.remove('active');
+            }
+        }
+    }
+
+    function editSelectedRedirect() {
+        if (activeSelectedRedirectId) {
+            location.href = `{{ site.saddress }}mod_redirect/edit?id=${activeSelectedRedirectId}`;
+        }
+    }
+
+    async function deleteSelectedRedirect() {
+        if (!activeSelectedRedirectId) return;
+
+        const confirmText = "{{ lang.mod_redirect.remove_record }}";
+        const confirmBtn = "{{ lang.mod_redirect.button.yes }}";
+        const cancelBtn = "{{ lang.mod_redirect.button.no }}";
+
+        if (typeof Swal !== 'undefined' && Swal && typeof Swal.fire === 'function') {
+            const result = await Swal.fire({
+                text: confirmText,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#b3261e',
+                confirmButtonText: confirmBtn,
+                cancelButtonText: cancelBtn
+            });
+
+            if (result.isConfirmed) {
+                executeDeleteRedirect(activeSelectedRedirectId);
+            }
+        } else {
+            if (confirm(confirmText)) {
+                executeDeleteRedirect(activeSelectedRedirectId);
+            }
+        }
+    }
+
+    async function executeDeleteRedirect(id) {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('ajax_request', '1');
+
+        try {
+            const response = await fetch(`{{ site.saddress }}mod_redirect/delete`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+            if (response.ok && result.status === 'success') {
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(result.message, 'success');
+                }
+                
+                // Remove the card from the UI
+                const card = document.querySelector(`.redirect-card[data-id="${id}"]`);
+                if (card) {
+                    card.style.transition = 'all 0.3s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        card.remove();
+                        // Update total count
+                        const countEl = document.getElementById('totalRedirectsCount');
+                        if (countEl) {
+                            const current = parseInt(countEl.textContent || '0');
+                            countEl.textContent = String(Math.max(0, current - 1));
+                        }
+                    }, 300);
+                }
+                updateToolbarState(false);
+                activeSelectedRedirectId = null;
+            } else {
+                throw new Error(result.message || 'Error occurred');
+            }
+        } catch (error) {
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(error.message, 'error');
+            } else {
+                alert(error.message);
+            }
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', function(e) {
+                const term = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.redirect-card');
+                cards.forEach(card => {
+                    const source = card.getAttribute('data-name') || '';
+                    const target = card.getAttribute('data-target') || '';
+                    if (source.includes(term) || target.includes(term)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -12,7 +12,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.sadres }}">{{ lang.index.homepage }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.homepage }}</a>
                 </li>
                 <li class="active">{{ lang.index.mod_announcements.1 }}</li>
             </ol>
@@ -72,7 +72,7 @@
                         {% for announcement in announcements %}
                             <p>
                                 {{ announcement.created_at|date("Y-m-d") }} - <a data-bs-toggle="tooltip"
-    href="{{ site.sadres }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}"
+    href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}"
     title="{% if announcement.summary != '' %}{{ announcement.summary }}{% else %}{{ announcement.name }}{% endif %}">{{ announcement.name }}</a>
                             </p>
                         {% endfor %}

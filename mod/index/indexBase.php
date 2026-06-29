@@ -13,6 +13,23 @@ abstract class indexBase
     public $model;
     public $secenek;
     public $sec;
+
+    private function hasConfiguredDatabase()
+    {
+        $database = Kayit::getir('database');
+        $dbConfig = Kayit::getir('db_config');
+
+        if (!is_string($database) || $database === '') {
+            return false;
+        }
+
+        if (!is_array($dbConfig) || !isset($dbConfig[$database]) || !is_array($dbConfig[$database])) {
+            return false;
+        }
+
+        return isset($dbConfig[$database]['adapter'], $dbConfig[$database]['conf']) && is_array($dbConfig[$database]['conf']);
+    }
+
     public function __construct()
     {
         $this->tema = Load::lib('TwigTemplate');
@@ -99,7 +116,14 @@ abstract class indexBase
 
     public function _mod_video($v)
     {
-        $data = unserialize($v);
+        if (empty($v) || !is_string($v)) {
+            return;
+        }
+        $data = @unserialize($v);
+        if ($data === false && $v !== 'b:0;') {
+            error_log("Amed Framework Warning: Failed to unserialize video data: " . $v);
+            return;
+        }
         if (!is_array($data) || empty($data)) {
             return;
         }
@@ -136,6 +160,13 @@ abstract class indexBase
                 $results = array_merge($results, $vid_model->toArray());
             }
         }
+
+        foreach ($results as &$row) {
+            if (isset($row['name'])) {
+                $row['name'] = html_entity_decode($row['name'], ENT_QUOTES, 'UTF-8');
+            }
+        }
+        unset($row);
 
         $this->tema->ctx_set('video', $results);
     }
@@ -198,10 +229,15 @@ abstract class indexBase
     private function _get_site_settings()
     {
         $current_lang = $this->site['lang'] ?? 'tr';
-        
+
+        if (!$this->hasConfiguredDatabase()) {
+            $this->site['social_links'] = [];
+            return;
+        }
+
         $settings_model = Load::model('mod_settings');
         $settings_model->where_lang($current_lang)->gRo();
-        
+
         if ($settings_model->getSize() > 0) {
             $settings_model->sync();
             $settings_data = $settings_model->getResultOne()->toArray();
@@ -342,7 +378,7 @@ abstract class indexBase
     {
         header("HTTP/1.0 404 Not Found");
         header("Status: 404 Not Found");
-        Helper::yonlendir($this->site['adres']);
+        Helper::yonlendir($this->site['address']);
         exit();
     }
 

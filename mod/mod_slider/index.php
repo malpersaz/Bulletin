@@ -28,60 +28,15 @@ class mod_slider_mod extends indexMain
     // Ekleme Sayfası
     public function add()
     {
-        // Ekleme Permissionsi varmı?
-        if ($this->user->hasPermission('mod_slider', 'add', $this->lang['mod_slider']['role_errors']['add'], 1) === False) {
-            return False;
-        }
-        if (Req::is_Post('add')) {
-            $this->_add();
-        }
-        Run::import('management', '_index');
-        $this->site['title'] = $this->lang['mod_slider']['add'];
-        $this->tema->tpl('mod_slider/add');
-        $this->tema->veri('site', $this->site);
-        $this->db->fetch_array("SELECT name,seo FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
-        $this->db->fetch_array("SELECT name,id FROM `mod_acl` ORDER BY id DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        header("Location: " . $this->site['saddress'] . 'mod_slider/list');
+        exit;
     }
 
     // Düzenleme Sayfası
     public function edit($id = NULL)
     {
-        // Düzenleme Permissionsi varmı?
-        if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit'], 1) === False) {
-            return False;
-        }
-        $this->mod_slider_model = Load::model('mod_slider');
-        $id = Req::Url_Clear($id);
-        if ($this->mod_slider_model->exists_id($id) === False) {
-            $this->_error($this->lang['mod_slider']['errors']['record']);
-            Run::import('management', '_index');
-            $this->tema->tpl('mod_slider/edit');
-            return;
-        }
-
-        $d = $this->mod_slider_model->getResultOne()->toArray();
-
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
-        if ($this->user->checkPermission('mod_slider', 'moderate_edit', $d['user_id'], $this->lang['mod_slider']['role_errors']['moderate_edit'], 1) === False) {
-            return False;
-        }
-
-        if (Req::is_Post('edit')) {
-            $this->_edit($id);
-        }
-
-        Run::import('management', '_index');
-
-        $this->site['title'] = $this->lang['mod_slider']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_slider/edit');
-        $this->db->fetch_array("SELECT name,seo FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
-        $this->db->fetch_array("SELECT name,id FROM `mod_acl` ORDER BY id DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        header("Location: " . $this->site['saddress'] . 'mod_slider/list');
+        exit;
     }
 
     // Listeleme Sayfası
@@ -411,88 +366,11 @@ class mod_slider_mod extends indexMain
 
     public function delete()
     {
-        // Listeleme Permissionsi varmı?
-        if ($this->user->hasPermission('mod_slider',  'delete', $this->lang['mod_slider']['role_errors'][ 'delete']) === False) {
-            return False;
-        }
-        if (Req::is_Post( 'delete')) {
-            if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
-            } else {
-                echo 'HATA';
-            }
-        } else {
-            exit($this->lang['mod_slider']['errors']['record']);
-        }
+        exit($this->lang['mod_slider']['errors']['record']);
     }
 
     public function _delete($sil)
     {
-        $this->mod_slider_model = Load::model('mod_slider');
-        foreach ($sil as $s) {
-            $this->mod_slider_model->flush();
-            $this->mod_slider_model->where_id($s)->gRo();
-            if ($this->mod_slider_model->getSize() === 0) {
-                exit($this->lang['mod_slider']['errors']['record']);
-            }
-            $this->mod_slider_model->sync();
-            // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
-            if ($this->user->checkPermission('mod_slider', 'moderate_delete', $this->mod_slider_model->user_id, $this->lang['mod_slider']['role_errors']['moderate_delete']) === False) {
-                return False;
-            }
-
-            // Modül varmı ve Gallery Ekleniyormu
-            $this->mod = Load::model('mod_gallery_mod');
-            if ($this->mod->exists_mod_name("mod_slider") === TRUE) {
-                // İçeriğe Ait Gallery Varsa Silelim
-                Run::import('mod_gallery', '_remove', ['mod_slider', $this->mod_slider_model->id]);
-            }
-
-            if ($this->mod_slider_model->image != '') {
-                $image = Load::mod('image');
-                $image->mod = 'mod_slider';
-                $image->name = 'image';
-                $image->url = $this->mod_slider_model->image;
-                $option = [
-                    '/' =>
-                    [
-                        'width' => 1920,
-                        'height' => 1080,
-                        'option' => 'width',
-                    ],
-                    '/thumb' =>
-                    [
-                        'width' => 100,
-                        'height' => NULL,
-                        'option' => 'width',
-                    ],
-                ];
-                if ($image->_delete_files($option) !== TRUE) {
-                    echo $image->error;
-                }
-            }
-
-            if ($this->mod_slider_model->image_mobile != '') {
-                $imageMobile = Load::mod('image');
-                $imageMobile->mod = 'mod_slider';
-                $imageMobile->name = 'image_mobile';
-                $imageMobile->url = $this->mod_slider_model->image_mobile;
-                $optionMobile = [
-                    '/' =>
-                    [
-                        'width' => 1080,
-                        'height' => null,
-                        'option' => 'width',
-                    ]
-                ];
-                if ($imageMobile->_delete_files($optionMobile) !== TRUE) {
-                    echo $imageMobile->error;
-                }
-            }
-
-
-            $this->mod_slider_model->delete();
-        }
         return TRUE;
     }
 
@@ -504,216 +382,170 @@ class mod_slider_mod extends indexMain
         return preg_match('@(\d{4})-(\d{2})-(\d{2})$@', $data);
     }
 
-
-    public function datatable_json()
+    private function _hasColumn($table, $column)
     {
-
-
-        $i = Load::model('mod_slider');
-
-
-        $colomns = [];
-        $colomns[] = 'id';
-        $colomns[] = 'name';
-        $colomns[] = 'image';
-        $colomns[] = 'lang';
-        $colomns[] = 'created_at';
-        $colomns[] = 'status';
-        $i->select($colomns);
-        $limit = 50;
-        $offset = 0;
-        $order = $colomns[0];;
-        $sort = 'desc';
-
-        if (Req::is_Post('order')) {
-            $o = Req::Post_Safe('order');
-            if (
-                isset($o[0]['column']) && ($o[0]['column'] > 0) && isset($colomns[$o[0]['column'] - 1])
-
-            ) {
-                $order = $colomns[$o[0]['column'] - 1];
-            }
-            if (isset($o[0]['dir']) && in_array($o[0]['dir'], ['asc', 'desc'])) {
-                $sort = $o[0]['dir'];
-            }
-        }
-        $i->order($order, $sort);
-
-
-
-        $wheres = [];
-
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
-                if (in_array($k, $colomns) && $v != '') {
-                    $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
-                }
-            }
-        }
-
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
-                if (in_array($k, $colomns) && $v != '') {
-                    $wheres[] = $k . "='" . Req::Clear($v) . "'";
-                }
-            }
-        }
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
-                if (in_array($k, $colomns) && $v != '') {
-                    if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
-                        $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
-                    } elseif (
-                        isset($v['from']) && $this->_valid_date($v['from'])
-                    ) {
-                        $wheres[] = $k . " > '" . $v['from'] . "'";
-                    } elseif (
-                        isset($v['to']) && $this->_valid_date($v['to'])
-                    ) {
-                        $wheres[] = $k . " < '" . $v['to'] . "'";
+        $db = Load::lib('Database');
+        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $db->fetch_array("PRAGMA table_info('" . addslashes($table) . "')");
+            $result = $db->toArray();
+            if (is_array($result)) {
+                foreach ($result as $row) {
+                    if (isset($row['name']) && $row['name'] === $column) {
+                        return true;
                     }
                 }
             }
+            return false;
         }
+
+        $db->fetch_array("SHOW COLUMNS FROM `" . $table . "` LIKE '" . addslashes($column) . "'");
+        $result = $db->getResult()->toArray();
+        return is_array($result) && !empty($result);
+    }
+
+    private function _tableExists($table)
+    {
+        $db = Load::lib('Database');
+        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='" . addslashes($table) . "'");
+            $result = $db->toArray();
+            return !empty($result);
+        }
+
+        $db->fetch_array("SHOW TABLES LIKE '" . addslashes($table) . "'");
+        $result = $db->getResult()->toArray();
+        return !empty($result);
+    }
+
+    public function datatable_json()
+    {
+        $user_id_filter = "";
         if (
             (Roll::hasPermission('mod_slider', 'moderate_edit') !== TRUE)
             and
             (Roll::hasPermission('mod_slider', 'moderate_delete') !== TRUE)
         ) {
-            $wheres[] = "user_id='" . $this->session->get('id') . "'";
+            $user_id_filter = " AND user_id='" . intval($this->session->get('id')) . "'";
         }
 
-        if (count($wheres) > 0) {
-            $wheres = "(" . implode(") AND (", $wheres) . ")";
-            $i->addWhere($wheres);
+        $db = Load::lib('Database');
+
+        $queries = [];
+        
+        // 1. mod_news
+        if ($this->_tableExists('mod_news') && $this->_hasColumn('mod_news', 'slider')) {
+            $queries[] = [
+                'table' => 'mod_news',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_news' AS module FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+            ];
+        }
+        
+        // 2. mod_publication
+        if ($this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
+            $queries[] = [
+                'table' => 'mod_publication',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' AS module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+            ];
+        }
+        
+        // 3. mod_content
+        if ($this->_tableExists('mod_content') && $this->_hasColumn('mod_content', 'slider')) {
+            $queries[] = [
+                'table' => 'mod_content',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_content' AS module FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+            ];
+        }
+        
+        // 4. mod_product
+        if ($this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
+            $queries[] = [
+                'table' => 'mod_product',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_product' AS module FROM mod_product WHERE show_on_homepage = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_product WHERE show_on_homepage = 'y' AND status = 'y'" . $user_id_filter
+            ];
         }
 
+        if (empty($queries)) {
+            echo json_encode([
+                'data' => [],
+                'recordsFiltered' => 0,
+                'recordsTotal' => 0
+            ]);
+            return;
+        }
 
+        // Count query
+        $count_selects = [];
+        foreach ($queries as $q) {
+            $count_selects[] = $q['count'];
+        }
+        $count_query = "SELECT SUM(total) as total_count FROM (" . implode(" UNION ALL ", $count_selects) . ") t";
+        $db->fetch_array($count_query);
+        $countRow = $db->toArray();
+        $totalRecords = isset($countRow[0]['total_count']) ? intval($countRow[0]['total_count']) : 0;
 
+        $limit = 10;
+        $offset = 0;
         if (Req::is_Post('length') && intval(Req::Post_Safe('length'))) {
             $limit = intval(Req::Post_Safe('length'));
         }
-
-
         if (Req::is_Post('start') && intval(Req::Post_Safe('start'))) {
             $offset = intval(Req::Post_Safe('start'));
         }
-        $getCount = $i->getCount();
-        $i->limit($limit, $offset);
 
+        // Fetch query
+        $select_queries = [];
+        foreach ($queries as $q) {
+            $select_queries[] = $q['select'];
+        }
+        $fetch_query = implode(" UNION ALL ", $select_queries) . " ORDER BY created_at DESC, id DESC LIMIT " . intval($limit) . " OFFSET " . intval($offset);
+        $db->fetch_array($fetch_query);
+        $rows = $db->toArray();
 
-        $i->gR();
-        //print_r($i);exit;
+        $module_labels = [
+            'mod_news' => isset($this->lang['mod_slider']['modules']['news']) ? $this->lang['mod_slider']['modules']['news'] : 'Nûçe',
+            'mod_publication' => isset($this->lang['mod_slider']['modules']['publication']) ? $this->lang['mod_slider']['modules']['publication'] : 'Weşan',
+            'mod_content' => isset($this->lang['mod_slider']['modules']['content']) ? $this->lang['mod_slider']['modules']['content'] : 'Naverok',
+            'mod_product' => isset($this->lang['mod_slider']['modules']['product']) ? $this->lang['mod_slider']['modules']['product'] : 'Hilber',
+        ];
+
         $data = [];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        $status_list = [
-
-
-            'y' => ['success', $this->lang['mod_slider']['admin']['radio']['publish_yes']],
-
-
-
-
-            'n' => ['danger', $this->lang['mod_slider']['admin']['radio']['publish_no']],
-
-
-
-        ];
-
-
-
-
-        $target_list = [
-
-
-            'y' => ['success', $this->lang['mod_slider']['admin']['radio']['target_e']],
-
-
-
-
-            'n' => ['danger', $this->lang['mod_slider']['admin']['radio']['target_h']],
-
-
-
-        ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-        if ($getCount > 0) {
-            foreach ($i->toArray() as $content) {
-
-                $last = "";
-                if (Roll::hasPermission('mod_slider', 'edit')) {
-                    $last .= '<button onclick="mod_slider_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple">
-    <i class="fa fa-edit"></i> ' . $this->lang['mod_slider']['button']['edit'] . ' </button>';
+        if ($totalRecords > 0 && is_array($rows)) {
+            foreach ($rows as $content) {
+                $compound_id = $content['module'] . ':' . $content['id'];
+                
+                $thumb_url = '';
+                if (!empty($content['image'])) {
+                    $thumb_url = $this->site['iaddress'] . $content['module'] . '/thumb/' . $content['image'];
                 }
-                if (Roll::hasPermission('mod_slider',  'delete')) {
-                    $last .= '<button onclick="mod_slider_table_ajax.akm.processSil(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
-    <i class="fa fa-trash-o"></i> ' . $this->lang['mod_slider']['button'][ 'delete'] . ' </button>';
-                }
-
-                if (Roll::hasPermission('mod_slider', 'gallery')) {
-                    $last .= '<button onclick="mod_slider_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue">
-    <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_slider']['button']['gallery'] . ' </button>';
-                }
-
-                if (Roll::hasPermission('mod_slider', 'file')) {
-                    $last .= '<button onclick="mod_slider_table_ajax.akm.processDosya(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
-    <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_slider']['button']['file'] . ' </button>';
-                }
+                
+                $module_label = isset($module_labels[$content['module']]) ? $module_labels[$content['module']] : $content['module'];
+                
                 $data[] = [
-                    '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
-                    $content['id'],
+                    '',
+                    $compound_id,
                     $content['name'],
-                    '<img src="' . $this->site['radres'] . 'mod_slider/thumb/' . $content['image'] . '">',
+                    '<img src="' . $thumb_url . '">',
                     $content['lang'],
                     $content['created_at'],
-                    '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>',
-                    $last
+                    $module_label
                 ];
             }
         }
-        $ii = new mod_slider_model();
+
         echo json_encode([
             'data' => $data,
-            'recordsFiltered' => $getCount,
-            'recordsTotal' => $ii->getCount(),
-            // 'customActionStatus'=>'OK',
-            ///'customActionMessage'=>'Oldumu Şimdi?'
+            'recordsFiltered' => $totalRecords,
+            'recordsTotal' => $totalRecords
         ]);
     }
-
-
-
-
 
     // publish Sayfası
     public function publish()
     {
-        // duzenle Permissionsi varmı?
         if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit']) === False) {
             return False;
         }
@@ -727,25 +559,28 @@ class mod_slider_mod extends indexMain
 
     private function _publish($query = NULL)
     {
-        // mod_slider Modeli Yükleyelim
-        $this->mod_slider_model = Load::model('mod_slider');
         if (is_array($query)) {
+            $db = Load::lib('Database');
             foreach ($query as $s) {
-                $this->mod_slider_model->id = $s;
-                $this->mod_slider_model->status = 'y';
-                if ($this->mod_slider_model->update('id')) {
-                    continue;
+                $parts = explode(':', $s);
+                if (count($parts) === 2) {
+                    $module = Req::Clear($parts[0]);
+                    $id = intval($parts[1]);
+                    if ($module === 'mod_product' && $id > 0 && $this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
+                        $db->query("UPDATE `mod_product` SET show_on_homepage = 'y' WHERE id = " . $id);
+                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                        $db->query("UPDATE `" . $module . "` SET slider = 'y' WHERE id = " . $id);
+                    }
                 }
-                return FALSE;
             }
             return TRUE;
         }
         return FALSE;
     }
+
     // unpublish Sayfası
     public function unpublish()
     {
-        // duzenle Permissionsi varmı?
         if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit']) === False) {
             return False;
         }
@@ -759,16 +594,19 @@ class mod_slider_mod extends indexMain
 
     private function _unpublish($query = NULL)
     {
-        // mod_slider Modeli Yükleyelim
-        $this->mod_slider_model = Load::model('mod_slider');
         if (is_array($query)) {
+            $db = Load::lib('Database');
             foreach ($query as $s) {
-                $this->mod_slider_model->id = $s;
-                $this->mod_slider_model->status = 'n';
-                if ($this->mod_slider_model->update('id')) {
-                    continue;
+                $parts = explode(':', $s);
+                if (count($parts) === 2) {
+                    $module = Req::Clear($parts[0]);
+                    $id = intval($parts[1]);
+                    if ($module === 'mod_product' && $id > 0 && $this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
+                        $db->query("UPDATE `mod_product` SET show_on_homepage = 'n' WHERE id = " . $id);
+                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                        $db->query("UPDATE `" . $module . "` SET slider = 'n' WHERE id = " . $id);
+                    }
                 }
-                return FALSE;
             }
             return TRUE;
         }

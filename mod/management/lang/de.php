@@ -1,14 +1,26 @@
 <?php
 $lang['management'] = [
     '1' => 'Benutzerpanel',
-
     'anasayfa' => 'Startseite',
     'dashboard' => 'Dashboard',
     'uyelik' => 'Mitgliedschaft',
+    'content_workspace' => 'Inhalts-Arbeitsbereich',
     'content_and_page' => 'Inhalte und Seiten',
     'video_and_images' => 'Videos und Bilder',
-
-
+    'products_workspace' => 'Produkte-Arbeitsbereich',
+    'products' => 'Produktmanagement',
+    'services' => 'Dienstleistungsmanagement',
+    'product_categories' => 'Produktkategorien',
+    'service_categories' => 'Dienstleistungskategorien',
+    'clients' => 'Kundenmanagement',
+    'references' => 'Referenzmanagement',
+    'system_tools' => 'System-Tools',
+    'recent_modules' => 'Kürzlich genutzte Module',
+    'pinned_modules' => 'Angepinnte Module',
+    'module_search_placeholder' => 'Module suchen...',
+    'pin_module' => 'Modul anheften',
+    'unpin_module' => 'Modul lösen',
+    'recent_workspace_empty' => 'Kürzlich genutzte Module erscheinen hier',
     'uyeler' => 'Mitglieder',
     'uye_gruplari' => 'Benutzergruppen',
     'membership_setting' => 'Mitgliedschaftseinstellungen',
@@ -17,15 +29,6 @@ $lang['management'] = [
     'gallery_modulleri' => 'Galeriemodule',
     'dosya_modulleri' => 'Dateimodule',
     'locale_management' => 'Sprachverwaltung',
-    'system_tools' => 'System-Tools',
-    'recent_modules' => 'Kürzlich verwendete Module',
-    'pinned_modules' => 'Angepinnte Module',
-    'module_search_placeholder' => 'Module suchen...',
-    'module_search_empty' => 'Keine Module gefunden',
-    'pin_module' => 'Modul anpinnen',
-    'unpin_module' => 'Modul lospinnen',
-    'recent_workspace_empty' => 'Zuletzt verwendete Module werden hier angezeigt',
-
     'content_categories' => 'Inhaltskategorien',
     'news_categories' => 'Nachrichtenkategorien',
     'publication_categories' => 'Publikationskategorien',
@@ -37,11 +40,14 @@ $lang['management'] = [
     'news_management' => 'Nachrichtenverwaltung',
     'publication_management' => 'Veröffentlichungsverwaltung',
     'menu_management' => 'Menüverwaltung',
+    'redirect_management' => 'Weiterleitungsverwaltung',
+    'seo_and_redirects' => 'SEO und Weiterleitungen',
     'page_management' => 'Seitenverwaltung',
     'file_management' => 'Dateiverwaltung',
     'service_guide' => 'Serviceleitfaden',
     'survey_management' => 'Umfrageverwaltung',
 
+    // Video and Images Submenu
     'videos' => 'Videos',
     'remote_videos' => 'Externe Videos',
     'uzak_video_kategorisi' => 'Externe Videokategorie',
@@ -50,15 +56,24 @@ $lang['management'] = [
     'resim_gallery' => 'Bildergalerie',
     'image_gallery' => 'Bildergalerie',
 
+    // Announcement Management Submenu
     'announcement_management' => 'Ankündigungsverwaltung',
     'popup_announcements' => 'Popup-Ankündigungen',
 
+    // Additional UI Elements
+    'show_on_homepage' => 'Auf der Startseite anzeigen',
+    'homepage_action' => 'Startseite',
+    'parent_category' => 'Übergeordnete Kategorie',
+    'acl_settings' => 'ACL-Einstellungen',
+    'error' => 'Fehler',
+    'success' => 'Erfolg',
+    'network_error' => 'Netzwerkfehler',
     'settings' => 'Einstellungen',
     'management' => 'Verwaltung',
     'admin_panel' => 'Kontrollpanel',
     'profil' => 'Profil',
 
-
+    // User Profile Menu
     'edit_profile_menu' => 'Profil bearbeiten',
     'change_password_menu' => 'Passwort ändern',
     'user_menu_title' => 'Benutzermenü',
@@ -68,16 +83,17 @@ $lang['management'] = [
     'language_management_menu' => 'Sprachverwaltung',
     'logout_menu' => 'Abmelden',
 
+    // Quick Menu
     'quick_menu' => 'Schnellmenü',
     'under_construction_page_title' => 'Seite im Aufbau',
     'under_construction_module_title' => 'Modul im Aufbau',
     'under_construction_heading' => 'Dieses Modul ist noch nicht aktiv',
     'under_construction_description' => 'Die Umstellung auf das moderne Theme läuft noch. Diese Seite ist derzeit nur über das alte Panel erreichbar.',
-    'route_error_page_title' => 'Seite Nicht Verfügbar',
-    'missing_module_title' => 'Modul Nicht Gefunden',
+    'route_error_page_title' => 'Seite nicht verfügbar',
+    'missing_module_title' => 'Modul nicht gefunden',
     'missing_module_heading' => 'Das angeforderte Administrationsmodul wurde nicht gefunden',
     'missing_module_description' => 'Das Administrationsmodul "%s" existiert in dieser Installation nicht oder ist nicht verfügbar.',
-    'missing_method_title' => 'Methode Nicht Gefunden',
+    'missing_method_title' => 'Methode nicht gefunden',
     'missing_method_heading' => 'Die angeforderte Administrationsaktion wurde nicht gefunden',
     'missing_method_description' => 'Die Administrationsaktion "%s" existiert für dieses Modul nicht oder ist nicht verfügbar.',
     'private_method_heading' => 'Die angeforderte Administrationsaktion kann nicht direkt aufgerufen werden',
@@ -91,6 +107,10 @@ $lang['management'] = [
     'module_health_enable' => 'Aktivieren',
     'module_health_disable' => 'Deaktivieren',
     'module_health_repair' => 'Reparieren',
+    'module_health_all_clear' => 'Alle verfolgten Module sind bereit.',
+    'module_health_attention' => 'benötigt Aufmerksamkeit',
+    'module_health_ready_count' => 'bereit',
     'yes' => 'Ja',
-    'no' => 'Nein'
+    'no' => 'Nein',
+    'start_menu' => 'Startmenü'
 ];

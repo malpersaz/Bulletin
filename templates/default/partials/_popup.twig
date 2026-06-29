@@ -4,7 +4,7 @@
 {% set popup = ctx_get('popup') %}
 {% set pop = ctx_get('pop') %}
 {% if pop is defined and pop != false %}
-    <i {% if pop.image != '' %} data-remote="{{ site.radres }}mod_popup/{{ pop.image }}" data-type="image" {% if pop.link != '' %} data-title="<a href='{{ pop.link }}' class='btn btn-danger'>{{ pop.name }}</a>"
+    <i {% if pop.image != '' %} data-remote="{{ site.iaddress }}mod_popup/{{ pop.image }}" data-type="image" {% if pop.link != '' %} data-title="<a href='{{ pop.link }}' class='btn btn-danger'>{{ pop.name }}</a>"
     {% else %}
         data-title="{{ pop.name }}"
     {% endif %}

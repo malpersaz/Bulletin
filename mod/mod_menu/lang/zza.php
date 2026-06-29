@@ -2,7 +2,7 @@
 /**
  * Menu Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software
@@ -118,7 +118,7 @@ $lang['mod_menu'] = [
         'language' => 'Ziman',
         'name' => 'Navê Pêşekê',
         'url' => 'URL',
-        'parent_menu' => 'Serpêşek',
+        'parent_menu' => 'Menuya Jêr',
         'order' => 'Rêz',
         'target' => 'Bila çawa vebe?',
         'status' => 'Rewş',
@@ -126,7 +126,7 @@ $lang['mod_menu'] = [
         'access_level' => 'Destûra Dîtinê',
         'actions' => 'Çalakî',
         'name' => 'Navê Menûyê',
-        'parent_id' => 'Serpêşek',
+        'parent_id' => 'Menuya Jêr',
         'status' => 'Weşandin',
         'html' => 'HTML',
         'acl_id' => 'Destûra Têketinê',
@@ -139,7 +139,7 @@ $lang['mod_menu'] = [
             'name' => 'Nav',
             'url' => 'URL',
             'file' => 'Pel',
-            'parent_id' => 'Serpêşek',
+            'parent_id' => 'Menuya Jêr',
             'target' => 'Hedef',
             'status' => 'Rewşa Weşanê',
             'html' => 'HTML',
@@ -274,6 +274,8 @@ $lang['mod_menu'] = [
         'network' => 'Çewtiya torê. Ji kerema xwe girêdana înternetê xwe kontrol bike.',
         'server' => 'Çewtiya serverê. Ji kerema xwe paşê dîsa biceribîne.',
         'record' => 'Tomar Nehat Dîtin',
+        'parent_selection_required' => 'Gerek yo ke menuya ke na qeyd de tede beno weçinê.',
+        'parent_language_mismatch' => 'Zıwanê menuya dayık gerek yo ke zi zıwanê menu re hember bıbo.',
     ],
     
     // === ACL Roles ===
@@ -297,4 +299,13 @@ $lang['mod_menu'] = [
         'moderate_delete' => 'Destûra te ji bo jêbirina menûyên kesên din tune',
     ],
 
+];
+$lang['mod_menu']['slots'] = [
+    'header' => 'Menûya Jor',
+    'footer' => 'Menûya Jêr',
+];
+$lang['mod_menu']['parent_labels'] = [
+    'select_parent' => 'Menuya dayık weçine',
+    'language_root' => 'Sewiya corên bınê :language de',
+    'system_root' => 'Koka pergalê',
 ];

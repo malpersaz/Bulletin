@@ -52,12 +52,30 @@ class InstallerStateStore
 
     public function getDefaultState()
     {
+        $isHttps = (!empty($_SERVER['HTTPS']) && strtolower((string) $_SERVER['HTTPS']) !== 'off')
+            || (!empty($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443')
+            || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https');
+        $protocol = $isHttps ? 'https://' : 'http://';
+        $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : 'localhost';
+        $defaultAddress = rtrim($protocol . $host, '/') . '/';
+
         return array(
             'step' => 'language',
             'installer_language' => 'en',
             'installer_language_confirmed' => false,
             'project_name' => installer_site_build_name(),
             'project_default_language' => 'ku',
+            'project_description' => '',
+            'project_owner_name' => '',
+            'project_established_year' => '',
+            'project_phone' => '',
+            'project_phone_country_code' => '+90',
+            'project_whatsapp' => '',
+            'project_whatsapp_country_code' => '+90',
+            'project_email' => '',
+            'project_office_address' => '',
+            'project_work_address' => '',
+            'project_address' => $defaultAddress,
             'database_adapter' => 'PDO_MYSQL',
             'database_host' => 'localhost',
             'database_user' => '',

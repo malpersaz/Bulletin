@@ -2,7 +2,7 @@
 /**
  * Slider Module - Swedish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_slider
  * @version 1.0.0
  * @author  AKM Software
@@ -12,7 +12,7 @@
 $lang['mod_slider']= [
   'add' => 'Lägg till Bildspel',
   'edit' => 'Redigera Bildspel',
-  'list' => 'Lista över Bildspel',
+  'list' => 'Bildspelshantering',
   'information' => 'Information!',
   'oke' => 'Operationen Lyckades!',
   'hata' => 'Ett Fel Uppstod!',
@@ -153,4 +153,10 @@ $lang['mod_slider']= [
   'acl_all' => 'Offentlig',
   'empty' => ['title' => 'Inga poster hittades', 'no_data' => 'Inga bildspel har lagts till ännu.', 'no_search_results' => 'Inga bildspel hittades som matchar dina sökkriterier.'],
   'search_placeholder' => 'Sök Bildspel...',
+  'modules' => [
+    'news' => 'Nyheter',
+    'publication' => 'Publikation',
+    'content' => 'Innehåll',
+    'product' => 'Produkt',
+  ],
 ];

@@ -23,7 +23,18 @@ $lang['mod_page'] = [
     'remove_image' => 'Are you sure you want to remove this image?',
     'remove_image_oke' => 'Image Removed Successfully',
     'choose_wish' => 'Please Select if Desired',
+    'menu_options' => [
+        'none' => 'Do Not Add to Menu',
+        'top_level' => 'Add as Top-Level Menu Item',
+        'slot_root' => 'Add Under Selected Menu Surface',
+    ],
+    'menu_slot_options' => [
+        'none' => 'No Menu Surface',
+        'header' => 'Header Menu',
+        'footer' => 'Footer Menu',
+    ],
     'remove_record' => 'Are you sure you want to delete this record?',
+    'seo_meta' => 'SEO Metadata',
 
     // === System Messages ===
     'messages' => [
@@ -63,6 +74,7 @@ $lang['mod_page'] = [
     // === Error Messages ===
     'errors' => [
         'record' => 'The specified record was not found',
+        'slot_branch_missing' => 'The selected menu surface could not be resolved for this language',
     ],
 
     // === Button Labels ===
@@ -76,6 +88,8 @@ $lang['mod_page'] = [
         'hayir' => 'No',
         'gallery' => 'Image Gallery',
         'file' => 'File Manager',
+        'tamam' => 'OK',
+        'upload' => 'Upload',
     ],
 
     // === Actions ===
@@ -107,6 +121,7 @@ $lang['mod_page'] = [
         'file' => 'Can Add File?',
         'moderate_edit' => 'Can Edit Pages Not Belonging to Them',
         'moderate_delete' => 'Can Remove Pages Not Belonging to Them',
+        'approval' => 'Can Publish/Unpublish Pages?',
     ],
 
     // === Permission Errors ===
@@ -119,6 +134,7 @@ $lang['mod_page'] = [
         'delete' => 'You Do Not Have Permission To Remove Pages',
         'gallery' => 'You Do Not Have Permission To Add Gallery',
         'file' => 'You Do Not Have Permission To Add Files',
+        'approval' => 'You Do Not Have Permission To Publish/Unpublish Pages',
     ],
 
     // === Admin Panel ===
@@ -145,6 +161,7 @@ $lang['mod_page'] = [
             'acl_id' => 'Who Can See This Page?',
             'category_id' => 'Related Content Category',
             'menu' => 'Send Page to Menu',
+            'menu_slot' => 'Menu Surface',
         ],
         'select_value' => [
             'root_e' => 'Yes',
@@ -181,5 +198,13 @@ $lang['mod_page'] = [
         'page_summary' => 'Page Summary',
         'previous' => 'Previous',
         'next' => 'Next',
+    ],
+    'quick_unpublish_confirm' => 'Are you sure you want to unpublish this page?',
+    'quick_publish_confirm' => 'Are you sure you want to publish this page?',
+    'published_msg' => 'Page Published Successfully',
+    'unpublished_msg' => 'Page Unpublished Successfully',
+    'status_badge' => [
+        'active' => 'Published',
+        'draft' => 'Draft',
     ],
 ];

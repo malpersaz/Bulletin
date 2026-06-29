@@ -48,6 +48,17 @@ class mod_settings extends installerbase implements installerbaseinterface
     
     private function add_default_settings()
     {
+        $projectSetup = installer_get_project_setup_state();
+        $projectName = trim((string) $projectSetup['project_name']);
+        $projectDescription = trim((string) $projectSetup['project_description']);
+        $projectOwnerName = trim((string) $projectSetup['project_owner_name']);
+        $projectEstablishedYear = trim((string) $projectSetup['project_established_year']);
+        $projectPhone = trim((string) $projectSetup['project_phone']);
+        $projectWhatsapp = trim((string) $projectSetup['project_whatsapp']);
+        $projectEmail = trim((string) $projectSetup['project_email']);
+        $projectOfficeAddress = trim((string) $projectSetup['project_office_address']);
+        $projectWorkAddress = trim((string) $projectSetup['project_work_address']);
+
         // Fetch languages dynamically from the database
         $lang_query = $this->db->fetch_array("SELECT name, seo FROM `lang` ");
         if ($this->db->getSize() === 0) {
@@ -63,15 +74,15 @@ class mod_settings extends installerbase implements installerbaseinterface
             $this->model->where_lang($lang['seo'])->getResult(TRUE, TRUE);
             if ($this->model->getSize() === 0) {
                 $this->model->lang = $lang['seo'];
-                $this->model->title = installer_site_build_name();
-                $this->model->description = 'Modern Web Solutions';
-                $this->model->owner_name = 'Owner Name';
-                $this->model->established_year = 2014;
-                $this->model->phone = '+90 XXX XXX XX XX';
-                $this->model->whatsapp = '+90 XXX XXX XX XX';
-                $this->model->email = 'info@akmsoftware.co.uk';
-                $this->model->office_address = 'Office Address';
-                $this->model->work_address = 'Work Address';
+                $this->model->title = $projectName !== '' ? $projectName : installer_site_build_name();
+                $this->model->description = $projectDescription;
+                $this->model->owner_name = $projectOwnerName;
+                $this->model->established_year = $projectEstablishedYear !== '' ? $projectEstablishedYear : NULL;
+                $this->model->phone = $projectPhone;
+                $this->model->whatsapp = $projectWhatsapp;
+                $this->model->email = $projectEmail;
+                $this->model->office_address = $projectOfficeAddress;
+                $this->model->work_address = $projectWorkAddress;
                 
                 $this->model->map_embed_code = NULL; // Default to NULL
                 $this->model->google_search_console = NULL; // Default to NULL

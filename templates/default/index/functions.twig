@@ -5,7 +5,7 @@
 {# Avatar Helper Function #}
 
 {% function get_avatar_url(image) %}
-    {{ site.radres }}mod_user/{{ image }}
+    {{ site.iaddress }}mod_user/{{ image }}
 {% endfunction %}
 {% macro menu(menu, parent_id, ss) %}
     {% if menu[parent_id] is defined %}

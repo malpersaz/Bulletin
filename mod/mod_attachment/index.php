@@ -79,7 +79,7 @@ class mod_attachment_mod extends indexMain
 
         $this->model = Load::model($mod);
         if ($this->model->exists_id($vid) === false) {
-            Helper::yonlendir($this->site['adres'] . $mod . '/list', 1);
+            Helper::yonlendir($this->site['address'] . $mod . '/list', 1);
             print($this->lang['mod_attachment']['errors']['invalid_record']);
             return false;
         }

@@ -16,7 +16,6 @@ class mod_imagecategories_model extends ORM
     public $keywords;
     public $description;
     public $acl_id;
-    public $menu;
     public $image;
     public $user_id;
 }

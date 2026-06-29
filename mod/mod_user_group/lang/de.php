@@ -1,42 +1,49 @@
 <?php
 $lang['mod_user_group']=[
-	'1'=>'Benutzergruppen-Verwaltung',
+	'1'=>'Benutzergruppenverwaltung',
 	'2'=>'Benutzergruppen',
-	'5'=>'---Bitte auswählen--- ',
-	'8'=>'Sind Sie sicher, dass Sie diese Benutzergruppe löschen möchten?<br/> Wenn Sie diese Gruppe löschen, werden auch alle ihre Untergruppen gelöscht!',
-	'9'=>'Benutzergruppe Gelöscht!',
-	'10'=>'Benutzergruppen-Reihenfolge Geändert!',
-	'11'=>'Benutzergruppe Löschen',
-	'12'=>'Benutzergruppe Bearbeiten',
+	'5'=>'---Bitte auswählen---',
+	'8'=>'Sind Sie sicher, dass Sie diese Benutzergruppe löschen möchten?<br/> Bei einer Löschung werden auch alle untergeordneten Gruppen entfernt!',
+	'9'=>'Benutzergruppe wurde gelöscht!',
+	'10'=>'Reihenfolge der Benutzergruppen wurde geändert!',
+	'11'=>'Benutzergruppe löschen',
+	'12'=>'Benutzergruppe bearbeiten',
 	'13'=>'Bearbeiten',
 	'15'=>'Ja',
 	'16'=>'Abbrechen',
-	'17'=>'Benutzergruppen-Liste',
-	'18'=>'Doppelklicken Sie auf den Namen der Benutzergruppe, die Sie löschen oder bearbeiten möchten',
-	'19'=>'Ziehen Sie die Benutzergruppen, die Sie neu anordnen möchten',
-	'20'=>'Neue Benutzergruppe Hinzufügen'
+	'17'=>'Benutzergruppenliste',
+	'18'=>'Doppelklicken Sie auf die Benutzergruppe, die Sie bearbeiten oder löschen möchten.',
+	'19'=>'Verschieben Sie die Benutzergruppen per Drag & Drop, um die Sortierung anzupassen.',
+	'20'=>'Neue Benutzergruppe hinzufügen'
 ];
-
 $lang['mod_user_group']['admin']=[
-	'1'=>'Benutzergruppen-Ergänzungsbereich',
-	'2'=>'Benutzergruppen-Bearbeitungsbereich',
-	'3'=>'Benutzergruppen-Verwaltung',
-	'4'=>'Benutzergruppen-Ergänzungsformular',
-	'5'=>'Benutzergruppen-Bearbeitungsformular',
-	'7'=>'Benutzergruppen-Name',
+	'1'=>'Bereich: Benutzergruppe hinzufügen',
+	'2'=>'Bereich: Benutzergruppe bearbeiten',
+	'3'=>'Benutzergruppenverwaltung',
+	'4'=>'Formular: Benutzergruppe hinzufügen',
+	'5'=>'Formular: Benutzergruppe bearbeiten',
+	'7'=>'Name der Benutzergruppe',
 	'8'=>'Hinzufügen',
 	'9'=>'Bearbeiten',
-	'10'=>'Benutzergruppen-Liste',
-	'list'=>'Benutzergruppen-Liste',
-	'12'=>'Benutzergruppe Hinzugefügt!',
-	'13'=>'Benutzergruppe Aktualisiert',
+	'10'=>'Benutzergruppenliste',
+	'list'=>'Benutzergruppenliste',
+	'12'=>'Benutzergruppe erfolgreich hinzugefügt!',
+	'13'=>'Benutzergruppe wurde aktualisiert',
 	'22'=>'Untergeordnete Benutzergruppe'
 ];
-
 $lang['mod_user_group']['hata']=[
-	'1'=>'Bitte geben Sie einen Benutzergruppen-Namen an',
-	'2'=>'Bitte geben Sie einen Benutzergruppen-Link an.',
-	'3'=>'Bitte geben Sie einen anderen Benutzergruppen-Link an <br/>Da der angegebene Benutzergruppen-Link bereits registriert ist'
+	'1'=>'Bitte geben Sie einen Namen für die Benutzergruppe an.',
+	'2'=>'Bitte geben Sie einen Link für die Benutzergruppe an.',
+	'3'=>'Dieser Link wird bereits verwendet. Bitte wählen Sie einen anderen Benutzergruppen-Link.'
+];
+$lang['mod_user_group']['roll']=[
+	'name'=>'Benutzergruppenrollen',
+	'add' =>'Kann Benutzergruppen hinzufügen',
+	'edit' =>'Kann hinzugefügte Benutzergruppen bearbeiten',
+	'delete'=>'Kann hinzugefügte Benutzergruppen löschen',
+	'list' =>'Kann Benutzergruppenverwaltung einsehen',
+	'moderate'=>'Kann alle Benutzergruppen verwalten',
+	'move'=>'Kann die Reihenfolge der Benutzergruppen ändern'
 ];
 
 // Modern language keys (not numbered)
@@ -48,16 +55,6 @@ $lang['mod_user_group']['buttons'] = [
     'save' => 'Speichern'
 ];
 
-$lang['mod_user_group']['roll']=[
-	'name'=>'Benutzergruppen-Rollen',
-	'add' =>'Kann Benutzergruppe Hinzufügen.',
-	'edit' =>'Kann Hinzugefügte Benutzergruppe Bearbeiten.',
-	'delete'=>'Kann Hinzugefügte Benutzergruppe Löschen.',
-	'list' =>'Kann Benutzergruppen-Verwaltung Anzeigen.',
-	'moderate'=>'Kann Von anderen Hinzugefügte Benutzergruppen Verwalten.',
-	'move'=>'Kann Benutzergruppen-Reihenfolge Ändern'
-];
-
 // === AJAX Response Messages ===
 $lang['mod_user_group']['ajax'] = [
     'success' => 'Erfolg',
@@ -65,19 +62,19 @@ $lang['mod_user_group']['ajax'] = [
 ];
 
 $lang['mod_user_group']['role_errors']=[
-	'1'=>'Sie haben keine Berechtigung, Benutzergruppen anderer zu bearbeiten.',
-	'2'=>'Sie haben keine Berechtigung, Benutzergruppen anderer zu löschen.',
+	'1'=>'Sie haben keine Berechtigung, Benutzergruppen anderer Personen zu bearbeiten.',
+	'2'=>'Sie haben keine Berechtigung, Benutzergruppen anderer Personen zu löschen.',
 	'move'=>'Sie haben keine Berechtigung, die Reihenfolge der Benutzergruppen zu ändern.',
 	'add' =>'Sie haben keine Berechtigung, Benutzergruppen hinzuzufügen.',
 	'delete'=>'Sie haben keine Berechtigung, Benutzergruppen zu löschen.',
 	'edit' =>'Sie haben keine Berechtigung, Benutzergruppen zu bearbeiten.',
-	'list' =>'Sie haben keine Berechtigung, die Benutzergruppen-Verwaltung anzuzeigen.'
+	'list' =>'Sie haben keine Berechtigung, die Benutzergruppenverwaltung einzusehen.'
 ];
 $lang['mod_user_group']['general'] = [
     'info' => 'Info!',
     'action' => 'Aktion',
     'success' => 'Erfolg!',
     'error' => 'Fehler!',
-    'ok' => 'OK!',
+    'ok' => 'OK!'
 ];
 ?>

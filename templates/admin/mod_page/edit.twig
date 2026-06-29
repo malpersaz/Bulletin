@@ -65,19 +65,22 @@
     {% if select_nested_menu_result[parent_id] is defined %}
         {% for entry in select_nested_menu_result[parent_id] %}
             {% set parent_id_loop = entry.id %}
-            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
-                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
-                {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
-            </option>
+            {% set skip_root = (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '##') %}
+            {% if not skip_root %}
+                <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                    {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+                </option>
+            {% endif %}
             {% if select_nested_menu_result[parent_id_loop] is defined and select_nested_menu_result[parent_id_loop] is iterable %}
-                {{ _self.select_nested_menu_function(select_nested_menu_result, parent_id_loop, selected_id, level + 1) }}
+                {{ _self.select_nested_menu_function(select_nested_menu_result, parent_id_loop, selected_id, level + (skip_root ? 0 : 1)) }}
             {% endif %}
         {% endfor %}
     {% endif %}
 {% endmacro %}
 
 {% block content %}
-	<form id="editForm" method="POST" action="{{ site.sadres }}mod_page/edit/{{ d.id }}" enctype="multipart/form-data">
+	<form id="editForm" method="POST" action="{{ site.saddress }}mod_page/edit/{{ d.id }}" enctype="multipart/form-data">
 		<input type="hidden" name="id" value="{{ d.id }}">
 		<input type="hidden" name="edit" value="{{ lang.mod_page.button.edit }}">
 
@@ -185,7 +188,7 @@
 					<div id="image-container-edit">
                         <label for="editImgInput" class="image-upload-area interactive">
                             {% if d.image %}
-                                <img id="editImgPreview" src="{{ site.radres }}mod_page/thumb/{{ d.image }}" class="mod-page-image-preview">
+                                <img id="editImgPreview" src="{{ site.iaddress }}mod_page/thumb/{{ d.image }}" class="mod-page-image-preview">
                                 <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeImage()"><i class="bi bi-trash"></i></button>
                             {% else %}
                                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
@@ -215,9 +218,21 @@
 
                 <div class="form-row">
                     <div class="m3-input-wrapper">
+                        <select class="m3-input-lg" name="menu_slot" id="menu_slot">
+                            {% for option in menu_slot_options %}
+                                <option value="{{ option.value }}" {% if selected_menu_slot is defined and selected_menu_slot == option.value %} selected {% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                        <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu_slot }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
                         <select class="m3-input-lg" name="menu" id="menu">
-                            <option value="0" {% if d.menu == 0 %} selected {% endif %}>{{ lang.mod_page.choose_wish }}</option>
-                            {{ _self.select_nested_menu_function(select_nested_menu_result, 0, d.menu) }}
+                            <option value="__none__" {% if menu_binding_value == '__none__' %} selected {% endif %}>{{ lang.mod_page.menu_options.none }}</option>
+                            <option value="__top__" {% if menu_binding_value == '__top__' %} selected {% endif %}>{{ selected_menu_slot is defined and selected_menu_slot != 'none' ? lang.mod_page.menu_options.slot_root : lang.mod_page.menu_options.top_level }}</option>
+                            {{ _self.select_nested_menu_function(select_nested_menu_result, menu_parent_root_id is defined ? menu_parent_root_id : 0, menu_binding_value) }}
                         </select>
                         <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu }}</label>
                     </div>
@@ -257,14 +272,14 @@
                                 <option value="{{ item.id }}" {% if d.acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
                             {% endfor %}
                         </select>
-                        <a href="{{ site.sadres }}mod_acl/list" class="mod-page-acl-link small" title="{{ lang.management.acl }}">
+                        <a href="{{ site.saddress }}mod_acl/list" class="mod-page-acl-link small" title="{{ lang.management.acl }}">
                             <i class="bi bi-gear mod-page-icon-md"></i>
                         </a>
                     </div>
                 </div>
 
 				<div class="advanced-toggle" onclick="toggleAdvanced()">
-					<span>{{ lang.mod_content.button.yenile }} ({{ lang.mod_page.seo_meta }})</span>
+					<span>{{ lang.mod_page.seo_meta }}</span>
 					<i class="bi bi-chevron-down" id="advancedIcon"></i>
 				</div>
 
@@ -320,7 +335,7 @@
 
 {% block fixed_bottom %}
 	<div class="mod-page-final-bar">
-		<button type="button" class="mod-page-final-btn secondary" onclick="window.location.href='{{ site.sadres }}mod_page/list'">
+		<button type="button" class="mod-page-final-btn secondary" onclick="window.location.href='{{ site.saddress }}mod_page/list'">
 			<i class="bi bi-x-lg"></i>
 			{{ lang.mod_page.button.vazgec }}
 		</button>
@@ -333,6 +348,30 @@
 
 {% block scripts %}
 <script>
+    (function () {
+        var langSelect = document.getElementById('lang');
+        var slotSelect = document.getElementById('menu_slot');
+
+        function reloadFormContext() {
+            if (!langSelect || !slotSelect) {
+                return;
+            }
+
+            var url = new URL(window.location.href);
+            url.searchParams.set('lang', langSelect.value);
+            url.searchParams.set('menu_slot', slotSelect.value);
+            window.location.href = url.toString();
+        }
+
+        if (langSelect) {
+            langSelect.addEventListener('change', reloadFormContext);
+        }
+
+        if (slotSelect) {
+            slotSelect.addEventListener('change', reloadFormContext);
+        }
+    }());
+
     window.MOD_PAGE_FORM = {
         mode: 'edit',
         tinyMceSelector: '#contentTextarea',
@@ -345,7 +384,7 @@
         },
         removeImage: {
             pageId: {{ d.id|json_encode|raw }},
-            url: {{ (site.sadres ~ 'mod_page/image_remove_image')|json_encode|raw }},
+            url: {{ (site.saddress ~ 'mod_page/image_remove_image')|json_encode|raw }},
             title: {{ lang.mod_page.remove_image|json_encode|raw }},
             confirmText: {{ lang.mod_page.button.evet|json_encode|raw }},
             cancelText: {{ lang.mod_page.button.hayir|json_encode|raw }},
@@ -356,10 +395,10 @@
             inputId: 'editImgInput'
         },
         successRedirect: {% if oke is defined %}{
-            url: {{ (site.sadres ~ 'mod_page/list')|json_encode|raw }},
+            url: {{ (site.saddress ~ 'mod_page/list')|json_encode|raw }},
             delayMs: 2000
         }{% else %}null{% endif %}
     };
 </script>
-<script src="/templates/admin/assets/js/mod_page.js?v=3"></script>
+<script src="/templates/admin/assets/js/mod_page.js?v=4"></script>
 {% endblock %}

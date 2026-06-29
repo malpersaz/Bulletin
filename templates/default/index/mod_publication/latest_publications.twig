@@ -9,16 +9,16 @@
             {% for publication in latest_publications %}
                 <article class="col">
                     <div class="card h-100 shadow-sm">
-                        <a href="{{ site.sadres }}publication/{{ publication.seo }}" title="{{ publication.name }}">
+                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" title="{{ publication.name }}">
                             {% if publication.image is not empty %}
-                                <img src="{{ site.radres }}mod_publication/{{ publication.image }}" class="card-img-top" alt="{{ publication.name }}" loading="lazy">
+                                <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}" class="card-img-top" alt="{{ publication.name }}" loading="lazy">
                             {% else %}
-                                <img src="{{ site.radres }}mod_settings/logo.png" class="card-img-top p-4 bg-light" alt="{{ publication.name }}" loading="lazy" style="object-fit: contain;">
+                                <img src="{{ site.iaddress }}mod_settings/logo.png" class="card-img-top p-4 bg-light" alt="{{ publication.name }}" loading="lazy" style="object-fit: contain;">
                             {% endif %}
                         </a>
                         <div class="card-body">
                             <h3 class="card-title h5">
-                                <a href="{{ site.sadres }}publication/{{ publication.seo }}" class="text-decoration-none text-dark">{{ publication.name }}</a>
+                                <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="text-decoration-none text-dark">{{ publication.name }}</a>
                             </h3>
                             <p class="card-text">
                                 {% if publication.summary != '' %}
@@ -33,7 +33,7 @@
             {% endfor %}
         </div>
         <footer class="text-center mt-4">
-            <a href="{{ site.sadres }}publications" class="btn btn-primary">{{ lang.index.mod_publication.latest_publications.2 }}</a>
+            <a href="{{ site.saddress }}publications" class="btn btn-primary">{{ lang.index.mod_publication.latest_publications.2 }}</a>
         </footer>
     </section>
 {% else %}

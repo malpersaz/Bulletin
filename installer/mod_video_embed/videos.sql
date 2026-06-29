@@ -7,7 +7,6 @@ CREATE  VIEW videos AS SELECT
     mod_video_embed.original,
     mod_video_embed.duration,
     mod_video_embed.embed,
-
     mod_video_embed.title,
     mod_video_embed.keywords,
     mod_video_embed.description,

@@ -8,31 +8,42 @@
 {% block title %}{{ lang.mod_video_embed.named }}{% endblock %}
 {% block headline %}{{ lang.mod_video_embed.named }}{% endblock %}
 
-{% macro select_nested_category_id_function(parent_id, level) %}
+{% macro select_nested_category_id_function(parent_id, level, allowed_langs) %}
     {% for entry in attribute(select_nested_category_id_result, parent_id) %}
         {% set parent_id = entry.id %}
-        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
-            <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
-        {% else %}
-            <option
-                value="{{ entry.id }}"
-                {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
-                data-trigger-label="{{ entry.name|e('html_attr') }}"
-            >
-                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
-                {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
-            </option>
+        {% set entry_lang = entry.lang is defined ? entry.lang|lower : '' %}
+        {% set is_allowed = entry_lang == '' or entry_lang in allowed_langs %}
+        {% if is_allowed %}
+            {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+                <optgroup label="{{ '-'|repeat(level) }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang }}){% endif %}">
+            {% else %}
+                <option
+                    value="{{ entry.id }}"
+                    {% if entry.lang is defined %}data-lang="{{ entry.lang|upper }}"{% endif %}
+                    data-trigger-label="{{ entry.name|e('html_attr') }}"
+                >
+                    {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}
+                    {% if entry.lang is defined %}({{ entry.lang }}){% endif %}
+                </option>
+            {% endif %}
         {% endif %}
         {% if attribute(select_nested_category_id_result, parent_id) is not empty and attribute(select_nested_category_id_result, parent_id) is iterable %}
-            {{ _self.select_nested_category_id_function(parent_id, level + 1) }}
+            {{ _self.select_nested_category_id_function(parent_id, level + 1, allowed_langs) }}
         {% endif %}
-        {% if (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#') %}
+        {% if is_allowed and ((entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '#')) %}
             </optgroup>
         {% endif %}
     {% endfor %}
 {% endmacro %}
 
 {% block content %}
+{% set selected_lang = lang_value is defined ? lang_value : site.lang %}
+{% set allowed_langs = [] %}
+{% for item in lang_lang %}
+    {% if item.status == 'y' or item.seo == selected_lang %}
+        {% set allowed_langs = allowed_langs|merge([item.seo|lower]) %}
+    {% endif %}
+{% endfor %}
 <div class="form-container">
     {% if error is defined %}
         <script>
@@ -59,9 +70,9 @@
                     cancelButtonColor: '#6750a4'
                 }).then(function(result) {
                     if (result.isConfirmed) {
-                        window.location.href = '{{ site.sadres }}mod_video_embed/list';
+                        window.location.href = '{{ site.saddress }}mod_video_embed/list';
                     } else {
-                        window.location.href = '{{ site.sadres }}mod_video_embed/add';
+                        window.location.href = '{{ site.saddress }}mod_video_embed/add';
                     }
                 });
             });
@@ -110,7 +121,7 @@
         <div class="m3-card">
             <div class="form-group">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
-                <input type="text" name="name" id="nameInput" value="{{ name|default('') }}" class="form-input" required>
+                <input type="text" name="name" id="nameInput" value="{{ name|default('') }}" class="form-input" autocomplete="off" required>
             </div>
 
             <div class="form-group">
@@ -135,7 +146,9 @@
                     <div class="select-wrapper">
                         <select name="lang" id="langSelect" class="form-select" required>
                             {% for item in lang_lang %}
-                                <option value="{{ item.seo }}" {% if lang_value is defined and lang_value == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                {% if item.status == 'y' or item.seo == selected_lang %}
+                                    <option value="{{ item.seo }}" {% if selected_lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                {% endif %}
                             {% endfor %}
                         </select>
                     </div>
@@ -164,7 +177,7 @@
                         data-picker-lang-source="langSelect"
                     >
                         <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
-                        {{ _self.select_nested_category_id_function(0, 0) }}
+                        {{ _self.select_nested_category_id_function(0, 0, allowed_langs) }}
                     </select>
                     <div class="m3-fake-select select-picker-trigger" data-picker-trigger-for="categorySelect">
                         <span class="select-picker-label">{{ lang.mod_video_embed.choose_wish }}</span>
@@ -184,7 +197,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <a href="{{ site.sadres }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
+                    <a href="{{ site.saddress }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
                         <i class="bi bi-gear" style="font-size: 20px;"></i>
                     </a>
                 </div>
@@ -237,7 +250,7 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button class="toolbar-item active" onclick="window.location.href='{{ site.sadres }}mod_video_embed/list'">
+        <button class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video_embed/list'">
             <i class="bi bi-x-lg"></i>
             <span>{{ lang.mod_video_embed.button.cancel }}</span>
         </button>
@@ -260,7 +273,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const STORAGE_KEY = 'videoEmbedAddForm_v2';
     const form = document.getElementById('videoAddForm');
-    const siteBase = '{{ site.sadres }}';
+    const siteBase = '{{ site.saddress }}';
     const embedInput = document.getElementById('embedInput');
     const embedPreview = document.getElementById('embedPreview');
     const originalInput = form?.querySelector('[name="original"]');
@@ -586,7 +599,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     {% if autofill_image is defined and autofill_image %}
-        renderStoredImage('{{ site.radres }}mod_video_embed/thumb/{{ autofill_image }}?v={{ "now"|date("U") }}');
+        renderStoredImage('{{ site.iaddress }}mod_video_embed/thumb/{{ autofill_image }}?v={{ "now"|date("U") }}');
     {% endif %}
 
     ensureSeoFields();
@@ -629,4 +642,5 @@ function clearSelectedImage() {
     `;
 }
 </script>
+<!-- selection-card wizard_content wizard_page -->
 {% endblock %}

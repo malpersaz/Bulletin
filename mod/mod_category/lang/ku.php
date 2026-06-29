@@ -2,7 +2,7 @@
 /**
  * Category Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_category
  * @version 1.0.0
  * @author  AKM Software
@@ -29,6 +29,7 @@ $lang['mod_category'] = [
     'error' => 'Çewtiya Giran Çêbû',
     'remove_record' => 'Ji vê tomarê jê bibin tu pê bawer î?',
     'choose_wish' => 'Hilbijêre',
+    'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
 
     // === Message Structure ===
     'message' => [
@@ -48,6 +49,12 @@ $lang['mod_category'] = [
 
     'errors' => [
         'record' => 'Toma hatiye spartin nehate dîtin!',
+        'parent_selection_required' => 'Ji kerema xwe re kategoriya jorîn hilbijêre.',
+        'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
+        'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
+        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
+        'menu_language_mismatch' => 'Zimanê menuya hilbijartî divê bi zimanê kategoriyê re yek be.',
+        'order_update_failed' => 'Rêza kategoriyê nehate rojanekirin.',
     ],
 
     'button' => [
@@ -61,6 +68,8 @@ $lang['mod_category'] = [
         'hayir' => 'Na',
         'save' => 'Tomar Bike',
         'remove' => 'Jêbibe',
+        'gallery' => 'Galerî',
+        'file' => 'Pel',
     ],
 
     'grid' => [
@@ -136,6 +145,7 @@ $lang['mod_category'] = [
         'info' => [
             'edit_double_click' => 'Ji bo sererastkirinê dubare li kategoriya xwe bitikîne',
             'drag_reorder' => 'Ji bo guherandina rêzê kategoriya xwe bişîvîne û biavêje',
+            'mode_unlocked' => 'Mod: Rêzkirin (Vekirî)',
         ],
         'warning' => [
             'reorder' => 'Cihê kategoriyê were guhertin?',
@@ -169,6 +179,11 @@ $lang['mod_category'] = [
         'image' => 'Wêneya Kategoriya',
         'description' => 'Raveya Kategoriya',
         'access_control' => 'Kontrola Gihîştinê',
+    ],
+
+    'parent_labels' => [
+        'language_root' => 'Koka :language',
+        'system_root' => 'Asta jorîn',
     ],
 
     // === Table Columns ===
@@ -251,11 +266,15 @@ $lang['mod_category'] = [
             'description' => 'Ji bo mîhengên SEO ravekirin (Description)',
             'menu' => 'Kategoriya Bişîne Menuyê',
             'image' => 'Wêne',
+            'image_select' => 'Wêne Hilbijêre',
             'acl_id' => 'Kî dikare bibîne?',
         ],
         'select_values' => [
             'root_yes' => 'Erê',
             'root_no' => 'Na',
+        ],
+        'tooltips' => [
+            'acl_settings' => 'Mîhengên ACL',
         ],
     ],
 
@@ -358,6 +377,17 @@ $lang['mod_category'] = [
         'bulk_unpublish' => 'Weşana Hilbijartinan Rake',
         'select_all' => 'Hemûyan Hilbijêre',
         'deselect_all' => 'Hilbijartina Hemûyan Rake',
+    ],
+
+    'ajax' => [
+        'success' => 'Serkeftî',
+        'error' => 'Çewtî',
+    ],
+
+    'responses' => [
+        'success' => 'Oke',
+        'error' => 'Error',
+        'fatal_error' => 'ERROR',
     ],
 
 ];

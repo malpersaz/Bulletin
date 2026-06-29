@@ -3,8 +3,8 @@
     <div id="uyeol_icerik">
         <p class="mesaj hata">{{ lang.index.mod_user[8] }}</p>
         {% if session.id is not defined or session.id is empty %}
-            <p class="mesaj uyari">{{ lang.index.mod_user[9]|format(site.adres ~ 'login') }}</p>
-            <p class="mesaj bilgi">{{ lang.index.mod_user[10]|format(site.adres ~ 'register') }}</p>
+            <p class="mesaj uyari">{{ lang.index.mod_user[9]|format(site.address ~ 'login') }}</p>
+            <p class="mesaj bilgi">{{ lang.index.mod_user[10]|format(site.address ~ 'register') }}</p>
         {% endif %}
     </div>
 </div>

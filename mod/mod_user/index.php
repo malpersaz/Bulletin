@@ -141,12 +141,12 @@ class mod_user_mod extends indexMain
 
         // Redirect to homepage with modal if accessed directly (non-AJAX GET)
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !$this->_is_ajax_request()) {
-            Helper::yonlendir($this->site['sadres'] . "?login=modal", 0);
+            Helper::yonlendir($this->site['saddress'] . "?login=modal", 0);
             return;
         }
 
         $ref = isset($_SERVER['HTTP_REFERER']) ? Req::Clear($_SERVER['HTTP_REFERER']) : '';
-        $r = $ref != '' ? $ref : $this->site['sadres'] . 'mod_user/panel';
+        $r = $ref != '' ? $ref : $this->site['saddress'] . 'mod_user/panel';
 
         if (isset($_POST['login']) || Req::is_Post('login')) {
             $username = Req::Post_Safe('username');
@@ -234,6 +234,7 @@ class mod_user_mod extends indexMain
         }
 
         header('Content-Type: application/json; charset=utf-8');
+        header('X-Robots-Tag: noindex, nofollow');
         http_response_code($status_code);
 
         $response = json_encode($payload);
@@ -286,7 +287,7 @@ class mod_user_mod extends indexMain
             $this->user->logout($session_sid);
         }
 
-        $r = $this->site['sadres'];
+        $r = $this->site['saddress'];
         
         return Helper::yonlendir($r, 1);
     }
@@ -304,15 +305,11 @@ class mod_user_mod extends indexMain
         $this->apptemplate->veri('oke', null);
         $this->apptemplate->veri('mesaj', null);
 
-        if (Req::is_Post('forgot_password')) {
+        if ($this->_is_post_request()) {
             $this->_forgot_password();
         }
         $d['title'] = $this->lang['mod_user']['forgot_password']['forgot_password_title'];
         $this->apptemplate->veri('d', $d);
-        $this->captcha = Load::lib('Captcha');
-        $this->captcha->generate(); // Create new captcha
-        $captcha_url = $this->captcha->image();
-        $this->apptemplate->veri('captcha_image', $captcha_url);
 
         $this->apptemplate->tpl('mod_user/forgot-password');
     }
@@ -320,35 +317,47 @@ class mod_user_mod extends indexMain
     private function _forgot_password()
     {
         $this->val = Load::validator('mod_user.forgot_password');
-        if ($this->val->check()) {
+        $has_errors = $this->val->check();
+        if ($has_errors) {
             foreach ($_POST as $key => $val) {
                 $this->apptemplate->veri($key, Req::Post_Safe($key));
             }
             $this->apptemplate->veri('errors', $this->val->errors);
         } else {
+            $email = Req::Post_Safe('email');
             $this->model = Load::model('mod_user');
-            $this->model->Getemail(Req::Post_Safe('email'))->getResultOne(TRUE, TRUE)->sync();
-            if ($this->_semail_at()) {
-                $this->_appmesaj($this->lang['mod_user']['forgot_password']['title']);
-            } else {
-                $this->_appmesaj($this->lang['mod_user']['forgot_password']['error']['email_not_registered']);
+            $this->model->Getemail($email)->getResultOne(TRUE, TRUE);
+
+            if ($this->model->getSize() !== 0) {
+                $this->model->sync();
+                if (!$this->_semail_at()) {
+                    $this->_log_password_reset('Password reset email could not be sent for: ' . $email);
+                }
             }
+
+            $this->_appmesaj($this->lang['mod_user']['forgot_password']['info_1']);
         }
     }
 
     private function _semail_at()
     {
-        // Has Key Been Created Before
+        // Replace any previous reset code so each request creates a fresh token.
         $this->password_reset_model = Load::model('mod_user.password_reset');
         $this->password_reset_model->getemail($this->model->email)->getResultOne(TRUE, TRUE);
+        $key = $this->_generate_password_reset_code();
+
         if ($this->password_reset_model->getSize() !== 0) {
             $this->password_reset_model->sync();
-            $key = $this->password_reset_model->code;
+            $this->password_reset_model->code = $key;
+            $stored = $this->password_reset_model->update('email');
         } else {
-            $key = Helper::randomkey(20);
             $this->password_reset_model->email = $this->model->email;
             $this->password_reset_model->code = $key;
-            $this->password_reset_model->save();
+            $stored = $this->password_reset_model->save();
+        }
+
+        if (!$stored) {
+            return FALSE;
         }
 
         $email = Load::lib('Email');
@@ -367,21 +376,44 @@ class mod_user_mod extends indexMain
         return FALSE;
     }
 
+    private function _generate_password_reset_code()
+    {
+        if (function_exists('random_bytes')) {
+            try {
+                return bin2hex(random_bytes(20));
+            } catch (Exception $e) {
+                $this->_log_password_reset('Secure token generation failed: ' . $e->getMessage());
+            }
+        }
+
+        return Helper::randomkey(40);
+    }
+
+    private function _hash_password($password)
+    {
+        return function_exists('password_hash')
+            ? password_hash($password, PASSWORD_DEFAULT)
+            : md5($password);
+    }
+
+    private function _is_post_request()
+    {
+        return isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'POST';
+    }
+
 
     public function password_reset($code = NULL)
     {
         Run::import('index', '_index');
-        if ($code != 'NULL' and strlen($code) == 20) {
-            $this->apptemplate->veri('code', Req::Url_Clear($code));
+        $clean_code = is_string($code) ? Req::Url_Clear($code) : '';
+        if ($clean_code !== 'NULL' && preg_match('/^[A-Za-z0-9]{20,80}$/', $clean_code)) {
+            $this->apptemplate->veri('code', $clean_code);
         }
-        if (Req::is_Post('password_reset')) {
+        if ($this->_is_post_request()) {
             $this->_password_reset();
         }
         $d['title'] = $this->lang['mod_user']['password_reset']['title'];
         $this->apptemplate->veri('d', $d);
-
-        $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
 
         $this->apptemplate->tpl('mod_user/password_reset');
     }
@@ -405,37 +437,16 @@ class mod_user_mod extends indexMain
                 exit($this->lang['mod_user']['ajax']['membership_deleted']);
             }
 
-            $pass = Helper::randomkey(16);
-            $this->model->password = md5($pass);
+            $new_password = Req::Post_Safe('new_password');
+            $this->model->password = $this->_hash_password($new_password);
 
-
-            if ($this->_email_pass($pass)) {
-                if ($this->model->update('id')) {
-                    $this->_appmesaj($this->lang['mod_user']['password_reset']['password_required']);
-                }
+            if ($this->model->update('id')) {
+                $this->password_reset->delete();
+                $this->_appmesaj($this->lang['mod_user']['password_reset']['success_message']);
             } else {
-                $this->_appmesaj($this->lang['mod_user']['password_reset']['error']['passwords_mismatch']);
+                $this->_appemesaj($this->lang['mod_user']['error']['system_error']);
             }
         }
-    }
-
-    private function _email_pass($pass)
-    {
-        $email = Load::lib('Email');
-        $email->html = True;
-        $email->kime = [$this->model->email => $this->model->name . " " . $this->model->last_name];
-        $email->konu = $this->lang['mod_user']['register']['your_new_password'];
-        $this->apptemplate->veri('name', $this->model->name);
-        $this->apptemplate->veri('last_name', $this->model->last_name);
-        $this->apptemplate->veri('password', $pass);
-        $this->apptemplate->veri('site', $this->site);
-        $this->apptemplate->veri('ip', $_SERVER['REMOTE_ADDR']);
-        $email->mesaj = $this->apptemplate->fetch('mod_user/email_new_password');
-        if ($email->gonder()) {
-            $this->password_reset->delete();
-            return True;
-        }
-        return False;
     }
 
     // Resends Activation Code
@@ -622,29 +633,29 @@ class mod_user_mod extends indexMain
     private function _get_register_js_lang()
     {
         return [
-            'checking' => $this->lang['mod_user']['register']['js']['checking'] ?? '⏳ Checking...',
-            'username_available' => $this->lang['mod_user']['register']['js']['username_available'] ?? '✅ Username available',
-            'username_exists' => $this->lang['mod_user']['register']['js']['username_exists'] ?? '❌ This username is already taken',
-            'username_short' => $this->lang['mod_user']['register']['js']['username_short'] ?? 'Username must be at least 2 characters',
-            'email_available' => $this->lang['mod_user']['register']['js']['email_available'] ?? '✅ Email available',
-            'email_exists' => $this->lang['mod_user']['register']['js']['email_exists'] ?? '❌ This email is already registered',
-            'check_failed' => $this->lang['mod_user']['register']['js']['check_failed'] ?? '⚠️ Check could not be performed',
-            'register_success' => $this->lang['mod_user']['register']['js']['register_success'] ?? 'Your membership has been successfully created! You can log in.',
-            'errors_title' => $this->lang['mod_user']['register']['js']['errors_title'] ?? 'Errors:',
-            'validation_required' => $this->lang['mod_user']['register']['js']['validation_required'] ?? 'This field is required',
-            'validation_required_name' => $this->lang['mod_user']['register']['js']['validation_required_name'] ?? 'Please enter your name',
-            'validation_required_surname' => $this->lang['mod_user']['register']['js']['validation_required_surname'] ?? 'Please enter your surname',
-            'validation_required_username' => $this->lang['mod_user']['register']['js']['validation_required_username'] ?? 'Please enter a username',
-            'validation_username_short' => $this->lang['mod_user']['register']['js']['validation_username_short'] ?? 'Username must be at least 2 characters',
-            'validation_username_long' => $this->lang['mod_user']['register']['js']['validation_username_long'] ?? 'Username must not exceed 20 characters',
-            'validation_required_email' => $this->lang['mod_user']['register']['js']['validation_required_email'] ?? 'Please enter your email address',
-            'validation_invalid_email' => $this->lang['mod_user']['register']['js']['validation_invalid_email'] ?? 'Please enter a valid email address',
-            'validation_required_password' => $this->lang['mod_user']['register']['js']['validation_required_password'] ?? 'Please enter a password',
-            'validation_password_short' => $this->lang['mod_user']['register']['js']['validation_password_short'] ?? 'Password must be at least 6 characters',
-            'validation_password_long' => $this->lang['mod_user']['register']['js']['validation_password_long'] ?? 'Password must not exceed 20 characters',
-            'validation_confirm_password' => $this->lang['mod_user']['register']['js']['validation_confirm_password'] ?? 'Please confirm your password',
-            'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'] ?? 'Please enter your phone number',
-            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha'] ?? 'Please enter the security code'
+            'checking' => $this->lang['mod_user']['register']['js']['checking'],
+            'username_available' => $this->lang['mod_user']['register']['js']['username_available'],
+            'username_exists' => $this->lang['mod_user']['register']['js']['username_exists'],
+            'username_short' => $this->lang['mod_user']['register']['js']['username_short'],
+            'email_available' => $this->lang['mod_user']['register']['js']['email_available'],
+            'email_exists' => $this->lang['mod_user']['register']['js']['email_exists'],
+            'check_failed' => $this->lang['mod_user']['register']['js']['check_failed'],
+            'register_success' => $this->lang['mod_user']['register']['js']['register_success'],
+            'errors_title' => $this->lang['mod_user']['register']['js']['errors_title'],
+            'validation_required' => $this->lang['mod_user']['register']['js']['validation_required'],
+            'validation_required_name' => $this->lang['mod_user']['register']['js']['validation_required_name'],
+            'validation_required_surname' => $this->lang['mod_user']['register']['js']['validation_required_surname'],
+            'validation_required_username' => $this->lang['mod_user']['register']['js']['validation_required_username'],
+            'validation_username_short' => $this->lang['mod_user']['register']['js']['validation_username_short'],
+            'validation_username_long' => $this->lang['mod_user']['register']['js']['validation_username_long'],
+            'validation_required_email' => $this->lang['mod_user']['register']['js']['validation_required_email'],
+            'validation_invalid_email' => $this->lang['mod_user']['register']['js']['validation_invalid_email'],
+            'validation_required_password' => $this->lang['mod_user']['register']['js']['validation_required_password'],
+            'validation_password_short' => $this->lang['mod_user']['register']['js']['validation_password_short'],
+            'validation_password_long' => $this->lang['mod_user']['register']['js']['validation_password_long'],
+            'validation_confirm_password' => $this->lang['mod_user']['register']['js']['validation_confirm_password'],
+            'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'],
+            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha']
         ];
     }
 
@@ -664,7 +675,7 @@ class mod_user_mod extends indexMain
         $this->model = $this->_build_registration_model();
 
         if (!$this->model->save()) {
-            $this->apptemplate->veri('error_message', 'Database Error: ' . $this->model->db->sql_error());
+            $this->apptemplate->veri('error_message', $this->lang['mod_user']['database_error']);
             return;
         }
 
@@ -679,7 +690,7 @@ class mod_user_mod extends indexMain
         $model->last_name = Text::title(Req::Post_Safe('last_name'));
         $model->username = Req::Post_Safe('username');
         $model->email = Req::Post_Safe('email');
-        $model->password = md5(Req::Post_Safe('password'));
+        $model->password = $this->_hash_password(Req::Post_Safe('password'));
         $model->phone = $this->_build_registration_phone();
         $model->ip = $_SERVER['REMOTE_ADDR'];
         $model->group_id = $this->_group_id;
@@ -696,7 +707,7 @@ class mod_user_mod extends indexMain
 
     private function _build_registration_phone()
     {
-        $country_code = $_POST['country_code'] ?? '';
+        $country_code = isset($_POST['country_code']) ? $_POST['country_code'] : '';
         $phone = Req::Post_Safe('phone');
 
         if ($country_code && $phone) {
@@ -740,7 +751,7 @@ class mod_user_mod extends indexMain
 
     private function _redirect_after_register()
     {
-        Helper::yonlen($this->site['adres'] . 'register?success=1', 0);
+        Helper::yonlen($this->site['address'] . 'register?success=1', 0);
         session_write_close();
         exit;
     }
@@ -792,8 +803,7 @@ class mod_user_mod extends indexMain
                     $this->settings->k = $key;
                     $this->settings->v = $val;
                     if ($this->settings->update('k') === False) {
-                        print_r($this->settings);
-                        $this->_emesaj($this->settings->db->sql_error());
+                        $this->_emesaj($this->lang['mod_user']['database_error']);
                         return False;
                     }
                 }
@@ -811,7 +821,7 @@ class mod_user_mod extends indexMain
         }
 
         if (func_num_args() > 0 && $unused !== null && $unused !== '') {
-            Helper::yonlendir($this->site['sadres'] . 'mod_user/panel', 0);
+            Helper::yonlendir($this->site['saddress'] . 'mod_user/panel', 0);
             return FALSE;
         }
 
@@ -821,8 +831,123 @@ class mod_user_mod extends indexMain
 
         $this->tema->veri('site', $this->site);
         $this->tema->veri('panel_actions', $this->_build_panel_actions());
-        //print_r($_COOKIE);
         $this->tema->tpl('mod_user/panel');
+    }
+
+    private function _build_panel_actions()
+    {
+        $management_lang = Load::lang('management');
+        $video_embed_lang = Load::lang('mod_video_embed');
+        $slider_lang = Load::lang('mod_slider');
+        $video_lang = Load::lang('mod_video');
+        $gallery_lang = Load::lang('mod_gallery');
+        $redirect_lang = Load::lang('mod_redirect');
+
+        $definitions = [
+            [
+                'module' => 'mod_content',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_content/list',
+                'icon' => 'bi bi-file-earmark-text-fill',
+                'title' => $management_lang['management']['content_management'],
+            ],
+            [
+                'module' => 'mod_page',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_page/list',
+                'icon' => 'bi bi-file-richtext',
+                'title' => $management_lang['management']['page_management'],
+            ],
+            [
+                'module' => 'mod_news',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_news/list',
+                'icon' => 'bi bi-newspaper',
+                'title' => $management_lang['management']['news_management'],
+            ],
+            [
+                'module' => 'mod_announcements',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_announcements/list',
+                'icon' => 'bi bi-megaphone-fill',
+                'title' => $management_lang['management']['announcement_management'],
+            ],
+            [
+                'module' => 'mod_publication',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_publication/list',
+                'icon' => 'bi bi-journal-richtext',
+                'title' => $management_lang['management']['publication_management'],
+            ],
+            [
+                'module' => 'mod_video_embed',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_video_embed/list',
+                'icon' => 'bi bi-youtube',
+                'title' => $video_embed_lang['mod_video_embed']['list'],
+            ],
+            [
+                'module' => 'mod_video',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_video/list',
+                'icon' => 'bi bi-video',
+                'title' => $video_lang['mod_video']['video_management'],
+            ],
+            [
+                'module' => 'mod_gallery',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_gallery/list',
+                'icon' => 'bi bi-images',
+                'title' => $gallery_lang['mod_gallery']['admin']['title'],
+            ],
+            [
+                'module' => 'mod_slider',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_slider/list',
+                'icon' => 'bi bi-stars',
+                'title' => $slider_lang['mod_slider']['list'],
+            ],
+            [
+                'module' => 'mod_product',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_product/list',
+                'icon' => 'bi bi-box-seam-fill',
+                'title' => $management_lang['management']['products'],
+            ],
+            [
+                'module' => 'mod_service',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_service/list',
+                'icon' => 'bi bi-briefcase-fill',
+                'title' => $management_lang['management']['services'],
+            ],
+            [
+                'module' => 'mod_reference',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_reference/list',
+                'icon' => 'bi bi-award',
+                'title' => $management_lang['management']['references'],
+            ],
+            [
+                'module' => 'mod_client',
+                'permission' => 'list',
+                'href' => $this->site['saddress'] . 'mod_client/list',
+                'icon' => 'bi bi-people-fill',
+                'title' => $management_lang['management']['clients'],
+            ],
+        ];
+
+        $actions = [];
+        foreach ($definitions as $definition) {
+            if (isset($definition['module'], $definition['permission']) &&
+                Roll::hasPermission($definition['module'], $definition['permission']) !== TRUE) {
+                continue;
+            }
+
+            $actions[] = $definition;
+        }
+
+        return $actions;
     }
 
     private function _assert_panel_language_keys()
@@ -830,6 +955,8 @@ class mod_user_mod extends indexMain
         $management_lang = Load::lang('management');
         $video_embed_lang = Load::lang('mod_video_embed');
         $slider_lang = Load::lang('mod_slider');
+        $video_lang = Load::lang('mod_video');
+        $gallery_lang = Load::lang('mod_gallery');
 
         $required_keys = [
             [$this->lang, ['mod_user', 'panel', 'panel_title']],
@@ -837,16 +964,24 @@ class mod_user_mod extends indexMain
             [$this->lang, ['mod_user', 'panel', 'admin_brand']],
             [$this->lang, ['mod_user', 'panel', 'welcome_main']],
             [$this->lang, ['mod_user', 'panel', 'recent_workspace']],
-            [$this->lang, ['mod_user', 'panel', 'workspace_nav_videos']],
+            [$this->lang, ['mod_user', 'panel', 'workspace_nav_media']],
+            [$this->lang, ['mod_user', 'panel', 'workspace_nav_products']],
             [$this->lang, ['mod_user', 'panel', 'workspace_nav_more']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_title']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_copy']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_open_drawer']],
             [$management_lang, ['management', 'uyelik']],
+            [$management_lang, ['management', 'content_workspace']],
             [$management_lang, ['management', 'content_and_page']],
             [$management_lang, ['management', 'content_management']],
             [$management_lang, ['management', 'news_management']],
             [$management_lang, ['management', 'publication_management']],
+            [$management_lang, ['management', 'products']],
+            [$management_lang, ['management', 'services']],
+            [$management_lang, ['management', 'product_categories']],
+            [$management_lang, ['management', 'service_categories']],
+            [$management_lang, ['management', 'clients']],
+            [$management_lang, ['management', 'references']],
             [$management_lang, ['management', 'system_tools']],
             [$management_lang, ['management', 'uyeler']],
             [$management_lang, ['management', 'uye_gruplari']],
@@ -856,7 +991,10 @@ class mod_user_mod extends indexMain
             [$management_lang, ['management', 'page_management']],
             [$management_lang, ['management', 'language_management_menu']],
             [$management_lang, ['management', 'settings']],
+            [$management_lang, ['management', 'announcement_management']],
             [$video_embed_lang, ['mod_video_embed', 'list']],
+            [$video_lang, ['mod_video', 'video_management']],
+            [$gallery_lang, ['mod_gallery', 'admin', 'title']],
             [$slider_lang, ['mod_slider', 'list']],
         ];
 
@@ -917,98 +1055,6 @@ class mod_user_mod extends indexMain
         $this->tema->tpl('pages/route_error');
         $this->tema->output();
         exit();
-    }
-
-    private function _build_panel_actions()
-    {
-        $management_lang = Load::lang('management');
-        $video_embed_lang = Load::lang('mod_video_embed');
-        $slider_lang = Load::lang('mod_slider');
-
-        $quick_access = $this->lang['mod_user']['panel']['quick_access'];
-        $definitions = [
-            [
-                'module' => 'mod_content',
-                'permission' => 'list',
-                'href' => $this->site['sadres'] . 'mod_content/list',
-                'icon' => 'bi bi-file-earmark-text-fill',
-                'title' => $management_lang['management']['content_management'],
-                'meta' => $quick_access,
-            ],
-            [
-                'module' => 'mod_news',
-                'permission' => 'list',
-                'href' => $this->site['sadres'] . 'mod_news/list',
-                'icon' => 'bi bi-newspaper',
-                'title' => $management_lang['management']['news_management'],
-                'meta' => $quick_access,
-            ],
-            [
-                'module' => 'mod_publication',
-                'permission' => 'list',
-                'href' => $this->site['sadres'] . 'mod_publication/list',
-                'icon' => 'bi bi-journal-richtext',
-                'title' => $management_lang['management']['publication_management'],
-                'meta' => $quick_access,
-            ],
-            [
-                'module' => 'mod_video_embed',
-                'permission' => 'list',
-                'href' => $this->site['sadres'] . 'mod_video_embed/list',
-                'icon' => 'bi bi-youtube',
-                'title' => $video_embed_lang['mod_video_embed']['list'],
-                'meta' => $quick_access,
-            ],
-            [
-                'module' => 'mod_slider',
-                'permission' => 'list',
-                'href' => $this->site['sadres'] . 'mod_slider/list',
-                'icon' => 'bi bi-images',
-                'title' => $slider_lang['mod_slider']['list'],
-                'meta' => $quick_access,
-            ],
-        ];
-
-        // Resolve the media_href equivalent for Rêveberiya Vîdewoyan
-        $media_module = null;
-        $media_href = $this->site['sadres'] . 'mod_user/panel';
-
-        if (Roll::hasPermission('mod_video', 'list') === TRUE) {
-            $media_module = 'mod_video';
-            $media_href = $this->site['sadres'] . 'mod_video/list';
-        } elseif (Roll::hasPermission('mod_imagecategories', 'list') === TRUE) {
-            $media_module = 'mod_imagecategories';
-            $media_href = $this->site['sadres'] . 'mod_imagecategories/list';
-        } elseif (Roll::hasPermission('mod_video_embed', 'list') === TRUE) {
-            $media_module = 'mod_video_embed';
-            $media_href = $this->site['sadres'] . 'mod_video_embed/list';
-        } elseif (Roll::hasPermission('mod_gallery_mod', 'list') === TRUE) {
-            $media_module = 'mod_gallery_mod';
-            $media_href = $this->site['sadres'] . 'mod_gallery_mod/list';
-        }
-
-        if ($media_module !== null) {
-            $definitions[] = [
-                'module' => $media_module,
-                'permission' => 'list',
-                'href' => $media_href,
-                'icon' => 'bi bi-camera-video-fill',
-                'title' => $this->lang['mod_user']['panel']['workspace_nav_videos'],
-                'meta' => $quick_access,
-            ];
-        }
-
-        $actions = [];
-        foreach ($definitions as $definition) {
-            if (isset($definition['module'], $definition['permission']) &&
-                Roll::hasPermission($definition['module'], $definition['permission']) !== TRUE) {
-                continue;
-            }
-
-            $actions[] = $definition;
-        }
-
-        return $actions;
     }
 
     private function _get_social_platform_map()
@@ -1221,7 +1267,7 @@ class mod_user_mod extends indexMain
             $db->start_transaction();
             $u = Load::model('mod_user');
             $u->username = Req::Post_Safe('username');
-            $u->password = md5(Req::Post_Safe('password'));
+            $u->password = $this->_hash_password(Req::Post_Safe('password'));
             $u->email = Req::Post_Safe('email');
             $u->group_id = Req::Post_Safe('group_id');
             $u->name = Text::title(Req::Post_Safe('name'));
@@ -1274,7 +1320,7 @@ class mod_user_mod extends indexMain
             if ($u->save(true)) {
                 if ($this->_save_social_links($u->id, $_POST['social_links'] ?? []) === false) {
                     $db->rollback();
-                    $this->tema->veri('errors', ['Database Error: user social links could not be saved.']);
+                    $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
                     return FALSE;
                 }
 
@@ -1288,7 +1334,7 @@ class mod_user_mod extends indexMain
                 ];
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', print_r($u, TRUE));
+                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
             }
         }
     }
@@ -1320,14 +1366,15 @@ class mod_user_mod extends indexMain
             $this->tema->veri('errors', $this->val->errors);
         } else {
             $u = Load::model('mod_user');
-            $u->password = md5(Req::Post_Safe('new_password'));
+            $new_password_hash = $this->_hash_password(Req::Post_Safe('new_password'));
+            $u->password = $new_password_hash;
             $u->id = $this->session->get('id');
             if ($u->update('id')) {
                 $this->session->remove('password');
-                $this->session->set('password', md5(Req::Post_Safe('new_password')));
+                $this->session->set('password', $new_password_hash);
                 $this->_mesaj($this->lang['mod_user']['password_changed_success']);
             } else {
-                $this->tema->veri('errors', ['Database Error: ' . $u->db->sql_error()]);
+                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
             }
         }
     }
@@ -1424,7 +1471,7 @@ class mod_user_mod extends indexMain
                 $this->_mesaj($this->lang['mod_user']['info_updated_success']);
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', ['Database Error: profile data could not be updated.']);
+                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
             }
         }
     }
@@ -1632,7 +1679,7 @@ class mod_user_mod extends indexMain
                     if (isset($content['status']) && isset($status_list[$content['status']])) {
                         $status_html = '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>';
                     } else {
-                        $status_html = '<span class="label label-default">' . ($content['status'] ?? 'Unknown') . '</span>';
+                        $status_html = '<span class="label label-default">' . (isset($content['status']) ? $content['status'] : '') . '</span>';
                     }
 
                     $data[] = [
@@ -1784,7 +1831,6 @@ class mod_user_mod extends indexMain
         $this->site['title'] = $this->lang['mod_user']['admin']['edit_area'];
         $this->tema->veri('site', $this->site);
         $this->tema->veri('d', $d);
-        //print_r($group);
         $this->tema->veri('group', $group);
         
         // Pass country codes
@@ -1827,7 +1873,7 @@ class mod_user_mod extends indexMain
             
             $u->updated_at = date('Y-m-d H:i:s'); // Automatically set update time
             if (Req::Post_Safe('password') != '') {
-                $u->password = md5(Req::Post_Safe('password'));
+                $u->password = $this->_hash_password(Req::Post_Safe('password'));
             }
 
             // Additional fields
@@ -1882,20 +1928,20 @@ class mod_user_mod extends indexMain
                         'payload' => [
                             'success' => true,
                             'message' => $this->lang['mod_user']['admin']['updated'],
-                            'redirect' => $this->site['sadres'] . 'mod_user/list',
+                            'redirect' => $this->site['saddress'] . 'mod_user/list',
                         ],
                     ];
                 }
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', ['Database Error: user update could not be completed.']);
+                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
                 if ($is_ajax) {
                     return [
                         'status' => 500,
                         'payload' => [
                             'success' => false,
                             'message' => $this->lang['mod_user']['ajax']['error'],
-                            'errors' => ['Database Error: user update could not be completed.'],
+                            'errors' => [$this->lang['mod_user']['database_error']],
                         ],
                     ];
                 }
@@ -2000,7 +2046,7 @@ class mod_user_mod extends indexMain
                     if ($perm->save() === False) {
                         // If any error occurs, let's Rollback everything.
                         $db->rollback();
-                        $this->_emesaj(print_r($db, TRUE));
+                        $this->_emesaj($this->lang['mod_user']['database_error']);
                     }
                 }
             }
@@ -2018,7 +2064,7 @@ class mod_user_mod extends indexMain
     {
         // Is Logged In?
         if ($this->user->checklogin() === True) {
-            Helper::yonlendir($this->site['sadres'] . "mod_user/panel", 2);
+            Helper::yonlendir($this->site['saddress'] . "mod_user/panel", 2);
             return TRUE;
         }
         return FALSE;
@@ -2029,7 +2075,7 @@ class mod_user_mod extends indexMain
     {
         if ($this->user->checklogin() === False) {
             // Redirect to home with modal trigger instead of static login page
-            Helper::yonlendir($this->site['sadres'] . "?login=modal", 0);
+            Helper::yonlendir($this->site['saddress'] . "?login=modal", 0);
             return FALSE;
         }
         return TRUE;
@@ -2061,9 +2107,29 @@ class mod_user_mod extends indexMain
         $this->apptemplate->veri('errors', (array)$mesaj);
     }
 
+    private function _log_password_reset($message)
+    {
+        @file_put_contents(
+            root_dir . 'logs/password_reset.log',
+            '[' . date('Y-m-d H:i:s') . '] ' . $message . "\n",
+            FILE_APPEND
+        );
+    }
+
     // For Javascript Validator
     public function check_user_exists()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (!$this->_is_ajax_request()) {
+                Helper::yonlendir($this->site['saddress'], 0);
+                return;
+            }
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+        }
+
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');
         $error = Req::Post_Safe('validateError');
@@ -2074,16 +2140,26 @@ class mod_user_mod extends indexMain
         $arrayToJs[1] = $error;
         if ($this->b->exists_username($val) === False) {
             $arrayToJs[2] = "false";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         } else {
             $arrayToJs[2] = "true";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         }
+        $this->_respond_with_json(['jsonValidateReturn' => $arrayToJs]);
     }
 
     // For Javascript Validator
     public function check_username()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (!$this->_is_ajax_request()) {
+                Helper::yonlendir($this->site['saddress'], 0);
+                return;
+            }
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+        }
+
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');
         $error = Req::Post_Safe('validateError');
@@ -2094,16 +2170,26 @@ class mod_user_mod extends indexMain
         $arrayToJs[1] = $error;
         if ($this->b->exists_username($val) === False) {
             $arrayToJs[2] = "true";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         } else {
             $arrayToJs[2] = "false";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         }
+        $this->_respond_with_json(['jsonValidateReturn' => $arrayToJs]);
     }
 
     // For Javascript Validator
     public function check_email()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (!$this->_is_ajax_request()) {
+                Helper::yonlendir($this->site['saddress'], 0);
+                return;
+            }
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+        }
+
         $val = Req::Post_Safe('validateValue');
         $id = Req::Post_Safe('validateId');
         $error = Req::Post_Safe('validateError');
@@ -2114,73 +2200,85 @@ class mod_user_mod extends indexMain
         $arrayToJs[1] = $error;
         if ($this->b->exists_email($val) === False) {
             $arrayToJs[2] = "true";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         } else {
             $arrayToJs[2] = "false";
-            echo '{"jsonValidateReturn":' . json_encode($arrayToJs) . '}';
         }
+        $this->_respond_with_json(['jsonValidateReturn' => $arrayToJs]);
     }
 
     // Real-time username validation for registration
     public function checkUsernameAvailability()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (!$this->_is_ajax_request()) {
+                Helper::yonlendir($this->site['saddress'], 0);
+                return;
+            }
+            $this->_respond_with_json([
+                'available' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+        }
+
         $username = Req::Post_Safe('username');
 
         if (empty($username) || strlen($username) < 2) {
-            echo json_encode([
+            $this->_respond_with_json([
                 'available' => false,
                 'message' => $this->lang['mod_user']['register']['js']['username_short']
-            ]);
-            return;
+            ], 400);
         }
 
         // Check real username availability
         $this->model = Load::model('mod_user');
         $isAvailable = !$this->model->exists_username($username);
 
-        echo json_encode([
+        $this->_respond_with_json([
             'available' => $isAvailable,
             'message' => $isAvailable ?
                 $this->lang['mod_user']['register']['js']['username_available'] :
                 $this->lang['mod_user']['register']['js']['username_exists']
-            ]);
+        ]);
     }
 
     // Real-time username validation for login step-by-step
     public function checkUserExistence()
     {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            if (!$this->_is_ajax_request()) {
+                Helper::yonlendir($this->site['saddress'], 0);
+                return;
+            }
+            $this->_respond_with_json([
+                'exists' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+        }
+
         $username = Req::Post_Safe('username');
 
         if (empty($username)) {
-            echo json_encode([
+            $this->_respond_with_json([
                 'exists' => false,
                 'message' => $this->lang['mod_user']['error']['specify_username']
-            ]);
-            return;
+            ], 400);
         }
 
         $this->model = Load::model('mod_user');
         $user = $this->model->exists_username($username);
 
-        while (ob_get_level() > 0) {
-            ob_end_clean();
-        }
-        header('Content-Type: application/json; charset=utf-8');
-
         if ($user) {
-            echo json_encode([
+            $this->_respond_with_json([
                 'exists' => true,
                 'username' => $username,
                 'message' => 'Success'
             ]);
         } else {
-            echo json_encode([
+            $this->_respond_with_json([
                 'exists' => false,
                 'message' => $this->lang['mod_user']['error']['username_not_found']
             ]);
         }
-        session_write_close();
-        exit;
     }
 
     // Captcha method
@@ -2193,22 +2291,21 @@ class mod_user_mod extends indexMain
 
         try {
             $captcha = Load::lib('Captcha');
+            $captcha->generate();
             $image_data = $captcha->image();
 
-            // If data URL comes, decode it
             if (strpos($image_data, 'data:image/png;base64,') === 0) {
                 echo base64_decode(substr($image_data, 22));
             } else {
-                // If file path comes, read the file
                 if (file_exists($image_data)) {
                     echo file_get_contents($image_data);
                 } else {
-                    die('Captcha file not found');
+                    http_response_code(404);
                 }
             }
         } catch (Exception $e) {
-            die('Captcha error: ' . $e->getMessage());
+            http_response_code(500);
         }
-        exit; // Prevent HTML output
+        exit;
     }
 }

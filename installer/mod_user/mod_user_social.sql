@@ -8,4 +8,4 @@ CREATE TABLE IF NOT EXISTS `mod_user_social` (
   `is_active` ENUM('y', 'n') NOT NULL DEFAULT 'y',
   UNIQUE KEY `uniq_user_platform` (`user_id`, `platform`),
   INDEX `idx_user_social_user` (`user_id`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;

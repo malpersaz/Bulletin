@@ -206,10 +206,10 @@ class ContentManager {
 
             // Status Logic
             let statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.draft : "Draft";
-            let statusColor = "#FFAB00"; // Orange
+            let statusColor = "#0B57D0"; // Blue
             if (statusRaw === 'y') {
                 statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.active : "Active";
-                statusColor = "var(--md-sys-color-primary)"; // Purple/Primary
+                statusColor = "#2E7D32"; // Green
             }
 
             // Category Logic
@@ -228,47 +228,39 @@ class ContentManager {
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
-                <div class="card-content-layout">
-                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
+                <div class="card-content-layout" style="display:flex; gap:12px;">
+                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f8f2fa;'}; flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px;">
                         ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
-                    <div class="card-body-col">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                             <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span class="hero-slider-badge" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'} align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:rgba(255,193,7,0.18); color:#8a5a00; font-weight:700;">
+                    <div class="card-body-col" style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
+                             <div style="flex:1; min-width:0;">
+                                <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
+                                    <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
                                         <i class="bi bi-stars"></i> ${safeSliderBadge}
                                     </span>
-                                    <span class="hero-slider-dot" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'}">•</span>
-                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
-                                    <span>•</span>
-                                    <span>${safeCategoryName}</span>
+                                    <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${safeStatusText}</span>
                                 </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
+                                <h3 style="margin:4px 0; font-size:16px; font-weight:700; color: var(--md-sys-color-on-surface); word-break:break-word; line-height:1.2; text-align: left;">${safeTitleText}</h3>
                              </div>
-                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
+                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" aria-label="More actions">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
-
-                        <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
-                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
-                        </div>
                     </div>
+                </div>
+
+                <div class="meta-row" style="margin-top:12px; display:flex; align-items:center; width:100%; font-size:12px; color: var(--md-sys-color-on-surface-variant); border-top: 1px solid var(--md-sys-color-outline-variant, #EADDFF); padding-top: 8px;">
+                     <span style="display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
+                     <span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
+                     ${safeAuthorName ? `<span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-person" style="font-size:11px;"></i> ${safeAuthorName}</span>` : ''}
+                     <span style="margin-left: auto; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-diagram-2" style="font-size:11px;"></i> ${safeCategoryName}</span>
                 </div>
             `;
 
             const thumbnail = card.querySelector('.card-thumbnail');
             if (thumbnail) {
-                if (imgSrc) {
-                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
-                    thumbnail.style.backgroundSize = 'cover';
-                    thumbnail.style.backgroundPosition = 'center';
-                }
-
                 thumbnail.addEventListener('click', (event) => {
                     event.stopPropagation();
                     this.processImageUpload(id);
@@ -638,7 +630,7 @@ class ContentManager {
 
         const isPublished = (status === 'y');
         if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, isPublished);
+            openContextMenu(id, title, isPublished, ['video']);
         }
     }
 

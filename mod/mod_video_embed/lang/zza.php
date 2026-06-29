@@ -2,7 +2,7 @@
 $lang['mod_video_embed'] = [
     'add' => 'Vîdyo Embed Lêke',
     'edit' => 'Vîdyo Embed Serast Bike',
-    'list' => 'Vîdyo Embed',
+    'list' => 'Rêveberiya Video Embedan',
     'information' => 'Agahî!',
     'oke' => 'Kirar Serkeftî ye!',
     'hata' => 'Şaşî Çêbû!',
@@ -22,11 +22,12 @@ $lang['mod_video_embed'] = [
         'success' => 'Agahiyên vîdyoyê bi serkeftî hatin anîn.',
         'partial' => 'Wêneya kapaxê û agahiyên bingehîn hatin anîn. Heke YouTube hemû metadata nepeyde bike, qadan bi destan dagire.',
         'error' => 'Agahiyên vîdyoyê nehatin anîn.',
-        'permission_denied' => 'You do not have permission to fetch video details.',
-        'missing_source' => 'Paste a YouTube URL or embed code first.',
-        'invalid_source' => 'A valid YouTube video could not be detected from the provided input.',
-        'fetch_failed' => 'YouTube metadata could not be fetched.',
-        'download_failed' => 'Thumbnail image could not be downloaded.',
+        'permission_denied' => 'Mafê te tune ku agahiyên vîdyoyê bînî.',
+        'missing_source' => 'Pêşî lînka YouTube an koda embed binivîse.',
+        'invalid_source' => 'Ji agahiya hat dayîn vîdyoyeke YouTube ya derbasdar nehat dîtin.',
+        'fetch_failed' => 'Metadata ya YouTube nehat anîn.',
+        'download_failed' => 'Wêneya kapaxê nehat daxistin.',
+        'generic_error' => 'Di anîna agahiyên vîdyoyê de şaşî çêbû.',
     ],
     'message' => [
         'oke' => [
@@ -72,6 +73,8 @@ $lang['mod_video_embed'] = [
     ],
     'errors' => [
         'record' => 'Qeyd nehat dîtin!',
+        'image_upload_failed' => 'Wêne nehat barkirin.',
+        'image_delete_failed' => 'Wêne nehat jêbirin.',
     ],
     'validator' => [
         'required' => 'Qada %s mecbûrî ye!',
@@ -268,14 +271,14 @@ $lang['mod_video_embed'] = [
         ],
     ],
     'ajax' => [
-        'permission_denied' => 'You do not have permission to perform this action.',
-        'id_missing' => 'ID is missing.',
-        'db_update_failed' => 'Database could not be updated.',
-        'file_not_uploaded' => 'File was not uploaded.',
-        'content_permission_denied' => 'You do not have permission to edit this content.',
-        'success' => 'Operation successful!',
-        'error' => 'Error occurred!',
-        'fatal_error' => 'Fatal Error Occurred!',
+        'permission_denied' => 'Mafê te tune ku vê kirarê bikî.',
+        'id_missing' => 'ID kêm e.',
+        'db_update_failed' => 'Danegeh nehat rojane kirin.',
+        'file_not_uploaded' => 'Pel nehat barkirin.',
+        'content_permission_denied' => 'Mafê te tune ku vê naverokê biguherînî.',
+        'success' => 'Kirar bi serkeftî qedîya!',
+        'error' => 'Şaşî çêbû!',
+        'fatal_error' => 'Şaşiyek mezin çêbû!',
     ],
     'js_fallback' => [
         'video' => 'video',

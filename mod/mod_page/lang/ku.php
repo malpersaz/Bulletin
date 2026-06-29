@@ -23,7 +23,18 @@ $lang['mod_page'] = [
     'remove_image' => 'Bi rastî jî dixwazî vê wêneyê rakî?',
     'remove_image_oke' => 'Wêne Bi Serkeftin Hate Rakirin',
     'choose_wish' => 'Ji kerema xwe re, ger bixwazî hilbijêre',
+    'menu_options' => [
+        'none' => 'Di menuyê de nene',
+        'top_level' => 'Wekî hêmana sereke ya menuyê zêde bike',
+        'slot_root' => 'Li binê rûyê menuyê yê hatî hilbijartin zêde bike',
+    ],
+    'menu_slot_options' => [
+        'none' => 'Rûyê menuyê tune',
+        'header' => 'Menuya Jor',
+        'footer' => 'Menuya Jêr',
+    ],
     'remove_record' => 'Bi rastî jî dixwazî vê tomarê rakî?',
+    'seo_meta' => 'Daneyên SEO',
 
     // === System Messages ===
     'messages' => [
@@ -63,6 +74,7 @@ $lang['mod_page'] = [
     // === Peyamên Çewtiyê ===
     'errors' => [
         'record' => 'Tomara ku hate nîşankirin nehate dîtin',
+        'slot_branch_missing' => 'Rûyê menuyê yê hatî hilbijartin ji bo vî zimanî nehate çareserkirin',
     ],
 
     // === Etîketên Bişkojan ===
@@ -76,6 +88,8 @@ $lang['mod_page'] = [
         'hayir' => 'Na',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberiya Pelan',
+        'tamam' => 'Temam',
+        'upload' => 'Bar Bike',
     ],
 
     // === Actions ===
@@ -107,6 +121,7 @@ $lang['mod_page'] = [
         'file' => 'Dikare Pel Zêde Bike?',
         'moderate_edit' => 'Dikare Tomara Rûpelên Ku Ne Xwe Ne Biguhere',
         'moderate_delete' => 'Dikare Tomara Rûpelên Ku Ne Xwe Ne Rake',
+        'approval' => 'Dikare Rûpelan Biweşîne/Neweşîne?',
     ],
 
     // === Çewtiyên Destûran ===
@@ -119,6 +134,7 @@ $lang['mod_page'] = [
         'delete' => 'Destûra Te Ji Bo Rakirina Rûpelan Tune',
         'gallery' => 'Destûra Te Ji Bo Zêdekirina Galeriyê Tune',
         'file' => 'Destûra Te Ji Bo Zêdekirina Pelan Tune',
+        'approval' => 'Destûra Te Ji Bo Weşandin An Ji Weşanê Rakirina Rûpelan Tune',
     ],
 
     // === Panela Rêveber ===
@@ -145,6 +161,7 @@ $lang['mod_page'] = [
             'acl_id' => 'Kî Dikare Vê Rûpelê Bibîne?',
             'category_id' => 'Kategoriya Naveroka Têkildar',
             'menu' => 'Rûpelê Bişîne Menûyê',
+            'menu_slot' => 'Rûyê Menûyê',
         ],
         'select_value' => [
             'root_e' => 'Erê',
@@ -181,5 +198,13 @@ $lang['mod_page'] = [
         'page_summary' => 'Kurteya Rûpelê',
         'previous' => 'Paşve',
         'next' => 'Pêşve',
+    ],
+    'quick_unpublish_confirm' => 'Ma tu bawer î ku dixwazî vê rûpelê ji weşanê rakî?',
+    'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vê rûpelê biweşînî?',
+    'published_msg' => 'Rûpel Bi Serkeftin Hate Weşandin',
+    'unpublished_msg' => 'Rûpel Ji Weşanê Hate Rakirin',
+    'status_badge' => [
+        'active' => 'Weşandî',
+        'draft' => 'Pêşnûma',
     ],
 ];

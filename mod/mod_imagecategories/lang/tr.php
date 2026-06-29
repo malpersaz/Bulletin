@@ -1,101 +1,125 @@
 <?php
-                $lang['mod_imagecategories']= [
-  'add' => 'Gallery Kategorisi Ekle',
-  'edit' => 'Gallery Kategorini Düzenle',
-  'list' => 'Gallery Kategori Listesi',
-  'information' => 'Bilgi!',
-  'ok' => 'İşlem Başarılı!',
-  'hata' => 'Hata Oluştu!',
-  'error' => 'Ölümcül Hata Oluştu!',
-  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
-  'remove_image_oke' => 'Gallery Kaldırıldı',
-  'choose_wish' => 'Dilerseniz Seçin',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-  'message' => 
-   [
-    'ok' => 
-     [
-      'add' => 'Gallery Kategorisi Eklendi!',
-      'edit' => 'Gallery Kategorisi Düzenlendi!',
+if (!defined('AKM_LOADED')) {
+    die('Direct access to this file is not allowed.');
+}
+
+$lang['mod_imagecategories'] = [
+    'add' => 'Görsel Kategorisi Ekle',
+    'edit' => 'Görsel Kategorisini Düzenle',
+    'list' => 'Görsel Kategorileri',
+    'remove_record' => 'Bu görsel kategorisini silmek istediğinize emin misiniz?',
+    'remove_image' => 'Bu görseli kaldırmak istediğinize emin misiniz?',
+    'empty_state' => 'Henüz görsel kategorisi eklenmedi.',
+    'message' => [
+        'success' => [
+            'add' => 'Görsel kategorisi başarıyla eklendi.',
+            'edit' => 'Görsel kategorisi başarıyla güncellendi.',
+            'delete' => 'Görsel kategorisi başarıyla silindi.',
+            'reordered' => 'Görsel kategorisi sırası güncellendi.',
+            'image_removed' => 'Görsel kategorisi görseli kaldırıldı.',
+        ],
+        'error' => [
+            'add' => 'Görsel kategorisi eklenemedi.',
+            'edit' => 'Görsel kategorisi güncellenemedi.',
+        ],
     ],
-    'error' => 
-     [
-      'add' => 'Gallery Kategorisi Eklenemedi!',
-      'edit' => 'Gallery Kategorisi Düzenlenemedi!',
+    'errors' => [
+        'record' => 'Belirtilen görsel kategorisi bulunamadı.',
+        'delete_failed' => 'Görsel kategorisi silinemedi.',
+        'parent_self' => 'Bir kategori kendisinin üst kategorisi olamaz.',
+        'parent_selection_required' => 'Lütfen bir üst kategori seçin.',
+        'language_root_parent_locked' => 'Dil kökü kategorileri sistem kökünde kalmalıdır.',
+        'parent_language_mismatch' => 'Üst kategori dili, kategori diliyle aynı olmalıdır.',
+        'parent_cycle' => 'Bir kategori kendisinin veya alt kategorilerinden birinin altına taşınamaz.',
+        'menu_parent_not_found' => 'Seçilen menü üst kaydı bulunamadı.',
+        'menu_language_mismatch' => 'Menü üst kaydının dili, kategori diliyle aynı olmalıdır.',
+        'order_update_failed' => 'Kategori sırası güncellenemedi.',
+        'image_remove_failed' => 'Kategori görseli kaldırılamadı.',
     ],
-    'information' => 
-     [
-      'moderate' => 'Düzenlemek İstediğiniz Gallery Kategorisine İki Defa Tıklayın',
-      'move' => 'Sırasını Değiştirmek İstediğiniz Gallery Kategorini Sürükleyip Bırakın',
+    'parent_labels' => [
+        'system_root' => 'Sistem kökü',
+        'language_root' => ':language kökü',
     ],
-  ],
-  'errors' => 
-   [
-    'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
-  ],
-  'buttons' => 
-   [
-    'add' => 'Ekle',
-    'edit' => 'Düzenle',
-    'delete' => 'Sil',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'yes' => 'Evet',
-    'no' => 'Hayır',
-    'gallery' => 'Resim Galerisi',
-  ],
-  'validator' => 
-   [
-    'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
-    'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
-  ],
-  'roll' => 
-   [
-    'ad' => 'Gallery Kategori Yönetim Rolleri',
-    'add' => 'Gallery Kategorisi Ekleyebilir',
-    'edit' => 'Gallery Kategorisi Düzenleyebilir',
-    'delete' => 'Gallery Kategorisi Silebilir',
-    'gallery' => 'Resim  Ekleyebilirmi?',
-    'list' => 'Gallery Kategori Yönetimini Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan Gallery Kategori Kaydını Düzenleyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Gallery Kategori Kaydını Silebilir',
-  ],
-  'role_errors' => 
-   [
-    'moderate_edit' => 'Size Ait Olmayan Gallery Kategori Kaydını Düzenleyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan Gallery Kategori Kaydını Silemezsiniz',
-    'add' => 'Gallery Kategorisi Eklemeye Permissionniz Yok',
-    'edit' => 'Gallery Kategorisi Düzenlemeye Permissionniz Yok',
-    'list' => 'Gallery Kategori Yönetimini Görüntülemeye Permissionniz Yok',
-    'delete' => 'Gallery Kategorisi Silmeye Permissionniz Yok',
-    'gallery' => 'Galeriye Eklemeye Permissionniz Yok',
-  ],
-  'admin' => 
-   [
-    'columns' => 
-     [
-      'id' => 'ID',
-      'language' => 'Dil',
-      'name' => 'Gallery Adı',
-      'content' => 'Kısa Açıklama',
-      'parent_id' => 'Alt Gallery',
-      'order' => 'Sıra',
-      'root' => 'Görüntülenmemesi Gereken Root?',
-      'seo' => 'Gallery Bağlantısı',
-      'title' => 'Title ( Arama Motorları İçin)',
-      'keywords' => 'Keywords ( Arama Motorları İçin)',
-      'description' => 'Açıklama ( Arama Motorları İçin)',
-      'acl_id' => 'Bu Galleryi Kimler Görüntüleyebilir? ( <a href=\'mod_acl/list/\' target=\'_blank\'>ACL - Erişim kontrol listesi</a> )',
-      'menu' => 'Gallery Kategorisini Menüye Gönder',
-      'image' => 'Resim',
+    'button' => [
+        'add' => 'Ekle',
+        'edit' => 'Düzenle',
+        'delete' => 'Sil',
+        'cancel' => 'Vazgeç',
+        'save' => 'Kaydet',
+        'remove' => 'Kaldır',
     ],
-    'select_value' => 
-     [
-      'root_e' => 'Evet',
-      'root_h' => 'Hayır',
+    'validator' => [
+        'required' => 'Lütfen %s alanını boş bırakmayın.',
+        'length' => '%s alanı %s ile %s karakter arasında olmalıdır.',
+        'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
+        'inarray' => '%s alanı yalnızca şu değerleri kabul edebilir: %s.',
     ],
-  ],
+    'roll' => [
+        'ad' => 'Görsel Kategorisi Yönetim Rolleri',
+        'add' => 'Görsel kategorisi ekleyebilir',
+        'edit' => 'Görsel kategorisi düzenleyebilir',
+        'delete' => 'Görsel kategorisi silebilir',
+        'list' => 'Görsel kategorisi yönetimini görüntüleyebilir',
+        'moderate_edit' => 'Başkalarına ait görsel kategorilerini düzenleyebilir',
+        'moderate_delete' => 'Başkalarına ait görsel kategorilerini silebilir',
+    ],
+    'role_errors' => [
+        'add' => 'Görsel kategorisi ekleme yetkiniz yok.',
+        'edit' => 'Görsel kategorisi düzenleme yetkiniz yok.',
+        'delete' => 'Görsel kategorisi silme yetkiniz yok.',
+        'list' => 'Görsel kategorisi yönetimini görüntüleme yetkiniz yok.',
+        'moderate_edit' => 'Başkalarına ait görsel kategorilerini düzenleyemezsiniz.',
+        'moderate_delete' => 'Başkalarına ait görsel kategorilerini silemezsiniz.',
+    ],
+    'status' => [
+        'root' => 'Kök',
+        'nested' => 'Alt Kategori',
+    ],
+    'admin' => [
+        'columns' => [
+            'id' => 'ID',
+            'lang' => 'Dil',
+            'name' => 'Kategori Adı',
+            'content' => 'Kısa Açıklama',
+            'parent_id' => 'Üst Kategori',
+            'order' => 'Sıra',
+            'root' => 'Kök Görünümü',
+            'seo' => 'SEO URL',
+            'title' => 'Meta Başlık',
+            'keywords' => 'Meta Anahtar Kelimeler',
+            'description' => 'Meta Açıklama',
+            'image' => 'Görsel',
+            'menu' => 'Menü Üst Öğesi',
+            'acl_id' => 'Erişim Kontrolü',
+        ],
+        'radio' => [
+            'root_y' => 'Yapısal Kök Olarak Kullan',
+            'root_n' => 'Listelerde Göster',
+        ],
+    ],
+    'form' => [
+        'basics' => 'Kategori Temeli',
+        'structure' => 'Yapı ve Görünürlük',
+        'seo' => 'SEO Detayları',
+        'publishing' => 'Yayın Entegrasyonları',
+        'image_help' => 'Görsel listeleri ve menüler için kategori kapağı yükleyin.',
+        'parent_none' => 'Üst seviye kategori',
+        'menu_none' => 'Menü öğesi oluşturma',
+        'acl_none' => 'Herkese açık erişim',
+    ],
+    'list_ui' => [
+        'add_cta' => 'Ekle',
+        'delete_cta' => 'Sil',
+        'empty_cta' => 'İlk kategoriyi oluştur',
+        'select_record' => 'Önce bir kategori seçin.',
+        'delete_title' => 'Kategoriyi sil',
+        'delete_confirm_button' => 'Evet, sil',
+        'delete_cancel_button' => 'Vazgeç',
+        'network_error' => 'İstek gönderilemedi. Lütfen bağlantınızı kontrol edin.',
+        'unlock_reorder' => 'Sıralamayı Aç',
+        'lock_reorder' => 'Sıralamayı Kilitle',
+        'mode_unlocked' => 'Sıralama modu açıldı.',
+        'reorder_title' => 'Kategori sırasını güncelle',
+        'reorder_confirm' => 'Bu kategoriyi yeni konumuna taşımak istiyor musunuz?',
+    ],
 ];

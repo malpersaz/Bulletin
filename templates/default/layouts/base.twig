@@ -14,7 +14,7 @@
 		{% endblock %}
 		{% block keywords %}<meta name="keywords" content="{{ site.keywords }}">
 		{% endblock %}
-		{% block canonical %}<link rel="canonical" href="{{ site.adres }}"/>
+		{% block canonical %}<link rel="canonical" href="{{ site.address }}"/>
 		{% endblock %}
 
 		{% block meta_tags %}
@@ -26,10 +26,10 @@
 
 			<!-- Open Graph / Facebook -->
 			<meta property="og:type" content="website">
-			<meta property="og:url" content="{{ site.adres }}">
+			<meta property="og:url" content="{{ site.address }}">
 			<meta property="og:title" content="{{ site.title }}">
 			<meta property="og:description" content="{{ site.description }}">
-			<meta property="og:image" content="{{ site.radres }}mod_settings/logo.png">
+			<meta property="og:image" content="{{ site.iaddress }}mod_settings/logo.png">
 			<meta property="og:site_name" content="{{ site.title }}">
 			{% set og_locale = site.lang ~ '_SE' %}
 			{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
@@ -40,21 +40,21 @@
 
 			<!-- Twitter -->
 			<meta name="twitter:card" content="summary_large_image">
-			<meta name="twitter:url" content="{{ site.adres }}">
+			<meta name="twitter:url" content="{{ site.address }}">
 			<meta name="twitter:title" content="{{ site.title }}">
 			<meta name="twitter:description" content="{{ site.description }}">
-			<meta name="twitter:image" content="{{ site.radres }}mod_settings/logo.png">
+			<meta name="twitter:image" content="{{ site.iaddress }}mod_settings/logo.png">
 		{% endblock %}
 
 		<base
-		href="{{ site.adres }}">
+		href="{{ site.address }}">
 
 		<!-- Favicons -->
-		<link rel="icon" type="image/png" href="{{ site.adres }}favicon-96x96.png" sizes="96x96"/>
-		<link rel="icon" type="image/x-icon" href="{{ site.adres }}favicon.ico" sizes="32x32"/>
-		<link rel="shortcut icon" href="{{ site.adres }}favicon.ico"/>
-		<link rel="apple-touch-icon" sizes="180x180" href="{{ site.adres }}apple-touch-icon.png"/>
-		<link rel="manifest" href="{{ site.adres }}static/mod_settings/site.webmanifest"/>
+		<link rel="icon" type="image/png" href="{{ site.address }}favicon-96x96.png" sizes="96x96"/>
+		<link rel="icon" type="image/x-icon" href="{{ site.address }}favicon.ico" sizes="32x32"/>
+		<link rel="shortcut icon" href="{{ site.address }}favicon.ico"/>
+		<link rel="apple-touch-icon" sizes="180x180" href="{{ site.address }}apple-touch-icon.png"/>
+		<link rel="manifest" href="{{ site.address }}static/mod_settings/site.webmanifest"/>
 
 		<!-- Google Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,7 +74,7 @@
 		rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
 
 		<!-- Custom CSS - Bootstrap 5.3.8 Color Modes Test için geçici olarak devre dışı bırakılmıştı, tekrar aktif edildi -->
-		<link rel="stylesheet" href="{{ site.tadres }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
 			<!-- Google tag (gtag.js) -->
@@ -130,11 +130,11 @@
 		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
 
 		<!-- jQuery -->
-		<script src="{{ site.tadres }}base_static/js/jquery.js"></script>
-		<script src="{{ site.tadres }}base_static/js/jquery.cookie.js"></script>
+		<script src="{{ site.taddress }}base_static/js/jquery.js"></script>
+		<script src="{{ site.taddress }}base_static/js/jquery.cookie.js"></script>
 
 		<!-- Custom JS - DISABLED -->
-		<!-- <script src="{{ site.tadres }}{{ site.app_template }}/static/js/custom.js?v={{ "now"|date("U") }}"></script> -->
+		<!-- <script src="{{ site.taddress }}{{ site.app_template }}/static/js/custom.js?v={{ "now"|date("U") }}"></script> -->
 
 		<!-- <script type="text/javascript">
 								        document.addEventListener('DOMContentLoaded', function() {

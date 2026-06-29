@@ -75,7 +75,7 @@ class management_mod extends indexBase
 
     private function redirectBackToPanel()
     {
-        $target = $this->site['sadres'] . 'mod_user/panel';
+        $target = $this->site['saddress'] . 'mod_user/panel';
         if (!empty($_SERVER['HTTP_REFERER'])) {
             $target = $_SERVER['HTTP_REFERER'];
         }
@@ -147,12 +147,16 @@ class management_mod extends indexBase
         $this->tema->lang(Load::lang('mod_user_pm'));
         $this->tema->lang(Load::lang('mod_user_group'));
         $this->tema->lang(Load::lang('mod_acl'));
+        $this->tema->lang(Load::lang('mod_seo'));
 
         $sharedModules = [
             'mod_content' => $this->isFeatureReady('content.front'),
             'mod_news' => $this->isFeatureReady('news.front'),
             'mod_publication' => $this->isFeatureReady('publication.front'),
             'mod_video_embed' => $this->isFeatureReady('video_embed.front'),
+            'mod_product' => $this->runtime()->isModuleReady('mod_product'),
+            'mod_service' => $this->runtime()->isModuleReady('mod_service'),
+            'mod_page' => $this->runtime()->isModuleReady('mod_page'),
         ];
         $sharedModuleHealth = [
             'mod_content' => $this->getModuleHealth('mod_content'),

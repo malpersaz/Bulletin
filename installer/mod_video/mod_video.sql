@@ -10,5 +10,6 @@ CREATE TABLE  `mod_video` (
 `flv` VARCHAR(20),
 `original` varchar(20) DEFAULT NULL,
 `acl_id` INT(11)  DEFAULT 0 ,
+`view_count` INT(11) NOT NULL DEFAULT 0,
 `user_id` INT(11) NOT NULL
 )   DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
