@@ -1,3 +1,6 @@
+## v1.0.69
+- **Email Template Modernization & Localization**: Refactored the email templates (`email_password_reset.twig`, `email_activation.twig`, `email_new_password.twig`, and `email_admin_activation.twig`) to remove layout inheritance (`{% extends "layout.twig" %}`) and debug printing blocks (`{{ ctx_get(...) }}`). This eliminates the unintended printing of `"0"`, debug values, and HTML interface components (like navigation drawers or FABs) from the email bodies. Wired all template text to localized translation keys under the `email_templates` active dictionary to support multi-language mailing.
+
 ## v1.0.68
 - **Password Reset Redirect Enablement**: Uncommented and restored the automatic page redirection logic inside the forgot password Twig template. Configured it to route the user back to the login page (`login`) via the correct registry site address (`site.saddress`) after 3 seconds upon a successful submission, preventing the loading spinner from running endlessly.
 
