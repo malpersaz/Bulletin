@@ -345,6 +345,25 @@ class mod_hero_slider_helper extends indexBase
         }
 
         $db = Load::lib('Database');
+        $table_check = false;
+        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='" . addslashes($table) . "'");
+            $result = $db->toArray();
+            if (!empty($result)) {
+                $table_check = true;
+            }
+        } else {
+            $db->fetch_array("SHOW TABLES LIKE '" . addslashes($table) . "'");
+            $result = $db->getResult()->toArray();
+            if (!empty($result)) {
+                $table_check = true;
+            }
+        }
+
+        if (!$table_check) {
+            return false;
+        }
+
         if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
             $db->fetch_array("PRAGMA table_info('" . addslashes($table) . "')");
             $result = $db->toArray();
