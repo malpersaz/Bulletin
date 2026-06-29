@@ -1,3 +1,7 @@
+## v1.0.59
+- Active version bucket derived from the current user request.
+- **Nûjenkirina Modula mod_news li Repoya Rojname**: Modula `mod_news` bi temamî hate nûjenkirin da ku ji `BaseModuleController` mîras bigire û hemû boilerplateyên CRUD werin paqijkirin. Taybetmendiyên xweser ên wekî entegrasyona menuyan (`$menu_url_pattern`) û kontrolên sliderê hatin parastin. Zimanê Kurdî yê modulê li gorî rêgezan hate nûjenkirin û şablonên admin ji bo parzûnkirina zimanên aktîf hatin sererastkirin.
+
 ## v1.0.58
 - Active version bucket derived from the current user request.
 - **Senkronîzekirina Guhertinên Bingehîn ên Config û Pelên Têkildar**: Hemû guhertinên bingehîn ên mîna veguhertina keyên konfigurasyonê ('adres' -> 'address', 'sadres' -> 'saddress', 'radres' -> 'iaddress', 'tadres' -> 'taddress') ji repoya Business bi %100 li ser repoya Rojname hatin senkronîzekirin. Stûnên logo û sembolan li ser database MySQL a Rojname hatin zêdekirin.

@@ -387,7 +387,7 @@ $lang['mod_news'] = [
         'edit_alert' => "MODA SERERASTKIRINÊ:\nID: %s\nSernav: %s",
         'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
-        'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
+        'status_alert' => "REWŞ HAT NÛJENKIRIN:\n%s",
         'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Nûçe hat jêbirin!',
         'add_video' => 'Vîdeo Lêke',
@@ -399,7 +399,7 @@ $lang['mod_news'] = [
     'hero_slider_remove' => 'Ji Sliderê Rake',
     'hero_slider_added' => 'Nûçe bi serkeftî bo Slider hate şandin.',
     'hero_slider_removed' => 'Nûçe ji Slider hate rakirin.',
-    'hero_slider_error' => 'Rewşa Slider nehat nûkirin!',
+    'hero_slider_error' => 'Rewşa Slider nehat nûjenkirin!',
     'hero_slider_badge' => 'Slider',
 
     // === Media Picker UI ===
@@ -427,7 +427,7 @@ $lang['mod_news'] = [
             "Kurteya Teknolojiya Heftane: Çi Qewimî?",
             "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
             "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a Rojname hat nûkirin"
+            "Serlêdana Mobîl a Rojname hat nûjenkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],
@@ -440,6 +440,6 @@ $lang['mod_news'] = [
         'database_error' => 'Çewtiya Database',
         'record_not_found' => 'Nûçe nehat dîtin!',
         'unknown_type' => 'Cureyê nenas',
-        'relation_updated' => 'Peywendî bi serkeftî hate nûkirin',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûjenkirin',
     ],
 ];

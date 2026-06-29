@@ -17,6 +17,12 @@
     -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
+                adminLang.languages = adminLang.languages.filter(function (item) {
+                    return item.status === 'y';
+                });
+            }
+
             // Auto open wizard if we are on the 'add' page
             // But we need the wizard HTML to be present. 
             // It is included in layout.twig block 'wizards' -> 'wizard_content.twig'
@@ -26,6 +32,10 @@
             if(wizardOverlay) {
                 wizardOverlay.classList.add('active');
                 wizardOverlay.style.visibility = 'visible'; // Force show
+            }
+
+            if (typeof wizardData !== 'undefined' && (!wizardData.lang || !adminLang.languages.some(function (item) { return item.code === wizardData.lang; }))) {
+                wizardData.lang = adminLang.languages.length ? adminLang.languages[0].code : wizardData.lang;
             }
         });
     </script>
