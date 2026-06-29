@@ -1,3 +1,6 @@
+## v1.0.76
+- **Fix Database Query Builder Side-Effects**: Replaced raw `$db->query` followed by `$db->gRo()` with `$db->fetch_array($sql)` and `$db->getResultOne()` in `password_reset.validator.php`. This bypasses `$db->build()` query generation defaults which previously caused `SELECT * FROM ` syntax errors because builder properties were uninitialized for custom raw SQL strings.
+
 ## v1.0.75
 - **Fix Undefined Database::escape() Call**: Replaced the undefined `$db->escape()` method call with PHP-native regex sanitization (`preg_replace('/[^A-Za-z0-9]/', '', ...)`) in `password_reset.validator.php`. This fixes the runtime PHP error on the password reset validation stage while keeping the database query secure against SQL injection.
 

@@ -54,8 +54,9 @@ class password_reset_validator
 
 		$db = Load::lib('Database');
 		$safe_code = preg_replace('/[^A-Za-z0-9]/', '', Req::Post_Safe('code'));
-		$db->query("SELECT TIMESTAMPDIFF(SECOND, `created_at`, NOW()) AS `age` FROM `mod_user_password_reset` WHERE `code` = '{$safe_code}'");
-		$row = $db->gRo()->toArray();
+		$sql = "SELECT TIMESTAMPDIFF(SECOND, `created_at`, NOW()) AS `age` FROM `mod_user_password_reset` WHERE `code` = '{$safe_code}'";
+		$db->fetch_array($sql);
+		$row = $db->getResultOne()->toArray();
 		$age = isset($row['age']) ? (int)$row['age'] : null;
 
 		if ($age === null || $age > 3600) {
