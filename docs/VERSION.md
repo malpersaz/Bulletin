@@ -1,5 +1,6 @@
 ## v1.0.66
 - **Template Engine Fetch Method Support**: Added a `fetch($tpl)` method to `TwigTemplate` to support rendering Twig templates into string variables without immediate direct output. This resolves the fatal `Call to undefined method TwigTemplate::fetch()` error encountered during user password reset notifications.
+- **Twig Engine Post-Initialization Globals Safeguard**: Safeguarded variable assignment in `TwigTemplate::veri()`, `setGlobal()`, and `lang()` methods by storing variables in `assing_data` and catching Twig's `LogicException` thrown when trying to add globals after the environment is initialized. Passed `$this->assing_data` to all rendering pipelines (`fetch()`, `fetch_tpl()`) to ensure variable availability.
 - **SwiftMailer SMTP Transport Constructor Fix**: Resolved PHP 8.x deprecated constructor warning in `Swift_SmtpTransport` by replacing the `call_user_func_array` constructor reference with native `parent::__construct` and modern argument unpacking (`...`).
 
 ## v1.0.65

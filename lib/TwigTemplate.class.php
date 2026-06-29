@@ -73,13 +73,22 @@ class TwigTemplate
 
     public function veri($a, $b)
     {
-        $this->twig->addGlobal($a, $b);
+        $this->assing_data[$a] = $b;
+        try {
+            $this->twig->addGlobal($a, $b);
+        } catch (\LogicException $e) {
+            // Runtime already initialized, ignore
+        }
         $this->ctx_set($a, $b);
     }
 
     public function setGlobal($key, $value)
     {
-        $this->twig->addGlobal($key, $value);
+        try {
+            $this->twig->addGlobal($key, $value);
+        } catch (\LogicException $e) {
+            // Runtime already initialized, ignore
+        }
     }
     public function getGlobal($key)
     {
@@ -106,18 +115,21 @@ class TwigTemplate
         if (is_array($a)) {
             $this->dil = is_array($this->dil) && count($this->dil) > 0 ? array_merge($this->dil, $a) : $a;
         }
-        $this->twig->addGlobal('lang', $this->dil);
-        // $this->assing_data['lang'] = $this->dil;
+        $this->assing_data['lang'] = $this->dil;
+        try {
+            $this->twig->addGlobal('lang', $this->dil);
+        } catch (\LogicException $e) {
+            // Runtime already initialized, ignore
+        }
     }
 
     public function fetch_tpl($tpl)
     {
-        return $this->twig->render($tpl . '.twig');
-        // return $this->twig->render($tpl . '.twig', $this->assing_data);
+        return $this->twig->render($tpl . '.twig', $this->assing_data);
     }
 
     public function fetch($tpl)
     {
-        return $this->twig->render($tpl . '.twig');
+        return $this->twig->render($tpl . '.twig', $this->assing_data);
     }
 }
