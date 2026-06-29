@@ -1,22 +1,26 @@
+## v1.0.61
+- Active version bucket derived from the current user request.
+- **Translation of Release Notes**: Translated historical version notes (v1.0.57-v1.0.60) to English to conform to international documentation standards.
+
 ## v1.0.60
 - Active version bucket derived from the current user request.
-- **Nûjenkirin û Senkronîzekirina Modulên Weşanê (mod_publication)**: Modula `mod_publication` a Rojnameyê bi temamî hate nûjenkirin da ku ji `BaseModuleController` mîras bigire û her weha taybetmendiya sliderê ya bi AJAX (`toggle_hero_slider`) û daneyên mock hatin parastin. Zimanên modulê hatin hevgirtin da ku bi beşa `image` ya uploaderê re li hev werin.
-- **Nûjenkirina Modula Kategoriyên Weşanê (mod_publication_category)**: Modula `mod_publication_category` bi guhertin û kontrolên validasyonê yên pêşketî (kontrolên zimanê dê û zarokan, astengkirina çerxên bêdawî di dara kategoriyan de, û senkronîzekirina menuyan) ji Business hate senkronîzekirin. Dara kategoriyan a pêşketî ya recursive bi alîkariya SortableJS hate nûjenkirin û hemû şablonên admin hatin rojanekirin û fallbackên `|default` hatin paqijkirin.
+- **Modernization and Synchronization of Publication Modules (mod_publication)**: Completely modernized the `mod_publication` module in Rojname to extend `BaseModuleController`, while preserving the AJAX-based hero slider toggle feature (`toggle_hero_slider`) and mock data functionality. Merged the module's language files to include complete `image` keys for the drag-and-drop uploader.
+- **Modernization of Publication Category Module (mod_publication_category)**: Synchronized `mod_publication_category` with Business, integrating robust validation logic (e.g. parent category language matching, cycle loop prevention, and menu sync). Modernized the admin category templates to use a recursive tree-based layout powered by SortableJS, and cleaned up all `|default` fallbacks by providing proper dictionary keys.
 
 ## v1.0.59
 - Active version bucket derived from the current user request.
-- **Nûjenkirina Modula mod_news li Repoya Rojname**: Modula `mod_news` bi temamî hate nûjenkirin da ku ji `BaseModuleController` mîras bigire û hemû boilerplateyên CRUD werin paqijkirin. Taybetmendiyên xweser ên wekî entegrasyona menuyan (`$menu_url_pattern`) û kontrolên sliderê hatin parastin. Zimanê Kurdî yê modulê li gorî rêgezan hate nûjenkirin û şablonên admin ji bo parzûnkirina zimanên aktîf hatin sererastkirin.
+- **Modernization of mod_news Module in Rojname**: Completely modernized the `mod_news` module to extend `BaseModuleController` and cleaned up all CRUD boilerplates. Preserved custom menu integrations (`$menu_url_pattern`) and slider controls. Updated the Kurdish localization keys according to the project guidelines and corrected admin templates to filter active languages.
 
 ## v1.0.58
 - Active version bucket derived from the current user request.
-- **Senkronîzekirina Guhertinên Bingehîn ên Config û Pelên Têkildar**: Hemû guhertinên bingehîn ên mîna veguhertina keyên konfigurasyonê ('adres' -> 'address', 'sadres' -> 'saddress', 'radres' -> 'iaddress', 'tadres' -> 'taddress') ji repoya Business bi %100 li ser repoya Rojname hatin senkronîzekirin. Stûnên logo û sembolan li ser database MySQL a Rojname hatin zêdekirin.
+- **Synchronization of Core Config Changes and Related Files**: Synchronized 100% of core configuration changes (e.g., config key changes: 'adres' -> 'address', 'sadres' -> 'saddress', 'radres' -> 'iaddress', 'tadres' -> 'taddress') from Business to Rojname. Added logo and symbol columns to the Rojname MySQL database.
 
 ## v1.0.57
 - Active version bucket derived from the current user request.
-- **Senkronîzekirin û Paqijkirina mod_news_category**: Modula kategoriyên nûçeyan (`mod_news_category`) û sazkerê (installer) wê di navbera projeyên `Rojname` û `Business` de hatin senkronîzekirin.
-- **Nûjenkirina Sazkerê Rojname**: Di sazkerê `Rojname` de pênaseya taybetmendiya zêde `public $model;` û şiroveyên nehewce hatin paqijkirin. Bangkirina fonksiyona seedkirina kategoriyan (`installer_seed_category_bootstrap`) lê hate zêdekirin da ku bi bixweber kategoriyên bingehîn seed bike.
-- **Rakirina Qedexeyên Boundary li Rojname**: Sînorên modula `mod_news_category` û qedexeya seedkirinê ya ji bo sazkerê `Rojname` di pelê `AGENTS.md` de hatin rakirin da ku her du proje li ser vê modulê senkronîze bimînin.
-- **Wergerandin û Paqijkirina Şiroveyên Tirkî yên Business**: Şiroveyên bi zimanê Tirkî yên di pelên validatoran ên `Business` (`add.validator.php` û `edit.validator.php`) de hatin paqijkirin û wergerandin ser Îngilîzî da ku bi asta koda paqij a Rojname re li hev werin.
+- **Synchronization and Cleanup of mod_news_category**: Synchronized the news category module (`mod_news_category`) and its installer between the `Rojname` and `Business` projects.
+- **Rojname Installer Modernization**: Cleaned up the extra property definition `public $model;` and unnecessary comments from the `Rojname` installer script. Added the category seed bootstrap function (`installer_seed_category_bootstrap`) to seed default categories automatically.
+- **Removal of Boundary Restrictions in Rojname**: Removed boundary restrictions for `mod_news_category` and seed restrictions for the `Rojname` installer in `AGENTS.md` to keep both projects synchronized.
+- **Translation and Cleanup of Turkish Comments in Business**: Cleaned up Turkish comments in `Business` validator files (`add.validator.php` and `edit.validator.php`) and translated them to English to align with the clean code standards in Rojname.
 
 ## v1.0.56
 - Active version bucket derived from the current user request.
