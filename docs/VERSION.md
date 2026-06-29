@@ -1,3 +1,8 @@
+## v1.0.70
+- **Forgot Password JS Safeness Fix**: Wrapped the client-side email input validation and check logic inside a conditional `if (emailInput)` check to prevent JavaScript TypeError on page load when the user is on the success redirect page. This ensures the 3-second auto-redirection timer executes successfully.
+- **Password Reset View Modernization & Localization**: Redesigned the password reset page (`password_reset.twig`) using the modern Bootstrap 5 layout system to match `forgot-password.twig`. Fixed input names (`new_password`, `confirm_password`, `captcha`) to align with the backend validator and added a hidden input for the reset `code`. Created and mapped missing translation keys (`write_new_password`, `new_password`, `confirm_new_password`, `change_button`, `new_password_placeholder`, `confirm_password_placeholder`, `captcha_placeholder`, `captcha_refresh`) in English, Kurdish, and Turkish.
+- **Password Reset Controller Captcha Wire-up**: Wired the `Captcha` library inside the controller's `password_reset` method to dynamically generate and supply the security code image (`captcha_image`) to the reset template.
+
 ## v1.0.69
 - **Email Template Modernization & Localization**: Refactored the email templates (`email_password_reset.twig`, `email_activation.twig`, `email_new_password.twig`, and `email_admin_activation.twig`) to remove layout inheritance (`{% extends "layout.twig" %}`) and debug printing blocks (`{{ ctx_get(...) }}`). This eliminates the unintended printing of `"0"`, debug values, and HTML interface components (like navigation drawers or FABs) from the email bodies. Wired all template text to localized translation keys under the `email_templates` active dictionary to support multi-language mailing.
 

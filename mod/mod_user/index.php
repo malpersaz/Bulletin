@@ -418,6 +418,9 @@ class mod_user_mod extends indexMain
         $d['title'] = $this->lang['mod_user']['password_reset']['title'];
         $this->apptemplate->veri('d', $d);
 
+        $this->captcha = Load::lib('Captcha');
+        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+
         $this->apptemplate->tpl('mod_user/password_reset');
     }
 
