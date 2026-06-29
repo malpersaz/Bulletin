@@ -1,3 +1,6 @@
+## v1.0.75
+- **Fix Undefined Database::escape() Call**: Replaced the undefined `$db->escape()` method call with PHP-native regex sanitization (`preg_replace('/[^A-Za-z0-9]/', '', ...)`) in `password_reset.validator.php`. This fixes the runtime PHP error on the password reset validation stage while keeping the database query secure against SQL injection.
+
 ## v1.0.74
 - **Timezone-Safe Password Reset Link Expiration**: Replaced PHP-side timestamp age calculations (`strtotime` compared to local `time()`) with a MySQL-side timezone-safe check utilizing `TIMESTAMPDIFF` between the connection `NOW()` and `created_at` timestamp. This eliminates validation failures and premature link expiration warnings caused by timezone offsets between the PHP runtime environment and the MySQL server.
 
