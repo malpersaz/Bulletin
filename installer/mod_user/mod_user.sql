@@ -8,7 +8,7 @@ CREATE TABLE `mod_user` (
   `updated_at` DATETIME NULL DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `username` varchar(50) NOT NULL,
-  `password` varchar(50) NOT NULL,
+  `password` varchar(255) NOT NULL,
   `email` varchar(120) NOT NULL,
   `sid` varchar(32),
   `ip` varchar(15) NOT NULL,

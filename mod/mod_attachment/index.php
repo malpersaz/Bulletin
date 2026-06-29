@@ -1,6 +1,12 @@
 <?php
 
-class mod_attachment_mod extends indexMain
+/**
+ * mod_attachment controller
+ * Modernized version extending BaseModuleController
+ * 
+ * Amed Framework
+ */
+class mod_attachment_mod extends BaseModuleController
 {
     public $mlang;
     public $mod_attachment_model;
@@ -8,19 +14,11 @@ class mod_attachment_mod extends indexMain
 
     public function __construct()
     {
-        parent::__construct();
-
-        $this->tema = Load::lib('AdminTemplate');
-        $this->db = Load::lib('Database');
-        $this->lang = Load::lang('mod_attachment');
-        $this->tema->lang($this->lang);
+        parent::__construct('mod_attachment');
 
         if (Req::is_Post('sid')) {
             Kayit::ekle('session_sid', Req::Post_Safe('sid'));
         }
-
-        $this->session = Load::lib('Session');
-        $this->user = Load::model('mod_user.user');
     }
 
     public function index()
@@ -240,7 +238,7 @@ class mod_attachment_mod extends indexMain
             return false;
         }
 
-        $valid_ext = ['txt', 'xls', 'jpg', 'png', 'gif', 'png', 'bmp', 'jpeg', 'JPG', 'JPEG', 'PNG', 'GIF', 'rar', 'zip', 'pdf', 'doc', 'docx', 'ods', 'ppt', 'odt', 'epub', 'RAR', 'ZIP', 'PDF', 'DOC', 'DOCX', 'ODS', 'PPT', 'ODT', 'EPUB'];
+        $valid_ext = ['txt', 'xls', 'jpg', 'png', 'gif', 'bmp', 'jpeg', 'JPG', 'JPEG', 'PNG', 'GIF', 'rar', 'zip', 'pdf', 'doc', 'docx', 'ods', 'ppt', 'odt', 'epub', 'RAR', 'ZIP', 'PDF', 'DOC', 'DOCX', 'ODS', 'PPT', 'ODT', 'EPUB'];
 
         if (!Req::is_Files($input_name) || Req::Files_Name($input_name) == '') {
             exit($this->lang['mod_attachment']['errors']['uploaded_file_missing']);
@@ -275,13 +273,13 @@ class mod_attachment_mod extends indexMain
         return false;
     }
 
-    private function _mesaj($mesaj)
+    protected function _mesaj($mesaj)
     {
         $this->tema->veri('oke', true);
         $this->tema->veri('mesaj', $mesaj);
     }
 
-    private function _emesaj($mesaj)
+    protected function _emesaj($mesaj)
     {
         $this->tema->veri('error', true);
         $this->tema->veri('mesaj', $mesaj);

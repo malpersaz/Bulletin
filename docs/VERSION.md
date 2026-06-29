@@ -1,3 +1,7 @@
+## v1.0.64
+- **Increase Password Column Length for Hashing Upgrades**: Expanded the `password` column size in `mod_user` and `mod_user_log` installer tables from `varchar(50)` to `varchar(255)` and migrated the active database tables. This resolves the MySQL truncation error during login, which occurs when the system attempts to upgrade legacy MD5 password hashes to modern PHP `PASSWORD_DEFAULT` (bcrypt) hashes exceeding 50 characters.
+- **Modernization of mod_attachment and mod_attachment_mod Modules**: Fully modernized the `mod_attachment` and `mod_attachment_mod` modules to extend `BaseModuleController` and integrate with framework standards. Eliminated massive CRUD boilerplates in the `mod_attachment_mod` controller by delegating them to the base class, and enabled automatic DataTable JSON generation using `DataTableService`. Preserved all specialized features, routing contexts, and access control flows to maintain project compatibility and uniqueness.
+
 ## v1.0.63
 - Active version bucket derived from the current user request.
 - **FormData.entries Compatibility Fix**: Wrapped the `formData.entries()` loop inside `script.js` in a capability check to prevent runtime `TypeError` crashes on older browsers and devices that do not support this API, resolving the article publication hang issue.
