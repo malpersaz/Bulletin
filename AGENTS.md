@@ -21,6 +21,8 @@ Version logging rule:
 - When the current task represents unpublished work after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
 - If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
 - A user-provided version code still overrides the auto-detected Git version for that task.
+- All version notes written in `/docs/VERSION.md` must be written in English. Do not write version notes in Kurdish or Turkish, even if communicating with the user in Kurdish.
+- Before proposing any walkthrough or finishing a task, the agent must run the `task-validation` skill checks.
 
 Repository boundary rule:
 
@@ -36,7 +38,7 @@ Repository boundary rule:
 Module synchronization rule:
 
 - When updating a module, the agent must apply agent rules during the same pass.
-- The agent must not leave Turkish comments in touched files.
+- The agent must not leave Turkish or Kurdish comments in touched files. All comments, function names, variable names, translation keys, and documentation (except implementation_plan.md) must be in English. Do not write in any language other than English in comment lines, function/variable names, or other coding elements.
 - The agent must not use `default(...)`, inline fallback text, or any other fallback mechanism to hide missing localization keys in visible UI output.
 - If a visible string needs localization and the required key does not exist, the agent must add or wire the correct key instead of leaving a fallback behind.
 - The agent must treat full multilingual coverage in the touched flow as mandatory, not optional.

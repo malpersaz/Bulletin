@@ -1,3 +1,8 @@
+## v1.0.62
+- Active version bucket derived from the current user request.
+- **English-Only Rules for Version Log and Code**: Updated agent guidelines (`AGENTS.md`, `INDEX.md`, and `quality/manifest.md`) and the `task-validation` skill to enforce that `/docs/VERSION.md` is strictly updated in English. Added clear directives prohibiting Turkish or Kurdish in release notes, code comments, function names, variable names, translation keys, and overall coding elements.
+- **Mandatory Task Validation**: Reinforced that the `task-validation` skill checklist must be run before completing any development task.
+
 ## v1.0.61
 - Active version bucket derived from the current user request.
 - **Translation of Release Notes**: Translated historical version notes (v1.0.57-v1.0.60) to English to conform to international documentation standards.

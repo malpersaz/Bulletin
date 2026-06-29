@@ -151,6 +151,8 @@ When quality-agent policy changes, update these files together:
 - If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
 - Before appending to any existing version section, explicitly verify whether the note belongs to a shipped Git version or to the next unpublished version.
 - A user-provided version code overrides the auto-detected Git version for that task.
+- All version notes written in `/docs/VERSION.md` must be written in English. Do not write version notes in Kurdish or Turkish, even if communicating with the user in Kurdish.
+- Before proposing any walkthrough or finishing a task, the agent must run the `task-validation` skill checks.
 
 ## Repository Boundary Rule
 
