@@ -1,3 +1,7 @@
+## v1.0.72
+- **Password Reset View APP-Style Layout**: Optimized the password reset page (`password_reset.twig`) for mobile devices by implementing responsive styles to remove margins, borders, and shadows on small viewports. This matches native mobile application shells (APP-style) for optimized screen space.
+- **CAPTCHA Refresh & Layout Parity**: Redesigned the CAPTCHA section in `password_reset.twig` to use the same compact input group layout as the forgot password view. The CAPTCHA image and refresh button are unified within a single input-group addon block. Added a micro-animation that triggers a 360-degree spin on the refresh icon when clicked.
+
 ## v1.0.71
 - **Forgot Password Success Layout & Redirect Redesign**: Removed the automatic redirect spinner and redirect timer from the forgot password success screen (`forgot-password.twig`) to prevent confusing users before they receive their password reset emails. Redesigned the success view into a clean, professional card with an email status check icon and clear user guidance. Added return actions to direct the user back to the Homepage or the Login Modal. Mapped missing translation keys (`back_to_homepage`, `check_inbox_instruction`) in English, Kurdish, and Turkish.
 
