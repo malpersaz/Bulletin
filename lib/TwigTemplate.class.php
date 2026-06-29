@@ -115,4 +115,9 @@ class TwigTemplate
         return $this->twig->render($tpl . '.twig');
         // return $this->twig->render($tpl . '.twig', $this->assing_data);
     }
+
+    public function fetch($tpl)
+    {
+        return $this->twig->render($tpl . '.twig');
+    }
 }

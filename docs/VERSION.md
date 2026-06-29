@@ -1,3 +1,7 @@
+## v1.0.66
+- **Template Engine Fetch Method Support**: Added a `fetch($tpl)` method to `TwigTemplate` to support rendering Twig templates into string variables without immediate direct output. This resolves the fatal `Call to undefined method TwigTemplate::fetch()` error encountered during user password reset notifications.
+- **SwiftMailer SMTP Transport Constructor Fix**: Resolved PHP 8.x deprecated constructor warning in `Swift_SmtpTransport` by replacing the `call_user_func_array` constructor reference with native `parent::__construct` and modern argument unpacking (`...`).
+
 ## v1.0.65
 - **Forgot Password Localization and Icon Fixes**: Localized missing language keys and resolved Turkish hard-strings within the forgot password Twig template. Unified all 9 language files (English, Kurdish, Turkish, German, French, Swedish, Zazaki, Arabic, and Sorani Kurdish) with the new `js` verification translation strings under `forgot_password`. Corrected mismatched variable calls for email labels, placeholders, CAPTCHA, and submit button texts. Replaced all FontAwesome icon classes (which are not loaded in the public template) with Bootstrap Icons (`bi` classes) to restore and display all form field and button icons. Integrated a real dynamic CAPTCHA image instead of hardcoded text, and implemented standard asynchronous (AJAX) CAPTCHA refreshing to reload only the security code without reloading the entire page, styled with active scale transitions.
 
