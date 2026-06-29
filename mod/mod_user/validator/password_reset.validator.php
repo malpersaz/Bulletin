@@ -52,8 +52,13 @@ class password_reset_validator
 			return True;
 		}
 
-		$code->sync();
-		if ($code->created_at !== null && strtotime($code->created_at) < time() - 3600) {
+		$db = Load::lib('Database');
+		$safe_code = $db->escape(Req::Post_Safe('code'));
+		$db->query("SELECT TIMESTAMPDIFF(SECOND, `created_at`, NOW()) AS `age` FROM `mod_user_password_reset` WHERE `code` = '{$safe_code}'");
+		$row = $db->gRo()->toArray();
+		$age = isset($row['age']) ? (int)$row['age'] : null;
+
+		if ($age === null || $age > 3600) {
 			$this->errors[] = $this->lang['mod_user']['password_reset']['error']['expired_code'];
 		}
 

@@ -1,3 +1,6 @@
+## v1.0.74
+- **Timezone-Safe Password Reset Link Expiration**: Replaced PHP-side timestamp age calculations (`strtotime` compared to local `time()`) with a MySQL-side timezone-safe check utilizing `TIMESTAMPDIFF` between the connection `NOW()` and `created_at` timestamp. This eliminates validation failures and premature link expiration warnings caused by timezone offsets between the PHP runtime environment and the MySQL server.
+
 ## v1.0.73
 - **Forgot Password Success View Cleanup**: Removed the conditional email check info string and the back-to-login link from the success view in `forgot-password.twig`. This simplifies the success screen, leaving only the check inbox guidelines and the primary return homepage button.
 
