@@ -488,21 +488,33 @@ abstract class BaseModuleController
                 $config = $this->special_fields[$field];
                 switch ($config['type']) {
                     case 'html':
-                        $model->$field = Req::Post($field);
-                        $model->$field = Helper::clear_html($model->$field);
+                        if (property_exists($model, $field)) {
+                            $model->$field = Req::Post($field);
+                            $model->$field = Helper::clear_html($model->$field);
+                        }
                         break;
                     case 'now':
-                        $model->$field = NOW;
+                        if (property_exists($model, $field)) {
+                            $model->$field = NOW;
+                        }
                         break;
                     case 'user_id':
-                        $model->$field = $this->session->get('id');
+                        if (property_exists($model, $field)) {
+                            $model->$field = $this->session->get('id');
+                        }
                         break;
                     case 'custom':
                         if (isset($config['callback'])) {
                             if (is_callable($config['callback'])) {
-                                $model->$field = $config['callback']();
+                                $val = $config['callback']();
+                                if (property_exists($model, $field)) {
+                                    $model->$field = $val;
+                                }
                             } elseif (method_exists($this, $config['callback'])) {
-                                $model->$field = $this->{$config['callback']}();
+                                $val = $this->{$config['callback']}();
+                                if (property_exists($model, $field)) {
+                                    $model->$field = $val;
+                                }
                             }
                         }
                         // Skip setting field - let callbacks handle it
@@ -511,21 +523,25 @@ abstract class BaseModuleController
                         // Skip this field completely - let callbacks handle it
                         continue 2;
                     default:
-                        $model->$field = Req::Post_Safe($field);
+                        if (property_exists($model, $field)) {
+                            $model->$field = Req::Post_Safe($field);
+                        }
                 }
             } else {
                 // Default: everything is 'safe'
-                $model->$field = Req::Post_Safe($field);
+                if (property_exists($model, $field)) {
+                    $model->$field = Req::Post_Safe($field);
+                }
             }
         }
 
         // Handle special automatic fields for add operations
         if (!isset($model->id)) {
             // Add operation - set user_id and created_at automatically
-            if (!isset($this->special_fields['user_id'])) {
+            if (!isset($this->special_fields['user_id']) && property_exists($model, 'user_id')) {
                 $model->user_id = $this->session->get('id');
             }
-            if (!isset($this->special_fields['created_at']) && isset($_POST['created_at'])) {
+            if (!isset($this->special_fields['created_at']) && isset($_POST['created_at']) && property_exists($model, 'created_at')) {
                 // If created_at is in POST for add operation, set it to NOW
                 $model->created_at = NOW;
             }

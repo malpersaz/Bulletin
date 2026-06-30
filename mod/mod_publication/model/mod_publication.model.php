@@ -23,7 +23,6 @@ class mod_publication_model extends ORM
         public $file_id;
         public $image;
         public $acl_id;
-        public $menu;
         public $video;
         public $user_id;
     }

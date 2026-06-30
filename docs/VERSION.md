@@ -1,3 +1,7 @@
+## v1.0.80
+- **Fix Database Column Mismatch on News and Publication Save**: Removed the non-existent `menu` column declaration from `mod_news_model` and `mod_publication_model` to resolve the SQLSTATE[42S22] column not found database insert errors.
+- **Robust Field Mapping in Base Controller**: Safeguarded `BaseModuleController::processFieldData` to verify `property_exists` on the model before assigning properties. This prevents database insert queries from including form fields (like `menu`) that are not actual database columns, and eliminates dynamic property assignment deprecation warnings under PHP 8.2+.
+
 ## v1.0.79
 - **Fix mod_news Visibility Compatibility**: Changed the visibility of the `_valid_date()` method in `mod_news_mod` from `private` to `public` to match the inheritance signature of `BaseModuleController`, resolving a fatal PHP incompatibility error under PHP 8.x/8.5.
 
