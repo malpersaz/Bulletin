@@ -1,3 +1,6 @@
+## v1.0.81
+- **Fix Publication File and Gallery Pickers**: Implemented missing AJAX endpoints (`ajax_get_files`, `ajax_get_galleries`, `ajax_get_current_media`, and `ajax_update_relation`) in `mod_publication_mod` controller to resolve the "Error loading modal" dialog error triggered when opening attachment or gallery relation pickers on the publications administration list view.
+
 ## v1.0.80
 - **Fix Database Column Mismatch on News and Publication Save**: Removed the non-existent `menu` column declaration from `mod_news_model` and `mod_publication_model` to resolve the SQLSTATE[42S22] column not found database insert errors.
 - **Robust Field Mapping in Base Controller**: Safeguarded `BaseModuleController::processFieldData` to verify `property_exists` on the model before assigning properties. This prevents database insert queries from including form fields (like `menu`) that are not actual database columns, and eliminates dynamic property assignment deprecation warnings under PHP 8.2+.

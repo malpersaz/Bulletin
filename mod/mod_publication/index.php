@@ -386,4 +386,171 @@ class mod_publication_mod extends BaseModuleController
         $result = $this->db->getResult()->toArray();
         return is_array($result) && !empty($result);
     }
+
+    public function ajax_get_galleries()
+    {
+        if (Roll::hasPermission('mod_publication', 'edit') === FALSE) {
+            exit();
+        }
+
+        $this->ensure_gallery_module_mapping();
+
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_gallery_mod');
+        $model->select('id, name');
+        $model->where("mod_name != ''");
+        if ($q_param) {
+            $model->addWhere("name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => $item['id'],
+                    'name' => $item['name']
+                ];
+            }
+        }
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($results);
+    }
+
+    public function ajax_get_files()
+    {
+        if (Roll::hasPermission('mod_publication', 'edit') === FALSE) {
+            exit();
+        }
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_attachment');
+        $model->select('id, original_name as name');
+        if ($q_param) {
+            $model->addWhere("original_name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => $item['id'],
+                    'name' => $item['name']
+                ];
+            }
+        }
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($results);
+    }
+
+    public function ajax_get_current_media()
+    {
+        $id = intval(Req::Post_Safe('id'));
+        if (!$id) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['record_not_found']]);
+            return;
+        }
+
+        $pub_model = Load::model('mod_publication');
+        $pub_model->select('id, file_id, gallery_id, video')->where_id($id)->gRo();
+        if ($pub_model->getSize() === 0) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['record_not_found']]);
+            return;
+        }
+        $pub_model->sync();
+
+        $video = [];
+        if (!empty($pub_model->video)) {
+            $unserialized = @unserialize($pub_model->video);
+            $video = is_array($unserialized) ? $unserialized : [];
+        }
+
+        if (ob_get_level() > 0) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'file_id'    => intval($pub_model->file_id ?? 0),
+            'gallery_id' => intval($pub_model->gallery_id ?? 0),
+            'video'      => $video
+        ]);
+    }
+
+    public function ajax_update_relation()
+    {
+        if ($this->user->hasPermission('mod_publication', 'edit', $this->lang['mod_publication']['role_errors']['edit'], 1) === False) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        $type = Req::Post_Safe('type');
+        $value = Req::Post('value');
+
+        if (!$id) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['record_not_found']]);
+            return;
+        }
+
+        $pub_model = Load::model('mod_publication');
+        $pub_model->where_id($id)->gRo();
+        if ($pub_model->getSize() === 0) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['record_not_found']]);
+            return;
+        }
+        $pub_model->sync();
+
+        if ($type === 'video') {
+            $video_data = $pub_model->video;
+            $existed = (is_string($video_data) && !empty($video_data)) ? @unserialize($video_data) : [];
+            if (!is_array($existed)) {
+                $existed = [];
+            }
+
+            $value = trim((string) $value);
+            if ($value === "0" || $value === "") {
+                $existed = [];
+            } else {
+                if (in_array($value, $existed, true)) {
+                    $existed = array_values(array_diff($existed, [$value]));
+                } else {
+                    $existed[] = $value;
+                }
+            }
+            $pub_model->video = !empty($existed) ? serialize(array_values(array_unique($existed))) : '';
+        } elseif ($type === 'gallery' || $type === 'files') {
+            $val_int = intval($value);
+            if ($type === 'gallery') {
+                $pub_model->gallery_id = $val_int;
+            } else {
+                $pub_model->file_id = $val_int;
+            }
+        } else {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['unknown_type']]);
+            return;
+        }
+
+        $pub_model->id = $id;
+        if ($pub_model->update('id')) {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_publication']['ajax']['relation_updated']]);
+        } else {
+            if (ob_get_level() > 0) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_publication']['ajax']['database_error']]);
+        }
+    }
 }
