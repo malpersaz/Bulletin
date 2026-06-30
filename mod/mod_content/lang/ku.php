@@ -381,7 +381,7 @@ $lang['mod_content'] = [
     'hero_slider_unavailable' => 'Sitûna sliderê hîna nehatiye sazkirin.',
 
     'picker' => [
-        'file' => 'Pelê Heyî Hilbijêre',
+        'file' => 'Peleke heyî hilbijêre',
     ],
 
     'ajax' => [

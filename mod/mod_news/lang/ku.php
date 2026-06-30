@@ -405,7 +405,7 @@ $lang['mod_news'] = [
     // === Media Picker UI ===
     'picker' => [
         'gallery' => 'Galeriya Heyî Hilbijêre',
-        'file' => 'Pelê Heyî Hilbijêre',
+        'file' => 'Peleke heyî hilbijêre',
         'video' => 'Vîdeoya Heyî Hilbijêre',
     ],
 

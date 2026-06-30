@@ -990,7 +990,7 @@ window.openMediaRelationPicker = function(newsId, type) {
         addUrl = `${SITE_URL}mod_gallery/list/mod_news/${newsId}`;
     } else if (type === 'files') {
         endpoint = `${MODULE_URL}ajax_get_files`;
-        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Pelê Heyî Hilbijêre';
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.file : 'Select Existing File';
         addUrl = `${SITE_URL}mod_attachment/list/mod_news/${newsId}`;
     } else if (type === 'video') {
         endpoint = `${MODULE_URL}all_video`;

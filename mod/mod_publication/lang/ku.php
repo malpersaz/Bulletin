@@ -432,7 +432,7 @@ $lang['mod_publication'] = [
     // === Media Picker UI ===
     'picker' => [
         'gallery' => 'Wênedankeke Heyî Hilbijêre',
-        'file' => 'Pelelke Heyî Hilbijêre',
+        'file' => 'Peleke heyî hilbijêre',
         'video' => 'Vîdeoyeke Heyî Hilbijêre',
     ],
 ];

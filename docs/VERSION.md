@@ -1,3 +1,8 @@
+## v1.0.85
+- **Redesign Media Picker Search and Actions Layout**: Repositioned the search filter field to the top of the media selector bottom sheet, moved the upload/add button to the bottom-right corner as a Floating Action Button (FAB) labeled with a single plus sign (+), and expanded list bottom padding to avoid FAB content overlap.
+- **Improve Selection Visibility and Dynamic Checkmarks**: Upgraded the list checkmark icons to always remain visible, styling them as passive/cold outline check circles (`bi-check-circle` in Slate `#94a3b8`) for unselected options and transitioning them to active filled check circles (`bi-check-circle-fill` in Green `#34a853`) when selected.
+- **Normalize Kurdish Translation of Select Picker Title**: Updated language dictionaries to translate the file picker sheet title as "Peleke heyî hilbijêre" instead of legacy typos.
+
 ## v1.0.84
 - **Prevent Media Picker Upload Race Conditions**: Ensured media picker state variables (`window.currentMediaPickerType` and corresponding record IDs) are initialized immediately at the start of `openMediaRelationPicker`, `openFilesPicker`, and `openVideoPicker` functions. This prevents race conditions where selecting or uploading files was processed with old or uninitialized picker states, resolving redirect bugs when clicking the add button.
 - **Admin Assets Cache-Busting**: Incremented version query strings for `script.js` and module-specific JavaScript files (`mod_publication.js`, `mod_news.js`, `mod_content.js`) in administrative Twig templates to force browser cache refresh and ensure instant deployment of background uploader upgrades.

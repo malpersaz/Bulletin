@@ -1857,6 +1857,7 @@ function renderSelectPickerOptions() {
         }
 
         const itemTitle = (value === '0') ? removeLabel : (label || (select.dataset.pickerPlaceholder || ''));
+        const checkIconClass = (select.value === value) ? 'bi-check-circle-fill' : 'bi-check-circle';
 
         item.innerHTML = `
             <span class="select-picker-item-meta" ${value === '0' ? 'style="background:var(--md-sys-color-surface-variant); color:var(--md-sys-color-on-surface-variant);"' : ''}><i class="bi ${iconClass}"></i></span>
@@ -1864,7 +1865,7 @@ function renderSelectPickerOptions() {
                 <span class="select-picker-item-title">${itemTitle}</span>
                 ${subtitleHtml}
             </span>
-            <i class="bi bi-check-circle-fill select-picker-item-check"></i>
+            <i class="bi ${checkIconClass} select-picker-item-check"></i>
         `;
 
         item.addEventListener('click', () => {

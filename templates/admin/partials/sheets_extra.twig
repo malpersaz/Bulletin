@@ -205,7 +205,7 @@
     max-height: 400px;
     overflow-y: auto;
     margin: 0 -8px;
-    padding: 0 8px 8px;
+    padding: 0 8px 80px;
 }
 
 #select-picker-sheet .select-picker-item {
@@ -227,44 +227,33 @@
     overflow: hidden;
 }
 
-/* Custom Add Button Styling */
-.m3-btn-select-add {
-    position: relative;
-    padding: 8px 16px;
+/* Custom Add Button FAB Styling */
+.m3-btn-select-add-fab {
+    position: absolute;
+    right: 24px;
+    bottom: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
     border: none;
-    border-radius: 20px;
-    background: transparent;
     cursor: pointer;
-    overflow: hidden;
-    color: #fff;
-    font-weight: 600;
-    font-size: 13px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 4px 12px color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 24px;
+    z-index: 1060;
+    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
-.m3-btn-select-add .add-btn-bg {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, color-mix(in srgb, var(--md-sys-color-primary) 80%, black) 100%);
-    z-index: 0;
-    transition: opacity 0.3s ease;
+.m3-btn-select-add-fab:hover {
+    transform: scale(1.05);
+    background: color-mix(in srgb, var(--md-sys-color-primary) 90%, black);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
 }
-.m3-btn-select-add:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
-}
-.m3-btn-select-add:active {
-    transform: translateY(0);
-}
-.m3-btn-select-add .add-btn-content {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+.m3-btn-select-add-fab:active {
+    transform: scale(0.95);
 }
 
 /* Custom Close Button */
@@ -364,16 +353,17 @@
 }
 
 #select-picker-sheet .select-picker-item-check {
-    color: var(--md-sys-color-primary);
+    color: #94a3b8;
     font-size: 22px;
-    opacity: 0;
-    transform: scale(.5) translateX(10px);
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0.5;
+    transform: scale(0.9);
+    transition: all 0.2s ease-in-out;
 }
 
 #select-picker-sheet .select-picker-item.is-selected .select-picker-item-check {
+    color: #34a853;
     opacity: 1;
-    transform: scale(1) translateX(0);
+    transform: scale(1.1);
 }
 
 
@@ -557,15 +547,17 @@
 <div class="overlay" id="select-picker-overlay" onclick="closeSelectPickerSheet()"></div>
 <div class="bottom-sheet" id="select-picker-sheet">
     <div class="sheet-handle-bar"></div>
+    <input
+        type="search"
+        id="selectPickerSearchInput"
+        class="select-picker-search"
+        placeholder="{{ wizard_lang.ui.search }}"
+        autocomplete="off"
+        oninput="filterSelectPickerSheet()"
+    >
     <div class="select-picker-title-row" style="flex-wrap: nowrap; align-items: center;">
         <h3 id="selectPickerTitle" style="margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-size: 18px; font-weight: 700;">{{ wizard_lang.sheet.category_title }}</h3>
         <div style="display:flex; gap: 8px; flex-shrink: 0; align-items: center;">
-            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add" style="display:none;" onclick="handleSelectPickerAdd()"
-                    data-error-upload="{{ lang.mod_attachment.admin[41]|default('Barkirina pelê neserket.')|e('html') }}"
-                    data-loading-text="{{ lang.mod_attachment.admin[4]|default('Tê lêbarkirin...')|e('html') }}">
-                <div class="add-btn-bg"></div>
-                <span class="add-btn-content"><i class="bi bi-plus-lg"></i> {{ wizard_lang.button.add|default('Nû Zêdebike') }}</span>
-            </button>
             <button type="button" class="m3-btn-icon-close" aria-label="Close" onclick="closeSelectPickerSheet()"><i class="bi bi-x-lg"></i></button>
         </div>
     </div>
@@ -579,17 +571,14 @@
             <span id="selectPickerVisibleCount">0</span>
         </div>
     </div>
-    <input
-        type="search"
-        id="selectPickerSearchInput"
-        class="select-picker-search"
-        placeholder="{{ wizard_lang.ui.search }}"
-        autocomplete="off"
-        oninput="filterSelectPickerSheet()"
-    >
     <div class="select-picker-list" id="selectPickerList"></div>
     <div id="selectPickerEmpty" class="select-picker-empty">
         <i class="bi bi-search" style="font-size: 42px; display:block; margin-bottom:10px; opacity:.5;"></i>
         <p style="margin: 0;">{{ wizard_lang.wizard.summary.selected_none }}</p>
     </div>
+    <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add-fab" style="display:none;" onclick="handleSelectPickerAdd()"
+            data-error-upload="{{ lang.mod_attachment.admin[41]|default('Barkirina pelê neserket.')|e('html') }}"
+            data-loading-text="{{ lang.mod_attachment.admin[4]|default('Tê lêbarkirin...')|e('html') }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
 </div>
