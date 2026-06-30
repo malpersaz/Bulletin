@@ -1,3 +1,6 @@
+## v1.0.88
+- **Fix Crash on Invalid Module Routes**: Added the missing `index/error.twig` template to the default templates theme. This ensures that when a user or administrator attempts to load an invalid module route (such as the non-existent `mod_file/list`), the application gracefully renders a localized 404/not found error page using Bootstrap 5 instead of crashing with a filesystem loader Twig exception.
+
 ## v1.0.87
 - **Improve Browser Compatibility for Publication List and Modal**: Replaced `inset: 0` layout directives with explicit `top`, `right`, `bottom`, and `left` properties in the admin list template for the publication module. Added the `-webkit-backdrop-filter` style prefix to the modal background scrim to ensure the glassmorphic backdrop blur renders correctly on Safari and WebKit-based iOS/macOS browsers.
 
