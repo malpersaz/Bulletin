@@ -1,3 +1,6 @@
+## v1.0.87
+- **Improve Browser Compatibility for Publication List and Modal**: Replaced `inset: 0` layout directives with explicit `top`, `right`, `bottom`, and `left` properties in the admin list template for the publication module. Added the `-webkit-backdrop-filter` style prefix to the modal background scrim to ensure the glassmorphic backdrop blur renders correctly on Safari and WebKit-based iOS/macOS browsers.
+
 ## v1.0.86
 - **Fix Direct Attachment Upload ID Synchronization**: Passed the sync parameter (`true`) to `$file_model->save()` in `mod_attachment_mod::upload()` to ensure the generated database insert ID is synchronized back to the model instance. This resolves the bug where successful uploads returned a null ID in the JSON response, triggering false failure alerts on the client side.
 - **Auto-Refresh Module Lists on Direct Attachment Upload**: Updated the client-side `window.handleDirectAttachmentUpload` function to trigger the `loadData(true)` refresh method on active module managers (`pubListManager`, `newsListManager`, `productListManager`) upon successful relation mapping, ensuring the table list immediately reflects the newly associated file state.
