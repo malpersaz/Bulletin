@@ -1,3 +1,6 @@
+## v1.0.83
+- **Direct Attachment Upload and Auto-Association**: Simplified the file attachment workflow on administration list views. Clicking the "Add" button inside the attachment selection sheet now directly launches the native file picker on the user's device. The selected file is uploaded in the background via JSON-enabled AJAX and automatically associated with the target record (e.g. publication, news, content, or product) without redirecting the user to a complex management interface.
+
 ## v1.0.82
 - **Fix mod_attachment PHP 8.x Compatibility**: Updated `edit()` method signature in `mod_attachment_mod` to accept `$id = null` optional argument to match the parent `BaseModuleController::edit($id = null)` method declaration, resolving PHP fatal incompatibility error when adding or managing attachments.
 

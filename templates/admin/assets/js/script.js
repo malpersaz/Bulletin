@@ -1944,6 +1944,104 @@ function closeSelectPickerSheet() {
     }
 }
 
+window.handleSelectPickerAdd = function() {
+    if (window.currentMediaPickerType === 'files') {
+        let pickerFileInput = document.getElementById('pickerAttachmentFileInput');
+        if (!pickerFileInput) {
+            pickerFileInput = document.createElement('input');
+            pickerFileInput.id = 'pickerAttachmentFileInput';
+            pickerFileInput.type = 'file';
+            pickerFileInput.style.display = 'none';
+            document.body.appendChild(pickerFileInput);
+            pickerFileInput.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files.length > 0) {
+                    window.handleDirectAttachmentUpload(e.target.files[0]);
+                }
+            });
+        }
+        pickerFileInput.click();
+    } else {
+        if (window.currentMediaPickerAddUrl) {
+            window.location.href = window.currentMediaPickerAddUrl;
+        }
+    }
+};
+
+window.handleDirectAttachmentUpload = function(file) {
+    const recordId = window.currentMediaPickerPubId || window.currentMediaPickerContentId || window.currentMediaPickerNewsId;
+    if (!recordId || !window.currentMediaPickerType) {
+        return;
+    }
+
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    const loadingText = addBtn ? addBtn.getAttribute('data-loading-text') : 'Uploading...';
+    const errorText = addBtn ? addBtn.getAttribute('data-error-upload') : 'File upload failed.';
+
+    Swal.fire({
+        title: loadingText,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+        background: 'var(--md-sys-color-surface-container-high, #fff)',
+        color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+    });
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('vid', recordId);
+    formData.append('isim', 'file');
+    formData.append('mod_name', window.currentMediaPickerModuleName || 'mod_publication');
+    formData.append('response_format', 'json');
+
+    fetch(SITE_URL + 'mod_attachment/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(uploadRes => {
+        if (uploadRes.status === 'success' && uploadRes.id) {
+            const relationData = new FormData();
+            relationData.append('id', recordId);
+            relationData.append('type', 'files');
+            relationData.append('value', uploadRes.id);
+
+            const relationUrl = window.currentMediaPickerRelationUrl || (SITE_URL + (window.currentMediaPickerModuleName || 'mod_publication') + '/ajax_update_relation');
+
+            return fetch(relationUrl, {
+                method: 'POST',
+                body: relationData
+            })
+            .then(relationResponse => relationResponse.json())
+            .then(relationRes => {
+                if (relationRes.status === 'success') {
+                    Swal.close();
+                    closeSelectPickerSheet();
+                    showSnackbar(relationRes.message || 'Success', 'success');
+                    if (window.contentManager && typeof window.contentManager.loadData === 'function') {
+                        window.contentManager.loadData(true);
+                    }
+                } else {
+                    throw new Error(relationRes.message || errorText);
+                }
+            });
+        } else {
+            throw new Error(uploadRes.message || errorText);
+        }
+    })
+    .catch(error => {
+        console.error('Direct upload error:', error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || errorText,
+            confirmButtonColor: '#6750A4',
+            background: 'var(--md-sys-color-surface-container-high, #fff)',
+            color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+        });
+    });
+};
+
 function filterSelectPickerSheet() {
     renderSelectPickerOptions();
 }

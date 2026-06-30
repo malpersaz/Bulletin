@@ -932,7 +932,8 @@ window.openMediaRelationPicker = function(contentId, type) {
     }
 
     window.currentMediaPickerAddUrl = addUrl;
-
+    window.currentMediaPickerRelationUrl = MODULE_URL + 'ajax_update_relation';
+    window.currentMediaPickerModuleName = 'mod_content';
     const addBtn = document.getElementById('selectPickerAddBtn');
     if (addBtn) {
         addBtn.style.display = 'block';
@@ -1044,11 +1045,6 @@ window.openMediaRelationPicker = function(contentId, type) {
         });
 };
 
-window.handleSelectPickerAdd = function() {
-    if (window.currentMediaPickerAddUrl) {
-        window.location.href = window.currentMediaPickerAddUrl;
-    }
-};
 
 /**
  * Ported from legacy script.twig: Quick Publish/Unpublish

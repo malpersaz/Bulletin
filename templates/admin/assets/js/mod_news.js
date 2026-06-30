@@ -997,6 +997,8 @@ window.openMediaRelationPicker = function(newsId, type) {
     }
 
     window.currentMediaPickerAddUrl = addUrl;
+    window.currentMediaPickerRelationUrl = MODULE_URL + 'ajax_update_relation';
+    window.currentMediaPickerModuleName = 'mod_news';
     const addBtn = document.getElementById('selectPickerAddBtn');
     if (addBtn) addBtn.style.display = 'block';
 
@@ -1105,8 +1107,3 @@ window.openMediaRelationPicker = function(newsId, type) {
     });
 };
 
-window.handleSelectPickerAdd = function() {
-    if (window.currentMediaPickerAddUrl) {
-        window.location.href = window.currentMediaPickerAddUrl;
-    }
-};

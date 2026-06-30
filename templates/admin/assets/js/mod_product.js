@@ -705,6 +705,8 @@ class ProductListManager {
         }
 
         window.currentMediaPickerAddUrl = `${SITE_URL}mod_attachment/list/mod_product/${this.selectedProductId}`;
+        window.currentMediaPickerRelationUrl = MODULE_URL + 'ajax_update_relation';
+        window.currentMediaPickerModuleName = 'mod_product';
 
         const addBtn = document.getElementById('selectPickerAddBtn');
         if (addBtn) {
@@ -923,11 +925,7 @@ window.sliderSelected = function() {
     window.productListManager?.toggleHeroSlider();
 };
 
-window.handleSelectPickerAdd = function() {
-    if (window.currentMediaPickerAddUrl) {
-        window.location.href = window.currentMediaPickerAddUrl;
-    }
-};
+
 
 window.handleContextAction = function(action) {
     const id = window.currentContentId;

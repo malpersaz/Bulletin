@@ -267,12 +267,28 @@ class mod_attachment_mod extends BaseModuleController
         $file_model->user_id = $this->session->get('id');
 
         if ($file_model->save()) {
-            echo $result['original_name'];
-            return true;
+            if (Req::Post_Safe('response_format') === 'json') {
+                $this->jsonResponse([
+                    'status' => 'success',
+                    'id' => $file_model->id,
+                    'original_name' => $result['original_name'],
+                    'url' => $result['url']
+                ]);
+            } else {
+                echo $result['original_name'];
+                return true;
+            }
         }
 
-        echo 'ERROR';
-        return false;
+        if (Req::Post_Safe('response_format') === 'json') {
+            $this->jsonResponse([
+                'status' => 'error',
+                'message' => 'ERROR'
+            ]);
+        } else {
+            echo 'ERROR';
+            return false;
+        }
     }
 
     protected function _mesaj($mesaj)

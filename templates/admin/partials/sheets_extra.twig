@@ -560,7 +560,9 @@
     <div class="select-picker-title-row" style="flex-wrap: nowrap; align-items: center;">
         <h3 id="selectPickerTitle" style="margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-size: 18px; font-weight: 700;">{{ wizard_lang.sheet.category_title }}</h3>
         <div style="display:flex; gap: 8px; flex-shrink: 0; align-items: center;">
-            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add" style="display:none;" onclick="handleSelectPickerAdd()">
+            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add" style="display:none;" onclick="handleSelectPickerAdd()"
+                    data-error-upload="{{ lang.mod_attachment.admin[41]|default('Barkirina pelê neserket.')|e('html') }}"
+                    data-loading-text="{{ lang.mod_attachment.admin[4]|default('Tê lêbarkirin...')|e('html') }}">
                 <div class="add-btn-bg"></div>
                 <span class="add-btn-content"><i class="bi bi-plus-lg"></i> {{ wizard_lang.button.add|default('Nû Zêdebike') }}</span>
             </button>
