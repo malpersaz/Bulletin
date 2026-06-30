@@ -704,6 +704,9 @@ class ProductListManager {
             return;
         }
 
+        window.currentMediaPickerContentId = this.selectedProductId;
+        window.currentMediaPickerType = 'files';
+
         window.currentMediaPickerAddUrl = `${SITE_URL}mod_attachment/list/mod_product/${this.selectedProductId}`;
         window.currentMediaPickerRelationUrl = MODULE_URL + 'ajax_update_relation';
         window.currentMediaPickerModuleName = 'mod_product';
@@ -763,8 +766,7 @@ class ProductListManager {
 
             select.value = String(currentMedia.file_id || 0);
             select.dataset.pickerTitle = PRODUCT_LANG.picker_files;
-            window.currentMediaPickerContentId = this.selectedProductId;
-            window.currentMediaPickerType = 'files';
+            // Already initialized at the start of openFilesPicker
 
             const pickerTitle = document.getElementById('selectPickerTitle');
             const pickerSubtitle = document.getElementById('selectPickerActiveLang');
@@ -787,6 +789,9 @@ class ProductListManager {
             showSnackbar(PRODUCT_LANG.select_record, 'info');
             return;
         }
+
+        window.currentMediaPickerContentId = this.selectedProductId;
+        window.currentMediaPickerType = 'video';
 
         window.currentMediaPickerAddUrl = `${SITE_URL}mod_video_embed/add`;
 
@@ -845,8 +850,7 @@ class ProductListManager {
 
             select.value = '0';
             select.dataset.pickerTitle = PRODUCT_LANG.picker_video;
-            window.currentMediaPickerContentId = this.selectedProductId;
-            window.currentMediaPickerType = 'video';
+            // Already initialized at the start of openVideoPicker
 
             const pickerTitle = document.getElementById('selectPickerTitle');
             const pickerSubtitle = document.getElementById('selectPickerActiveLang');

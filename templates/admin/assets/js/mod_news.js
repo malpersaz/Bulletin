@@ -977,6 +977,9 @@ document.addEventListener('click', function(e) {
 
 // Added for media relation picker
 window.openMediaRelationPicker = function(newsId, type) {
+    window.currentMediaPickerNewsId = newsId;
+    window.currentMediaPickerType = type;
+
     let endpoint = '';
     let title = '';
     let addUrl = '';
@@ -1066,8 +1069,7 @@ window.openMediaRelationPicker = function(newsId, type) {
             });
         }
         
-        window.currentMediaPickerNewsId = newsId;
-        window.currentMediaPickerType = type;
+        // Already initialized at the start of openMediaRelationPicker
         
         // Clear stale headers in the picker sheet before opening
         const pickerTitleEl = document.getElementById('selectPickerTitle');

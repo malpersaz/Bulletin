@@ -915,6 +915,9 @@ document.addEventListener('click', function(e) {
 });
 
 window.openMediaRelationPicker = function(contentId, type) {
+    window.currentMediaPickerContentId = contentId;
+    window.currentMediaPickerType = type;
+
     let endpoint = '';
     let title = '';
     let addUrl = '';
@@ -1005,8 +1008,7 @@ window.openMediaRelationPicker = function(contentId, type) {
                 });
             }
 
-            window.currentMediaPickerContentId = contentId;
-            window.currentMediaPickerType = type;
+            // Already initialized at the start of openMediaRelationPicker
 
             const pickerTitleEl = document.getElementById('selectPickerTitle');
             const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');

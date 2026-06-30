@@ -929,6 +929,9 @@ window.toggleStatus = function (id, currentStatus) {
 
 // Media relation picker
 window.openMediaRelationPicker = function(pubId, type) {
+    window.currentMediaPickerPubId = pubId;
+    window.currentMediaPickerType = type;
+
     let endpoint = '';
     let title = '';
     let addUrl = '';
@@ -1001,8 +1004,7 @@ window.openMediaRelationPicker = function(pubId, type) {
             });
         }
         
-        window.currentMediaPickerPubId = pubId;
-        window.currentMediaPickerType = type;
+        // Already initialized at the start of openMediaRelationPicker
         
         const pickerTitleEl = document.getElementById('selectPickerTitle');
         const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');

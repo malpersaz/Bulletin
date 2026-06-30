@@ -1,3 +1,7 @@
+## v1.0.84
+- **Prevent Media Picker Upload Race Conditions**: Ensured media picker state variables (`window.currentMediaPickerType` and corresponding record IDs) are initialized immediately at the start of `openMediaRelationPicker`, `openFilesPicker`, and `openVideoPicker` functions. This prevents race conditions where selecting or uploading files was processed with old or uninitialized picker states, resolving redirect bugs when clicking the add button.
+- **Admin Assets Cache-Busting**: Incremented version query strings for `script.js` and module-specific JavaScript files (`mod_publication.js`, `mod_news.js`, `mod_content.js`) in administrative Twig templates to force browser cache refresh and ensure instant deployment of background uploader upgrades.
+
 ## v1.0.83
 - **Direct Attachment Upload and Auto-Association**: Simplified the file attachment workflow on administration list views. Clicking the "Add" button inside the attachment selection sheet now directly launches the native file picker on the user's device. The selected file is uploaded in the background via JSON-enabled AJAX and automatically associated with the target record (e.g. publication, news, content, or product) without redirecting the user to a complex management interface.
 
