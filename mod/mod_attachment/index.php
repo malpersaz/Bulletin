@@ -266,7 +266,7 @@ class mod_attachment_mod extends BaseModuleController
         $file_model->vid = $vid;
         $file_model->user_id = $this->session->get('id');
 
-        if ($file_model->save()) {
+        if ($file_model->save(true)) {
             if (Req::Post_Safe('response_format') === 'json') {
                 $this->jsonResponse([
                     'status' => 'success',

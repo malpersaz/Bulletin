@@ -1,3 +1,7 @@
+## v1.0.86
+- **Fix Direct Attachment Upload ID Synchronization**: Passed the sync parameter (`true`) to `$file_model->save()` in `mod_attachment_mod::upload()` to ensure the generated database insert ID is synchronized back to the model instance. This resolves the bug where successful uploads returned a null ID in the JSON response, triggering false failure alerts on the client side.
+- **Auto-Refresh Module Lists on Direct Attachment Upload**: Updated the client-side `window.handleDirectAttachmentUpload` function to trigger the `loadData(true)` refresh method on active module managers (`pubListManager`, `newsListManager`, `productListManager`) upon successful relation mapping, ensuring the table list immediately reflects the newly associated file state.
+
 ## v1.0.85
 - **Redesign Media Picker Search and Actions Layout**: Repositioned the search filter field to the top of the media selector bottom sheet, moved the upload/add button to the bottom-right corner as a Floating Action Button (FAB) labeled with a single plus sign (+), and expanded list bottom padding to avoid FAB content overlap.
 - **Improve Selection Visibility and Dynamic Checkmarks**: Upgraded the list checkmark icons to always remain visible, styling them as passive/cold outline check circles (`bi-check-circle` in Slate `#94a3b8`) for unselected options and transitioning them to active filled check circles (`bi-check-circle-fill` in Green `#34a853`) when selected.

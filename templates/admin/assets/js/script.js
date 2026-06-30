@@ -2022,6 +2022,15 @@ window.handleDirectAttachmentUpload = function(file) {
                     if (window.contentManager && typeof window.contentManager.loadData === 'function') {
                         window.contentManager.loadData(true);
                     }
+                    if (window.pubListManager && typeof window.pubListManager.loadData === 'function') {
+                        window.pubListManager.loadData(true);
+                    }
+                    if (window.newsListManager && typeof window.newsListManager.loadData === 'function') {
+                        window.newsListManager.loadData(true);
+                    }
+                    if (window.productListManager && typeof window.productListManager.loadData === 'function') {
+                        window.productListManager.loadData(true);
+                    }
                 } else {
                     throw new Error(relationRes.message || errorText);
                 }
