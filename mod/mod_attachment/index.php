@@ -155,7 +155,7 @@ class mod_attachment_mod extends BaseModuleController
         return true;
     }
 
-    public function edit()
+    public function edit($id = null)
     {
         $vid = Req::Post_Safe('vid');
         $mod = Req::Post_Safe('mod_name');
@@ -164,7 +164,9 @@ class mod_attachment_mod extends BaseModuleController
         }
 
         $this->r = Load::model('mod_attachment');
-        $id = Req::Post_Safe('id');
+        if ($id === null) {
+            $id = Req::Post_Safe('id');
+        }
         $this->r->where_id($id)->gRo();
 
         if ($this->r->getSize() === 0) {

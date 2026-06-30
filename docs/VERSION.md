@@ -1,3 +1,6 @@
+## v1.0.82
+- **Fix mod_attachment PHP 8.x Compatibility**: Updated `edit()` method signature in `mod_attachment_mod` to accept `$id = null` optional argument to match the parent `BaseModuleController::edit($id = null)` method declaration, resolving PHP fatal incompatibility error when adding or managing attachments.
+
 ## v1.0.81
 - **Fix Publication File and Gallery Pickers**: Implemented missing AJAX endpoints (`ajax_get_files`, `ajax_get_galleries`, `ajax_get_current_media`, and `ajax_update_relation`) in `mod_publication_mod` controller to resolve the "Error loading modal" dialog error triggered when opening attachment or gallery relation pickers on the publications administration list view.
 
