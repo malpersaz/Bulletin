@@ -1,3 +1,13 @@
+## v1.1.0 (2026-09-26)
+- **Publication Open Graph & Social Share Preview Author Image Fallback (`templates/amida/index/mod_publication/publication.twig`)**:
+  - Enhanced social share metadata resolution for publication articles: when a publication has no dedicated cover image (`d.image`), the template now automatically resolves and prioritizes the author's profile photo (`d.user_image`) before falling back to the site logo.
+  - Resolved missing writer preview on WhatsApp, Telegram, Facebook, and Twitter link sharing for author column articles and essays.
+  - Eliminated broken `.webp` to `.jpg` string replacements that produced HTTP 500 / 404 dead image links, preserving canonical WebP asset paths supported across modern crawlers.
+  - Conditionally rendered landscape Open Graph dimensions (`og:image:width: 1200`, `og:image:height: 630`) only when dedicated publication images exist, preventing invalid aspect ratio stretching for portrait author photos.
+  - Enriched Schema.org `Article` structured data to dynamically reference the resolved share image and populated `author.image` with the author's avatar URL.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.0`.
+
 ## v1.0.99 (2026-09-25)
 - **Editorial Public Theme Latest News Grid Super Polish (`templates/amida/index/mod_news/latest_news.twig`, `templates/amida/static/css/latest-news.css`, `static/css/latest-news.css`)**:
   - Overhauled the latest news widget with modern semantic HTML5 markup, strict separation of concerns, and full dark mode styling.

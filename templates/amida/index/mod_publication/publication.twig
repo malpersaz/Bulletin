@@ -15,9 +15,14 @@
 {% set faq_lang = ctx_get('faq_lang') %}
 
 {% set publication_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
-{% set publication_share_image = d.image is not empty ? site.iaddress ~ 'mod_publication/' ~ d.image : publication_logo_asset %}
-{% set publication_share_jpg = publication_share_image matches '/\\.webp$/i' ? publication_share_image|replace({'.webp': '.jpg'}) : publication_share_image %}
-{% set publication_share_ext = publication_share_jpg|split('?')|first|split('.')|last|lower %}
+{% if d.image is defined and d.image is not empty %}
+    {% set publication_share_image = site.iaddress ~ 'mod_publication/' ~ d.image %}
+{% elseif d.user_image is defined and d.user_image is not empty %}
+    {% set publication_share_image = site.iaddress ~ 'mod_user/' ~ d.user_image %}
+{% else %}
+    {% set publication_share_image = publication_logo_asset %}
+{% endif %}
+{% set publication_share_ext = publication_share_image|split('?')|first|split('.')|last|lower %}
 {% set publication_share_mime = publication_share_ext == 'png' ? 'image/png' : (publication_share_ext == 'webp' ? 'image/webp' : (publication_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 
 {% block canonical %}
@@ -42,12 +47,14 @@
     <meta property="og:title" content="{{ d.title|default(d.name) }}">
     <meta property="og:description" content="{{ d.description|striptags|slice(0, 200) }}">
     {% if publication_share_image is not empty %}
-        <meta property="og:image" content="{{ publication_share_jpg }}">
-        <meta property="og:image:secure_url" content="{{ publication_share_jpg }}">
+        <meta property="og:image" content="{{ publication_share_image }}">
+        <meta property="og:image:secure_url" content="{{ publication_share_image }}">
         <meta property="og:image:type" content="{{ publication_share_mime }}">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-        <link rel="image_src" href="{{ publication_share_jpg }}">
+        {% if d.image is defined and d.image is not empty %}
+            <meta property="og:image:width" content="1200">
+            <meta property="og:image:height" content="630">
+        {% endif %}
+        <link rel="image_src" href="{{ publication_share_image }}">
     {% endif %}
     <meta property="og:site_name" content="{{ site.title }}">
     {% set og_locale = site.lang %}
@@ -70,7 +77,7 @@
     <meta name="twitter:title" content="{{ d.title|default(d.name) }}">
     <meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
     {% if publication_share_image is not empty %}
-        <meta name="twitter:image" content="{{ publication_share_jpg }}">
+        <meta name="twitter:image" content="{{ publication_share_image }}">
     {% endif %}
 {% endblock %}
 
@@ -80,10 +87,11 @@
           "@context": "https://schema.org",
           "@type": "Article",
           "headline": {{ d.name|json_encode|raw }},
-          "image": {% if d.image is not empty %}{{ (site.iaddress ~ 'mod_publication/' ~ d.image)|json_encode|raw }}{% else %}{{ (site.iaddress ~ 'mod_settings/logo.png')|json_encode|raw }}{% endif %},
+          "image": {{ publication_share_image|json_encode|raw }},
           "author": {
             "@type": "Person",
-            "name": {{ (d.u_name|default('') ~ ' ' ~ d.u_last_name|default(''))|trim|json_encode|raw }}
+            "name": {{ (d.u_name|default('') ~ ' ' ~ d.u_last_name|default(''))|trim|json_encode|raw }}{% if d.user_image is defined and d.user_image is not empty %},
+            "image": {{ (site.iaddress ~ 'mod_user/' ~ d.user_image)|json_encode|raw }}{% endif %}
           },
           "publisher": {
             "@type": "Organization",
