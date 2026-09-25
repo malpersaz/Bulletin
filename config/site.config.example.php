@@ -17,11 +17,20 @@ $isLocal = ($host === 'localhost'
     || strpos($host, 'pinggy.link') !== false
 );
 
-// Enforce HTTPS in production environments while keeping HTTP for local development
-$scheme = $isLocal ? 'http' : 'https';
+// Proxy-aware HTTPS detection (supports native SSL, Cloudflare, load balancers, and reverse proxies like KasServer)
+$isHttps = (
+    (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+    || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+    || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+    || (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) === 'on')
+    || (!empty($_SERVER['HTTP_CF_VISITOR']) && strpos($_SERVER['HTTP_CF_VISITOR'], '"scheme":"https"') !== false)
+);
 
-// Perform HTTP to HTTPS 301 redirection for live non-CLI requests
-if (!$isLocal && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && (($_SERVER['SERVER_PORT'] ?? 80) != 443)) {
+// Enforce HTTPS in production environments while keeping HTTP for local development
+$scheme = ($isLocal && !$isHttps) ? 'http' : 'https';
+
+// Perform HTTP to HTTPS 301 redirection for live non-CLI requests when not already on HTTPS
+if (!$isLocal && !$isHttps && PHP_SAPI !== 'cli') {
     if (PHP_SAPI !== 'cli') {
         header('Location: https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
         exit();
@@ -49,7 +58,7 @@ $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.93';
+$site['version'] = '1.0.94';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');

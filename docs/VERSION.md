@@ -1,3 +1,15 @@
+## v1.0.94
+- **Proxy-Aware HTTPS Detection & Infinite Redirect Loop Resolution (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Implemented comprehensive proxy-aware HTTPS detection inspecting `HTTP_X_FORWARDED_PROTO`, `HTTP_X_FORWARDED_SSL`, `HTTP_CF_VISITOR`, `SERVER_PORT == 443`, and `HTTPS !== 'off'`.
+  - Prevented infinite 301 redirection loops (`ERR_TOO_MANY_REDIRECTS`) in production environments operating behind SSL-terminating reverse proxies, Cloudflare, load balancers, and KasServer (All-Inkl).
+  - Maintained automated HTTP-to-HTTPS 301 enforcement for genuine unencrypted HTTP requests while safeguarding localized environment configurations.
+  - Bumped framework version constant and fallback baseline to `1.0.94`.
+- **Installation Gate Modernization & AF/Business Architecture Parity (`index.php`)**:
+  - Aligned entry point architecture with `AF/Business` standards by introducing output buffer clearing (`ob_end_clean()`) prior to redirect and error response headers.
+  - Dynamically resolved canonical `$installerUrl` using configured `$siteConfig['address']` with clean trailing slash trimming.
+  - Implemented structured JSON 503 error envelope for asynchronous AJAX requests when installation state is unfulfilled.
+  - Standardized all entry point metadata headers, error handler comments, and configuration comments into clean canonical English.
+
 ## v1.0.93
 - **Configuration Architecture Modernization & AF/Business System Parity**:
   - **Dynamic Environment & HTTPS Enforcement (`config/site.config.php`, `config/site.config.example.php`)**:
