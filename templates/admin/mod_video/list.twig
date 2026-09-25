@@ -16,6 +16,14 @@
         color: #2e7d32 !important;
         background: rgba(46, 125, 50, 0.12);
     }
+    .standard-toolbar #toolbarSlider.active {
+        color: #0b57d0 !important;
+        background: rgba(11, 87, 208, 0.12);
+    }
+    .standard-toolbar #toolbarSlider.active.is-selected {
+        color: #2e7d32 !important;
+        background: rgba(46, 125, 50, 0.12);
+    }
 </style>
 {% endblock %}
 
@@ -46,7 +54,7 @@
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_video.grid['3'] }}</span>
+    <span>{{ lang.mod_video.grid.loading }}</span>
 </div>
 
 <!-- HIDDEN FILTERS -->
@@ -54,8 +62,8 @@
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
-    <input type="hidden" name="arama[name]" id="filterSearch" value="">
-    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
@@ -63,6 +71,11 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
+        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_video.hero_slider_add }}">
+            <i class="bi bi-stars"></i>
+            <span>{{ lang.mod_video.hero_slider_badge }}</span>
+        </button>
+
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_video.button.edit }}</span>
@@ -85,7 +98,7 @@
     </div>
 
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video/add'" aria-label="{{ lang.mod_video.add|default('Videoyê Lêzêde Bike') }}">
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video/add'" aria-label="{{ lang.mod_video.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endblock %}
@@ -103,20 +116,22 @@
         confirm_delete: "{{ lang.mod_video.remove_record|e('js') }}",
         confirm_publish: "{{ lang.mod_video.grid.publish.value|e('js') }}",
         confirm_unpublish: "{{ lang.mod_video.grid.unpublish.value|e('js') }}",
-        error_general: "{{ lang.mod_video.hata|e('js') }}",
-        confirm_yes: "{{ lang.mod_video.button.evet|e('js') }}",
-        confirm_no: "{{ lang.mod_video.button.hayir|e('js') }}",
-        loading: "{{ lang.mod_video.grid['3']|e('js') }}",
+        confirm_yes: "{{ lang.mod_video.button.yes|e('js') }}",
+        confirm_no: "{{ lang.mod_video.button.no|e('js') }}",
+        publishing: "{{ lang.mod_video.grid.publishing|e('js') }}",
+        unpublishing: "{{ lang.mod_video.grid.unpublishing|e('js') }}",
+        delete_confirm_title: "{{ lang.mod_video.grid.delete_confirm_title|e('js') }}",
+        delete_confirm_text: "{{ lang.mod_video.grid.delete_confirm_text|e('js') }}",
+        cancel: "{{ lang.mod_video.button.cancel|e('js') }}",
+        error_general: "{{ lang.mod_video.error|e('js') }}",
+        loading: "{{ lang.mod_video.grid.loading|e('js') }}",
         information: "{{ lang.mod_video.information|e('js') }}",
         image_update_confirm: "{{ lang.mod_video.remove_image|e('js') }}", // Will use as prompt
-        button: {
-            cancel: "{{ lang.mod_video.button.vazgec|e('js') }}"
-        },
         sheet: {
-            ok: "{{ lang.mod_video.oke|e('js') }}"
+            ok: "{{ lang.mod_video.success|e('js') }}"
         },
         grid: {
-            load_more: "{{ lang.mod_video.grid['0']|e('js') }}"
+            load_more: "{{ lang.mod_video.grid.showing_results|e('js') }}"
         }
     };
 </script>

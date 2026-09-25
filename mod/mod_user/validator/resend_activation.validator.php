@@ -7,9 +7,9 @@ class resend_activation_validator
     public $errors = [];
 	function __construct()
 	{
-		// Validator Kütüphanesini Yükleyelim
+		// Load Validator Library
 		$this->valid = Load::lib('Validator');
-		// Dil Dosyası.
+		// Language File.
 		$this->lang = Load::lang('mod_user');
 		$this->captcha = Load::lib('Captcha');
 	}

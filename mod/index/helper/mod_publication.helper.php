@@ -7,10 +7,19 @@ class mod_publication_helper extends indexBase
         parent::__construct();
     }
 
+    protected function _verify_image_asset($image)
+    {
+        if (empty($image)) {
+            return null;
+        }
+        $fullPath = root_dir . ltrim($image, '/');
+        return (file_exists($fullPath) && is_file($fullPath)) ? $image : null;
+    }
+
     public function _categories()
     {
         if (!$this->isFeatureReady('publication.front')) {
-            $this->tema->ctx_set('categories', []);
+            $this->theme->ctx_set('categories', []);
             return;
         }
 
@@ -30,7 +39,7 @@ class mod_publication_helper extends indexBase
             }
         }
 
-        $this->tema->ctx_set('categories', $categories);
+        $this->theme->ctx_set('categories', $categories);
     }
 
     public function publication($seo)
@@ -52,7 +61,7 @@ class mod_publication_helper extends indexBase
 
         $publication->sync();
 
-        if ($this->_permission_kontrol($publication->acl_id)) {
+        if ($this->_permission_check($publication->acl_id)) {
             return;
         }
 
@@ -74,8 +83,10 @@ class mod_publication_helper extends indexBase
             $this->_mod_attachment('mod_publication', $publication->id);
         }
 
-        $this->tema->ctx_set('d', $publication->toArray());
-        $this->tema->tpl('index/mod_publication/publication');
+        $pub_data = $publication->toArray();
+        $this->theme->ctx_set('d', $pub_data);
+        $this->theme->ctx_set('detail', $pub_data);
+        $this->theme->tpl('index/mod_publication/publication');
         $this->_index();
         unset($publication);
     }
@@ -107,11 +118,11 @@ class mod_publication_helper extends indexBase
             $publication->limit($page_limit, $offset)->order('created_at', 'DESC')->gR();
 
             if ($publication->getSize() != 0) {
-                $this->tema->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $publication->toArray());
             }
 
             $category_seo = 'all';
-            $category_name = $this->lang['index']['mod_publication']['2'];
+            $category_name = $this->lang['index']['mod_publication']['all_publications'] ?? $this->lang['index']['mod_publication']['all_items'] ?? 'All Publications';
         } elseif ($category_model->exists_seo($category) === FALSE) {
             return $this->_404();
         } else {
@@ -121,7 +132,7 @@ class mod_publication_helper extends indexBase
             $publication->getLimit($page_limit, $offset);
 
             if ($publication->getSize() !== 0) {
-                $this->tema->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $publication->toArray());
             }
 
             $category_model->where_seo($category);
@@ -143,7 +154,7 @@ class mod_publication_helper extends indexBase
         }
 
         if ($pager->Result() !== FALSE) {
-            $this->tema->ctx_set('pagination', $pager->Result());
+            $this->theme->ctx_set('pagination', $pager->Result());
         }
 
         if ($page != '1') {
@@ -153,19 +164,23 @@ class mod_publication_helper extends indexBase
         }
 
         if ($page <= 1) {
-            $d['title'] = sprintf($this->lang['index']['mod_publication']['1'], $category_name);
+            $category_fmt = $this->lang['index']['mod_publication']['category_title'] ?? $this->lang['index']['mod_publication']['title_fmt'] ?? '%s';
+            $d['title'] = sprintf($category_fmt, $category_name);
         } else {
-            $d['title'] = sprintf($this->lang['index']['mod_publication']['5'], $category_name, $page);
+            $archive_page_fmt = $this->lang['index']['mod_publication']['archive_page_title'] ?? '%s Archive - Page %s';
+            $d['title'] = sprintf($archive_page_fmt, $category_name, $page);
         }
 
-        $d['description'] = $this->lang['index']['mod_publication']['2'];
-        $d['keywords'] = $this->lang['index']['mod_publication']['3'];
+        $all_pubs_str = $this->lang['index']['mod_publication']['all_publications'] ?? $this->lang['index']['mod_publication']['all_items'] ?? 'All Publications';
+        $d['description'] = $all_pubs_str;
+        $d['keywords'] = $this->lang['index']['mod_publication']['keywords'] ?? $this->lang['index']['mod_publication']['no_items_found'] ?? 'publications';
 
-        $this->tema->ctx_set('d', $d);
-        $this->tema->ctx_set('categoryname', $category_name);
-        $this->tema->ctx_set('category_seo', $category_seo);
-        $this->tema->ctx_set('page', $page);
-        $this->tema->tpl('index/mod_publication/publications');
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('detail', $d);
+        $this->theme->ctx_set('categoryname', $category_name);
+        $this->theme->ctx_set('category_seo', $category_seo);
+        $this->theme->ctx_set('page', $page);
+        $this->theme->tpl('index/mod_publication/publications');
         $this->_index();
     }
 
@@ -199,7 +214,7 @@ class mod_publication_helper extends indexBase
         $sql = "SELECT p.*
             FROM publications p
             INNER JOIN (
-                SELECT mod_publication.user_id, MAX(mod_publication.created_at) AS latest_created_at
+                SELECT mod_publication.user_id, MAX(mod_publication.created_at) latest_created_at
                 FROM mod_publication
                 LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                 WHERE mod_publication.status = 'y'
@@ -278,12 +293,12 @@ class mod_publication_helper extends indexBase
         $offset = ($page - 1) * $page_limit;
 
         $authors = Load::model('mod_publication.publications');
-        $count_sql = "SELECT COUNT(*) AS total_count
+        $count_sql = "SELECT COUNT(*) total_count
             FROM (
                 SELECT latest_publications.user_id
-                FROM publications AS latest_publications
+                FROM publications latest_publications
                 INNER JOIN (
-                    SELECT mod_publication.user_id, MAX(mod_publication.created_at) AS latest_created_at
+                    SELECT mod_publication.user_id, MAX(mod_publication.created_at) latest_created_at
                     FROM mod_publication
                     LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                     WHERE mod_publication.status = 'y'
@@ -295,16 +310,16 @@ class mod_publication_helper extends indexBase
                    AND latest_publications.created_at = author_latest.latest_created_at
                 WHERE latest_publications.status = 'y'
                   AND latest_publications.lang = '" . $this->site['lang'] . "'
-            ) AS paged_authors";
+            ) paged_authors";
         $authors->fetch_array($count_sql);
         $count_rows = $authors->toArray();
         $total_item = isset($count_rows[0]['total_count']) ? intval($count_rows[0]['total_count']) : 0;
 
         $authors->flush();
         $sql = "SELECT latest_publications.*
-            FROM publications AS latest_publications
+            FROM publications latest_publications
             INNER JOIN (
-                SELECT mod_publication.user_id, MAX(mod_publication.created_at) AS latest_created_at
+                SELECT mod_publication.user_id, MAX(mod_publication.created_at) latest_created_at
                 FROM mod_publication
                 LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                 WHERE mod_publication.status = 'y'
@@ -321,7 +336,7 @@ class mod_publication_helper extends indexBase
         $authors->fetch_array($sql);
 
         if ($authors->getSize() !== 0) {
-            $this->tema->ctx_set('authors', $authors->toArray());
+            $this->theme->ctx_set('authors', $authors->toArray());
         }
 
         $pager = Load::lib('Pager');
@@ -335,17 +350,18 @@ class mod_publication_helper extends indexBase
         }
 
         if ($pager->Result() !== FALSE) {
-            $this->tema->ctx_set('pagination', $pager->Result());
+            $this->theme->ctx_set('pagination', $pager->Result());
         }
 
         $d['name'] = $this->lang['index']['mod_publication']['authors'];
         $d['title'] = $d['name'];
         $d['keywords'] = $d['name'];
         $d['description'] = $d['name'];
-        $this->tema->ctx_set('d', $d);
-        $this->tema->ctx_set('page', $page);
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('detail', $d);
+        $this->theme->ctx_set('page', $page);
 
-        $this->tema->tpl('index/mod_publication/authors');
+        $this->theme->tpl('index/mod_publication/authors');
         $this->_index();
     }
 
@@ -386,12 +402,12 @@ class mod_publication_helper extends indexBase
         $social_data = $this->loadAuthorSocialLinks($author_data['user_id'] ?? 0);
         $author_data['twitter'] = $social_data['map']['twitter'];
         $author_data['facebook'] = $social_data['map']['facebook'];
-        $this->tema->ctx_set('author', $author_data);
-        $this->tema->ctx_set('author_social_links', $social_data['items']);
-        $this->tema->ctx_set('username', $username);
+        $this->theme->ctx_set('author', $author_data);
+        $this->theme->ctx_set('author_social_links', $social_data['items']);
+        $this->theme->ctx_set('username', $username);
 
         $publication = Load::model('mod_publication.publications');
-        $count_sql = "SELECT COUNT(*) AS total_count
+        $count_sql = "SELECT COUNT(*) total_count
             FROM publications
             WHERE username = '" . addslashes($username) . "'
               AND status = 'y'
@@ -410,7 +426,7 @@ class mod_publication_helper extends indexBase
         $publication->fetch_array($publication_sql);
 
         if ($publication->getSize() !== 0) {
-            $this->tema->ctx_set('publications', $publication->toArray());
+            $this->theme->ctx_set('publications', $publication->toArray());
         }
 
         $pager = Load::lib('Pager');
@@ -424,23 +440,24 @@ class mod_publication_helper extends indexBase
         }
 
         if ($pager->Result() !== FALSE) {
-            $this->tema->ctx_set('pagination', $pager->Result());
+            $this->theme->ctx_set('pagination', $pager->Result());
         }
 
-        $this->tema->ctx_set('page', $page);
+        $this->theme->ctx_set('page', $page);
 
         $d['name'] = trim(($author_data['u_name'] ?? '') . ' ' . ($author_data['u_last_name'] ?? ''));
         $d['title'] = $d['name'];
         $d['keywords'] = $d['name'];
         $d['description'] = $d['name'];
-        $this->tema->ctx_set('d', $d);
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('detail', $d);
 
         $sidebar_authors = $this->_latest_authors(3);
         if (!empty($sidebar_authors)) {
-            $this->tema->ctx_set('authors', $sidebar_authors);
+            $this->theme->ctx_set('authors', $sidebar_authors);
         }
 
-        $this->tema->tpl('index/mod_publication/author');
+        $this->theme->tpl('index/mod_publication/author');
         $this->_index();
     }
 
@@ -502,28 +519,43 @@ class mod_publication_helper extends indexBase
         }
 
         $publication = Load::model('mod_publication');
-        $sql = "SELECT YEAR(MAX(created_at)) AS max_yil, YEAR(MIN(created_at)) AS min_yil FROM `mod_publication` WHERE 1";
+        $sql = "SELECT MAX(created_at), MIN(created_at) FROM `mod_publication` WHERE 1";
         $publication->fetch_array($sql);
-        $publication->getResultOne();
-        $this->tema->ctx_set('arsiv_yil', $publication->toArray());
+        $row = $publication->getResultOne();
+        $row_data = is_object($row) ? $row->toArray() : (array) $row;
+        $values = array_values($row_data);
+        $max_date = $values[0] ?? null;
+        $min_date = $values[1] ?? null;
+        $min_year = $min_date ? (int) date('Y', strtotime($min_date)) : 2020;
+        $max_year = $max_date ? (int) date('Y', strtotime($max_date)) : (int) date('Y');
+        $archive_years = [
+            'min_year' => $min_year,
+            'max_year' => $max_year,
+            'min_yil' => $min_year,
+            'max_yil' => $max_year
+        ];
+        $this->theme->ctx_set('archive_years', $archive_years);
+        $this->theme->ctx_set('arsiv_yil', $archive_years);
 
         $category = Load::model('mod_publication_category');
         $category->where_lang_and_root($this->site['lang'], 'n');
         $category->order('parent_id, order', 'DESC');
         $category->gR();
         if ($category->getSize() !== 0) {
-            $this->tema->ctx_set('archive_categories', $category->toArray());
+            $this->theme->ctx_set('archive_categories', $category->toArray());
         }
 
-        $d['name'] = $this->lang['index']['mod_publication']['6'];
-        $d['title'] = $this->lang['index']['mod_publication']['6'];
-        $d['keywords'] = $this->lang['index']['mod_publication']['6'];
-        $d['description'] = $this->lang['index']['mod_publication']['6'];
-        $this->tema->ctx_set('d', $d);
+        $archive_title = $this->lang['index']['mod_publication']['archive_title'] ?? $this->lang['index']['mod_publication']['archive'] ?? 'Publication Archive';
+        $d['name'] = $archive_title;
+        $d['title'] = $archive_title;
+        $d['keywords'] = $archive_title;
+        $d['description'] = $archive_title;
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('detail', $d);
 
-        if (Req::is_Post('category_id') and Req::is_Post('yil') and Req::is_Post('ay')) {
-            $yil = Req::Post_Safe('yil');
-            $ay = Req::Post_Safe('ay');
+        if (Req::is_Post('category_id') and (Req::is_Post('yil') or Req::is_Post('year')) and (Req::is_Post('ay') or Req::is_Post('month'))) {
+            $yil = Req::is_Post('year') ? Req::Post_Safe('year') : Req::Post_Safe('yil');
+            $ay = Req::is_Post('month') ? Req::Post_Safe('month') : Req::Post_Safe('ay');
             $category_id = Req::Post_Safe('category_id');
 
             if ($yil === '*') {
@@ -535,7 +567,7 @@ class mod_publication_helper extends indexBase
             }
 
             $category_where = $category_id === '*' ? '' : " AND category_id='" . $category_id . "'";
-            $this->tema->ctx_set('category_id', $category_id);
+            $this->theme->ctx_set('category_id', $category_id);
 
             $publication->select('seo,name,created_at,summary');
             if ($yil !== NULL && $ay !== NULL) {
@@ -563,20 +595,23 @@ class mod_publication_helper extends indexBase
 
             $publication->gR();
             if ($publication->getSize() !== 0) {
-                $this->tema->ctx_set('publications', $publication->toArray());
+                $this->theme->ctx_set('publications', $publication->toArray());
             } else {
-                $this->tema->ctx_set('bulunamadi', TRUE);
+                $this->theme->ctx_set('bulunamadi', TRUE);
+                $this->theme->ctx_set('not_found', TRUE);
             }
 
             if ($yil !== NULL) {
-                $this->tema->ctx_set('yil', $yil);
+                $this->theme->ctx_set('yil', $yil);
+                $this->theme->ctx_set('year', $yil);
             }
             if ($ay !== NULL) {
-                $this->tema->ctx_set('ay', $ay);
+                $this->theme->ctx_set('ay', $ay);
+                $this->theme->ctx_set('month', $ay);
             }
         }
 
-        $this->tema->tpl('index/mod_publication/archive');
+        $this->theme->tpl('index/mod_publication/archive');
         $this->_index();
     }
 }

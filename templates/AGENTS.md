@@ -4,7 +4,7 @@ Inherit the repository root `AGENTS.md`.
 
 ## Scope Map
 
-- `templates/default` and future `templates/<theme>` folders are public frontend themes.
+- `templates/amida` and future `templates/<theme>` folders are public frontend themes.
 - `templates/admin` is the active admin panel and is a phone-only admin/screen surface.
 - `templates/base_static` contains shared legacy/vendor frontend assets.
 
@@ -14,7 +14,7 @@ Inherit the repository root `AGENTS.md`.
 - Use `.agents/skills/frontend-theme/SKILL.md` for public theme creation, audit, registration, and validation.
 - Use `.agents/theme/prompts/frontend-theme-agent.md` only when the user explicitly requests a dedicated theme agent.
 - For new durable visual themes or substantial redesigns, use `.agents/design/INDEX.md`, load only the public theme baseline and one matching profile, and create or update `templates/<theme>/DESIGN.md`.
-- Keep public theme includes active-theme-relative. Do not pin copied templates to `default/` unless that dependency is intentional and documented.
+- Keep public theme includes active-theme-relative. Do not pin copied templates to `amida/` unless that dependency is intentional and documented.
 - Use `{{ site.taddress }}{{ site.app_template }}/...` for theme-owned assets.
 - Put theme-owned assets under `templates/<theme>/static/`.
 

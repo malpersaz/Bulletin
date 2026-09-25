@@ -18,25 +18,27 @@ if (!defined('AKM_LOADED')) {
  * Content Management Module Language Translations
  */
 $lang['mod_content'] = [
+    'total_content' => 'Total Content',
+    'draft_content' => 'Draft Content',
 
     // === Basic Actions ===
     'add' => 'Add Content',
     'edit' => 'Edit Content',
     'list' => 'Content List',
+    'search_placeholder' => 'Search content (title, summary)...',
     'information' => 'Information!',
-    'oke' => 'Operation Successful!',
-    'hata' => 'Error Occurred!',
-    'error' => 'Fatal Error Occurred!',
+    'success' => 'Operation Successful!',
+    'error' => 'Error Occurred!',
     'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image Removed',
+    'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
     'delete_confirm' => 'Are you sure you want to delete this content?',
     'quick_unpublish_confirm' => 'Are you sure you want to unpublish this content?',
     'quick_publish_confirm' => 'Are you sure you want to publish this content?',
-    'resim_ekle' => 'Add Image',
-    'resim_yukle_degistir' => 'Upload/Change Image',
-    'lokal' => 'Local',
+    'add_image' => 'Add Image',
+    'upload_change_image' => 'Upload/Change Image',
+    'local' => 'Local',
     'embed' => 'Embed',
 
     // === Filter Menu ===
@@ -64,7 +66,7 @@ $lang['mod_content'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Content Added!',
             'edit' => 'Content Updated!',
         ],
@@ -88,27 +90,28 @@ $lang['mod_content'] = [
         'send' => 'Send',
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
         'gallery' => 'Image Gallery',
         'file' => 'File Manager',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results.',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results.',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
         'approve' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this content?',
@@ -130,11 +133,11 @@ $lang['mod_content'] = [
         'title_length' => 'You must enter a title consisting of at least 1 and at most 70 characters.',
         'title_exists' => 'This title already exists, please change it',
         'title_unique' => 'Your title is unique',
-        'deck_length' => 'Please enter an introductory text of at least 110 characters and a maximum of 280 characters.',
+        'deck_length' => 'Please enter an introductory text of at least 90 characters and a maximum of 120 characters.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Content Management Roles',
         'add' => 'Can Add Content',
         'edit' => 'Can Edit Content',
@@ -198,32 +201,31 @@ $lang['mod_content'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Record Management',
-        'islem' => 'Operation',
-        'uygula' => 'Apply',
-        'islem_column' => 'Action',
+        'record_management' => 'Record Management',
+        'operation' => 'Operation',
+        'apply' => 'Apply',
+        'action_column' => 'Action',
         'select' => 'Select',
-        'burdan' => 'From',
-        'buraya' => 'To',
-        'ara' => 'Search',
-        'sifirla' => 'Reset',
+        'from' => 'From',
+        'to' => 'To',
+        'search' => 'Search',
+        'reset' => 'Reset',
         'approval' => 'Confirm',
-        'isleniyor' => 'Processing',
+        'processing' => 'Processing',
         'record_selected' => 'Record selected',
-        'islem_gerceklestirilemedi' => 'Operation could not be performed',
-        'islem_secin' => 'Please select an operation',
+        'operation_failed' => 'Operation could not be performed',
+        'select_operation' => 'Please select an operation',
         'all' => 'All',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Print',
-        'yazdir_bilgi' => 'Print info',
-        'olusturan' => 'Created by',
-        'kopyala' => 'Copy',
+        'print' => 'Print',
+        'print_info' => 'Print info',
+        'creator' => 'Created by',
+        'copy' => 'Copy',
         'default_sort' => 'Newest',
         'default_lang' => 'EN',
         'date_locale' => 'en-US',
-        'all' => 'All',
         'filter_cleared' => 'Filters cleared and reset to defaults.',
         'filter_applied' => 'Filters Applied',
         'sort_label' => 'Sorting',
@@ -308,7 +310,7 @@ $lang['mod_content'] = [
             'category' => 'Determine the category to add content to.',
             'title' => 'Enter an engaging title. (Min: 1, Max: 70)',
             'date' => 'Date and time for publication.',
-            'intro' => 'Write a short and concise summary. (110 - 280 Characters)',
+            'intro' => 'Write a short and concise summary. (110 - 120 Characters)',
             'content' => 'Rich text editor.',
             'image' => 'Upload a cover image.',
             'finish' => 'Final checks and publishing.',
@@ -377,7 +379,6 @@ $lang['mod_content'] = [
         'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for content.",
         'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for content.",
         'status_alert' => "STATUS UPDATED:\n%s",
-        'delete_confirm' => 'Yes, Delete!',
         'delete_success' => 'Content deleted!',
     ],
 
@@ -391,6 +392,14 @@ $lang['mod_content'] = [
 
     'picker' => [
         'file' => 'Select Existing File',
+    ],
+
+    'empty_state' => [
+        'title' => 'No content yet',
+        'description' => 'Get started by creating your first content item.',
+        'search_title' => 'No matching results',
+        'search_description' => 'No content matched your search criteria. Try adjusting your keyword or filters.',
+        'clear_search' => 'Clear Search',
     ],
 
     'ajax' => [

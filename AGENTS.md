@@ -1,56 +1,41 @@
-# AGENTS
+# AGENTS (Repository Baseline & Priority Hierarchy)
 
-Repository-local agent documentation lives under:
-
+Repository-local agent documentation index lives under:
 - `/.agents/INDEX.md`
 
 Primary quality-agent policy:
+- `/docs/CODE_QUALITY_AGENT_STRATEGY.md`
 
-- `/CODE_QUALITY_AGENT_STRATEGY.md`
+---
 
-Use the index first to navigate prompts, manifests, and examples.
+## Primary Rules Hierarchy (Strict Priority Order: 1 to 10)
 
-Version logging rule:
+### 1. User Question vs Execution Rule (Primary Interaction Rule)
+When the user asks a question, treat it strictly as a question, NOT as a code modification or execution command. Answer the question directly without making any code edits or starting unauthorized refactoring. Do not execute research tools prior to answering unless the user explicitly instructs to research/investigate first.
 
-- `/docs/VERSION.md` is the source of truth for shipped and in-progress version notes.
-- Before appending any new development note, inspect the latest Git-uploaded version code from the current repository history.
-- Every time a version-note update is needed, re-run the version-log checks from the start.
-- Before writing any version note, verify the latest Git-uploaded version from actual Git history first; do not infer it only from `/docs/VERSION.md` or from the current worktree state.
-- Treat the latest Git-uploaded version as the latest shipped version, and keep its section frozen unless the user explicitly asks to repair shipped historical notes.
-- If still-unuploaded developments are missing from `/docs/VERSION.md`, do not backfill them under the shipped version section; create or use the next unpublished version section and place those notes there first.
-- When the current task represents unpublished work after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
-- If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
-- A user-provided version code still overrides the auto-detected Git version for that task.
-- All version notes written in `/docs/VERSION.md` must be written in English. Do not write version notes in Kurdish or Turkish, even if communicating with the user in Kurdish.
-- Before proposing any walkthrough or finishing a task, the agent must run the `task-validation` skill checks.
+### 2. Strict Code Separation Mandate
+Do not write inline CSS (`style="..."` attributes or `<style>` blocks) or inline JavaScript (`<script>` logic or inline event handlers) within HTML, Twig templates, or PHP files. Never nest PHP, CSS, JS, and Twig code!
 
-Repository boundary rule:
+### 3. Language & Documentation Mandate (Agent, Skill & /docs/)
+All Agent rules, Skill instructions (`SKILL.md`), and Markdown files inside `/docs/` MUST strictly be written in English at all times.
 
-- The following modules are `Rojname`-only and must remain project-specific unless the user explicitly changes the rule:
-  - `mod_news`
-  - `mod_publication`
-  - `mod_publication_category`
-- The following installer decisions are also `Rojname`-specific and must stay local unless the user explicitly changes the rule:
-  - using `Rojname` as installer branding/default project name
-  - removing default sample menu/content seeds from installer setup
-- Refactoring work outside those project-specific decisions should be treated as shared-core candidate work for sibling-repository synchronization.
+### 4. Workspace Isolation & Zero Autonomous Cross-Repo Sync
+Do not make any autonomous decisions. Treat each repository as a strictly isolated workspace. Agents, skills, and tools must NEVER touch, mirror, sync, or inspect sibling repositories autonomously unless explicitly instructed by the user. If you spend tokens purchased with the user's own money through autonomous decisions, you will also spend tokens purchased with the user's own money when reversing these transactions, which means causing the user double the damage. Also, if you ask for confirmation in a language the user doesn't understand, you may cause the same results. This makes you responsible for the consequences.
 
-Module synchronization rule:
+### 5. Strict Versioning & Production Parity Policy
+Write the `docs/VERSION.md` file in English.
 
-- When updating a module, the agent must apply agent rules during the same pass.
-- The agent must not leave Turkish or Kurdish comments in touched files. All comments, function names, variable names, translation keys, and documentation (except implementation_plan.md) must be in English. Do not write in any language other than English in comment lines, function/variable names, or other coding elements.
-- The agent must not use `default(...)`, inline fallback text, or any other fallback mechanism to hide missing localization keys in visible UI output.
-- If a visible string needs localization and the required key does not exist, the agent must add or wire the correct key instead of leaving a fallback behind.
-- The agent must treat full multilingual coverage in the touched flow as mandatory, not optional.
-- The agent must not keep old and new keys, routes, methods, validators, templates, or aliases alive together unless the user explicitly requests compatibility retention.
-- The agent must not leave a half-completed refactor behind.
-- Before moving to the next module, the agent must perform a short review of the touched files and fix any obvious rule violations.
+### 6. Admin Mobile-First Surface Rule
+The entire admin panel (`templates/admin/`) MUST be treated strictly as a phone-only product surface. Develop and test admin UI exclusively for phone-sized viewports. Tablet and desktop layouts are out of scope unless explicitly requested by the user.
 
-Admin mobile rule:
+### 7. Module Internal Quality & i18n Rule
+Use only English in the code. If you encounter code other than English in the old code, rewrite it in English.
 
-- The entire admin panel must be treated as a phone-only product surface.
-- Agents must develop admin UI for phone screens only; tablet and desktop layouts are not target platforms unless the user explicitly overrides this rule.
-- Agents must not use tablet-first, desktop-first, or responsive desktop assumptions when designing, implementing, or reviewing admin interfaces.
-- Admin UI decisions must optimize for fixed phone-sized app shells, touch interaction, compact vertical space usage, and one-hand usability.
-- During implementation and validation, agents must test admin UI flows only against phone-sized viewports or the repository's phone simulator shell.
-- Tablet and desktop visual polish, breakpoint tuning, and layout validation must not delay or redirect admin work unless the user explicitly requests them.
+### 8. Conversation & Task Title Language Protocol
+Engage in dialogue with the user in the Kurmanji dialect of Kurdish and the Latin alphabet, and present your plans accordingly. Apply this rule when requesting permission from the user.
+
+### 9. Skill Design Rule
+Repository skills must be short, ordered operation documents (`SKILL.md`), not knowledge bases. Keep durable knowledge in normal docs and keep skills focused on execution.
+
+### 10. URL Generation Parity (Wikipedia Style)
+Amed Framework generates URLs according to their original alphabet in all languages (e.g., using `legacy_seo`). Like Wikipedia URLs, original casing and characters are preserved, and spaces are replaced with underscores. Do not force lowercase hyphenated slugs if the module implements this style.

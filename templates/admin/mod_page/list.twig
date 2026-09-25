@@ -1,66 +1,40 @@
+{% set module_lang_key = 'mod_page' %}
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_page.search_placeholder %}
 {% extends "admin/layout.twig" %}
 
 {% block title %}{{ lang.mod_page.list }}{% endblock %}
 {% block headline %}{{ lang.mod_page.list }}{% endblock %}
 
 {% block styles %}
-<style>
-    .page-toolbar .toolbar-item {
-        gap: 0;
-        min-width: 44px;
-        padding: 8px 4px;
-    }
-    .page-toolbar .toolbar-item span {
-        display: none;
-    }
-    .page-toolbar #toolbarDelete.active {
-        color: #b3261e !important;
-        background: rgba(179, 38, 30, 0.12);
-    }
-    .page-toolbar #toolbarDelete.active i {
-        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
-    }
-    .page-toolbar #toolbarApprove.active {
-        color: #0b57d0 !important;
-        background: rgba(11, 87, 208, 0.12);
-    }
-    .page-toolbar #toolbarApprove.active.is-unpublished {
-        color: #2e7d32 !important;
-        background: rgba(46, 125, 50, 0.12);
-    }
-    .page-toolbar #toolbarGallery.active {
-        color: #06b6d4 !important;
-        background: rgba(6, 182, 212, 0.12);
-    }
-    .page-toolbar #toolbarFiles.active {
-        color: #f97316 !important;
-        background: rgba(249, 115, 22, 0.12);
-    }
-</style>
+    <link rel="stylesheet" href="/templates/admin/assets/css/mod_page.css?v=3.2">
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
     {% if items[parent_id] is defined %}
         {% for entry in items[parent_id] %}
-            <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.name|lower }}">
-                <div class="m3-list-card" data-status="{{ entry.status }}" onclick="selectMenu('{{ entry.id }}', this)">
-                    <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
+            {% set has_children = items[entry.id] is defined and items[entry.id]|length > 0 %}
+            <div class="page-tree-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ entry.name|lower }}" data-status="{{ entry.status }}">
+                <div class="m3-list-card {{ entry.status == 'y' ? 'status-published' : 'status-draft' }}" data-id="{{ entry.id }}" data-status="{{ entry.status }}">
+                    <div class="drag-handle" title="{{ lang.mod_page.messages.information.move }}"><i class="bi bi-grip-vertical"></i></div>
                     
-                    {% if items[entry.id] is defined %}
-                        <button class="toggle-btn collapsed" onclick="toggleMenu(this, event)">
+                    {% if has_children %}
+                        <button type="button" class="toggle-btn collapsed" aria-label="Toggle subpages">
                             <i class="bi bi-chevron-down"></i>
                         </button>
                     {% else %}
-                        <div style="width:24px; margin-right:4px;"></div> <!-- Spacer -->
+                        <div class="tree-spacer"></div>
                     {% endif %}
 
                     <div class="card-thumb">
                         {% if entry.image %}
-                            <img src="{{ site.iaddress }}mod_page/thumb/{{ entry.image }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                            <img src="{{ site.iaddress }}mod_page/thumb/{{ entry.image }}" alt="{{ entry.name }}" class="page-thumb-img">
+                            <i class="bi {{ has_children ? 'bi-folder2-open' : 'bi-file-earmark-text' }} page-thumb-fallback is-hidden"></i>
                         {% else %}
-                            <i class="bi bi-file-text"></i>
+                            <i class="bi {{ has_children ? 'bi-folder2-open' : 'bi-file-earmark-text' }}"></i>
                         {% endif %}
                     </div>
 
@@ -68,15 +42,23 @@
                         <div class="card-title">{{ entry.name }}</div>
                         <div class="card-meta">
                             <span class="meta-badge">{{ entry.lang|upper }}</span>
-                            {% if entry.status == 'n' %}
-                                <span class="meta-badge draft" style="background: rgba(234, 179, 8, 0.12); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.2); font-weight: 700; font-size: 10px;">{{ lang.mod_page.status_badge.draft|upper }}</span>
+                            {% if entry.status == 'y' %}
+                                <span class="meta-status published"><i class="bi bi-check-circle-fill"></i> {{ lang.mod_page.published_pages }}</span>
+                            {% else %}
+                                <span class="meta-status draft"><i class="bi bi-pause-circle-fill"></i> {{ lang.mod_page.draft_pages }}</span>
+                            {% endif %}
+                            {% if entry.root is defined and entry.root == 'y' %}
+                                <span class="meta-badge root-badge"><i class="bi bi-house-door"></i> ROOT</span>
                             {% endif %}
                             <span class="meta-id">#{{ entry.id }}</span>
+                            {% if has_children %}
+                                <span class="subpages-count-badge" title="{{ items[entry.id]|length }} subpages"><i class="bi bi-diagram-2"></i> {{ items[entry.id]|length }}</span>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
                 
-                {% if items[entry.id] is defined %}
+                {% if has_children %}
                     <div class="list-children collapsed">
                         {{ _self.render_tree(items, entry.id, level + 1) }}
                     </div>
@@ -87,78 +69,133 @@
 {% endmacro %}
 
 {% block content %}
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% set has_pages = select_nested_mod_page_result[0] is defined and select_nested_mod_page_result[0]|length > 0 %}
+<div class="page-list-container">
 
-<div class="content-list" id="menuRootList">
-    
-    <!-- Reorder Toggle Bar -->
-    <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
-        <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
-            <i class="bi bi-lock-fill" id="reorderIcon"></i>
-            <span id="reorderText">{{ lang.mod_page.actions.unlock_reorder }}</span>
+    <!-- Top Stats Row (Interactive Filter Pills) -->
+    <div class="page-stats-row">
+        <button type="button" class="page-stat-card active" data-status-filter="all" aria-label="{{ lang.mod_page.total_pages }}">
+            <span class="page-stat-value">{{ total_pages|default(0) }}</span>
+            <span class="page-stat-label">{{ lang.mod_page.total_pages }}</span>
+        </button>
+        <button type="button" class="page-stat-card stat-published" data-status-filter="published" aria-label="{{ lang.mod_page.published_pages }}">
+            <span class="page-stat-value">{{ published_pages|default(0) }}</span>
+            <span class="page-stat-label">{{ lang.mod_page.published_pages }}</span>
+        </button>
+        <button type="button" class="page-stat-card stat-draft" data-status-filter="draft" aria-label="{{ lang.mod_page.draft_pages }}">
+            <span class="page-stat-value">{{ draft_pages|default(0) }}</span>
+            <span class="page-stat-label">{{ lang.mod_page.draft_pages }}</span>
         </button>
     </div>
 
-    {% if select_nested_mod_page_result[0] is defined %}
-        {{ _self.render_tree(select_nested_mod_page_result, 0, 0) }}
-    {% else %}
-        <div class="empty-state-container">
-            <div class="empty-icon-box">
-                 <i class="bi bi-file-text"></i>
-            </div>
-            <h2 style="font-weight: 800;">{{ lang.mod_page.empty.no_pages }}</h2>
-            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_page/add'">
-                <i class="bi bi-plus-lg"></i>
-            </div>
-        </div>
+    {% if has_pages %}
+    <!-- Tree Control Action Bar -->
+    <div class="page-controls-bar">
+        <button id="reorderToggleBtn" type="button" class="page-control-btn" data-action="toggle-reorder" aria-label="{{ lang.mod_page.actions.unlock_reorder }}">
+            <i class="bi bi-lock-fill" id="reorderIcon"></i>
+            <span id="reorderText">{{ lang.mod_page.actions.unlock_reorder }}</span>
+        </button>
+
+        <button id="expandCollapseAllBtn" type="button" class="page-control-btn" data-action="toggle-expand-all" aria-label="{{ lang.mod_page.expand_all }}">
+            <i class="bi bi-arrows-expand" id="expandCollapseIcon"></i>
+            <span id="expandCollapseText">{{ lang.mod_page.expand_all }}</span>
+        </button>
+    </div>
+
+    <!-- Reorder Info Banner -->
+    <div class="reorder-info-banner is-hidden" id="reorderBanner">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>{{ lang.mod_page.messages.information.move }}</span>
+    </div>
     {% endif %}
+
+    <!-- Main Tree Content List -->
+    <div class="content-list page-tree-root" id="pageRootList">
+        {% if has_pages %}
+            {{ _self.render_tree(select_nested_mod_page_result, 0, 0) }}
+        {% else %}
+            <div class="page-empty-card">
+                <div class="page-empty-icon">
+                    <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <h3 class="page-empty-title">{{ lang.mod_page.empty.no_pages }}</h3>
+                <p class="page-empty-desc">{{ lang.mod_page.empty.description }}</p>
+                {% if session.permissions.mod_page.add is defined %}
+                    <div class="page-empty-action">
+                        <button type="button" class="page-empty-btn" data-action="navigate" data-href="{{ site.saddress }}mod_page/add" aria-label="{{ lang.mod_page.add }}">
+                            <i class="bi bi-plus-lg"></i>
+                            <span>{{ lang.mod_page.add }}</span>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Search Empty State -->
+    <div class="page-search-empty is-hidden" id="searchEmptyState">
+        <div class="page-empty-icon">
+            <i class="bi bi-search"></i>
+        </div>
+        <h3 class="page-empty-title">{{ lang.mod_page.empty.no_pages }}</h3>
+        <p class="page-empty-desc" id="searchEmptyDesc">{{ lang.mod_page.search_placeholder }}</p>
+        <button type="button" class="page-empty-btn page-empty-btn-secondary" id="resetSearchBtn" data-action="clear-search">
+            <i class="bi bi-x-circle"></i>
+            <span>{{ lang.mod_page.button.cancel }}</span>
+        </button>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
     <div class="standard-toolbar page-toolbar">
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_page.button.delete|default('Jê bibe') }}</span>
-        </button>
+        {% if session.permissions.mod_page.gallery is defined %}
+            <button id="toolbarGallery" type="button" class="toolbar-item is-disabled" data-action="gallery" title="{{ lang.mod_page.button.gallery }}" aria-label="{{ lang.mod_page.button.gallery }}">
+                <i class="bi bi-images"></i>
+            </button>
+        {% endif %}
 
-        <button id="toolbarApprove" class="toolbar-item" onclick="approveSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-eye-fill" id="approveIcon"></i>
-            <span id="approveText">{{ lang.mod_page.radio.publish_yes|default('Biweşîne') }}</span>
-        </button>
+        {% if session.permissions.mod_page.file is defined %}
+            <button id="toolbarFiles" type="button" class="toolbar-item is-disabled" data-action="files" title="{{ lang.mod_page.button.file }}" aria-label="{{ lang.mod_page.button.file }}">
+                <i class="bi bi-paperclip"></i>
+            </button>
+        {% endif %}
 
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_page.button.gallery }}">
-            <i class="bi bi-image"></i>
-            <span>{{ lang.mod_page.button.gallery }}</span>
-        </button>
+        {% if session.permissions.mod_page.faq is defined or session.permissions.mod_page.edit is defined %}
+            <button id="toolbarFaq" type="button" class="toolbar-item is-disabled" data-action="faq" title="{{ lang.mod_faq.module_title }}" aria-label="{{ lang.mod_faq.module_title }}">
+                <i class="bi bi-patch-question-fill"></i>
+            </button>
+        {% endif %}
 
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_page.button.file }}">
-            <i class="bi bi-paperclip"></i>
-            <span>{{ lang.mod_page.button.file }}</span>
-        </button>
+        {% if session.permissions.mod_page.edit is defined %}
+            <button id="toolbarApprove" type="button" class="toolbar-item is-disabled" data-action="publish" title="{{ lang.mod_page.admin.radio.publish_yes }}" aria-label="{{ lang.mod_page.admin.radio.publish_yes }}">
+                <i class="bi bi-eye-fill" id="approveIcon"></i>
+            </button>
+        {% endif %}
 
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_page.button.edit|default('Biguhere') }}</span>
-        </button>
+        {% if session.permissions.mod_page.edit is defined %}
+            <button id="toolbarEdit" type="button" class="toolbar-item is-disabled" data-action="edit" title="{{ lang.mod_page.button.edit }}" aria-label="{{ lang.mod_page.button.edit }}">
+                <i class="bi bi-pencil-fill"></i>
+            </button>
+        {% endif %}
+
+        {% if session.permissions.mod_page.delete is defined %}
+            <button id="toolbarDelete" type="button" class="toolbar-item is-disabled" data-action="delete" title="{{ lang.mod_page.button.delete }}" aria-label="{{ lang.mod_page.button.delete }}">
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        {% endif %}
     </div>
 
-    <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_page/add'" aria-label="{{ lang.mod_page.add|default('Rûpelê Lêzêde Bike') }}">
-        <i class="bi bi-plus-lg"></i>
-    </button>
+    {% if session.permissions.mod_page.add is defined and select_nested_mod_page_result[0] is defined and select_nested_mod_page_result[0]|length > 0 %}
+        <!-- Main FAB Button -->
+        <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_page/add" aria-label="{{ lang.mod_page.add }}">
+            <i class="bi bi-plus-lg"></i>
+        </a>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    {% include 'mod_page/script.twig' %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var wrapper = document.querySelector('.mobile-wrapper');
-            if(wrapper) {
-                wrapper.classList.add('mesh-bg');
-            }
-        });
-    </script>
+    <script src="/templates/admin/assets/js/mod_page_list.js?v=4.0"></script>
 {% endblock %}

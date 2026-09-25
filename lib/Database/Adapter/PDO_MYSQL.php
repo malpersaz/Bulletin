@@ -1,12 +1,9 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 06.08.2025 - Updated for PHP 8 PDO
- * Sınıf İsmi: PDO Adapter
+ * Amed Framework
+ * Class: Adapter_PDO_MYSQL
+ * Description: PDO MySQL Database Adapter
  */
 class Adapter_PDO_MYSQL
 {
@@ -26,7 +23,7 @@ class Adapter_PDO_MYSQL
      */
     public function __construct($database)
     {
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         $this->_con_setting = $db_config[$database]['conf'];
 
         if ($this->_connect() === false) {
@@ -178,6 +175,7 @@ class Adapter_PDO_MYSQL
         if (isset($errorInfo[2]) && $errorInfo[2] !== null) {
             return $errorInfo[2];
         }
+
         return "Unknown MySQL Error (Check PDOException traces)";
     }
 

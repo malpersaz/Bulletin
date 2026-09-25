@@ -2,7 +2,7 @@
 
 class AmedException extends Exception
 {
-    public function notcall()
+    public function notCall()
     {
         echo $this->getMessage() . " method cannot be executed";
     }
@@ -18,8 +18,8 @@ class Amed
 
     private function hasConfiguredDatabase()
     {
-        $database = Kayit::getir('database');
-        $dbConfig = Kayit::getir('db_config');
+        $database = Registry::get('database');
+        $dbConfig = Registry::get('db_config');
 
         if (!is_string($database) || $database === '') {
             return false;
@@ -34,22 +34,22 @@ class Amed
 
     private function getBootstrapLanguageState()
     {
-        $bootstrap = Kayit::getir('i18n_bootstrap');
-        $fallback = array(
+        $bootstrap = Registry::get('i18n_bootstrap');
+        $fallback = [
             'default_language' => 'ku',
-            'active_codes' => array('ku'),
-        );
+            'active_codes' => ['ku'],
+        ];
 
         if (!is_array($bootstrap)) {
             return $fallback;
         }
 
-        $activeCodes = array();
+        $activeCodes = [];
         if (isset($bootstrap['active_langs']) && is_array($bootstrap['active_langs'])) {
             $activeCodes = array_values(array_unique(array_filter($bootstrap['active_langs'], 'is_string')));
         }
 
-        if (empty($activeCodes)) {
+        if ($activeCodes === []) {
             $activeCodes = $fallback['active_codes'];
         }
 
@@ -57,10 +57,10 @@ class Amed
             ? $bootstrap['default_lang']
             : $activeCodes[0];
 
-        return array(
+        return [
             'default_language' => $defaultLanguage,
             'active_codes' => $activeCodes,
-        );
+        ];
     }
 
     private function buildLanguageRegistryState()
@@ -68,11 +68,11 @@ class Amed
         $bootstrapState = $this->getBootstrapLanguageState();
         $fallbackCodes = $bootstrapState['active_codes'];
         $defaultLanguage = $bootstrapState['default_language'];
-        $state = array(
+        $state = [
             'active_codes' => $fallbackCodes,
             'default_language' => $defaultLanguage,
-            'available_languages' => array(),
-        );
+            'available_languages' => [],
+        ];
 
         if (!$this->hasConfiguredDatabase()) {
             return $state;
@@ -88,17 +88,17 @@ class Amed
             $rows = $langModel->toArray();
             $hasStatusColumn = array_key_exists('status', $rows[0]);
             $hasDefaultColumn = array_key_exists('is_default', $rows[0]);
-            $activeCodes = array();
-            $availableLanguages = array();
+            $activeCodes = [];
+            $availableLanguages = [];
 
             foreach ($rows as $row) {
                 $isActive = !$hasStatusColumn || !isset($row['status']) || $row['status'] === 'y';
                 if ($isActive) {
                     $activeCodes[] = $row['seo'];
-                    $availableLanguages[] = array(
+                    $availableLanguages[] = [
                         'code' => $row['seo'],
                         'name' => $row['name'],
-                    );
+                    ];
                 }
 
                 if ($hasDefaultColumn && isset($row['is_default']) && $row['is_default'] === 'y') {
@@ -106,7 +106,7 @@ class Amed
                 }
             }
 
-            if (empty($activeCodes)) {
+            if ($activeCodes === []) {
                 return $state;
             }
 
@@ -125,8 +125,60 @@ class Amed
         $this->site['default_lang'] = $languageState['default_language'];
         $this->site['available_languages'] = $languageState['available_languages'];
 
-        Kayit::yenile('active_langs', $languageState['active_codes']);
-        Kayit::yenile('default_lang', $languageState['default_language']);
+        Registry::set('active_langs', $languageState['active_codes']);
+        Registry::set('default_lang', $languageState['default_language']);
+    }
+
+    private function ensureSiteNameColumn($db)
+    {
+        if (!$db) {
+            return false;
+        }
+
+        $table = 'mod_settings';
+        $column = 'site_name';
+        $safeTable = addslashes($table);
+        $safeColumn = addslashes($column);
+        $adapter = (string) $db->getAdapterType();
+        $exists = false;
+
+        try {
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+                $rows = $db->toArray();
+                if (is_array($rows)) {
+                    foreach ($rows as $row) {
+                        if (isset($row['name']) && $row['name'] === $column) {
+                            $exists = true;
+                            break;
+                        }
+                    }
+                }
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+                $db->fetch_array($sql);
+                $exists = ($db->getSize() !== 0);
+            } else {
+                $db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+                $exists = ($db->getSize() !== 0);
+            }
+
+            if (!$exists) {
+                if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN site_name VARCHAR(255) DEFAULT NULL";
+                } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN site_name VARCHAR(255) DEFAULT NULL";
+                } else {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `site_name` VARCHAR(255) DEFAULT NULL";
+                }
+                $db->query($sql);
+                $exists = true;
+            }
+        } catch (Exception $e) {
+            $exists = false;
+        }
+
+        return $exists;
     }
 
     private function mergeSettingsForLanguage($langCode)
@@ -140,6 +192,10 @@ class Amed
             : (isset($this->site['default_lang']) ? $this->site['default_lang'] : 'en');
 
         try {
+            $db = Load::lib('Database');
+            $this->ensureSiteNameColumn($db);
+            $this->ensureAppTemplateColumn($db);
+
             $settingsModel = Load::model('mod_settings');
             $settingsModel->where_lang($langCode)->gRo();
 
@@ -147,16 +203,126 @@ class Amed
                 $settingsModel->sync();
                 $this->site = array_merge($this->site, $settingsModel->toArray());
             }
+
+            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amida';
+            $cookieTheme = isset($_COOKIE['theme']) ? basename(Req::Clear($_COOKIE['theme'])) : null;
+            if ($cookieTheme && file_exists(template_dir . $cookieTheme) && is_dir(template_dir . $cookieTheme)) {
+                $activeTemplate = $cookieTheme;
+            }
+            $fullTplPath = template_dir . $activeTemplate;
+            if (!file_exists($fullTplPath) || !is_dir($fullTplPath)) {
+                $activeTemplate = 'amida';
+            }
+            $this->site['app_template'] = $activeTemplate;
+            Registry::set('app_template', $activeTemplate);
+
+            if (empty($this->site['site_name'])) {
+                $default_lang = Registry::get('default_lang');
+                if (!is_string($default_lang) || $default_lang === '') {
+                    $default_lang = 'tr';
+                }
+                if ($default_lang !== $langCode) {
+                    $fallbackModel = Load::model('mod_settings');
+                    $fallbackModel->where_lang($default_lang)->gRo();
+                    if ($fallbackModel->getSize() > 0) {
+                        $fallbackModel->sync();
+                        $fallback_data = $fallbackModel->getResultOne()->toArray();
+                        if (!empty($fallback_data['site_name'])) {
+                            $this->site['site_name'] = $fallback_data['site_name'];
+                        }
+                    }
+                }
+            }
+
+            if (empty($this->site['site_name'])) {
+                try {
+                    $db->fetch_array("SELECT site_name FROM mod_settings WHERE site_name IS NOT NULL AND site_name != '' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $this->site['site_name'] = $db->toArray()[0]['site_name'];
+                    }
+                } catch (Exception $db_e) {
+                }
+            }
+
+            $this->site['name'] = !empty($this->site['site_name']) ? $this->site['site_name'] : ($this->site['title'] ?? '');
+
+            $settingsDir = root_dir . 'static' . DIRECTORY_SEPARATOR . 'mod_settings' . DIRECTORY_SEPARATOR;
+            if (!empty($this->site['site_webmanifest'])) {
+                $manifestPath = $settingsDir . $this->site['site_webmanifest'];
+                if (!file_exists($manifestPath) || filesize($manifestPath) < 5) {
+                    try {
+                        $manifestGenerator = Load::lib('BrandAssetGenerator');
+                        $manifestGenerator->ensureManifestExists([
+                            'title' => $this->site['name'],
+                            'site_name' => $this->site['site_name'] ?? '',
+                        ]);
+                    } catch (Exception $m_e) {
+                    }
+                }
+                if (!file_exists($manifestPath) || filesize($manifestPath) < 5) {
+                    $this->site['site_webmanifest'] = '';
+                }
+            }
         } catch (Exception $exception) {
         }
+    }
+
+    private function ensureAppTemplateColumn($db)
+    {
+        if (!$db) {
+            return false;
+        }
+
+        $table = 'mod_settings';
+        $column = 'app_template';
+        $safeTable = addslashes($table);
+        $safeColumn = addslashes($column);
+        $adapter = (string) $db->getAdapterType();
+        $exists = false;
+
+        try {
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+                $rows = $db->toArray();
+                if (is_array($rows)) {
+                    foreach ($rows as $row) {
+                        if (isset($row['name']) && $row['name'] === $column) {
+                            $exists = true;
+                            break;
+                        }
+                    }
+                }
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+                $db->fetch_array($sql);
+                $exists = ($db->getSize() !== 0);
+            } else {
+                $db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+                $exists = ($db->getSize() !== 0);
+            }
+
+            if (!$exists) {
+                if (strpos($adapter, 'PDO_SQLITE') !== false || strpos($adapter, 'POSTGRESQL') !== false) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN app_template VARCHAR(64) DEFAULT 'amida'";
+                } else {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `app_template` VARCHAR(64) DEFAULT 'amida'";
+                }
+                $db->query($sql);
+                $exists = true;
+            }
+        } catch (Exception $e) {
+            $exists = false;
+        }
+
+        return $exists;
     }
 
     public function __construct()
     {
         Load::lib('Session');
         $this->url = Load::lib('Url');
-        $url_config = Kayit::getir('url_config');
-        $this->site = Kayit::getir('site_config');
+        $url_config = Registry::get('url_config');
+        $this->site = Registry::get('site_config');
         $languageState = $this->buildLanguageRegistryState();
         $this->site['lang'] = $languageState['default_language'];
         $this->publishLanguageRegistryState($languageState);
@@ -169,7 +335,7 @@ class Amed
                     $lang_model = Load::model('lang');
                     $lang_model->all();
                     $available_langs = [];
-                    $active_langs = Kayit::getir('active_langs');
+                    $active_langs = Registry::get('active_langs');
                     if ($lang_model->getSize() > 0) {
                         foreach ($lang_model->toArray() as $l) {
                             if (is_array($active_langs) && in_array($l['seo'], $active_langs, TRUE)) {
@@ -181,32 +347,90 @@ class Amed
                 } catch (Exception $lang_e) {
                 }
 
-                Kayit::yenile('site_config', $this->site);
+                Registry::set('site_config', $this->site);
             } catch (Exception $e) {
-                Kayit::yenile('site_config', $this->site);
+                Registry::set('site_config', $this->site);
             }
         } else {
-            Kayit::yenile('site_config', $this->site);
+            Registry::set('site_config', $this->site);
         }
 
-        if (Kayit::getir('i18n') === true) {
-            $activeLangs = Kayit::getir('active_langs');
+        if (Registry::get('i18n') === true) {
+            $activeLangs = Registry::get('active_langs');
             if (is_array($activeLangs) && in_array($this->url->path['0'], $activeLangs, TRUE)) {
                 $this->site['lang'] = $this->url->path['0'];
                 $this->site['saddress'] = $this->site['address'] . $this->url->path['0'] . '/';
                 $lang_len = mb_strlen($this->url->path['0'], "UTF-8");
-                $this->url->link = substr($this->url->link, $lang_len + 1);
+                if (strlen($this->url->link) <= $lang_len) {
+                    $this->url->link = '';
+                } else {
+                    $this->url->link = substr($this->url->link, $lang_len + 1);
+                }
+
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    if (!isset($_COOKIE['lang']) || $_COOKIE['lang'] !== $this->site['lang']) {
+                        @setcookie('lang', $this->site['lang'], time() + (86400 * 30), '/');
+                    }
+                }
             } else {
-                $this->site['lang'] = isset($this->site['default_lang']) ? $this->site['default_lang'] : $this->site['lang'];
+                $cookieLang = (isset($_COOKIE['lang']) && is_string($_COOKIE['lang'])) ? $_COOKIE['lang'] : null;
+                if ($cookieLang && is_array($activeLangs) && in_array($cookieLang, $activeLangs, TRUE)) {
+                    $this->site['lang'] = $cookieLang;
+                } else {
+                    $this->site['lang'] = isset($this->site['default_lang']) ? $this->site['default_lang'] : $this->site['lang'];
+                }
                 $this->site['saddress'] = $this->site['address'] . $this->site['lang'] . '/';
             }
-            Kayit::yenile('lang', $this->site['lang']);
+            Registry::set('lang', $this->site['lang']);
         }
 
         $this->mergeSettingsForLanguage($this->site['lang']);
 
         $this->site['url'] = trim($this->url->link, '/');
-        Kayit::yenile('site_config', $this->site);
+        Registry::set('site_config', $this->site);
+
+        // Canonical homepage and clean URL 301/302 redirect normalization
+        $isAjax = (
+            (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (isset($_POST['ajax_request']) && ($_POST['ajax_request'] === 'true' || $_POST['ajax_request'] === '1'))
+        );
+
+        if (PHP_SAPI !== 'cli' && !$isAjax && !headers_sent()) {
+            $rawLink = trim((string) $this->url->link, '/');
+            $rawPath0 = isset($this->url->path[0]) ? $this->url->path[0] : '';
+            $isI18n = (Registry::get('i18n') === true);
+            $queryString = (!empty($_SERVER['QUERY_STRING'])) ? '?' . $_SERVER['QUERY_STRING'] : '';
+
+            // 1. Redirect redundant /index or /<lang>/index to canonical homepage
+            if ($rawLink === 'index') {
+                $targetUrl = $isI18n ? $this->site['saddress'] : $this->site['address'];
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . $targetUrl . $queryString);
+                exit;
+            }
+
+            // 2. Redirect bare root "/" to active/preferred language "/<lang>/" when i18n is enabled
+            if ($isI18n && $this->url->root() && $rawPath0 === '') {
+                $targetUrl = $this->site['saddress'];
+                header("HTTP/1.1 301 Moved Permanently");
+                header("Location: " . $targetUrl . $queryString);
+                exit;
+            }
+
+            // 3. Redirect bare language code "/<lang>" (without trailing slash) to canonical "/<lang>/"
+            if ($isI18n && !empty($rawPath0) && in_array($rawPath0, (array) Registry::get('active_langs'), true)) {
+                $reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+                // Only when the whole path is the language segment itself ("/tr").
+                // Deeper paths whose LAST segment equals a language code
+                // ("/tr/mod_settings/edit/tr") must route to their module, not home.
+                if ($reqPath !== '' && substr($reqPath, -1) !== '/' && $this->url->link === '') {
+                    $targetUrl = $this->site['saddress'];
+                    header("HTTP/1.1 301 Moved Permanently");
+                    header("Location: " . $targetUrl . $queryString);
+                    exit;
+                }
+            }
+        }
 
         if ($this->hasConfiguredDatabase()) {
             try {
@@ -237,7 +461,7 @@ class Amed
                             $redirectUrl = $target;
                         } else {
                             $targetHasLang = false;
-                            $activeLangs = Kayit::getir('active_langs');
+                            $activeLangs = Registry::get('active_langs');
                             if (is_array($activeLangs)) {
                                 foreach ($activeLangs as $al) {
                                     if (strpos($target, $al . '/') === 0 || $target === $al) {
@@ -281,21 +505,21 @@ class Amed
                     if (strpos($val, '$') !== false and strpos($key, '(') !== false) {
                         $val = preg_replace('#^' . $key . '$#', $val, $this->url->link);
                     }
-                    return $this->parselle($val);
+                    return $this->parseRoute($val);
                 }
             }
         }
         unset($url_config);
-        $this->parselle($this->url->link);
+        $this->parseRoute($this->url->link);
     }
 
 
-    public function parselle($parsel)
+    public function parseRoute($route)
     {
-        if (strpos($parsel, '/') !== false) {
-            $val = explode('/', $parsel);
-            $this->class = (isset($val['0']) and $val['0'] != '') ? $val['0'] : Kayit::getir('app_default_mod');
-            $this->method = (isset($val['1']) and $val['1'] != '') ? $val['1'] : Kayit::getir('app_default_function');
+        if (strpos($route, '/') !== false) {
+            $val = explode('/', $route);
+            $this->class = (isset($val['0']) and $val['0'] != '') ? $val['0'] : Registry::get('app_default_mod');
+            $this->method = (isset($val['1']) and $val['1'] != '') ? $val['1'] : Registry::get('app_default_function');
             $ext = array_slice($val, 2);
             if (isset($ext[0])) {
                 foreach ($ext as $k) {
@@ -305,20 +529,23 @@ class Amed
                 }
             }
         } else {
-            if ($this->url->root()) {
-                $this->class = Kayit::getir('app_default_mod');
-                $this->method = Kayit::getir('app_default_function');
-            } elseif (strpos($parsel, '?') === false) {
-                $this->class = Kayit::getir('app_default_mod');
+            if ($this->url->root() || $route === '' || $route === false) {
+                $this->class = Registry::get('app_default_mod');
+                $this->method = Registry::get('app_default_function');
+            } elseif ($route !== '' && is_dir(root_dir . 'mod' . DS . $route) && file_exists(root_dir . 'mod' . DS . $route . DS . 'index.php')) {
+                $this->class = $route;
+                $this->method = Registry::get('app_default_function');
+            } elseif (strpos((string) $route, '?') === false && (string) $this->url->link !== '') {
+                $this->class = Registry::get('app_default_mod');
                 $this->method = $this->url->link;
             } else {
-                $this->class = Kayit::getir('app_default_mod');
-                $this->method = Kayit::getir('app_default_function');
+                $this->class = Registry::get('app_default_mod');
+                $this->method = Registry::get('app_default_function');
             }
         }
     }
 
-    public function _isprivate()
+    public function _isPrivate()
     {
         if (substr($this->method, 0, 1) === '_') {
             throw new AmedException($this->method);
@@ -328,7 +555,7 @@ class Amed
 
     private function hasAdminContext()
     {
-        return Kayit::varmi('AdminTemplate-lib');
+        return Registry::has('AdminTemplate-lib');
     }
 
     private function renderAdminRouteError($type, $target)
@@ -339,7 +566,7 @@ class Amed
         $adminTemplate = Load::lib('AdminTemplate');
         $adminTemplate->lang($managementLang);
 
-        $site = Kayit::getir('site_config');
+        $site = Registry::get('site_config');
         $site['title'] = $managementLang['management']['route_error_page_title'];
 
         $config = [
@@ -370,7 +597,6 @@ class Amed
         $adminTemplate->setGlobal('hide_navbar', true);
         $adminTemplate->setGlobal('hide_search', true);
         $adminTemplate->setGlobal('show_fab', false);
-        $adminTemplate->setGlobal('show_sidebar', false);
         $adminTemplate->setGlobal('show_navbar', false);
         $adminTemplate->setGlobal('show_filter_sheet', false);
         $adminTemplate->setGlobal('show_extra_sheets', false);
@@ -389,18 +615,18 @@ class Amed
         }
 
         try {
-            $this->_isprivate();
+            $this->_isPrivate();
         } catch (AmedException $e) {
             if ($this->hasAdminContext()) {
                 $this->renderAdminRouteError('private_method', $this->method);
                 exit();
             }
-            $e->notcall();
+            $e->notCall();
             exit();
         }
 
         try {
-            Run::calistir($mod, $this->method, $this->ext);
+            Run::execute($mod, $this->method, $this->ext);
         } catch (RunException $e) {
             if ($this->hasAdminContext()) {
                 $this->renderAdminRouteError('method', $this->class . '/' . $this->method);
@@ -419,8 +645,8 @@ class Amed
             "://" . ($_SERVER['HTTP_HOST'] ?? 'localhost') . ($_SERVER['REQUEST_URI'] ?? '/');
 
 
-        if (!$isAjax && !headers_sent()) {
-            if (Kayit::varmi('AdminTemplate-lib')) {
+        if (!headers_sent()) {
+            if (Registry::has('AdminTemplate-lib')) {
                 $admintemplate = Load::lib('AdminTemplate');
                 if (isset($_SESSION)) {
                     $admintemplate->setGlobal('session', $_SESSION);
@@ -432,25 +658,25 @@ class Amed
                     $admintemplate->setGlobal('cookie', $_COOKIE);
                 }
                 $admintemplate->setGlobal('mod', $this->class);
-                $admintemplate->setGlobal('site', Kayit::getir('site_config'));
+                $admintemplate->setGlobal('site', Registry::get('site_config'));
                 $admintemplate->setGlobal('link', $currentFullUrl);
-                $admintemplate->ctx_add('site', Kayit::getir('site_config'));
+                $admintemplate->ctx_add('site', Registry::get('site_config'));
                 $admintemplate->output();
                 unset($admintemplate);
             }
 
-            if (Kayit::varmi('TwigTemplate-lib')) {
-                $tema = Load::lib('TwigTemplate');
+            if (Registry::has('TwigTemplate-lib')) {
+                $twigTemplate = Load::lib('TwigTemplate');
                 if (isset($_SESSION)) {
-                    $tema->setGlobal('session', $_SESSION);
+                    $twigTemplate->setGlobal('session', $_SESSION);
                 }
                 if (isset($_COOKIE)) {
-                    $tema->setGlobal('cookie', $_COOKIE);
+                    $twigTemplate->setGlobal('cookie', $_COOKIE);
                 }
-                $tema->setGlobal('mod', $this->class);
-                $tema->setGlobal('link', $currentFullUrl);
-                $tema->output();
-                unset($tema);
+                $twigTemplate->setGlobal('mod', $this->class);
+                $twigTemplate->setGlobal('link', $currentFullUrl);
+                $twigTemplate->output();
+                unset($twigTemplate);
             }
         }
 

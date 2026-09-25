@@ -36,7 +36,7 @@ Repository policy is defined in:
 Theme agents may inspect:
 
 - current diff
-- `templates/default`
+- `templates/amida`
 - `templates/<new_theme>`
 - `config/site.config.php`
 - `config/site.config.example.php`
@@ -59,7 +59,7 @@ Theme agents must avoid:
 The following block completion:
 
 - public theme created without preserving the active frontend template contract
-- unintended hardcoded dependency on `templates/default` or a missing theme folder
+- unintended hardcoded dependency on `templates/amida` or a missing theme folder
 - visible hardcoded UI copy introduced in Twig, JavaScript, or PHP output
 - visible localization fallback such as `default(...)` or inline fallback copy
 - missing language keys in a touched visible flow

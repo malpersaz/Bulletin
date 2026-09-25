@@ -48,9 +48,9 @@ class ModuleRuntime
             }
         }
 
-        if (!empty($missingModules) || !empty($missingTables)) {
-            $reason = !empty($missingTables) ? 'missing_table' : 'missing_module';
-            if (!empty($missingModules) && !empty($missingTables)) {
+        if ($missingModules !== [] || $missingTables !== []) {
+            $reason = $missingTables !== [] ? 'missing_table' : 'missing_module';
+            if ($missingModules !== [] && $missingTables !== []) {
                 $reason = 'missing_dependency';
             }
 

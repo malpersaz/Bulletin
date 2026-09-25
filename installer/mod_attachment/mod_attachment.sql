@@ -9,6 +9,8 @@ CREATE TABLE `mod_attachment` (
   `mod_name` varchar(250) NOT NULL,
   `vid` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `view_count` INT(11) NOT NULL DEFAULT 0,
-  PRIMARY KEY (`id`)
+  `view_count` int(11) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`),
+  INDEX `idx_att_mod_vid` (`mod_name`, `vid`),
+  INDEX `idx_att_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

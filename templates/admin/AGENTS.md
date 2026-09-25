@@ -28,7 +28,7 @@ Relevant surfaces include:
 - `templates/admin/pages/`
 - `templates/admin/management/`
 
-Do not use public theme assumptions from `templates/default` or future public themes when working here.
+Do not use public theme assumptions from `templates/amida` or future public themes when working here.
 
 ## Localization
 

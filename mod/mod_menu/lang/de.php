@@ -1,6 +1,6 @@
 <?php
 /**
- * Menu Module - German Language File
+ * Menu Module - English Language File
  *
  * @package AKM Business
  * @module  mod_menu
@@ -19,153 +19,162 @@ if (!defined('AKM_LOADED')) {
  */
 $lang['mod_menu'] = [
 
-    // === Page Titles ===
+    // === Page Titles & Statistics ===
     'list' => 'Menüverwaltung',
     'add' => 'Menü hinzufügen',
     'edit' => 'Menü bearbeiten',
     'information' => 'Information',
+    'total_menus' => 'Gesamtmenüs',
+    'published_menus' => 'Veröffentlicht',
+    'draft_menus' => 'Entwürfe',
+    'expand_all' => 'Alle erweitern',
+    'collapse_all' => 'Alle einklappen',
+    'search_placeholder' => 'Menüs durchsuchen...',
 
     // === Legacy Message Keys (used by index.php) ===
     'message' => [
-        'oke' => [
-            'add' => 'Menü erfolgreich hinzugefügt!',
-            'edit' => 'Menü erfolgreich aktualisiert!',
+        'success' => [
+            'add' => 'Menu successfully added!',
+            'edit' => 'Menu successfully updated!',
         ],
         'error' => [
-            'add' => 'Menü konnte nicht hinzugefügt werden!',
-            'edit' => 'Menü konnte nicht aktualisiert werden!',
+            'add' => 'Failed to add menu!',
+            'edit' => 'Failed to update menu!',
         ],
     ],
 
     // === Navigation & Actions ===
     'actions' => [
-        'add' => 'Hinzufügen',
-        'edit' => 'Bearbeiten',
-        'list' => 'Listen',
-        'delete' => 'Löschen',
-        'cancel' => 'Abbrechen',
-        'save' => 'Speichern',
-        'update' => 'Aktualisieren',
-        'remove' => 'Entfernen',
-        'refresh' => 'Aktualisieren',
-        'export' => 'Exportieren',
-        'import' => 'Importieren',
-        'bulk_actions' => 'Massenaktionen',
-        'gallery' => 'Galerie',
-        'file' => 'Dateien',
-        'unlock_reorder' => 'Drag-and-Drop-Modus aktivieren',
-        'lock_reorder' => 'Drag-and-Drop-Modus deaktivieren',
+        'add' => 'Add',
+        'edit' => 'Edit',
+        'list' => 'List',
+        'delete' => 'Delete',
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'update' => 'Update',
+        'remove' => 'Remove',
+        'refresh' => 'Refresh',
+        'export' => 'Export',
+        'import' => 'Import',
+        'bulk_actions' => 'Bulk Actions',
+        'gallery' => 'Gallery',
+        'file' => 'Files',
+        'unlock_reorder' => 'Unlock Reorder Mode',
+        'lock_reorder' => 'Lock Reorder Mode',
+        'publish_toggle' => 'Publish Status',
     ],
 
     // === System Messages ===
     'messages' => [
         'success' => [
-            'added' => 'Menü erfolgreich hinzugefügt!',
-            'updated' => 'Menü erfolgreich aktualisiert!',
-            'deleted' => 'Menü erfolgreich gelöscht!',
-            'reordered' => 'Menüreihenfolge aktualisiert!',
+            'added' => 'Menu successfully added!',
+            'updated' => 'Menu successfully updated!',
+            'deleted' => 'Menu successfully deleted!',
+            'reordered' => 'Menu order updated!',
+            'published' => 'Menu successfully published!',
+            'unpublished' => 'Menu successfully unpublished!',
         ],
         'error' => [
-            'not_added' => 'Menü konnte nicht hinzugefügt werden!',
-            'not_updated' => 'Menü konnte nicht aktualisiert werden!',
-            'not_deleted' => 'Menü konnte nicht gelöscht werden!',
-            'not_found' => 'Der angegebene Menüeintrag konnte nicht gefunden werden!',
+            'not_added' => 'Failed to add menu!',
+            'not_updated' => 'Failed to update menu!',
+            'not_deleted' => 'Failed to delete menu!',
+            'not_found' => 'The specified menu record could not be found!',
         ],
         'warning' => [
-            'delete' => 'Sind Sie sicher, dass Sie dieses Menü löschen möchten?',
-            'reorder' => 'Möchten Sie die Menüreihenfolge ändern?',
+            'delete' => 'Are you sure you want to delete this menu?',
+            'reorder' => 'Are you sure you want to change the menu order?',
         ],
         'info' => [
-            'edit_double_click' => 'Doppelklicken Sie auf das Menü, das Sie bearbeiten möchten',
-            'drag_reorder' => 'Ziehen Sie das Menü an die gewünschte Stelle, um die Reihenfolge zu ändern',
-            'block_system_removed' => 'Block-System entfernt - diese Funktion ist nicht mehr verfügbar',
-            'move' => 'Sie können Menüs per Drag-and-Drop neu anordnen.',
-            'reorder_mode' => 'Modus: Neuanordnung (Entsperrt)',
+            'edit_double_click' => 'Double-click the menu you want to edit',
+            'drag_reorder' => 'Drag and drop the menu to reorder',
+            'block_system_removed' => 'Block system removed - this feature is no longer available',
+            'move' => 'You can drag and drop to reorder menus.',
+            'reorder_mode' => 'Mode: Reorder (Unlocked)',
         ],
     ],
 
     // === Status Types ===
     'status' => [
-        'published' => 'Veröffentlicht',
-        'draft' => 'Entwurf',
-        'archived' => 'Archiviert',
+        'published' => 'Published',
+        'draft' => 'Draft',
+        'archived' => 'Archived',
     ],
 
     // === Yes/No Options ===
     'options' => [
-        'yes' => 'Ja',
-        'no' => 'Nein',
+        'yes' => 'Yes',
+        'no' => 'No',
         'ok' => 'OK',
     ],
 
     // === Target Options ===
     'targets' => [
-        'same' => 'Gleiche Seite',
-        'new' => 'Neue Seite',
-        'blank' => 'Neuer Tab',
+        'same' => 'Same Page',
+        'new' => 'New Page',
+        'blank' => 'New Tab',
     ],
 
     // === Form Labels ===
     'form' => [
-        'basic_info' => 'Basisinformationen',
-        'display_settings' => 'Anzeigeeinstellungen',
-        'advanced_settings' => 'Erweiterte Einstellungen',
-        'acl_settings' => 'Berechtigungseinstellungen (ACL)',
+        'basic_info' => 'Basic Information',
+        'display_settings' => 'Display Settings',
+        'advanced_settings' => 'Advanced Settings',
+        'acl_settings' => 'Permission Settings (ACL)',
 
         'id' => 'ID',
-        'name' => 'Menüname',
-        'url' => 'Menü-URL',
-        'parent' => 'Übergeordnetes Menü',
-        'order' => 'Reihenfolge',
-        'language' => 'Anzeigesprache',
-        'target' => 'Ziel',
+        'name' => 'Menu Name',
+        'url' => 'Menu URL',
+        'parent' => 'Parent Menu',
+        'order' => 'Order',
+        'language' => 'Display Language',
+        'target' => 'Target',
         'published' => 'Status',
-        'html_class' => 'HTML-Klasse',
+        'html_class' => 'HTML Class',
         'icon' => 'Icon',
-        'access_control' => 'Zugriffskontrolle',
-        'description' => 'Beschreibung',
-        'file' => 'Datei',
+        'access_control' => 'Access Control',
+        'description' => 'Description',
+        'file' => 'File',
     ],
 
     // === Table Columns ===
     'columns' => [
         'id' => 'ID',
-        'language' => 'Sprache',
-        'name' => 'Menüname',
+        'language' => 'Language',
+        'name' => 'Menu Name',
         'url' => 'URL',
-        'parent_menu' => 'Untermenü',
-        'order' => 'Reihenfolge',
-        'target' => 'Ziel',
+        'parent_menu' => 'Übergeordnetes Menü',
+        'order' => 'Order',
+        'target' => 'Target',
         'status' => 'Status',
         'icon' => 'Icon',
-        'access_level' => 'Zugriffsebene',
-        'actions' => 'Aktionen',
-        'parent_id' => 'Untermenü',
+        'access_level' => 'Access Level',
+        'actions' => 'Actions',
+        'parent_id' => 'Übergeordnetes Menü',
         'html' => 'HTML',
-        'acl_id' => 'Zugriffsrecht',
-        'file' => 'Datei',
+        'acl_id' => 'Access Permission',
+        'file' => 'File',
     ],
 
     'admin' => [
         'columns' => [
-            'language' => 'Sprache',
-            'name' => 'Menüname',
+            'language' => 'Language',
+            'name' => 'Menu Name',
             'url' => 'URL',
-            'file' => 'Datei',
-            'parent_id' => 'Untermenü',
-            'target' => 'Öffnungsart',
-            'status' => 'Veröffentlichungsstatus',
+            'file' => 'File',
+            'parent_id' => 'Übergeordnetes Menü',
+            'target' => 'Open Mode',
+            'status' => 'Publish Status',
             'html' => 'HTML',
             'icon' => 'Icon',
-            'acl_id' => 'Zugriffsrecht',
+            'acl_id' => 'Access Permission',
         ],
         'select_value' => [
-            'target_e' => 'Neues Fenster (_blank)',
-            'target_h' => 'Gleiches Fenster (_self)',
+            'target_e' => 'New Window (_blank)',
+            'target_h' => 'Same Window (_self)',
         ],
         'radio' => [
-            'publish_yes' => 'Veröffentlicht',
-            'publish_no' => 'Entwurf',
+            'publish_yes' => 'Published',
+            'publish_no' => 'Draft',
         ],
     ],
 
@@ -173,128 +182,206 @@ $lang['mod_menu'] = [
 
     // === Validation Messages ===
     'validation' => [
-        'required' => 'Das Feld :field ist erforderlich',
-        'min_length' => 'Das Feld :field muss mindestens :min Zeichen lang sein',
-        'max_length' => 'Das Feld :field darf nicht länger als :max Zeichen sein',
-        'unique' => 'Das Feld :field muss eindeutig sein',
-        'url' => 'Bitte geben Sie eine gültige URL-Adresse ein',
-        'numeric' => 'Das Feld :field muss numerisch sein',
-        'email' => 'Bitte geben Sie eine gültige E-Mail-Adresse ein',
+        'required' => ':field field is required',
+        'min_length' => ':field field must be at least :min characters',
+        'max_length' => ':field field may not be greater than :max characters',
+        'unique' => ':field field must be unique',
+        'url' => 'Please enter a valid URL address',
+        'numeric' => ':field field must be numeric',
+        'email' => 'Please enter a valid email address',
     ],
 
     // === Access Control (ACL) ===
-    'choose_wish' => 'Bitte wählen',
+    'choose_wish' => 'Please Choose',
     'permissions' => [
-        'title' => 'Berechtigungen der Menüverwaltung',
-        'view' => 'Menüs anzeigen',
-        'add' => 'Menü hinzufügen',
-        'edit_own' => 'Eigenes Menü bearbeiten',
-        'edit_all' => 'Alle Menüs bearbeiten',
-        'delete_own' => 'Eigenes Menü löschen',
-        'delete_all' => 'Alle Menüs löschen',
-        'manage_access' => 'Zugriff verwalten',
+        'title' => 'Menu Management Permissions',
+        'view' => 'View Menus',
+        'add' => 'Add Menu',
+        'edit_own' => 'Edit Own Menu',
+        'edit_all' => 'Edit All Menus',
+        'delete_own' => 'Delete Own Menu',
+        'delete_all' => 'Delete All Menus',
+        'manage_access' => 'Manage Access',
     ],
 
     // === Permission Errors ===
     'permission_errors' => [
-        'view_denied' => 'Sie haben keine Berechtigung, die Menüverwaltung einzusehen',
-        'add_denied' => 'Sie haben keine Berechtigung, ein Menü hinzuzufügen',
-        'edit_denied' => 'Sie haben keine Berechtigung, ein Menü zu bearbeiten',
-        'delete_denied' => 'Sie haben keine Berechtigung, ein Menü zu löschen',
-        'access_denied' => 'Sie haben keine Berechtigung, dieses Menü zu bearbeiten/löschen (gehört nicht Ihnen)',
+        'view_denied' => 'You do not have permission to view menu management',
+        'add_denied' => 'You do not have permission to add menu',
+        'edit_denied' => 'You do not have permission to edit menu',
+        'delete_denied' => 'You do not have permission to delete menu',
+        'access_denied' => 'You do not have permission to edit/delete this menu (does not belong to you)',
     ],
 
     // === Confirmation Messages ===
     'confirmations' => [
-        'delete_single' => 'Sind Sie sicher, dass Sie dieses Menü löschen möchten?',
-        'delete_multiple' => 'Sind Sie sicher, dass Sie :count ausgewählte Menüs löschen möchten?',
-        'publish' => 'Sind Sie sicher, dass Sie dieses Menü veröffentlichen möchten?',
-        'unpublish' => 'Sind Sie sicher, dass Sie die Veröffentlichung dieses Menüs aufheben möchten?',
-        'reorder_single' => 'Möchten Sie dieses Menü an den neuen Ort verschieben?',
+        'delete_single' => 'Are you sure you want to delete this menu?',
+        'delete_multiple' => 'Are you sure you want to delete :count selected menus?',
+        'publish' => 'Are you sure you want to publish this menu?',
+        'unpublish' => 'Are you sure you want to unpublish this menu?',
+        'reorder_single' => 'Do you want to move this menu to its new location?',
     ],
 
     // === Helper Text ===
     'help' => [
-        'parent_menu' => 'Wählen Sie aus, unter welchem Menü dieses Menü angezeigt werden soll',
-        'access_control' => 'Geben Sie an, welche Benutzerrollen dieses Menü sehen können',
-        'url' => 'Verwenden Sie das Format /start für interne Links, beginnen Sie mit https:// für externe Links',
-        'order' => 'Bestimmt die Reihenfolge des Menüs (niedrigere Werte erscheinen oben)',
-        'icon' => 'Geben Sie den Namen der Bootstrap-Icon-Klasse ein (z. B. bi-house)',
+        'parent_menu' => 'Select under which menu this menu should be displayed',
+        'access_control' => 'Specify which user roles can see this menu',
+        'url' => 'Use /starting format for internal links, start with https:// for external links',
+        'order' => 'Determines the order of the menu (lower values appear at the top)',
+        'icon' => 'Enter Bootstrap icon class name (e.g: bi-house)',
     ],
 
     // === Placeholders ===
     'placeholders' => [
-        'menu_name' => 'Menünamen eingeben',
-        'menu_url' => '/beispiel-link oder https://beispiel.de',
+        'menu_name' => 'Type the menu name',
+        'menu_url' => '/sample-link or https://example.com',
         'menu_file' => 'menu-partial.twig',
-        'menu_html' => 'Eigener HTML-Inhalt',
+        'menu_html' => 'Custom HTML content',
         'icon_class' => 'bi-house',
     ],
 
     // === Empty States ===
     'empty' => [
-        'no_menus' => 'Bisher wurden keine Menüs hinzugefügt',
-        'no_results' => 'Keine Menüs gefunden, die Ihren Suchkriterien entsprechen',
-        'add_first' => 'Klicken Sie auf die Schaltfläche, um das erste Menü hinzuzufügen',
+        'no_menus' => 'No menus have been added yet',
+        'no_results' => 'No menus found matching your search criteria',
+        'add_first' => 'Click the button to add the first menu',
     ],
 
     // === Loading States ===
     'loading' => [
-        'saving' => 'Speichern...',
-        'loading' => 'Laden...',
-        'processing' => 'Verarbeiten...',
+        'saving' => 'Saving...',
+        'loading' => 'Loading...',
+        'processing' => 'Processing...',
     ],
 
+    'success' => 'Success!',
+    'error' => 'Error!',
+    'success_title' => 'Success!',
+    'error_title' => 'Error!',
+
     // === Success Messages ===
-    'success' => [
-        'operation_completed' => 'Vorgang erfolgreich abgeschlossen!',
-        'changes_saved' => 'Änderungen gespeichert!',
+    'success_messages' => [
+        'operation_completed' => 'Operation completed successfully!',
+        'changes_saved' => 'Changes saved!',
     ],
 
     // === Error Messages ===
     'errors' => [
-        'general' => 'Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.',
-        'network' => 'Netzwerkfehler. Bitte überprüfen Sie Ihre Internetverbindung.',
-        'server' => 'Server error. Bitte versuchen Sie es später erneut.',
-        'record' => 'Der angegebene Menüeintrag konnte nicht gefunden werden.',
-        'parent_selection_required' => 'Sie müssen auswählen, welchem Menü dieser Eintrag zugeordnet wird.',
-        'parent_language_mismatch' => 'Die Sprache des übergeordneten Menüs muss mit der Menüsprache übereinstimmen.',
+        'general' => 'An error occurred. Please try again.',
+        'network' => 'Network error. Please check your internet connection.',
+        'server' => 'Server error. Please try again later.',
+        'record' => 'The specified menu record could not be found.',
+        'parent_selection_required' => 'You must choose which menu this item will be attached to.',
+        'parent_language_mismatch' => 'Parent menu language must match the menu language.',
     ],
 
     // === AJAX Response Messages ===
     'ajax' => [
-        'success' => 'Erfolg',
-        'error' => 'Fehler',
+        'success' => 'Success',
+        'error' => 'Error',
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Rollen der Menüverwaltung',
-        'add' => 'Kann Menüs hinzufügen',
-        'edit' => 'Kann Menüs bearbeiten',
-        'delete' => 'Kann Menüs löschen',
-        'list' => 'Kann die Menüverwaltung einsehen',
-        'acl' => 'Kann Menüberechtigungen bearbeiten',
-        'setting' => 'Kann Menüeinstellungen ändern',
-        'link' => 'Kann Menülinks ansehen'
+    'role' => [
+        'name' => 'Menu Management Roles',
+        'add' => 'Can Add Menus',
+        'edit' => 'Can Edit Menus',
+        'delete' => 'Can Delete Menus',
+        'list' => 'Can View Menu Management',
+        'acl' => 'Can Edit Menu Permissions',
+        'setting' => 'Can Change Menu Settings',
+        'link' => 'Can View Menu Links'
     ],
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'Sie haben keine Berechtigung, Menüs hinzuzufügen',
-        'edit' => 'Sie haben keine Berechtigung, Menüs zu bearbeiten',
-        'delete' => 'Sie haben keine Berechtigung, Menüs zu löschen',
-        'list' => 'Sie haben keine Berechtigung, die Menüverwaltung einzusehen',
-        'moderate_edit' => 'Sie haben keine Berechtigung, Menüs anderer Benutzer zu bearbeiten',
-        'moderate_delete' => 'Sie haben keine Berechtigung, Menüs anderer Benutzer zu löschen',
+        'add' => 'You do not have permission to add menus',
+        'edit' => 'You do not have permission to edit menus',
+        'delete' => 'You do not have permission to delete menus',
+        'list' => 'You do not have permission to view menu management',
+        'moderate_edit' => 'You do not have permission to edit other users\' menus',
+        'moderate_delete' => 'You do not have permission to delete other users\' menus',
+    ],
+
+    // === Mobile Wizard ===
+    'wizard' => [
+        'title' => 'Menü hinzufügen',
+        'steps' => [
+            'step_1' => 'Sprache',
+            'step_2' => 'Menüname',
+            'step_3' => 'Übergeordnetes Menü',
+            'step_4' => 'Link (URL)',
+            'step_5' => 'Symbol (Icon)',
+            'step_6' => 'Menüdatei',
+            'step_7' => 'Benutzerdefiniertes HTML',
+            'step_8' => 'Zielfenster',
+            'step_9' => 'Zugriffsebene',
+            'step_10' => 'Veröffentlichungsstatus und Übersicht',
+        ],
+        'subtitles' => [
+            'step_1' => 'Wählen Sie die Sprache für diesen Menüpunkt.',
+            'step_2' => 'Geben Sie den Menünamen ein.',
+            'step_3' => 'Geben Sie das hierarchisch übergeordnete Menü an.',
+            'step_4' => 'Geben Sie die Ziel-URL für diesen Menüpunkt ein.',
+            'step_5' => 'Wählen Sie ein passendes Symbol aus.',
+            'step_6' => 'Geben Sie den optionalen Dateipfad ein.',
+            'step_7' => 'Fügen Sie optionales benutzerdefiniertes HTML hinzu.',
+            'step_8' => 'Wählen Sie das Zielfenster.',
+            'step_9' => 'Bestimmen Sie die Zugriffsebene.',
+            'step_10' => 'Wählen Sie den Status, überprüfen Sie alle Einstellungen und fügen Sie das Menü hinzu.',
+        ],
+        'buttons' => [
+            'next' => 'Weiter',
+            'prev' => 'Zurück',
+            'finish' => 'Menü hinzufügen',
+            'cancel' => 'Abbrechen',
+        ],
+        'summary' => [
+            'title' => 'Menüübersicht',
+            'language' => 'Sprache',
+            'name' => 'Menüname',
+            'parent' => 'Übergeordnetes Menü',
+            'url' => 'Link (URL)',
+            'target' => 'Zielfenster',
+            'status' => 'Status',
+            'acl' => 'Zugriffsebene',
+            'none' => 'Keine',
+            'root' => 'Oberste Ebene',
+            'same_window' => 'Gleiches Fenster (_self)',
+            'new_window' => 'Neues Fenster (_blank)',
+            'published' => 'Veröffentlicht',
+            'draft' => 'Entwurf',
+        ],
+        'labels' => [
+            'popular_icons' => 'Beliebte Symbole',
+            'advanced_settings' => 'Erweiterte Einstellungen',
+            'placement_preview' => 'Platzierungsvorschau',
+            'will_be_added_here' => 'Wird hier hinzugefügt',
+            'live_preview' => 'Live-Vorschau',
+            'quick_links' => 'Schnelllinks',
+            'preset_home' => 'Startseite (/)',
+            'preset_external' => 'Extern (https://)',
+            'preset_header_only' => 'Nur Überschrift (#)',
+            'target_same_desc' => 'Link öffnet im aktuellen Tab (_self)',
+            'target_blank_desc' => 'Link öffnet in neuem Tab (_blank)',
+            'status_published_desc' => 'Menü ist sofort auf der Website sichtbar',
+            'status_draft_desc' => 'Nur im Administrationsbereich sichtbar',
+            'step_prefix' => 'Schritt',
+        ],
+        'validation' => [
+            'name_required' => 'Menüname ist erforderlich.',
+            'name_min' => 'Menüname muss mindestens 2 Zeichen lang sein.',
+            'parent_required' => 'Auswahl des übergeordneten Menüs ist erforderlich.',
+        ],
     ],
 ];
 $lang['mod_menu']['slots'] = [
-    'header' => 'Kopfmenü',
-    'footer' => 'Fußmenü',
+    'header' => 'Header Menu',
+    'footer' => 'Footer Menu',
+    'action' => 'Aktionsmenü',
 ];
 $lang['mod_menu']['parent_labels'] = [
-    'select_parent' => 'Übergeordnetes Menü wählen',
-    'language_root' => 'Oberste Ebene unter :language',
-    'system_root' => 'Systemwurzel',
+    'select_parent' => 'Select parent menu',
+    'language_root' => 'Top level under :language',
+    'system_root' => 'System root',
 ];

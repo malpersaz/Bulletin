@@ -9,8 +9,8 @@ class InstallerLang
         $languageCode = $languageCode ?: self::current();
         $cacheKey = self::CACHE_KEY_PREFIX . $languageCode;
 
-        if (Kayit::varmi($cacheKey) === TRUE) {
-            return Kayit::getir($cacheKey);
+        if (Registry::has($cacheKey) === TRUE) {
+            return Registry::get($cacheKey);
         }
 
         $file = installer_dir . 'lang' . DS . $languageCode . '.php';
@@ -27,14 +27,14 @@ class InstallerLang
 
         $installerLang = installer_replace_build_name($installerLang);
 
-        Kayit::ekle($cacheKey, $installerLang);
+        Registry::add($cacheKey, $installerLang);
         return $installerLang;
     }
 
     public static function current()
     {
-        if (Kayit::varmi('lang') === TRUE) {
-            return (string) Kayit::getir('lang');
+        if (Registry::has('lang') === TRUE) {
+            return (string) Registry::get('lang');
         }
 
         return 'en';
@@ -43,12 +43,12 @@ class InstallerLang
     public static function reset($languageCode = null)
     {
         if ($languageCode !== null) {
-            Kayit::sil(self::CACHE_KEY_PREFIX . $languageCode);
+            Registry::remove(self::CACHE_KEY_PREFIX . $languageCode);
             return;
         }
 
         foreach (array_keys(self::availableLanguages()) as $code) {
-            Kayit::sil(self::CACHE_KEY_PREFIX . $code);
+            Registry::remove(self::CACHE_KEY_PREFIX . $code);
         }
     }
 
@@ -61,10 +61,11 @@ class InstallerLang
             'fa' => array('label' => 'فارسی', 'code' => 'FA'),
             'fr' => array('label' => 'Français', 'code' => 'FR'),
             'ku' => array('label' => 'Kurmancî', 'code' => 'KU'),
-            'ckb' => array('label' => 'کوردی', 'code' => 'CKB'),
+            'ckb' => array('label' => 'سۆرانی', 'code' => 'CKB'),
             'sv' => array('label' => 'Svenska', 'code' => 'SV'),
             'tr' => array('label' => 'Türkçe', 'code' => 'TR'),
             'zza' => array('label' => 'Zazakî', 'code' => 'ZZA'),
+            'ru' => array('label' => 'Русский', 'code' => 'RU'),
         );
     }
 }

@@ -8,7 +8,7 @@ $lang['mod_user_pm']=[
 						'send_private_message_title'=>'Send Private Message',
 						'pm_sending_area_title'=>'Private Message Sending Area',
 						'message_sent_success'=>'Message sent successfully!',
-						'new_tag'=>'NÛ',
+						'new_tag'=>'NEW',
 						'bulk_pm_area_desc'=>'Bulk message sending area for multiple users',
 						'usernames_label'=>'Usernames',
 						'bulk_sent_success'=>'Message sent to selected users successfully!',
@@ -43,7 +43,7 @@ $lang['mod_user_pm']=[
 						'recipient_col'=>'Recipient',
 						'message_info_sent'=>'This message was sent to <strong>%s</strong> on <strong>%s</strong>.',
 						'sent_followup_note'=>'Review recent deliveries and jump back into the conversation quickly.',
-						'reply_action_alt'=>'Reply',
+						'reply_action_tooltip' =>'Reply',
 						'unread'=>'Unread',
 						'total'=>'Total',
 						'loading'=>'Loading...',
@@ -89,16 +89,17 @@ $lang['mod_user_pm']['error']=[
 						'group_not_selected'=>'Please select a user group.',
 						'group_not_found'=>'The user group you specified was not found!'
 					];
-$lang['mod_user_pm']['roll']=[
-						'ad'=>'Private Message Roles',
+$lang['mod_user_pm']['role']=[
+						'name'=>'Private Messaging Roles',
+						'roles'=>'Private Messages',
 						'send'=>'Can send private messages',
-						'bulk'=>'Can send bulk private messages to multiple users at once.',
-						'group_bulk'=>'Can send bulk private messages to user groups.',
-						'all'=>'Can send bulk private messages to all users at once'
+						'bulk'=>'Can send bulk private messages to multiple users at once',
+						'group_bulk'=>'Can send bulk private messages to user groups',
+						'all'=>'Can send bulk private messages to all users at once',
 ];
 $lang['mod_user_pm']['role_errors']=[
-						'send'=>'To send private messages, you must first <a href="register" style="color:#000">Register</a>.',
+						'send'=>'To send private messages, you must first <a href="register">Register</a>.',
 						'bulk'=>'You do not have permission to send bulk private messages.',
 						'group_bulk'=>'You do not have permission to send bulk messages to groups.',
-						'all'=>'You do not have permission to send bulk messages to all users.'
+						'all'=>'You do not have permission to send bulk messages to all users.',
 ];

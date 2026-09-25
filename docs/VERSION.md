@@ -1,3 +1,84 @@
+## v1.0.92
+- **Super Polish Top Navigation Masthead & Public Theme Baseline**:
+  - Fully modernized `templates/amida/index/mod_menu/top_menu.twig` with clean semantic markup, accessible ARIA attributes, and strict code separation (zero inline styles or inline scripts).
+  - Redesigned `templates/amida/static/css/top-menu.css` adhering to high-end editorial newspaper masthead aesthetics:
+    - Balanced Gothic brand typography (`Grenze Gotisch`) with proportional image logo rendering.
+    - Sleek pill search input with smooth focus expansion, nested icon button, and accessible keyboard interactions.
+    - Polished `.btn-header-action` controls for desktop language selection and dark mode toggle.
+    - Editorial-grade auth action buttons (`.btn-header-login` ghost button and `.btn-header-register` solid ink button) with unified 38px touch/click target heights.
+    - Polished glassmorphic dropdown cards with refined shadows, subtle borders, and smooth entrance transitions.
+    - Responsive mobile off-canvas drawer with smooth slide-in, blurred backdrop overlay, and zero horizontal viewport peeking (`transform: translateX(100%)`).
+  - Added template fallback guard in `mod/index/indexBase.php` to ensure `app_template` dynamically falls back to an existing theme folder (e.g. `amida`) when database contains legacy values.
+  - Scoped primary button styles in `templates/amida/static/css/login-modal.css` to `#loginModal` to prevent CSS leaking.
+- **Cache System Modernization & Undeclared Static Property Fix**:
+  - Replaced legacy undeclared static property `Cache::$sure` with standard `Cache::$ttl` (`Cache::$ttl = 3600;` and `Cache::$ttl = 86400;`) across `mod/index/helper/search.helper.php` and `mod/index/indexBase.php`.
+  - Migrated legacy `Cache::exists_cache()` and `Cache::get_cache()` to canonical `Cache::exists()` and `Cache::get()` with explicit key passing.
+  - Standardized search cache keys to English `-search-` format.
+  - Standardized ACL cache keys to `"permission-acl-" . $acl_id` matching `mod_acl` cache invalidation rules.
+- **RedisCache Autoload & Search Query Standardization (AF/Business Parity)**:
+  - Registered `RedisCache` and `GoogleIndexingService` in `$autoload['libfile']` and `google` in `$autoload['config']` in `config/autoload.config.php`.
+  - Created `config/google.config.php` providing Redis connection and Google API configurations.
+  - Added defensive bootstrap check in `lib/Cache.class.php` ensuring `RedisCache` is loaded prior to static calls.
+  - Standardized search input name from legacy `kelime` to canonical `query` across `templates/amida/index/mod_menu/top_menu.twig`, `templates/amida/index/banner.twig`, and `templates/amida/index/search.twig`.
+  - Updated `mod/index/helper/search.helper.php` and `mod/index/index.php` to accept canonical `query`, `keyword`, and `q` parameters with graceful fallback support for legacy `kelime`.
+  - Declared `public $url;` property in `mod/index/indexBase.php`.
+
+## v1.0.91
+- **Frontend Theme Modernization & Baseline Theme Renamed to "amida"**:
+  - Renamed the baseline public frontend theme directory from `templates/default` to `templates/amida`.
+  - Updated configuration in `config/site.config.php` to use `amida` as `$site['app_template']`.
+  - Updated framework template loader fallbacks in `lib/Amed.class.php` and `lib/TwigTemplate.class.php` to resolve `templates/amida`.
+  - Updated database installer schemas and controller defaults across `mod/mod_settings/` and `installer/mod_settings/` to default `app_template` to `'amida'`.
+  - Standardized theme markup IDs (`#amidaMainHeader`, `#amidaMobileMenu`, `#amidaBottomMenu`) and synchronized top menu navigation scripts in `templates/amida/static/js/top-menu.js`.
+  - Translated Turkish documentation in `templates/amida/layouts/base.txt` to English and updated theme references across agent documentation and E2E test suites.
+- **Full Editorial & Core System Modernization Parity with AF/Business**:
+  - **Phase 1 Editorial Modules Synced**: Synchronized controllers, models, installer definitions, and phone-first administrative view templates for `mod_news`, `mod_news_category`, `mod_publication`, `mod_publication_category`, `mod_content`, `mod_content_category`, `mod_page`, and `mod_announcements`. Migrated to standard `Role::` and `$this->theme` / `$this->view`.
+  - **Phase 2 Media Modules Synced**: Synchronized controllers, models, installer definitions, and templates for `mod_video`, `mod_video_embed`, `mod_video_embed_category`, `mod_gallery`, `mod_gallery_mod`, `mod_attachment`, `mod_attachment_mod`, `mod_document`, `mod_imagecategories`, and `mod_headline`.
+  - **Phase 3 System & Settings Modules Modernization**:
+    - Ported canonical English-only settings controller (`mod_settings/index.php`) and sub-page templates: `cookie_policy.twig`, `working_hours.twig`, and `affiliations.twig`.
+    - Modernized `mod_menu`, `mod_slider` (adapted to link editorial articles `mod_publication` instead of forbidden `mod_product`), `mod_user`, `mod_user_group`, `mod_user_pm`, `mod_acl`, `mod_seo`, `mod_redirect`, `mod_survey`, and `mod_popup`.
+    - Modernized `mod/tools/index.php` with `Role::` permission verification and standard robots indexing directives.
+  - **Phase 4 Administrative Partials & Navigation Layout Cleanliness**:
+    - Synchronized administrative partials (`fab.twig`, `header.twig`, `sheets_extra.twig`, `wizard_content.twig`) and completely cleansed them of forbidden commercial module bindings (`mod_product`, `mod_service`, `mod_project`, `mod_appointment`, `mod_test`, `mod_hr`).
+    - Standardized `templates/admin/partials/sidebar.twig` and `mod/management/lang/en.php` to zero-alias canonical English keys (`site_home`, `remote_video_category`, `headline_management`, `full_headline_management`, `gallery_modules`, `file_modules`).
+    - Cleaned residual references to `mod_reservation` in `header.twig`, `mod_organization_type` in `legal_info.twig` and `mod_settings/index.php`, `mod_assessment` routes in `url.config.php`, `mod_category` health checks in `management/index.php`, and commercial seeds (`mod_service`, `mod_product`, `mod_project`, `mod_reference`) in `mod_gallery_mod` and `mod_attachment_mod` installers.
+    - Updated `AdminTemplate.class.php` to automatically bootstrap required management and editorial language dictionaries.
+  - **Quality Assurance & Verification**:
+    - `tools/module_boundary_guard.py`: 0 violations across 16 forbidden modules.
+    - `tools/cross_repo_sync.py`: 1,250 identical files, 0 drift, 0 missing.
+    - `tools/audit_modernization.py`: 100% compliance across all active modules.
+    - Zero active forbidden module occurrences, zero `Roll::` occurrences, and zero syntax errors across all application PHP files.
+
+## v1.0.90
+- **AF/Business Canonical Parity & Editorial Modernization Overhaul**:
+  - **Shared-Core Synchronization & Zero-Drift Parity**: Synchronized all core libraries (`lib/`), installer engine (`installer/app/`, `installer/index.php`), and quality tooling with `AF/Business`, achieving 100% parity (808 identical files, 0 drift, 0 missing in `cross_repo_sync.py`).
+  - **Root Workspace Security & Hygiene Cleanup**: Permanently eradicated security hazards and binary bloat from the repository root: purged standalone `adminer.php` (507 KB), `composer.phar` (3.2 MB), `ip.php`, `clear_cache.php`, and `rector.php`.
+  - **Domain Boundary Guard & Exclusion Enforcement**: Configured `tools/module_boundary_guard.py` enforcing strict boundary isolation and forbidding 14 commercial, enterprise, and corporate modules (`mod_product`, `mod_product_category`, `mod_service`, `mod_service_category`, `mod_client`, `mod_reference`, `mod_project`, `mod_project_category`, `mod_appointment`, `mod_reservation`, `mod_hr`, `mod_organization_type`, `mod_test`, `mod_assessment`).
+  - **Legacy Module Purge**: Deprecated and purged obsolete generic `mod_category` (migrated to dedicated module taxonomies) and incomplete `mod_hero_slider` model directory; purged forbidden `mod_assessment` references from `InstallerModuleCatalog.php`.
+  - **Core Library Modernization**: Eradicated legacy `$this->tema` property from `BaseModuleController.class.php`, integrated polymorphic `$has_faq` bridge and `ensureBridgeIntegrations()`, synchronized dynamic cookie theme negotiation (`$_COOKIE['theme']`) and URL bounds checking in `Amed.class.php`, added PDO `get_connection()` accessor in `Database.php`, and ported `GoogleIndexingService.class.php` and `RedisCache.class.php`.
+  - **Admin View Restoration & Strict Code Separation**: Ported missing administrative templates for `mod_survey`, `mod_popup`, `mod_faq_mod`, and `layout_blank.twig`. Modernized `mod_survey` controller to extend `BaseModuleController`. Extracted all inline styles and event handlers into external `mod_survey.css` and `mod_survey.js`, achieving zero violations in `code_separation_guard.py`.
+  - **Admin UI & Decoupled Assets Synchronization**: Synchronized mobile-first `layout.twig` with `window.adminLang` context and ported modular administrative CSS/JS stylesheets across all editorial modules.
+
+## v1.0.89
+- **FAQ Duplicate Question Prevention & Validation**: Enforced duplicate question prevention across both backend controllers (`ajax_save`, `ajax_batch_save`) and frontend JavaScript (`saveSingleItem`, `saveAll`) in `mod_faq`:
+  - Added duplicate question check per entity (`mod_name`, `vid`, `lang`) before saving single or batch FAQ items.
+  - Added localized validation strings (`question_duplicate` and `duplicate_question`) across all supported language files (`en`, `tr`, `ku`, `ar`, `ckb`, `de`, `fr`, `zza`).
+  - Added instant client-side notification toast and input focus on duplicate question attempts.
+- **Framework Core Synchronization, Non-English Element Eradication & Sibling Parity**: Synchronized shared-core architecture and eradicated legacy Turkish identifiers, files, and classes across the codebase in full parity with `Business`:
+  - Modernized framework initialization entrypoint: replaced `koberz.init.php` with canonical `init.php` across all entrypoint scripts (`index.php`, `modules.php`, `js.php`, `cron.php`, `resize.php`, `search.php`, `sitemap.php`, `installer/index.php`).
+  - Standardized Role architecture: created canonical `lib/Role.class.php`, `mod/mod_user/model/mod_user_role.model.php`, and `installer/mod_user/mod_user_role.sql`, and eradicated deprecated `lib/Roll.class.php`, `mod_user_roll.model.php`, and `mod_user_roll.sql`.
+  - Survey module architecture & model overhaul: created canonical `mod/mod_survey/model/survey_option.model.php` and `surveyselect.model.php`, updated validators (`add.validator.php`, `edit.validator.php`), and purged legacy Turkish model `secenek.model.php` and methods (`soru`, `secenekler`, `anket`, `oyver()`).
+  - Attachment module schema standardization: renamed schema definition to canonical `mod_attachment_mod.sql` and purged `mod_file_mod.sql`.
+  - Validator naming standardization: renamed all Turkish validator files (`ekle.validator.php`, `duzenle.validator.php`) to standard English (`add.validator.php`, `edit.validator.php`) across `mod_acl`, `mod_gallery_mod`, `mod_headline`, `mod_document`, `mod_popup`, and `mod_survey`.
+  - Flexigrid vector SVG standard & raster asset purge: replaced legacy PNG icons (`takip.png`, `vasif.png`, `yenile.png`, `yonet.png`) with modern vector SVGs (`attribute.svg`, `manage.svg`, `refresh.svg`, `tracking.svg`), updated `flexigrid.css`, and purged stale backup files (`confirm copy-yedek.css`, `datepicker111.css`, `theme11.css`, `index-test.php`, `untitled-1.png`).
+  - Legacy word & alias purge: completely eliminated `Kayit::` class aliases from `config/db.config.php` and codebase, standardized `$toplam` to `$total` across datatable models, updated `public $tablolar` / `$this->tablolar` to `public $tables` / `$this->tables` in installer module classes, and replaced `oke()` with `success()`.
+  - Twig hero slider syntax fix: standardized background video embed dynamic URL query parameter binding across all public frontend themes (`'?' in item.embed_url ? '&' : '?'`).
+  - Automated quality guard: added `tools/code_separation_guard.py` to enforce strict code separation.
+
+
+- **Synchronized Forgot-Password and Login Template**: Synchronized the default login template (`templates/default/mod_user/login.twig`) from Property to clean up hardcoded inline language fallbacks and Turkish checks, aligning with repository localization and quality standards.
+- **Robust Captcha Image Rendering Fallback**: Synchronized the updated Captcha utility (`lib/Captcha.class.php`) from Property to enable in-memory PHP output buffering as a fallback if the server lacks cache directory write permissions, ensuring captcha images render successfully on all environments.
+
 ## v1.0.88
 - **Fix Crash on Invalid Module Routes**: Added the missing `index/error.twig` template to the default templates theme. This ensures that when a user or administrator attempts to load an invalid module route (such as the non-existent `mod_file/list`), the application gracefully renders a localized 404/not found error page using Bootstrap 5 instead of crashing with a filesystem loader Twig exception.
 

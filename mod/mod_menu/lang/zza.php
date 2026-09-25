@@ -19,11 +19,17 @@ if (!defined('AKM_LOADED')) {
  */
 $lang['mod_menu'] = [
 
-    // === Page Titles ===
+    // === Page Titles & Statistics ===
     'list' => 'Rêveberîya Menûyan',
-    'add' => 'Zêde Bike',
+    'add' => 'Menuyê Lêke',
     'edit' => 'Biguhere',
     'information' => 'Agahdarî',
+    'total_menus' => 'Pêroyî Menuyî',
+    'published_menus' => 'Weşîyaye',
+    'draft_menus' => 'Pêşnoşîya',
+    'expand_all' => 'Pêroyî Hîra Bike',
+    'collapse_all' => 'Pêroyî Teng Bike',
+    'search_placeholder' => 'Menuyan de bigêre...',
 
     // === Navigation & Actions ===
     'actions' => [
@@ -118,16 +124,14 @@ $lang['mod_menu'] = [
         'language' => 'Ziman',
         'name' => 'Navê Pêşekê',
         'url' => 'URL',
-        'parent_menu' => 'Menuya Jêr',
+        'parent_menu' => 'Menuya Serên',
         'order' => 'Rêz',
         'target' => 'Bila çawa vebe?',
         'status' => 'Rewş',
         'icon' => 'Îkona Bootstrapê',
         'access_level' => 'Destûra Dîtinê',
         'actions' => 'Çalakî',
-        'name' => 'Navê Menûyê',
-        'parent_id' => 'Menuya Jêr',
-        'status' => 'Weşandin',
+        'parent_id' => 'Menuya Serên',
         'html' => 'HTML',
         'acl_id' => 'Destûra Têketinê',
         'file' => 'Pel',
@@ -139,7 +143,7 @@ $lang['mod_menu'] = [
             'name' => 'Nav',
             'url' => 'URL',
             'file' => 'Pel',
-            'parent_id' => 'Menuya Jêr',
+            'parent_id' => 'Menuya Serên',
             'target' => 'Hedef',
             'status' => 'Rewşa Weşanê',
             'html' => 'HTML',
@@ -159,14 +163,13 @@ $lang['mod_menu'] = [
     'choose_wish' => 'Hilbijêre',
     'add' => 'Zêde Bike',
     'edit' => 'Biguhere',
-    'oke' => 'Serkeftî!',
+    'success' => 'Serkeftî!',
     'error' => 'Çewtî!',
-    'hata' => 'Çewtî!',
     'remove_record' => 'Tomar Jê Bibe',
 
     // === Legacy Message Keys (used by index.php) ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Menû bi serkeftî hate zêdekirin!',
             'edit' => 'Menû bi serkeftî hate guhertin!',
         ],
@@ -279,8 +282,8 @@ $lang['mod_menu'] = [
     ],
     
     // === ACL Roles ===
-    'roll' => [
-        'ad' => 'Rolên Rêveberiya Menûyan',
+    'role' => [
+        'name' => 'Rolenên Rêveberiya Menûyê',
         'add' => 'Dikare Menû Zêde Bike',
         'edit' => 'Dikare Menû Biguhere',
         'delete' => 'Dikare Menû Jê Bibe',
@@ -299,10 +302,82 @@ $lang['mod_menu'] = [
         'moderate_delete' => 'Destûra te ji bo jêbirina menûyên kesên din tune',
     ],
 
+    // === Mobile Wizard ===
+    'wizard' => [
+        'title' => 'Lêzêdekirina Pêşekê',
+        'steps' => [
+            'step_1' => 'Ziman',
+            'step_2' => 'Navê Pêşekê',
+            'step_3' => 'Pêşeka Dayîk',
+            'step_4' => 'Girêdan (URL)',
+            'step_5' => 'Nîşan (Îkon)',
+            'step_6' => 'Pelê Pêşekê',
+            'step_7' => 'Koda HTML',
+            'step_8' => 'Armanca Vekirinê',
+            'step_9' => 'Destûra Têketinê',
+            'step_10' => 'Rewşa Weşanê û Kurte',
+        ],
+        'subtitles' => [
+            'step_1' => 'Zimanê ku ev pêşek tê de were weşandin hilbijêre.',
+            'step_2' => 'Navê pêşekê binivîse.',
+            'step_3' => 'Pêşeka dayîk û asta wê ya hiyerarşiyê diyar bike.',
+            'step_4' => 'Navnîşana girêdana URL a pêşekê binivîse.',
+            'step_5' => 'Ji bo pêşekê îkoneke guncaw diyar bike.',
+            'step_6' => 'Pelê çavkaniyê yê taybet binivîse (vebijarkî ye).',
+            'step_7' => 'Koda xwerû ya HTMLê lêke (vebijarkî ye).',
+            'step_8' => 'Diyar bike bê ka rûpel di heman pencereyê de yan di ya nû de vebe.',
+            'step_9' => 'Asta destûra gihîştinê ji bo vê pêşekê diyar bike.',
+            'step_10' => 'Rewşa weşanê hilbijêre, agahiyên hatine mîhengkirin kontrol bike û pêşekê lêke.',
+        ],
+        'buttons' => [
+            'next' => 'Pêşve',
+            'prev' => 'Vegere',
+            'finish' => 'Pêşekê Lêke',
+            'cancel' => 'Betal',
+        ],
+        'summary' => [
+            'title' => 'Kurteya Pêşekê',
+            'language' => 'Ziman',
+            'name' => 'Navê Pêşekê',
+            'parent' => 'Pêşeka Dayîk',
+            'url' => 'Girêdan (URL)',
+            'target' => 'Armanca Vekirinê',
+            'status' => 'Rewşa Weşanê',
+            'acl' => 'Destûra Têketinê',
+            'none' => 'Tune',
+            'root' => 'Asta jor (Koka pêşekan)',
+            'same_window' => 'Heman Pencere (_self)',
+            'new_window' => 'Pencereya Nû (_blank)',
+            'published' => 'Weşandî',
+            'draft' => 'Pêşnivîs',
+        ],
+        'labels' => [
+            'popular_icons' => 'Îkonên Berbiçav',
+            'advanced_settings' => 'Mîhengên Pêşketî (Pel û HTML)',
+            'placement_preview' => 'Pêşdîtina Cihbûnê',
+            'will_be_added_here' => 'Dê li vir were lêkirin',
+            'live_preview' => 'Pêşdîtina Zindî',
+            'quick_links' => 'Girêdanên Bilez',
+            'preset_home' => 'Malper (/)',
+            'preset_external' => 'Derve (https://)',
+            'preset_header_only' => 'Tenê Serdêr (#)',
+            'target_same_desc' => 'Girêdan di heman hilpekînê de vedibe (_self)',
+            'target_blank_desc' => 'Girêdan di hilpekîna nû de vedibe (_blank)',
+            'status_published_desc' => 'Pêşek di cih de li ser malperê tê dîtin',
+            'status_draft_desc' => 'Tenê di panela rêveberiyê de tê parastin',
+            'step_prefix' => 'Gav',
+        ],
+        'validation' => [
+            'name_required' => 'Navê pêşekê pêwîst e.',
+            'name_min' => 'Navê pêşekê divê herî kêm 2 tîp be.',
+            'parent_required' => 'Divê pêşeka dayîk were hilbijartin.',
+        ],
+    ],
 ];
 $lang['mod_menu']['slots'] = [
     'header' => 'Menûya Jor',
     'footer' => 'Menûya Jêr',
+    'action' => 'Menûya Çalakîye',
 ];
 $lang['mod_menu']['parent_labels'] = [
     'select_parent' => 'Menuya dayık weçine',

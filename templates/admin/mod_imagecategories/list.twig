@@ -285,7 +285,7 @@ function updateCategoryOrder(event) {
     }).then(function (response) {
         return response.text();
     }).then(function (text) {
-        if (text.trim() === 'Oke') {
+        if (text.trim() === 'Success') {
             showSnackbar({{ lang.mod_imagecategories.message.success.reordered|json_encode|raw }}, 'success');
             return;
         }
@@ -358,7 +358,7 @@ async function deleteSelectedCategory() {
         });
 
         const text = await response.text();
-        if (text.trim() === 'Oke') {
+        if (text.trim() === 'Success') {
             selectedCard.remove();
             clearSelectedCategory();
             restoreEmptyStateIfNeeded();

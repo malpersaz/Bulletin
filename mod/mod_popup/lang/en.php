@@ -25,20 +25,19 @@ $lang['mod_popup'] = [
     'list' => 'Popup List',
 
     // === System Messages ===
-    'oke' => 'Operation Successful!',
-    'hata' => 'Error Occurred!',
-    'error' => 'Critical Error Occurred!',
+    'success' => 'Operation Successful!',
+    'error' => 'Error Occurred!',
     'information' => 'Information!',
 
     // === Image Management ===
     'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image removed',
+    'remove_image_success' => 'Image removed',
     'choose_wish' => 'Select if you wish',
     'remove_record' => 'Are you sure you want to delete this record?',
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Popup successfully added!',
             'edit' => 'Popup successfully updated!',
         ],
@@ -61,27 +60,27 @@ $lang['mod_popup'] = [
     'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
         'gallery' => 'Image Gallery',
         'file' => 'File Manager',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
+        'cancel' => 'Cancel',
+        'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results.',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results.',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
         'publish' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this popup?',
@@ -102,8 +101,8 @@ $lang['mod_popup'] = [
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Popup Management Permissions',
+    'role' => [
+        'name' => 'Popup Management Permissions',
         'add' => 'Can add popup',
         'edit' => 'Can edit popup',
         'delete' => 'Can delete popup',
@@ -127,9 +126,9 @@ $lang['mod_popup'] = [
         'columns' => [
             'id' => 'ID',
             'language' => 'Language',
-            'ad' => 'Popup Name',
-            'tarih' => 'Publish Start',
-            'etarih' => 'Publish End',
+            'name' => 'Popup Name',
+            'start_date' => 'Publish Start',
+            'end_date' => 'Publish End',
             'status' => 'Active?',
             'content' => 'Description',
             'sure' => 'Auto Close (seconds)',

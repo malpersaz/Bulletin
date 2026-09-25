@@ -46,7 +46,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
    * @var array
    * @access private
    */
-  private $_keys = array();
+  private $_keys = [];
 
   /**
    * Will be true if magic_quotes_runtime is turned on.
@@ -278,7 +278,7 @@ class Swift_KeyCache_DiskKeyCache implements Swift_KeyCache
       {
         throw new Swift_IoException('Failed to create cache directory ' . $cacheDir);
       }
-      $this->_keys[$nsKey] = array();
+      $this->_keys[$nsKey] = [];
     }
   }
 

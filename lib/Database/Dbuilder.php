@@ -1,22 +1,21 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 16.04.2011- 21:20
- * Sınıfı : Dbuilder
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * Class: Dbuilder
  */
 class Dbuilder
 {
     public static $symbol;
 
-
-
     public static function cc($val)
     {
-        return str_replace("'", "''", $val);
+        if ($val === null) {
+            return '';
+        }
+        return str_replace("'", "''", (string)$val);
     }
 
     public static function table($arg)
@@ -27,29 +26,26 @@ class Dbuilder
     public static function table_join($conf)
     {
         if (is_array($conf) === false) {
-            throw new DbuilderException(
-                "Table JOIN PROBLEM :" . $conf . " is not array!" .
-                    "TABLO JOIN PROBLEMI : " . $conf . " bir dizi değil!"
-            );
+            throw new DbuilderException("Table JOIN error: parameter is not an array!");
         }
         $join = "";
         $select = [];
-        foreach ($conf as $veri) {
-            foreach ($veri['table']['1'] as $colom) {
-                $select[] = $veri['table']['0'] . "." . $colom;
+        foreach ($conf as $data) {
+            foreach ($data['table']['1'] as $column) {
+                $select[] = $data['table']['0'] . "." . $column;
             }
-            if (isset($veri['alias'])) {
-                foreach ($veri['alias']['1'] as $colom) {
-                    $select[] = $veri['alias']['0'] . "." . $colom;
+            if (isset($data['alias'])) {
+                foreach ($data['alias']['1'] as $column) {
+                    $select[] = $data['alias']['0'] . "." . $column;
                 }
-                $join .= $veri['table']['0'] . " " . $veri['type'] . " JOIN ";
-                $join .= $veri['alias']['0'];
+                $join .= $data['table']['0'] . " " . $data['type'] . " JOIN ";
+                $join .= $data['alias']['0'];
                 $join .= " ON ";
-                $join .= $veri['condition']['0'] . "=" . $veri['condition']['1'];
+                $join .= $data['condition']['0'] . "=" . $data['condition']['1'];
             } else {
-                $join .= " " . $veri['type'] . " JOIN " . $veri['table']['0'];
+                $join .= " " . $data['type'] . " JOIN " . $data['table']['0'];
                 $join .= " ON ";
-                $join .= $veri['condition']['0'] . "=" . $veri['condition']['1'];
+                $join .= $data['condition']['0'] . "=" . $data['condition']['1'];
             }
             $join .= "\n";
         }
@@ -61,6 +57,10 @@ class Dbuilder
 
     public static function coloms($arg)
     {
+        if ($arg === null || $arg === '') {
+            return '';
+        }
+
         if (is_array($arg)) {
             $escaped_cols = array_map([self::class, 'wrapSymbol'], $arg);
             return implode(',', $escaped_cols);
@@ -70,8 +70,9 @@ class Dbuilder
             return '*';
         }
 
-        if (strpos($arg, ',') !== false) {
-            $parts = explode(',', $arg);
+        $argStr = (string)$arg;
+        if (strpos($argStr, ',') !== false) {
+            $parts = explode(',', $argStr);
             $escaped_parts = array_map([self::class, 'wrapSymbol'], $parts);
             return implode(',', $escaped_parts);
         }
@@ -81,28 +82,34 @@ class Dbuilder
 
     private static function wrapSymbol($val)
     {
-        $val = trim($val);
-        if ($val === '*' || strpos($val, '(') !== false || strpos($val, ' ') !== false) {
+        if ($val === null || $val === '') {
+            return '';
+        }
+
+        $val = trim((string)$val);
+        if ($val === '' || $val === '*' || strpos($val, '(') !== false || strpos($val, ' ') !== false) {
             return $val;
         }
+
+        $sym = self::$symbol ?? '';
         
         // Handle table-prefixed columns (e.g., table.column)
         if (strpos($val, '.') !== false) {
             $parts = explode('.', $val);
-            $escaped_parts = array_map(function($part) {
-                if ($part === '*' || (strpos($part, self::$symbol) === 0 && substr($part, -1) === self::$symbol)) {
+            $escaped_parts = array_map(function($part) use ($sym) {
+                if ($part === '*' || ($sym !== '' && strpos($part, $sym) === 0 && substr($part, -1) === $sym)) {
                     return $part;
                 }
-                return self::$symbol . $part . self::$symbol;
+                return $sym . $part . $sym;
             }, $parts);
             return implode('.', $escaped_parts);
         }
 
-        // Eğer zaten sembolle sarılmışsa ekleme
-        if (strpos($val, self::$symbol) === 0 && substr($val, -1) === self::$symbol) {
+        // If already wrapped with symbol, do not add again
+        if ($sym !== '' && strpos($val, $sym) === 0 && substr($val, -1) === $sym) {
             return $val;
         }
-        return self::$symbol . $val . self::$symbol;
+        return $sym . $val . $sym;
     }
 
     public static function limit($limit, $offset = null)
@@ -126,13 +133,11 @@ class Dbuilder
         return self::create_where($data);
     }
 
-
     /*
-    * Make İnsert Key
-    * Veritabanı insert işlemi için keyleri oluşturur.
-    * @param array $data
-    * @return string
-    */
+     * Build insert column keys
+     * @param array $data
+     * @return string
+     */
     public static function create_insert_key($data)
     {
         if (is_array($data)) {
@@ -140,37 +145,29 @@ class Dbuilder
             $escaped_keys = array_map([self::class, 'wrapSymbol'], $keys);
             return '(' . implode(',', $escaped_keys) . ')';
         }
-        throw new DbuilderException(
-            "insert builder problem :" . $data . " is not array!" .
-                "insert builder problemi : " . $data . " bir dizi değil!"
-        );
+        throw new DbuilderException("Insert builder error: parameter is not an array!");
     }
 
     /*
-    * Make İnsert Value
-    * Veritabanı insert işlemi için value kısmını oluşturur.
-    * @param array $data
-    * @return string
-    */
+     * Build insert values
+     * @param array $data
+     * @return string
+     */
     public static function create_insert_value($data)
     {
         if (is_array($data)) {
             return ' VALUES (\'' . implode('\',\'', array_map(['Dbuilder', 'cc'], array_values($data))) . '\')';
         }
-        throw new DbuilderException(
-            "insert builder problem :" . $data . " is not array!" .
-                "insert builder problemi : " . $data . " bir dizi değil!"
-        );
+        throw new DbuilderException("Insert builder error: parameter is not an array!");
     }
 
     /*
-    * Make insert sql string
-    * Veritabanı insert işlemi için sql stringi oluşturur
-    * @param string $table
-    * @param array $array
-    * @param bool $bool
-    * @return string
-    */
+     * Create insert SQL string
+     * @param string $table
+     * @param array $array
+     * @param bool|null $replace
+     * @return string
+     */
     public static function create_insert($table, $array, $replace = null)
     {
         $val = $replace ? 'REPLACE INTO ' : 'INSERT INTO ';
@@ -189,21 +186,19 @@ class Dbuilder
         return $val . $table . $key . $value;
     }
 
-
     /*
-    * Make update sql string
-    * Veritabanı update işlemi için sql stringi oluşturur
-    * @param string $table
-    * @param array $array
-    * @param string $where
-    * @return string
-    */
-    public static function create_update($tablo, $array, $where)
+     * Create update SQL string
+     * @param string $table
+     * @param array $array
+     * @param mixed $where
+     * @return string
+     */
+    public static function create_update($table, $array, $where)
     {
-        $tablo = self::table($tablo);
+        $table = self::table($table);
         $update = self::create_update_string($array);
         $where = self::where($where);
-        return "UPDATE " . $tablo . " SET " . $update . " WHERE " . $where;
+        return "UPDATE " . $table . " SET " . $update . " WHERE " . $where;
     }
 
     public static function create_update_string($data)
@@ -215,30 +210,29 @@ class Dbuilder
             }
             return rtrim($val, ', ');
         }
-        return $data;
+        return (string)$data;
     }
 
     public static function create_where($data)
     {
         if (is_array($data)) {
-            $val = '';
+            $clauses = [];
             foreach ($data as $key => $value) {
                 if ($key === 'condition') {
-                    $val .= " " . $value . " ";
                     continue;
                 }
-                $val .= " " . self::wrapSymbol($key) . " = '" . self::cc($value) . "' ";
+                $clauses[] = self::wrapSymbol($key) . " = '" . self::cc($value) . "'";
             }
-            return $val;
+            $condition = isset($data['condition']) ? ' ' . trim($data['condition']) . ' ' : ' AND ';
+            return implode($condition, $clauses);
         }
-        return $data;
+        return (string)$data;
     }
 
     public static function create_delete($table = null, $where = null)
     {
-        if ($table === null) {
-            throw new DbuilderException("\$table not is null\n \$table boş Olamaz");
-            return false;
+        if ($table === null || $table === '') {
+            throw new DbuilderException("Table parameter cannot be null or empty!");
         }
         $table = self::table($table);
         return $where !== null ? "DELETE FROM " . $table . " WHERE " . self::where($where) : "DELETE FROM " . $table;

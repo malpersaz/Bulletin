@@ -2,17 +2,17 @@
 
 class mod_gallery_mod extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
     public $model;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_gallery_mod';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_gallery_mod'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list', 'moderate_edit','moderate_delete'
         );
     }
@@ -28,7 +28,7 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions.
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
 
@@ -83,34 +83,13 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
                 'mod_key' => 'id',
                 'mod_value' => 'name',
                 'user_id' => 1
-            ),
-            array(
-                'name' => 'Product Galleries',
-                'mod_name' => 'mod_product',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
-                'name' => 'Service Galleries',
-                'mod_name' => 'mod_service',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
-                'name' => 'Reference Galleries',
-                'mod_name' => 'mod_reference',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
             )
         );
 
         $this->model = Load::model('mod_gallery_mod');
         foreach ($records as $key => $value) {
             if ($this->model->exists_mod_name($value['mod_name']) === FALSE) {
-                $this->oke(" -----<b>" . $value['name'] . "</b> gallery module registered");
+                $this->success(" -----<b>" . $value['name'] . "</b> gallery module registered");
                 $keys = array_keys($value);
                 foreach ($keys as $k) {
                     $this->model->$k = $value[$k];
@@ -133,7 +112,7 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

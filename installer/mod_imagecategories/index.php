@@ -2,17 +2,17 @@
 
 class mod_imagecategories extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_imagecategories';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_imagecategories',
             'pictures'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list', 'moderate_edit','moderate_delete','gallery'
         );
     }
@@ -25,7 +25,7 @@ class mod_imagecategories extends installerbase implements installerbaseinterfac
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         if ($this->installer_seed_category_bootstrap('mod_imagecategories') === FALSE) {
@@ -41,7 +41,7 @@ class mod_imagecategories extends installerbase implements installerbaseinterfac
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

@@ -2,7 +2,7 @@
 /**
  * Category Module - English Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication_category
  * @version 1.0.0
  * @author  AKM Software
@@ -24,16 +24,15 @@ $lang['mod_publication_category'] = [
     'add' => 'Add Category',
     'edit' => 'Edit Category',
     'information' => 'Information',
-    'oke' => 'Success',
-    'hata' => 'Error Occurred',
-    'error' => 'Fatal Error Occurred',
+    'success' => 'Success',
+    'error' => 'Error Occurred',
     'remove_record' => 'Are you sure you want to delete this record?',
     'choose_wish' => 'Choose as you wish',
     'remove_image' => 'Are you sure you want to remove this image?',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Category successfully added!',
             'edit' => 'Category successfully updated!',
         ],
@@ -49,44 +48,32 @@ $lang['mod_publication_category'] = [
 
     'errors' => [
         'record' => 'The specified record could not be found!',
-        'parent_selection_required' => 'Please select a parent category.',
-        'parent_language_mismatch' => 'Parent category language must match the category language.',
-        'parent_cycle' => 'A category cannot be moved under itself or one of its subcategories.',
-        'menu_parent_not_found' => 'Selected menu parent could not be found.',
-        'menu_language_mismatch' => 'Menu parent language must match the category language.',
-        'order_update_failed' => 'Category order could not be updated.',
-    ],
-
-    'parent_labels' => [
-        'system_root' => 'System root',
-        'language_root' => ':language root',
     ],
 
     'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
-        'save' => 'Save',
+        'cancel' => 'Cancel',
         'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
+        'save' => 'Save',
         'gallery' => 'Gallery',
         'file' => 'File',
     ],
 
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
     ],
 
     'validator' => [
@@ -97,8 +84,8 @@ $lang['mod_publication_category'] = [
         'inarray' => '%s field can only accept \' %s \' values',
     ],
 
-    'roll' => [
-        'ad' => 'Category Management Roles',
+    'role' => [
+        'name' => 'Publication Category Management Roles',
         'add' => 'Can Add Category',
         'edit' => 'Can Edit Category',
         'delete' => 'Can Delete Category',
@@ -126,8 +113,6 @@ $lang['mod_publication_category'] = [
         'save' => 'Save',
         'update' => 'Update',
         'remove' => 'Remove',
-        'unlock_reorder' => 'Unlock Reorder',
-        'lock_reorder' => 'Lock Reorder',
     ],
 
     // === System Messages ===
@@ -150,10 +135,6 @@ $lang['mod_publication_category'] = [
         'info' => [
             'edit_double_click' => 'Double-click the category you want to edit',
             'drag_reorder' => 'Drag and drop the category to reorder',
-            'mode_unlocked' => 'Mode: Reorder (Unlocked)',
-        ],
-        'warning' => [
-            'reorder' => 'Warning! You are changing the tree structure.',
         ],
     ],
 
@@ -210,9 +191,6 @@ $lang['mod_publication_category'] = [
         'edit' => 'Edit Selected',
         'delete' => 'Delete Selected',
         'refresh' => 'Refresh',
-        'add' => 'Add',
-        'edit' => 'Edit',
-        'delete' => 'Delete',
         'cancel' => 'Cancel',
         'remove' => 'Remove',
         'yes' => 'Yes',
@@ -266,15 +244,11 @@ $lang['mod_publication_category'] = [
             'description' => 'Description (for Search Engines)',
             'menu' => 'Send Category to Menu',
             'image' => 'Image',
-            'image_select' => 'Select Image',
             'acl_id' => 'Access Control',
         ],
-        'select_values' => [
-            'root_yes' => 'Yes',
-            'root_no' => 'No',
-        ],
-        'tooltips' => [
-            'acl_settings' => 'ACL Settings',
+        'select_value' => [
+            'root_e' => 'Yes',
+            'root_h' => 'No',
         ],
     ],
 
@@ -286,7 +260,6 @@ $lang['mod_publication_category'] = [
         'delete_multiple' => 'Are you sure you want to delete :count selected categories?',
         'make_root' => 'Are you sure you want to make this a root category?',
         'remove_root' => 'Are you sure you want to remove root category status?',
-        'reorder_single' => 'Do you want to move this category to its new location?',
     ],
 
     // === Success Messages ===
@@ -387,7 +360,7 @@ $lang['mod_publication_category'] = [
 
     // === Response Codes (for AJAX/PHP responses) ===
     'responses' => [
-        'success' => 'Oke',  // Keep 'Oke' as it's used in JavaScript comparisons
+        'success' => 'Success',  // Keep 'Success' as it's used in JavaScript comparisons
         'error' => 'Error',  // Keep 'Error' as it's used in JavaScript comparisons
         'fatal_error' => 'ERROR',  // Keep 'ERROR' as it's used in JavaScript comparisons
     ],

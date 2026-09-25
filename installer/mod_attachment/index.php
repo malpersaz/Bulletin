@@ -2,16 +2,16 @@
 
 class mod_attachment extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_attachment';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_attachment'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list', 'moderate_edit','moderate_delete'
         );
     }
@@ -27,7 +27,7 @@ class mod_attachment extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions.
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
 
@@ -39,7 +39,7 @@ class mod_attachment extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

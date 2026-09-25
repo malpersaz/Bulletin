@@ -54,14 +54,15 @@ $lang['mod_imagecategories'] = [
         'unique' => 'Erzişê %s xora est. Kerem ke %sê bîn hilweçine.',
         'inarray' => 'Qadê %s tenya nê erzişan qebul keno: %s.',
     ],
-    'roll' => [
-        'ad' => 'Rolê İdarekerdışê Kategoriyê Resim',
+    'role' => [
+        'name' => 'Rolenên Rêveberiya Kategoriya Diyariyan',
         'add' => 'Şıma şenê kategoriyê resim cı zêde bikerê',
         'edit' => 'Şıma şenê kategoriyê resim vurnayê',
         'delete' => 'Şıma şenê kategoriyê resim besterê',
         'list' => 'Şıma şenê idarekerdışê kategoriyê resim bıvinê',
         'moderate_edit' => 'Şıma şenê kategoriyê resim yê kesê bîn vurnayê',
         'moderate_delete' => 'Şıma şenê kategoriyê resim yê kesê bîn besterê',
+        'gallery' => 'Şıma şenê galeriya resiman cı zêde bikerê',
     ],
     'role_errors' => [
         'add' => 'Destûrê to yê cı zêdekerdışê kategoriyê resim çıniyo.',
@@ -70,6 +71,7 @@ $lang['mod_imagecategories'] = [
         'list' => 'Destûrê to yê dîtışê idarekerdışê kategoriyê resim çıniyo.',
         'moderate_edit' => 'Tu nêşkenî kategoriyê resim yê kesê bîn vurnayî.',
         'moderate_delete' => 'Tu nêşkenî kategoriyê resim yê kesê bîn besterî.',
+        'gallery' => 'Destûrê to yê cı zêdekerdışê galeriya resiman çıniyo.',
     ],
     'status' => [
         'root' => 'Kok',

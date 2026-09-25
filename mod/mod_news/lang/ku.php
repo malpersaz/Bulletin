@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Property
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -20,22 +20,22 @@ if (!defined('AKM_LOADED')) {
 $lang['mod_news'] = [
 
     // === Basic Actions ===
-    'add' => 'Nûçe Lê Zêde Bike',
+    'add' => 'Nûçe Lêke',
     'edit' => 'Nûçeyê Biguherîne',
     'list' => 'Nûçe',
     'information' => 'Agahî!',
-    'oke' => 'Çêbû!',
+    'success' => 'Çêbû!',
     'error_occurred' => 'Çewtî Çêbû!',
     'error' => 'Çewtiya Giran Çêbû!',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
     'delete_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
     'quick_unpublish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
     'wizard_loading' => 'Sêrbaz tê barkirin...',
-    'add_image' => 'Wêne lê zêde bike',
+    'add_image' => 'Wêne Lêke',
     'upload_image' => 'Wêne Lê Bar Bike/Biguherîne',
     'local' => 'Lokal',
     'embed' => 'Embed',
@@ -69,7 +69,7 @@ $lang['mod_news'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Nûçe Hate Zêdekirin!',
             'edit' => 'Nûçe Hate Sererastkirin!',
         ],
@@ -89,9 +89,9 @@ $lang['mod_news'] = [
         'next' => 'Pêşve',
         'prev' => 'Vegere',
         'send' => 'Bişîne',
-        'add' => 'Zêde Bike',
+        'add' => 'Lêke',
         'edit' => 'Biguhere',
-        'refresh' => 'Nû Bike',
+        'refresh' => 'Nûjen Bike',
         'delete' => 'Jêbibe',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberê Pelan',
@@ -105,17 +105,17 @@ $lang['mod_news'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        4 => 'Tu dane nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
-        104 => 'Tê barkirin...',
-        105 => 'Tu nûçe nehat dîtin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+        'no_data' => 'Tu dane nehat dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        'loading' => 'Tê barkirin...',
+        'no_data' => 'Tu nûçe nehat dîtin',
         'approve' => [
             'key' => 'Weşandin',
             'value' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
@@ -137,12 +137,12 @@ $lang['mod_news'] = [
         'title_length' => 'Divê tu sernavekî herî kêm ji 1 tîpê û herî pir ji 70 tîpan pêk tê binivîsî.',
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
-        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku herî kêm 110 tîp û herî pir 280 tîp pêk tê binivîsin.',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
     // === Permission Roles ===
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Rolên Rêveberiya Nûçeyan',
         'add' => 'Dikare nûçeyan lê zêde bike',
         'edit' => 'Dikare nûçeyan biguhere',
@@ -194,7 +194,7 @@ $lang['mod_news'] = [
             'gallery_id' => 'Galerî',
             'file_id' => 'Pel',
             'acl_id' => 'Kontrola Têketinê',
-            'menu' => 'Li Menuyê Zêde Bike',
+            'menu' => 'Li Pêşekê Lêke',
             'video' => 'Galeriya Vîdeoyê',
             'video_help' => 'Navê vîdeoya ku tu dixwazî di nûçeyê de diyar bibe bibîne',
         ],
@@ -233,7 +233,6 @@ $lang['mod_news'] = [
         'default_sort' => 'Yên Nû',
         'default_lang' => 'KU',
         'date_locale' => 'ku-TR',
-        'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
         'filter_applied' => 'Parzûn hatin sepandin',
         'sort_label' => 'Rêzkirin',
@@ -318,7 +317,7 @@ $lang['mod_news'] = [
             'category' => 'Beşa nûçeyê lê were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
-            'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
+            'intro' => 'Kin û zelal binivîse. (90 - 120 tîp)',
             'news' => 'Edîtorê nivîsa dewlemend.',
             'image' => 'Tu dikarî wêneyekî tenê hilbijêrî.',
             'finish' => 'Saxtîkirina dawî û şandin.',
@@ -388,7 +387,6 @@ $lang['mod_news'] = [
         'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛJENKIRIN:\n%s",
-        'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Nûçe hat jêbirin!',
         'add_video' => 'Vîdeo Lêke',
         'add_file' => 'Pelan Lêke',
@@ -411,9 +409,9 @@ $lang['mod_news'] = [
 
     // === Latest News ===
     'latest_news' => [
-        1 => 'Nûçeyên Dawî',
-        2 => 'Hemû Nûçeyan Bibîne',
-        3 => 'Hîna tu nûçe nehatine weşandin.',
+        'title' => 'Nûçeyên Dawî',
+        'subtitle' => 'Hemû Nûçeyan Bibîne',
+        'description' => 'Hîna tu nûçe nehatine weşandin.',
     ],
 
     'mock' => [

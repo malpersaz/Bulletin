@@ -7,6 +7,15 @@ class mod_announcements_helper extends indexBase
         parent::__construct();
     }
 
+    protected function _verify_image_asset($image)
+    {
+        if (empty($image)) {
+            return null;
+        }
+        $fullPath = root_dir . ltrim($image, '/');
+        return (file_exists($fullPath) && is_file($fullPath)) ? $image : null;
+    }
+
     public function _latest_announcements($limit, $select)
     {
         $m = Load::model('mod_announcements')->select($select)->where_lang_and_status($this->site['lang'], 'y')->limit($limit)->order('created_at', 'DESC');

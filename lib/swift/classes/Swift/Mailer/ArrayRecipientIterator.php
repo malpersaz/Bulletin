@@ -24,7 +24,7 @@ class Swift_Mailer_ArrayRecipientIterator
    * @var array
    * @access private
    */
-  private $_recipients = array();
+  private $_recipients = [];
   
   /**
    * Create a new ArrayRecipientIterator from $recipients.
@@ -41,7 +41,7 @@ class Swift_Mailer_ArrayRecipientIterator
    */
   public function hasNext()
   {
-    return !empty($this->_recipients);
+    return $this->_recipients !== [];
   }
   
   /**

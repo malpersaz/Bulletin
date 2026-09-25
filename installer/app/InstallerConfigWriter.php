@@ -57,8 +57,8 @@ class InstallerConfigWriter
 
         $content .= ");\n\n";
         
-        $content .= "Kayit::ekle('database', 'installed');\n";
-        $content .= "Kayit::ekle('db_config', \$db);\n";
+        $content .= "Registry::add('database', 'installed');\n";
+        $content .= "Registry::add('db_config', \$db);\n";
         $content .= "unset(\$db);\n";
 
         return file_put_contents($this->configPath, $content) !== false;

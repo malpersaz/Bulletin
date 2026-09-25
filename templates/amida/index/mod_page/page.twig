@@ -1,0 +1,392 @@
+{% extends "layouts/base.twig" %}
+{% import "macros/faq.twig" as faq %}
+
+{% block css_custom %}
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
+{% set d = ctx_get('detail') ?: ctx_get('d') %}
+{% set list_root = ctx_get('list_root') %}
+{% set parent_id_list = ctx_get('parent_id_list') %}
+{% set list = ctx_get('list') %}
+{% set parent_id_list_root = ctx_get('parent_id_list_root') %}
+{% set gallery = ctx_get('gallery') ?: ctx_get('res') %}
+{% set files = ctx_get('files') ?: ctx_get('file') %}
+{% set subpages = ctx_get('subpages') ?: (ctx_get('sub_pages') ?: ctx_get('altsayfalar')) %}
+{% set contents = ctx_get('contents') %}
+{% set faqs = ctx_get('faqs') ?: ctx_get('faq') %}
+{% set faq_lang = ctx_get('faq_lang') %}
+
+{% set sidebar_nav_count = 0 %}
+{% if list is not empty %}
+	{% for l in list %}
+		{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
+			{% set sidebar_nav_count = sidebar_nav_count + 1 %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
+{% if parent_id_list is not empty %}
+	{% for l in parent_id_list %}
+		{% if l.lang == site.lang and l.root != 'y' and l.seo != d.seo %}
+			{% set sidebar_nav_count = sidebar_nav_count + 1 %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
+{% set has_sidebar = (sidebar_nav_count > 0) %}
+{% set page_meta_title = d.title is defined and d.title is not empty ? d.title : d.name %}
+{% set page_meta_description = d.description is defined and d.description is not empty ? d.description : (d.summary is defined and d.summary is not empty ? d.summary : site.description) %}
+{% set page_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set page_share_image = d.image is not empty ? site.iaddress ~ 'mod_page/' ~ d.image : page_logo_asset %}
+{% set page_share_jpg = page_share_image matches '/\\.webp$/i' ? page_share_image|replace({'.webp': '.jpg'}) : page_share_image %}
+{% set page_share_ext = page_share_jpg|split('?')|first|split('.')|last|lower %}
+{% set page_share_mime = page_share_ext == 'png' ? 'image/png' : (page_share_ext == 'webp' ? 'image/webp' : (page_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
+
+{% block canonical %}
+	<link rel="canonical" href="{{ site.saddress }}page/{{ d.seo }}"/>
+{% endblock %}
+
+{% block title %}
+	<title>{{ page_meta_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+	<meta name="description" content="{{ page_meta_description }}">
+{% endblock %}
+
+{% block keywords %}
+	<meta name="keywords" content="{{ d.keywords }}">
+{% endblock %}
+
+{% block meta_tags %}
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="{{ site.saddress }}page/{{ d.seo }}">
+	<meta property="og:title" content="{{ page_meta_title }}">
+	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	{% if page_share_image is not empty %}
+		<meta property="og:image" content="{{ page_share_jpg }}">
+		<meta property="og:image:secure_url" content="{{ page_share_jpg }}">
+		<meta property="og:image:type" content="{{ page_share_mime }}">
+		<meta property="og:image:width" content="1200">
+		<meta property="og:image:height" content="630">
+		<link rel="image_src" href="{{ page_share_jpg }}">
+	{% endif %}
+	<meta property="og:site_name" content="{{ site.title }}">
+	{% set og_locale = site.lang %}
+	{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+	{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+	{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+	{% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
+	{% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
+	{% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
+	{% endif %}
+	<meta property="og:locale" content="{{ og_locale }}">
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:url" content="{{ site.saddress }}page/{{ d.seo }}">
+	<meta name="twitter:title" content="{{ page_meta_title }}">
+	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	{% if page_share_image is not empty %}
+		<meta name="twitter:image" content="{{ page_share_jpg }}">
+	{% endif %}
+{% endblock %}
+
+{% block schema %}
+	<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@type": "AboutPage",
+		  "name": {{ d.name|json_encode|raw }},
+		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
+		  "url": {{ (site.saddress ~ 'page/' ~ d.seo)|json_encode|raw }},
+		  "isPartOf": {
+		    "@type": "WebSite",
+		    "name": {{ site.title|json_encode|raw }},
+		    "url": {{ site.address|json_encode|raw }}
+		  },
+		  "breadcrumb": {
+		    "@type": "BreadcrumbList",
+		    "itemListElement": [
+		      {
+		        "@type": "ListItem",
+		        "position": 1,
+		        "name": {{ lang.index.home|json_encode|raw }},
+		        "item": {{ site.saddress|json_encode|raw }}
+		      },
+		      {
+		        "@type": "ListItem",
+		        "position": 2,
+		        "name": {{ d.name|json_encode|raw }},
+		        "item": {{ (site.saddress ~ 'page/' ~ d.seo)|json_encode|raw }}
+		      }
+		    ]
+		  }
+		}
+	</script>
+	{{ faq.schema(faqs) }}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_page">
+	<div class="col-lg-10">
+		<div class="detail-page-layout{% if has_sidebar %} has-sidebar{% endif %}">
+			{% if has_sidebar %}
+				<aside class="detail-page-sidebar">
+					<div class="detail-sidebar-card">
+						<div class="card-body">
+							<div class="detail-sidebar-list">
+								{% for l in list %}
+									{% if list_root == l.id %}
+										{% if l.root != 'y' %}
+											<div class="detail-sidebar-root">
+												<i class="bi bi-diagram-3"></i>
+												<span>{{ l.name }}</span>
+											</div>
+										{% endif %}
+									{% elseif l.lang == site.lang and l.root != 'y' %}
+										<a href="{{ site.saddress }}page/{{ l.seo }}" class="detail-sidebar-link{% if d.seo == l.seo %} is-active{% endif %}">
+											<span>{{ l.name }}</span>
+											<span><i class="bi bi-arrow-right-short"></i></span>
+										</a>
+									{% endif %}
+								{% endfor %}
+								{% if parent_id_list is not empty %}
+									{% for l in parent_id_list %}
+										{% if parent_id_list_root == l.id %}
+											{% if l.root != 'y' %}
+												<div class="detail-sidebar-root">
+													<i class="bi bi-layers"></i>
+													<span>{{ l.name }}</span>
+												</div>
+											{% endif %}
+										{% elseif l.lang == site.lang and l.root != 'y' %}
+											<a href="{{ site.saddress }}page/{{ l.seo }}" class="detail-sidebar-link{% if d.seo == l.seo %} is-active{% endif %}">
+												<span>{{ l.name }}</span>
+												<span><i class="bi bi-arrow-right-short"></i></span>
+											</a>
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</aside>
+			{% endif %}
+
+			<div class="detail-page-content">
+				<article class="detail-card">
+					<div class="detail-breadcrumb-wrap">
+						<nav aria-label="{{ lang.index.home }}">
+							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<a itemprop="item" href="{{ site.saddress }}">
+										<span itemprop="name">{{ lang.index.home }}</span>
+									</a>
+									<meta itemprop="position" content="1"/>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<span itemprop="name">{{ d.name }}</span>
+									<meta itemprop="position" content="2"/>
+								</li>
+							</ol>
+						</nav>
+					</div>
+
+					<div class="detail-content position-relative">
+						{% set readingTime = (d.content|striptags|length / 1100)|round(0, 'ceil') %}
+						<div class="detail-page-intro">
+							<div class="detail-page-meta">
+								{% set kicker_shown = false %}
+								{% if list_root is not empty and list is not empty %}
+									{% for l in list %}
+										{% if l.id == list_root and l.root != 'y' and not kicker_shown %}
+											<span class="detail-page-kicker">{{ l.name }}</span>
+											{% set kicker_shown = true %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+								{% if not kicker_shown and parent_id_list is not empty %}
+									{% for l in parent_id_list %}
+										{% if l.id == parent_id_list_root and l.root != 'y' and not kicker_shown %}
+											<span class="detail-page-kicker">{{ l.name }}</span>
+											{% set kicker_shown = true %}
+										{% endif %}
+									{% endfor %}
+								{% endif %}
+								{% if not kicker_shown %}
+									<span class="detail-page-kicker">{{ lang.index.mod_page.subtitle|default('Page') }}</span>
+								{% endif %}
+								<span class="detail-page-reading">
+									<i class="bi bi-clock-history"></i>
+									<span>{{ readingTime }} {{ lang.index.min_read }}</span>
+								</span>
+							</div>
+
+							<h1 class="detail-title">{{ d.name }}</h1>
+						</div>
+
+						{% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
+							<div class="detail-lead detail-page-lead">
+								<p class="detail-page-summary">{{ d.summary }}</p>
+							</div>
+						{% endif %}
+
+						{% if d.image is not empty and d.image != '#' %}
+							<div class="detail-hero">
+								<a href="{{ site.iaddress }}mod_page/{{ d.image }}" data-bs-toggle="lightbox" data-gallery="page-main-image">
+									<img src="{{ site.iaddress }}mod_page/{{ d.image }}" fetchpriority="high" class="detail-hero-image" alt="{{ d.name }}" title="{{ d.name }}">
+								</a>
+							</div>
+						{% else %}
+							<div class="detail-hero detail-hero-placeholder">
+								{% if site.logo_path is defined and site.logo_path is not empty %}
+									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" class="detail-placeholder-logo" alt="{{ site.title }}" title="{{ d.name }}">
+								{% elseif site.logo_symbol is defined and site.logo_symbol is not empty %}
+									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_symbol }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
+								{% elseif site.site_icon is defined and site.site_icon is not empty %}
+									<img src="{{ site.iaddress }}mod_settings/{{ site.site_icon }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
+								{% endif %}
+							</div>
+						{% endif %}
+
+						{% include 'partials/share.twig' with {
+							'share_wrap_class': 'd-block d-lg-none mb-4 detail-share-quiet',
+							'share_container_class': 'justify-content-start',
+							'share_url_path': 'page',
+							'show_share_text': false
+						} %}
+
+						{% set is_legal_page = d.seo in [
+							lang.index.legal_info_slug,
+							'Legal_Information',
+							'Agahdariya_Zagônî',
+							'Agahiyên_Qanûnî',
+							'زانیارییە_یاساییەکان',
+							'المعلومات_القانونية',
+							'Rechtliche_Hinweise',
+							'Informations_Légales',
+							'Juridisk_Information',
+							'Yasal_Bilgiler',
+							'Melumatê_Huqûqî'
+						] %}
+
+						<div id="amed_content" class="detail-body">
+							{% if is_legal_page %}
+								{% include 'partials/_legal_info.twig' %}
+							{% else %}
+								{{ d.content|raw }}
+							{% endif %}
+						</div>
+
+						{% include 'partials/share_toolbar.twig' with {
+							'share_url_path': 'page',
+							'mod_name': 'mod_page',
+							'item_id': d.id,
+							'has_gallery': gallery is defined and gallery is not empty
+						} %}
+
+						{% if gallery is not empty %}
+							<section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
+								<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images"></i>{{ lang.index.mod_pictures.title }}</h2>
+								<div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
+									{% for image_item in gallery %}
+										<div class="col-6 col-md-4 mb-3">
+											<div class="detail-gallery-card">
+												<a href="{{ site.iaddress }}mod_gallery/mod_page/original/{{ image_item.url }}"
+												   data-bs-toggle="lightbox"
+												   data-gallery="multiimages"
+												   data-title="{{ image_item.name }}"
+												   aria-label="{{ lang.index.enlarge_image }}: {{ image_item.name }}">
+													<img src="{{ site.iaddress }}mod_gallery/mod_page/thumb/{{ image_item.url }}" class="card-img-top" alt="{{ image_item.name }}">
+												</a>
+												{% if image_item.name %}
+													<div class="card-body text-center">
+														<p class="card-text small text-muted text-truncate mb-0">{{ image_item.name }}</p>
+													</div>
+												{% endif %}
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
+
+						{% if files is not empty %}
+							<section class="detail-section" aria-labelledby="files-title">
+								<h2 id="files-title" class="detail-section-heading h4"><i class="bi bi-cloud-download"></i>{{ lang.index.mod_attachment.title }}</h2>
+								<div class="detail-file-list">
+									{% for file_item in files %}
+										{% set extension = file_item.original_name|split('.')|last|lower %}
+										{% set file_icon = 'bi-file-earmark-arrow-down' %}
+										{% set badge_color = 'bg-secondary' %}
+										{% if extension == 'pdf' %}{% set file_icon = 'bi-file-earmark-pdf' %}{% set badge_color = 'bg-danger' %}
+										{% elseif extension == 'zip' or extension == 'rar' %}{% set file_icon = 'bi-file-earmark-zip' %}{% set badge_color = 'bg-warning text-dark' %}
+										{% elseif extension == 'doc' or extension == 'docx' or extension == 'odt' %}{% set file_icon = 'bi-file-earmark-word' %}{% set badge_color = 'bg-primary' %}
+										{% elseif extension == 'xls' or extension == 'xlsx' %}{% set file_icon = 'bi-file-earmark-excel' %}{% set badge_color = 'bg-success' %}
+										{% elseif extension == 'ppt' or extension == 'pptx' %}{% set file_icon = 'bi-file-earmark-ppt' %}{% set badge_color = 'bg-info text-dark' %}
+										{% elseif extension == 'jpg' or extension == 'jpeg' or extension == 'png' or extension == 'gif' %}{% set file_icon = 'bi-file-earmark-image' %}{% set badge_color = 'bg-info' %}
+										{% elseif extension == 'epub' %}{% set file_icon = 'bi-book' %}{% set badge_color = 'bg-success' %}
+										{% endif %}
+
+										<a href="{{ site.address }}tools/saveFile/mod_page/{{ d.id }}/{{ file_item.id }}" class="detail-file-link">
+											<div class="detail-file-meta">
+												<div class="detail-file-icon">
+													<i class="bi {{ file_icon }}"></i>
+												</div>
+												<div>
+													<h6 class="detail-file-title">{{ file_item.original_name }}</h6>
+													<span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
+												</div>
+											</div>
+											<span class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+												<i class="bi bi-download me-1"></i>{{ lang.index.download }}
+											</span>
+										</a>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
+
+						{% if subpages is not empty %}
+							<section class="detail-list-card mt-5" aria-labelledby="subpages-title">
+								<div class="card-header">
+									<h5 id="subpages-title" class="fw-bold mb-0">
+										<i class="bi bi-layers me-2 text-primary"></i> {{ lang.index.mod_page.description|default('Subpages') }}
+									</h5>
+								</div>
+								<div class="list-group list-group-flush p-3">
+									{% for item in subpages %}
+										<a href="{{ site.saddress }}page/{{ item.seo }}" class="list-group-item list-group-item-action border-0 rounded-2 mb-1" title="{{ item.summary|striptags|slice(0, 100) }}">
+											{{ item.name }}
+										</a>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
+
+						{% if contents is not empty %}
+							<section class="detail-list-card mt-4" aria-labelledby="related-contents-title">
+								<div class="card-header">
+									<h5 id="related-contents-title" class="fw-bold mb-0">
+										<i class="bi bi-journal-text me-2 text-primary"></i> {{ lang.index.mod_content.title|default('Related Articles') }}
+									</h5>
+								</div>
+								<div class="list-group list-group-flush p-3">
+									{% for item in contents %}
+										<a href="{{ site.saddress }}article/{{ item.seo }}" class="list-group-item list-group-item-action border-0 rounded-2 mb-1" title="{{ item.summary|striptags|slice(0, 100) }}">
+											{{ item.name }}
+										</a>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
+
+						{{ faq.render(faqs, faq_lang.mod_faq.title|default('FAQ')) }}
+					</div>
+				</article>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

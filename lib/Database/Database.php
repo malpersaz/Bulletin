@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Koberz Content Management System
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * User: Kobim
+ * AKM Rojname Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
  * Date: 08.04.2011 - 18:55
  */
 if (defined('lib_dir') === false) {
@@ -21,8 +21,8 @@ class Database
     public $_for_update = false;
     public static $_sql_querys = [];
 
-    private static $_instances = [];
-    private static $database;
+    public static $_instances = [];
+    public static $database;
 
     public $_first_next = 0;
 
@@ -50,13 +50,13 @@ class Database
     public function connect($database = null)
     {
         if (is_array($database)) {
-            $dbconfig = array_merge($database, Kayit::getir('db_config'));
-            Kayit::yenile('db_config', $dbconfig);
+            $dbconfig = array_merge($database, Registry::get('db_config'));
+            Registry::set('db_config', $dbconfig);
             $r = array_keys($database);
             $database = $r[0];
         }
         // If the $database parameter passed is not NULL
-        self::$database = $database != null ? $database : Kayit::getir('database');
+        self::$database = $database != null ? $database : Registry::get('database');
 
         // If this database has been called before.
         if (array_key_exists(self::$database, self::$_instances)) {
@@ -604,11 +604,16 @@ class Database
         return $this->_db[self::$database];
     }
 
+    public function get_connection()
+    {
+        $db = $this->getDB();
+        return isset($db->_con) ? $db->_con : null;
+    }
+
     public function getAdapterType()
     {
         if (isset($this->_db[self::$database])) {
-            $adapterClass = get_class($this->_db[self::$database]);
-            return $adapterClass;
+            return get_class($this->_db[self::$database]);
         }
         return null;
     }
@@ -625,6 +630,27 @@ class Database
             $e->show();
             return null;
         }
+    }
+
+    /**
+     * Safely quotes and escapes a string value for query execution.
+     *
+     * @param string $string String value to escape
+     * @return string Quoted/escaped string
+     */
+    public function quote($string)
+    {
+        $db = $this->getDB();
+        if (method_exists($db, 'escape_string')) {
+            return $db->escape_string($string);
+        }
+        if (isset($db->_con) && method_exists($db->_con, 'quote')) {
+            return $db->_con->quote($string);
+        }
+        if (isset($db->_con) && method_exists($db->_con, 'real_escape_string')) {
+            return "'" . $db->_con->real_escape_string($string) . "'";
+        }
+        return "'" . addslashes($string) . "'";
     }
 
     public function flush()

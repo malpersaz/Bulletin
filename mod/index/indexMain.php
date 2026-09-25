@@ -11,19 +11,19 @@ class indexMain
     public $val;
     public $mod;
     public $model;
-    public $secenek;
-    public $sec;
+    public $options;
+    public $option;
     function __construct()
     {
-        // Tema Kütüphanesini Çağıralım
+        // Load Template Library
         // $this->tema = Load::lib('AdminTemplate');
-        // // Database Kütüphanesini Yükleyelim
+        // Load Database Library
         // $this->db = Load::lib('Database');
-        // // Site ayarlarını çekelim
-        $this->site = Kayit::getir('site_config');
-        // // Session Kütüphanesi
+        // Fetch site settings
+        $this->site = Registry::get('site_config');
+        // Session Library
         // $this->session = Load::lib('Session');
-        // // User Model
+        // User Model
         // $this->user = Load::model('mod_user.user');
     }
 
@@ -63,9 +63,9 @@ class indexMain
     }
 
     /**
-     * IP Bazlı Görüntüleme Sayısını Günceller (Anti-F5 Spam)
-     * @param string $table Tablo adı (Örn: mod_news)
-     * @param int $id İçerik ID'si
+     * Updates IP-based view count (Anti-F5 Spam)
+     * @param string $table Table name (e.g. mod_news)
+     * @param int $id Content ID
      * @return bool
      */
     public function _update_view_count($table, $id)
@@ -79,15 +79,15 @@ class indexMain
         
         $db = Load::lib('Database');
         
-        // Bu IP bugün bu içeriği görmüş mü kontrol et
+        // Check if this IP viewed this item today
         $db->fetch_array("SELECT id FROM `sys_view_logs` WHERE `table_name` = '$table' AND `item_id` = " . intval($id) . " AND `ip_address` = '$ip' AND `created_at` = '$today' LIMIT 1");
         
         if ($db->getSize() === 0) {
-            // Log kaydı ekle (Duplicate entry hatasını önlemek için IGNORE kullanıyoruz)
+            // Add log record (use INSERT IGNORE to prevent duplicate entry error)
             $db->query("INSERT IGNORE INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
                         VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
             
-            // Eğer bir satır eklendiyse view count artır
+            // If inserted, increment view count
             if ($db->affected_rows() > 0) {
                 $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
                 return true;

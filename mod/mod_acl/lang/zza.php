@@ -1,101 +1,95 @@
 <?php
-$lang['mod_acl'] = array (
-  'ziyaretci' => 'Mêvan',
-  'add' => 'ACL lêzêde bike',
-  'edit' => 'ACL serast bike',
-  'list' => 'ACL lîste',
-  'information' => 'Agahî!',
-  'oke' => 'Operasyon Serkeft!',
-  'hata' => 'Çewtî Çêbû!',
-  'error' => 'Çewtiya Giran Çêbû!',
-  'remove_image' => 'Ji derxistina vê wêneyê bawer î?',
-  'remove_image_oke' => 'Wêne hate rakirin',
-  'choose_wish' => 'Heke bixwazî hilbijêre',
-  'remove_record' => 'Ma tu rakirana vê naverokê bawer î?',
-  'message' => 
-  array (
-    'oke' => 
-    array (
-      'add' => 'ACL nehat lêzêdekirin!',
-      'edit' => 'ACL nehat serastkirin!',
-    ),
-    'error' => 
-    array (
-      'add' => 'ACL nehat lêzêdekirin!',
-      'edit' => 'ACL nehat serastkirin!',
-    ),
-    'information' => 
-    array (
-      'moderate' => 'Naveroka tu dixwazî serast bikî du caran li pey hev bitikîne',
-      'move' => 'Naveroka tu dixwazî cihê wê biguharî bigire û kaş bike cihê nû',
-    ),
-  ),
-  'errors' => 
-  array (
-    'record' => 'Daneya tu dixwazî nehat dîtin!',
-  ),
-  'button' => 
-  array (
-    'add' => 'Zêde Bike',
-    'edit' => 'Serast Bike',
-    'search' => 'Lêgerîn',
-    'reset' => 'Sifir Bike',
-    'yenile' => 'Nû Bike',
-    'delete' => 'Jêbibe',
-    'gallery' => 'Wênedank',
-    'vazgec' => 'Betal',
-    'kaldir' => 'Rake',
-    'evet' => 'Erê',
-    'hayir' => 'Na',
-  ),
-  'grid' => 
-  array (
-    0 => 'Ji nav {total} encaman ji {from} heta {to} tê xwiyakirin.',
-    1 => 'Rûpel',
-    2 => 'Hejmara Rûpelan',
-    3 => 'Dane tên lêbarkirin, li hêviyê bimîne ...',
-    4 => 'Tu dane nehatin dîtin',
-    5 => 'Şaşiya pêwendiyê',
-    6 => 'Lêgerîn',
-    7 => 'Herî kêm rêzikekê hilbijerê',
-    8 => 'Tenê rêzikekê hilbijêre',
-  ),
-  'validator' => 
-  array (
-    'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
-    'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',
-  ),
-  'roll' => 
-  array (
-    'ad' => 'ACL Rêveberî Rolleri',
-    'add' => 'ACL Zêde Bikeyebilir',
-    'edit' => 'ACL Biguhereyebilir',
-    'delete' => 'ACL Jê Bibeebilir',
-    'list' => 'ACL Rêveberîni Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan ACL Kaydını Biguhereyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan ACL Kaydını Biguhereyebilir',
-  ),
-  'role_errors' => 
-  array (
-    'moderate_edit' => 'Size Ait Olmayan ACL Kaydını Biguhereyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan ACL Kaydını Jê Bibeemezsiniz',
-    'add' => 'ACL Zêde Bikemeye Permissionniz Yok',
-    'edit' => 'ACL Biguheremeye Permissionniz Yok',
-    'list' => 'ACL Rêveberîni Görüntülemeye Permissionniz Yok',
-    'delete' => 'ACL Jê Bibemeye Permissionniz Yok',
-  ),
-  'admin' => 
-  array (
-    'list' => 'Lîsteya ACL',
-    'columns' => 
-    array (
-      'id' => 'ID',
-      'ad' => 'ACL Nav',
-      'acl' => 'Endam Grupları',
-    ),
-  ),
-);
-?>
+$lang['mod_acl'] = [
+    'guest' => 'Meyman',
+    'add' => 'Rola Newiye De Biyere',
+    'edit' => 'Rola ACL Bivurne',
+    'list' => 'Listeyê Rolan',
+    'information' => 'Zanaye!',
+    'success' => 'Operasyon Biyê Serkewte!',
+    'error' => 'Xeta Biyê!',
+    'error_title' => 'Xeta',
+    'confirm_title' => 'Tesdiq',
+    'success_title' => 'Serkewte',
+    'remove_image' => 'Tı emînî ke na resıme wedarnî?',
+    'remove_image_success' => 'Resım wedariya',
+    'choose_wish' => 'Eke wazenî weçine',
+    'remove_record' => 'Tı emînî ke na qeyde wedarnî?',
+    'records' => 'qeydî',
+    'message' => [
+        'success' => [
+            'add' => 'ACL de biya!',
+            'edit' => 'ACL newe biya!',
+        ],
+        'error' => [
+            'add' => 'ACL de nêbiya!',
+            'edit' => 'ACL newe nêbiya!',
+        ],
+        'information' => [
+            'moderate' => 'Seba vurnayişi di rey serê naveroke bıtıkne',
+            'move' => 'Naveroke bance u berze cayê newey',
+            'select_roles' => 'Kerem kerê desturanê na role weçînê.',
+        ],
+    ],
+    'errors' => [
+        'record' => 'Qeyda ke to waşte nêameye vênayene!',
+    ],
+    'button' => [
+        'add' => 'De Biyere',
+        'edit' => 'Bivurne',
+        'search' => 'Cı Geyre',
+        'reset' => 'Sıfır Bıkere',
+        'refresh' => 'Newe Bıkere',
+        'delete' => 'Bıestere',
+        'gallery' => 'Galeriya Resıman',
+        'cancel' => 'Bıtexelne',
+        'remove' => 'Wedare',
+        'yes' => 'Heya',
+        'no' => 'Nê',
+        'ok' => 'Temam',
+        'new_role' => 'Rola Newiye',
+    ],
+    'grid' => [
+        'showing_results' => 'Miyanê {total} neticeyan ra {from} ra heta {to} yeno ramocnayene.',
+        'page' => 'Pele',
+        'page_count' => 'Amorê Pelan',
+        'loading' => 'Melumatî yenê barkerdene, pawê...',
+        'no_data' => 'Yew melumat nêame vênayene',
+        'connection_error' => 'Xetaya Pêbestişi',
+        'search' => 'Cıgerayiş',
+        'select_at_least_one' => 'Kerem kerê tewr kêmî yew rêze weçînê',
+        'select_only_one' => 'Kerem kerê tenya yew rêze weçînê',
+    ],
+    'validator' => [
+        'required' => 'Mıntıqaya %s nêşena veng bimanê',
+        'length' => 'Mıntıqaya %s şena tewr kêmî %s u tewr zaf %s karakteran ra pê bêro',
+        'email' => 'Kerem kerê mıntıqaya %s de adresê e-postaya raşte bınusnê',
+        'unique' => '%s o ke to nuşto verênde qeyd biyo. Kerem kerê yewna %s diyar bıkere!',
+        'inarray' => 'Mıntıqaya %s tenya şena ercanê \'%s\' bîgêro',
+    ],
+    'role' => [
+        'name' => 'Rolê Îdareyê ACL',
+        'add' => 'Şeno ACL de bıyero',
+        'edit' => 'Şeno ACL bivurno',
+        'delete' => 'Şeno ACL bıestero',
+        'list' => 'Şeno Îdareyê ACL bıvêno',
+        'moderate_edit' => 'Şeno qeyda ACL a ke a ey/aye nîya bivurno',
+        'moderate_delete' => 'Şeno qeyda ACL a ke a ey/aye nîya bıestero',
+    ],
+    'role_errors' => [
+        'moderate_edit' => 'Desturê to çınyo ke qeyda ke a to nîya bivurnî',
+        'moderate_delete' => 'Desturê to çınyo ke qeyda ke a to nîya biesterî',
+        'add' => 'Desturê to çınyo ke ACL de biyerî',
+        'edit' => 'Desturê to çınyo ke ACL bivurnî',
+        'list' => 'Desturê to çınyo ke Îdareyê ACL bıvênî',
+        'delete' => 'Desturê to çınyo ke ACL biesterî',
+    ],
+    'admin' => [
+        'list' => 'Listeyê ACL',
+        'search_placeholder' => 'Rolan cı geyre...',
+        'columns' => [
+            'id' => 'ID',
+            'name' => 'Nameyê Rolî',
+            'acl' => 'Desturê Na Role (ACL)',
+        ],
+    ],
+];

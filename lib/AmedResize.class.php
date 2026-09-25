@@ -1,14 +1,14 @@
 <?php
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 5/2/11 - 4:54 PM
- * Telif Hakkı:AKM Software
+ * User: AKM
+ * Date: 5/2/11 - 4:54 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Sınıfı: AmedResize
- * Dosya: AmedResize.class.php
- * Açıklama:
+ * Class: AmedResize
+ * File: AmedResize.class.php
+ * Description: Image resizing utility library
  */
 class AmedResizeException extends Exception
 {
@@ -87,17 +87,16 @@ class AmedResize
         $transparencyIndex = imagecolorallocate($this->image_resized, $transparencyColor['red'], $transparencyColor['green'], $transparencyColor['blue']);
         imagefill($this->image_resized, 0, 0, $transparencyIndex);
         imagecolortransparent($this->image_resized, $transparencyIndex);
-        // Transparan
+        // Preserve transparency
         imagecopyresampled($this->image_resized, $this->image_source, 0, 0, 0, 0, $optiomalwidth, $optiomalheight, $this->image_width, $this->image_height);
         return $this;
     }
 
     /*
-    * Formdan Gelen Files değişkeni alır işler
+    * Process $_FILES data submitted from form
     * @param $filename string
     * @param $index NULL|integer
     * @return getsource function
-    *
     */
     public function _getformfile($filename, $index = NULL)
     {
@@ -149,7 +148,7 @@ class AmedResize
 
         $this->image_source = @imagecreatefromstring($this->image_file_source);
         if ($this->image_source === FALSE) {
-            throw new AmedResizeException(htmlspecialchars($file) . " File İs İnvalid Type Extenstion.");
+            throw new AmedResizeException(htmlspecialchars($file) . " File has an invalid type or extension.");
         }
 
         $this->image_width = imagesx($this->image_source);
@@ -219,8 +218,8 @@ class AmedResize
         return TRUE;
     }
 
-    /* getoption fonksiyonu
-    * Gönderilen option parametresine göre width height verir
+    /* getOption method
+    * Calculates width and height based on provided option parameter
     * @param width NULL|integer
     * @param height NULL|integer
     * @param option auto,width,height,original,extract
@@ -251,31 +250,29 @@ class AmedResize
 
     private function _auto_resize($width = NULL, $height = NULL)
     {
-        // Eğer her ikiside NULL ise orjinal
+        // Return original dimensions if both width and height are NULL
         if ($width === NULL && $height === NULL) {
             return $this->_original_resize();
         }
-        // Eğer Resim Height gönderilenden büyükse ve $width null ise yada $width orjinaldan büyükse heighte göre resize
+        // Resize by height if image height exceeds target and width is unspecified or smaller than original
         if (($this->image_height > $height) && ($width === NULL || $this->image_width < $width)) {
             return $this->_height_resize($height);
         }
-        // Eğer Resim width gönderilenden büyükse ve $height null ise yada $height orjinaldan büyükse width'e göre resize
+        // Resize by width if image width exceeds target and height is unspecified or smaller than original
         if (($this->image_width > $width) && ($height === NULL || $this->image_height < $height)) {
             return $this->_width_resize($width);
         }
-        // Eğer Gönderilen her iki değerde orjinaldan büyükse orjinalini al
+        // Keep original dimensions if both target dimensions are larger than original image
         if (($this->image_height < $height) && ($this->image_width < $width)) {
             return $this->_original_resize($width);
         }
-        // Bunlardan hiç biri değilse gönderilen parametreye göre al
+        // Exact dimension calculation fallback
         return $this->_extract_resize($width, $height);
     }
 
     private function _original_resize()
     {
-        $result['width'] = $this->image_width;
-        $result['height'] = $this->image_height;
-        return $result;
+        return ['width' => $this->image_width, 'height' => $this->image_height];
     }
 
     private function _width_resize($width = NULL)
@@ -296,9 +293,7 @@ class AmedResize
 
     private function _extract_resize($width = NULL, $height = NULL)
     {
-        $result['width'] = $width === NULL ? $this->image_width : $width;
-        $result['height'] = $height === NULL ? $this->image_height : $height;
-        return $result;
+        return ['width' => $width === NULL ? $this->image_width : $width, 'height' => $height === NULL ? $this->image_height : $height];
     }
 
     public function flush()

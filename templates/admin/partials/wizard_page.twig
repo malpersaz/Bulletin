@@ -41,7 +41,7 @@
     {% if select_nested_menu_result[parent_id] is defined %}
         {% for entry in select_nested_menu_result[parent_id] %}
             {% set parent_id_loop = entry.id %}
-            {% set skip_root = (entry.root is defined and entry.root == 'y') or (entry.url is defined and entry.url == '##') %}
+            {% set skip_root = entry.root is defined and entry.root == 'y' %}
             {% if not skip_root %}
                 <option value="{{ entry.id }}" {% if selected_id == entry.id %}selected{% endif %}>
                     {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.name }}{% if entry.lang is defined %} ({{ entry.lang|upper }}){% endif %}
@@ -89,6 +89,9 @@
         </div>
 
         <div class="wizard-step" id="pageWizardStep2">
+            <h2 class="step-headline">{{ lang.mod_page.wizard.steps.structure }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.structure }}</p>
+
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="parent_id" id="pageWizardParentId">
                     <option value="0">{{ lang.mod_page.choose_wish }}</option>
@@ -118,19 +121,10 @@
             </div>
 
             <div class="input-wrapper-lg">
-                <select class="m3-input-lg" name="menu_slot" id="pageWizardMenuSlot">
-                    {% for option in menu_slot_options %}
-                        <option value="{{ option.value }}" {% if selected_menu_slot is defined and selected_menu_slot == option.value %}selected{% endif %}>{{ option.label }}</option>
-                    {% endfor %}
-                </select>
-                <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu_slot }}</label>
-            </div>
-
-            <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="menu" id="pageWizardMenuId">
                     <option value="__none__" {% if menu_binding_value is defined and menu_binding_value == '__none__' %}selected{% endif %}>{{ lang.mod_page.menu_options.none }}</option>
-                    <option value="__top__" {% if menu_binding_value is defined and menu_binding_value == '__top__' %}selected{% endif %}>{{ selected_menu_slot is defined and selected_menu_slot != 'none' ? lang.mod_page.menu_options.slot_root : lang.mod_page.menu_options.top_level }}</option>
-                    {{ _self.select_nested_menu_function(select_nested_menu_result, menu_parent_root_id is defined ? menu_parent_root_id : 0, 0, menu_binding_value is defined ? menu_binding_value : (menu is defined ? menu : '__none__')) }}
+                    <option value="__top__" {% if menu_binding_value is defined and menu_binding_value == '__top__' %}selected{% endif %}>{{ lang.mod_page.menu_options.top_level }}</option>
+                    {{ _self.select_nested_menu_function(select_nested_menu_result, 0, 0, menu_binding_value is defined ? menu_binding_value : (menu is defined ? menu : '__none__')) }}
                 </select>
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.menu }}</label>
             </div>
@@ -138,6 +132,7 @@
 
         <div class="wizard-step" id="pageWizardStep3">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.title }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.title }}</p>
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="pageWizardNameInput" value="{{ name is defined ? name : '' }}" placeholder=" " autocomplete="off" maxlength="255">
@@ -148,16 +143,18 @@
 
         <div class="wizard-step" id="pageWizardStep4">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.summary }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.summary }}</p>
 
             <div class="input-wrapper-lg">
-                <textarea class="m3-input-lg" name="summary" id="pageWizardSummaryInput" rows="5" placeholder=" " maxlength="280">{{ summary is defined ? summary : '' }}</textarea>
+                <textarea class="m3-input-lg" name="summary" id="pageWizardSummaryInput" rows="5" placeholder=" " minlength="90" maxlength="120" data-counter-target="pageWizardSummaryCounter" data-counter-min="90" data-counter-max="120" required>{{ summary is defined ? summary : '' }}</textarea>
                 <label class="m3-floating-label">{{ lang.mod_page.admin.columns.summary }}</label>
             </div>
-            <div class="char-counter" id="pageWizardSummaryCounter">0 / 280</div>
+            <div class="char-counter" id="pageWizardSummaryCounter">{{ (summary is defined ? summary : '')|length }} / 120</div>
         </div>
 
         <div class="wizard-step" id="pageWizardStep5">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.content }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.content }}</p>
 
             <div class="mod-page-wizard-editor-wrap">
                 <textarea name="content" id="pageWizardContentTextarea">{{ content is defined ? content : '' }}</textarea>
@@ -166,6 +163,7 @@
 
         <div class="wizard-step" id="pageWizardStep6">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.display }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.display }}</p>
 
             <input type="hidden" name="root" value="{{ root is defined ? root : 'n' }}" id="pageWizardRootSelect">
             <label class="filter-group-label mod-page-section-label strong">{{ lang.mod_page.admin.columns.root }}</label>
@@ -200,6 +198,7 @@
 
         <div class="wizard-step" id="pageWizardStep7">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.relations }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.relations }}</p>
 
             <div class="input-wrapper-lg">
                 <select class="m3-input-lg" name="gallery_id" id="pageWizardGalleryId">
@@ -241,6 +240,7 @@
 
         <div class="wizard-step" id="pageWizardStep8">
             <h2 class="step-headline">{{ lang.mod_page.wizard.steps.seo_finish }}</h2>
+            <p class="step-subhead">{{ lang.mod_page.wizard.descriptions.seo_finish }}</p>
 
             <input type="hidden" name="status" value="{{ status is defined ? status : 'y' }}" id="pageWizardStatusHidden">
 

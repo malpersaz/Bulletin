@@ -20,4 +20,5 @@ class mod_video_embed_model extends ORM
     public $image;
     public $acl_id;
     public $user_id;
+    public $slider;
 }

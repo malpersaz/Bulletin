@@ -27,8 +27,7 @@ $lang['mod_user'] = [
     'reset' => 'Sifir bike',
   ],
   'information' => 'Agahî!',
-  'oke' => 'Kiryar Serkeftî ye!',
-  'success' => 'Serkeftî!',
+ 'Serkeftî!',
   'last_step' => 'Gava Dawî',
   'error_title' => 'Çewtî Çêbû!',
   'error_label' => 'Çewtî!',
@@ -52,11 +51,11 @@ $lang['mod_user'] = [
   'error_fatal' => 'Çewtiyeke Mezin Çêbû!',
   'database_error' => 'Tomar nehat tomarkirin. Ji kerema xwe dîsa biceribîne.',
   'remove_image' => 'Tu bawer î ku dixwazî vê wêneyê jê bibî?',
-  'remove_image_oke' => 'Wêne Hate Jêbirin',
+  'remove_image_success' => 'Wêne Hate Jêbirin',
   'choose_wish' => 'Ji kerema xwe re tişta ku tu dixwazî hilbijêre',
   'remove_record' => 'Tu bawer î ku dixwazî vê tomarê jê bibî?',
   'message' => [
-    'oke' => [
+    'success' => [
       'add' => 'Endam Hate Lêzêdekirin!',
       'edit' => 'Endam Hate Rojanekirin!',
     ],
@@ -471,8 +470,13 @@ $lang['mod_user'] = [
     'more_sheet_title' => 'Amûrên Zêde',
     'more_sheet_copy' => 'Bêyî ku xeta sereke ya karê tijî bike, rûyên rêveberiyê yên kêm-bikaranîn veke.',
     'more_sheet_open_drawer' => 'Peldanka hemû modulan veke',
+    'link_list' => 'Lîste',
+    'link_add' => 'Zêde bike',
+    'link_categories' => 'Kategorî',
+    'link_submissions' => 'Encam',
+    'clear_search' => 'Paqij bike',
     'home_title' => 'Serûpel',
-    'admin_brand' => 'Rêveberiya AKM Business',
+    'admin_brand' => 'Rêveberiya AKM Rojname',
   ],
   'fab' => [
     'add_announcement' => 'Daxuyaniyê Lêzêde Bike',

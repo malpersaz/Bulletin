@@ -1,0 +1,243 @@
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+
+{% block title %}{{ lang.mod_settings.legal_info_title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.legal_info_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/legal_info.css?v=2.7">
+{% endblock %}
+
+{% block content %}
+<div class="legal-page" data-modal-title="{{ lang.mod_settings.legal_info_title }}" data-modal-icon="bi-building-lock">
+
+    {% if message is defined and message %}
+        <div class="legal-banner {{ Success is defined and Success ? 'success' : 'error' }}">
+            <i class="bi {{ Success is defined and Success ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill' }} legal-banner-icon"></i>
+            <div class="legal-banner-text">{{ message }}</div>
+        </div>
+    {% endif %}
+
+    <form action="{{ site.saddress }}mod_settings/legal_info" method="post" id="legalInfoForm" class="legal-shell">
+        <input type="hidden" name="legal_info" value="1">
+
+        <!-- Section 1: Company & Registry -->
+        <section class="legal-section-card">
+            <div class="legal-section-header">
+                <div class="legal-section-icon company">
+                    <i class="bi bi-building"></i>
+                </div>
+                <div class="legal-section-title-wrap">
+                    <h3 class="legal-section-title">{{ lang.mod_settings.section_company_registry }}</h3>
+                    <p class="legal-section-desc">{{ lang.mod_settings.legal_info_description }}</p>
+                </div>
+            </div>
+            <div class="legal-section-body">
+                <div class="legal-field-group">
+                    <label class="legal-field-label mb-1">{{ lang.mod_settings.business_type_title }}</label>
+                    <p class="legal-field-hint mb-2">{{ lang.mod_settings.business_type_hint }}</p>
+                    
+                    <div class="operation-mode-types">
+                        <!-- 1. Online Retail -->
+                        <label class="operation-type-card {{ setting.is_online_retail|default('n') == 'y' ? 'active' : '' }}">
+                            <div class="operation-type-icon">
+                                <i class="bi bi-display"></i>
+                            </div>
+                            <div class="operation-type-info">
+                                <div class="operation-type-title">{{ lang.mod_settings.is_online_retail }}</div>
+                                <div class="operation-type-desc">{{ lang.mod_settings.is_online_retail_desc }}</div>
+                            </div>
+                            <div class="operation-type-check">
+                                <input type="checkbox" name="is_online_retail" value="y" {{ setting.is_online_retail|default('n') == 'y' ? 'checked' : '' }} class="operation-type-checkbox">
+                                <span class="custom-check-box"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </label>
+
+                        <!-- 2. Local Store -->
+                        <label class="operation-type-card {{ setting.is_local_store|default('y') == 'y' ? 'active' : '' }}">
+                            <div class="operation-type-icon">
+                                <i class="bi bi-shop"></i>
+                            </div>
+                            <div class="operation-type-info">
+                                <div class="operation-type-title">{{ lang.mod_settings.is_local_store }}</div>
+                                <div class="operation-type-desc">{{ lang.mod_settings.is_local_store_desc }}</div>
+                            </div>
+                            <div class="operation-type-check">
+                                <input type="checkbox" name="is_local_store" value="y" {{ setting.is_local_store|default('y') == 'y' ? 'checked' : '' }} class="operation-type-checkbox">
+                                <span class="custom-check-box"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </label>
+
+                        <!-- 3. Service Business -->
+                        <label class="operation-type-card {{ setting.is_service_business|default('n') == 'y' ? 'active' : '' }}">
+                            <div class="operation-type-icon">
+                                <i class="bi bi-house-gear"></i>
+                            </div>
+                            <div class="operation-type-info">
+                                <div class="operation-type-title">{{ lang.mod_settings.is_service_business }}</div>
+                                <div class="operation-type-desc">{{ lang.mod_settings.is_service_business_desc }}</div>
+                            </div>
+                            <div class="operation-type-check">
+                                <input type="checkbox" name="is_service_business" value="y" {{ setting.is_service_business|default('n') == 'y' ? 'checked' : '' }} class="operation-type-checkbox">
+                                <span class="custom-check-box"><i class="bi bi-check-lg"></i></span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="country" class="legal-field-label">{{ lang.mod_settings.country }}</label>
+                    <input type="text" id="country" name="country" class="legal-field-input" value="{{ setting.country|default('') }}" placeholder="{{ lang.mod_settings.country_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="legal_company_name" class="legal-field-label">{{ lang.mod_settings.legal_company_name }}</label>
+                    <input type="text" id="legal_company_name" name="legal_company_name" class="legal-field-input" value="{{ setting.legal_company_name|default('') }}" placeholder="{{ lang.mod_settings.legal_company_name_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="company_type" class="legal-field-label mb-1">{{ lang.mod_settings.company_type }}</label>
+                    <div class="legal-select-wrapper {{ setting.company_type|default('') ? 'has-value' : '' }}" id="companyTypeWrapper">
+                        <select id="company_type" name="company_type" class="legal-field-select {{ setting.company_type|default('') ? 'is-selected' : '' }}">
+                            <option value="">-- {{ lang.mod_settings.company_type_placeholder }} --</option>
+                            {% if organization_types is defined and organization_types is not empty %}
+                                {% for item in organization_types %}
+                                    <option value="{{ item.code }}" {{ setting.company_type|default('') == item.code ? 'selected' : '' }}>
+                                        {{ item.name }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                        <span class="legal-select-ok-badge" title="OK">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </span>
+                        <span class="legal-select-arrow">
+                            <i class="bi bi-chevron-down"></i>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="trade_registry_number" class="legal-field-label">{{ lang.mod_settings.trade_registry_number }}</label>
+                    <input type="text" id="trade_registry_number" name="trade_registry_number" class="legal-field-input" value="{{ setting.trade_registry_number|default('') }}" placeholder="{{ lang.mod_settings.trade_registry_number_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="central_registration_number" class="legal-field-label">{{ lang.mod_settings.central_registration_number }}</label>
+                    <input type="text" id="central_registration_number" name="central_registration_number" class="legal-field-input" value="{{ setting.central_registration_number|default('') }}" placeholder="{{ lang.mod_settings.central_registration_number_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="chamber_of_commerce" class="legal-field-label">{{ lang.mod_settings.chamber_of_commerce }}</label>
+                    <input type="text" id="chamber_of_commerce" name="chamber_of_commerce" class="legal-field-input" value="{{ setting.chamber_of_commerce|default('') }}" placeholder="{{ lang.mod_settings.chamber_of_commerce_placeholder }}">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Tax & Fiscal -->
+        <section class="legal-section-card">
+            <div class="legal-section-header">
+                <div class="legal-section-icon tax">
+                    <i class="bi bi-bank"></i>
+                </div>
+                <div class="legal-section-title-wrap">
+                    <h3 class="legal-section-title">{{ lang.mod_settings.section_tax_fiscal }}</h3>
+                    <p class="legal-section-desc">{{ lang.mod_settings.tax_office }} & {{ lang.mod_settings.tax_number }}</p>
+                </div>
+            </div>
+            <div class="legal-section-body">
+                <div class="legal-field-group">
+                    <label for="tax_office" class="legal-field-label">{{ lang.mod_settings.tax_office }}</label>
+                    <input type="text" id="tax_office" name="tax_office" class="legal-field-input" value="{{ setting.tax_office|default('') }}" placeholder="{{ lang.mod_settings.tax_office_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="tax_number" class="legal-field-label">{{ lang.mod_settings.tax_number }}</label>
+                    <input type="text" id="tax_number" name="tax_number" class="legal-field-input" value="{{ setting.tax_number|default('') }}" placeholder="{{ lang.mod_settings.tax_number_placeholder }}">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Legal Contact -->
+        <section class="legal-section-card">
+            <div class="legal-section-header">
+                <div class="legal-section-icon contact">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="legal-section-title-wrap">
+                    <h3 class="legal-section-title">{{ lang.mod_settings.section_legal_contact }}</h3>
+                    <p class="legal-section-desc">{{ lang.mod_settings.authorized_person }} & {{ lang.mod_settings.registered_email }}</p>
+                </div>
+            </div>
+            <div class="legal-section-body">
+                <div class="legal-field-group">
+                    <label for="authorized_person" class="legal-field-label">{{ lang.mod_settings.authorized_person }}</label>
+                    <input type="text" id="authorized_person" name="authorized_person" class="legal-field-input" value="{{ setting.authorized_person|default('') }}" placeholder="{{ lang.mod_settings.authorized_person_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="registered_email" class="legal-field-label">{{ lang.mod_settings.registered_email }}</label>
+                    <input type="email" id="registered_email" name="registered_email" class="legal-field-input" value="{{ setting.registered_email|default('') }}" placeholder="{{ lang.mod_settings.registered_email_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="legal_contact_phone" class="legal-field-label">{{ lang.mod_settings.legal_contact_phone }}</label>
+                    <input type="text" id="legal_contact_phone" name="legal_contact_phone" class="legal-field-input" value="{{ setting.legal_contact_phone|default('') }}" placeholder="{{ lang.mod_settings.legal_contact_phone_placeholder }}">
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Warranty & Policies -->
+        <section class="legal-section-card">
+            <div class="legal-section-header">
+                <div class="legal-section-icon warranty">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <div class="legal-section-title-wrap">
+                    <h3 class="legal-section-title">{{ lang.mod_settings.section_warranty_policies }}</h3>
+                    <p class="legal-section-desc">{{ lang.mod_settings.default_warranty_duration }} & {{ lang.mod_settings.return_policy_days }}</p>
+                </div>
+            </div>
+            <div class="legal-section-body">
+                <div class="legal-field-group">
+                    <label for="default_warranty_duration" class="legal-field-label">{{ lang.mod_settings.default_warranty_duration }}</label>
+                    <input type="text" id="default_warranty_duration" name="default_warranty_duration" class="legal-field-input" value="{{ setting.default_warranty_duration|default('') }}" placeholder="{{ lang.mod_settings.default_warranty_duration_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="warranty_type" class="legal-field-label">{{ lang.mod_settings.warranty_type }}</label>
+                    <input type="text" id="warranty_type" name="warranty_type" class="legal-field-input" value="{{ setting.warranty_type|default('') }}" placeholder="{{ lang.mod_settings.warranty_type_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="return_policy_days" class="legal-field-label">{{ lang.mod_settings.return_policy_days }}</label>
+                    <input type="text" id="return_policy_days" name="return_policy_days" class="legal-field-input" value="{{ setting.return_policy_days|default('') }}" placeholder="{{ lang.mod_settings.return_policy_days_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="warranty_description" class="legal-field-label">{{ lang.mod_settings.warranty_description }}</label>
+                    <textarea id="warranty_description" name="warranty_description" class="legal-field-textarea" placeholder="{{ lang.mod_settings.warranty_description_placeholder }}">{{ setting.warranty_description|default('') }}</textarea>
+                </div>
+            </div>
+        </section>
+
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="m3-final-bar">
+    <button type="submit" form="legalInfoForm" class="m3-btn-half m3-btn-half-primary" id="legalInfoSubmitBtn">
+        {{ lang.mod_settings.save }}
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/legal_info.js?v=2.7"></script>
+{% endblock %}

@@ -53,8 +53,8 @@ $lang['mod_video_embed_category'] = [
         'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
         'inarray' => '%s alanı yalnızca şu değerleri kabul edebilir: %s.',
     ],
-    'roll' => [
-        'ad' => 'Video Kategorisi Yönetim Rolleri',
+    'role' => [
+        'name' => 'Video Kategorisi Yönetim Rolleri',
         'add' => 'Video kategorisi ekleyebilir',
         'edit' => 'Video kategorisi düzenleyebilir',
         'delete' => 'Video kategorisi silebilir',

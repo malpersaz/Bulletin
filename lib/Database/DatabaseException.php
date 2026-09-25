@@ -1,11 +1,11 @@
 <?php
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 08.04.2011 - 18:57
- * Sınıf İsmi: DatabaseException
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 08.04.2011 - 18:57
+ * Class Name: DatabaseException
  */
 class DatabaseException extends Exception
 {
@@ -24,13 +24,13 @@ class DatabaseException extends Exception
 
     public function show()
     {
-        // AJAX daxwaznameyê kontrol bike
+        // Check for AJAX request
         $isAjax = (
             (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
             || (isset($_POST['ajax_request']) && $_POST['ajax_request'] === '1')
         );
         
-        // Log şaşiyê
+        // Log error message
         $logFile = (defined('root_dir') ? root_dir : '') . 'logs/ajax_errors.log';
         $logMessage = '[' . date('Y-m-d H:i:s') . '] DatabaseException: ' . $this->message . "\n";
         if (isset($this->sql)) {
@@ -44,7 +44,7 @@ class DatabaseException extends Exception
         $logMessage .= "---\n";
         @file_put_contents($logFile, $logMessage, FILE_APPEND);
         
-        // Heke AJAX be, JSON vegere
+        // If request is AJAX, return JSON response
         if ($isAjax) {
             if (!headers_sent()) {
                 header('Content-Type: application/json; charset=utf-8');
@@ -62,7 +62,7 @@ class DatabaseException extends Exception
             return;
         }
         
-        // Non-AJAX: HTML output (awayê berê)
+        // Non-AJAX: Legacy HTML output
         $f = $this->getTrace();
         $last = end($f);
         unset($f);

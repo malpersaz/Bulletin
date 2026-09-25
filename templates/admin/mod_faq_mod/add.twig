@@ -1,0 +1,76 @@
+{% set show_fab = false %}
+{% set show_search = false %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set show_extra_sheets = false %}
+{% set hide_contextual_bar = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_faq_mod.add }}{% endblock %}
+{% block headline %}{{ lang.mod_faq_mod.add }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_faq_mod.css?v=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="faq-mod-form-shell">
+    <section class="faq-mod-intro">
+        <h2>{{ lang.mod_faq_mod.add }}</h2>
+        <p>{{ lang.mod_faq_mod.admin.intro_add }}</p>
+    </section>
+
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for message in errors %}
+                <div>{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" id="addFaqModForm" class="faq-mod-form-card">
+        <input type="hidden" name="add" value="1">
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="name" value="{{ name }}" type="text" id="name" placeholder=" " maxlength="255">
+            <label class="m3-floating-label">{{ lang.mod_faq_mod.admin.columns.name }}</label>
+        </div>
+        <div class="faq-mod-hint">{{ lang.mod_faq_mod.admin.hints.name }}</div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_name" value="{{ mod_name }}" type="text" id="mod_name" placeholder=" " maxlength="255">
+            <label class="m3-floating-label">{{ lang.mod_faq_mod.admin.columns.mod_name }}</label>
+        </div>
+        <div class="faq-mod-hint">{{ lang.mod_faq_mod.admin.hints.mod_name }}</div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_key" value="{{ mod_key }}" type="text" id="mod_key" placeholder=" " maxlength="255">
+            <label class="m3-floating-label">{{ lang.mod_faq_mod.admin.columns.mod_key }}</label>
+        </div>
+        <div class="faq-mod-hint">{{ lang.mod_faq_mod.admin.hints.mod_key }}</div>
+
+        <div class="m3-input-wrapper">
+            <input class="m3-input-lg" name="mod_value" value="{{ mod_value }}" type="text" id="mod_value" placeholder=" " maxlength="255">
+            <label class="m3-floating-label">{{ lang.mod_faq_mod.admin.columns.mod_value }}</label>
+        </div>
+        <div class="faq-mod-hint">{{ lang.mod_faq_mod.admin.hints.mod_value }}</div>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if oke is not defined %}
+    {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
+        cancel_url: site.saddress ~ 'mod_faq_mod/list',
+        cancel_label: lang.mod_faq_mod.button.cancel,
+        form_id: 'addFaqModForm',
+        submit_label: lang.mod_faq_mod.button.add,
+        reset_label: lang.mod_faq_mod.button.refresh
+    } %}
+{% endif %}
+{% endblock %}

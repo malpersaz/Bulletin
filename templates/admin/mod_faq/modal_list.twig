@@ -1,0 +1,164 @@
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_faq.module_title }}{% endblock %}
+
+{% block headline %}{{ lang.mod_faq.module_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_faq.css?v=1.2">
+{% endblock %}
+
+{% block content %}
+<div class="faq-modal-shell" data-modal-title="{{ lang.mod_faq.module_title }}" data-modal-icon="bi-patch-question-fill" data-mod-name="{{ mod_name }}" data-vid="{{ vid }}" data-lang="{{ site.lang|default('en') }}">
+
+    <!-- Context Header -->
+    <div class="faq-context-card">
+        <div class="faq-context-info">
+            <div class="faq-context-title-row">
+                <span class="faq-mod-badge">{{ mod_name|replace({'mod_': ''})|capitalize }}</span>
+                <span class="faq-lang-badge">{{ site.lang|default('en')|upper }}</span>
+                <span class="faq-count-badge" id="faqCountBadge">{{ faqs|length }} / {{ max_allowed|default(25) }}</span>
+            </div>
+            <h3 class="faq-entity-title">{{ record_title|default(mod_name ~ ' #' ~ vid) }}</h3>
+        </div>
+        <button type="button" class="faq-add-header-btn" id="faqAddHeaderBtn" aria-label="{{ lang.mod_faq.add_question }}">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_faq.add_question }}</span>
+        </button>
+    </div>
+
+    <!-- FAQ Items Card List (Touch Reorderable) -->
+    <div class="faq-card-list" id="faqCardList">
+        {% for item in faqs %}
+            <div class="faq-item-card" data-id="{{ item.id }}" data-sort="{{ item.sort_order }}" data-status="{{ item.status }}">
+                <div class="faq-card-header">
+                    <div class="faq-drag-handle" aria-label="{{ lang.mod_faq.drag_to_reorder }}">
+                        <i class="bi bi-grip-vertical"></i>
+                    </div>
+                    <div class="faq-card-title-preview">
+                        <span class="faq-preview-text">{{ item.question|default('') }}</span>
+                    </div>
+                    <div class="faq-card-header-actions">
+                        <button type="button" class="faq-card-status-toggle" data-action="toggle-status" data-status="{{ item.status }}" aria-label="{{ lang.mod_faq.status }}">
+                            <span class="faq-status-pill {{ item.status == 'y' ? 'status-published' : 'status-draft' }}">
+                                {{ item.status == 'y' ? lang.mod_faq.published : lang.mod_faq.draft }}
+                            </span>
+                        </button>
+                        <button type="button" class="faq-card-expand-btn" data-action="toggle-expand" aria-label="Expand">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="faq-card-body">
+                    <!-- Question Field -->
+                    <div class="faq-field-group">
+                        <div class="faq-field-label-row">
+                            <label class="faq-label">{{ lang.mod_faq.question }}</label>
+                            <span class="faq-char-counter faq-question-counter"><span class="current-count">{{ item.question|length }}</span> / 255</span>
+                        </div>
+                        <input type="text" class="faq-input faq-question-input" name="question" maxlength="255" value="{{ item.question|e('html_attr') }}" placeholder="{{ lang.mod_faq.question_placeholder }}">
+                    </div>
+
+                    <!-- Answer Field -->
+                    <div class="faq-field-group">
+                        <div class="faq-field-label-row">
+                            <label class="faq-label">{{ lang.mod_faq.answer }}</label>
+                            <span class="faq-char-counter faq-answer-counter"><span class="current-count">{{ item.answer|length }}</span> / 5000</span>
+                        </div>
+                        <textarea class="faq-textarea faq-answer-input" name="answer" maxlength="5000" rows="3" placeholder="{{ lang.mod_faq.answer_placeholder }}">{{ item.answer }}</textarea>
+                    </div>
+
+                    <!-- Card Footer Actions -->
+                    <div class="faq-card-footer">
+                        <div class="faq-status-switch-wrapper">
+                            <label class="faq-switch">
+                                <input type="checkbox" class="faq-status-checkbox" {{ item.status == 'y' ? 'checked' : '' }}>
+                                <span class="faq-slider"></span>
+                            </label>
+                            <span class="faq-switch-label">{{ item.status == 'y' ? lang.mod_faq.published : lang.mod_faq.draft }}</span>
+                        </div>
+                        <div class="faq-card-footer-actions">
+                            <button type="button" class="faq-card-footer-delete-btn" data-action="delete" aria-label="{{ lang.mod_faq.delete_question }}">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                            <button type="button" class="faq-save-single-btn" data-action="save-single">
+                                <i class="bi bi-check2"></i>
+                                <span>{{ lang.mod_faq.update }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty State -->
+    <div class="faq-empty-state {{ faqs|length == 0 ? 'is-visible' : '' }}" id="faqEmptyState">
+        <div class="faq-empty-icon-box">
+            <i class="bi bi-patch-question"></i>
+        </div>
+        <h4 class="faq-empty-title">{{ lang.mod_faq.title }}</h4>
+        <p class="faq-empty-desc">{{ lang.mod_faq.empty_state }}</p>
+        <button type="button" class="faq-empty-add-btn" id="faqEmptyAddBtn">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_faq.add_question }}</span>
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="faq-bottom-bar" id="faqBottomBar">
+    <button type="button" class="faq-save-all-btn" id="faqSaveAllBtn">
+        <i class="bi bi-cloud-arrow-up-fill"></i>
+        <span>{{ lang.mod_faq.save_all }}</span>
+    </button>
+    <button type="button" class="faq-floating-add-btn" id="faqFabBtn" aria-label="{{ lang.mod_faq.add_question }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.FAQ_LANG = {
+        title: {{ lang.mod_faq.title|json_encode|raw }},
+        module_title: {{ lang.mod_faq.module_title|json_encode|raw }},
+        add_question: {{ lang.mod_faq.add_question|json_encode|raw }},
+        edit_question: {{ lang.mod_faq.edit_question|json_encode|raw }},
+        delete_question: {{ lang.mod_faq.delete_question|json_encode|raw }},
+        update: {{ lang.mod_faq.update|json_encode|raw }},
+        save_all: {{ lang.mod_faq.save_all|json_encode|raw }},
+        question: {{ lang.mod_faq.question|json_encode|raw }},
+        answer: {{ lang.mod_faq.answer|json_encode|raw }},
+        sort_order: {{ lang.mod_faq.sort_order|json_encode|raw }},
+        status: {{ lang.mod_faq.status|json_encode|raw }},
+        published: {{ lang.mod_faq.published|json_encode|raw }},
+        draft: {{ lang.mod_faq.draft|json_encode|raw }},
+        empty_state: {{ lang.mod_faq.empty_state|json_encode|raw }},
+        limit_reached: {{ lang.mod_faq.limit_reached|json_encode|raw }},
+        question_placeholder: {{ lang.mod_faq.question_placeholder|json_encode|raw }},
+        answer_placeholder: {{ lang.mod_faq.answer_placeholder|json_encode|raw }},
+        drag_to_reorder: {{ lang.mod_faq.drag_to_reorder|json_encode|raw }},
+        confirm_delete: {{ lang.mod_faq.confirm_delete|json_encode|raw }},
+        success_add: {{ lang.mod_faq.message.success.add|json_encode|raw }},
+        success_edit: {{ lang.mod_faq.message.success.edit|json_encode|raw }},
+        success_delete: {{ lang.mod_faq.message.success.delete|json_encode|raw }},
+        success_reorder: {{ lang.mod_faq.message.success.reorder|json_encode|raw }},
+        success_batch: {{ lang.mod_faq.message.success.batch|json_encode|raw }},
+        success_status: {{ lang.mod_faq.message.success.status|json_encode|raw }},
+        error_max_limit: {{ lang.mod_faq.message.error.max_limit|json_encode|raw }},
+        question_required: {{ lang.mod_faq.validation.question_required|json_encode|raw }},
+        question_max: {{ lang.mod_faq.validation.question_max|json_encode|raw }},
+        question_duplicate: {{ lang.mod_faq.validation.question_duplicate|json_encode|raw }},
+        answer_required: {{ lang.mod_faq.validation.answer_required|json_encode|raw }},
+        answer_max: {{ lang.mod_faq.validation.answer_max|json_encode|raw }}
+    };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+<script src="/templates/admin/assets/js/mod_faq.js?v=1.3"></script>
+{% endblock %}

@@ -1,115 +1,301 @@
-{% set show_fab = false %}
-{% set show_navbar = false %}
-{% extends 'admin/layout.twig' %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set back_url = site.saddress ~ 'mod_settings/edit' %}
+
 {% block title %}{{ lang.mod_settings.sections.social_title }}{% endblock %}
 {% block headline %}{{ lang.mod_settings.sections.social_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_settings.css?v=1.8">
-<style>
-.m3-modern-switch {
-    position: relative;
-    display: inline-block;
-    width: 48px;
-    height: 26px;
-    flex-shrink: 0;
-    margin-bottom: 0;
-}
-.m3-modern-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.m3-modern-slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-color: #cbd5e1;
-    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    border-radius: 34px;
-}
-.m3-modern-slider:before {
-    position: absolute;
-    content: "";
-    height: 20px;
-    width: 20px;
-    left: 3px;
-    bottom: 3px;
-    background-color: white;
-    transition: .3s cubic-bezier(0.4, 0.0, 0.2, 1);
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-input:checked + .m3-modern-slider {
-    background-color: var(--bs-primary, #3b82f6);
-}
-input:checked + .m3-modern-slider:before {
-    transform: translateX(22px);
-}
-</style>
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/social_media.css?v=2.0">
 {% endblock %}
 
 {% block content %}
-<div class="settings-page" style="max-width: 800px; margin: 0 auto; padding: 20px;">
-    <!-- Dummy form to satisfy mod_settings.js logic without crashing -->
-    <form id="settingsForm" style="display:none;"></form>
+<div class="social-page"
+     data-list-url="{{ site.saddress }}mod_settings/ajax_social_list"
+     data-save-url="{{ site.saddress }}mod_settings/ajax_social_save"
+     data-toggle-url="{{ site.saddress }}mod_settings/ajax_social_toggle_status"
+     data-reorder-url="{{ site.saddress }}mod_settings/ajax_social_reorder"
+     data-delete-url="{{ site.saddress }}mod_settings/ajax_social_delete"
+     data-add-title="{{ lang.mod_settings.add_social }}"
+     data-edit-title="{{ lang.mod_settings.button.edit }}"
+     data-delete-title="{{ lang.mod_settings.delete }}"
+     data-delete-confirm="{{ lang.mod_settings.confirm_delete }}"
+     data-delete-btn="{{ lang.mod_settings.delete }}"
+     data-cancel-btn="{{ lang.mod_settings.button.cancel }}"
+     data-save-btn="{{ lang.mod_settings.save }}"
+     data-loading-text="{{ lang.mod_settings.loading_message }}"
+     data-no-records="{{ lang.mod_settings.no_records_found }}"
+     data-no-url="{{ lang.mod_settings.no_url_configured }}">
 
-    <div class="m3-card" style="background: transparent; border: none; box-shadow: none;">
-        <div class="m3-card-body" style="padding: 0;">
-            <div class="settings-social-list" id="socialMediaList" style="display: flex; flex-direction: column;">
-                <!-- Social Media items will be loaded here via AJAX -->
-                <div class="text-center p-5" style="background: white; border-radius: 16px; border: 1px dashed #cbd5e1;">
-                    <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem; opacity: 0.5;">
-                        <span class="visually-hidden">{{ lang.mod_settings.loading_message }}</span>
-                    </div>
-                </div>
+    <!-- Hero & Overview Card -->
+    <section class="social-hero-card">
+        <div class="social-hero-header">
+            <div class="social-hero-icon">
+                <i class="bi bi-share-fill"></i>
+            </div>
+            <div class="social-hero-text">
+                <h3 class="social-hero-title">{{ lang.mod_settings.sections.social_title }}</h3>
+                <p class="social-hero-desc">{{ lang.mod_settings.sections.social_description }}</p>
             </div>
         </div>
+
+        <!-- Filter Stat Pills -->
+        <div class="social-stats-row">
+            <button type="button" class="social-stat-pill active" data-filter="all">
+                <span>{{ lang.mod_settings.filter_all }}</span>
+                <span class="social-stat-count" id="statAllCount">{{ social_items is defined ? social_items|length : 0 }}</span>
+            </button>
+            <button type="button" class="social-stat-pill" data-filter="active">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span>{{ lang.mod_settings.cookie_status_active }}</span>
+                <span class="social-stat-count" id="statActiveCount">0</span>
+            </button>
+            <button type="button" class="social-stat-pill" data-filter="inactive">
+                <i class="bi bi-dash-circle-fill text-muted"></i>
+                <span>{{ lang.mod_settings.cookie_status_inactive }}</span>
+                <span class="social-stat-count" id="statInactiveCount">0</span>
+            </button>
+        </div>
+
+        <!-- Action Bar: Live Search & Add -->
+        <div class="social-hero-actions">
+            <div class="social-search-wrapper">
+                <i class="bi bi-search social-search-icon"></i>
+                <input type="text" id="socialSearchInput" class="social-search-input" placeholder="{{ lang.mod_settings.platform_ph }}" autocomplete="off" aria-label="{{ lang.mod_settings.platform_ph }}">
+                <button type="button" id="clearSocialSearchBtn" class="social-search-clear is-hidden" aria-label="{{ lang.mod_settings.button.cancel }}">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+            <button type="button" class="social-hero-add-btn" id="openAddSocialBtn" aria-label="{{ lang.mod_settings.add_social }}">
+                <i class="bi bi-plus-lg"></i>
+                <span>{{ lang.mod_settings.add_social }}</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Social Media Cards List -->
+    <div class="social-cards-list" id="socialCardsList">
+        {% if social_items is defined and social_items is not empty %}
+            {% for item in social_items %}
+                {% set platform_clean = item.platform|lower %}
+                {% set is_item_active = item.is_active == 'y' %}
+                <div class="social-card{% if not is_item_active %} is-inactive{% endif %}"
+                     data-id="{{ item.id }}"
+                     data-platform="{{ item.platform }}"
+                     data-url="{{ item.url }}"
+                     data-icon="{{ item.icon_class }}"
+                     data-active="{{ item.is_active }}">
+                    
+                    <div class="social-card-top">
+                        <div class="social-card-meta">
+                            <div class="social-brand-avatar" data-brand="{{ platform_clean }}">
+                                <i class="{{ item.icon_class|default('bi bi-link-45deg') }}"></i>
+                            </div>
+                            <div class="social-card-info">
+                                <div class="social-platform-title-row">
+                                    <h4 class="social-platform-name">{{ item.platform }}</h4>
+                                    <span class="social-status-tag {{ is_item_active ? 'active' : 'inactive' }}">
+                                        {{ is_item_active ? lang.mod_settings.cookie_status_active : lang.mod_settings.cookie_status_inactive }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="social-switch-control">
+                            <label class="social-switch" title="{{ is_item_active ? 'Active' : 'Inactive' }}">
+                                <input type="checkbox" {% if is_item_active %}checked{% endif %} aria-label="{{ item.platform }} status">
+                                <span class="social-switch-track"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="social-url-container">
+                        {% if item.url and item.url|trim is not empty %}
+                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="social-url-box" title="{{ item.url }}">
+                                <div class="social-url-text-wrap">
+                                    <i class="bi bi-link-45deg social-url-icon"></i>
+                                    <span class="social-url-text">{{ item.url }}</span>
+                                </div>
+                                <i class="bi bi-box-arrow-up-right social-url-external"></i>
+                            </a>
+                        {% else %}
+                            <div class="social-url-empty">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <span>{{ lang.mod_settings.no_url_configured }}</span>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="social-card-bottom">
+                        <div class="social-reorder-group">
+                            <span class="social-order-badge">#{{ loop.index }}</span>
+                            <button type="button" class="social-action-btn icon-only reorder-up" title="Move Up" aria-label="Move Up" {% if loop.first %}disabled{% endif %}>
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <button type="button" class="social-action-btn icon-only reorder-down" title="Move Down" aria-label="Move Down" {% if loop.last %}disabled{% endif %}>
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        </div>
+                        <div class="social-card-actions-right">
+                            <button type="button" class="social-action-btn btn-edit" title="{{ lang.mod_settings.button.edit }}">
+                                <i class="bi bi-pencil-square"></i>
+                                <span>{{ lang.mod_settings.button.edit }}</span>
+                            </button>
+                            <button type="button" class="social-action-btn icon-only btn-delete" title="{{ lang.mod_settings.delete }}" aria-label="{{ lang.mod_settings.delete }}">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Empty State -->
+    <div class="social-empty-state{% if social_items is defined and social_items is not empty %} is-hidden{% endif %}" id="socialEmptyState">
+        <div class="social-empty-icon-wrap">
+            <i class="bi bi-share"></i>
+        </div>
+        <h4 class="social-empty-title">{{ lang.mod_settings.no_records_found }}</h4>
+        <p class="social-empty-desc">{{ lang.mod_settings.sections.social_description }}</p>
+        <button type="button" class="social-empty-btn" id="emptyAddBtn">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_settings.add_social }}</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal Bottom-Sheet for Add / Edit -->
+<div class="social-modal-backdrop" id="socialItemModal" role="dialog" aria-modal="true" aria-labelledby="socialModalTitle">
+    <div class="social-modal-sheet">
+        <div class="social-modal-notch"></div>
+        <div class="social-modal-header">
+            <h4 class="social-modal-title" id="socialModalTitle">{{ lang.mod_settings.add_social }}</h4>
+            <button type="button" class="social-modal-close" data-action="close-modal" aria-label="{{ lang.mod_settings.button.close }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <form id="socialItemForm" class="social-modal-form">
+            <input type="hidden" id="social_item_id" name="id" value="0">
+            <div class="social-modal-body">
+                <!-- Preset Platform Picker -->
+                <div class="social-presets-wrap">
+                    <label class="social-form-label">{{ lang.mod_settings.platform_ph }}</label>
+                    <div class="social-preset-chips" id="presetChips">
+                        <button type="button" class="social-preset-chip" data-platform="instagram" data-icon="bi bi-instagram" data-prefix="https://instagram.com/">
+                            <i class="bi bi-instagram"></i>
+                            <span>Instagram</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="x" data-icon="bi bi-twitter-x" data-prefix="https://x.com/">
+                            <i class="bi bi-twitter-x"></i>
+                            <span>X (Twitter)</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="facebook" data-icon="bi bi-facebook" data-prefix="https://facebook.com/">
+                            <i class="bi bi-facebook"></i>
+                            <span>Facebook</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="youtube" data-icon="bi bi-youtube" data-prefix="https://youtube.com/@">
+                            <i class="bi bi-youtube"></i>
+                            <span>YouTube</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="linkedin" data-icon="bi bi-linkedin" data-prefix="https://linkedin.com/company/">
+                            <i class="bi bi-linkedin"></i>
+                            <span>LinkedIn</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="tiktok" data-icon="bi bi-tiktok" data-prefix="https://tiktok.com/@">
+                            <i class="bi bi-tiktok"></i>
+                            <span>TikTok</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="spotify" data-icon="bi bi-spotify" data-prefix="https://open.spotify.com/">
+                            <i class="bi bi-spotify"></i>
+                            <span>Spotify</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="whatsapp" data-icon="bi bi-whatsapp" data-prefix="https://wa.me/">
+                            <i class="bi bi-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="telegram" data-icon="bi bi-telegram" data-prefix="https://t.me/">
+                            <i class="bi bi-telegram"></i>
+                            <span>Telegram</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="github" data-icon="bi bi-github" data-prefix="https://github.com/">
+                            <i class="bi bi-github"></i>
+                            <span>GitHub</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="pinterest" data-icon="bi bi-pinterest" data-prefix="https://pinterest.com/">
+                            <i class="bi bi-pinterest"></i>
+                            <span>Pinterest</span>
+                        </button>
+                        <button type="button" class="social-preset-chip" data-platform="discord" data-icon="bi bi-discord" data-prefix="https://discord.gg/">
+                            <i class="bi bi-discord"></i>
+                            <span>Discord</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="social-form-group">
+                    <label for="social_platform_input" class="social-form-label">{{ lang.mod_settings.platform_ph }} *</label>
+                    <div class="social-input-prefix-wrap">
+                        <span class="social-icon-preview" id="iconPreviewBadge">
+                            <i class="bi bi-link-45deg" id="iconPreview"></i>
+                        </span>
+                        <input type="text" id="social_platform_input" name="platform" class="social-form-input" required placeholder="e.g., Instagram, X, YouTube">
+                    </div>
+                </div>
+
+                <div class="social-form-group">
+                    <label for="social_url_input" class="social-form-label">{{ lang.mod_settings.url_ph }} *</label>
+                    <input type="url" id="social_url_input" name="url" class="social-form-input" required placeholder="https://instagram.com/yourprofile">
+                </div>
+
+                <div class="social-form-group">
+                    <label for="social_icon_input" class="social-form-label">{{ lang.mod_settings.icon_ph }}</label>
+                    <input type="text" id="social_icon_input" name="icon_class" class="social-form-input" placeholder="bi bi-instagram">
+                </div>
+
+                <div class="social-form-group-switch">
+                    <div>
+                        <div class="social-switch-label">{{ lang.mod_settings.cookie_status_active }}</div>
+                        <div class="social-switch-desc">Visible on public theme headers and footers</div>
+                    </div>
+                    <label class="social-switch">
+                        <input type="checkbox" id="social_active_input" name="is_active" value="y" checked>
+                        <span class="social-switch-track"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="social-modal-footer">
+                <button type="button" class="social-btn social-btn-cancel" data-action="close-modal">
+                    {{ lang.mod_settings.button.cancel }}
+                </button>
+                <button type="submit" class="social-btn social-btn-primary" id="saveSocialBtn">
+                    <i class="bi bi-check-lg"></i>
+                    <span>{{ lang.mod_settings.save }}</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    window.modSettingsConfig = window.modSettingsConfig || {};
-    Object.assign(window.modSettingsConfig, {
-        socialListUrl: '{{ site.saddress }}mod_settings/ajax_social_list',
-        socialSaveUrl: '{{ site.saddress }}mod_settings/ajax_social_save',
-        socialToggleUrl: '{{ site.saddress }}mod_settings/ajax_social_toggle_status',
-        socialReorderUrl: '{{ site.saddress }}mod_settings/ajax_social_reorder',
-    });
-    window.modSettingsConfig.messages = window.modSettingsConfig.messages || {};
-    Object.assign(window.modSettingsConfig.messages, {
-        edit: '{{ lang.mod_settings.button.edit|e('js') }}',
-        save: '{{ lang.mod_settings.save|e('js') }}',
-        cancel: '{{ lang.mod_settings.button.cancel|e('js') }}',
-        noRecordsFound: '{{ lang.mod_settings.no_records_found|e('js') }}',
-        noUrlConfigured: '{{ lang.mod_settings.no_url_configured|e('js') }}'
-    });
-</script>
-<script src="/templates/admin/assets/js/mod_settings.js?v=1.9"></script>
+{% block fixed_bottom %}
+<div class="m3-final-bar">
+    <a href="{{ site.saddress }}mod_settings/edit" class="m3-btn-half m3-btn-half-neutral">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ lang.mod_settings.button.close }}</span>
+    </a>
+    <button type="button" class="m3-btn-half m3-btn-half-primary" id="finalBarAddBtn">
+        <i class="bi bi-plus-lg"></i>
+        <span>{{ lang.mod_settings.add_social }}</span>
+    </button>
+</div>
 {% endblock %}
 
-{% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'" style="opacity: 1; pointer-events: auto;">
-            <i class="bi bi-house-door-fill"></i>
-            <span>{{ lang.management.anasayfa }}</span>
-        </button>
-        
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/info'" style="opacity: 1; pointer-events: auto;">
-            <i class="bi bi-person-fill"></i>
-            <span>{{ lang.management.profil }}</span>
-        </button>
-
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_settings/edit'" style="opacity: 1; pointer-events: auto;">
-            <i class="bi bi-gear-fill"></i>
-            <span>{{ lang.management.settings }}</span>
-        </button>
-
-        <button class="toolbar-item" onclick="history.back()" style="opacity: 1; pointer-events: auto;">
-            <i class="bi bi-arrow-left"></i>
-            <span>{{ lang.mod_settings.button.close }}</span>
-        </button>
-    </div>
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/social_media.js?v=2.0"></script>
 {% endblock %}

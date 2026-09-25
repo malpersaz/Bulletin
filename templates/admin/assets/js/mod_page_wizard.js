@@ -43,24 +43,6 @@
         return element.options[element.selectedIndex].text || fallback || '';
     }
 
-    function resetSelectValue(id, fallbackValue) {
-        var element = getById(id);
-        if (!element) {
-            return;
-        }
-
-        element.value = fallbackValue;
-        element.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    function resetLanguageScopedFields() {
-        resetSelectValue('pageWizardParentId', '0');
-        resetSelectValue('pageWizardCategoryId', '0');
-        resetSelectValue('pageWizardMenuId', '__none__');
-        resetSelectValue('pageWizardGalleryId', '0');
-        resetSelectValue('pageWizardFileId', '0');
-    }
-
     function currentState() {
         return {
             step: currentStep,
@@ -68,9 +50,14 @@
                 lang: getById('pageWizardHiddenLang') ? getById('pageWizardHiddenLang').value : '',
                 name: getById('pageWizardNameInput') ? getById('pageWizardNameInput').value : '',
                 summary: getById('pageWizardSummaryInput') ? getById('pageWizardSummaryInput').value : '',
+                parent_id: getById('pageWizardParentId') ? getById('pageWizardParentId').value : '0',
+                category_id: getById('pageWizardCategoryId') ? getById('pageWizardCategoryId').value : '0',
+                menu: getById('pageWizardMenuId') ? getById('pageWizardMenuId').value : '0',
                 status: getById('pageWizardStatusHidden') ? getById('pageWizardStatusHidden').value : 'y',
                 root: getById('pageWizardRootSelect') ? getById('pageWizardRootSelect').value : 'n',
                 deck: getById('pageWizardDeckSelect') ? getById('pageWizardDeckSelect').value : 'n',
+                gallery_id: getById('pageWizardGalleryId') ? getById('pageWizardGalleryId').value : '0',
+                file_id: getById('pageWizardFileId') ? getById('pageWizardFileId').value : '0',
                 acl_id: getById('pageWizardAclId') ? getById('pageWizardAclId').value : '0',
                 seo: getById('pageWizardSeoInput') ? getById('pageWizardSeoInput').value : '',
                 title: getById('pageWizardTitleInput') ? getById('pageWizardTitleInput').value : '',
@@ -107,18 +94,24 @@
             }
 
             currentStep = state.step || 1;
-            var activeLang = config.initialLang || state.data.lang || 'tr';
-            if (getById('pageWizardHiddenLang')) {
-                getById('pageWizardHiddenLang').value = activeLang;
-            }
-            if (state.data.lang && state.data.lang.toLowerCase() !== activeLang.toLowerCase()) {
-                resetLanguageScopedFields();
+
+            if (getById('pageWizardHiddenLang') && state.data.lang) {
+                getById('pageWizardHiddenLang').value = state.data.lang;
             }
             if (getById('pageWizardNameInput')) {
                 getById('pageWizardNameInput').value = state.data.name || '';
             }
             if (getById('pageWizardSummaryInput')) {
                 getById('pageWizardSummaryInput').value = state.data.summary || '';
+            }
+            if (getById('pageWizardParentId')) {
+                getById('pageWizardParentId').value = state.data.parent_id || '0';
+            }
+            if (getById('pageWizardCategoryId')) {
+                getById('pageWizardCategoryId').value = state.data.category_id || '0';
+            }
+            if (getById('pageWizardMenuId')) {
+                getById('pageWizardMenuId').value = state.data.menu || '0';
             }
             if (getById('pageWizardStatusHidden')) {
                 getById('pageWizardStatusHidden').value = state.data.status || 'y';
@@ -128,6 +121,12 @@
             }
             if (getById('pageWizardDeckSelect')) {
                 getById('pageWizardDeckSelect').value = state.data.deck || 'n';
+            }
+            if (getById('pageWizardGalleryId')) {
+                getById('pageWizardGalleryId').value = state.data.gallery_id || '0';
+            }
+            if (getById('pageWizardFileId')) {
+                getById('pageWizardFileId').value = state.data.file_id || '0';
             }
             if (getById('pageWizardAclId')) {
                 getById('pageWizardAclId').value = state.data.acl_id || '0';
@@ -208,7 +207,16 @@
             nameCounter.innerText = nameInput.value.length + ' / 255';
         }
         if (summaryInput && summaryCounter) {
-            summaryCounter.innerText = summaryInput.value.length + ' / 280';
+            var sLen = summaryInput.value.length;
+            summaryCounter.innerText = sLen + ' / 120';
+            summaryCounter.classList.remove('is-valid', 'is-warning', 'is-error');
+            if (sLen >= 90 && sLen <= 120) {
+                summaryCounter.classList.add('is-valid');
+            } else if (sLen > 120) {
+                summaryCounter.classList.add('is-error');
+            } else if (sLen > 0) {
+                summaryCounter.classList.add('is-warning');
+            }
         }
     }
 
@@ -298,10 +306,18 @@
 
     function validateCurrentStep() {
         var nameInput = getById('pageWizardNameInput');
+        var summaryInput = getById('pageWizardSummaryInput');
         var contentInput = getById('pageWizardContentTextarea');
 
         if (currentStep === 3 && (!nameInput || nameInput.value.trim().length < 1)) {
             return (config.texts && config.texts.validationName) || 'Name is required.';
+        }
+
+        if (currentStep === 4) {
+            var summaryVal = summaryInput ? summaryInput.value.trim() : '';
+            if (summaryVal.length < 90 || summaryVal.length > 120) {
+                return (config.texts && config.texts.deckLengthError) || 'Summary must be between 90 and 120 characters.';
+            }
         }
 
         if (currentStep === 5) {
@@ -318,36 +334,43 @@
         return '';
     }
 
+    function syncPageDeck() {
+        var summaryInput = getById('pageWizardSummaryInput');
+        var descriptionInput = getById('pageWizardDescriptionInput');
+        if (!summaryInput) {
+            return;
+        }
+        var val = summaryInput.value || '';
+        if (descriptionInput && !seoFieldTouched.description) {
+            var sanitized = typeof sanitizeText === 'function' ? sanitizeText(val) : val;
+            descriptionInput.value = sanitized.substring(0, 120);
+        }
+    }
+
     function generateSeoValues() {
         var nameInput = getById('pageWizardNameInput');
-        var summaryInput = getById('pageWizardSummaryInput');
         var seoInput = getById('pageWizardSeoInput');
         var titleInput = getById('pageWizardTitleInput');
         var keywordsInput = getById('pageWizardKeywordsInput');
-        var descriptionInput = getById('pageWizardDescriptionInput');
         var source = nameInput ? nameInput.value : '';
 
         if (!source) {
             return;
         }
 
-        var normalized = source
-            .normalize('NFKC')
-            .replace(/[^\p{L}\p{N}\s_-]/gu, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
+        var hiddenLangEl = getById('pageWizardHiddenLang');
+        var locale = (hiddenLangEl && hiddenLangEl.value)
+            ? String(hiddenLangEl.value).toLowerCase().trim()
+            : (typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en');
 
         if (seoInput && !seoFieldTouched.seo) {
-            seoInput.value = normalized.replace(/\s+/g, '_').toLowerCase();
+            seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(source, locale) : source.replace(/\s+/g, '_').toLowerCase();
         }
         if (titleInput && !seoFieldTouched.title) {
-            titleInput.value = source;
+            titleInput.value = typeof sanitizeText === 'function' ? sanitizeText(source) : source;
         }
         if (keywordsInput && !seoFieldTouched.keywords) {
-            keywordsInput.value = normalized.replace(/\s+/g, ',').toLowerCase();
-        }
-        if (descriptionInput && !seoFieldTouched.description) {
-            descriptionInput.value = (summaryInput && summaryInput.value.trim()) || source;
+            keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(source, locale) : source.replace(/\s+/g, ',').toLowerCase();
         }
     }
 
@@ -408,15 +431,20 @@
         }
 
         tinymce.init({
+            license_key: 'gpl',
             selector: '#pageWizardContentTextarea',
             height: 320,
             menubar: false,
+            statusbar: false,
+            branding: false,
+            promotion: false,
+            elementpath: false,
             plugins: [
                 'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
                 'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
                 'insertdatetime', 'media', 'table', 'help', 'wordcount'
             ],
-            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | removeformat | help',
+            toolbar: 'undo redo | blocks | bold italic | alignleft aligncenter alignright | bullist numlist | removeformat | link image | code fullscreen | help',
             setup: function (editor) {
                 editor.on('change keyup', function () {
                     editor.save();
@@ -427,7 +455,7 @@
     }
 
     function bindInputs() {
-        ['pageWizardNameInput', 'pageWizardSummaryInput', 'pageWizardSeoInput', 'pageWizardTitleInput', 'pageWizardKeywordsInput', 'pageWizardDescriptionInput', 'pageWizardParentId', 'pageWizardCategoryId', 'pageWizardMenuSlot', 'pageWizardMenuId', 'pageWizardRootSelect', 'pageWizardDeckSelect', 'pageWizardGalleryId', 'pageWizardFileId', 'pageWizardAclId'].forEach(function (id) {
+        ['pageWizardNameInput', 'pageWizardSummaryInput', 'pageWizardSeoInput', 'pageWizardTitleInput', 'pageWizardKeywordsInput', 'pageWizardDescriptionInput', 'pageWizardParentId', 'pageWizardCategoryId', 'pageWizardMenuId', 'pageWizardRootSelect', 'pageWizardDeckSelect', 'pageWizardGalleryId', 'pageWizardFileId', 'pageWizardAclId'].forEach(function (id) {
             var element = getById(id);
             if (!element) {
                 return;
@@ -455,19 +483,8 @@
         var summaryInput = getById('pageWizardSummaryInput');
         if (summaryInput) {
             summaryInput.addEventListener('input', function () {
-                generateSeoValues();
+                syncPageDeck();
                 saveState();
-            });
-        }
-
-        var menuSlot = getById('pageWizardMenuSlot');
-        if (menuSlot) {
-            menuSlot.addEventListener('change', function () {
-                var hiddenLang = getById('pageWizardHiddenLang');
-                var url = new URL(window.location.href);
-                url.searchParams.set('lang', hiddenLang ? hiddenLang.value : (config.initialLang || ''));
-                url.searchParams.set('menu_slot', menuSlot.value);
-                window.location.href = url.toString();
             });
         }
     }
@@ -508,6 +525,7 @@
             currentStep += 1;
             if (currentStep === totalSteps) {
                 generateSeoValues();
+                syncPageDeck();
             }
             updateStepUI();
         }
@@ -525,24 +543,18 @@
             card.classList.remove('active');
         });
         element.classList.add('active');
-        var nextLang = String(lang || '').toLowerCase();
-        var currentLang = String(config.initialLang || '').toLowerCase();
         if (getById('pageWizardHiddenLang')) {
-            getById('pageWizardHiddenLang').value = nextLang;
+            getById('pageWizardHiddenLang').value = String(lang || '').toLowerCase();
             getById('pageWizardHiddenLang').dispatchEvent(new Event('change', { bubbles: true }));
-        }
-        if (nextLang && nextLang !== currentLang) {
-            resetLanguageScopedFields();
         }
         updateSummary();
         saveState();
 
+        var currentLang = String(config.initialLang || '').toLowerCase();
+        var nextLang = String(lang || '').toLowerCase();
         if (nextLang && nextLang !== currentLang) {
             var url = new URL(window.location.href);
             url.searchParams.set('lang', nextLang);
-            if (getById('pageWizardMenuSlot')) {
-                url.searchParams.set('menu_slot', getById('pageWizardMenuSlot').value);
-            }
             window.location.href = url.toString();
         }
     }
@@ -596,6 +608,18 @@
     }
 
     function submitPageWizard() {
+        var summaryInput = getById('pageWizardSummaryInput');
+        if (summaryInput) {
+            var sVal = summaryInput.value.trim();
+            if (sVal.length < 90 || sVal.length > 120) {
+                showValidation((config.texts && config.texts.deckLengthError) || 'Summary must be between 90 and 120 characters.');
+                currentStep = 4;
+                updateStepUI();
+                summaryInput.focus();
+                return;
+            }
+        }
+
         var validation = validateCurrentStep();
         if (validation) {
             showValidation(validation);
@@ -658,6 +682,7 @@
         }
         setupSeoFieldTracking();
         generateSeoValues();
+        syncPageDeck();
         updateCounters();
         updateSummary();
         updateStepUI();

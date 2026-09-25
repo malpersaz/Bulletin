@@ -2,7 +2,6 @@
 {% set show_fab = false %}
 {% set show_search = true %}
 {% set show_search_filter_button = false %}
-{% set show_sidebar = true %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -139,7 +138,7 @@
     <div id="galleryModList" class="gallery-mod-list"></div>
     <section id="galleryModEmpty" class="gallery-mod-empty" style="display:none;">
         <div class="empty-icon-box"><i class="bi bi-images"></i></div>
-        <h3>{{ lang.mod_gallery_mod.grid[4] }}</h3>
+        <h3>{{ lang.mod_gallery_mod.grid.no_data }}</h3>
         <p>{{ lang.mod_gallery_mod.information }}</p>
     </section>
 </div>
@@ -164,7 +163,7 @@
 </div>
 
 <!-- Main FAB Button -->
-<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_gallery_mod/add'" aria-label="{{ lang.mod_gallery_mod.add|default('Pêveka Galeriyê Lêzêde Bike') }}">
+<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_gallery_mod/add'" aria-label="{{ lang.mod_gallery_mod.add }}">
     <i class="bi bi-plus-lg"></i>
 </button>
 {% endblock %}
@@ -320,8 +319,8 @@
             icon: 'warning',
             text: '{{ lang.mod_gallery_mod.remove_record|e('js') }}',
             showCancelButton: true,
-            confirmButtonText: '{{ lang.mod_gallery_mod.button.evet|e('js') }}',
-            cancelButtonText: '{{ lang.mod_gallery_mod.button.hayir|e('js') }}'
+            confirmButtonText: '{{ lang.mod_gallery_mod.button.yes|e('js') }}',
+            cancelButtonText: '{{ lang.mod_gallery_mod.button.no|e('js') }}'
         }).then((result) => {
             if (!result.isConfirmed) {
                 return;
@@ -330,20 +329,20 @@
             const body = new URLSearchParams();
             body.append('delete[]', galleryModSelectedId);
 
-            fetch('{{ site.saddress }}mod_gallery_mod/sil', {
+            fetch('{{ site.saddress }}mod_gallery_mod/delete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: body.toString()
             })
                 .then((response) => response.text())
                 .then((payload) => {
-                    if (payload.trim().toLowerCase() === 'oke') {
-                        showSnackbar('{{ lang.mod_gallery_mod.oke|e('js') }}');
+                    if (payload.trim().toLowerCase() === 'success') {
+                        showSnackbar('{{ lang.mod_gallery_mod.success|e('js') }}');
                         loadGalleryModRecords();
                         return;
                     }
 
-                    showSnackbar(payload || '{{ lang.mod_gallery_mod.hata|e('js') }}', 'error');
+                    showSnackbar(payload || '{{ lang.mod_gallery_mod.error|e('js') }}', 'error');
                 })
                 .catch((error) => {
                     showSnackbar(String(error.message || error), 'error');

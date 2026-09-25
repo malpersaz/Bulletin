@@ -1,14 +1,12 @@
 <?php
 
-/*
- * POST GET işlemleri İçin.
- * Req Sınıfı
- * Fonksiyonlar Static Olarak tanımlanmıştır.
+/**
+ * Amed Framework Request Handler
+ * Static helpers for $_POST, $_GET, $_REQUEST, and $_FILES processing
  */
-
 class Req
 {
-    // MQ MQ MQ - Fixed for PHP 8+ compatibility
+    // Deep stripslashes for compatibility
     public static function deep(&$value)
     {
         if (is_array($value)) {
@@ -21,33 +19,55 @@ class Req
         return $value;
     }
 
-    // Veri temizlemek İçin
-    public static function Temizle($veri)
+    /**
+     * Clear and sanitize string value
+     *
+     * @param string|null $data
+     * @return string
+     */
+    public static function Clear_Value($data)
     {
-        if ($veri === null) {
+        if ($data === null) {
             return '';
         }
-        $veri = trim(htmlspecialchars($veri, ENT_QUOTES, 'UTF-8'));
-        //	echo $veri;
-        //echo "<br>";
-        $veri = str_replace('`', '&#96;', $veri);
+        $data = trim(htmlspecialchars($data, ENT_QUOTES, 'UTF-8'));
+        $data = str_replace('`', '&#96;', $data);
 
         // hsc fix &amp;#039; => to => &#039;
-        $veri = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $veri);
-        // $veri = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $veri);
+        $data = preg_replace("/&amp;(#[0-9]+|[a-z]+);/i", "&$1;", $data);
 
-
-        return $veri;
+        return $data;
     }
 
-    // Url den gelen veriyi temizliyoruz.
-    public static function Url_Clear($veri)
+    /**
+     * Backward-compatibility alias for Clear_Value
+     *
+     * @param string|null $data
+     * @return string
+     */
+    public static function Temizle($data)
     {
-        $veri = urldecode($veri ?? '');
-        return self::Clear($veri);
+        return self::Clear_Value($data);
     }
 
-    // Veri temizlemek için
+    /**
+     * Clean URL-encoded data
+     *
+     * @param string|null $data
+     * @return string|array
+     */
+    public static function Url_Clear($data)
+    {
+        $data = urldecode($data ?? '');
+        return self::Clear($data);
+    }
+
+    /**
+     * Sanitize scalar or array values
+     *
+     * @param mixed $value
+     * @return mixed
+     */
     public static function Clear($value = null)
     {
         if ($value === null) {
@@ -56,7 +76,7 @@ class Req
         if (is_array($value)) {
             return array_map(['Req', 'Clear'], $value);
         }
-        return Req::Temizle($value);
+        return self::Clear_Value($value);
     }
 
     public static function unhtmlentities($string)
@@ -66,74 +86,72 @@ class Req
         return strtr($string, $trans_tbl);
     }
 
-    // MQ Değerine Bakıyoruz.
     public static function Amed()
     {
         return true;
-        // return get_magic_quotes_gpc() ? true : false;
     }
 
-    // $_POST ile gelen değeri alıyoruz
+    // Retrieve $_POST parameter
     public static function Post($name)
     {
         return self::Amed() ? self::deep($_POST[$name]) : $_POST[$name];
     }
 
-    // $_POST ile alınan veriyi temizliyoruz
+    // Retrieve sanitized $_POST parameter
     public static function Post_Safe($name)
     {
         return self::Clear(self::Post($name));
     }
 
-    // $_POST ile gelen değer varmı bakıyoruz
+    // Check if $_POST parameter exists and is not empty
     public static function is_Post($name)
     {
         return isset($_POST[$name]) and $_POST[$name] != '';
     }
 
-    // $_POST ile gelen veri int mi
+    // Check if $_POST parameter is integer
     public static function is_int_Post($name)
     {
         return is_int($_POST[$name]);
     }
 
-    // $_POST ile gelen veri int mi
+    // Check if $_POST parameter is string
     public static function is_string_Post($name)
     {
         return is_string($_POST[$name]);
     }
 
-    // $_FILES ile gelen değeri alıyoruz
+    // Retrieve $_FILES entry
     public static function Files($name)
     {
         return $_FILES[$name];
     }
 
-    // $_FILES ile gelen değer varmı bakıyoruz
+    // Check if $_FILES entry exists
     public static function is_Files($name)
     {
         return isset($_FILES[$name]);
     }
 
-    // $_FILES ile gelen değerin ismini alıyoruz
+    // Retrieve uploaded file name
     public static function Files_Name($name)
     {
         return $_FILES[$name]['name'];
     }
 
-    // $_FILES ile gelen değerin tipini alıyoruz
+    // Retrieve uploaded file MIME type
     public static function Files_Type($name)
     {
         return $_FILES[$name]['type'];
     }
 
-    // $_FILES ile gelen değerin tmp name değerini alıyoruz
+    // Retrieve uploaded file temp path
     public static function Files_Tmp($name)
     {
         return $_FILES[$name]['tmp_name'];
     }
 
-    // $_FILES ile gelen değerin uzantısını alıyoruz.
+    // Retrieve uploaded file extension
     public static function Files_Ext($name)
     {
         $array = explode('.', $_FILES[$name]['name']);
@@ -141,61 +159,61 @@ class Req
         return $array[$size];
     }
 
-    // $_GET ile gelen değeri alıyoruz
+    // Retrieve $_GET parameter
     public static function Get($name)
     {
         return self::Amed() ? self::deep($_GET[$name]) : $_GET[$name];
     }
 
-    // $_GET ile gelen değer varmı bakıyoruz
+    // Check if $_GET parameter exists and is not empty
     public static function is_Get($name)
     {
         return isset($_GET[$name]) and $_GET[$name] != '';
     }
 
-    // $_GET ile alınan veriyi temizliyoruz
+    // Retrieve sanitized $_GET parameter
     public static function Get_Safe($name)
     {
         return self::Url_Clear(self::Get($name));
     }
 
-    // $_GET ile gelen veri int mi
+    // Check if $_GET parameter is integer
     public static function is_int_Get($name)
     {
         return is_int($_GET[$name]);
     }
 
-    // $_GET ile gelen veri int mi
+    // Check if $_GET parameter is string
     public static function is_string_Get($name)
     {
         return is_string($_GET[$name]);
     }
 
-    // $_REQUEST ile gelen değeri alıyoruz
+    // Retrieve $_REQUEST parameter
     public static function Request($name)
     {
         return self::Amed() ? self::deep($_REQUEST[$name]) : $_REQUEST[$name];
     }
 
-    // $_REQUEST ile gelen değer varmı bakıyoruz
+    // Check if $_REQUEST parameter exists and is not empty
     public static function is_Request($name)
     {
         return isset($_REQUEST[$name]) and $_REQUEST[$name] != '';
     }
 
-    // $_REQUEST ile alınan veriyi temizliyoruz
+    // Retrieve sanitized $_REQUEST parameter
     public static function Request_Safe($name)
     {
         return self::Url_Clear(self::Request($name));
     }
 
-    // $_REQUEST ile gelen veri int mi
+    // Check if $_REQUEST parameter is integer
     public static function is_int_Request($name)
     {
         return is_int($_REQUEST[$name]);
     }
 
-    // $_REQUEST ile gelen veri int mi
+    // Check if $_REQUEST parameter is string
     public static function is_string_Request($name)
     {
         return is_string($_REQUEST[$name]);
@@ -203,7 +221,7 @@ class Req
 
     public static function isNumeric($numeric)
     {
-        return preg_match("/^\\d+\$/", $numeric);
+        return preg_match("/^\d+$/", $numeric);
     }
 
     public static function isBiggerDouble($a, $b)

@@ -16,108 +16,120 @@ class edit_validator
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['language'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['language'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // category_id Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'category_id',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['category_id'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['category_id'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // created_at Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'created_at',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['created_at'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['created_at'])
+            ]
+        );
+        if ($this->_check() === True) {
+            return True;
+        }
+        // summary Required
+        $this->valid->add(
+            [
+                'name' => 'summary',
+                'func' => 'required',
+                'arg' => '',
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['summary'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // content Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'content',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['content'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['content'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // seo Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'seo',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['seo'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['seo'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['title'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['title'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['keywords'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['keywords'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // description Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['description'])
+                'message' => sprintf($this->lang['mod_publication']['validator']['required'], $this->lang['mod_publication']['admin']['columns']['description'])
             ]
         );
         if ($this->_check() === True) {
@@ -126,75 +138,90 @@ class edit_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['name'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['name'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // seo Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'seo',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['seo'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['seo'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['title'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['title'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['keywords'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['keywords'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // description Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['description'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication']['validator']['length'], $this->lang['mod_publication']['admin']['columns']['description'], '1', '255')
+            ]
+        );
+        if ($this->_check() === True) {
+            return True;
+        }
+        // summary Length
+        $this->valid->add(
+            [
+                'name' => 'summary',
+                'func' => 'length',
+                'arg' => [
+                    'min' => '90',
+                    'max' => '120'
+                ],
+                'message' => $this->lang['mod_publication']['validator']['deck_length']
             ]
         );
         if ($this->_check() === True) {
@@ -203,24 +230,24 @@ class edit_validator
 
         #Check inarray
         // status in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'status',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['inarray'], $this->lang['mod_publication']['admin']['columns']['status'], 'y,n')
+                'message' => sprintf($this->lang['mod_publication']['validator']['inarray'], $this->lang['mod_publication']['admin']['columns']['status'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // deck in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'deck',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_publication']['validator']['inarray'], $this->lang['mod_publication']['admin']['columns']['deck'], 'y,n')
+                'message' => sprintf($this->lang['mod_publication']['validator']['inarray'], $this->lang['mod_publication']['admin']['columns']['deck'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
@@ -233,7 +260,7 @@ class edit_validator
 
         #Check Unique
 
-        #Check Unique with column düzenle
+        #Check Unique with edit column
         $this->mod_publication_model = Load::model('mod_publication');
         $this->mod_publication_model->where_seo_and_lang_and_not_id(html_entity_decode(trim(Req::Post('seo')), ENT_QUOTES, 'UTF-8'), Req::Post_Safe('lang'), $id);
         if ($this->mod_publication_model->limit(1)->gRo()->getSize() > 0) {

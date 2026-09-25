@@ -27,8 +27,7 @@ $lang['mod_user'] = [
     'reset' => 'Sifir bike',
   ],
   'information' => 'Bilgi!',
-  'oke' => 'İşlem Başarılı!',
-  'success' => 'Serkeftî!',
+ 'Serkeftî!',
   'last_step' => 'Son Adım',
   'error_title' => 'Çewtî Çêbû!',
   'error_label' => 'Çewtî!',
@@ -52,11 +51,11 @@ $lang['mod_user'] = [
   'error_fatal' => 'Ölümcül Hata Oluştu!',
   'database_error' => 'Qeyd qeyd nêbiyo. Kerem kerê reyna biceribnê.',
   'remove_image' => 'Are you sure you want to remove this image?',
-  'remove_image_oke' => 'Image Removed',
+  'remove_image_success' => 'Image Removed',
   'choose_wish' => 'Please choose if you want',
   'remove_record' => 'Are you sure you want to delete this record?',
   'message' => [
-    'oke' => [
+    'success' => [
       'add' => 'User Added!',
       'edit' => 'User Updated!',
     ],
@@ -470,8 +469,13 @@ $lang['mod_user'] = [
     'more_sheet_title' => 'Amurê Zêde',
     'more_sheet_copy' => 'Bêy ku xeta sereke ya kar tijî bibo, rûyê idareyiya kem-bıkaranışi veke.',
     'more_sheet_open_drawer' => 'Peldanka pêro modulan veke',
+    'link_list' => 'Lîste',
+    'link_add' => 'Ezâfe bike',
+    'link_categories' => 'Kategorî',
+    'link_submissions' => 'Netîcey',
+    'clear_search' => 'Pak bike',
     'home_title' => 'Serûpel',
-    'admin_brand' => 'Rêveberiya AKM Business',
+    'admin_brand' => 'AKM Rojname Admin',
   ],
   'fab' => [
     'add_announcement' => 'Daxwiyaniyekê Lêke',

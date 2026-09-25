@@ -15,7 +15,7 @@ if (!isset($_SERVER['HTTP_USER_AGENT'])) {
     $_SERVER['HTTP_USER_AGENT'] = 'module-management-smoke';
 }
 
-require_once dirname(__DIR__) . '/koberz.init.php';
+require_once dirname(__DIR__) . '/init.php';
 
 $runtime = Load::lib('ModuleRuntime');
 

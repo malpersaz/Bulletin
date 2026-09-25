@@ -1,13 +1,14 @@
 {% set module_lang_key = 'mod_gallery' %}
-{% set hide_navbar = true %}
+{% set hide_search = true %}
 {% set hide_fab = true %}
-{% extends 'admin/layout.twig' %}
+{% set hide_navbar = true %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
 
-{% block title %}{{ lang.mod_gallery.admin.title }}{% endblock %}
+{% block title %}{{ record_label is defined and record_label ? record_label : lang.mod_gallery.admin.title }}{% endblock %}
 
-{% block headline %}{{ record_label is defined ? record_label : lang.mod_gallery.admin.title }}{% endblock %}
+{% block headline %}{{ record_label is defined and record_label ? record_label : lang.mod_gallery.admin.title }}{% endblock %}
 
-{% block styles %}
+{% block content %}
 <style>
     .headline {
         font-size: 18px !important;
@@ -66,23 +67,23 @@
         position: fixed;
         inset: 0;
         z-index: 12005;
-        display: none;
+        display: none !important;
         align-items: flex-end;
         justify-content: center;
     }
     .gallery-tools-sheet.active {
-        display: flex;
+        display: flex !important;
     }
     .gallery-selection-sheet {
         position: fixed;
         inset: 0;
         z-index: 12006;
-        display: none;
+        display: none !important;
         align-items: flex-end;
         justify-content: center;
     }
     .gallery-selection-sheet.active {
-        display: flex;
+        display: flex !important;
     }
     .gallery-tools-sheet__scrim {
         position: absolute;
@@ -1008,52 +1009,154 @@
             display: flex !important;
         }
     }
-</style>
-{% endblock %}
 
-{% block content %}
+    /* Modal Dynamic Dialog & Hero Add Images Card Styling */
+    #modal-dynamic-dialog .gallery-bottom-bar,
+    #modal-dynamic-dialog .standard-toolbar,
+    .edit-container .gallery-bottom-bar,
+    .gallery-tools-sheet:not(.active),
+    .gallery-selection-sheet:not(.active),
+    .gallery-detail-sheet:not(.active),
+    #modal-dynamic-dialog .gallery-tools-sheet:not(.active),
+    #modal-dynamic-dialog .gallery-selection-sheet:not(.active),
+    #modal-dynamic-dialog .gallery-detail-sheet:not(.active) {
+        display: none !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
+    }
+    #modal-dynamic-dialog .modal-header-bar {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 12px 16px !important;
+    }
+    #modal-dynamic-dialog .modal-header-bar .modal-title-wrapper {
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        min-width: 0 !important;
+        text-align: center !important;
+    }
+    #modal-dynamic-dialog .modal-header-bar .modal-title-wrapper h3 {
+        font-size: 14px !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin: 0 !important;
+        max-width: 220px !important;
+        text-align: center !important;
+    }
+    .gallery-modal-container {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    .gallery-hero-upload-card {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        background: linear-gradient(135deg, var(--md-sys-color-surface-container-low, #f7f2fa) 0%, var(--md-sys-color-surface-container-high, #ece6f0) 100%);
+        border: 2px dashed var(--md-sys-color-primary, #6750a4);
+        border-radius: 24px;
+        padding: 32px 20px !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 14px !important;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+        box-shadow: 0 4px 16px rgba(103, 80, 164, 0.06);
+        margin: 0 auto !important;
+    }
+    .gallery-hero-upload-card * {
+        text-align: center !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+    .gallery-hero-upload-card:hover {
+        background: var(--md-sys-color-surface-container-high, #ece6f0);
+        border-color: var(--md-sys-color-primary, #6750a4);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(103, 80, 164, 0.12);
+    }
+    .gallery-hero-upload-icon {
+        width: 60px !important;
+        height: 60px !important;
+        border-radius: 50% !important;
+        background: color-mix(in srgb, var(--md-sys-color-primary, #6750a4) 14%, transparent) !important;
+        color: var(--md-sys-color-primary, #6750a4) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 30px !important;
+        margin: 0 auto 4px auto !important;
+    }
+    .gallery-add-btn-hero {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        min-height: 48px !important;
+        padding: 0 28px !important;
+        border-radius: 24px !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 14px rgba(103, 80, 164, 0.25) !important;
+        background: var(--md-sys-color-primary, #6750a4) !important;
+        color: var(--md-sys-color-on-primary, #ffffff) !important;
+        border: none !important;
+        cursor: pointer !important;
+        margin: 0 auto !important;
+    }
+    .gallery-hero-upload-hint {
+        margin: 0 auto !important;
+        font-size: 12px !important;
+        color: var(--md-sys-color-on-surface-variant, #49454f) !important;
+        font-weight: 500 !important;
+        text-align: center !important;
+    }
+</style>
+
 {% set image_count = pictures is defined ? pictures|length : 0 %}
 
-<div class="gallery-shell">
-    <section class="gallery-context">
-        <div class="gallery-context__eyebrow">
-            <i class="bi bi-images"></i>
-            <span>{{ lang.mod_gallery.admin.title }}</span>
-        </div>
-        <div class="gallery-context__meta" style="font-size: 13px; font-weight: 500; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; color: var(--md-sys-color-on-surface-variant);">
-            <span>{{ lang.mod_gallery.admin.meta_mod }}: <strong style="color: var(--md-sys-color-on-surface);">{{ mod_name }}</strong></span>
-            <span>{{ lang.mod_gallery.admin.meta_id }}: <strong style="color: var(--md-sys-color-on-surface);">{{ vid }}</strong></span>
-            <span>{{ lang.mod_gallery.admin.meta_relation }}: <strong style="color: #2E7D32;">{{ lang.mod_gallery.admin.meta_relation_exists }}</strong></span>
-            <span style="margin-left: auto; display: inline-flex; align-items: center; gap: 6px;" class="gallery-context__chip">
+<div class="edit-container gallery-modal-container" data-modal-title="{{ record_label is defined and record_label ? record_label : lang.mod_gallery.admin.title }}" data-modal-icon="bi-images">
+    
+    <!-- CONTEXT SUB-HEADER -->
+    <div class="gallery-context-bar" style="display: {{ image_count > 0 ? 'flex' : 'none' }}; align-items: center; justify-content: space-between; padding: 4px 4px 10px; border-bottom: 1px solid var(--md-sys-color-outline-variant); margin-bottom: 4px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="gallery-context__chip" style="font-size: 12px; padding: 4px 12px; border-radius: 12px; background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent); color: var(--md-sys-color-primary); font-weight: 700;">
                 <i class="bi bi-collection"></i>
                 <strong id="galleryVisibleCount">{{ lang.mod_gallery.admin.images_summary|format(image_count) }}</strong>
             </span>
         </div>
-    </section>
+    </div>
 
-    <!-- EMBEDDED UPLOAD SECTION -->
-    <div id="uploadSheet" class="gallery-upload-section">
-        <div
-            id="uploadArea"
-            class="upload-dropzone"
-            onclick="document.getElementById('fileInput').click()"
-            ondragenter="GalleryManager.setUploadDragState(true)"
-            ondragover="event.preventDefault(); GalleryManager.setUploadDragState(true)"
-            ondragleave="GalleryManager.setUploadDragState(false)"
-            ondrop="GalleryManager.handleDrop(event)"
-        >
-            <button type="button" class="m3-btn-browse">
-                <span>{{ lang.mod_gallery.admin.browse_description }}</span>
-                <span class="m3-btn-browse__icon-wrapper">
-                    <i class="bi bi-cloud-arrow-up"></i>
-                </span>
-            </button>
-            <p class="upload-dropzone-subtitle" style="margin-top: 8px;">{{ lang.mod_gallery.admin.upload_hint }}</p>
+    <!-- PROMINENT CENTERED HERO ADD IMAGES CARD -->
+    <div class="gallery-hero-upload-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; width: 100%; box-sizing: border-box; padding: 32px 20px; margin: 0 auto;" onclick="window.lastFileInputTime = Date.now(); document.getElementById('fileInput').click()" ondragenter="GalleryManager.setUploadDragState(true)" ondragover="event.preventDefault(); GalleryManager.setUploadDragState(true)" ondragleave="GalleryManager.setUploadDragState(false)" ondrop="GalleryManager.handleDrop(event)">
+        <div class="gallery-hero-upload-icon" style="margin: 0 auto 4px auto; display: flex; align-items: center; justify-content: center;">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
         </div>
+        <button type="button" class="m3-btn-filled gallery-add-btn-hero" style="margin: 0 auto; display: inline-flex; align-items: center; justify-content: center;" onclick="event.stopPropagation(); window.lastFileInputTime = Date.now(); document.getElementById('fileInput').click();">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_gallery.admin.add_images }}</span>
+        </button>
+        <p class="gallery-hero-upload-hint" style="margin: 0 auto; text-align: center;">{{ lang.mod_gallery.admin.upload_hint }}</p>
+    </div>
 
-        <input type="file" id="fileInput" multiple hidden accept="image/*" onchange="GalleryManager.handleFileSelect(this)">
+    <input type="file" id="fileInput" multiple hidden accept="image/*" onchange="window.lastFileInputTime = Date.now(); GalleryManager.handleFileSelect(this)">
 
-        <div id="uploadPreview" class="upload-sheet__queue" aria-live="polite" style="display: none; width: 100%;">
+    <!-- EMBEDDED UPLOAD SECTION QUEUE -->
+    <div id="uploadSheet" class="gallery-upload-section">
+        <div id="uploadPreview" class="upload-sheet__queue" aria-live="polite" style="width: 100%;">
             <div class="upload-sheet__queue-header" style="margin-top: 10px;">
                 <div>
                     <h4 style="margin: 0; font-size: 14px; font-weight: 700;">{{ lang.mod_gallery.admin.upload_queue_title }}</h4>
@@ -1077,16 +1180,13 @@
             <div id="uploadQueueList" class="upload-sheet__queue-list" style="margin-top: 8px;"></div>
 
             <div class="upload-sheet__footer" style="margin-top: 10px; display: flex; justify-content: flex-end;">
-                <button class="m3-btn-text" type="button" data-upload-close onclick="closeUploadSheet()" style="color: var(--md-sys-color-error); font-weight: 700;">
-                    {{ lang.mod_gallery.admin.cancel }}
-                </button>
                 <button id="uploadBtn" class="m3-btn-filled" type="button" style="display: none;" disabled onclick="GalleryManager.startUpload()">
                 </button>
             </div>
         </div>
     </div>
 
-    <section id="galleryBoard" class="gallery-board">
+    <section id="galleryBoard" class="gallery-board" style="display: {{ image_count > 0 ? 'block' : 'none' }};">
         {% if pictures is defined and pictures|length > 0 %}
             <div class="gallery-workspace">
                 <div class="gallery-workspace__main">
@@ -1097,8 +1197,8 @@
 
                     <div id="galleryGrid" class="gallery-grid">
                         {% for picture in pictures %}
-                            {% set original_url = site.address ~ 'static/mod_gallery/' ~ mod_name ~ '/original/' ~ picture.url %}
-                            {% set thumb_url = site.address ~ 'static/mod_gallery/' ~ mod_name ~ '/thumb/' ~ picture.url %}
+                            {% set original_url = site.iaddress ~ 'mod_gallery/' ~ mod_name ~ '/original/' ~ picture.url %}
+                            {% set thumb_url = site.iaddress ~ 'mod_gallery/' ~ mod_name ~ '/thumb/' ~ picture.url %}
                             <article
                                 class="gallery-item"
                                 id="image-{{ picture.id }}"
@@ -1119,10 +1219,6 @@
                                         <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.openImageDetail('{{ picture.id }}')" title="{{ lang.mod_gallery.admin.open_detail }}">
                                             <i class="bi bi-layout-sidebar-inset"></i>
                                             <span>{{ lang.mod_gallery.admin.open_detail }}</span>
-                                        </button>
-                                        <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.viewOriginal('{{ original_url }}')" title="{{ lang.mod_gallery.admin.view_original }}">
-                                            <i class="bi bi-arrows-fullscreen"></i>
-                                            <span>{{ lang.mod_gallery.admin.view_original }}</span>
                                         </button>
                                         <button class="action-btn" onclick="event.stopPropagation(); GalleryManager.editName('{{ picture.id }}', '{{ picture.name|escape('js') }}')" title="{{ lang.mod_gallery.admin.rename_image }}">
                                             <i class="bi bi-pencil"></i>
@@ -1147,22 +1243,11 @@
                 </div>
 
             </div>
-        {% else %}
-            <div class="gallery-empty">
-                <div class="gallery-empty__icon">
-                    <i class="bi bi-images"></i>
-                </div>
-                <h3 style="margin: 0; font-size: 20px; color: var(--md-sys-color-on-surface);">{{ lang.mod_gallery.admin.no_registered_images }}</h3>
-                <p style="margin: 8px 0 0; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.select_category_hint }}</p>
-                <button class="m3-btn-filled" style="margin-top: 20px; border-radius: 18px;" onclick="openUploadSheet()">
-                    <i class="bi bi-cloud-upload"></i>
-                    <span>{{ lang.mod_gallery.admin.add_images }}</span>
-                </button>
-            </div>
         {% endif %}
     </section>
 </div>
 
+{% if pictures is defined and pictures|length > 0 %}
 <div id="galleryToolsSheet" class="gallery-tools-sheet">
     <div class="gallery-tools-sheet__scrim" onclick="GalleryManager.closeToolsSheet()"></div>
     <div class="gallery-tools-sheet__content">
@@ -1251,9 +1336,9 @@
             <div style="width: 40px;"></div>
         </div>
 
-        <!-- Pêşdîtin bi Bişkojên Aliyan -->
+        <!-- Side Action Preview -->
         <div class="gallery-detail__preview-container">
-            <button class="nav-overlay-btn prev" type="button" onclick="GalleryManager.showPreviousImage()" aria-label="Wêneya berê">
+            <button class="nav-overlay-btn prev" type="button" onclick="GalleryManager.showPreviousImage()" aria-label="Previous Image">
                 <i class="bi bi-chevron-left"></i>
             </button>
 
@@ -1264,12 +1349,12 @@
                 </div>
             </div>
 
-            <button class="nav-overlay-btn next" type="button" onclick="GalleryManager.showNextImage()" aria-label="Wêneya paş">
+            <button class="nav-overlay-btn next" type="button" onclick="GalleryManager.showNextImage()" aria-label="Next Image">
                 <i class="bi bi-chevron-right"></i>
             </button>
         </div>
 
-        <!-- Agahî û Bişkokên Minimalist ên Jêrîn -->
+        <!-- Bottom Info and Actions -->
         <div class="gallery-detail__bottom-panel">
             <div class="gallery-detail__meta-summary">
                 <span class="meta-label">ID: <strong id="galleryDetailId">-</strong></span>
@@ -1294,46 +1379,34 @@
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block fixed_bottom %}
-<div class="standard-toolbar gallery-bottom-bar">
-    <!-- Toolbar Item: Veger (Back) -->
-    <a
-        class="toolbar-item"
-        href="{{ back_url is defined and back_url ? back_url : (site.saddress ~ 'mod_gallery/list') }}"
-        title="{{ lang.mod_gallery.admin.back }}"
-        aria-label="{{ lang.mod_gallery.admin.back }}"
-    >
-        <i class="bi bi-arrow-left"></i>
-    </a>
+<div id="galleryOriginalLightbox" class="gallery-original-lightbox" style="display:none; position:fixed; inset:0; z-index:999999; background:rgba(18, 15, 23, 0.98); backdrop-filter:blur(16px); align-items:center; justify-content:center;">
+    <div class="gallery-original-lightbox__content" style="position:relative; width:100%; height:100%; max-width:412px; display:flex; flex-direction:column; justify-content:space-between; box-sizing:border-box; margin:0 auto;">
+        
+        <!-- Phone Top Bar -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px; background:linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%); z-index:3;">
+            <button type="button" class="close-btn" onclick="GalleryManager.closeOriginalLightbox()" style="background:rgba(255,255,255,0.08); border:none; color:#fff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Girtin">
+                <i class="bi bi-arrow-left" style="font-size:18px;"></i>
+            </button>
+            <span style="font-size:14px; font-weight:700; color:#fff;">View Original</span>
+            <a id="lightboxOpenTabBtn" href="#" target="_blank" style="background:rgba(255,255,255,0.08); border:none; color:#fff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;" title="Open in new tab">
+                <i class="bi bi-box-arrow-up-right" style="font-size:16px;"></i>
+            </a>
+        </div>
 
-    <!-- Hidden element to prevent JS from breaking -->
-    <button id="gallerySelectionToggle" class="toolbar-item" type="button" style="display: none;" onclick="GalleryManager.toggleSelectionMode()">
-        <i class="bi bi-check2-square"></i>
-    </button>
+        <!-- Phone Center Image Preview -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; padding:12px; min-height:0; z-index:2;" onclick="GalleryManager.closeOriginalLightbox()">
+            <img id="lightboxImage" src="" alt="Original Image" style="max-width:100%; max-height:100%; object-fit:contain; border-radius:16px; box-shadow:0 8px 32px rgba(0,0,0,0.6);" onclick="event.stopPropagation()">
+        </div>
 
-    <!-- Symmetrical Center Start Button -->
-    <button type="button" class="toolbar-start-btn" onclick="if(typeof toggleDrawer==='function')toggleDrawer();" title="{{ lang.management.start_menu }}" aria-label="{{ lang.management.start_menu }}">
-        <i class="bi bi-list"></i>
-    </button>
-
-    <!-- Hidden element to prevent JS from breaking -->
-    <button class="toolbar-item" type="button" style="display: none;" disabled onclick="GalleryManager.startUpload()">
-        <i class="bi bi-plus-lg"></i>
-    </button>
-
-    <button class="toolbar-item" type="button" style="display: none;" onclick="GalleryManager.openToolsSheet()">
-        <i class="bi bi-sliders"></i>
-    </button>
-
-    <!-- Symmetrical Right Placeholder -->
-    <div style="width: 48px; visibility: hidden;"></div>
+        <!-- Phone Bottom Bar -->
+        <div style="padding:16px; background:linear-gradient(0deg, rgba(0,0,0,0.6) 0%, transparent 100%); text-align:center; z-index:3;">
+            <span id="lightboxFilename" style="font-size:12px; color:rgba(255,255,255,0.7); font-weight:500;"></span>
+        </div>
+    </div>
 </div>
-{% endblock %}
-
-{% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/mod_gallery.js?v=8"></script>
+{% endif %}
+<script src="{{ site.address }}templates/admin/assets/js/mod_gallery.js?v=14"></script>
 <script>
     GalleryManager.init({
         vid: '{{ vid }}',
@@ -1415,10 +1488,20 @@
         GalleryManager.resetUpload();
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
+    const initGalleryUI = function () {
         GalleryManager.sortImages(document.getElementById('gallerySortSelect')?.value || 'newest');
         GalleryManager.filterImages('');
         GalleryManager.openFirstVisibleImage();
-    });
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initGalleryUI);
+    } else {
+        setTimeout(initGalleryUI, 50);
+    }
 </script>
 {% endblock %}
+
+{% block fixed_bottom %}{% endblock %}
+{% block scripts %}{% endblock %}
+

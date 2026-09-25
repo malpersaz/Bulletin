@@ -1,0 +1,143 @@
+{% set has_company_info = (site.legal_company_name is defined and site.legal_company_name is not empty)
+    or (site.legal_trading_name is defined and site.legal_trading_name is not empty)
+    or (site.company_registration_number is defined and site.company_registration_number is not empty)
+    or (site.trade_registry_number is defined and site.trade_registry_number is not empty)
+    or (site.central_registration_number is defined and site.central_registration_number is not empty)
+    or (site.chamber_of_commerce is defined and site.chamber_of_commerce is not empty)
+    or (site.country is defined and site.country is not empty)
+    or (site.corporate_address is defined and site.corporate_address is not empty) %}
+
+{% set has_tax_info = (site.tax_office is defined and site.tax_office is not empty)
+    or (site.tax_number is defined and site.tax_number is not empty)
+    or (site.vat_number is defined and site.vat_number is not empty) %}
+
+{% set has_contact_info = (site.authorized_person is defined and site.authorized_person is not empty)
+    or (site.registered_email is defined and site.registered_email is not empty)
+    or (site.legal_contact_phone is defined and site.legal_contact_phone is not empty) %}
+
+{% set has_publishing_info = (site.managing_director is defined and site.managing_director is not empty)
+    or (site.editor_in_chief is defined and site.editor_in_chief is not empty)
+    or (site.press_code_license is defined and site.press_code_license is not empty)
+    or (site.dpo_email is defined and site.dpo_email is not empty)
+    or (site.hosting_provider is defined and site.hosting_provider is not empty)
+    or (site.compliance_jurisdiction is defined and site.compliance_jurisdiction is not empty) %}
+
+{% set has_warranty_info = (site.default_warranty_duration is defined and site.default_warranty_duration is not empty)
+    or (site.warranty_type is defined and site.warranty_type is not empty)
+    or (site.return_policy_days is defined and site.return_policy_days is not empty)
+    or (site.warranty_description is defined and site.warranty_description is not empty) %}
+
+{% set has_any_legal_info = has_company_info or has_tax_info or has_contact_info or has_publishing_info or has_warranty_info %}
+
+{% if not has_any_legal_info %}
+    <div class="legal-info-empty text-center py-4 px-3 my-3 border rounded-3 bg-light">
+        <i class="bi bi-info-circle text-primary fs-3 d-block mb-2" aria-hidden="true"></i>
+        <p class="mb-0 text-secondary fs-6 fw-medium">
+            {{ lang.index.legal_info_pending|default('Legal information is currently being updated.') }}
+        </p>
+    </div>
+{% else %}
+    <div class="legal-info-content">
+        {% if has_company_info %}
+            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.company_registry_title|default('Company & Commercial Registry') }}</strong></h3>
+            <ul class="list-unstyled mb-4">
+                {% if site.legal_company_name is defined and site.legal_company_name is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.legal_company_name|default('Legal Company Name') }}:</strong> {{ site.legal_company_name }}</li>
+                {% endif %}
+                {% if site.legal_trading_name is defined and site.legal_trading_name is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.legal_trading_name|default('Trading Name') }}:</strong> {{ site.legal_trading_name }}</li>
+                {% endif %}
+                {% if site.company_registration_number is defined and site.company_registration_number is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.company_registration_number|default('Company Registration Number') }}:</strong> {{ site.company_registration_number }}</li>
+                {% endif %}
+                {% if site.trade_registry_number is defined and site.trade_registry_number is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.trade_registry_number|default('Trade Registry Number') }}:</strong> {{ site.trade_registry_number }}</li>
+                {% endif %}
+                {% if site.central_registration_number is defined and site.central_registration_number is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.central_registration_number|default('Central Registration Number (MERSIS)') }}:</strong> {{ site.central_registration_number }}</li>
+                {% endif %}
+                {% if site.chamber_of_commerce is defined and site.chamber_of_commerce is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.chamber_of_commerce|default('Chamber of Commerce') }}:</strong> {{ site.chamber_of_commerce }}</li>
+                {% endif %}
+                {% if site.corporate_address is defined and site.corporate_address is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.corporate_address|default('Corporate Address') }}:</strong> {{ site.corporate_address }}</li>
+                {% endif %}
+                {% if site.country is defined and site.country is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.country|default('Country') }}:</strong> {{ site.country }}</li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
+        {% if has_publishing_info %}
+            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.publishing_credentials_title|default('Publishing Credentials & Governance') }}</strong></h3>
+            <ul class="list-unstyled mb-4">
+                {% if site.managing_director is defined and site.managing_director is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.managing_director|default('Managing Director') }}:</strong> {{ site.managing_director }}</li>
+                {% endif %}
+                {% if site.editor_in_chief is defined and site.editor_in_chief is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.editor_in_chief|default('Editor-in-Chief') }}:</strong> {{ site.editor_in_chief }}</li>
+                {% endif %}
+                {% if site.press_code_license is defined and site.press_code_license is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.press_code_license|default('Press Code / License') }}:</strong> {{ site.press_code_license }}</li>
+                {% endif %}
+                {% if site.dpo_email is defined and site.dpo_email is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.dpo_email|default('Data Protection Officer (DPO)') }}:</strong> <a href="mailto:{{ site.dpo_email }}" class="text-decoration-none">{{ site.dpo_email }}</a></li>
+                {% endif %}
+                {% if site.hosting_provider is defined and site.hosting_provider is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.hosting_provider|default('Hosting Provider') }}:</strong> {{ site.hosting_provider }}</li>
+                {% endif %}
+                {% if site.compliance_jurisdiction is defined and site.compliance_jurisdiction is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.compliance_jurisdiction|default('Jurisdiction') }}:</strong> {{ site.compliance_jurisdiction }}</li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
+        {% if has_tax_info %}
+            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.tax_fiscal_title|default('Tax & Fiscal Disclosures') }}</strong></h3>
+            <ul class="list-unstyled mb-4">
+                {% if site.tax_office is defined and site.tax_office is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.tax_office|default('Tax Office') }}:</strong> {{ site.tax_office }}</li>
+                {% endif %}
+                {% if site.tax_number is defined and site.tax_number is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.tax_number|default('Tax Identification Number') }}:</strong> {{ site.tax_number }}</li>
+                {% endif %}
+                {% if site.vat_number is defined and site.vat_number is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.vat_number|default('VAT Identification Number') }}:</strong> {{ site.vat_number }}</li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
+        {% if has_contact_info %}
+            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.legal_contact_title|default('Statutory & Legal Contact') }}</strong></h3>
+            <ul class="list-unstyled mb-4">
+                {% if site.authorized_person is defined and site.authorized_person is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.authorized_person|default('Authorized Representative') }}:</strong> {{ site.authorized_person }}</li>
+                {% endif %}
+                {% if site.registered_email is defined and site.registered_email is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.registered_email|default('Registered Corporate Email') }}:</strong> <a href="mailto:{{ site.registered_email }}" class="text-decoration-none">{{ site.registered_email }}</a></li>
+                {% endif %}
+                {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.legal_contact_phone|default('Legal Contact Phone') }}:</strong> <a href="tel:{{ site.legal_contact_phone }}" class="text-decoration-none">{{ site.legal_contact_phone }}</a></li>
+                {% endif %}
+            </ul>
+        {% endif %}
+
+        {% if has_warranty_info %}
+            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.warranty_policies_title|default('Consumer & Warranty Policies') }}</strong></h3>
+            <ul class="list-unstyled mb-3">
+                {% if site.default_warranty_duration is defined and site.default_warranty_duration is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.default_warranty_duration|default('Warranty Duration') }}:</strong> {{ site.default_warranty_duration }} {{ lang.index.months|default('months') }}</li>
+                {% endif %}
+                {% if site.warranty_type is defined and site.warranty_type is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.warranty_type|default('Warranty Type') }}:</strong> {{ site.warranty_type }}</li>
+                {% endif %}
+                {% if site.return_policy_days is defined and site.return_policy_days is not empty %}
+                    <li class="mb-2"><strong>{{ lang.index.return_policy_days|default('Return Policy') }}:</strong> {{ site.return_policy_days }} {{ lang.index.days|default('days') }}</li>
+                {% endif %}
+            </ul>
+            {% if site.warranty_description is defined and site.warranty_description is not empty %}
+                <p class="mb-3">{{ site.warranty_description|nl2br }}</p>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endif %}

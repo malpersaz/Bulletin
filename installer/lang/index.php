@@ -4,7 +4,7 @@ class lang extends installerbase implements installerbaseinterface
 {
     const INSTALLER_STATE_SESSION_KEY = 'installer_mobile_state';
 
-    public $tablolar;
+    public $tables;
     public $model;
     public $lang;
 
@@ -12,7 +12,7 @@ class lang extends installerbase implements installerbaseinterface
     {
         parent::__construct();
         $this->mod = 'lang';
-        $this->tablolar = array('lang');
+        $this->tables = array('lang');
         $this->lang = InstallerLang::load();
     }
 
@@ -46,7 +46,7 @@ class lang extends installerbase implements installerbaseinterface
             return FALSE;
         }
 
-        $this->oke($this->lang['installer']['sql_added']);
+        $this->success($this->lang['installer']['sql_added']);
         return TRUE;
     }
 
@@ -73,7 +73,7 @@ class lang extends installerbase implements installerbaseinterface
                 return FALSE;
             }
 
-            $this->oke("Language table column '" . $column . "' added");
+            $this->success("Language table column '" . $column . "' added");
         }
 
         return TRUE;
@@ -92,7 +92,7 @@ class lang extends installerbase implements installerbaseinterface
             ['name' => 'فارسی', 'seo' => 'fa'],
             ['name' => 'Français', 'seo' => 'fr'],
             ['name' => 'Kurmancî', 'seo' => 'ku'],
-            ['name' => 'Soranî', 'seo' => 'ckb'],
+            ['name' => 'سۆرانی', 'seo' => 'ckb'],
             ['name' => 'Svenska', 'seo' => 'sv'],
             ['name' => 'Türkçe', 'seo' => 'tr'],
             ['name' => 'Zazakî', 'seo' => 'zza']
@@ -114,7 +114,7 @@ class lang extends installerbase implements installerbaseinterface
                     $record->is_default = $language['seo'] === $defaultLanguage ? 'y' : 'n';
                 }
                 if ($record->save()) {
-                    $this->oke(sprintf($this->lang['installer']['lang_added'], $language['name']));
+                    $this->success(sprintf($this->lang['installer']['lang_added'], $language['name']));
                 } else {
                     $this->error("Language '" . $language['seo'] . "' could not be added");
                     return FALSE;

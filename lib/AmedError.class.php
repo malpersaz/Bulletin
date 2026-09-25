@@ -2,7 +2,7 @@
 
 /**
  * Amed Framework
- * User: a.k.mutlu
+ * User: AKM
  * Date: 4/23/11 - 7:09 PM
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
@@ -33,8 +33,9 @@ class AmedError
         self::$template->setGlobal('link', $currentFullUrl);
 
         $errorData = self::$lang['index']['error'][$page];
-        self::$template->setGlobal('title', self::$lang['index']['error']['1'] . " : " . $errorData['ad']);
-        self::$template->setGlobal('mesaj', sprintf($errorData['mesaj'], $argument));
+        $errorTitlePrefix = self::$lang['index']['error']['title'] ?? 'Error';
+        self::$template->setGlobal('title', $errorTitlePrefix . " : " . ($errorData['title'] ?? 'Error'));
+        self::$template->setGlobal('message', sprintf($errorData['message'] ?? '%s', $argument));
         self::$template->setGlobal('tpl', 'index/error');
         self::$template->tpl('index/error');
         Run::import('index', '_index');
@@ -80,26 +81,21 @@ class AmedError
     {
         $indexLang = self::loadIndexLanguage();
 
-        if (!isset($indexLang['index']['language'])) {
-            throw new RuntimeException('Missing index language key: index.language');
-        }
-
-        if (!isset($indexLang['index']['file_not_found'])) {
-            throw new RuntimeException('Missing index language key: index.file_not_found');
-        }
+        $langLabel = $indexLang['index']['language'] ?? 'Language';
+        $fileNotFoundLabel = $indexLang['index']['file_not_found'] ?? 'File not found';
 
         echo Helper::red_text($path);
         echo "</br>";
-        echo Helper::black_text(sprintf("%s %s: %s", $indexLang['index']['language'], $indexLang['index']['file_not_found'], $path));
+        echo Helper::black_text(sprintf("%s %s: %s", $langLabel, $fileNotFoundLabel, $path));
     }
 
     private static function loadIndexLanguage()
     {
-        if (Kayit::varmi('index-lang') !== False) {
-            return Kayit::getir('index-lang');
+        if (Registry::has('index-lang') !== False) {
+            return Registry::get('index-lang');
         }
 
-        $currentLang = Kayit::getir('lang');
+        $currentLang = Registry::get('lang');
         $file = mod_dir . 'index' . DS . lang_dir . $currentLang . '.php';
 
         if (file_exists($file) === FALSE) {
@@ -107,7 +103,7 @@ class AmedError
         }
 
         require($file);
-        Kayit::ekle('index-lang', $lang);
+        Registry::add('index-lang', $lang);
 
         return $lang;
     }

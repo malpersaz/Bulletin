@@ -12,7 +12,7 @@ Primary policy:
 
 Input assumption:
 
-- Findings may come from `i18n-guard`, `comment-guard`, `naming-guard`, `template-guard`, and `cleanup-guard`.
+- Findings may come from `i18n-guard`, `comment-guard`, `naming-guard`, `template-guard`, `cleanup-guard`, and `modernization-guard`.
 
 Your job:
 

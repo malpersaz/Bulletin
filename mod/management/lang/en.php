@@ -1,19 +1,12 @@
 <?php
-$lang['management']=[
-    '1'=>'User Panel',
-    'anasayfa' => 'Home',
+$lang['management'] = [
+    'home' => 'Home',
+    'site_home' => 'Site Home',
     'dashboard' => 'Dashboard',
-    'uyelik' => 'Membership',
+    'membership' => 'Membership',
     'content_workspace' => 'Content Workspace',
     'content_and_page' => 'Content and Pages',
     'video_and_images' => 'Video and Images',
-    'products_workspace' => 'Products Workspace',
-    'products' => 'Product Management',
-    'services' => 'Service Management',
-    'product_categories' => 'Product Categories',
-    'service_categories' => 'Service Categories',
-    'clients' => 'Client Management',
-    'references' => 'Reference Management',
     'system_tools' => 'System Tools',
     'recent_modules' => 'Recent Modules',
     'pinned_modules' => 'Pinned Modules',
@@ -21,13 +14,13 @@ $lang['management']=[
     'pin_module' => 'Pin module',
     'unpin_module' => 'Unpin module',
     'recent_workspace_empty' => 'Recent modules will appear here',
-    'uyeler' => 'Members',
-    'uye_gruplari' => 'User Groups',
+    'members' => 'Members',
+    'user_groups' => 'User Groups',
     'membership_setting' => 'Membership Settings',
-    'uye_permission_yonetimi_acl' => 'User Permission Management (ACL)',
+    'user_permission_management_acl' => 'User Permission Management (ACL)',
     'acl' => 'ACL',
-    'gallery_modulleri' => 'Gallery Modules',
-    'dosya_modulleri' => 'File Modules',
+    'gallery_modules' => 'Gallery Modules',
+    'file_modules' => 'File Modules',
     'locale_management' => 'Locale Management',
     'content_categories' => 'Content Categories',
     'news_categories' => 'News Categories',
@@ -46,21 +39,15 @@ $lang['management']=[
     'file_management' => 'File Management',
     'service_guide' => 'Service Guide',
     'survey_management' => 'Survey Management',
-
-    // Video and Images Submenu
     'videos' => 'Videos',
     'remote_videos' => 'Remote Videos',
-    'uzak_video_kategorisi' => 'Remote Video Category',
-    'manset_yonetimi' => 'Headline Management',
-    'full_manset_yonetimi' => 'Full Headline Management',
-    'resim_gallery' => 'Image Gallery',
+    'remote_video_category' => 'Remote Video Category',
+    'headline_management' => 'Headline Management',
+    'full_headline_management' => 'Full Headline Management',
     'image_gallery' => 'Image Gallery',
-
-    // Announcement Management Submenu
     'announcement_management' => 'Announcement Management',
     'popup_announcements' => 'Popup Announcements',
-
-    // Additional UI Elements
+    'newsletter_management' => 'Newsletter Subscribers',
     'show_on_homepage' => 'Show on Homepage',
     'homepage_action' => 'Homepage',
     'parent_category' => 'Parent Category',
@@ -71,11 +58,7 @@ $lang['management']=[
     'settings' => 'Settings',
     'management' => 'Administration',
     'admin_panel' => 'Control Panel',
-    'profil' => 'Profile',
-
-    // Theme Management
-
-    // User Profile Menu
+    'profile' => 'Profile',
     'edit_profile_menu' => 'Edit Profile',
     'change_password_menu' => 'Change Password',
     'user_menu_title' => 'User Menu',
@@ -84,8 +67,7 @@ $lang['management']=[
     'administration_menu' => 'Administration',
     'language_management_menu' => 'Language Management',
     'logout_menu' => 'Logout',
-
-    // Quick Menu
+    'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'Quick Menu',
     'under_construction_page_title' => 'Page Under Construction',
     'under_construction_module_title' => 'Module Under Construction',
@@ -101,6 +83,7 @@ $lang['management']=[
     'private_method_heading' => 'The requested admin action cannot be called directly',
     'private_method_description' => 'The admin action "%s" is internal and cannot be opened directly.',
     'back_to_home' => 'Back to Home',
+    'back' => 'Back',
     'logo_upload_error' => 'Error uploading logo: ',
     'invalid_image_extension' => 'Invalid image extension: ',
     'module_health' => 'Module Health',
@@ -114,5 +97,7 @@ $lang['management']=[
     'module_health_ready_count' => 'ready',
     'yes' => 'Yes',
     'no' => 'No',
-    'start_menu' => 'Start Menu'
+    'start_menu' => 'Start Menu',
+    'no_records_found' => 'No records found',
+    'module_search_empty' => 'No modules found matching your search.',
 ];

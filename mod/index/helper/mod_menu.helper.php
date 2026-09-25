@@ -205,8 +205,8 @@ class mod_menu_helper extends indexBase
 
     private function hasConfiguredDatabase()
     {
-        $database = Kayit::getir('database');
-        $dbConfig = Kayit::getir('db_config');
+        $database = Registry::get('database');
+        $dbConfig = Registry::get('db_config');
 
         if (!is_string($database) || $database === '') {
             return false;

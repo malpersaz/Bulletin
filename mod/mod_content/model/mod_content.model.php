@@ -24,4 +24,5 @@ class mod_content_model extends ORM
         public $acl_id;
         public $video;
         public $user_id;
+        public $slider;
     }

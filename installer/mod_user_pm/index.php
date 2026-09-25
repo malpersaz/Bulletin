@@ -2,37 +2,37 @@
 
 class mod_user_pm extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
     public $model;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_user_pm';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_user_pm_inbox',
             'mod_user_pm_sent'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'send', 'bulk', 'group_bulk', 'all'
         );
     }
 
     public function install()
     {
-        // Tabloları Oluşturalım
+        // Create tables
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Modülü Ekleyelim
+        // Add module
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Roller ve Permleri Ekleyelim
-        if ($this->insert_roll() === FALSE) {
+        // Insert roles and permissions
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
-        // Özel MEsaj Ekleleyim
+        // Add private message
         if ($this->addmessage() === FALSE) {
             return FALSE;
         }
@@ -56,7 +56,7 @@ class mod_user_pm extends installerbase implements installerbaseinterface
         }
 
         if ($this->model->send_user_message($message_data['subject'], $message_data['message'], $message_data['reader_id'], $message_data['user_id'])) {
-            $this->oke("Example Private Message Added");
+            $this->success("Example Private Message Added");
         } else {
             $this->error("Error Occurred While Adding Example Message" . print_r($this->model, TRUE));
             return FALSE;
@@ -70,7 +70,7 @@ class mod_user_pm extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

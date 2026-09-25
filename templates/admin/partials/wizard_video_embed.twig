@@ -1,5 +1,5 @@
 <!-- NEW: Video Embed Wizard -->
-<form id="videoAddFormWizard" method="POST" action="{{ site.saddress }}mod_video_embed/ekle" enctype="multipart/form-data">
+<form id="videoAddFormWizard" method="POST" action="{{ site.saddress }}mod_video_embed/add" enctype="multipart/form-data">
 <div id="videoEmbedWizard" class="wizard-overlay">
     <!-- Wizard Header -->
     <header class="wizard-header">
@@ -35,13 +35,11 @@
             <p class="step-subhead" id="videoEmbedWizardStepSubhead1">{{ lang.mod_video_embed.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                    {% if item.status == 'y' %}
-                    <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
-                        <div class="selection-icon">{{ item.seo|upper }}</div>
-                        <div class="selection-label">{{ item.name }}</div>
-                        <i class="bi bi-check-circle-fill check-icon"></i>
-                    </div>
-                    {% endif %}
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectVideoEmbedWizardLang(this, '{{ item.seo|lower }}')">
+                    <div class="selection-icon">{{ item.seo|upper }}</div>
+                    <div class="selection-label">{{ item.name }}</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -66,12 +64,12 @@
 
             <div class="input-wrapper-lg">
                 <textarea class="m3-input-lg" name="embed" id="videoEmbedInput" rows="4" placeholder=" " required></textarea>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.embed }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.embed }}</label>
             </div>
 
             <div class="input-wrapper-lg" style="margin-top: 16px;">
                 <input type="text" class="m3-input-lg" name="original" id="videoOriginalTitleInput" placeholder=" " autocomplete="off">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.original }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.original }}</label>
             </div>
         </div>
 
@@ -82,12 +80,12 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" name="name" id="videoNameInput" placeholder=" " autocomplete="off" required>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.name }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.name }}</label>
             </div>
 
             <div class="input-wrapper-lg" style="margin-top: 16px;">
                 <input type="text" class="m3-input-lg" name="sure" id="videoDurationInput" placeholder=" " autocomplete="off" required>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.sure }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.admin.columns.duration }}</label>
             </div>
 
             <div class="input-wrapper-lg" style="margin-top: 16px;">
@@ -95,7 +93,7 @@
             </div>
             
             <div class="form-group" style="margin-top: 16px;">
-                <label class="form-label">{{ lang.mod_video_embed.namemin.columns.acl_id }}</label>
+                <label class="form-label">{{ lang.mod_video_embed.columns.acl_id }}</label>
                 <div class="select-wrapper">
                     <select name="acl_id_dynamic" id="videoEmbedWizardAclSelect" class="form-select" onchange="document.getElementById('videoEmbedWizardHiddenAcl').value = this.value">
                         <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
@@ -137,15 +135,15 @@
 
             <div class="input-wrapper-lg">
                 <input type="text" class="m3-input-lg" id="videoEmbedWizardSeoTitleInput" placeholder=" ">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.title }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.title }}</label>
             </div>
             <div class="input-wrapper-lg" style="margin-top: 16px;">
                 <input type="text" class="m3-input-lg" id="videoEmbedWizardSeoKeywordsInput" placeholder=" ">
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.keywords }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.keywords }}</label>
             </div>
             <div class="input-wrapper-lg" style="margin-top: 16px;">
                 <textarea class="m3-input-lg" id="videoEmbedWizardSeoDescriptionInput" rows="3" placeholder=" "></textarea>
-                <label class="m3-floating-label">{{ lang.mod_video_embed.namemin.columns.description }}</label>
+                <label class="m3-floating-label">{{ lang.mod_video_embed.columns.description }}</label>
             </div>
         </div>
 

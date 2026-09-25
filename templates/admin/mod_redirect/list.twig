@@ -358,6 +358,9 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        if (typeof openRedirectModal === 'function') {
+            openRedirectModal();
+        }
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             searchInput.addEventListener('input', function(e) {

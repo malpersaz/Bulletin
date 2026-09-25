@@ -18,6 +18,7 @@
 class Swift_Events_SendEvent extends Swift_Events_EventObject
 {
   
+  public $_result = self::RESULT_PENDING;
   /** Sending has yet to occur */
   const RESULT_PENDING = 0x0001;
   
@@ -46,13 +47,13 @@ class Swift_Events_SendEvent extends Swift_Events_EventObject
    * Any recipients which failed after sending.
    * @var string[]
    */
-  private $_failedRecipients = array();
+  private $_failedRecipients = [];
   
   /**
    * The overall result as a bitmask from the class constants.
    * @var int
    */
-  private $_result;
+  private $result;
   
   /**
    * Create a new SendEvent for $source and $message.
@@ -64,7 +65,6 @@ class Swift_Events_SendEvent extends Swift_Events_EventObject
   {
     parent::__construct($source);
     $this->_message = $message;
-    $this->_result = self::RESULT_PENDING;
   }
   
   /**

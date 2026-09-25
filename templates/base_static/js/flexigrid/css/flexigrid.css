@@ -733,35 +733,35 @@ div.colCopy {
 		{
 			background: url(../images/close.png) no-repeat center left;
 		}
-		.flexigrid div.fbutton .yenile
+		.flexigrid div.fbutton .refresh
 			{
-				background: url(../images/yenile.png) no-repeat center left;
+				background: url(../images/load.png) no-repeat center left;
 			}
-			.flexigrid div.fbutton .duzenle
+			.flexigrid div.fbutton .edit
 				{
-					background: url(../images/duzenle.png) no-repeat center left;
+					background: url(../images/edit.png) no-repeat center left;
 				}		
 				.flexigrid div.fbutton .list
 						{
 							background: url(../images/list.png) no-repeat center left;
 						}
-						.flexigrid div.fbutton .yonet
+						.flexigrid div.fbutton .manage
 								{
-									background: url(../images/yonet.png) no-repeat center left;
+									background: url(../images/list.png) no-repeat center left;
 								}	
-								.flexigrid div.fbutton .vasif
+								.flexigrid div.fbutton .role
 											{
-												background: url(../images/vasif.png) no-repeat center left;
+												background: url(../images/list.png) no-repeat center left;
 											}	
-											.flexigrid div.fbutton .takip
+											.flexigrid div.fbutton .track
 														{
-															background: url(../images/takip.png) no-repeat center left;
+															background: url(../images/magnifier.png) no-repeat center left;
 														}	
 														.flexigrid div.fbutton .gallery
 																		{
 																			background: url(../images/gallery.png) no-repeat center left;
 																		}
-																		.flexigrid div.fbutton .dosya
+																		.flexigrid div.fbutton .file
 																						{
-																							background: url(../images/dosya.png) no-repeat center left;
+																							background: url(../images/file.png) no-repeat center left;
 																						}

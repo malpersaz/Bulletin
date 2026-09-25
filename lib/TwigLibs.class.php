@@ -38,7 +38,9 @@ class TwigLibs extends AbstractExtension
         if (!$name || $name === '') {
             throw new \InvalidArgumentException("name is required.");
         }
-
+        if ($this->ctx === null) {
+            $this->ctx = new TemplateContext();
+        }
         $this->ctx->add($name, $content);
     }
     // for single key value data
@@ -48,19 +50,26 @@ class TwigLibs extends AbstractExtension
             throw new \InvalidArgumentException("name is required.");
         }
 
+        if ($this->ctx === null) {
+            $this->ctx = new TemplateContext();
+        }
+
         $this->ctx->set($name, $content);
     }
 
 
     public function ctx_get(string $key)
     {
+        if ($this->ctx === null) {
+            $this->ctx = new TemplateContext();
+        }
         return $this->ctx->get($key);
     }
 
     public function lang($a)
     {
-        if (Kayit::varmi('TwigTemplate-lib')) {
-            Kayit::getir('TwigTemplate-lib')->lang($a);
+        if (Registry::has('TwigTemplate-lib')) {
+            Registry::get('TwigTemplate-lib')->lang($a);
         }
     }
 
@@ -110,11 +119,16 @@ class TwigLibs extends AbstractExtension
         return [
             new TwigFilter('repeat', [$this, 'repeat']),
             new TwigFilter('permission', [$this, 'permissionFilter']),
-            new TwigFilter('mzaman', [$this, 'mzamanFilter']),
+            new TwigFilter('format_date', [$this, 'formatDateFilter']),
             new TwigFilter('sefurl', [$this, 'sefurlFilter']),
             new TwigFilter('legacy_seo', [$this, 'legacySeoFilter']),
             new TwigFilter('base64_encode', [$this, 'base64Encode']),
         ];
+    }
+
+    public function formatDateFilter(int $timestamp): string
+    {
+        return format_custom_date($timestamp);
     }
 
     public function base64Encode($string)
@@ -127,14 +141,12 @@ class TwigLibs extends AbstractExtension
     {
 
         //var_dump($params);
-        //exit;
         if (!isset($params['mod'])) {
-            //var_dump($params);
-            throw new \InvalidArgumentException("url: run Komutunda mod parametresi boş olamaz.");
+            throw new \InvalidArgumentException("url: mod parameter cannot be empty in run command.");
         }
 
         if (empty($params['method'])) {
-            throw new \InvalidArgumentException("url: run Komutunda method parametresi boş olamaz.");
+            throw new \InvalidArgumentException("url: method parameter cannot be empty in run command.");
         }
 
         $args = [$this];
@@ -142,22 +154,15 @@ class TwigLibs extends AbstractExtension
             $args = array_merge($args, (array)$params['extra']);
         }
 
-        // var_dump(gettype($args));  
-        // exit;
         try {
             return Run::import($params['mod'], $params['method'], $args);
         } catch (\Exception $e) {
-            var_dump($args, $params);
             throw new \InvalidArgumentException(
-                "url: run returns an error." .
-                    "mod: " . $params['mod'] .
-                    "method: " . $params['method']
-                // .
-                // "\ntrace: " . $e->getTraceAsString()
-
+                "url: run returns an error. mod: " . $params['mod'] . 
+                ", method: " . $params['method'] . 
+                ", error: " . $e->getMessage() . 
+                " in " . $e->getFile() . " on line " . $e->getLine()
             );
-            // var_dump($e);
-            // error_log("Twig run function error: " . $e->getMessage());
             return null;
         }
     }
@@ -170,8 +175,7 @@ class TwigLibs extends AbstractExtension
 
         if (!is_array($acl)) {
             throw new \Exception(
-                gettype($acl) .
-                    'Gönderilen $acl Değişkeni <b>' . htmlspecialchars($acl) . '</b> Bir Dizi Değil'
+                'Provided $acl variable is not an array: ' . htmlspecialchars(is_scalar($acl) ? (string)$acl : gettype($acl))
             );
         }
 
@@ -182,7 +186,7 @@ class TwigLibs extends AbstractExtension
     public function cssFunction(array $params): void
     {
         if (!isset($params['url'])) {
-            throw new \InvalidArgumentException("Url Paremetresi Gereklidir");
+            throw new \InvalidArgumentException("URL parameter is required");
         }
 
         if (empty($params['url'])) {
@@ -232,10 +236,10 @@ class TwigLibs extends AbstractExtension
 
             if (isset($params['tip']) && $params['tip'] == 'inlined') {
                 echo '<style type="text/css">';
-                echo '/* CSS DOSYALARI ' . $css . ' */';
-                $desen = '/(?i)msie [1-7]/';
+                echo '/* CSS FILES: ' . $css . ' */';
+                $pattern = '/(?i)msie [1-7]/';
                 $agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-                if (strpos($agent, 'MSIE') && preg_match($desen, $agent)) {
+                if (strpos($agent, 'MSIE') && preg_match($pattern, $agent)) {
                     echo file_get_contents($cachefile);
                 } else {
                     echo file_get_contents($cachefile . "-data");
@@ -249,14 +253,14 @@ class TwigLibs extends AbstractExtension
 
     public function ieFunction(array $params, $context): void
     {
-        if (isset($params['kucuk'])) {
-            $desen = '/(?i)msie [1-' . $params['version'] . ']/';
+        if (isset($params['less_than']) || isset($params['lt'])) {
+            $pattern = '/(?i)msie [1-' . $params['version'] . ']/';
         } else {
-            $desen = '/(?i)msie [' . $params['version'] . ']/';
+            $pattern = '/(?i)msie [' . $params['version'] . ']/';
         }
 
         $agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
-        $context['ie'] = (bool) preg_match($desen, $agent);
+        $context['ie'] = (bool) preg_match($pattern, $agent);
     }
 
 
@@ -275,7 +279,7 @@ class TwigLibs extends AbstractExtension
     public function jsFunction(array $params): void
     {
         if (!isset($params['url'])) {
-            throw new \InvalidArgumentException("url: js url şeklinde kullanılır.");
+            throw new \InvalidArgumentException("url: Expected js url parameter.");
         }
 
         if (empty($params['url'])) {
@@ -339,36 +343,34 @@ class TwigLibs extends AbstractExtension
     }
 
 
-    public function menuFunction($alt = 0, array $params = []): string
+    public function menuFunction(int $parentId = 0, array $params = []): string
     {
         // Handle both named parameters and direct parameter passing
-        if (isset($params['alt'])) {
-            $alt = intval($params['alt']);
-        } else {
-            $alt = intval($alt);
-        }
+        $parentId = isset($params['parent_id']) ? intval($params['parent_id']) : intval($parentId);
         
         $menuHelper = Load::helper('index.mod_menu');
         $menuItems = $menuHelper->menu();
         
-        return $this->renderMenu($menuItems, $alt);
+        return $this->renderMenu($menuItems, $parentId);
     }
     
     private function renderMenu(array $items, int $parentId = 0): string
     {
         $html = '';
         foreach ($items as $item) {
-            if (isset($item['alt']) && $item['alt'] == $parentId) {
+            $itemParentId = $item['parent_id'] ?? 0;
+            if ($itemParentId == $parentId) {
                 $activeClass = '';
                 if (isset($_SERVER['REQUEST_URI']) && isset($item['link']) && strpos($_SERVER['REQUEST_URI'], $item['link']) !== false) {
                     $activeClass = ' active';
                 }
                 
+                $title = $item['name'] ?? ($item['title'] ?? '');
                 $html .= '<li class="nav-item' . $activeClass . '">';
-                $html .= '<a class="nav-link" href="' . ($item['link'] ?? '#') . '">' . ($item['ad'] ?? '') . '</a>';
+                $html .= '<a class="nav-link" href="' . ($item['link'] ?? '#') . '">' . $title . '</a>';
                 
                 $childrenHtml = $this->renderMenu($items, $item['id']);
-                if ($childrenHtml) {
+                if ($childrenHtml !== '' && $childrenHtml !== '0') {
                     $html .= '<ul class="dropdown-menu">' . $childrenHtml . '</ul>';
                 }
                 
@@ -381,12 +383,12 @@ class TwigLibs extends AbstractExtension
     public function sefurlFilter(?string $s): string
     {
         if ($s === null) {
-            throw new \InvalidArgumentException('sefurl Modifier Hata: Parametre Boş Olamaz');
+            throw new \InvalidArgumentException('sefurl modifier error: parameter cannot be null');
         }
 
-        $tr = ['ş', 'Ş', 'ı', 'İ', 'ğ', 'Ğ', 'ü', 'Ü', 'ö', 'Ö', 'Ç', 'ç'];
-        $eng = ['s', 'S', 'i', 'I', 'g', 'G', 'u', 'U', 'o', 'O', 'C', 'c'];
-        $s = str_replace($tr, $eng, $s);
+        $turkishChars = ['ş', 'Ş', 'ı', 'İ', 'ğ', 'Ğ', 'ü', 'Ü', 'ö', 'Ö', 'Ç', 'ç'];
+        $asciiChars   = ['s', 'S', 'i', 'I', 'g', 'G', 'u', 'U', 'o', 'O', 'C', 'c'];
+        $s = str_replace($turkishChars, $asciiChars, $s);
 
         $s = preg_replace('/[^0-9A-Za-z]/', ' ', $s);
         $s = trim($s);
@@ -402,24 +404,15 @@ class TwigLibs extends AbstractExtension
     public function legacySeoFilter(?string $s): string
     {
         if ($s === null) {
-            throw new \InvalidArgumentException('legacy_seo Modifier Hata: Parametre Boş Olamaz');
+            throw new \InvalidArgumentException('legacy_seo modifier error: parameter cannot be null');
         }
 
-        $s = preg_replace('/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"\' ]/', ' ', $s);
-        $s = trim($s);
-        $s = preg_replace('/\s+/', '_', $s);
-        $s = str_replace('İ', 'i', $s);
-
-        for ($i = 0; $i <= 5; $i++) {
-            $s = str_replace('__', '_', $s);
-        }
-
-        return $s;
+        return Helper::legacy_seo($s);
     }
 }
 
-function mmzaman(int $zaman): string
+function format_custom_date(int $timestamp): string
 {
-    $gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-    return date("d/m/Y", $zaman) . " " . $gunler[date("w", $zaman)] . " " . date("H:i", $zaman);
+    $days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    return date("d/m/Y", $timestamp) . " " . $days[date("w", $timestamp)] . " " . date("H:i", $timestamp);
 }

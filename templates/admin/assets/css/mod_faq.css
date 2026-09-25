@@ -1,0 +1,760 @@
+/**
+ * mod_faq.css - Phone-First MD3 Styles for FAQ Module Administration
+ * Amed Framework (AF/Business CMS)
+ *
+ * Strict Code Separation: 100% External CSS
+ */
+
+:root {
+  --faq-primary: var(--md-sys-color-primary, #6750a4);
+  --faq-on-primary: var(--md-sys-color-on-primary, #ffffff);
+  --faq-primary-container: var(--md-sys-color-primary-container, #eaddff);
+  --faq-on-primary-container: var(--md-sys-color-on-primary-container, #21005d);
+  --faq-surface: var(--md-sys-color-surface, #fef7ff);
+  --faq-on-surface: var(--md-sys-color-on-surface, #1d1b20);
+  --faq-surface-container: var(--md-sys-color-surface-container, #f3edf7);
+  --faq-surface-container-high: var(--md-sys-color-surface-container-high, #ece6f0);
+  --faq-surface-container-low: var(--md-sys-color-surface-container-low, #f7f2fa);
+  --faq-outline: var(--md-sys-color-outline, #79747e);
+  --faq-outline-variant: var(--md-sys-color-outline-variant, #cac4d0);
+  --faq-error: var(--md-sys-color-error, #b3261e);
+  --faq-success: #2e7d32;
+  --faq-success-container: #e8f5e9;
+  --faq-draft: #e65100;
+  --faq-draft-container: #fff3e0;
+}
+
+[data-bs-theme="dark"],
+body.dark-mode,
+.dark-theme {
+  --faq-primary: var(--md-sys-color-primary, #d0bcff);
+  --faq-on-primary: var(--md-sys-color-on-primary, #381e72);
+  --faq-primary-container: var(--md-sys-color-primary-container, #4f378b);
+  --faq-on-primary-container: var(--md-sys-color-on-primary-container, #eaddff);
+  --faq-surface: var(--md-sys-color-surface, #141218);
+  --faq-on-surface: var(--md-sys-color-on-surface, #e6e1e5);
+  --faq-surface-container: var(--md-sys-color-surface-container, #211f26);
+  --faq-surface-container-high: var(--md-sys-color-surface-container-high, #2b2930);
+  --faq-surface-container-low: var(--md-sys-color-surface-container-low, #1d1b20);
+  --faq-outline: var(--md-sys-color-outline, #938f99);
+  --faq-outline-variant: var(--md-sys-color-outline-variant, #44474f);
+  --faq-error: var(--md-sys-color-error, #f2b8b5);
+  --faq-success: #81c784;
+  --faq-success-container: #1b5e20;
+  --faq-draft: #ffb74d;
+  --faq-draft-container: #e65100;
+}
+
+/* ==========================================================================
+   1. Modal Shell & Nested Padding Optimization
+   ========================================================================== */
+.faq-modal-shell {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 8px 2px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#modal-dynamic-body .faq-modal-shell {
+  padding: 0 0 72px 0;
+}
+
+/* ==========================================================================
+   2. Context Header Card
+   ========================================================================== */
+.faq-context-card {
+  background: var(--faq-surface-container);
+  border: 1px solid var(--faq-outline-variant);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.faq-context-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.faq-context-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.faq-mod-badge,
+.faq-lang-badge,
+.faq-count-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.faq-mod-badge {
+  background: var(--faq-primary-container);
+  color: var(--faq-on-primary-container);
+}
+
+.faq-lang-badge {
+  background: var(--faq-surface-container-high);
+  color: var(--faq-on-surface);
+  border: 1px solid var(--faq-outline-variant);
+}
+
+.faq-count-badge {
+  background: color-mix(in srgb, var(--faq-primary) 12%, transparent);
+  color: var(--faq-primary);
+}
+
+.faq-count-badge.limit-reached {
+  background: var(--faq-error);
+  color: #ffffff;
+}
+
+.faq-entity-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--faq-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.faq-add-header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: none;
+  background: var(--faq-primary);
+  color: var(--faq-on-primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, background 0.2s ease, opacity 0.2s ease;
+}
+
+.faq-add-header-btn:active {
+  transform: scale(0.95);
+}
+
+.faq-add-header-btn:disabled,
+.faq-add-header-btn.is-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* On screens <= 380px, show icon-only to prevent badge wrapping */
+@media (max-width: 380px) {
+  .faq-add-header-btn span {
+    display: none;
+  }
+  .faq-add-header-btn {
+    width: 44px;
+    padding: 0;
+    border-radius: 50%;
+  }
+}
+
+/* ==========================================================================
+   3. Card List & Individual FAQ Cards
+   ========================================================================== */
+.faq-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item-card {
+  background: var(--faq-surface);
+  border: 1px solid var(--faq-outline-variant);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.faq-item-card.is-new {
+  border-color: var(--faq-primary);
+  animation: faqCardEnter 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.faq-item-card.sortable-ghost {
+  opacity: 0.35;
+  background: var(--faq-primary-container);
+  border: 2px dashed var(--faq-primary);
+}
+
+.faq-item-card.sortable-chosen {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes faqCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   4. Card Header (Streamlined for Maximum Question Text Space)
+   ========================================================================== */
+.faq-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: var(--faq-surface-container-low);
+  border-bottom: 1px solid var(--faq-outline-variant);
+  cursor: pointer;
+  user-select: none;
+  min-height: 48px;
+}
+
+.faq-drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--faq-outline);
+  cursor: grab;
+  touch-action: none;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.faq-drag-handle:active {
+  cursor: grabbing;
+}
+
+.faq-card-title-preview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.faq-preview-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--faq-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  width: 100%;
+}
+
+.faq-preview-text:empty::before {
+  content: "...";
+  opacity: 0.5;
+}
+
+.faq-card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.faq-card-status-toggle {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.faq-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.faq-status-pill.status-published {
+  background: var(--faq-success-container);
+  color: var(--faq-success);
+}
+
+.faq-status-pill.status-draft {
+  background: var(--faq-draft-container);
+  color: var(--faq-draft);
+}
+
+.faq-card-delete-btn,
+.faq-card-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  background: transparent;
+  color: var(--faq-outline);
+  font-size: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.faq-card-delete-btn:hover {
+  color: var(--faq-error);
+  background: color-mix(in srgb, var(--faq-error) 10%, transparent);
+}
+
+.faq-card-expand-btn i {
+  transition: transform 0.25s ease;
+}
+
+.faq-item-card.is-collapsed .faq-card-expand-btn i {
+  transform: rotate(-90deg);
+}
+
+.faq-item-card.is-collapsed .faq-card-body {
+  display: none;
+}
+
+/* ==========================================================================
+   5. Card Body & Input Fields
+   ========================================================================== */
+.faq-card-body {
+  padding: 14px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.faq-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.faq-field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.faq-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faq-on-surface);
+}
+
+.faq-char-counter {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faq-outline);
+  font-variant-numeric: tabular-nums;
+}
+
+.faq-char-counter.limit-exceeded {
+  color: var(--faq-error);
+  font-weight: 800;
+}
+
+.faq-input,
+.faq-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--faq-surface-container-high);
+  border: 1px solid var(--faq-outline-variant);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--faq-on-surface);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-input {
+  min-height: 48px;
+}
+
+.faq-textarea {
+  min-height: 88px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.faq-input:focus,
+.faq-textarea:focus {
+  border-color: var(--faq-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--faq-primary) 20%, transparent);
+}
+
+.faq-input.is-duplicate {
+  border-color: var(--faq-error) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--faq-error) 25%, transparent) !important;
+  background-color: color-mix(in srgb, var(--faq-error) 4%, var(--faq-surface-container-high));
+}
+
+/* ==========================================================================
+   6. Card Footer (Safe Actions: Delete + Single Save, No Accidental Taps)
+   ========================================================================== */
+.faq-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--faq-outline-variant);
+  gap: 10px;
+}
+
+.faq-status-switch-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+
+.faq-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.faq-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.faq-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: var(--faq-surface-container-high);
+  border: 2px solid var(--faq-outline);
+  transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+  border-radius: 28px;
+}
+
+.faq-slider::before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: var(--faq-outline);
+  transition: 0.25s cubic-bezier(0.2, 0, 0, 1);
+  border-radius: 50%;
+}
+
+.faq-switch input:checked + .faq-slider {
+  background-color: var(--faq-primary);
+  border-color: var(--faq-primary);
+}
+
+.faq-switch input:checked + .faq-slider::before {
+  transform: translateX(22px);
+  background-color: var(--faq-on-primary);
+  height: 20px;
+  width: 20px;
+  left: 2px;
+  bottom: 2px;
+}
+
+.faq-switch-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faq-on-surface);
+}
+
+.faq-card-footer-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.faq-card-footer-delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--faq-error) 25%, transparent);
+  background: color-mix(in srgb, var(--faq-error) 8%, transparent);
+  color: var(--faq-error);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.faq-card-footer-delete-btn:hover {
+  background: color-mix(in srgb, var(--faq-error) 15%, transparent);
+}
+
+.faq-save-single-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--faq-outline-variant);
+  background: var(--faq-surface-container-low);
+  color: var(--faq-on-surface);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.faq-save-single-btn:active {
+  transform: scale(0.96);
+}
+
+.faq-save-single-btn:hover {
+  background: var(--faq-surface-container-high);
+  border-color: var(--faq-primary);
+  color: var(--faq-primary);
+}
+
+/* ==========================================================================
+   7. Empty State
+   ========================================================================== */
+.faq-empty-state {
+  display: none;
+  background: var(--faq-surface);
+  border: 1px dashed var(--faq-outline-variant);
+  border-radius: 24px;
+  padding: 36px 20px;
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.faq-empty-state.is-visible {
+  display: flex;
+}
+
+.faq-empty-icon-box {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: var(--faq-primary-container);
+  color: var(--faq-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+}
+
+.faq-empty-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--faq-on-surface);
+}
+
+.faq-empty-desc {
+  margin: 0;
+  font-size: 13px;
+  color: var(--faq-outline);
+  max-width: 260px;
+  line-height: 1.4;
+}
+
+.faq-empty-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  border: none;
+  background: var(--faq-primary);
+  color: var(--faq-on-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: transform 0.15s ease;
+}
+
+.faq-empty-add-btn:active {
+  transform: scale(0.96);
+}
+
+/* ==========================================================================
+   8. Bottom Floating Action Area (Docked / Sticky Inside Modal)
+   ========================================================================== */
+.faq-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: transparent;
+  pointer-events: none;
+  border-top: none;
+  padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 412px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+dialog .faq-bottom-bar,
+#modal-dynamic-dialog .faq-bottom-bar,
+#modal-dynamic-body .faq-bottom-bar {
+  position: sticky !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  margin-top: auto !important;
+  border-radius: 0 !important;
+  z-index: 10 !important;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-top: none !important;
+  pointer-events: none !important;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.faq-floating-add-btn {
+  width: 52px;
+  min-width: 52px;
+  height: 52px;
+  min-height: 52px;
+  border-radius: 16px;
+  border: none;
+  background: var(--faq-primary);
+  color: var(--faq-on-primary);
+  font-size: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--faq-primary) 40%, transparent);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.faq-floating-add-btn:active {
+  transform: scale(0.92);
+}
+
+.faq-floating-add-btn:disabled,
+.faq-floating-add-btn.is-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   9. Helper Utilities & Animation
+   ========================================================================== */
+.spin {
+  animation: spin 1s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   10. RTL Support
+   ========================================================================== */
+[dir="rtl"] .faq-switch input:checked + .faq-slider::before {
+  transform: translateX(-22px);
+}
+
+[dir="rtl"] .faq-item-card.is-collapsed .faq-card-expand-btn i {
+  transform: rotate(90deg);
+}
+
+[dir="rtl"] .faq-context-card,
+[dir="rtl"] .faq-card-header,
+[dir="rtl"] .faq-card-footer {
+  direction: rtl;
+}
+
+/* ==========================================================================
+   11. Focus Visibility & A11y
+   ========================================================================== */
+.faq-input:focus-visible,
+.faq-textarea:focus-visible,
+.faq-add-header-btn:focus-visible,
+.faq-empty-add-btn:focus-visible,
+.faq-floating-add-btn:focus-visible,
+.faq-save-single-btn:focus-visible,
+.faq-card-footer-delete-btn:focus-visible,
+.faq-card-expand-btn:focus-visible,
+.faq-card-status-toggle:focus-visible,
+.faq-card-header:focus-visible {
+  outline: 2px solid var(--faq-primary) !important;
+  outline-offset: 2px !important;
+}
+
+/* ==========================================================================
+   12. Reduced Motion (WCAG AA Compliance)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .faq-item-card,
+  .faq-add-header-btn,
+  .faq-floating-add-btn,
+  .faq-empty-add-btn,
+  .faq-save-single-btn,
+  .faq-card-footer-delete-btn,
+  .faq-card-expand-btn i,
+  .faq-slider,
+  .faq-slider::before,
+  .spin {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+

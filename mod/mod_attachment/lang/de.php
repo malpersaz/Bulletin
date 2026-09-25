@@ -1,100 +1,99 @@
 <?php
 
 if (!defined('AKM_LOADED')) {
-    die('Direkter Zugriff auf diese Datei ist nicht erlaubt.');
+    die('Direct access to this file is not allowed.');
 }
 
 $lang['mod_attachment'] = [];
 
 $lang['mod_attachment']['admin'] = [
-    1 => 'Datei-Upload-Bereich',
-    2 => 'Wählen Sie eine Datei aus, indem Sie unten auf die Schaltfläche Durchsuchen klicken!',
-    3 => 'Sie können mehrere Dateien auswählen und hochladen, indem Sie die <b>STRG</b>-Taste auf Ihrer Tastatur gedrückt halten.',
-    4 => 'Wird hochgeladen...',
-    5 => 'Ansehen',
-    6 => 'In der Upload-Warteschlange warten...',
-    7 => 'Datei',
-    8 => 'Anzahl der ausgewählten Dateien',
-    9 => 'Anzahl der in der Warteschlange wartenden Dateien',
-    10 => 'Die von Ihnen ausgewählte Datei \'+file.name+\' ist zu groß.',
-    11 => 'Durchsuchen',
-    12 => 'Zurück',
-    14 => 'Dateiverwaltung',
-    17 => 'Sind Sie sicher, dass Sie diese Datei löschen möchten?',
-    18 => 'Datei löschen',
-    19 => 'Ja',
-    20 => 'Abbrechen',
-    21 => 'Speichern',
-    22 => 'Datei-Upload-Bereich für %s Inhalt',
-    23 => 'Dateiname',
-    24 => 'Doppelklicken Sie auf die Datei, die Sie umbenennen möchten.',
-    25 => 'Keine Dateien gefunden!',
-    26 => '--- Alle Dateien ---',
-    27 => 'Keine registrierten Dateien gefunden!',
-    28 => 'Kategorie auswählen und Dateien hinzufügen',
-    29 => 'Datei herunterladen',
-    30 => 'Dateiname bearbeiten',
-    31 => 'Datei entfernen',
-    35 => '\'Datei %s wurde auf den Server hochgeladen!\'',
-    36 => 'Datei gelöscht',
-    37 => 'Dateien zugehörig zu "%s"',
-    38 => 'Datei hinzufügen',
-    39 => 'Datei bearbeitet',
-    40 => 'Dateiname "+original+" wurde in "+text+" geändert',
-    41 => 'Datei-Upload fehlgeschlagen.',
-    42 => 'Statistik',
-    43 => 'Neu',
-    44 => 'Panel',
-    'warning' => 'Warnung!',
+    'upload_area' => 'File Upload Area',
+    'select_file_instruction' => 'Select a file by clicking the Browse button below!',
+    'ctrl_key_instruction' => 'You can select and upload multiple files by holding down the <b>CTRL</b> key on your keyboard.',
+    'loading' => 'Uploading...',
+    'view' => 'View',
+    'waiting_queue' => 'Waiting in upload queue...',
+    'file' => 'File',
+    'selected_files_count' => 'Number of Selected Files',
+    'waiting_files_count' => 'Number of Files Waiting in Queue',
+    'file_size_error' => 'The file \'+file.name+\' you selected is too large.',
+    'browse' => 'Browse',
+    'back' => 'Back',
+    'file_management' => 'File Management',
+    'confirm_delete_file' => 'Are you sure you want to delete this file?',
+    'delete_file' => 'Delete File',
+    'yes' => 'Yes',
+    'cancel' => 'Cancel',
+    'save' => 'Save',
+    'content_upload_area' => 'File Upload Area for %s Content',
+    'file_name' => 'File Name',
+    'no_file_found' => 'No files found!',
+    'all_files' => '--- All Files ---',
+    'no_saved_file_found' => 'No registered files found!',
+    'select_category_add_file' => 'Select a category and add files',
+    'download_file' => 'Download File',
+    'edit_file_name' => 'Edit File Name',
+    'remove_image' => 'Remove File',
+    'file_uploaded_success' => '\'File %s has been uploaded to the server!\'',
+    'file_deleted' => 'File deleted',
+    'files_belonging_to' => 'Files belonging to "%s"',
+    'add_files' => 'Add File',
+    'file_edited' => 'File Edited',
+    'file_renamed' => 'File name "+original+" has been changed to "+text+"',
+    'file_upload_failed' => 'File upload failed.',
+    'statistics' => 'Statistics',
+    'new' => 'New',
+    'panel' => 'Panel',
+    'warning' => 'Warning!',
     'info' => 'Info!',
-    'message' => 'Nachricht!',
-    'help' => 'Hilfe!'
+    'message' => 'Message!',
+    'help' => 'Help!'
 ];
 
 $lang['mod_attachment']['hata'] = [
-    1 => 'Dateiquelle konnte nicht abgerufen werden',
-    2 => 'Die angegebene Datei ist keine gültige Datei',
-    3 => 'Bitte geben Sie die Datei an, in die geschrieben werden soll',
-    4 => 'Nur png, jpg, jpeg, gif, bmp Dateien können als Ausgabe generiert werden',
-    5 => 'Datei konnte nicht erstellt werden',
-    6 => 'Dateiausgabe konnte nicht generiert werden'
+    'source_not_retrieved' => 'Could not get file source',
+    'specified_file_invalid' => 'The specified file is not a valid file',
+    'specify_destination_file' => 'Please specify the file to write to',
+    'supported_formats_only' => 'Only png, jpg, jpeg, gif, png, bmp files can be generated as output',
+    'file_creation_failed' => 'File could not be created',
+    'file_output_failed' => 'File output could not be generated'
 ];
 
 $lang['mod_attachment']['errors'] = [
-    'missing_module_name' => 'Modulinformationen fehlen für den Dateivorgang.',
-    'missing_record_id' => 'Datensatzinformationen fehlen für den Dateivorgang.',
-    'invalid_module' => 'Für diesen Datensatz ist kein Dateimodul definiert.',
-    'module_file_permission_missing' => 'Für dieses Modul ist keine Dateiberechtigung definiert.',
-    'invalid_record' => 'Der zugehörige Datensatz konnte nicht gefunden werden.',
-    'invalid_file' => 'Der zugehörige Dateidatensatz konnte nicht gefunden werden.',
-    'invalid_record_title_field' => 'Das Feld mod_value ist für dieses Modul ungültig. Korrigieren Sie das Anzeigefeld manuell.',
-    'upload_field_missing' => 'Informationen zum Upload-Feld fehlen.',
-    'uploaded_file_missing' => 'Es wurde keine Datei zum Hochladen übermittelt.',
+    'missing_module_name' => 'Module information is missing for the file operation.',
+    'missing_record_id' => 'Record information is missing for the file operation.',
+    'invalid_module' => 'No file module is defined for this record.',
+    'module_file_permission_missing' => 'No file permission is defined for this module.',
+    'invalid_record' => 'The related record could not be found.',
+    'invalid_file' => 'The related file record could not be found.',
+    'invalid_record_title_field' => 'The mod_value field for this module is invalid. Correct the display field manually.',
+    'upload_field_missing' => 'Upload field information is missing.',
+    'uploaded_file_missing' => 'No file was provided for upload.',
 ];
 
-$lang['mod_attachment']['roll'] = [
-    'ad' => 'Galerierollen',
-    'add' => 'Kann Dateien hinzufügen.',
-    'edit' => 'Kann hochgeladene Dateien bearbeiten',
-    'delete' => 'Kann hochgeladene Dateien löschen',
-    'list' => 'Kann Dateiverwaltung ansehen',
-    'moderate' => 'Kann Dateien von anderen verwalten'
+$lang['mod_attachment']['role'] = [
+    'name' => 'Gallery Roles',
+    'add' => 'Can add files.',
+    'edit' => 'Can edit uploaded files',
+    'delete' => 'Can delete uploaded files',
+    'list' => 'Can view file management',
+    'moderate' => 'Can manage files belonging to others'
 ];
 
 $lang['mod_attachment']['module'] = [
-    'description' => 'Dateimodul',
+    'description' => 'File Module',
 ];
 
 $lang['mod_attachment']['ajax'] = [
-    'success' => 'Erfolg',
-    'error' => 'Fehler',
+    'success' => 'Success',
+    'error' => 'Error',
 ];
 
 $lang['mod_attachment']['role_errors'] = [
-    1 => 'Sie haben keine Berechtigung, eine Datei zu bearbeiten, die jemand anderem gehört',
-    2 => 'Sie haben keine Berechtigung, eine Datei zu löschen, die jemand anderem gehört.',
-    'add' => 'Sie haben keine Berechtigung, Dateien hinzuzufügen',
-    'delete' => 'Sie haben keine Berechtigung, Dateien zu löschen',
-    'edit' => 'Sie haben keine Berechtigung, Dateien zu bearbeiten',
-    'list' => 'Sie haben keine Berechtigung, die Dateiverwaltung anzusehen'
+    'no_edit_permission' => 'You do not have permission to edit a file belonging to someone else',
+    'no_delete_permission' => 'You do not have permission to delete a file belonging to someone else.',
+    'add' => 'You do not have permission to add files',
+    'delete' => 'You do not have permission to delete files',
+    'edit' => 'You do not have permission to edit files',
+    'list' => 'You do not have permission to view file management'
 ];

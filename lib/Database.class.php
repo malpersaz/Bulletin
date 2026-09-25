@@ -1,10 +1,10 @@
 <?php
 /**
- * AKM Business İçerik Yönetim Sistemi
+ * AKM Business Content Management System
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
- * Kullanıcı: a.k.mutlu
- * Zaman: 11.04.2011 - 18:34
+ * User: AKM
+ * Time: 11.04.2011 - 18:34
  */
 
 require_once(lib_dir.'Database'.DS.'AdapterException.php');

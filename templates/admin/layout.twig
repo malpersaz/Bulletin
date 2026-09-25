@@ -6,33 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{% block title %}{{ site.title }} {{ lang.management.admin_panel }}{% if site.version is defined and site.version %} v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}{% endif %}{% endblock %}</title>
 
+    <!-- Favicon & Icons -->
+    <link rel="shortcut icon" href="/static/mod_settings/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="96x96" href="/static/mod_settings/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/static/mod_settings/apple-touch-icon.png">
+
+    <!-- Fonts & Icons CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Manrope:wght@600;700;800&family=Marcellus&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
     <!-- CSS Assets (Absolute Path) -->
-<link rel="stylesheet" href="/templates/admin/assets/css/style.css?v=4.11">
-    <style>
-        :root {
-            --af-radius-xs: 4px;
-            --af-radius-sm: 8px;
-            --af-radius-md: 12px;
-            --af-radius-lg: 20px;
-            --af-radius-full: 999px;
-            --md-sys-color-error: #B3261E;
-            --md-sys-color-on-error: #FFFFFF;
-            --md-sys-color-error-container: #F9DEDC;
-            --md-sys-color-on-error-container: #410E0B;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/style.css?v=4.41">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/modals/core_modals.css?v=2.3">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_faq.css?v=1.5">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/legal_info.css?v=2.4">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/cookie_policy.css?v=2.0">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/working_hours.css?v=2.0">
     {% block styles %}{% endblock %}
 </head>
 <body class="{% if hide_navbar %}hide-navbar{% endif %} {% if hide_search %}hide-search{% endif %}">
     {% set active_module_lang_key = module_lang_key is defined ? module_lang_key : (wizard_module is defined ? wizard_module : null) %}
-    {% if active_module_lang_key is not null and lang[active_module_lang_key] is not defined %}
-        {% set __missing_required_module_language__ = 1 / 0 %}
-    {% endif %}
-    {% set active_module_lang = active_module_lang_key is not null ? attribute(lang, active_module_lang_key) : null %}
+    {% set active_module_lang = active_module_lang_key is not null and attribute(lang, active_module_lang_key) is defined ? attribute(lang, active_module_lang_key) : null %}
 
     <!-- Simulator Wrapper for Desktop -->
     <div class="mobile-wrapper">
@@ -60,17 +59,10 @@
         {% if show_fab is not defined or show_fab %}
             {% include 'admin/partials/fab.twig' %}
         {% endif %}
-        {% if (show_navbar is not defined or show_navbar) and active_module_lang_key is not null %}
-            {% include 'admin/partials/navbar.twig' %}
-        {% endif %}
         
         <!-- FIXED BOTTOM UI (e.g. Action Bars) -->
         {% block fixed_bottom %}{% endblock %}
 
-        <!-- SHEETS & DRAWERS -->
-        {% if show_sidebar is not defined or show_sidebar %}
-            {% include 'admin/partials/sidebar.twig' %}
-        {% endif %}
         {% if (show_filter_sheet is defined and show_filter_sheet) or (show_filter_sheet is not defined and active_module_lang_key is not null) %}
             {% include 'admin/partials/filter_sheet.twig' %}
         {% endif %}
@@ -92,11 +84,15 @@
 
     <!-- CORE SCRIPTS (Absolute Path) -->
     <script>
-        const SITE_URL = '{{ site.saddress }}';
-        const START_MENU_LABEL = '{{ lang.management.start_menu|default("Start Menu")|e("js") }}';
-        const WIZARD_MODULE = {{ wizard_module is defined ? ('"' ~ wizard_module ~ '"')|raw : 'null' }};
-        const adminLang = {
-            {% if wizard_module is defined %}
+        const SITE_URL = {{ site.saddress|default('')|json_encode|raw }};
+        const SITE_ADDRESS = {{ site.address|default('')|json_encode|raw }};
+        const SITE_LANG = {{ site.lang|default('en')|json_encode|raw }};
+        const WIZARD_MODULE = {{ wizard_module is defined and wizard_module is not null ? wizard_module|json_encode|raw : 'null' }};
+        window.SITE_URL = SITE_URL;
+        window.SITE_ADDRESS = SITE_ADDRESS;
+        window.SITE_LANG = SITE_LANG;
+        window.adminLang = {
+            {% if wizard_module is defined and wizard_module is not null %}
             wizard: {
                 {% set wizard_lang = attribute(lang, wizard_module) %}
                 {% set wizard_title_key = 'content_title' %}
@@ -109,179 +105,168 @@
                     {% set wizard_body_key = 'publication' %}
                 {% endif %}
                 step: {
-                    language: '{{ wizard_lang.wizard.step.language|e("js") }}',
-                    category: '{{ wizard_lang.wizard.step.category|e("js") }}',
-                    title: '{{ wizard_lang.wizard.step.title|e("js") }}',
-                    date: '{{ wizard_lang.wizard.step.date|e("js") }}',
-                    intro: '{{ wizard_lang.wizard.step.intro|e("js") }}',
-                    content: '{{ attribute(wizard_lang.wizard.step, wizard_body_key)|e("js") }}',
-                    image: '{{ wizard_lang.wizard.step.image|e("js") }}',
-                    finish: '{{ wizard_lang.wizard.step.finish|e("js") }}'
+                    language: {{ wizard_lang.wizard.step.language|default('')|json_encode|raw }},
+                    category: {{ wizard_lang.wizard.step.category|default('')|json_encode|raw }},
+                    title: {{ wizard_lang.wizard.step.title|default('')|json_encode|raw }},
+                    date: {{ wizard_lang.wizard.step.date|default('')|json_encode|raw }},
+                    intro: {{ wizard_lang.wizard.step.intro|default('')|json_encode|raw }},
+                    content: {{ attribute(wizard_lang.wizard.step, wizard_body_key)|default('')|json_encode|raw }},
+                    image: {{ wizard_lang.wizard.step.image|default('')|json_encode|raw }},
+                    finish: {{ wizard_lang.wizard.step.finish|default('')|json_encode|raw }}
                 },
                 messages: {
-                    success_sim: '{{ wizard_lang.wizard.messages.success_sim|e("js") }}',
-                    error: '{% if wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}',
-                    invalid_json: '{% if wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}',
-                    network_error: '{% if wizard_lang.grid is defined and attribute(wizard_lang.grid, 5) is defined %}{{ attribute(wizard_lang.grid, 5)|e("js") }}{% elseif wizard_lang.error_occurred is defined %}{{ wizard_lang.error_occurred|e("js") }}{% elseif wizard_lang.hata is defined %}{{ wizard_lang.hata|e("js") }}{% elseif wizard_lang.error is defined %}{{ wizard_lang.error|e("js") }}{% endif %}'
+                    success_sim: {{ wizard_lang.wizard.messages.success_sim|default('')|json_encode|raw }}
                 },
                 label: {
-                    change_image: '{{ wizard_lang.wizard.label.change_image|e("js") }}'
+                    change_image: {{ wizard_lang.wizard.label.change_image|default('')|json_encode|raw }}
                 },
                 summary: {
-                    selected_none: '{{ wizard_lang.wizard.summary.selected_none|e("js") }}'
+                    selected_none: {{ wizard_lang.wizard.summary.selected_none|default('')|json_encode|raw }}
                 },
                 button: {
-                    save: '{{ wizard_lang.wizard.button.save|e("js") }}',
-                    next: '{{ wizard_lang.wizard.button.next|e("js") }}',
-                    prev: '{{ wizard_lang.wizard.button.prev|e("js") }}',
-                    finish: '{{ wizard_lang.wizard.button.finish|e("js") }}'
+                    save: {{ wizard_lang.wizard.button.save|default('')|json_encode|raw }},
+                    next: {{ wizard_lang.wizard.button.next|default('')|json_encode|raw }},
+                    prev: {{ wizard_lang.wizard.button.prev|default('')|json_encode|raw }},
+                    finish: {{ wizard_lang.wizard.button.finish|default('')|json_encode|raw }}
                 }
             },
             {% else %}
             wizard: null,
             {% endif %}
-            {% if lang.mod_video_embed is defined %}
+            {% if lang.mod_video_embed is defined and lang.mod_video_embed is not null %}
             video_embed: {
                 messages: {
-                    success: '{{ lang.mod_video_embed.message.oke.add|e("js") }}',
-                    error: '{{ lang.mod_video_embed.hata|e("js") }}',
-                    invalid_json: '{{ lang.mod_video_embed.hata|e("js") }}',
-                    network_error: '{{ lang.mod_video_embed.ajax.ajax_error|e("js") }}',
-                    embed_error: '{{ lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.namemin.columns.embed})|e("js") }}',
-                    title_error: '{{ lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.namemin.columns.name, "%s": 3, "%s": 255})|e("js") }}'
+                    success: {{ lang.mod_video_embed.message.success.add|json_encode|raw }},
+                    embed_error: {{ (lang.mod_video_embed.validator.required|replace({"%s": lang.mod_video_embed.columns.embed}))|json_encode|raw }},
+                    title_error: {{ (lang.mod_video_embed.validator.length|replace({"%s": lang.mod_video_embed.columns.name, "%s": 3, "%s": 255}))|json_encode|raw }}
                 },
                 label: {
-                    change_image: '{{ lang.mod_video_embed.wizard.label.change_image|e("js") }}'
+                    change_image: {{ lang.mod_video_embed.wizard.label.change_image|json_encode|raw }}
                 },
                 wizard: {
                     step: {
-                        language: '{{ lang.mod_video_embed.wizard.step.language|e("js") }}',
-                        category: '{{ lang.mod_video_embed.wizard.step.category|e("js") }}',
-                        embed: '{{ lang.mod_video_embed.wizard.step.embed|e("js") }}',
-                        details: '{{ lang.mod_video_embed.wizard.step.details|e("js") }}',
-                        content: '{{ lang.mod_video_embed.wizard.step.content|e("js") }}',
-                        image: '{{ lang.mod_video_embed.wizard.step.image|e("js") }}',
-                        seo: '{{ lang.mod_video_embed.wizard.step.seo|e("js") }}',
-                        finish: '{{ lang.mod_video_embed.wizard.step.finish|e("js") }}'
+                        language: {{ lang.mod_video_embed.wizard.step.language|json_encode|raw }},
+                        category: {{ lang.mod_video_embed.wizard.step.category|json_encode|raw }},
+                        embed: {{ lang.mod_video_embed.wizard.step.embed|json_encode|raw }},
+                        details: {{ lang.mod_video_embed.wizard.step.details|json_encode|raw }},
+                        content: {{ lang.mod_video_embed.wizard.step.content|json_encode|raw }},
+                        image: {{ lang.mod_video_embed.wizard.step.image|json_encode|raw }},
+                        seo: {{ lang.mod_video_embed.wizard.step.seo|json_encode|raw }},
+                        finish: {{ lang.mod_video_embed.wizard.step.finish|json_encode|raw }}
                     },
                     subtitle: {
-                        language: '{{ lang.mod_video_embed.wizard.subtitle.language|e("js") }}',
-                        category: '{{ lang.mod_video_embed.wizard.subtitle.category|e("js") }}',
-                        embed: '{{ lang.mod_video_embed.wizard.subtitle.embed|e("js") }}',
-                        details: '{{ lang.mod_video_embed.wizard.subtitle.details|e("js") }}',
-                        content: '{{ lang.mod_video_embed.wizard.subtitle.content|e("js") }}',
-                        image: '{{ lang.mod_video_embed.wizard.subtitle.image|e("js") }}',
-                        seo: '{{ lang.mod_video_embed.wizard.subtitle.seo|e("js") }}',
-                        finish: '{{ lang.mod_video_embed.wizard.subtitle.finish|e("js") }}'
+                        language: {{ lang.mod_video_embed.wizard.subtitle.language|json_encode|raw }},
+                        category: {{ lang.mod_video_embed.wizard.subtitle.category|json_encode|raw }},
+                        embed: {{ lang.mod_video_embed.wizard.subtitle.embed|json_encode|raw }},
+                        details: {{ lang.mod_video_embed.wizard.subtitle.details|json_encode|raw }},
+                        content: {{ lang.mod_video_embed.wizard.subtitle.content|json_encode|raw }},
+                        image: {{ lang.mod_video_embed.wizard.subtitle.image|json_encode|raw }},
+                        seo: {{ lang.mod_video_embed.wizard.subtitle.seo|json_encode|raw }},
+                        finish: {{ lang.mod_video_embed.wizard.subtitle.finish|json_encode|raw }}
                     },
                     label: {
-                        upload_text: '{{ lang.mod_video_embed.wizard.label.upload_text|e("js") }}',
-                        published: '{{ lang.mod_video_embed.wizard.label.published|e("js") }}',
-                        published_desc: '{{ lang.mod_video_embed.wizard.label.published_desc|e("js") }}',
-                        category_select: '{{ lang.mod_video_embed.wizard.label.category_select|e("js") }}',
-                        change_image: '{{ lang.mod_video_embed.wizard.label.change_image|e("js") }}'
+                        upload_text: {{ lang.mod_video_embed.wizard.label.upload_text|json_encode|raw }},
+                        published: {{ lang.mod_video_embed.wizard.label.published|json_encode|raw }},
+                        published_desc: {{ lang.mod_video_embed.wizard.label.published_desc|json_encode|raw }},
+                        category_select: {{ lang.mod_video_embed.wizard.label.category_select|json_encode|raw }},
+                        change_image: {{ lang.mod_video_embed.wizard.label.change_image|json_encode|raw }}
                     },
                     summary: {
-                        title: '{{ lang.mod_video_embed.wizard.summary.title|e("js") }}',
-                        selected_none: '{{ lang.mod_video_embed.wizard.summary.selected_none|e("js") }}'
+                        title: {{ lang.mod_video_embed.wizard.summary.title|json_encode|raw }},
+                        selected_none: {{ lang.mod_video_embed.wizard.summary.selected_none|json_encode|raw }}
                     },
                     button: {
-                        save: '{{ lang.mod_video_embed.wizard.button.save|e("js") }}',
-                        next: '{{ lang.mod_video_embed.wizard.button.next|e("js") }}',
-                        prev: '{{ lang.mod_video_embed.wizard.button.prev|e("js") }}',
-                        finish: '{{ lang.mod_video_embed.wizard.button.finish|e("js") }}'
+                        save: {{ lang.mod_video_embed.wizard.button.save|json_encode|raw }},
+                        next: {{ lang.mod_video_embed.wizard.button.next|json_encode|raw }},
+                        prev: {{ lang.mod_video_embed.wizard.button.prev|json_encode|raw }},
+                        finish: {{ lang.mod_video_embed.wizard.button.finish|json_encode|raw }}
                     }
                 }
             },
             {% else %}
             video_embed: null,
             {% endif %}
-            {% if active_module_lang_key is not null %}
+            {% if active_module_lang is not null %}
             general: {
-                delete_confirm: '{{ active_module_lang.delete_confirm|e("js") }}',
-                card_click: '{{ active_module_lang.wizard.messages.card_click|e("js") }}'
+                delete_confirm: {{ active_module_lang.delete_confirm is defined ? active_module_lang.delete_confirm|json_encode|raw : '""' }},
+                card_click: {{ active_module_lang.wizard is defined and active_module_lang.wizard.messages is defined and active_module_lang.wizard.messages.card_click is defined ? active_module_lang.wizard.messages.card_click|json_encode|raw : '""' }}
             },
             status: {
-                active: '{{ active_module_lang.status_badge.active|e("js") }}',
-                draft: '{{ active_module_lang.status_badge.draft|e("js") }}'
+                active: {{ active_module_lang.status_badge is defined and active_module_lang.status_badge.active is defined ? active_module_lang.status_badge.active|json_encode|raw : (active_module_lang.status is defined and active_module_lang.status.published is defined ? active_module_lang.status.published|json_encode|raw : '""') }},
+                draft: {{ active_module_lang.status_badge is defined and active_module_lang.status_badge.draft is defined ? active_module_lang.status_badge.draft|json_encode|raw : (active_module_lang.status is defined and active_module_lang.status.draft is defined ? active_module_lang.status.draft|json_encode|raw : '""') }}
+            },
+            mock: {
+                titles: {{ active_module_lang.mock is defined and active_module_lang.mock.titles is defined and active_module_lang.mock.titles is not null ? active_module_lang.mock.titles|json_encode|raw : '[]' }},
+                categories: {{ active_module_lang.mock is defined and active_module_lang.mock.categories is defined and active_module_lang.mock.categories is not null ? active_module_lang.mock.categories|json_encode|raw : '[]' }},
+                authors: {{ active_module_lang.mock is defined and active_module_lang.mock.authors is defined and active_module_lang.mock.authors is not null ? active_module_lang.mock.authors|json_encode|raw : '[]' }}
             },
             context_menu: {
-                edit: '{{ active_module_lang.context_menu.edit|e("js") }}',
-                publish: '{{ active_module_lang.context_menu.publish|e("js") }}',
-                unpublish: '{{ active_module_lang.context_menu.unpublish|e("js") }}',
-                video: '{{ active_module_lang.context_menu.video|e("js") }}',
-                published_msg: '{{ active_module_lang.context_menu.published_msg|e("js") }}',
-                unpublished_msg: '{{ active_module_lang.context_menu.unpublished_msg|e("js") }}',
-                confirm: '{{ active_module_lang.context_menu.confirm|e("js") }}',
-                cancel: '{{ active_module_lang.context_menu.cancel|e("js") }}',
-                edit_alert: '{{ active_module_lang.context_menu.edit_alert|replace({"\n": "\\n"})|e("js") }}',
-                gallery_alert: '{{ active_module_lang.context_menu.gallery_alert|replace({"\n": "\\n"})|e("js") }}',
-                files_alert: '{{ active_module_lang.context_menu.files_alert|replace({"\n": "\\n"})|e("js") }}',
-                status_alert: '{{ active_module_lang.context_menu.status_alert|replace({"\n": "\\n"})|e("js") }}',
-                delete_confirm: '{{ active_module_lang.context_menu.delete_confirm|e("js") }}',
-                delete_success: '{{ active_module_lang.context_menu.delete_success|e("js") }}'
+                edit: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.edit is defined ? active_module_lang.context_menu.edit|json_encode|raw : '""' }},
+                gallery: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.gallery is defined ? active_module_lang.context_menu.gallery|json_encode|raw : '""' }},
+                files: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.files is defined ? active_module_lang.context_menu.files|json_encode|raw : '""' }},
+                video: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.video is defined ? active_module_lang.context_menu.video|json_encode|raw : '""' }},
+                delete: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.delete is defined ? active_module_lang.context_menu.delete|json_encode|raw : '""' }},
+                publish: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.publish is defined ? active_module_lang.context_menu.publish|json_encode|raw : '""' }},
+                unpublish: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.unpublish is defined ? active_module_lang.context_menu.unpublish|json_encode|raw : '""' }},
+                published_msg: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.published_msg is defined ? active_module_lang.context_menu.published_msg|json_encode|raw : '""' }},
+                unpublished_msg: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.unpublished_msg is defined ? active_module_lang.context_menu.unpublished_msg|json_encode|raw : '""' }},
+                confirm: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.confirm is defined ? active_module_lang.context_menu.confirm|json_encode|raw : '""' }},
+                cancel: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.cancel is defined ? active_module_lang.context_menu.cancel|json_encode|raw : '""' }},
+                edit_alert: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.edit_alert is defined ? active_module_lang.context_menu.edit_alert|json_encode|raw : '""' }},
+                gallery_alert: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.gallery_alert is defined ? active_module_lang.context_menu.gallery_alert|json_encode|raw : '""' }},
+                files_alert: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.files_alert is defined ? active_module_lang.context_menu.files_alert|json_encode|raw : '""' }},
+                status_alert: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.status_alert is defined ? active_module_lang.context_menu.status_alert|json_encode|raw : '""' }},
+                delete_success: {{ active_module_lang.context_menu is defined and active_module_lang.context_menu.delete_success is defined ? active_module_lang.context_menu.delete_success|json_encode|raw : '""' }}
             },
             filter: {
-                default_sort: '{{ active_module_lang.ui.default_sort|e("js") }}',
-                default_lang: '{{ (site.default_lang is defined ? site.default_lang : site.lang)|lower }}'
+                default_sort: {{ active_module_lang.ui is defined and active_module_lang.ui.default_sort is defined ? active_module_lang.ui.default_sort|json_encode|raw : '""' }},
+                default_lang: {{ site.lang is defined ? site.lang|lower|json_encode|raw : '""' }}
             },
             ui: {
-                select: '{{ active_module_lang.ui.select|e("js") }}',
-                all: '{{ active_module_lang.ui.all|e("js") }}',
-                filter_cleared: '{{ active_module_lang.ui.filter_cleared|e("js") }}',
-                filter_applied: '{{ active_module_lang.ui.filter_applied|e("js") }}',
-                sort_label: '{{ active_module_lang.ui.sort_label|e("js") }}',
-                limit_label: '{{ active_module_lang.ui.limit_label|e("js") }}',
-                lang_label: '{{ active_module_lang.ui.lang_label|e("js") }}'
+                select: {{ active_module_lang.ui is defined and active_module_lang.ui.select is defined ? active_module_lang.ui.select|json_encode|raw : '""' }},
+                all: {{ active_module_lang.ui is defined and active_module_lang.ui.all is defined ? active_module_lang.ui.all|json_encode|raw : '""' }},
+                filter_cleared: {{ active_module_lang.ui is defined and active_module_lang.ui.filter_cleared is defined ? active_module_lang.ui.filter_cleared|json_encode|raw : '""' }},
+                filter_applied: {{ active_module_lang.ui is defined and active_module_lang.ui.filter_applied is defined ? active_module_lang.ui.filter_applied|json_encode|raw : '""' }},
+                sort_label: {{ active_module_lang.ui is defined and active_module_lang.ui.sort_label is defined ? active_module_lang.ui.sort_label|json_encode|raw : '""' }},
+                limit_label: {{ active_module_lang.ui is defined and active_module_lang.ui.limit_label is defined ? active_module_lang.ui.limit_label|json_encode|raw : '""' }},
+                lang_label: {{ active_module_lang.ui is defined and active_module_lang.ui.lang_label is defined ? active_module_lang.ui.lang_label|json_encode|raw : '""' }}
             },
-            adminCategories: {{ categories is defined ? categories|json_encode|raw : '[]' }},
+            adminCategories: {{ categories is defined and categories is not null ? categories|json_encode|raw : '[]' }}
             {% else %}
             general: null,
             status: null,
+            mock: null,
             context_menu: null,
             filter: null,
             ui: null,
-            adminCategories: [],
-            {% endif %}
-            navigation: {
-                pin_module: '{{ lang.management.pin_module|e("js") }}',
-                unpin_module: '{{ lang.management.unpin_module|e("js") }}',
-                recent_workspace_empty: '{{ lang.management.recent_workspace_empty|e("js") }}'
-            },
-            video_embed_categories: {{ video_embed_categories|json_encode|raw }},
-            date_locale: '{{ site.lang }}',
+            adminCategories: []
+            {% endif %},
+            mod_page: {{ lang.mod_page is defined and lang.mod_page is not null ? lang.mod_page|json_encode|raw : 'null' }},
+            mod_menu: {{ lang.mod_menu is defined and lang.mod_menu is not null ? lang.mod_menu|json_encode|raw : 'null' }},
+            active_module: {{ active_module_lang is not null ? active_module_lang|json_encode|raw : 'null' }},
+            mod_user: {{ lang.mod_user is defined and lang.mod_user is not null ? lang.mod_user|json_encode|raw : 'null' }},
+            mod_settings: {{ lang.mod_settings is defined and lang.mod_settings is not null ? lang.mod_settings|json_encode|raw : 'null' }},
+            video_embed_categories: {{ video_embed_categories is defined and video_embed_categories is not null ? video_embed_categories|json_encode|raw : '[]' }},
+            date_locale: {{ site.lang|default('en')|json_encode|raw }},
             languages: [
                 {% if lang_lang is defined and lang_lang is not empty %}
                     {% for l in lang_lang %}
-                        { code: '{{ l.seo|lower }}', name: '{{ l.name|e("js") }}', status: '{{ (l.status is defined ? l.status : "y")|e("js") }}' },
+                        { code: {{ l.seo|lower|json_encode|raw }}, name: {{ l.name|json_encode|raw }}, status: {{ l.status|default('y')|json_encode|raw }} },
                     {% endfor %}
                 {% endif %}
             ]
         };
+        const adminLang = window.adminLang;
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.5.1/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="/templates/admin/assets/js/script.js?v=1.71"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Handle Flash Messages from Session
-            {% if session.flash is defined and session.flash %}
-                showSnackbar('{{ session.flash.message|e("js") }}', '{{ session.flash.type|e("js") }}');
-            {% endif %}
-
-            // Handle Direct Template Messages (Validation errors, etc.)
-            {% if success is defined and success %}
-                showSnackbar('{{ message|e("js") }}', 'success');
-            {% elseif error is defined and error %}
-                showSnackbar('{{ message|e("js") }}', 'error');
-            {% elseif fatal_error is defined and fatal_error %}
-                showSnackbar('{{ message|e("js") }}', 'error');
-            {% elseif errors is defined and errors|length > 0 %}
-                {% for err in errors %}
-                    showSnackbar('{{ err|e("js") }}', 'error');
-                {% endfor %}
-            {% endif %}
-        });
-    </script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/af_modal_engine.js?v=1.21"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_menu.js?v=1.07"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_theme_logo.js?v=1.05"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_site_status.js?v=1.05"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_redirects.js?v=1.05"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_newsletter.js?v=1.05"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_profile.js?v=1.05"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/script.js?v=1.98"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

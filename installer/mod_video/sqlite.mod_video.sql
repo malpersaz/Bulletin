@@ -4,10 +4,9 @@ CREATE TABLE mod_video (
     name TEXT NOT NULL,
     duration TEXT NOT NULL,
     created_at TEXT DEFAULT (datetime('now')),
-    status TEXT NOT NULL DEFAULT 'y',     -- ENUM yerine TEXT
+    status TEXT NOT NULL DEFAULT 'y',
     description TEXT DEFAULT NULL,
     image TEXT,
-    flv TEXT,
     original TEXT DEFAULT NULL,
     acl_id INTEGER DEFAULT 0,
     view_count INTEGER NOT NULL DEFAULT 0,

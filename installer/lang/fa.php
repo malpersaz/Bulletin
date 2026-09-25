@@ -259,14 +259,8 @@ $installerLang = [
       'mod_video_embed' => 'جاسازی ویدئو',
       'mod_news' => 'خبرها',
       'mod_publication' => 'انتشارها',
-      'mod_category' => 'دسته‌ها',
+      'mod_content_category' => 'دسته‌ها',
       'mod_content' => 'محتوا',
-      'mod_client' => 'مشتریان',
-      'mod_product_category' => 'دسته‌بندی محصولات',
-      'mod_service_category' => 'دسته‌بندی خدمات',
-      'mod_product' => 'محصولات',
-      'mod_service' => 'خدمات',
-      'mod_reference' => 'مراجع',
     ],
     'checks' => [
       'php_version' => [

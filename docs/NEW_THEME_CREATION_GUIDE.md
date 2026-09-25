@@ -1,6 +1,6 @@
 # New Theme Creation Guide
 
-This document explains how to create a new frontend theme in this project without modifying the existing `templates/default` and `templates/artist` themes directly.
+This document explains how to create a new frontend theme in this project without modifying the existing `templates/amida` theme directly.
 
 ## Mandatory Theme Rules
 
@@ -233,7 +233,7 @@ The safest starting point is to copy one existing theme as a base, then refactor
 
 Recommended approach:
 
-1. Copy `templates/default` or `templates/artist` into a new folder.
+1. Copy `templates/amida` into a new folder.
 2. Rename the copied folder to the new theme name.
 3. Remove or replace design-specific files that should not be inherited.
 
@@ -337,8 +337,7 @@ The existing frontend menu templates contain hardcoded theme buttons.
 
 Review files such as:
 
-- `templates/default/index/mod_menu/top_menu.twig`
-- `templates/artist/index/mod_menu/top_menu.twig`
+- `templates/amida/index/mod_menu/top_menu.twig`
 - related `top-menu.js` files inside each theme
 
 Add a new selector entry for the new theme if you want users to switch to it from the frontend.

@@ -1,6 +1,5 @@
 {% set show_fab = false %}
 {% set show_navbar = false %}
-{% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -11,12 +10,12 @@
 {% block headline %}{{ lang.mod_user_pm.sent_title }}{% endblock %}
 
 {% block content %}
-{% set recipient_name = veri.username|default('') %}
-{% set subject_text = veri.subject|default('') %}
+{% set recipient_name = messages.username|default('') %}
+{% set subject_text = messages.subject|default('') %}
 {% set initial = recipient_name|slice(0, 1)|upper %}
-{% set iso_date = veri.created_at|date('Y-m-d') %}
-{% set time_text = veri.created_at|date('H:i') %}
-{% set formatted_date = veri.created_at|date('d M Y') %}
+{% set iso_date = messages.created_at|date('Y-m-d') %}
+{% set time_text = messages.created_at|date('H:i') %}
+{% set formatted_date = messages.created_at|date('d M Y') %}
 {% set detail_date = iso_date == "now"|date('Y-m-d')
     ? lang.mod_user_pm.today_label ~ ' ' ~ time_text
     : (iso_date == ("-1 day"|date('Y-m-d'))
@@ -26,7 +25,7 @@
 {% set note_date = detail_date|e %}
 
 <div class="pm-detail-shell"
-     id="alan_{{ veri.id }}"
+     id="alan_{{ messages.id }}"
      data-delete-title="{{ lang.mod_user_pm.confirm_delete_msg }}"
      data-delete-text="{{ lang.mod_user_pm.confirm_delete_msg }}"
      data-delete-confirm="{{ lang.mod_user_pm.confirm_delete_yes }}"
@@ -56,7 +55,7 @@
                 <i class="bi bi-reply"></i>
                 <span>{{ lang.mod_user_pm.resend_action }}</span>
             </a>
-            <button type="button" class="pm-detail-action pm-detail-action-danger" onclick="deleteMessage('{{ veri.id }}', 'sent')">
+            <button type="button" class="pm-detail-action pm-detail-action-danger" onclick="deleteMessage('{{ messages.id }}', 'sent')">
                 <i class="bi bi-trash3"></i>
                 <span>{{ lang.mod_user_pm.delete_action }}</span>
             </button>
@@ -64,7 +63,7 @@
 
         <article class="pm-detail-body">
             <div class="pm-detail-body-mark" aria-hidden="true"></div>
-            {{ veri.message|nl2br }}
+            {{ messages.message|nl2br }}
         </article>
 
         <p class="pm-detail-note">{{ lang.mod_user_pm.message_info_sent|format(note_recipient, note_date)|raw }}</p>
@@ -306,7 +305,7 @@
 
 {% block scripts %}
 <script>
-    const RADRES_URL = '{{ site.iaddress }}';
+    const IADDRESS_URL = '{{ site.iaddress }}';
     const PM_LANG = {
         read: "{{ lang.mod_user_pm.view_action|e('js') }}",
         reply: "{{ lang.mod_user_pm.reply_action|e('js') }}",

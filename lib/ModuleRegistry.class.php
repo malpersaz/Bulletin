@@ -4,16 +4,16 @@ class ModuleRegistry
 {
     private $featureMap = [
         'content.front' => [
-            'modules' => ['mod_content', 'mod_category'],
-            'tables' => ['mod_content', 'mod_category'],
+            'modules' => ['mod_content', 'mod_content_category'],
+            'tables' => ['mod_content', 'mod_content_category'],
         ],
         'content.latest' => [
             'modules' => ['mod_content'],
             'tables' => ['mod_content'],
         ],
         'content.archive' => [
-            'modules' => ['mod_content', 'mod_category'],
-            'tables' => ['mod_content', 'mod_category'],
+            'modules' => ['mod_content', 'mod_content_category'],
+            'tables' => ['mod_content', 'mod_content_category'],
         ],
         'news.front' => [
             'modules' => ['mod_news', 'mod_news_category'],
@@ -63,8 +63,8 @@ class ModuleRegistry
 
     private $installDependencies = [
         'mod_content' => [
-            'modules' => ['mod_category', 'mod_gallery', 'mod_user'],
-            'tables' => ['mod_category', 'mod_gallery', 'mod_user'],
+            'modules' => ['mod_content_category', 'mod_gallery', 'mod_user'],
+            'tables' => ['mod_content_category', 'mod_gallery', 'mod_user'],
         ],
         'mod_news' => [
             'modules' => ['mod_news_category', 'mod_gallery', 'mod_user'],
@@ -74,18 +74,6 @@ class ModuleRegistry
             'modules' => ['mod_publication_category', 'mod_gallery', 'mod_user'],
             'tables' => ['mod_publication_category', 'mod_gallery', 'mod_user'],
         ],
-        'mod_product' => [
-            'modules' => ['mod_product_category', 'mod_gallery', 'mod_user'],
-            'tables' => ['mod_product_category', 'mod_gallery', 'mod_user'],
-        ],
-        'mod_service' => [
-            'modules' => ['mod_service_category', 'mod_gallery', 'mod_user'],
-            'tables' => ['mod_service_category', 'mod_gallery', 'mod_user'],
-        ],
-        'mod_reference' => [
-            'modules' => ['mod_client', 'mod_product', 'mod_service', 'mod_gallery', 'mod_user'],
-            'tables' => ['mod_client', 'mod_product', 'mod_service', 'mod_gallery', 'mod_user'],
-        ],
         'mod_video_embed' => [
             'modules' => ['mod_video_embed_category', 'mod_user'],
             'tables' => ['mod_video_embed_category', 'mod_user'],
@@ -93,14 +81,9 @@ class ModuleRegistry
     ];
 
     private $uninstallDependents = [
-        'mod_category' => ['mod_content'],
+        'mod_content_category' => ['mod_content'],
         'mod_news_category' => ['mod_news'],
         'mod_publication_category' => ['mod_publication'],
-        'mod_client' => ['mod_reference'],
-        'mod_product_category' => ['mod_product'],
-        'mod_service_category' => ['mod_service'],
-        'mod_product' => ['mod_reference'],
-        'mod_service' => ['mod_reference'],
         'mod_video_embed_category' => ['mod_video_embed'],
     ];
 

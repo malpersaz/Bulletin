@@ -259,14 +259,8 @@ $installerLang = [
       'mod_video_embed' => 'تێخستنی ڤیدیۆ',
       'mod_news' => 'هەواڵ',
       'mod_publication' => 'بڵاوکراوە',
-      'mod_category' => 'هاوپۆل',
+      'mod_content_category' => 'هاوپۆل',
       'mod_content' => 'ناوەڕۆک',
-      'mod_client' => 'کڕیارەکان',
-      'mod_product_category' => 'هاوپۆلەکانی کاڵا',
-      'mod_service_category' => 'هاوپۆلەکانی خزمەتگوزاری',
-      'mod_product' => 'کاڵاکان',
-      'mod_service' => 'خزمەتگوزارییەکان',
-      'mod_reference' => 'ڕێفرەنسەکان',
     ],
     'checks' => [
       'php_version' => [

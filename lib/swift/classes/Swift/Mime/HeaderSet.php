@@ -52,7 +52,7 @@ interface Swift_Mime_HeaderSet extends Swift_Mime_CharsetObserver
    * @param array $params
    */
   public function addParameterizedHeader($name, $value = null,
-    $params = array());
+    $params = []);
   
   /**
    * Add a new ID header for Message-ID or Content-ID.

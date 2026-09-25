@@ -1,0 +1,78 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_navbar = false %}
+{% set show_fab = false %}
+{% set is_panel = true %}
+
+{% block title %}{{ lang.mod_user.agent.title }} - {{ lang.mod_user.panel.admin_brand }}{% endblock %}
+
+{% block headline %}{{ lang.mod_user.agent.title }}{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_user_agent.css?v=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="agent-dialogue-wrapper">
+
+    <!-- Status Header Pill -->
+    <div class="agent-status-bar">
+        <div class="agent-status-pill">
+            <span class="agent-status-dot"></span>
+            <span class="agent-status-label">{{ gemini_model }}</span>
+        </div>
+        <button type="button" class="agent-action-btn" id="agentClearBtn" title="{{ lang.mod_user.agent.clear }}" aria-label="{{ lang.mod_user.agent.clear }}">
+            <i class="bi bi-trash3"></i>
+            <span>{{ lang.mod_user.agent.clear }}</span>
+        </button>
+    </div>
+
+    <!-- Dialogue Message Stream -->
+    <div class="agent-dialogue-stream" id="agentDialogueStream" aria-live="polite">
+        
+        <!-- Welcome Model Message -->
+        <div class="agent-message-row agent-row-model">
+            <div class="agent-avatar">
+                <i class="bi bi-robot"></i>
+            </div>
+            <div class="agent-bubble agent-bubble-model">
+                <div class="agent-message-content">
+                    <p>{{ lang.mod_user.agent.greeting }}</p>
+                </div>
+                <div class="agent-message-time" data-timestamp="now"></div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<!-- Fixed Bottom Dialogue Input -->
+<div class="agent-input-container">
+    <form id="agentChatForm" class="agent-chat-form" action="{{ agent_chat_url }}" method="post" autocomplete="off">
+        <input type="hidden" id="agentChatUrl" value="{{ agent_chat_url }}">
+        <div class="agent-input-pill">
+            <textarea
+                id="agentPromptInput"
+                name="prompt"
+                rows="1"
+                class="agent-input-textarea"
+                placeholder="{{ lang.mod_user.agent.input_placeholder }}"
+                aria-label="{{ lang.mod_user.agent.input_placeholder }}"
+                required></textarea>
+            <button type="submit" id="agentSendBtn" class="agent-send-btn" title="{{ lang.mod_user.agent.send }}" aria-label="{{ lang.mod_user.agent.send }}">
+                <i class="bi bi-arrow-up"></i>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script src="{{ site.address }}templates/admin/assets/js/mod_user_agent.js?v=1.0"></script>
+{% endblock %}

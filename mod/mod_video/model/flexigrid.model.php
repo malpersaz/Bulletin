@@ -2,6 +2,9 @@
 class flexigrid_model
 {
 
+    private $lang;
+    public $session;
+    public $json;
     public $mod_video_model;
     public function __construct()
     {
@@ -18,21 +21,21 @@ class flexigrid_model
 
         $rp = Req::is_Post('rp') ? Req::Post_Safe('rp') : 10;
         // ORDER BY ID ASC Gibi
-        if (in_array(Req::Post_Safe('sortorder'), $valid_sort) == False) {
+        if (in_array(Req::Post_Safe('sortorder'), $valid_sort) === False) {
             $sortorder = $valid_sort['0'];
         } else {
             $sortorder = Req::Post_Safe('sortorder');
         }
 
-        $sortname = in_array(Req::Post_Safe('sortname'), $colom) == False ? $colom['0'] : Req::Post_Safe('sortname');
+        $sortname = in_array(Req::Post_Safe('sortname'), $colom) === False ? $colom['0'] : Req::Post_Safe('sortname');
 
 
         $unique = 'id';
         $page = Req::is_Post('page') ? Req::Post_Safe('page') : 1;
         if (
-            (Roll::hasPermission('mod_video', 'moderate_edit') === TRUE)
+            (Role::hasPermission('mod_video', 'moderate_edit') === TRUE)
             ||
-            (Roll::hasPermission('mod_video', 'moderate_delete') === TRUE)
+            (Role::hasPermission('mod_video', 'moderate_delete') === TRUE)
         ) {
             $moderate = TRUE;
         } else {
@@ -57,24 +60,24 @@ class flexigrid_model
         }
 
         $this->mod_video_model->select("id,name,duration,lang,created_at")->gR();
-        $toplam = $this->mod_video_model->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->mod_video_model->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
-        // Eğer Sonuç Yoksa Malesef
-        if ($toplam < 1) {
+        // If no results found
+        if ($total < 1) {
             echo json_encode($this->json);
             exit();
         }
 
-        // Ofset Değeri
+        // Offset Value
         $offset = $page != 1 ? (($page - 1) * $rp) : NULL;
 
         $this->mod_video_model->limit($rp, $offset);
         $this->mod_video_model->order($sortname, $sortorder);
         $this->mod_video_model->getResult(TRUE, TRUE);
 
-        // Eğer Sonuç Yoksa
+        // If no results
         if ($this->mod_video_model->getSize() < 1) {
             echo json_encode($this->json);
             exit();

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Koberz Content Management System
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * User: Kobim
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
  * Date: 06.08.2025 - SQLite PDO Adapter
  * Class Name: PDO SQLite Adapter
  */
@@ -39,7 +39,7 @@ class Adapter_PDO_SQLITE
      */
     public function __construct($database)
     {
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         $this->_con_setting = $db_config[$database]['conf'];
 
         if ($this->_connect() === false) {
@@ -56,9 +56,9 @@ class Adapter_PDO_SQLITE
      */
     private function _connect()
     {
-        // SQLite DSN format: sqlite:/path/to/database.db
+        // SQLite connection path: sqlite:/path/to/database.db
         $database_path = $this->_con_setting['database_path'] ?? 'data/database.sqlite';
-        $dsn = "sqlite:" . $database_path;
+        $connection_string = "sqlite:" . $database_path;
         
         $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
@@ -67,9 +67,10 @@ class Adapter_PDO_SQLITE
         ];
 
         try {
-            $this->_con = new PDO($dsn, null, null, $options);
-            // Enable foreign key constraints
+            $this->_con = new PDO($connection_string, null, null, $options);
+            // Enable foreign key constraints and set busy timeout
             $this->_con->exec('PRAGMA foreign_keys = ON');
+            $this->_con->exec('PRAGMA busy_timeout = 5000');
         } catch (PDOException $e) {
             throw new DatabaseException("SQLite Connection Problem!\n" . $e->getMessage());
         }

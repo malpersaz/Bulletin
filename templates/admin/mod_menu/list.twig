@@ -1,155 +1,169 @@
+{% set module_lang_key = 'mod_menu' %}
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = false %}
+{% set search_placeholder = lang.mod_menu.search_placeholder %}
+{% set show_filter_sheet = false %}
+{% set show_extra_sheets = false %}
 {% extends "admin/layout.twig" %}
 
 {% block title %}{{ lang.mod_menu.list }}{% endblock %}
 {% block headline %}{{ lang.mod_menu.list }}{% endblock %}
 
 {% block styles %}
-    <style>
-        .list-children-empty {
-            min-height: 48px;
-            border: 2px dashed rgba(103, 80, 164, 0.4);
-            border-radius: 12px;
-            margin-top: 8px;
-            margin-left: 24px;
-            display: none;
-        }
-        body.reorder-active .list-children-empty {
-            display: block;
-        }
-        /* Two-line layout for menu items to prevent truncation of titles on mobile */
-        .m3-list-card .card-info {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-        }
-        .m3-list-card .card-title {
-            white-space: normal;
-            word-break: break-word;
-            width: 100%;
-        }
-        .list-children {
-            padding-left: 20px; /* Reduced from 32px to save horizontal space */
-        }
-        .list-children::before {
-            left: 11px; /* Align hierarchy dotted line with the new padding */
-        }
-    </style>
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_menu.css?v=2.1">
 {% endblock %}
 
 {% macro render_tree(items, parent_id, level) %}
-    {% for entry in items[parent_id] %}
-        {% set is_container = entry.url is defined and entry.url == '##' %}
-        {% set display_name = entry.display_name %}
-        <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}" data-status="{{ entry.status }}">
-            <div class="m3-list-card" onclick="selectMenu('{{ entry.id }}', this)">
-                <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
-                
-                {% if items[entry.id] is defined or is_container %}
-                    <button class="toggle-btn collapsed" onclick="toggleMenu(this, event)">
-                        <i class="bi bi-chevron-down"></i>
-                    </button>
-                {% else %}
-                    <div style="width:24px; margin-right:4px;"></div> <!-- Spacer -->
-                {% endif %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            {% set is_container = entry.url is defined and entry.url == '##' %}
+            {% set display_name = entry.display_name %}
+            {% set has_children = items[entry.id] is defined and items[entry.id]|length > 0 %}
+            <div class="menu-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}" data-status="{{ entry.status }}" data-is-container="{{ is_container ? '1' : '0' }}"{% if entry.slot_key is defined and entry.slot_key %} data-slot="{{ entry.slot_key }}" id="slot-{{ entry.slot_key }}"{% endif %}>
+                <div class="m3-list-card" data-action="select-card" data-id="{{ entry.id }}" data-status="{{ entry.status }}" data-is-container="{{ is_container ? '1' : '0' }}">
+                    <div class="drag-handle" title="{{ lang.mod_menu.messages.info.drag_reorder }}"><i class="bi bi-grip-vertical"></i></div>
 
-                <div class="card-thumb">
-                    {% if entry.icon %}
-                        <i class="{{ entry.icon }}"></i>
+                    {% if has_children or is_container %}
+                        <button type="button" class="toggle-btn collapsed" data-action="toggle-node" aria-label="Toggle children">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
                     {% else %}
-                        <i class="bi bi-link-45deg"></i>
+                        <div class="tree-spacer"></div>
                     {% endif %}
-                </div>
 
-                <div class="card-info">
-                    <div class="card-title">{{ display_name }}</div>
-                    <div class="card-meta">
-                        <span class="meta-badge">{{ entry.lang|upper }}</span>
-                        <span class="meta-id">#{{ entry.id }}</span>
-                        {% if entry.status == 'y' %}
-                            <span class="meta-status" style="margin-left: 8px; color: #2e7d32;"><i class="bi bi-eye-fill"></i></span>
+                    <div class="card-thumb">
+                        {% if entry.icon %}
+                            <i class="{{ entry.icon }}"></i>
                         {% else %}
-                            <span class="meta-status" style="margin-left: 8px; color: #b3261e; opacity: 0.7;"><i class="bi bi-eye-slash-fill"></i></span>
+                            <i class="bi bi-link-45deg"></i>
                         {% endif %}
                     </div>
+
+                    <div class="card-info">
+                        <div class="card-title">{{ display_name }}</div>
+                        <div class="card-meta">
+                            <span class="meta-badge">{{ entry.lang|upper }}</span>
+                            <span class="meta-id">#{{ entry.id }}</span>
+                            {% if entry.status == 'y' %}
+                                <span class="meta-status published"><i class="bi bi-check-circle-fill"></i> {{ lang.mod_menu.status.published }}</span>
+                            {% else %}
+                                <span class="meta-status draft"><i class="bi bi-pause-circle-fill"></i> {{ lang.mod_menu.status.draft }}</span>
+                            {% endif %}
+                            {% if has_children %}
+                                <span class="submenus-count-badge" title="{{ items[entry.id]|length }}"><i class="bi bi-diagram-2"></i> {{ items[entry.id]|length }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
+
+                {% if entry.id != parent_id and level < 20 %}
+                    <div class="list-children collapsed{% if not has_children %} list-children-empty{% endif %}">
+                        {% if has_children %}
+                            {{ _self.render_tree(items, entry.id, level + 1) }}
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
-            
-            {% if entry.id != parent_id and level < 20 %}
-                <div class="list-children collapsed{% if items[entry.id] is not defined %} list-children-empty{% endif %}">
-                    {% if items[entry.id] is defined %}
-                        {{ _self.render_tree(items, entry.id, level + 1) }}
-                    {% endif %}
-                </div>
-            {% endif %}
-        </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
 {% endmacro %}
 
 {% block content %}
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% set has_menus = select_nested_mod_menu_result[0] is defined and select_nested_mod_menu_result[0]|length > 0 %}
+<div class="menu-list-container">
 
-<div class="content-list" id="menuRootList">
-    
-    <!-- Reorder Toggle Bar -->
-    <div class="reorder-controller" style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
-        <button id="reorderToggleBtn" class="btn-m3-tonal" onclick="toggleReorderMode()" style="border-radius: 12px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; border: none; background: #f3edf7; color: #6750a4; font-weight: 600; cursor: pointer;">
-            <i class="bi bi-lock-fill" id="reorderIcon"></i>
-            <span id="reorderText">{{ lang.mod_menu.actions.unlock_reorder }}</span>
+    <!-- Top Stats Row (Interactive Filter Pills) -->
+    <div class="menu-stats-row">
+        <button type="button" class="menu-stat-card active" data-action="select-status-pill" data-status-filter="all" aria-label="{{ lang.mod_menu.total_menus }}">
+            <span class="menu-stat-value">{{ total_menus|default(0) }}</span>
+            <span class="menu-stat-label">{{ lang.mod_menu.total_menus }}</span>
+        </button>
+        <button type="button" class="menu-stat-card stat-published" data-action="select-status-pill" data-status-filter="published" aria-label="{{ lang.mod_menu.published_menus }}">
+            <span class="menu-stat-value">{{ published_menus|default(0) }}</span>
+            <span class="menu-stat-label">{{ lang.mod_menu.published_menus }}</span>
+        </button>
+        <button type="button" class="menu-stat-card stat-draft" data-action="select-status-pill" data-status-filter="draft" aria-label="{{ lang.mod_menu.draft_menus }}">
+            <span class="menu-stat-value">{{ draft_menus|default(0) }}</span>
+            <span class="menu-stat-label">{{ lang.mod_menu.draft_menus }}</span>
         </button>
     </div>
 
-    {% if select_nested_mod_menu_result[0] is defined %}
-        {{ _self.render_tree(select_nested_mod_menu_result, 0, 0) }}
-    {% else %}
-        <div class="empty-state-container">
-            <div class="empty-icon-box">
-                 <i class="bi bi-diagram-3"></i>
-            </div>
-            <h2 style="font-weight: 800;">{{ lang.mod_menu.empty.no_menus }}</h2>
-            <div class="toolbar-fab" style="margin: 40px auto 0 auto; position: static;" onclick="location.href='{{ site.saddress }}mod_menu/add'">
-                <i class="bi bi-plus-lg"></i>
-            </div>
-        </div>
+    {% if has_menus %}
+    <!-- Tree Control Action Bar (Only shown when menus exist) -->
+    <div class="menu-controls-bar">
+        <button id="reorderToggleBtn" type="button" class="menu-control-btn" data-action="toggle-reorder" aria-label="{{ lang.mod_menu.actions.unlock_reorder }}">
+            <i class="bi bi-lock-fill" id="reorderIcon"></i>
+            <span id="reorderText">{{ lang.mod_menu.actions.unlock_reorder }}</span>
+        </button>
+
+        <button id="expandCollapseAllBtn" type="button" class="menu-control-btn" data-action="toggle-expand-all" aria-label="{{ lang.mod_menu.expand_all }}">
+            <i class="bi bi-arrows-expand" id="expandCollapseIcon"></i>
+            <span id="expandCollapseText">{{ lang.mod_menu.expand_all }}</span>
+        </button>
+    </div>
+
+    <!-- Reorder Info Banner -->
+    <div class="reorder-info-banner is-hidden" id="reorderBanner">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>{{ lang.mod_menu.messages.info.move }}</span>
+    </div>
     {% endif %}
+
+    <!-- Main Tree Content List -->
+    <div class="content-list menu-tree-root" id="menuRootList">
+        {% if has_menus %}
+            {{ _self.render_tree(select_nested_mod_menu_result, 0, 0) }}
+        {% else %}
+            <div class="menu-empty-card">
+                <div class="menu-empty-icon">
+                    <i class="bi bi-diagram-3"></i>
+                </div>
+                <h3 class="menu-empty-title">{{ lang.mod_menu.empty.no_menus }}</h3>
+                <p class="menu-empty-desc">{{ lang.mod_menu.empty.add_first }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Search Empty State -->
+    <div class="menu-search-empty is-hidden" id="searchEmptyState">
+        <div class="menu-empty-icon">
+            <i class="bi bi-search"></i>
+        </div>
+        <h3 class="menu-empty-title">{{ lang.mod_menu.empty.no_results }}</h3>
+        <p class="menu-empty-desc">{{ lang.mod_menu.search_placeholder }}</p>
+        <button type="button" class="menu-search-empty-btn" data-action="clear-search">
+            <i class="bi bi-x-circle"></i>
+            <span>{{ lang.mod_menu.actions.cancel }}</span>
+        </button>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
     <div class="standard-toolbar menu-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarApprove" type="button" class="toolbar-item is-disabled toolbar-slot-1" data-action="publish" title="{{ lang.mod_menu.actions.publish_toggle }}" aria-label="{{ lang.mod_menu.actions.publish_toggle }}">
+            <i class="bi bi-eye-fill" id="approveIcon"></i>
+        </button>
+
+        <button id="toolbarEdit" type="button" class="toolbar-item is-disabled toolbar-slot-5" data-action="edit" title="{{ lang.mod_menu.actions.edit }}" aria-label="{{ lang.mod_menu.actions.edit }}">
             <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_menu.actions.edit }}</span>
         </button>
 
-        <button id="toolbarEye" class="toolbar-item" onclick="toggleStatusSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-eye-fill"></i>
-            <span>{{ lang.mod_menu.actions.publish_toggle }}</span>
-        </button>
-
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarDelete" type="button" class="toolbar-item is-disabled toolbar-slot-7" data-action="delete" title="{{ lang.mod_menu.actions.delete }}" aria-label="{{ lang.mod_menu.actions.delete }}">
             <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_menu.actions.delete }}</span>
         </button>
     </div>
 
-    <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_menu/add'" aria-label="{{ lang.mod_menu.add|default('Menuyê Lêzêde Bike') }}">
+    <!-- Main FAB Button (Fixed Floating Action Button) -->
+    <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_menu/add" aria-label="{{ lang.mod_menu.add }}">
         <i class="bi bi-plus-lg"></i>
-    </button>
+    </a>
 {% endblock %}
 
 {% block scripts %}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    {% include 'mod_menu/script.twig' %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var wrapper = document.querySelector('.mobile-wrapper');
-            if(wrapper) {
-                wrapper.classList.add('mesh-bg');
-            }
-        });
-    </script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_menu_list.js?v=2.1"></script>
 {% endblock %}

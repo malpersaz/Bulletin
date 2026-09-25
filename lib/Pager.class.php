@@ -2,17 +2,17 @@
 
 class Pager
 {
-    // Toplam İtem Sayısı 300
+    // Total item count e.g. 300
     public $total_item;
-    // Sayfalama Limit 10
+    // Page limit e.g. 10
     public $page_limit;
-    // Pager Limit sayfalamada kaç bağlantı gösterilecek 10
+    // Number of pagination links to display e.g. 10
     public $pager_limit;
-    // Aktif sayfa 7
+    // Active page e.g. 7
     public $page;
-    // Toplam sayfa sayısı $total_item/$page_limit sonuçunda bulunur
+    // Total page count calculated from $total_item / $page_limit
     public $total_page;
-    // Sonuç
+    // Result
     private $result;
 
     public function call()

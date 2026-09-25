@@ -3,12 +3,12 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_slider');
     }
     public function check($id)
@@ -136,10 +136,10 @@ class edit_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

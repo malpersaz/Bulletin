@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -26,6 +26,8 @@ $lang['mod_publication'] = [
     'information' => 'Agahî!',
     'success' => 'Çêbû!',
     'error' => 'Çewtî Çêbû!',
+    'error_occurred' => 'Çewtî Çêbû!',
+    'wizard_loading' => 'Sêrbaz tê barkirin...',
     'fatal_error' => 'Çewtiya Giran Çêbû!',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_success' => 'Wêne hate rakirin',
@@ -101,15 +103,15 @@ $lang['mod_publication'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        4 => 'Tu dane nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+        'no_data' => 'Tu dane nehat dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
         'approve' => [
             'key' => 'Weşandin',
             'value' => 'Ma tu bawer î ku dixwazî vî weşanî biweşînî?',
@@ -131,12 +133,12 @@ $lang['mod_publication'] = [
         'title_length' => 'Divê tu sernavekî herî kêm ji 1 tîpê û herî pir ji 70 tîpan pêk tê binivîsî.',
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
-        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku herî kêm 110 tîp û herî pir 280 tîp pêk tê binivîsin.',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
     // === Permission Roles ===
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Rolenên Rêveberiya Weşanan',
         'add' => 'Dikare weşanan lê zêde bike',
         'edit' => 'Dikare weşanan biguhere',
@@ -215,7 +217,6 @@ $lang['mod_publication'] = [
         'created_by' => 'Afirîner',
         'copy' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
-        'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
         'filter_applied' => 'Parzûn hatin sepandin',
         'sort_label' => 'Rêzkirin',
@@ -300,7 +301,7 @@ $lang['mod_publication'] = [
             'category' => 'Beşa ku ev weşan tê de were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
-            'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
+            'intro' => 'Kin û zelal binivîse. (90 - 120 tîp)',
             'publication' => 'Edîtorê nivîsa dewlemend.',
             'image' => 'Tu dikarî wêneyekî tenê hilbijêrî.',
             'finish' => 'Saxtîkirina dawî û şandin.',
@@ -314,18 +315,6 @@ $lang['mod_publication'] = [
             'category_select' => 'Beşa Weşanê...',
             'change_image' => 'Wêne biguherîne',
             'editor_placeholder' => 'Dest bi nivîsandina weşana xwe bikin...',
-        ],
-'image' => [
-            'drop_title' => 'Wêneyekî kaşke ser vir an jî',
-            'drop_description' => 'Bar bike, pêve bike an jî wêneyekî berde vir.',
-            'upload_link' => 'pelekê bar bikin',
-            'link_separator' => 'AN JÎ',
-            'link_placeholder' => 'Lînka wêneyê binivîse',
-            'link_action' => 'Bîne',
-            'hint_loading' => 'Wêne tê anîn...',
-            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
-            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
-            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
         ],
         'messages' => [
             'success_sim' => 'Weşan bi serketî hat afirandin! (Simulasyon)',
@@ -366,7 +355,6 @@ $lang['mod_publication'] = [
         'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
-        'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Weşan hat jêbirin!',
         'video_unavailable' => 'Rêveberiya vîdeo rê weşanan de hîn amade nêyo.',
     ],
@@ -375,14 +363,14 @@ $lang['mod_publication'] = [
         'titles' => [
             "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",
             "Bernameya Festîvala Çand û Hunerê ya Amedê hat eşkerekirin",
-            "Komxebata Rojnamegeriya Herêmî bi dawî bû",
+            "Komxebata AKM ARTIST CMSgeriya Herêmî bi dawî bû",
             "Nîşeyên li ser Têkiliya Aqilê Çêkirî û Medyayê",
-            "Derbasbûna ji Rojnamegeriya Kevneşopî bo Medyaya Dijîtal",
+            "Derbasbûna ji AKM ARTIST CMSgeriya Kevneşopî bo Medyaya Dijîtal",
             "Amarên Bikaranîna Medyaya Civakî 2024",
             "Kurteya Teknolojiya Heftane: Çi Qewimî?",
             "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
             "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a Rojname hat nûkirin"
+            "Serlêdana Mobîl a AKM ARTIST CMS hat nûkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],

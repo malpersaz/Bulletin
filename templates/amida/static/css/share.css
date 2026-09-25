@@ -1,0 +1,206 @@
+/* ==========================================================================
+   Social Share & Action Toolbar Component
+   ========================================================================== */
+
+.share-toolbar-wrapper {
+    margin: 2.25rem 0 1.25rem 0;
+}
+
+.share-toolbar-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-bottom: 0.55rem;
+    padding-left: 0.35rem;
+}
+
+.share-toolbar-title {
+    font-size: 0.785rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bs-secondary-color, #6c757d);
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.share-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    background-color: var(--bs-tertiary-bg, #f8f9fa);
+    border: 1px solid var(--bs-border-color-translucent, rgba(0, 0, 0, 0.08));
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.share-toolbar-section {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+/* Social Media Buttons (Circular, Brand Colors on Light/White Base) */
+.social-share-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    background-color: var(--bs-body-bg, #ffffff);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.98rem;
+    padding: 0;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.social-share-btn:hover {
+    transform: translateY(-2px);
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+.social-share-btn:active {
+    transform: translateY(0);
+}
+
+/* Native Share */
+.btn-native-share { display: none; color: #0d6efd; border-color: rgba(13, 110, 253, 0.2); }
+.btn-native-share:hover { background-color: #0d6efd; color: #ffffff !important; }
+
+/* Social Icons Base Colors & Hover Fills */
+.btn-facebook { color: #1877f2; border-color: rgba(24, 119, 242, 0.25); }
+.btn-facebook:hover { background-color: #1877f2; box-shadow: 0 4px 12px rgba(24, 119, 242, 0.35); }
+
+.btn-twitter { color: #000000; border-color: rgba(0, 0, 0, 0.2); }
+.btn-twitter:hover { background-color: #000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+
+.btn-whatsapp { color: #25d366; border-color: rgba(37, 211, 102, 0.3); }
+.btn-whatsapp:hover { background-color: #25d366; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.35); }
+
+.btn-tiktok { color: #000000; border-color: rgba(0, 0, 0, 0.2); }
+.btn-tiktok:hover { background-color: #000000; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); }
+
+.btn-linkedin { color: #0a66c2; border-color: rgba(10, 102, 194, 0.25); }
+.btn-linkedin:hover { background-color: #0a66c2; box-shadow: 0 4px 12px rgba(10, 102, 194, 0.35); }
+
+.btn-email { color: #ea4335; border-color: rgba(234, 67, 53, 0.3); }
+.btn-email:hover { background-color: #ea4335; box-shadow: 0 4px 12px rgba(234, 67, 53, 0.35); }
+
+.btn-copy { color: #495057; border-color: rgba(73, 80, 87, 0.25); }
+.btn-copy:hover { background-color: #495057; box-shadow: 0 4px 12px rgba(73, 80, 87, 0.3); }
+
+/* Right Action Tools (Squircle / Rounded Square, Distinct Shape & Role) */
+.tool-action-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    background-color: var(--bs-body-bg, #ffffff);
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.98rem;
+    padding: 0;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 0.2s ease,
+                color 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.tool-action-btn:hover {
+    transform: translateY(-2px);
+    color: #ffffff !important;
+    border-color: transparent !important;
+}
+
+.tool-action-btn:active {
+    transform: translateY(0);
+}
+
+.btn-tool-html { color: #0d6efd; border-color: rgba(13, 110, 253, 0.25); }
+.btn-tool-html:hover { background-color: #0d6efd; box-shadow: 0 4px 12px rgba(13, 110, 253, 0.35); }
+
+.btn-tool-text { color: #198754; border-color: rgba(25, 135, 84, 0.25); }
+.btn-tool-text:hover { background-color: #198754; box-shadow: 0 4px 12px rgba(25, 135, 84, 0.35); }
+
+.btn-tool-zip { color: #fd7e14; border-color: rgba(253, 126, 20, 0.25); }
+.btn-tool-zip:hover { background-color: #fd7e14; box-shadow: 0 4px 12px rgba(253, 126, 20, 0.35); }
+
+.btn-tool-print { color: #495057; border-color: rgba(73, 80, 87, 0.25); }
+.btn-tool-print:hover { background-color: #495057; box-shadow: 0 4px 12px rgba(73, 80, 87, 0.35); }
+
+/* Dark Theme Support */
+[data-bs-theme="dark"] .share-toolbar {
+    background-color: var(--bs-dark-bg-subtle, #1a1e24);
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-bs-theme="dark"] .social-share-btn,
+[data-bs-theme="dark"] .tool-action-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[data-bs-theme="dark"] .btn-twitter { color: #e9ecef; border-color: rgba(255, 255, 255, 0.2); }
+[data-bs-theme="dark"] .btn-tiktok { color: #e9ecef; border-color: rgba(255, 255, 255, 0.2); }
+[data-bs-theme="dark"] .btn-copy { color: #ced4da; }
+[data-bs-theme="dark"] .btn-tool-print { color: #ced4da; }
+
+/* RTL Support */
+[dir="rtl"] .share-toolbar-heading {
+    padding-left: 0;
+    padding-right: 0.35rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 767.98px) {
+    .share-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.85rem;
+        padding: 1rem 0.85rem;
+    }
+
+    .share-toolbar-section {
+        justify-content: center;
+    }
+
+    .social-share-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 1.05rem;
+    }
+
+    .tool-action-btn {
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
+        min-height: 40px;
+        font-size: 1.05rem;
+        border-radius: 10px;
+    }
+}

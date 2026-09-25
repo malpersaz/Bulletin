@@ -51,10 +51,9 @@ class Swift_Image extends Swift_EmbeddedFile
    */
   public static function fromPath($path)
   {
-    $image = self::newInstance()->setFile(
+    return self::newInstance()->setFile(
       new Swift_ByteStream_FileByteStream($path)
       );
-    return $image;
   }
   
 }

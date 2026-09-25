@@ -8,6 +8,11 @@
 {% block title %}{{ lang.mod_video_embed.edit }}{% endblock %}
 {% block headline %}{{ lang.mod_video_embed.edit }}{% endblock %}
 
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.0">
+{% endblock %}
+
 {% macro select_nested_category_id_function(parent_id, level, d, allowed_langs) %}
     {% for entry in attribute(select_nested_category_id_result, parent_id) %}
         {% set parent_id = entry.id %}
@@ -38,7 +43,7 @@
 {% endmacro %}
 
 {% block content %}
-{% set selected_lang = d.lang is defined ? d.lang : site.lang %}
+{% set selected_lang = d.lang is defined and d.lang != '' ? d.lang : site.lang %}
 {% set allowed_langs = [] %}
 {% for item in lang_lang %}
     {% if item.status == 'y' or item.seo == selected_lang %}
@@ -46,120 +51,136 @@
     {% endif %}
 {% endfor %}
 <div class="form-container">
-    {% if error is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'warning',
-                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            });
-        </script>
+    {% if success is defined %}
+        <div class="banner-m3 banner-success-soft">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ message|default(lang.mod_video_embed.message.success.edit) }}</span>
+        </div>
     {% endif %}
-    {% if oke is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
-                    confirmButtonText: '{{ lang.mod_video_embed.list }}',
-                    confirmButtonColor: '#2e7d32'
-                }).then(function(result) {
-                    window.location.href = '{{ site.saddress }}mod_video_embed/list';
-                });
-            });
-        </script>
+    {% if error is defined and errors is not defined %}
+        <div class="banner-m3 banner-error-soft">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ message|default(lang.mod_video_embed.error) }}</span>
+        </div>
     {% endif %}
-    {% if hatalar is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                let errorHtml = '<div style="text-align: left;">';
-                {% for hata in hatalar %}
-                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+    {% if errors is defined and errors is not empty %}
+        <div class="banner-m3 banner-error-soft">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                {% for err in errors %}
+                    <div>{{ err }}</div>
                 {% endfor %}
-                errorHtml += '</div>';
-                Swal.fire({
-                    icon: 'warning',
-                    html: errorHtml,
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            });
-        </script>
+            </div>
+        </div>
     {% endif %}
 
-    <form method="POST" action="" id="videoEditForm" enctype="multipart/form-data">
+    <form
+        method="POST"
+        action=""
+        id="videoEditForm"
+        enctype="multipart/form-data"
+        data-id="{{ d.id }}"
+        data-site-address="{{ site.saddress }}"
+        data-i18n-ok="{{ lang.mod_video_embed.button.ok|e('html_attr') }}"
+        data-i18n-yes="{{ lang.mod_video_embed.button.yes|e('html_attr') }}"
+        data-i18n-no="{{ lang.mod_video_embed.button.no|e('html_attr') }}"
+        data-i18n-cancel="{{ lang.mod_video_embed.button.cancel|e('html_attr') }}"
+        data-i18n-save="{{ lang.mod_video_embed.button.save|e('html_attr') }}"
+        data-i18n-info="{{ lang.mod_video_embed.information|e('html_attr') }}"
+        data-i18n-error="{{ lang.mod_video_embed.error|e('html_attr') }}"
+        data-i18n-success="{{ lang.mod_video_embed.success|e('html_attr') }}"
+        data-i18n-image-update-confirm="{{ lang.mod_video_embed.image_update_confirm|e('html_attr') }}"
+        data-i18n-remove-image-title="{{ lang.mod_video_embed.remove_image|e('html_attr') }}"
+        data-i18n-remove-image-confirm="{{ lang.mod_video_embed.delete_confirm|e('html_attr') }}"
+        data-i18n-remove-image-success="{{ lang.mod_video_embed.remove_image_success|e('html_attr') }}"
+        data-i18n-unsupported-emoji="{{ lang.mod_video_embed.validator.unsupported_emoji|replace({'%s': lang.mod_video_embed.admin.columns.content})|e('html_attr') }}"
+        data-i18n-autofill-missing="{{ lang.mod_video_embed.autofill.missing_source|e('html_attr') }}"
+        data-i18n-autofill-loading="{{ lang.mod_video_embed.autofill.loading|e('html_attr') }}"
+        data-i18n-autofill-success="{{ lang.mod_video_embed.autofill.success|e('html_attr') }}"
+        data-i18n-autofill-error="{{ lang.mod_video_embed.autofill.error|e('html_attr') }}"
+        data-i18n-upload-text="{{ lang.mod_video_embed.wizard.label.upload_text|e('html_attr') }}"
+        data-i18n-preview-text="{{ lang.mod_video_embed.admin.columns.preview|e('html_attr') }}"
+        data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|default('video')|e('html_attr') }}"
+    >
+        <input type="hidden" name="edit" value="{{ lang.mod_video_embed.button.edit }}">
 
-        {# Card 1: Embed Code + Preview #}
+        {# Card 1: Embed Code + Live Preview + YouTube Autofill #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.embed }}</label>
-                <textarea name="embed" id="embedInput" rows="3" class="form-input" style="resize:vertical; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13px;">{{ d.embed|default('') }}</textarea>
+                <label class="form-label" for="embedInput">{{ lang.mod_video_embed.admin.columns.embed }}</label>
+                <textarea name="embed" id="embedInput" rows="3" class="form-input embed-code-input" required>{{ d.embed|default('') }}</textarea>
             </div>
-            <div id="embedPreview" class="embed-preview {% if d.embed is defined and d.embed != '' %}has-content{% endif %}">
+            <div class="autofill-row">
+                <button type="button" id="autofillButton" class="autofill-btn">
+                    <i class="bi bi-magic"></i>
+                    <span>{{ lang.mod_video_embed.autofill.button }}</span>
+                </button>
+                <span id="autofillStatus" class="autofill-status">{{ lang.mod_video_embed.autofill.hint }}</span>
+            </div>
+            <div id="embedPreview" class="embed-preview{% if d.embed is defined and d.embed != '' %} has-content{% endif %}">
                 {% if d.embed is defined and d.embed != '' %}
                     {{ d.embed|raw }}
                 {% else %}
                     <div class="embed-placeholder">
-                        <i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i>
-                        <span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span>
+                        <i class="bi bi-play-circle embed-placeholder-icon"></i>
+                        <span class="embed-placeholder-text">{{ lang.mod_video_embed.admin.columns.preview }}</span>
                     </div>
                 {% endif %}
             </div>
         </div>
 
-        {# Card 2: Agahiyên Bingehîn #}
+        {# Card 2: Basic Info #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
+                <label class="form-label" for="nameInput">{{ lang.mod_video_embed.admin.columns.name }}</label>
                 <input type="text" name="name" id="nameInput" value="{{ d.name|default('') }}" class="form-input" autocomplete="off" required>
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.original }}</label>
-                <input type="text" name="original" value="{{ d.original|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.original }}">
+                <label class="form-label" for="originalInput">{{ lang.mod_video_embed.admin.columns.original }}</label>
+                <input type="text" name="original" id="originalInput" value="{{ d.original|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.original }}">
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.sure }}</label>
-                <input type="text" name="sure" value="{{ d.duration|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.sure }}" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.tarih }}</label>
-                <input type="datetime-local" name="created_at" id="tarihInput" value="{{ d.created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
+            <div class="form-row-2col">
+                <div class="form-col form-group">
+                    <label class="form-label" for="durationInput">{{ lang.mod_video_embed.admin.columns.duration }}</label>
+                    <input type="text" name="sure" id="durationInput" value="{{ d.duration|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.duration|default('05:30') }}" required>
+                </div>
+                <div class="form-col form-group">
+                    <label class="form-label" for="dateInput">{{ lang.mod_video_embed.admin.columns.date }}</label>
+                    <input type="datetime-local" name="created_at" id="dateInput" value="{{ d.created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
+                </div>
             </div>
         </div>
 
-        {# Card 3: Mîheng #}
+        {# Card 3: Settings #}
         <div class="m3-card">
-            <div class="form-group" style="display:flex; gap: 16px;">
-                <div style="flex: 1;">
-                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.language }}</label>
+            <div class="form-row-2col">
+                <div class="form-col form-group">
+                    <label class="form-label" for="langSelect">{{ lang.mod_video_embed.admin.columns.language }}</label>
                     <div class="select-wrapper">
                         <select name="lang" id="langSelect" class="form-select" required>
                             {% for item in lang_lang %}
                                 {% if item.status == 'y' or item.seo == selected_lang %}
-                                    <option value="{{ item.seo }}" {% if selected_lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                    <option value="{{ item.seo }}"{% if selected_lang == item.seo %} selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-                <div style="flex: 1;">
-                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.status }}</label>
+                <div class="form-col form-group">
+                    <label class="form-label" for="statusSelect">{{ lang.mod_video_embed.admin.columns.status }}</label>
                     <div class="select-wrapper">
-                        <select name="status" class="form-select">
-                            <option value="y" {% if d.status is defined and d.status == 'y' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_yes }}</option>
-                            <option value="n" {% if d.status is defined and d.status == 'n' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_no }}</option>
+                        <select name="status" id="statusSelect" class="form-select">
+                            <option value="y"{% if d.status is defined and d.status == 'y' %} selected{% endif %}>{{ lang.mod_video_embed.admin.radio.publish_yes }}</option>
+                            <option value="n"{% if d.status is defined and d.status == 'n' %} selected{% endif %}>{{ lang.mod_video_embed.admin.radio.publish_no }}</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
+                <label class="form-label" for="categorySelect">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
                 <div class="select-wrapper">
                     <select
                         name="category_id"
@@ -180,43 +201,47 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="select-wrapper" style="flex: 1;">
+            <div class="form-group mb-0">
+                <label class="form-label" for="aclSelect">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
+                <div class="acl-row">
+                    <div class="select-wrapper acl-select-wrap">
                         <select name="acl_id" id="aclSelect" class="form-select">
                             <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
                             {% for item in mod_acl_acl_id %}
-                                <option value="{{ item.id }}" {% if d is defined and d.acl_id is defined and d.acl_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+                                <option value="{{ item.id }}"{% if d is defined and d.acl_id is defined and d.acl_id == item.id %} selected{% endif %}>{{ item.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <a href="{{ site.saddress }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
-                        <i class="bi bi-gear" style="font-size: 20px;"></i>
+                        <i class="bi bi-gear acl-icon"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        {# Card 4: Naverok + Wêne #}
+        {# Card 4: Content + Image #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.content }}</label>
-                <textarea name="content" id="videoContent" rows="5" class="form-input" style="min-height: 120px;">{{ d.content|default('')|raw }}</textarea>
+                <label class="form-label" for="videoContent">{{ lang.mod_video_embed.admin.columns.content }}</label>
+                <textarea name="content" id="videoContent" rows="5" class="form-input content-textarea">{{ d.content|default('')|raw }}</textarea>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
+            <div class="form-group mb-0">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.image }}</label>
-                <label class="image-upload-area" id="imageUploadArea" onclick="handleImageUpdate()">
+                <div class="image-upload-area" id="imageUploadArea">
                     {% if d is defined and d.image is defined and d.image != '' %}
-                        <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ d.image }}" class="current-image">
-                        <button type="button" class="remove-img-btn" onclick="event.preventDefault(); event.stopPropagation(); removeExistingImage('{{ d.id }}')"><i class="bi bi-trash"></i></button>
+                        <div class="current-image-wrapper">
+                            <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ d.image }}" class="current-image" alt="{{ d.name|default('Video Image') }}">
+                            <button type="button" class="remove-img-btn" id="btnRemoveExistingImage" aria-label="{{ lang.mod_video_embed.remove_image }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     {% else %}
                         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
                         <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
                     {% endif %}
-                </label>
-                <input type="file" name="image" id="resimInput" accept="image/*" style="display: none;" onchange="previewEditImage(this)">
+                </div>
+                <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
             </div>
         </div>
 
@@ -226,21 +251,21 @@
                 <i class="bi bi-search"></i> {{ lang.mod_video_embed.seo_title }}
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
+                <label class="form-label" for="seoPreviewInput">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
                 <input type="text" id="seoPreviewInput" class="form-input" value="" readonly>
-                <small style="display:block; margin-top:8px; opacity:0.68;">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
+                <small class="seo-preview-help">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
+                <label class="form-label" for="titleInput">{{ lang.mod_video_embed.admin.columns.title }}</label>
                 <input type="text" name="title" id="titleInput" value="{{ d.title|default('') }}" class="form-input" required>
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
+                <label class="form-label" for="keywordsInput">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
                 <input type="text" name="keywords" id="keywordsInput" value="{{ d.keywords|default('') }}" class="form-input" required>
             </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.aciklama }}</label>
-                <input type="text" name="description" id="aciklamaInput" value="{{ d.description|default('') }}" class="form-input" required>
+            <div class="form-group mb-0">
+                <label class="form-label" for="descriptionInput">{{ lang.mod_video_embed.admin.columns.description }}</label>
+                <input type="text" name="description" id="descriptionInput" value="{{ d.description|default('') }}" class="form-input" required>
             </div>
         </div>
 
@@ -250,16 +275,16 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video_embed/list'">
+        <button type="button" class="toolbar-item active" id="btnCancelEdit" data-href="{{ site.saddress }}mod_video_embed/list">
             <i class="bi bi-x-lg"></i>
             <span>{{ lang.mod_video_embed.button.cancel }}</span>
         </button>
 
-        <div class="toolbar-fab" onclick="document.getElementById('videoEditForm').submit()">
+        <div class="toolbar-fab" id="fabSaveEdit" role="button" aria-label="{{ lang.mod_video_embed.button.save }}">
             <i class="bi bi-check-lg"></i>
         </div>
 
-        <button class="toolbar-item active" onclick="document.getElementById('videoEditForm').submit()">
+        <button type="button" class="toolbar-item active" id="btnSaveEdit">
             <i class="bi bi-floppy-fill"></i>
             <span>{{ lang.mod_video_embed.button.save }}</span>
         </button>
@@ -267,265 +292,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const STORAGE_KEY = 'videoEmbedEditForm_{{ d.id|default(0) }}';
-    const form = document.getElementById('videoEditForm');
-    const nameInput = document.getElementById('nameInput');
-    const titleInput = document.getElementById('titleInput');
-    const keywordsInput = document.getElementById('keywordsInput');
-    const aciklamaInput = document.getElementById('aciklamaInput');
-    const contentInput = document.getElementById('videoContent');
-
-    function cleanMetaText(value) {
-        let cleaned = (value || '').toString();
-        cleaned = cleaned.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, ' ');
-        cleaned = cleaned.trim();
-
-        for (let i = 0; i <= 15; i += 1) {
-            cleaned = cleaned.replace(/  /g, ' ');
-        }
-
-        return cleaned;
-    }
-
-    // -- localStorage: Daneyên formê tomar bike --
-    function saveFormData() {
-        if (!form) return;
-        const data = {};
-        const fields = form.querySelectorAll('input[name], select[name], textarea[name]');
-        fields.forEach(function(el) {
-            if (el.type === 'file' || el.type === 'hidden') return;
-            data[el.name] = el.value;
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-
-    // -- localStorage: Daneyên parastî bar bike --
-    function restoreFormData() {
-        if (!form) return;
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return;
-        try {
-            const data = JSON.parse(saved);
-            Object.keys(data).forEach(function(name) {
-                const el = form.querySelector('[name="' + name + '"]');
-                if (!el || el.type === 'file' || el.type === 'hidden') return;
-                el.value = data[name];
-            });
-            document.getElementById('langSelect')?.dispatchEvent(new Event('change', { bubbles: true }));
-            document.getElementById('categorySelect')?.dispatchEvent(new Event('change', { bubbles: true }));
-            updateEmbedPreview();
-        } catch(e) {}
-    }
-
-    // -- localStorage: Piştî şandina serketî paqij bike --
-    {% if oke is defined %}
-        localStorage.removeItem(STORAGE_KEY);
-    {% endif %}
-
-    {% if oke is not defined %}
-        restoreFormData();
-    {% endif %}
-
-    // Her guheztinê de tomar bike
-    if (form) {
-        form.addEventListener('input', saveFormData);
-        form.addEventListener('change', saveFormData);
-    }
-
-    // -- Embed Preview --
-    const embedInput = document.getElementById('embedInput');
-    const embedPreview = document.getElementById('embedPreview');
-
-    function updateEmbedPreview() {
-        if (!embedInput || !embedPreview) return;
-        if (embedInput.value.trim()) {
-            embedPreview.innerHTML = embedInput.value;
-            embedPreview.classList.add('has-content');
-        } else {
-            embedPreview.innerHTML = '<div class="embed-placeholder"><i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i><span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span></div>';
-            embedPreview.classList.remove('has-content');
-        }
-    }
-
-    function slugifyVideoName(value) {
-        let slug = cleanMetaText(value);
-        slug = slug.replace(/\s+/g, '_');
-        slug = slug.replace(/İ/g, 'i');
-
-        for (let i = 0; i <= 5; i += 1) {
-            slug = slug.replace(/__/g, '_');
-        }
-
-        return slug || '{{ lang.mod_video_embed.js_fallback.video|e('js') }}';
-    }
-
-    function updateSeoPreview() {
-        const seoPreviewInput = document.getElementById('seoPreviewInput');
-        if (!seoPreviewInput || !nameInput) return;
-        const slug = slugifyVideoName(nameInput.value);
-        seoPreviewInput.value = '{{ site.saddress }}video/{{ d.id }}-' + slug;
-    }
-
-    if (embedInput) {
-        embedInput.addEventListener('input', function() {
-            updateEmbedPreview();
-        });
-    }
-
-    // -- Name -> SEO alanlarini otomatik doldur --
-    if (nameInput) {
-        nameInput.addEventListener('input', function() {
-            const val = this.value;
-            const cleanedVal = cleanMetaText(val);
-
-            if (titleInput && (!titleInput.value || titleInput.dataset.autofilled !== 'false')) {
-                titleInput.value = cleanedVal;
-                titleInput.dataset.autofilled = 'true';
-            }
-            if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.autofilled !== 'false')) {
-                keywordsInput.value = cleanMetaText(val).replace(/\s+/g, ',').toLowerCase().replace(/İ/g, 'i');
-                keywordsInput.dataset.autofilled = 'true';
-            }
-            if (aciklamaInput && (!aciklamaInput.value || aciklamaInput.dataset.autofilled !== 'false')) {
-                aciklamaInput.value = cleanedVal;
-                aciklamaInput.dataset.autofilled = 'true';
-            }
-            saveFormData();
-            updateSeoPreview();
-        });
-    }
-
-    // Manual edit trackers for SEO fields
-    ['titleInput', 'keywordsInput', 'aciklamaInput'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('input', () => {
-                el.dataset.autofilled = 'false';
-                saveFormData();
-            });
-        }
-    });
-
-    // -- Hidden submit button --
-    if (form) {
-        const hiddenBtn = document.createElement('input');
-        hiddenBtn.type = 'hidden';
-        hiddenBtn.name = 'edit';
-        hiddenBtn.value = '{{ lang.mod_video_embed.button.edit }}';
-        form.appendChild(hiddenBtn);
-
-        form.addEventListener('submit', function(event) {
-            const restrictedFields = [nameInput, titleInput, keywordsInput, aciklamaInput, contentInput];
-            const hasUnsupportedCharacter = restrictedFields.some(function(field) {
-                return field && /[\u{10000}-\u{10FFFF}]/u.test(field.value || '');
-            });
-
-            if (hasUnsupportedCharacter) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    text: '{{ lang.mod_video_embed.validator.unsupported_emoji|e('js')|replace({'%s': lang.mod_video_embed.admin.columns.content|e('js')}) }}',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam|e('js') }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            }
-        });
-    }
-
-    if (typeof initSelectPickerSheets === 'function') {
-        initSelectPickerSheets();
-    }
-
-    updateSeoPreview();
-});
-</script>
-
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_video_embed.css">
-<script>
-// Image Preview and Remove Functions
-async function handleImageUpdate() {
-    const hasImage = {% if d is defined and d.image is defined and d.image != '' %}true{% else %}false{% endif %};
-    const resimInput = document.getElementById('resimInput');
-
-    if (hasImage) {
-        const result = await Swal.fire({
-            title: '{{ lang.mod_video_embed.information }}',
-            text: '{{ lang.mod_video_embed.image_update_confirm }}',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ba1a1a',
-            cancelButtonColor: '#6e7881',
-            confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
-            cancelButtonText: '{{ lang.mod_video_embed.button.cancel }}'
-        });
-
-        if (result.isConfirmed) {
-            resimInput.click();
-        }
-    } else {
-        resimInput.click();
-    }
-}
-
-function previewEditImage(input) {
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const area = document.getElementById('imageUploadArea');
-            area.innerHTML = `
-                <img id="editImgPreview" src="${e.target.result}" class="current-image">
-                <button type="button" class="remove-img-btn" onclick="event.preventDefault(); clearSelectedImage()"><i class="bi bi-x-lg"></i></button>
-            `;
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function clearSelectedImage() {
-    const input = document.getElementById('resimInput');
-    input.value = '';
-    const area = document.getElementById('imageUploadArea');
-    area.innerHTML = `
-        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
-    `;
-}
-
-function removeExistingImage(id) {
-    Swal.fire({
-        title: '{{ lang.mod_video_embed.remove_image }}',
-        text: '{{ lang.mod_video_embed.context_menu.delete_confirm }}',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#ba1a1a',
-        cancelButtonColor: '#6e7881',
-        confirmButtonText: '{{ lang.mod_video_embed.button.evet }}',
-        cancelButtonText: '{{ lang.mod_video_embed.button.hayir }}'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const formData = new URLSearchParams();
-            formData.append('id', id);
-
-            fetch('{{ site.saddress }}mod_video_embed/image_remove_image', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: formData
-            })
-            .then(r => r.text())
-            .then(data => {
-                if (data.trim() === 'Oke') {
-                    Swal.fire('{{ lang.mod_video_embed.oke }}', '{{ lang.mod_video_embed.remove_image_oke }}', 'success');
-                    clearSelectedImage();
-                } else {
-                    Swal.fire('{{ lang.mod_video_embed.hata }}', data, 'error');
-                }
-            });
-        }
-    });
-}
-</script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.0"></script>
 {% endblock %}

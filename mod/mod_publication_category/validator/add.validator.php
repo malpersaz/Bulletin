@@ -3,7 +3,7 @@ class add_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
         // Load the validator library.
@@ -15,72 +15,72 @@ class add_validator
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['language'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['language'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // parent_id Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'parent_id',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['parent_id'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['parent_id'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // seo Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'seo',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['seo'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['seo'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['title'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['title'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['keywords'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['keywords'])
             ]
         );
         if ($this->_check() === True) {
@@ -88,12 +88,12 @@ class add_validator
         }
 
         // description Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['description'])
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['required'], $this->lang['mod_publication_category']['admin']['columns']['description'])
             ]
         );
         if ($this->_check() === True) {
@@ -102,60 +102,60 @@ class add_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // seo Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'seo',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['seo'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['seo'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['title'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['title'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['keywords'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['keywords'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -163,15 +163,15 @@ class add_validator
         }
 
         // description Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['description'], '1', '255')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['length'], $this->lang['mod_publication_category']['admin']['columns']['description'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -181,12 +181,12 @@ class add_validator
 
         #Check inarray
         // root in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'root',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_publication_category']['validator']['inarray'], $this->lang['mod_publication_category']['admin']['columns']['root'], 'y,n')
+                'message' => sprintf($this->lang['mod_publication_category']['validator']['inarray'], $this->lang['mod_publication_category']['admin']['columns']['root'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
@@ -208,10 +208,10 @@ class add_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

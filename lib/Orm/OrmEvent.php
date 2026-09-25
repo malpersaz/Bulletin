@@ -1,10 +1,7 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: kral
- * Date: 4/18/11
- * Time: 8:59 PM
- * To change this template use File | Settings | File Templates.
+ * AKM Business Content Management System
+ * Orm Event Handler
  */
 
 class OrmEvent

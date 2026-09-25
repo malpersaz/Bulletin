@@ -10,6 +10,7 @@ class mod_video_model extends ORM
     public $duration;
     public $created_at;
     public $status;
+    public $slider;
     public $description;
     public $image;
     public $flv;

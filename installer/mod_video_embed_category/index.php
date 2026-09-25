@@ -2,16 +2,16 @@
 
 class mod_video_embed_category extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_video_embed_category';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_video_embed_category'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit', 'delete', 'list', 'moderate_edit', 'moderate_delete'
         );
     }
@@ -24,7 +24,7 @@ class mod_video_embed_category extends installerbase implements installerbaseint
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         if ($this->installer_seed_category_bootstrap('mod_video_embed_category', 'videos') === FALSE) {
@@ -38,7 +38,7 @@ class mod_video_embed_category extends installerbase implements installerbaseint
     {
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

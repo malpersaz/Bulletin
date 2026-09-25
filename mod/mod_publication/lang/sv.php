@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Swedish Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -26,6 +26,8 @@ $lang['mod_publication'] = [
     'information' => 'Information!',
     'success' => 'Operationen lyckades!',
     'error' => 'Ett fel uppstod!',
+    'error_occurred' => 'Ett Fel Uppstod!',
+    'wizard_loading' => 'Guiden laddas...',
     'fatal_error' => 'Fatalt fel uppstod!',
     'remove_image' => 'Är du säker på att du vill ta bort den här bilden?',
     'remove_image_success' => 'Bilden togs bort',
@@ -102,15 +104,15 @@ $lang['mod_publication'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Visar {from} till {to} av {total} resultat.',
-        1 => 'Sida',
-        2 => 'Sidantal',
-        3 => 'Laddar data, vänta...',
-        4 => 'Ingen data hittades',
-        5 => 'Anslutningsfel',
-        6 => 'Sök',
-        7 => 'Välj minst en rad',
-        8 => 'Välj endast en rad',
+        'showing_results' => 'Visar {from} till {to} av {total} resultat.',
+        'page' => 'Sida',
+        'page_count' => 'Sidantal',
+        'loading' => 'Laddar data, vänta...',
+        'no_data' => 'Ingen data hittades',
+        'connection_error' => 'Anslutningsfel',
+        'search' => 'Sök',
+        'select_at_least_one' => 'Välj minst en rad',
+        'select_only_one' => 'Välj endast en rad',
         'approve' => [
             'key' => 'Publicera',
             'value' => 'Är du säker på att du vill publicera den här publikationen?',
@@ -132,11 +134,11 @@ $lang['mod_publication'] = [
         'title_length' => 'Du måste ange en titel på minst 1 och högst 70 tecken.',
         'title_exists' => 'Denna titel finns redan, vänligen ändra den',
         'title_unique' => 'Din titel är unik',
-        'deck_length' => 'Vänligen ange en introduktionstext på minst 110 tecken och högst 280 tecken.',
+        'deck_length' => 'Vänligen ange en introduktionstext på mellan 90 och 120 tecken.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Roller för publikationshantering',
         'add' => 'Kan lägga till publikationer',
         'edit' => 'Kan redigera publikationer',
@@ -227,7 +229,6 @@ $lang['mod_publication'] = [
         'default_sort' => 'Nyaste',
         'default_lang' => 'SV',
         'date_locale' => 'sv-SE',
-        'all' => 'Alla',
         'filter_cleared' => 'Filter rensade och återställda till standardvärden.',
         'filter_applied' => 'Filter tillämpade',
         'sort_label' => 'Sortering',
@@ -314,7 +315,7 @@ $lang['mod_publication'] = [
             'category' => 'Välj kategori som denna publikation tillhör.',
             'title' => 'Ange en engagerande titel. (Min: 1, Max: 70)',
             'date' => 'Datum och tid för publicering.',
-            'intro' => 'Skriv en kort och koncis sammanfattning. (110 - 280 Tecken)',
+            'intro' => 'Skriv en kort och koncis sammanfattning. (90 - 120 Tecken)',
             'publication' => 'Rich text editor.',
             'image' => 'Ladda upp en omslagsbild.',
             'finish' => 'Slutkontroller och publicering.',
@@ -328,18 +329,6 @@ $lang['mod_publication'] = [
             'category_select' => 'Välj kategori...',
             'change_image' => 'Ändra bild',
             'editor_placeholder' => 'Börja skriva din publikation här...',
-        ],
-'image' => [
-            'drop_title' => 'Dra en bild hit',
-            'drop_description' => 'Ladda upp, klistra in eller släpp en bild.',
-            'upload_link' => 'ladda upp en fil',
-            'link_separator' => 'ELLER',
-            'link_placeholder' => 'Klistra in bildlänk',
-            'link_action' => 'Importera',
-            'hint_loading' => 'Importerar bild...',
-            'hint_invalid_type' => 'Endast bildfiler stöds här.',
-            'hint_no_drop_data' => 'Ingen användbar bild hittades i det släppta innehållet.',
-            'hint_remote_failed' => 'Bilden kunde inte importeras från den källan.',
         ],
         'messages' => [
             'success_sim' => 'Publikation skapad! (Simulering)',
@@ -384,7 +373,6 @@ $lang['mod_publication'] = [
         'gallery_alert' => "GALLERIHANTERING:\nID: %s\nTitel: %s\nÖppnar bildgalleri för publikation.",
         'files_alert' => "FILHANTERING:\nID: %s\nTitel: %s\nÖppnar filuppladdningsskärm för publikation.",
         'status_alert' => "STATUS UPPDATERAD:\n%s",
-        'delete_confirm' => 'Ja, Ta bort!',
         'delete_success' => 'Publikation borttagen!',
         'video_unavailable' => 'Videohantering är inte tillgänglig för publikationer ännu.',
     ],
@@ -400,7 +388,7 @@ $lang['mod_publication'] = [
             "Veckans tekniska sammanfattning: Vad hände?",
             "Författarförbundet väljer ny styrelse",
             "Anmälningar till fotoworkshop har börjat",
-            "Rojname mobilapp uppdaterad"
+            "AKM ARTIST CMS mobilapp uppdaterad"
         ],
         'categories' => ["Agenda", "Kultur & Konst", "Teknik", "Media", "Livet"],
         'authors' => [],

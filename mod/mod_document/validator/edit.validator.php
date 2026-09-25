@@ -17,13 +17,15 @@ class edit_validator
         // Required Fields
         $required_fields = ['lang', 'name', 'seo', 'title', 'keywords', 'description'];
         foreach ($required_fields as $field) {
-            $this->valid->ekle([
+            $this->valid->add([
                 'name' => $field,
                 'func' => 'required',
                 'arg' => '',
                 'message' => sprintf($this->lang['mod_document']['validator']['required'], $this->lang['mod_document']['admin']['columns'][$field])
             ]);
-            if ($this->_check()) return true;
+            if ($this->_check()) {
+                return true;
+            }
         }
 
         // Length Checks
@@ -35,23 +37,27 @@ class edit_validator
             'description' => ['min' => 1, 'max' => 500]
         ];
         foreach ($length_fields as $field => $args) {
-            $this->valid->ekle([
+            $this->valid->add([
                 'name' => $field,
                 'func' => 'length',
                 'arg' => $args,
                 'message' => sprintf($this->lang['mod_document']['validator']['length'], $this->lang['mod_document']['admin']['columns'][$field], $args['min'], $args['max'])
             ]);
-            if ($this->_check()) return true;
+            if ($this->_check()) {
+                return true;
+            }
         }
 
         // Status check
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'status',
             'func' => 'array',
             'arg' => ['y', 'n'],
             'message' => sprintf($this->lang['mod_document']['validator']['required'], $this->lang['mod_document']['admin']['columns']['status'])
         ]);
-        if ($this->_check()) return true;
+        if ($this->_check()) {
+            return true;
+        }
 
         // Unique SEO Check (excluding current ID)
         $this->mod_document_model = Load::model('mod_document');

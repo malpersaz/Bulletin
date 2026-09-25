@@ -14,11 +14,10 @@ $lang['mod_slider']= [
   'edit' => 'Redigera Bildspel',
   'list' => 'Bildspelshantering',
   'information' => 'Information!',
-  'oke' => 'Operationen Lyckades!',
-  'hata' => 'Ett Fel Uppstod!',
-  'error' => 'Allvarligt Fel Uppstod!',
+  'success' => 'Operationen Lyckades!',
+  'error' => 'Ett Fel Uppstod!',
   'remove_image' => 'Är du säker på att du vill ta bort den här bilden?',
-  'remove_image_oke' => 'Bilden har tagits bort',
+  'remove_image_success' => 'Bilden har tagits bort',
   'choose_wish' => 'Välj om du vill',
   'remove_record' => 'Är du säker på att du vill radera denna post?',
   'messages' => [
@@ -26,7 +25,7 @@ $lang['mod_slider']= [
     'success_delete' => 'Posten raderades framgångsrikt!',
   ],
   'message' => [
-    'oke' => 
+    'success' => 
      [
       'add' => 'Bildspel Tillagt!',
       'edit' => 'Bildspel Redigerat!',
@@ -54,25 +53,22 @@ $lang['mod_slider']= [
     'no' => 'Nej',
     'add' => 'Lägg till',
     'edit' => 'Redigera',
-    'yenile' => 'Uppdatera',
+    'refresh' => 'Uppdatera',
     'delete' => 'Radera',
     'gallery' => 'Bildgalleri',
-    'vazgec' => 'Avbryt',
-    'kaldir' => 'Ta bort',
-    'evet' => 'Ja',
-    'hayir' => 'Nej',
+    'remove' => 'Ta bort',
   ],
   'grid' => 
    [
-    0 => 'Visar {from} till {to} av {total} resultat.',
-    1 => 'Sida',
-    2 => 'Sidantal',
-    3 => 'Data laddas, vänligen vänta...',
-    4 => 'Ingen data hittades',
-    5 => 'Anslutningsfel',
-    6 => 'Sök',
-    7 => 'Vänligen välj minst en rad',
-    8 => 'Vänligen välj endast en rad',
+    'showing_results' => 'Visar {from} till {to} av {total} resultat.',
+    'page' => 'Sida',
+    'page_count' => 'Sidantal',
+    'loading' => 'Data laddas, vänligen vänta...',
+    'no_data' => 'Ingen data hittades',
+    'connection_error' => 'Anslutningsfel',
+    'search' => 'Sök',
+    'select_at_least_one' => 'Vänligen välj minst en rad',
+    'select_only_one' => 'Vänligen välj endast en rad',
     'publish' => 
      [
       'key' => 'Publicera',
@@ -92,9 +88,8 @@ $lang['mod_slider']= [
     'unique' => '%s som du angav är redan registrerad. Vänligen ange en annan %s!',
     'inarray' => 'Fältet %s kan endast ta värdena \' %s \'',
   ],
-  'roll' => 
-   [
-    'ad' => 'Roller för Bildspelshantering',
+  'role' => [
+    'name' => 'Roller för Bildspelshantering',
     'add' => 'Kan Lägga till Bildspel',
     'edit' => 'Kan Redigera Bildspel',
     'delete' => 'Kan Radera Bildspel',
@@ -158,5 +153,6 @@ $lang['mod_slider']= [
     'publication' => 'Publikation',
     'content' => 'Innehåll',
     'product' => 'Produkt',
+    'video' => 'Video',
   ],
 ];

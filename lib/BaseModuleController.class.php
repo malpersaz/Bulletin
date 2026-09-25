@@ -24,6 +24,7 @@ abstract class BaseModuleController
     protected $model_name;
     protected $has_gallery = false;
     protected $has_files = false;
+    protected $has_faq = false;
 
     // Flexible image fields configuration
     protected $image_fields = [
@@ -166,7 +167,8 @@ abstract class BaseModuleController
 
 
 
-    public $tema;
+    public $theme;
+    public $view;
     public $db;
     public $site;
     public $lang;
@@ -177,6 +179,16 @@ abstract class BaseModuleController
     public $model;
     public $options;
     public $selected;
+
+    public function __get($name)
+    {
+        return null;
+    }
+
+    public function __set($name, $value)
+    {
+        $this->$name = $value;
+    }
     public function __construct($module_name = null)
     {
         // Auto-detect module name if not provided
@@ -190,13 +202,15 @@ abstract class BaseModuleController
         $this->model_name = $this->module_name;
 
         // Common initialization that every module does
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
+        $this->view = $this->theme;
         $this->db = Load::lib('Database');
-        $this->site = Kayit::getir('site_config');
+        $this->site = Registry::get('site_config');
         $this->lang = Load::lang($this->module_name);
-        $this->tema->lang($this->lang);
+        $this->view->lang($this->lang);
         $this->session = Load::lib('Session');
         $this->user = Load::model('mod_user.user');
+        $this->ensureBridgeIntegrations();
     }
 
     /**
@@ -231,10 +245,8 @@ abstract class BaseModuleController
         // If field name provided and exists in image_fields config, use that
         if ($field_name && !empty($this->image_fields)) {
             foreach ($this->image_fields as $field_config) {
-                if (isset($field_config['name']) && $field_config['name'] === $field_name) {
-                    if (isset($field_config['sizes'])) {
-                        return $field_config['sizes'];
-                    }
+                if (isset($field_config['name']) && $field_config['name'] === $field_name && isset($field_config['sizes'])) {
+                    return $field_config['sizes'];
                 }
             }
         }
@@ -262,10 +274,13 @@ abstract class BaseModuleController
     {
         $data = [];
 
-        // Load simple table data - just SELECT * FROM table ORDER BY id DESC (or seo DESC for lang)
+        // Load simple table data - just SELECT * FROM table ORDER BY id DESC (or status='y' for lang)
         foreach ($this->need_simple_data as $table => $variable_name) {
-            $order_field = ($table === 'lang') ? 'seo DESC' : 'id DESC';
-            $this->db->fetch_array("SELECT * FROM `{$table}` ORDER BY {$order_field}");
+            if ($table === 'lang') {
+                $this->db->fetch_array("SELECT * FROM `lang` WHERE status='y' ORDER BY is_default DESC, seo ASC");
+            } else {
+                $this->db->fetch_array("SELECT * FROM `{$table}` ORDER BY id DESC");
+            }
             $data[$variable_name] = $this->db->getResult()->toArray();
         }
 
@@ -289,12 +304,23 @@ abstract class BaseModuleController
     }
 
     /**
+     * Safely get role error message for a given action
+     */
+    protected function getRoleErrorMessage($action)
+    {
+        if (isset($this->lang[$this->module_name]['role_errors'][$action])) {
+            return $this->lang[$this->module_name]['role_errors'][$action];
+        }
+        return 'Permission Denied';
+    }
+
+    /**
      * Common add functionality
      */
     public function add()
     {
         // Check permission
-        if ($this->user->hasPermission($this->module_name, 'add', $this->lang[$this->module_name]['role_errors']['add'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'add', $this->getRoleErrorMessage('add'), 1) === false) {
             return false;
         }
 
@@ -303,14 +329,14 @@ abstract class BaseModuleController
         }
 
         Run::import('management', '_index');
-        $this->site['title'] = $this->lang[$this->module_name]['add'];
-        $this->tema->tpl($this->module_name . '/add');
-        $this->tema->veri('site', $this->site);
+        $this->site['title'] = isset($this->lang[$this->module_name]['add']) ? $this->lang[$this->module_name]['add'] : $this->module_name;
+        $this->view->tpl($this->module_name . '/add');
+        $this->view->set('site', $this->site);
 
         // Set additional form data
         $form_data = $this->getFormData();
         foreach ($form_data as $key => $value) {
-            $this->tema->veri($key, $value);
+            $this->view->set($key, $value);
         }
     }
 
@@ -320,7 +346,7 @@ abstract class BaseModuleController
     public function edit($id = null)
     {
         // Check permission
-        if ($this->user->hasPermission($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'edit', $this->getRoleErrorMessage('edit'), 1) === false) {
             return false;
         }
 
@@ -328,16 +354,17 @@ abstract class BaseModuleController
         $id = Req::Url_Clear($id);
 
         if ($model->exists_id($id) === false) {
-            $this->_error($this->lang[$this->module_name]['errors']['record']);
+            $errorMsg = isset($this->lang[$this->module_name]['errors']['record']) ? $this->lang[$this->module_name]['errors']['record'] : 'Record not found';
+            $this->_error($errorMsg);
             Run::import('management', '_index');
-            $this->tema->tpl($this->module_name . '/edit');
+            $this->view->tpl($this->module_name . '/edit');
             return;
         }
 
         $d = $model->getResultOne()->toArray();
 
         // Check moderation permission
-        if ($this->user->checkPermission($this->module_name, 'moderate_edit', $d['user_id'], $this->lang[$this->module_name]['role_errors']['moderate_edit'], 1) === false) {
+        if ($this->user->checkPermission($this->module_name, 'moderate_edit', $d['user_id'], $this->getRoleErrorMessage('moderate_edit'), 1) === false) {
             return false;
         }
 
@@ -346,15 +373,15 @@ abstract class BaseModuleController
         }
 
         Run::import('management', '_index');
-        $this->site['title'] = $this->lang[$this->module_name]['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl($this->module_name . '/edit');
+        $this->site['title'] = isset($this->lang[$this->module_name]['edit']) ? $this->lang[$this->module_name]['edit'] : $this->module_name;
+        $this->view->set('site', $this->site);
+        $this->view->set('d', $d);
+        $this->view->tpl($this->module_name . '/edit');
 
         // Set additional form data
         $form_data = $this->getFormData();
         foreach ($form_data as $key => $value) {
-            $this->tema->veri($key, $value);
+            $this->view->set($key, $value);
         }
     }
 
@@ -364,19 +391,81 @@ abstract class BaseModuleController
     public function list()
     {
         // Check permission
-        if ($this->user->hasPermission($this->module_name, 'list', $this->lang[$this->module_name]['role_errors']['list'], 1) === false) {
+        if ($this->user->hasPermission($this->module_name, 'list', $this->getRoleErrorMessage('list'), 1) === false) {
             return false;
         }
 
         Run::import('management', '_index');
-        $this->site['title'] = $this->lang[$this->module_name]['list'];
-        $this->tema->tpl($this->module_name . '/list');
-        $this->tema->veri('site', $this->site);
+        $this->site['title'] = isset($this->lang[$this->module_name]['list']) ? $this->lang[$this->module_name]['list'] : (isset($this->lang[$this->module_name]['module_title']) ? $this->lang[$this->module_name]['module_title'] : $this->module_name);
+        $this->view->tpl($this->module_name . '/list');
+        $this->view->set('site', $this->site);
+
+        // Fetch total and draft statistics if requested by list templates (like mod_content, mod_news, mod_publication)
+        $has_status = false;
+        $has_user_id = false;
+        $adapter = $this->db->getAdapterType();
+        if ($adapter !== null) {
+            $adapter_upper = strtoupper($adapter);
+            if (strpos($adapter_upper, 'SQLITE') !== false) {
+                $cols = $this->db->fetch_array("PRAGMA table_info(`{$this->model_name}`)")->toArray();
+                if (is_array($cols)) {
+                    foreach ($cols as $col) {
+                        if (isset($col['name'])) {
+                            if ($col['name'] === 'status') {
+                                $has_status = true;
+                            }
+                            if ($col['name'] === 'user_id') {
+                                $has_user_id = true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                $cols = $this->db->fetch_array("SHOW COLUMNS FROM `{$this->model_name}`")->toArray();
+                if (is_array($cols)) {
+                    foreach ($cols as $col) {
+                        if (isset($col['Field'])) {
+                            if ($col['Field'] === 'status') {
+                                $has_status = true;
+                            }
+                            if ($col['Field'] === 'user_id') {
+                                $has_user_id = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $total_count = 0;
+        $draft_count = 0;
+
+        $model_class = Load::modelfile($this->model_name);
+        $total_model = new $model_class();
+        if ($has_user_id && Role::hasPermission($this->module_name, 'moderate_edit') !== TRUE && Role::hasPermission($this->module_name, 'moderate_delete') !== TRUE) {
+            $total_model->addWhere("user_id='" . $this->session->get('id') . "'");
+        }
+        $total_count = $total_model->getCount();
+
+        $draft_model = new $model_class();
+        if ($has_status) {
+            $draft_model->addWhere("status='n'");
+        }
+        if ($has_user_id && Role::hasPermission($this->module_name, 'moderate_edit') !== TRUE && Role::hasPermission($this->module_name, 'moderate_delete') !== TRUE) {
+            $draft_model->addWhere("user_id='" . $this->session->get('id') . "'");
+        }
+        $draft_count = $has_status ? $draft_model->getCount() : 0;
+        $published_count = max(0, $total_count - $draft_count);
+
+        $suffix = str_replace('mod_', '', $this->module_name);
+        $this->view->set('total_' . $suffix, $total_count);
+        $this->view->set('published_' . $suffix, $published_count);
+        $this->view->set('draft_' . $suffix, $draft_count);
 
         // Set additional form data for the integrated wizard
         $form_data = $this->getFormData();
         foreach ($form_data as $key => $value) {
-            $this->tema->veri($key, $value);
+            $this->view->set($key, $value);
         }
     }
 
@@ -470,6 +559,433 @@ abstract class BaseModuleController
     }
 
     /**
+     * Handle AJAX image upload from administrative lists/cards
+     * 
+     * @return void
+     */
+    public function ajax_image_upload()
+    {
+        if (empty($this->image_fields)) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => 'This module does not have an image feature.']);
+            return;
+        }
+
+        // Check edit permission
+        if ($this->user->hasPermission($this->module_name, 'edit', $this->lang[$this->module_name]['role_errors']['edit'], 1) === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang[$this->module_name]['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang[$this->module_name]['errors']['record']]);
+            return;
+        }
+
+        $model = Load::model($this->model_name);
+        $model->where_id($id)->gRo();
+        if ($model->getSize() === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang[$this->module_name]['errors']['record']]);
+            return;
+        }
+        $model->sync();
+
+        // Check moderation permission if editing another user's record
+        if ($this->user->checkPermission($this->module_name, 'moderate_edit', $model->user_id, $this->lang[$this->module_name]['role_errors']['moderate_edit'], 1) === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang[$this->module_name]['role_errors']['moderate_edit']]);
+            return;
+        }
+
+        // Detect the active image field name
+        $field_name = 'image';
+        foreach ($this->image_fields as $field_config) {
+            if (isset($_FILES[$field_config['name']])) {
+                $field_name = $field_config['name'];
+                break;
+            }
+        }
+
+        if (isset($_FILES[$field_name]['name']) && $_FILES[$field_name]['name'] != '') {
+            $image = Load::mod('image');
+            $image->mod = $this->module_name;
+            $image->name = $field_name;
+            $options = $this->getImageOptions($field_name);
+
+            try {
+                if ($image->_resize($options)) {
+                    $new_image_url = $image->url;
+                    
+                    // If an old image exists, clean it up
+                    if ($model->$field_name != '') {
+                        $image->mod = $this->module_name;
+                        $image->url = $model->$field_name;
+                        $image->_delete_files($options);
+                    }
+
+                    $update_model = Load::model($this->model_name);
+                    $update_model->id = $id;
+                    $update_model->updated_at = date('Y-m-d H:i:s');
+                    $update_model->$field_name = $new_image_url;
+
+                    if ($update_model->update('id')) {
+                        if (ob_get_level() > 0) {
+                            ob_clean();
+                        }
+                        header('Content-Type: application/json; charset=utf-8');
+                        echo json_encode([
+                            'status' => 'success',
+                            'message' => $this->lang[$this->module_name]['message']['success']['edit'] ?? 'Image updated successfully.',
+                            'url' => $this->site['iaddress'] . $this->module_name . '/' . $new_image_url . '?v=' . time(),
+                            'image' => $new_image_url
+                        ]);
+                    } else {
+                        if (ob_get_level() > 0) {
+                            ob_clean();
+                        }
+                        header('Content-Type: application/json; charset=utf-8');
+                        echo json_encode([
+                            'status' => 'error',
+                            'message' => $this->lang[$this->module_name]['message']['error']['edit'] ?? 'Image could not be updated.'
+                        ]);
+                    }
+                } else {
+                    if (ob_get_level() > 0) {
+                        ob_clean();
+                    }
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode(['status' => 'error', 'message' => $image->error]);
+                }
+            } catch (Exception $e) {
+                if (ob_get_level() > 0) {
+                    ob_clean();
+                }
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            }
+        } else {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => 'No file uploaded']);
+        }
+    }
+
+    /**
+     * Ensure bridge integrations (gallery, files, FAQ) are registered in bridge tables
+     */
+    public function ensureBridgeIntegrations()
+    {
+        if ($this->has_gallery) {
+            $this->ensureBridgeModule('mod_gallery_mod', 'Galleries', 'id', 'name');
+        }
+        if ($this->has_files) {
+            $this->ensureBridgeModule('mod_attachment_mod', 'Files', 'id', 'name');
+        }
+        if ($this->has_faq) {
+            $this->ensureBridgeModule('mod_faq_mod', 'FAQs', 'id', 'name');
+        }
+    }
+
+    /**
+     * Ensure a single bridge module registration exists
+     */
+    protected function ensureBridgeModule($bridgeTable, $suffix, $modKey = 'id', $modValue = 'name')
+    {
+        try {
+            $safeMod = addslashes($this->module_name);
+            $safeBridgeTable = addslashes($bridgeTable);
+            $checkSql = "SELECT id FROM `{$safeBridgeTable}` WHERE `mod_name` = '{$safeMod}' LIMIT 1";
+            $this->db->fetch_array($checkSql);
+            if ($this->db->getSize() === 0) {
+                $rawName = str_replace('mod_', '', $this->module_name);
+                $displayName = ucfirst($rawName) . ' ' . $suffix;
+                $safeName = addslashes($displayName);
+                $safeKey = addslashes($modKey);
+                $safeValue = addslashes($modValue);
+                $userId = intval($this->session->get('id')) > 0 ? intval($this->session->get('id')) : 1;
+                $insertSql = "INSERT INTO `{$safeBridgeTable}` (`name`, `mod_name`, `mod_key`, `mod_value`, `user_id`) VALUES ('{$safeName}', '{$safeMod}', '{$safeKey}', '{$safeValue}', {$userId})";
+                $this->db->query($insertSql);
+            }
+        } catch (Exception $e) {
+            // Silently ignore if bridge table is not created yet
+        }
+    }
+
+    /**
+     * Retrieve available galleries/images for relation modal pickers.
+     * 
+     * @return void
+     */
+    public function ajax_get_images()
+    {
+        if ($this->user->hasPermission($this->module_name, 'edit', '', 1) === false && Role::hasPermission($this->module_name, 'edit') === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            return;
+        }
+
+        $this->ensureBridgeIntegrations();
+
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : (Req::is_Get('q') ? Req::Get_Safe('q') : null);
+        $model = Load::model('mod_gallery_mod');
+        $model->select('id, name');
+        $model->where("mod_name != ''");
+        if ($q_param) {
+            $model->addWhere("name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => intval($item['id']),
+                    'name' => $item['name'] ?? '',
+                    'text' => $item['name'] ?? ''
+                ];
+            }
+        }
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($results);
+    }
+
+    /**
+     * Alias for ajax_get_images for compatibility with gallery picker scripts.
+     * 
+     * @return void
+     */
+    public function ajax_get_galleries()
+    {
+        $this->ajax_get_images();
+    }
+
+    /**
+     * Retrieve available attachment files for relation modal pickers.
+     * 
+     * @return void
+     */
+    public function ajax_get_files()
+    {
+        if ($this->user->hasPermission($this->module_name, 'edit', '', 1) === false && Role::hasPermission($this->module_name, 'edit') === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            return;
+        }
+
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : (Req::is_Get('q') ? Req::Get_Safe('q') : null);
+        $model = Load::model('mod_attachment');
+        $model->select('id, original_name as name');
+        if ($q_param) {
+            $model->addWhere("original_name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => intval($item['id']),
+                    'name' => $item['name'] ?? '',
+                    'text' => $item['name'] ?? ''
+                ];
+            }
+        }
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($results);
+    }
+
+    /**
+     * Retrieve current media relations (file_id, gallery_id, video) for a record.
+     * 
+     * @return void
+     */
+    public function ajax_get_current_media()
+    {
+        $id = intval(Req::Post_Safe('id') ?: Req::Get_Safe('id'));
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status'     => 'error',
+                'file_id'    => 0,
+                'gallery_id' => 0,
+                'video'      => []
+            ]);
+            return;
+        }
+
+        $model = Load::model($this->model_name);
+        $model->where_id($id)->gRo();
+        if ($model->getSize() === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status'     => 'error',
+                'file_id'    => 0,
+                'gallery_id' => 0,
+                'video'      => []
+            ]);
+            return;
+        }
+        $model->sync();
+
+        $video = [];
+        if (!empty($model->video)) {
+            $unserialized = @unserialize($model->video);
+            $video = is_array($unserialized) ? $unserialized : [];
+        }
+
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status'     => 'success',
+            'file_id'    => intval($model->file_id ?? 0),
+            'gallery_id' => intval($model->gallery_id ?? 0),
+            'video'      => $video
+        ]);
+    }
+
+    /**
+     * Update relation values (file_id, gallery_id, or video) for a record.
+     * 
+     * @return void
+     */
+    public function ajax_update_relation()
+    {
+        $editError = $this->lang[$this->module_name]['role_errors']['edit'] ?? 'You do not have permission to edit.';
+        if ($this->user->hasPermission($this->module_name, 'edit', $editError, 1) === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $editError]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        $type = Req::Post_Safe('type');
+        $value = Req::Post('value');
+
+        $recordNotFound = $this->lang[$this->module_name]['errors']['record'] ?? ($this->lang[$this->module_name]['ajax']['record_not_found'] ?? 'Record not found.');
+
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $recordNotFound]);
+            return;
+        }
+
+        $model = Load::model($this->model_name);
+        $model->where_id($id)->gRo();
+        if ($model->getSize() === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $recordNotFound]);
+            return;
+        }
+        $model->sync();
+
+        if ($type === 'video') {
+            $video_data = $model->video;
+            $existed = (is_string($video_data) && !empty($video_data)) ? @unserialize($video_data) : [];
+            if (!is_array($existed)) {
+                $existed = [];
+            }
+
+            $value = trim((string) $value);
+            if ($value === "0" || $value === "") {
+                $existed = [];
+            } else {
+                if (in_array($value, $existed, true)) {
+                    $existed = array_values(array_diff($existed, [$value]));
+                } else {
+                    $existed[] = $value;
+                }
+            }
+            $model->video = !empty($existed) ? serialize(array_values(array_unique($existed))) : '';
+        } elseif ($type === 'gallery' || $type === 'files') {
+            $val_int = intval($value);
+            if ($type === 'gallery') {
+                $model->gallery_id = $val_int;
+            } else {
+                $model->file_id = $val_int;
+            }
+        } else {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode(['status' => 'error', 'message' => $this->lang[$this->module_name]['ajax']['unknown_type'] ?? 'Unknown relation type.']);
+            return;
+        }
+
+        $model->id = $id;
+        if ($model->update('id')) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status'  => 'success',
+                'message' => $this->lang[$this->module_name]['ajax']['relation_updated'] ?? 'Relation updated successfully.'
+            ]);
+        } else {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status'  => 'error',
+                'message' => $this->lang[$this->module_name]['ajax']['database_error'] ?? 'Database update error.'
+            ]);
+        }
+    }
+
+
+    /**
      * Process field data for add/edit operations
      * By default, all POST fields are processed as 'safe'
      * Only fields in $this->special_fields get special processing
@@ -488,33 +1004,21 @@ abstract class BaseModuleController
                 $config = $this->special_fields[$field];
                 switch ($config['type']) {
                     case 'html':
-                        if (property_exists($model, $field)) {
-                            $model->$field = Req::Post($field);
-                            $model->$field = Helper::clear_html($model->$field);
-                        }
+                        $model->$field = Req::Post($field);
+                        $model->$field = Helper::clear_html($model->$field);
                         break;
                     case 'now':
-                        if (property_exists($model, $field)) {
-                            $model->$field = NOW;
-                        }
+                        $model->$field = NOW;
                         break;
                     case 'user_id':
-                        if (property_exists($model, $field)) {
-                            $model->$field = $this->session->get('id');
-                        }
+                        $model->$field = $this->session->get('id');
                         break;
                     case 'custom':
                         if (isset($config['callback'])) {
                             if (is_callable($config['callback'])) {
-                                $val = $config['callback']();
-                                if (property_exists($model, $field)) {
-                                    $model->$field = $val;
-                                }
+                                $model->$field = $config['callback']();
                             } elseif (method_exists($this, $config['callback'])) {
-                                $val = $this->{$config['callback']}();
-                                if (property_exists($model, $field)) {
-                                    $model->$field = $val;
-                                }
+                                $model->$field = $this->{$config['callback']}();
                             }
                         }
                         // Skip setting field - let callbacks handle it
@@ -523,25 +1027,29 @@ abstract class BaseModuleController
                         // Skip this field completely - let callbacks handle it
                         continue 2;
                     default:
-                        if (property_exists($model, $field)) {
-                            $model->$field = Req::Post_Safe($field);
-                        }
+                        $model->$field = Req::Post_Safe($field);
                 }
             } else {
                 // Default: everything is 'safe'
-                if (property_exists($model, $field)) {
-                    $model->$field = Req::Post_Safe($field);
+                $val = Req::Post_Safe($field);
+                if ($field === 'lang' && is_string($val)) {
+                    $val = strtolower($val);
                 }
+                $model->$field = $val;
             }
+        }
+
+        if (isset($model->lang) && is_string($model->lang)) {
+            $model->lang = strtolower($model->lang);
         }
 
         // Handle special automatic fields for add operations
         if (!isset($model->id)) {
             // Add operation - set user_id and created_at automatically
-            if (!isset($this->special_fields['user_id']) && property_exists($model, 'user_id')) {
+            if (!isset($this->special_fields['user_id'])) {
                 $model->user_id = $this->session->get('id');
             }
-            if (!isset($this->special_fields['created_at']) && isset($_POST['created_at']) && property_exists($model, 'created_at')) {
+            if (!isset($this->special_fields['created_at']) && isset($_POST['created_at'])) {
                 // If created_at is in POST for add operation, set it to NOW
                 $model->created_at = NOW;
             }
@@ -574,9 +1082,8 @@ abstract class BaseModuleController
             // Use image module if sizes are provided, otherwise use ImageService  
             if ($field_config && isset($field_config['sizes'])) {
                 return $this->handleImageUploadWithOptions($model, $field_name, $options);
-            } else {
-                return $this->handleImageUploadStandard($model, $field_name, $options);
             }
+            return $this->handleImageUploadStandard($model, $field_name, $options);
         }
 
         // If no field name provided, handle all image fields
@@ -606,20 +1113,16 @@ abstract class BaseModuleController
     {
         if (isset($_FILES[$field_name]['name']) && $_FILES[$field_name]['name'] != '') {
             $imageService = Load::lib('ImageService');
-            $result = $imageService->uploadImage($this->module_name, $field_name, $options);
-
-            if ($result) {
-                $model->$field_name = $imageService->getUploadedUrl();
-                return true;
-            } else {
-                if ($this->isAjaxRequest()) {
-                    $this->jsonResponse([
-                        'status' => 'error',
-                        'message' => $imageService->getLastError()
-                    ]);
+            try {
+                $result = $imageService->uploadImage($this->module_name, $field_name, $options);
+                if ($result) {
+                    $model->$field_name = $imageService->getUploadedUrl();
+                    return true;
                 }
-                $this->_error_message($imageService->getLastError());
-                return false;
+                $error_msg = $imageService->getLastError() ?: 'Unknown image upload error';
+                return $this->handleUploadError($error_msg);
+            } catch (Exception $e) {
+                return $this->handleUploadError($e->getMessage());
             }
         } else {
             if (isset($model->$field_name)) {
@@ -640,18 +1143,15 @@ abstract class BaseModuleController
             $image->mod = $this->module_name;
             $image->name = $field_name;
 
-            if ($image->_resize($options)) {
-                $model->$field_name = $image->url;
-                return true;
-            } else {
-                if ($this->isAjaxRequest()) {
-                    $this->jsonResponse([
-                        'status' => 'error',
-                        'message' => $image->error
-                    ]);
+            try {
+                if ($image->_resize($options)) {
+                    $model->$field_name = $image->url;
+                    return true;
                 }
-                $this->_error_message($image->error);
-                return false;
+                $error_msg = $image->error ?: 'Unknown image processing error';
+                return $this->handleUploadError($error_msg);
+            } catch (Exception $e) {
+                return $this->handleUploadError($e->getMessage());
             }
         } else {
             if (isset($model->$field_name)) {
@@ -660,6 +1160,60 @@ abstract class BaseModuleController
         }
 
         return true;
+    }
+
+    /**
+     * Translate common upload and save error messages based on active language
+     *
+     * @param string $message The error message to translate
+     * @return string The translated error message
+     */
+    protected function translateErrorMessage($message)
+    {
+        $t = [
+            'writable'    => $this->lang['image_writable'] ?? 'Can\'t write image to path. Directory is not writable.',
+            'exist'       => $this->lang['image_exist'] ?? 'Can\'t write image to path. Directory does not exist.',
+            'invalid'     => $this->lang['image_invalid_ext'] ?? 'Invalid file extension: %s',
+            'save_failed' => $this->lang['image_save_failed'] ?? 'File could not be saved to: %s',
+        ];
+
+        if (strpos($message, 'Directory is not writable') !== false) {
+            return $t['writable'];
+        }
+        if (strpos($message, 'Directory does not exist') !== false) {
+            return $t['exist'];
+        }
+        if (strpos($message, 'invalid_extension|') === 0) {
+            $parts = explode('|', $message);
+            $ext = isset($parts[1]) ? $parts[1] : '';
+            return sprintf($t['invalid'], $ext);
+        }
+        if (strpos($message, 'File could not be saved to:') !== false) {
+            $dir = str_replace('File could not be saved to: ', '', $message);
+            return sprintf($t['save_failed'], $dir);
+        }
+
+        return $message;
+    }
+
+    /**
+     * Handle upload errors by returning a localized error response
+     *
+     * @param string $errorMessage Raw error message
+     * @return bool False to indicate failure
+     */
+    protected function handleUploadError($errorMessage)
+    {
+        $translated = $this->translateErrorMessage($errorMessage);
+
+        if ($this->isAjaxRequest()) {
+            $this->jsonResponse([
+                'status' => 'error',
+                'message' => $translated
+            ]);
+        }
+        $this->_error_message($translated);
+        return false;
     }
 
     /**
@@ -675,14 +1229,16 @@ abstract class BaseModuleController
             if ($isAjax) {
                 $this->jsonResponse([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
             }
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->view->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->view->set('errors', $this->val->errors);
+            $this->view->set('error', true);
+            $this->view->set('message', isset($this->lang[$this->module_name]['error_occurred']) ? $this->lang[$this->module_name]['error_occurred'] : 'Error Occurred!');
         } else {
             $model = Load::model($this->model_name);
 
@@ -711,14 +1267,16 @@ abstract class BaseModuleController
                 // Execute post-save callback
                 $this->executeAfterSaveCallback($model);
 
+                $successMsg = $this->lang[$this->module_name]['message']['success']['add'] ?? 'Record added successfully.';
                 if ($isAjax) {
                     $this->jsonResponse([
                         'status' => 'success',
-                        'message' => $this->lang[$this->module_name]['message']['oke']['add'],
+                        'message' => $successMsg,
                         'redirect' => $this->site['saddress'] . $this->module_name . '/list'
                     ]);
                 }
-                $this->_oke_message($this->lang[$this->module_name]['message']['oke']['add']);
+                $this->_success_message($successMsg);
+                $this->_redirect_now($this->site['saddress'] . $this->module_name . '/list');
             } else {
                 if ($isAjax) {
                     $this->jsonResponse([
@@ -744,14 +1302,16 @@ abstract class BaseModuleController
             if ($isAjax) {
                 $this->jsonResponse([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
             }
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->view->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->view->set('errors', $this->val->errors);
+            $this->view->set('error', true);
+            $this->view->set('message', isset($this->lang[$this->module_name]['error_occurred']) ? $this->lang[$this->module_name]['error_occurred'] : 'Error Occurred!');
         } else {
             $model = Load::model($this->model_name);
             $model->id = $id;
@@ -786,14 +1346,16 @@ abstract class BaseModuleController
                 // Execute post-update callback
                 $this->executeAfterUpdateCallback($model, $id);
 
+                $successMsg = $this->lang[$this->module_name]['message']['success']['edit'] ?? 'Record updated successfully.';
                 if ($isAjax) {
                     $this->jsonResponse([
                         'status' => 'success',
-                        'message' => $this->lang[$this->module_name]['message']['oke']['edit'],
+                        'message' => $successMsg,
                         'redirect' => $this->site['saddress'] . $this->module_name . '/list'
                     ]);
                 }
-                $this->_oke_message($this->lang[$this->module_name]['message']['oke']['edit']);
+                $this->_success_message($successMsg);
+                $this->_redirect_now($this->site['saddress'] . $this->module_name . '/list');
             } else {
                 if ($isAjax) {
                     $this->jsonResponse([
@@ -866,11 +1428,22 @@ abstract class BaseModuleController
                 }
             }
 
+            // Generate URL for Google Indexing before deletion
+            $absoluteUrl = '';
+            if ($this->menu_url_pattern) {
+                $site_config = Registry::get('site_config');
+                $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                if (!empty($baseUrl)) {
+                    $relativeUrl = $this->generateMenuUrl($model);
+                    $absoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativeUrl, '/');
+                }
+            }
+
             // Delete the record
             $model->delete();
 
             // Execute post-delete callback
-            $this->executeAfterDeleteCallback($s);
+            $this->executeAfterDeleteCallback($s, $absoluteUrl);
         }
 
         return true;
@@ -933,7 +1506,7 @@ abstract class BaseModuleController
      * - datetime: Date and time formatting (d.m.Y H:i)
      * - time: Time formatting (H:i)
      * - number: Number formatting with thousands separator
-     * - currency: Currency formatting (₺)
+     * - currency: Currency formatting ($/EUR/GBP)
      * - truncate: Truncated text (50 chars)
      * - link: Clickable link
      * - email: Mailto link
@@ -970,31 +1543,82 @@ abstract class BaseModuleController
 
     protected function echoSuccessResponse()
     {
-        if (in_array($this->module_name, ['mod_news', 'mod_content', 'mod_publication'])) {
+        if (in_array($this->module_name, ['mod_content', 'mod_publication'])) {
             echo 'Success';
         } elseif (in_array($this->module_name, ['mod_video'])) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'OK';
         }
     }
 
-    protected function _oke_message($message)
+    protected function _success_message($message)
     {
-        $this->tema->veri('ok', true);
-        $this->tema->veri('message', $message);
+        $this->view->set('ok', true);
+        $this->view->set('success', true);
+        $this->view->set('message', $message);
     }
 
     protected function _error_message($message)
     {
-        $this->tema->veri('error', true);
-        $this->tema->veri('errors', [$message]);
+        $this->view->set('error', true);
+        $this->view->set('errors', [$message]);
     }
 
     protected function _error($message)
     {
-        $this->tema->veri('error', true);
-        $this->tema->veri('message', $message);
+        $this->view->set('error', true);
+        $this->view->set('message', $message);
+        $this->view->set('errors', [$message]);
+    }
+
+    protected function _redirect_now($url)
+    {
+        if (!headers_sent()) {
+            header('Location: ' . $url);
+        } else {
+            echo '<script>window.location.href=' . json_encode($url) . ';</script>';
+            echo '<noscript><meta http-equiv="refresh" content="0;url=' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '" /></noscript>';
+        }
+        exit();
+    }
+
+    protected function normalizeDateTime($value)
+    {
+        if (empty($value)) {
+            return date('Y-m-d H:i:s');
+        }
+        $timestamp = strtotime(str_replace('T', ' ', $value));
+        if ($timestamp === false) {
+            return date('Y-m-d H:i:s');
+        }
+        return date('Y-m-d H:i:s', $timestamp);
+    }
+
+    protected function serializeVideos($video_str)
+    {
+        if (empty($video_str)) {
+            return '';
+        }
+        
+        if (preg_match('/^a:\d+:{/', $video_str)) {
+            $unserialized = @unserialize($video_str);
+            if (is_array($unserialized)) {
+                return $video_str;
+            }
+        }
+
+        $videos = explode(',', $video_str);
+        $data = [];
+        foreach ($videos as $video_key) {
+            if ($video_key !== '') {
+                $data[] = $video_key;
+            }
+        }
+        if ($data !== []) {
+            return serialize(array_values(array_unique($data)));
+        }
+        return '';
     }
 
     /**
@@ -1069,7 +1693,7 @@ abstract class BaseModuleController
     }
 
     /**
-     * Activate records (set durum = 'a')
+     * Activate records (set status = 'y')
      */
     public function activate()
     {
@@ -1082,7 +1706,7 @@ abstract class BaseModuleController
     }
 
     /**
-     * Deactivate records (set durum = 'p')
+     * Deactivate records (set status = 'n')
      */
     public function deactivate()
     {
@@ -1162,6 +1786,18 @@ abstract class BaseModuleController
             $this->handleMenuIntegration($model, 'add');
         }
 
+        // Notify Google Indexing API of new published item
+        if ($this->menu_url_pattern && isset($model->status) && $model->status === 'y') {
+            $site_config = Registry::get('site_config');
+            $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+            if (!empty($baseUrl)) {
+                $relativeUrl = $this->generateMenuUrl($model);
+                $absoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativeUrl, '/');
+                $indexingService = new GoogleIndexingService();
+                $indexingService->notifyUpdate($absoluteUrl);
+            }
+        }
+
         // Execute custom callback
         $result = $this->afterSave($model);
         // If callback returns a model, use it; otherwise keep existing model
@@ -1200,6 +1836,23 @@ abstract class BaseModuleController
             $this->handleMenuIntegration($model, 'update', $id);
         }
 
+        // Notify Google Indexing API of status update
+        if ($this->menu_url_pattern) {
+            $site_config = Registry::get('site_config');
+            $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+            if (!empty($baseUrl)) {
+                $relativeUrl = $this->generateMenuUrl($model);
+                $absoluteUrl = rtrim($baseUrl, '/') . '/' . ltrim($relativeUrl, '/');
+                $indexingService = new GoogleIndexingService();
+                
+                if (isset($model->status) && $model->status === 'y') {
+                    $indexingService->notifyUpdate($absoluteUrl);
+                } elseif (isset($model->status) && $model->status === 'n') {
+                    $indexingService->notifyDelete($absoluteUrl);
+                }
+            }
+        }
+
         // Execute custom callback
         $result = $this->afterUpdate($model, $id);
         // If callback returns a model, use it; otherwise keep existing model
@@ -1231,10 +1884,14 @@ abstract class BaseModuleController
      * Execute callback after successful delete operation
      * Calls afterDelete() method which can be overridden in child classes
      */
-    protected function executeAfterDeleteCallback($id)
+    protected function executeAfterDeleteCallback($id, $url = '')
     {
-        $result = $this->afterDelete($id);
-        return $result;
+        // Notify Google Indexing API of deletion
+        if (!empty($url)) {
+            $indexingService = new GoogleIndexingService();
+            $indexingService->notifyDelete($url);
+        }
+        return $this->afterDelete($id);
     }
 
     /**

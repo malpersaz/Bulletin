@@ -12,6 +12,7 @@ class mod_video_embed_category_mod extends indexMain
         'header' => ['##HEADER MENU', 'HEADER MENU', '##HEADER', 'HEADER', 'TOP MENU', 'MAIN MENU'],
         'footer' => ['##FOOTER MENU', 'FOOTER MENU', '##FOOTER', 'FOOTER', 'BOTTOM MENU'],
         'sidebar' => ['##SIDEBAR', 'SIDEBAR', 'SIDE MENU'],
+        'action' => ['##ACTION MENU', 'ACTION MENU', '##ACTION', 'ACTION', 'CTA MENU', '##CTA MENU', 'ACTIONMENU', 'ACTION_MENU', 'PESEKA CALAKIYE', 'ÇALAKÎ', 'AKTIONSMENU', 'AKTIONSMENÜ', 'EYLEM MENUSU'],
     ];
 
     public function __construct()
@@ -41,7 +42,7 @@ class mod_video_embed_category_mod extends indexMain
     {
         $name = is_array($row) ? ($row['name'] ?? '') : (string) $row;
         if (strpos($name, '##') === 0) {
-            if (is_array($row) && (int) ($row['parent_id'] ?? -1) === 0 && !empty($visibleLanguages)) {
+            if (is_array($row) && (int) ($row['parent_id'] ?? -1) === 0 && $visibleLanguages !== []) {
                 $langCode = isset($row['lang']) ? $row['lang'] : '';
                 foreach ($visibleLanguages as $language) {
                     if (($language['seo'] ?? '') === $langCode) {
@@ -86,7 +87,7 @@ class mod_video_embed_category_mod extends indexMain
 
     private function buildNestedRows(array $rows)
     {
-        if (empty($rows)) {
+        if ($rows === []) {
             return [];
         }
 
@@ -191,7 +192,7 @@ class mod_video_embed_category_mod extends indexMain
             return $this->site['lang'];
         }
 
-        $defaultLang = Kayit::getir('default_lang');
+        $defaultLang = Registry::get('default_lang');
         if (is_string($defaultLang) && $defaultLang !== '') {
             return $defaultLang;
         }
@@ -426,8 +427,8 @@ class mod_video_embed_category_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_video_embed_category']['list'];
-        $this->view->veri('site', $this->site);
-        $this->view->veri('category_tree', $this->loadCategoryTree());
+        $this->view->set('site', $this->site);
+        $this->view->set('category_tree', $this->loadCategoryTree());
         $this->view->tpl('mod_video_embed_category/list');
     }
 
@@ -443,15 +444,15 @@ class mod_video_embed_category_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_video_embed_category']['add'];
-        $this->view->veri('site', $this->site);
+        $this->view->set('site', $this->site);
         $selectedLang = $this->resolveSelectedLanguage();
         $selectedParentId = Req::is_Post('parent_id') ? Req::Post_Safe('parent_id') : null;
         $formDefaults = $this->defaultFormData();
         $formDefaults['lang'] = $selectedLang;
         $this->loadFormMetadata($selectedLang, null, $selectedParentId);
-        $this->view->veri('record', $formDefaults);
-        $this->view->veri('form_id', 'videoCategoryAddForm');
-        $this->view->veri('mode', 'add');
+        $this->view->set('record', $formDefaults);
+        $this->view->set('form_id', 'videoCategoryAddForm');
+        $this->view->set('mode', 'add');
         $this->view->tpl('mod_video_embed_category/add');
     }
 
@@ -467,7 +468,7 @@ class mod_video_embed_category_mod extends indexMain
         if ($this->mod_video_embed_category_model->getSize() === 0) {
             $this->_fatal_error($this->lang['mod_video_embed_category']['errors']['record']);
             Run::import('management', '_index');
-            $this->view->veri('site', $this->site);
+            $this->view->set('site', $this->site);
             $this->view->tpl('mod_video_embed_category/edit');
             return false;
         }
@@ -489,13 +490,13 @@ class mod_video_embed_category_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_video_embed_category']['edit'];
-        $this->view->veri('site', $this->site);
+        $this->view->set('site', $this->site);
         $selectedLang = Req::is_Post('lang') ? Req::Post_Safe('lang') : ($record['lang'] ?? '');
         $selectedParentId = Req::is_Post('parent_id') ? Req::Post_Safe('parent_id') : ($record['parent_id'] ?? 0);
         $this->loadFormMetadata($selectedLang, $id, $selectedParentId, $record['lang'] ?? '');
-        $this->view->veri('record', $record);
-        $this->view->veri('form_id', 'videoCategoryEditForm');
-        $this->view->veri('mode', 'edit');
+        $this->view->set('record', $record);
+        $this->view->set('form_id', 'videoCategoryEditForm');
+        $this->view->set('mode', 'edit');
         $this->view->tpl('mod_video_embed_category/edit');
     }
 
@@ -506,7 +507,7 @@ class mod_video_embed_category_mod extends indexMain
         }
 
         $query = Req::Post_Safe('query');
-        if (!is_array($query) || empty($query)) {
+        if (!is_array($query) || $query === []) {
             echo $this->lang['mod_video_embed_category']['errors']['delete_failed'];
             return false;
         }
@@ -518,7 +519,7 @@ class mod_video_embed_category_mod extends indexMain
             }
         }
 
-        echo 'Oke';
+        echo 'Success';
         return true;
     }
 
@@ -542,14 +543,14 @@ class mod_video_embed_category_mod extends indexMain
         }
 
         if (empty($this->mod_video_embed_category_model->image)) {
-            echo 'Oke';
+            echo 'Success';
             return true;
         }
 
         if ($this->deleteImageFiles($this->mod_video_embed_category_model->image)) {
             $this->mod_video_embed_category_model->image = '';
             $this->mod_video_embed_category_model->update('id');
-            echo 'Oke';
+            echo 'Success';
             return true;
         }
 
@@ -562,7 +563,7 @@ class mod_video_embed_category_mod extends indexMain
         $this->val = Load::validator('mod_video_embed_category.add');
         if ($this->val->check()) {
             $this->bindValidationInput();
-            $this->view->veri('errors', $this->val->errors);
+            $this->view->set('errors', $this->val->errors);
             return false;
         }
 
@@ -607,7 +608,7 @@ class mod_video_embed_category_mod extends indexMain
         $this->val = Load::validator('mod_video_embed_category.edit');
         if ($this->val->check($id)) {
             $this->bindValidationInput();
-            $this->view->veri('errors', $this->val->errors);
+            $this->view->set('errors', $this->val->errors);
             return false;
         }
 
@@ -657,7 +658,7 @@ class mod_video_embed_category_mod extends indexMain
 
     private function populateCategoryModel($model)
     {
-        $model->lang = Req::Post_Safe('lang');
+        $model->lang = strtolower(Req::Post_Safe('lang'));
         $model->name = Req::Post_Safe('name');
         $model->parent_id = intval(Req::Post_Safe('parent_id'));
         $model->root = Req::Post_Safe('root');
@@ -683,7 +684,7 @@ class mod_video_embed_category_mod extends indexMain
     {
         foreach ($_POST as $key => $value) {
             $targetKey = $key === 'lang' ? 'form_lang' : $key;
-            $this->view->veri($targetKey, Req::Post_Safe($key));
+            $this->view->set($targetKey, Req::Post_Safe($key));
         }
     }
 
@@ -694,8 +695,8 @@ class mod_video_embed_category_mod extends indexMain
         }
 
         $visibleLanguages = $this->getVisibleLanguages($currentRecordLang);
-        $this->view->veri('selected_lang', $selectedLang);
-        $this->view->veri('lang_lang', $visibleLanguages);
+        $this->view->set('selected_lang', $selectedLang);
+        $this->view->set('lang_lang', $visibleLanguages);
 
         $categoryRows = $this->getAllCategoryRows();
         $languageRootRow = $this->findLanguageRootRow($categoryRows, $selectedLang);
@@ -744,12 +745,12 @@ class mod_video_embed_category_mod extends indexMain
             $selectedParentId = $languageRootId;
         }
 
-        $this->view->veri('select_nested_parent_id_result', $this->buildNestedRows($filteredCategories));
-        $this->view->veri('category_parent_root_id', $languageRootId);
-        $this->view->veri('category_parent_default_id', $defaultParentId);
-        $this->view->veri('category_selected_parent_id', $selectedParentId !== null ? $selectedParentId : $defaultParentId);
-        $this->view->veri('category_language_root_label', $languageRootLabel);
-        $this->view->veri('category_allow_system_parent', $allowSystemParent);
+        $this->view->set('select_nested_parent_id_result', $this->buildNestedRows($filteredCategories));
+        $this->view->set('category_parent_root_id', $languageRootId);
+        $this->view->set('category_parent_default_id', $defaultParentId);
+        $this->view->set('category_selected_parent_id', $selectedParentId !== null ? $selectedParentId : $defaultParentId);
+        $this->view->set('category_language_root_label', $languageRootLabel);
+        $this->view->set('category_allow_system_parent', $allowSystemParent);
 
         $menuLang = Load::lang('mod_menu');
         $menuRows = $this->getAllMenuRows();
@@ -771,11 +772,11 @@ class mod_video_embed_category_mod extends indexMain
             $row['display_name'] = $this->resolveMenuDisplayName($row, $visibleLanguages, $menuLang);
             $filteredMenus[] = $row;
         }
-        $this->view->veri('select_nested_menu_result', $this->buildNestedRows($filteredMenus));
-        $this->view->veri('category_menu_root_id', $menuLanguageRootId);
+        $this->view->set('select_nested_menu_result', $this->buildNestedRows($filteredMenus));
+        $this->view->set('category_menu_root_id', $menuLanguageRootId);
 
         $this->db->fetch_array("SELECT id, name FROM mod_acl ORDER BY name ASC");
-        $this->view->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->view->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     private function loadCategoryTree()
@@ -1009,7 +1010,7 @@ class mod_video_embed_category_mod extends indexMain
 
         if ($this->db->query("UPDATE `mod_video_embed_category` SET `parent_id` = '$parentId' WHERE `id` = '$id'")) {
             if ($this->applySiblingOrder()) {
-                echo 'Oke';
+                echo 'Success';
                 return true;
             }
 
@@ -1074,19 +1075,19 @@ class mod_video_embed_category_mod extends indexMain
 
     private function _success_message($message)
     {
-        $this->view->veri('success', true);
-        $this->view->veri('message', $message);
+        $this->view->set('success', true);
+        $this->view->set('message', $message);
     }
 
     private function _error_message($message)
     {
-        $this->view->veri('error', true);
-        $this->view->veri('errors', [$message]);
+        $this->view->set('error', true);
+        $this->view->set('errors', [$message]);
     }
 
     private function _fatal_error($message)
     {
-        $this->view->veri('fatal_error', true);
-        $this->view->veri('message', $message);
+        $this->view->set('fatal_error', true);
+        $this->view->set('message', $message);
     }
 }

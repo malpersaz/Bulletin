@@ -6,26 +6,28 @@ if (defined('root_dir') === false) {
 
 class InstallationState
 {
-    private $requiredTables = array(
+    private $requiredTables = [
         'lang',
         'mods',
         'mod_settings',
         'mod_user',
         'mod_user_group',
-    );
+        'mod_menu',
+        'mod_page',
+    ];
 
     public function inspect()
     {
-        $summary = array(
+        $summary = [
             'status' => 'needs_installation',
             'is_installed' => false,
             'database' => null,
             'adapter' => null,
-            'issues' => array(),
-        );
+            'issues' => [],
+        ];
 
-        $database = Kayit::getir('database');
-        $dbConfig = Kayit::getir('db_config');
+        $database = Registry::get('database');
+        $dbConfig = Registry::get('db_config');
 
         if (!is_string($database) || $database === '') {
             $summary['issues'][] = $this->buildIssue('database_key_missing', 'No active database key is registered.');
@@ -41,7 +43,7 @@ class InstallationState
 
         $config = $dbConfig[$database];
         $adapter = isset($config['adapter']) ? strtoupper((string) $config['adapter']) : '';
-        $conf = isset($config['conf']) && is_array($config['conf']) ? $config['conf'] : array();
+        $conf = isset($config['conf']) && is_array($config['conf']) ? $config['conf'] : [];
         $summary['adapter'] = $adapter;
 
         if ($adapter !== 'PDO_MYSQL' && $adapter !== 'PDO_SQLITE') {
@@ -71,7 +73,7 @@ class InstallationState
             $summary['issues'][] = $this->buildIssue(
                 'database_schema_incomplete',
                 'Core installation tables are missing.',
-                array('tables' => $missingTables)
+                ['tables' => $missingTables]
             );
             return $summary;
         }
@@ -84,11 +86,11 @@ class InstallationState
 
     private function connect($adapter, array $conf)
     {
-        $options = array(
+        $options = [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_TIMEOUT => 5,
-        );
+        ];
 
         if ($adapter === 'PDO_SQLITE') {
             $path = $this->normalizeSqlitePath(isset($conf['database_path']) ? $conf['database_path'] : '');
@@ -141,7 +143,7 @@ class InstallationState
 
     private function findMissingTables(PDO $pdo, $adapter, array $conf)
     {
-        $missing = array();
+        $missing = [];
 
         foreach ($this->requiredTables as $table) {
             if (!$this->tableExists($pdo, $adapter, $conf, $table)) {
@@ -156,13 +158,13 @@ class InstallationState
     {
         if ($adapter === 'PDO_SQLITE') {
             $statement = $pdo->prepare("SELECT name FROM sqlite_master WHERE type IN ('table', 'view') AND name = :table LIMIT 1");
-            $statement->execute(array(':table' => $table));
+            $statement->execute([':table' => $table]);
             return (bool) $statement->fetchColumn();
         }
 
         $database = (string) $conf['database'];
         $statement = $pdo->prepare('SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :schema AND table_name = :table');
-        $statement->execute(array(':schema' => $database, ':table' => $table));
+        $statement->execute([':schema' => $database, ':table' => $table]);
 
         return (int) $statement->fetchColumn() > 0;
     }
@@ -172,7 +174,7 @@ class InstallationState
         if ($adapter === 'PDO_SQLITE') {
             $statement = $pdo->query('PRAGMA table_info(' . $this->quoteIdentifier($table, $adapter) . ')');
             $rows = $statement->fetchAll();
-            $columns = array();
+            $columns = [];
 
             foreach ($rows as $row) {
                 if (isset($row['name'])) {
@@ -185,7 +187,7 @@ class InstallationState
 
         $database = (string) $conf['database'];
         $statement = $pdo->prepare('SELECT COLUMN_NAME FROM information_schema.columns WHERE table_schema = :schema AND table_name = :table');
-        $statement->execute(array(':schema' => $database, ':table' => $table));
+        $statement->execute([':schema' => $database, ':table' => $table]);
 
         return array_map(function ($column) {
             return is_array($column) && isset($column['COLUMN_NAME']) ? $column['COLUMN_NAME'] : null;
@@ -201,12 +203,12 @@ class InstallationState
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
-    private function buildIssue($key, $message, array $meta = array())
+    private function buildIssue($key, $message, array $meta = [])
     {
-        return array(
+        return [
             'key' => $key,
             'message' => $message,
             'meta' => $meta,
-        );
+        ];
     }
 }

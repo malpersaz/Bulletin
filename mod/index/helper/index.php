@@ -44,9 +44,9 @@ class index_mod extends indexBase
     }
 
     // Mod Vid
-    public function videos($sayfa = 1)
+    public function videos($page = 1)
     {
-        return $this->_loadHelper("index.mod_video_embed", "videos", [$sayfa]);
+        return $this->_loadHelper("index.mod_video_embed", "videos", [$page]);
     }
 
     public function video($id = null)
@@ -68,14 +68,19 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_content", "content", [$seo]);
     }
 
-    public function contents($category = null, $sayfa = 1)
+    public function contents($category = null, $page = 1)
     {
-        return $this->_loadHelper("index.mod_content", "contents", [$category, $sayfa]);
+        return $this->_loadHelper("index.mod_content", "contents", [$category, $page]);
+    }
+
+    public function archive()
+    {
+        return $this->_loadHelper("index.mod_content", "arsiv");
     }
 
     public function arsiv()
     {
-        return $this->_loadHelper("index.mod_content", "arsiv");
+        return $this->archive();
     }
 
     public function news($seo = null)
@@ -83,9 +88,9 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_news", "content", [$seo]);
     }
 
-    public function newses($category = null, $sayfa = 1)
+    public function newses($category = null, $page = 1)
     {
-        return $this->_loadHelper("index.mod_news", "contents", [$category, $sayfa]);
+        return $this->_loadHelper("index.mod_news", "contents", [$category, $page]);
     }
 
     public function news_archive()
@@ -98,9 +103,9 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_publication", "publication", [$seo]);
     }
 
-    public function publications($category = null, $sayfa = 1)
+    public function publications($category = null, $page = 1)
     {
-        return $this->_loadHelper("index.mod_publication", "publications", [$category, $sayfa]);
+        return $this->_loadHelper("index.mod_publication", "publications", [$category, $page]);
     }
 
     public function publication_archive()
@@ -145,9 +150,9 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_publication", "authors", [$limit]);
     }
 
-    public function author($username = null, $sayfa = 1)
+    public function author($username = null, $page = 1)
     {
-        return $this->_loadHelper("index.mod_publication", "author", [$username, $sayfa]);
+        return $this->_loadHelper("index.mod_publication", "author", [$username, $page]);
     }
 
     // Latest Announcements

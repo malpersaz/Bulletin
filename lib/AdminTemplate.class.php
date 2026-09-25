@@ -1,9 +1,7 @@
 <?php
-/*
- * Koberz İçerik Yönetim Sistemi
- * @ 2010
- * Loader Sınıfı
- * Template.class.php
+/**
+ * Amed Framework Admin Template Engine
+ * Extends TwigTemplate for administrative views
  */
 if (defined('root_dir') === false) {
     exit(':)');
@@ -15,6 +13,9 @@ class AdminTemplate extends TwigTemplate
     public function __construct()
     {
         parent::__construct();
-        
+        $this->lang(Load::lang('management'));
+        $this->lang(Load::lang('mod_newsletter'));
+        $this->lang(Load::lang('mod_settings'));
+        $this->lang(Load::lang('mod_user'));
     }
 }

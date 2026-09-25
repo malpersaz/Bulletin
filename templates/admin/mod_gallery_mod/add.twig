@@ -1,7 +1,6 @@
 {% set show_navbar = false %}
 {% set show_fab = false %}
 {% set show_search = false %}
-{% set show_sidebar = true %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -108,16 +107,16 @@
         <p>{{ lang.mod_gallery_mod.information }}</p>
     </section>
 
-    {% if oke is defined %}
-        <div class="form-status success">{{ mesaj }}</div>
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
     {% endif %}
     {% if error is defined %}
-        <div class="form-status error">{{ mesaj }}</div>
+        <div class="form-status error">{{ message }}</div>
     {% endif %}
-    {% if hata is defined or hatalar is defined %}
+    {% if error is defined or errors is defined %}
         <div class="form-status error">
-            {% if hatalar is defined %}
-                {% for message in hatalar %}
+            {% if errors is defined %}
+                {% for message in errors %}
                     <div>{{ message }}</div>
                 {% endfor %}
             {% endif %}
@@ -152,10 +151,10 @@
 {% if oke is not defined %}
     {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
         cancel_url: cancel_url|default(site.saddress ~ 'mod_gallery_mod/list'),
-        cancel_label: lang.mod_gallery_mod.button.vazgec,
+        cancel_label: lang.mod_gallery_mod.button.cancel,
         form_id: 'addGalleryModForm',
         submit_label: lang.mod_gallery_mod.button.add,
-        reset_label: lang.mod_gallery_mod.button.yenile
+        reset_label: lang.mod_gallery_mod.button.refresh
     } %}
 {% endif %}
 {% endblock %}

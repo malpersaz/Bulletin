@@ -1,0 +1,807 @@
+/**
+ * Amed Framework
+ * Affiliations Admin Styles (Material Design 3 & Phone-Only Product Surface)
+ * templates/admin/assets/css/affiliations.css
+ * Version: 1.0
+ */
+
+:root {
+    --affil-primary: var(--md-sys-color-primary, #0ea5e9);
+    --affil-primary-hover: #0284c7;
+    --affil-primary-container: var(--md-sys-color-primary-container, #e0f2fe);
+    --affil-on-primary-container: var(--md-sys-color-on-primary-container, #0369a1);
+    --affil-surface: var(--md-sys-color-surface, #ffffff);
+    --affil-surface-variant: var(--md-sys-color-surface-container-low, #f8fafc);
+    --affil-surface-container: var(--md-sys-color-surface-container, #f1f5f9);
+    --affil-surface-container-high: var(--md-sys-color-surface-container-high, #e2e8f0);
+    --affil-on-surface: var(--md-sys-color-on-surface, #0f172a);
+    --affil-on-surface-variant: var(--md-sys-color-on-surface-variant, #64748b);
+    --affil-outline: var(--md-sys-color-outline-variant, #e2e8f0);
+    --affil-success: var(--md-sys-color-success, #16a34a);
+    --affil-danger: var(--md-sys-color-error, #dc2626);
+    --affil-card-radius: 18px;
+    --affil-inner-radius: 12px;
+}
+
+.affil-page {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 14px 96px 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* --- Hero & Summary Card --- */
+.affil-hero-card {
+    background: var(--affil-surface);
+    border-radius: var(--affil-card-radius);
+    border: 1px solid var(--affil-outline);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-sizing: border-box;
+}
+
+.affil-hero-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.affil-hero-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
+}
+
+.affil-hero-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.affil-hero-title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--affil-on-surface);
+    letter-spacing: -0.01em;
+}
+
+.affil-hero-desc {
+    margin: 2px 0 0 0;
+    font-size: 0.82rem;
+    color: var(--affil-on-surface-variant);
+    line-height: 1.35;
+}
+
+/* Status Filter Row */
+.affil-stats-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.affil-stat-pill {
+    appearance: none;
+    border: 1px solid var(--affil-outline);
+    background: var(--affil-surface-variant);
+    border-radius: 999px;
+    padding: 6px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--affil-on-surface-variant);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.affil-stat-pill.active {
+    background: var(--affil-primary-container);
+    color: var(--affil-on-primary-container);
+    border-color: rgba(14, 165, 233, 0.35);
+}
+
+.affil-stat-count {
+    background: rgba(0, 0, 0, 0.05);
+    padding: 1px 6px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+}
+
+.affil-stat-pill.active .affil-stat-count {
+    background: rgba(14, 165, 233, 0.2);
+}
+
+/* Action Bar: Search & Add */
+.affil-hero-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.affil-search-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.affil-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--affil-on-surface-variant);
+    pointer-events: none;
+}
+
+.affil-search-input {
+    width: 100%;
+    height: 42px;
+    background: var(--affil-surface-container);
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 0 34px 0 36px;
+    font-size: 0.86rem;
+    color: var(--affil-on-surface);
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.affil-search-input:focus {
+    background: #ffffff;
+    border-color: var(--affil-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.affil-search-clear {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--affil-on-surface-variant);
+    padding: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.affil-search-clear.is-hidden {
+    display: none !important;
+}
+
+.affil-hero-add-btn {
+    height: 42px;
+    padding: 0 16px;
+    background: var(--affil-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.25);
+    flex-shrink: 0;
+}
+
+.affil-hero-add-btn:hover {
+    background: var(--affil-primary-hover);
+}
+
+/* --- Cards List --- */
+.affil-cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.affil-card {
+    background: var(--affil-surface);
+    border: 1px solid var(--affil-outline);
+    border-radius: var(--affil-card-radius);
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.affil-card.is-inactive {
+    opacity: 0.7;
+    background: #fbfbfc;
+}
+
+.affil-card.is-hidden {
+    display: none !important;
+}
+
+.affil-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.affil-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.affil-logo-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #ffffff;
+    border: 1px solid var(--affil-outline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.affil-logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.affil-placeholder-icon {
+    font-size: 22px;
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.affil-item-name {
+    margin: 0;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--affil-on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.affil-status-tag {
+    display: inline-block;
+    margin-top: 3px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 999px;
+}
+
+.affil-status-tag.active {
+    background: #dcfce7;
+    color: #15803d;
+}
+
+.affil-status-tag.inactive {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Switch */
+.affil-switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+}
+
+.affil-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.affil-switch-track {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #cbd5e1;
+    transition: 0.25s;
+    border-radius: 999px;
+}
+
+.affil-switch-track:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.25s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.affil-switch input:checked + .affil-switch-track {
+    background-color: var(--affil-primary);
+}
+
+.affil-switch input:checked + .affil-switch-track:before {
+    transform: translateX(20px);
+}
+
+/* URL Container */
+.affil-url-container {
+    margin-top: -2px;
+}
+
+.affil-url-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--affil-surface-container);
+    border-radius: 10px;
+    text-decoration: none;
+    color: var(--affil-on-surface-variant);
+    font-size: 0.78rem;
+    transition: background-color 0.2s ease;
+}
+
+.affil-url-box:hover {
+    background: var(--affil-surface-container-high);
+}
+
+.affil-url-text-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.affil-url-icon {
+    font-size: 15px;
+    color: var(--affil-primary);
+    flex-shrink: 0;
+}
+
+.affil-url-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: monospace;
+    font-size: 0.76rem;
+}
+
+.affil-url-external {
+    font-size: 12px;
+    opacity: 0.6;
+    flex-shrink: 0;
+}
+
+/* Bottom Actions */
+.affil-card-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 6px;
+    border-top: 1px dashed var(--affil-outline);
+}
+
+.affil-reorder-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.affil-order-badge {
+    font-size: 0.74rem;
+    font-weight: 800;
+    color: var(--affil-on-surface-variant);
+    padding: 2px 6px;
+    background: var(--affil-surface-container);
+    border-radius: 6px;
+    margin-right: 4px;
+}
+
+.affil-action-btn {
+    appearance: none;
+    background: var(--affil-surface-container);
+    border: none;
+    border-radius: 10px;
+    color: var(--affil-on-surface-variant);
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    gap: 6px;
+    padding: 0 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.affil-action-btn.icon-only {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+}
+
+.affil-action-btn:hover:not(:disabled) {
+    background: var(--affil-surface-container-high);
+    color: var(--affil-on-surface);
+}
+
+.affil-action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.affil-card-actions-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.affil-action-btn.btn-delete:hover {
+    background: #fee2e2;
+    color: var(--affil-danger);
+}
+
+/* Empty State */
+.affil-empty-state {
+    background: var(--affil-surface);
+    border: 2px dashed var(--affil-outline);
+    border-radius: var(--affil-card-radius);
+    padding: 36px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.affil-empty-state.is-hidden {
+    display: none !important;
+}
+
+.affil-empty-icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--affil-surface-container);
+    color: var(--affil-on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    margin-bottom: 4px;
+}
+
+.affil-empty-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--affil-on-surface);
+}
+
+.affil-empty-desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--affil-on-surface-variant);
+    max-width: 280px;
+}
+
+.affil-empty-btn {
+    margin-top: 6px;
+    height: 38px;
+    padding: 0 16px;
+    background: var(--affil-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+/* Modal Bottom-Sheet */
+.affil-modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1050;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+
+.affil-modal-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.affil-modal-sheet {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    max-height: 85vh;
+    transform: translateY(100%);
+    transition: transform 0.28s cubic-bezier(0.1, 0.9, 0.2, 1);
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.affil-modal-backdrop.is-open .affil-modal-sheet {
+    transform: translateY(0);
+}
+
+.affil-modal-notch {
+    width: 36px;
+    height: 4px;
+    background: #cbd5e1;
+    border-radius: 999px;
+    margin: 10px auto 4px auto;
+}
+
+.affil-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--affil-outline);
+}
+
+.affil-modal-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--affil-on-surface);
+}
+
+.affil-modal-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: var(--affil-on-surface-variant);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.affil-modal-body {
+    padding: 18px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-sizing: border-box;
+}
+
+.affil-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.affil-form-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--affil-on-surface);
+}
+
+.affil-form-input {
+    width: 100%;
+    height: 44px;
+    border: 1px solid var(--affil-outline);
+    border-radius: 12px;
+    padding: 0 14px;
+    font-size: 0.88rem;
+    color: var(--affil-on-surface);
+    box-sizing: border-box;
+    outline: none;
+    transition: all 0.2s ease;
+    background: var(--affil-surface-variant);
+}
+
+.affil-form-input:focus {
+    background: #ffffff;
+    border-color: var(--affil-primary);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+}
+
+.affil-logo-upload-wrap {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--affil-surface-variant);
+    border: 1px dashed var(--affil-outline);
+    border-radius: 14px;
+    padding: 12px;
+    box-sizing: border-box;
+}
+
+.affil-preview-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid var(--affil-outline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+    font-size: 24px;
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.affil-preview-img.is-hidden {
+    display: none !important;
+}
+
+.affil-file-input-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.affil-file-input {
+    font-size: 0.78rem;
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-upload-hint {
+    font-size: 0.7rem;
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-form-group-switch {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    background: var(--affil-surface-variant);
+    border-radius: 12px;
+}
+
+.affil-switch-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--affil-on-surface);
+}
+
+.affil-switch-desc {
+    font-size: 0.74rem;
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-modal-footer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--affil-outline);
+    background: #ffffff;
+}
+
+.affil-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: 12px;
+    border: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.affil-btn-cancel {
+    background: var(--affil-surface-container);
+    color: var(--affil-on-surface-variant);
+}
+
+.affil-btn-primary {
+    background: var(--affil-primary);
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(14, 165, 233, 0.3);
+}
+
+.affil-btn-primary:hover {
+    background: var(--affil-primary-hover);
+}
+
+/* Toast */
+.affil-toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+    width: 90%;
+    max-width: 360px;
+}
+
+.affil-toast {
+    background: #1e293b;
+    color: #ffffff;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: all 0.25s ease;
+}
+
+.affil-toast.error {
+    background: #b91c1c;
+}

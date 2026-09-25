@@ -30,8 +30,8 @@ $lang['mod_video_embed_category'] = [
         'parent_selection_required' => 'Ji kerema xwe re kategoriya jorîn hilbijêre.',
         'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
         'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
-        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
-        'menu_language_mismatch' => 'Zimanê menuya jorîn divê bi zimanê kategoriyê re yek be.',
+        'menu_parent_not_found' => 'Pêşeka jorîn a hilbijartî nehate dîtin.',
+        'menu_language_mismatch' => 'Zimanê pêşeka jorîn divê bi zimanê kategoriyê re yek be.',
         'order_update_failed' => 'Rêza kategoriyê nehate nûkirin.',
         'image_remove_failed' => 'Wêneyê kategoriyê nehate rakirin.',
     ],
@@ -46,6 +46,8 @@ $lang['mod_video_embed_category'] = [
         'cancel' => 'Betal',
         'save' => 'Tomar Bike',
         'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
     ],
     'validator' => [
         'required' => 'Ji kerema xwe re qada %s vala nehêle.',
@@ -53,8 +55,8 @@ $lang['mod_video_embed_category'] = [
         'unique' => 'Nirxa %s jixwe heye. Ji kerema xwe re %s-ek din hilbijêre.',
         'inarray' => 'Qada %s tenê dikare van nirxan qebûl bike: %s.',
     ],
-    'roll' => [
-        'ad' => 'Rolên Rêvebirina Kategoriya Vîdeoyê',
+    'role' => [
+        'name' => 'Rolên Rêvebirina Kategoriya Vîdeoyê',
         'add' => 'Dikare kategoriyên vîdeoyê lê zêde bike',
         'edit' => 'Dikare kategoriyên vîdeoyê sererast bike',
         'delete' => 'Dikare kategoriyên vîdeoyê jê bibe',
@@ -87,7 +89,7 @@ $lang['mod_video_embed_category'] = [
             'keywords' => 'Peyvên Sereke yên Meta',
             'description' => 'Danasîna Meta',
             'image' => 'Wêne',
-            'menu' => 'Jorê Menüyê',
+            'menu' => 'Pêşeka Dayîk',
             'acl_id' => 'Kontrola Gihiştinê',
         ],
         'radio' => [
@@ -100,9 +102,9 @@ $lang['mod_video_embed_category'] = [
         'structure' => 'Avahî û Dîtin',
         'seo' => 'Detayên SEO',
         'publishing' => 'Têkiliyên Weşanê',
-        'image_help' => 'Ji bo lîsteyên vîdeoyê û menuyan wêneyekî kategoriyê bar bike.',
+        'image_help' => 'Ji bo lîsteyên vîdeoyê û pêşekan wêneyekî kategoriyê bar bike.',
         'parent_none' => 'Kategoriya asta jor',
-        'menu_none' => 'Tiştekî menuyê çêneke',
+        'menu_none' => 'Tiştekî pêşekê çêneke',
         'acl_none' => 'Gihiştina gelemperî',
     ],
     'list_ui' => [

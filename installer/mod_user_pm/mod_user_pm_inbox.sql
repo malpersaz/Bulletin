@@ -6,5 +6,7 @@ CREATE TABLE `mod_user_pm_inbox` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reader_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  INDEX `idx_pminbox_reader` (`reader_id`),
+  INDEX `idx_pminbox_user` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

@@ -23,6 +23,48 @@ class mod_video_embed_mod extends BaseModuleController
     public function __construct()
     {
         parent::__construct('mod_video_embed');
+        $this->ensureSliderColumn();
+    }
+
+    private function ensureSliderColumn()
+    {
+        $table = 'mod_video_embed';
+        $column = 'slider';
+        $safeTable = addslashes($table);
+        $safeColumn = addslashes($column);
+        $adapter = (string) $this->db->getAdapterType();
+        $exists = false;
+
+        if (strpos($adapter, 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+            $rows = $this->db->toArray();
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    if (isset($row['name']) && $row['name'] === $column) {
+                        $exists = true;
+                        break;
+                    }
+                }
+            }
+        } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+            $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+            $this->db->fetch_array($sql);
+            $exists = ($this->db->getSize() !== 0);
+        } else {
+            $this->db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+            $exists = ($this->db->getSize() !== 0);
+        }
+
+        if (!$exists) {
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider TEXT CHECK(slider IN ('y', 'n')) NOT NULL DEFAULT 'n'";
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider VARCHAR(1) NOT NULL DEFAULT 'n'";
+            } else {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `slider` ENUM('y', 'n') NOT NULL DEFAULT 'n'";
+            }
+            $this->db->query($sql);
+        }
     }
 
     protected function getDatatableColumns()
@@ -47,16 +89,16 @@ class mod_video_embed_mod extends BaseModuleController
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_video_embed']['add'];
-        $this->tema->tpl('mod_video_embed/add');
-        $this->tema->veri('site', $this->site);
-        $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
+        $this->theme->tpl('mod_video_embed/add');
+        $this->theme->set('site', $this->site);
+        $this->db->fetch_array("SELECT * FROM `lang` WHERE status='y' ORDER BY is_default DESC, seo ASC");
+        $this->theme->set('lang_lang', $this->db->getResult()->toArray());
         $mod_video_embed_category_nested = Load::model('mod_video_embed_category');
         $mod_video_embed_category_nested->order('order', 'ASC')->all();
         $select_nested_category_id_result = Helper::nested($mod_video_embed_category_nested->toArray(), 'parent_id', 'id');
-        $this->tema->veri('select_nested_category_id_result', $select_nested_category_id_result);
+        $this->theme->set('select_nested_category_id_result', $select_nested_category_id_result);
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     // Render the edit form.
@@ -71,7 +113,7 @@ class mod_video_embed_mod extends BaseModuleController
         if ($this->mod_video_embed_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_video_embed']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_video_embed/edit');
+            $this->theme->tpl('mod_video_embed/edit');
             return;
         }
 
@@ -84,23 +126,29 @@ class mod_video_embed_mod extends BaseModuleController
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             $this->_edit($id);
+            $this->mod_video_embed_model->where_id($id)->gRo()->sync();
+            $d = $this->mod_video_embed_model->toArray();
         }
 
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_video_embed']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_video_embed/edit');
-        $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->tpl('mod_video_embed/edit');
+        $langWhere = "WHERE status='y'";
+        if (!empty($d['lang'])) {
+            $langWhere .= " OR seo='" . Req::Clear($d['lang']) . "'";
+        }
+        $this->db->fetch_array("SELECT * FROM `lang` " . $langWhere . " ORDER BY is_default DESC, seo ASC");
+        $this->theme->set('lang_lang', $this->db->getResult()->toArray());
         $mod_video_embed_category_nested = Load::model('mod_video_embed_category');
         $mod_video_embed_category_nested->flush();
         $mod_video_embed_category_nested->order('order', 'ASC')->all();
         $select_nested_category_id_result = Helper::nested($mod_video_embed_category_nested->toArray(), 'parent_id', 'id');
-        $this->tema->veri('select_nested_category_id_result', $select_nested_category_id_result);
+        $this->theme->set('select_nested_category_id_result', $select_nested_category_id_result);
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     // Render the list page.
@@ -113,13 +161,13 @@ class mod_video_embed_mod extends BaseModuleController
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_video_embed']['list'];
-        $this->tema->tpl('mod_video_embed/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_video_embed/list');
+        $this->theme->set('site', $this->site);
     }
 
     public function autofill_metadata()
     {
-        if ($this->user->hasPermission('mod_video_embed', 'add', $this->lang['mod_video_embed']['role_errors']['add'], 1) === False) {
+        if ($this->user->hasPermission('mod_video_embed', 'add', '', 1) === False && $this->user->hasPermission('mod_video_embed', 'edit', '', 1) === False) {
             $this->_jsonResponse([
                 'status' => 'error',
                 'message' => $this->_autofillMessage('permission_denied'),
@@ -198,7 +246,7 @@ class mod_video_embed_mod extends BaseModuleController
         }
 
         $id = intval(Req::Post_Safe('id'));
-        if (!$id) {
+        if ($id === 0) {
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['ajax']['id_missing']]);
             return;
         }
@@ -280,20 +328,20 @@ class mod_video_embed_mod extends BaseModuleController
         }
 
         if ($this->mod_video_embed_model->image != '') {
-                $image = Load::mod('image');
-                $image->mod = 'mod_video_embed';
-                $image->url = $this->mod_video_embed_model->image;
-                $option = $this->_videoImageOptions();
-                if ($image->_delete_files($option)) {
+            $image = Load::mod('image');
+            $image->mod = 'mod_video_embed';
+            $image->url = $this->mod_video_embed_model->image;
+            $option = $this->_videoImageOptions();
+            if ($image->_delete_files($option)) {
                 $this->mod_video_embed_model->image = '';
                 $this->mod_video_embed_model->update('id');
-                echo $this->lang['mod_video_embed']['ajax']['success'];
+                echo json_encode(['status' => 'success', 'message' => $this->lang['mod_video_embed']['remove_image_success']]);
             } else {
-                echo $this->lang['mod_video_embed']['errors']['image_delete_failed'];
+                echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['image_delete_failed']]);
                 return FALSE;
             }
         } else {
-            echo $this->lang['mod_video_embed']['ajax']['success'];
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_video_embed']['remove_image_success']]);
         }
     }
 
@@ -308,15 +356,15 @@ class mod_video_embed_mod extends BaseModuleController
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
                 exit;
             }
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_video_embed_model = Load::model('mod_video_embed');
 
@@ -366,12 +414,12 @@ class mod_video_embed_mod extends BaseModuleController
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'success',
-                        'message' => $this->lang['mod_video_embed']['message']['oke']['add'],
+                        'message' => $this->lang['mod_video_embed']['message']['success']['add'],
                         'redirect' => $this->site['saddress'] . 'mod_video_embed/list'
                     ]);
                     exit;
                 }
-                $this->_oke_message($this->lang['mod_video_embed']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_video_embed']['message']['success']['add']);
             } else {
                 // Roll back the uploaded image if persistence fails.
                 if (isset($image->url)) {
@@ -397,9 +445,9 @@ class mod_video_embed_mod extends BaseModuleController
         $this->val = Load::validator('mod_video_embed.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_video_embed_model = Load::model('mod_video_embed');
 
@@ -451,7 +499,7 @@ class mod_video_embed_mod extends BaseModuleController
 
             $this->mod_video_embed_model->id = $id;
             if ($this->mod_video_embed_model->update('id')) {
-                $this->_oke_message($this->lang['mod_video_embed']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_video_embed']['message']['success']['edit']);
             } else {
                 // Roll back the uploaded image if persistence fails.
                 if (isset($image->url)) {
@@ -472,7 +520,7 @@ class mod_video_embed_mod extends BaseModuleController
         }
         if (Req::is_Post('delete')) {
             if ($this->_delete(Req::Post('delete'))) {
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo 'HATA';
             }
@@ -551,6 +599,7 @@ class mod_video_embed_mod extends BaseModuleController
         $colomns[] = 'lang';
         $colomns[] = 'created_at';
         $colomns[] = 'status';
+        $colomns[] = 'slider';
         $i->select($colomns);
         $limit = 50;
         $offset = 0;
@@ -575,23 +624,23 @@ class mod_video_embed_mod extends BaseModuleController
 
         $wheres = [];
 
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
+        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+            foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
                 }
             }
         }
 
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+            foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
             }
         }
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
+        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+            foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
                         $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
@@ -608,9 +657,9 @@ class mod_video_embed_mod extends BaseModuleController
             }
         }
         if (
-            (Roll::hasPermission('mod_video_embed', 'moderate_edit') !== TRUE)
+            (Role::hasPermission('mod_video_embed', 'moderate_edit') !== TRUE)
             and
-            (Roll::hasPermission('mod_video_embed', 'moderate_delete') !== TRUE)
+            (Role::hasPermission('mod_video_embed', 'moderate_delete') !== TRUE)
         ) {
             $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
@@ -673,21 +722,21 @@ class mod_video_embed_mod extends BaseModuleController
             foreach ($i->toArray() as $content) {
 
                 $last = "";
-                if (Roll::hasPermission('mod_video_embed', 'edit')) {
+                if (Role::hasPermission('mod_video_embed', 'edit')) {
                     $last .= '<button onclick="window.location.href=\''. $this->site['saddress'] .'mod_video_embed/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_video_embed']['button']['edit'] . ' </button>';
                 }
-                if (Roll::hasPermission('mod_video_embed',  'delete')) {
+                if (Role::hasPermission('mod_video_embed',  'delete')) {
                     $last .= '<button onclick="mod_video_embed_table_ajax.akm.processDelete(\''. $content['id'] .'\'); return false;" class="btn default btn-xs red">
     <i class="fa fa-trash-o"></i> ' . $this->lang['mod_video_embed']['button'][ 'delete'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_video_embed', 'gallery')) {
+                if (Role::hasPermission('mod_video_embed', 'gallery')) {
                     $last .= '<button onclick="mod_video_embed_table_ajax.akm.processGallery(\''. $content['id'] .'\'); return false;" class="btn default btn-xs blue">
     <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_video_embed']['button']['gallery'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_video_embed', 'file')) {
+                if (Role::hasPermission('mod_video_embed', 'file')) {
                     $last .= '<button onclick="mod_video_embed_table_ajax.akm.processDosya(\''. $content['id'] .'\'); return false;" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_video_embed']['button']['file'] . ' </button>';
                 }
@@ -700,7 +749,8 @@ class mod_video_embed_mod extends BaseModuleController
                     $content['lang'],
                     $content['created_at'],
                     '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>',
-                    $last
+                    $last,
+                    $content['slider']
                 ];
             }
         }
@@ -724,7 +774,7 @@ class mod_video_embed_mod extends BaseModuleController
         }
         $query = Req::Post_Safe('query');
         if ($this->_publish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -747,6 +797,50 @@ class mod_video_embed_mod extends BaseModuleController
         }
         return FALSE;
     }
+
+    public function toggle_hero_slider()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($this->user->hasPermission('mod_video_embed', 'edit', $this->lang['mod_video_embed']['role_errors']['edit']) === false) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['role_errors']['edit']]);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        if ($id <= 0) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['record']]);
+            return;
+        }
+
+        $this->mod_video_embed_model = Load::model('mod_video_embed');
+        $this->mod_video_embed_model->where_id($id)->gRo();
+        if ($this->mod_video_embed_model->getSize() === 0) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['errors']['record']]);
+            return;
+        }
+        $this->mod_video_embed_model->sync();
+
+        $new_slider = ($this->mod_video_embed_model->slider === 'y') ? 'n' : 'y';
+        
+        $update_model = Load::model('mod_video_embed');
+        $update_model->id = $id;
+        $update_model->slider = $new_slider;
+
+        if ($update_model->update('id')) {
+            echo json_encode([
+                'status' => 'success',
+                'in_hero_slider' => $new_slider === 'y',
+                'slider' => $new_slider,
+                'message' => $new_slider === 'y'
+                    ? $this->lang['mod_video_embed']['hero_slider_added']
+                    : $this->lang['mod_video_embed']['hero_slider_removed']
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_video_embed']['hero_slider_error']]);
+        }
+    }
+
     // Unpublish the selected records.
     public function unpublish()
     {
@@ -756,7 +850,7 @@ class mod_video_embed_mod extends BaseModuleController
         }
         $query = Req::Post_Safe('query');
         if ($this->_unpublish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -781,24 +875,24 @@ class mod_video_embed_mod extends BaseModuleController
     }
 
     // Store a success message for the template.
-    protected function _oke_message($mesaj)
+    protected function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     // Store a validation error message for the template.
-    protected function _error_message($mesaj)
+    protected function _error_message($message)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
     // Store a fatal error message for the template.
-    protected function _error($mesaj)
+    protected function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
     }
 
     // Check whether the request should be treated as AJAX.
@@ -932,11 +1026,7 @@ class mod_video_embed_mod extends BaseModuleController
                     $h = floor($seconds / 3600);
                     $m = floor(($seconds % 3600) / 60);
                     $s = $seconds % 60;
-                    if ($h > 0) {
-                        $metadata['duration'] = sprintf('%02d:%02d:%02d', $h, $m, $s);
-                    } else {
-                        $metadata['duration'] = sprintf('%02d:%02d', $m, $s);
-                    }
+                    $metadata['duration'] = $h > 0 ? sprintf('%02d:%02d:%02d', $h, $m, $s) : sprintf('%02d:%02d', $m, $s);
                 }
 
                 // 3. Fallback for title/description if still empty

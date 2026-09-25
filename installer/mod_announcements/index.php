@@ -2,32 +2,32 @@
 
 class mod_announcements extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_announcements';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_announcements'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list','gallery','file','moderate_edit','moderate_delete'
         );
     }
 
     public function install()
     {
-        // Tabloları Oluşturalım
+        // Create tables
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Modülü Ekleyelim
+        // Add module
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Roller ve Permleri Ekleyelim
-        if ($this->insert_roll() === FALSE) {
+        // Insert roles and permissions
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
 
@@ -39,7 +39,7 @@ class mod_announcements extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

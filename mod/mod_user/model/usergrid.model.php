@@ -21,13 +21,13 @@ class usergrid_model
 
         $rp = Req::is_Post('rp') ? Req::Post_Safe('rp') : 10;
         // ORDER BY ID ASC Gibi
-        if (in_array(Req::Post_Safe('sortorder'), $valid_sort) == False) {
+        if (in_array(Req::Post_Safe('sortorder'), $valid_sort) === False) {
             $sortorder = $valid_sort['0'];
         } else {
             $sortorder = Req::Post_Safe('sortorder');
         }
 
-        $sortname = in_array(Req::Post_Safe('sortname'), $colom) == False ? $colom['0'] : Req::Post_Safe('sortname');
+        $sortname = in_array(Req::Post_Safe('sortname'), $colom) === False ? $colom['0'] : Req::Post_Safe('sortname');
 
 
         $unique = 'id';
@@ -61,24 +61,24 @@ class usergrid_model
         $this->user->getResult(TRUE, TRUE);
 
 
-        $toplam = $this->user->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->user->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
-        // Eğer Sonuç Yoksa Malesef 
-        if($toplam< 1){
+        // If no results found 
+        if($total< 1){
             echo json_encode($this->json);
             exit();
         }
 
-        // Ofset Değeri
+        // Offset Value
         $offset = $page != 1 ? (($page-1) * $rp) : NULL;
 
         $this->user->limit($rp, $offset);
         $this->user->order($sortname, $sortorder);
         $this->user->getResult(TRUE, TRUE);
 
-        // Eğer Sonuç Yoksa
+        // If no results
         if($this->user->getSize()< 1){
             echo json_encode($this->json);
             exit();

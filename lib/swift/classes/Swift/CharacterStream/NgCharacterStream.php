@@ -251,8 +251,7 @@ Class Swift_CharacterStream_NgCharacterStream
     $read=$this->read($length);
   	if ($read!==false)
   	{
-      $ret = array_map('ord', str_split($read, 1));
-      return $ret;
+      return array_map('ord', str_split($read, 1));
   	}
   	return false;
   }
@@ -281,18 +280,12 @@ Class Swift_CharacterStream_NgCharacterStream
     {
       $this->_charReader = $this->_charReaderFactory->getReaderFor(
         $this->_charset);
-      $this->_map = array();
+      $this->_map = [];
       $this->_mapType = $this->_charReader->getMapType();
     }
   	$ignored='';
   	$this->_datas .= $chars;
     $this->_charCount += $this->_charReader->getCharPositions(substr($this->_datas, $this->_datasSize), $this->_datasSize, $this->_map, $ignored);
-    if ($ignored!==false) {
-      $this->_datasSize=strlen($this->_datas)-strlen($ignored);
-    }
-    else
-    {
-      $this->_datasSize=strlen($this->_datas);
-    }
+    $this->_datasSize = $ignored !== false ? strlen($this->_datas)-strlen($ignored) : strlen($this->_datas);
   }
 }

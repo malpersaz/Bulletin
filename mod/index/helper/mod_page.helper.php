@@ -7,46 +7,52 @@ class mod_page_helper extends indexBase
         parent::__construct();
     }
 
+    protected function _verify_image_asset($image)
+    {
+        if (empty($image)) {
+            return null;
+        }
+        $fullPath = root_dir . ltrim($image, '/');
+        return (file_exists($fullPath) && is_file($fullPath)) ? $image : null;
+    }
+
     public function page($seo)
     {
         $seo = Req::Url_Clear($seo);
-        $sayfa = Load::model('mod_page');
-        $sayfa->where_seo_and_status_and_root_and_lang($seo, 'y', 'n', $this->site['lang']);
-        $sayfa->limit(1);
-        $sayfa->gRo();
-        if ($sayfa->getSize() !== 0) {
-            $sayfa->sync();
-            $this->tema->ctx_set('d', $sayfa->toArray());
-            // Permission Kontrol
-            if ($this->_permission_kontrol($sayfa->acl_id)) {
+        $page = Load::model('mod_page');
+        $page->where_seo_and_status_and_root_and_lang($seo, 'y', 'n', $this->site['lang']);
+        $page->limit(1);
+        $page->gRo();
+        if ($page->getSize() !== 0) {
+            $page->sync();
+            $this->tema->ctx_set('d', $page->toArray());
+            // Access permission check
+            if ($this->_permission_check($page->acl_id)) {
                 return;
             }
 
-            // Hejmara xwendinê zêde bike (IP Bazlı)
-            $this->_update_view_count('mod_page', $sayfa->id);
+            // Increment view count (IP based)
+            $this->_update_view_count('mod_page', $page->id);
 
-            $this->_parent_id_pages($sayfa->id);
+            $this->_parent_id_pages($page->id);
 
-
-            if ($sayfa->category_id !== 0) {
-                $this->_related_content($sayfa->category_id);
+            if ($page->category_id !== 0) {
+                $this->_related_content($page->category_id);
             }
 
-            if (isset($sayfa->gallery_id) && $sayfa->gallery_id != 0) {
-                $this->_gallery_resimgetir('mod_page', $sayfa->gallery_id);
+            if (isset($page->gallery_id) && $page->gallery_id != 0) {
+                $this->_gallery_get_images('mod_page', $page->gallery_id);
             } else {
-                $this->_gallery_resimgetir('mod_page', $sayfa->id);
+                $this->_gallery_get_images('mod_page', $page->id);
             }
 
-            if (isset($sayfa->file_id) && $sayfa->file_id != 0) {
-                $this->_mod_attachment('mod_page', $sayfa->file_id);
+            if (isset($page->file_id) && $page->file_id != 0) {
+                $this->_mod_attachment('mod_page', $page->file_id);
             } else {
-                $this->_mod_attachment('mod_page', $sayfa->id);
+                $this->_mod_attachment('mod_page', $page->id);
             }
 
-
-            //print_r($sayfa);
-            $this->_mod_ust_list('mod_page', $sayfa->parent_id, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
+            $this->_mod_ust_list('mod_page', $page->parent_id, ['id', 'name', 'seo', 'order', 'lang', 'root'], 'order');
         } else {
             return $this->_404();
         }

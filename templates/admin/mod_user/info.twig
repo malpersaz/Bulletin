@@ -1,165 +1,30 @@
-{% extends 'admin/layout.twig' %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
 
 {% set hide_search = true %}
 {% set hide_fab = true %}
 {% set hide_navbar = true %}
 
 {% block title %}
-	{{ lang.mod_user.info_change }}
+	{{ lang.mod_user.profile_menu.edit_profile }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_user.info_change }}
+	{{ lang.mod_user.profile_menu.edit_profile }}
 {% endblock %}
 
 {% block content %}
-	<style>
-			.edit-container {
-				padding: 12px;
-				display: flex;
-				flex-direction: column;
-				gap: 12px;
-				padding-bottom: 96px;
-			}
-			.edit-card {
-				background: var(--md-sys-color-surface);
-				border-radius: 18px;
-				padding: 16px;
-				box-shadow: var(--md-sys-elevation-1);
-			}
-			.form-row {
-				margin-bottom: 14px;
-			}
-		.form-row:last-child {
-			margin-bottom: 0;
-		}
-		.m3-input-wrapper {
-			position: relative;
-			margin-bottom: 4px;
-		}
-			.m3-input-lg {
-				width: 100%;
-				padding: 14px 16px;
-				border-radius: 14px;
-			border: 1px solid var(--md-sys-color-outline);
-			background: transparent;
-			color: var(--md-sys-color-on-surface);
-			font-size: 16px;
-			outline: none;
-            box-sizing: border-box;
-		}
-			.m3-input-lg:focus {
-				border-color: var(--md-sys-color-primary);
-				border-width: 2px;
-				padding: 13px 15px;
-			}
-		.m3-input-lg:focus + .m3-floating-label,
-		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
-			top: -10px;
-			left: 12px;
-			font-size: 12px;
-			color: var(--md-sys-color-primary);
-			background: var(--md-sys-color-surface);
-			padding: 0 4px;
-		}
-		.m3-floating-label {
-			position: absolute;
-			top: 12px;
-			left: 16px;
-			color: var(--md-sys-color-on-surface-variant);
-			font-size: 16px;
-			pointer-events: none;
-			transition: all 0.2s;
-		}
-        .image-preview-container {
-            margin-top: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px dashed var(--md-sys-color-outline);
-            border-radius: 12px;
-            padding: 24px;
-            position: relative;
-            background: var(--md-sys-color-surface-container-lowest);
-            min-height: 120px;
-        }
-        .image-preview-container img {
-            max-width: 150px;
-            max-height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: var(--md-sys-elevation-2);
-            margin-bottom: 16px;
-        }
-        .upload-btn-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .m3-upload-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            background: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-        }
-        .m3-upload-button:hover {
-            box-shadow: var(--md-sys-elevation-1);
-            background: var(--md-sys-color-primary-container-hover, var(--md-sys-color-primary-container));
-        }
-        .m3-upload-button i {
-            font-size: 18px;
-        }
-	        .filter-group-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 8px;
-            margin-left: 4px;
-	        }
-	        .contact-grid {
-	            display: grid;
-	            gap: 14px;
-	        }
-	        .sr-only {
-	            position: absolute;
-	            width: 1px;
-	            height: 1px;
-	            padding: 0;
-	            margin: -1px;
-	            overflow: hidden;
-	            clip: rect(0, 0, 0, 0);
-	            white-space: nowrap;
-	            border: 0;
-	        }
-	</style>
+	<div class="edit-container" data-modal-title="{{ lang.mod_user.profile_menu.edit_profile }}" data-modal-icon="bi-person-gear">
 
-	<div class="edit-container">
-		{% if oke is defined %}
-			<div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
+		{% if success is defined %}
+			<div class="banner-m3 banner-success">
 				<i class="bi bi-check-circle-fill"></i>
-				<span>{{ mesaj }}</span>
+				<span>{{ message }}</span>
 			</div>
-			<script>
-				setTimeout(() => {
-					window.location.href = "{{ site.saddress }}mod_user/panel";
-				}, 2000);
-			</script>
 		{% else %}
 			{% if errors is defined %}
-				<div class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+				<div class="banner-m3 banner-danger">
 					{% for error in errors %}
-						<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
+						<div class="error-item">
 							<i class="bi bi-exclamation-circle-fill"></i>
 							<span>{{ error }}</span>
 						</div>
@@ -167,272 +32,157 @@
 				</div>
 			{% endif %}
 
-			<form method="POST" action="" id="bilgiForm" enctype="multipart/form-data">
-				{# Card 1: Account #}
-				<div class="edit-card">
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-								<input class="m3-input-lg" name="current_password" type="password" id="current_password" placeholder=" " required>
-								<label class="m3-floating-label">{{ lang.mod_user.current_password }}</label>
-							</div>
-						</div>
+			<form method="POST" action="" id="profileInfoForm" enctype="multipart/form-data" novalidate
+				data-msg-current-password-required="{{ lang.mod_user.js.current_password_required }}"
+				data-msg-email-required="{{ lang.mod_user.js.email_required }}"
+				data-msg-unsaved-title="{{ lang.mod_user.js.unsaved_changes_title }}"
+				data-msg-unsaved-message="{{ lang.mod_user.js.unsaved_changes_message|default('') }}"
+				data-msg-exit-without-saving="{{ lang.mod_user.js.exit_without_saving }}"
+				data-msg-save="{{ lang.mod_user.button.save }}"
+				data-msg-continue-editing="{{ lang.mod_user.js.continue_editing|default(lang.mod_user.js.stay) }}">
+				<input type="file" name="image" id="image" class="visually-hidden" data-action="preview-avatar">
 
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="email" value="{{ d.email }}" type="email" id="email" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.your_email }}</label>
-						</div>
+				{# Profile Hero Banner #}
+				<div class="m3-profile-hero">
+					<div class="m3-hero-avatar-wrapper" id="avatarPreviewContainer" data-initial-src="{% if d.image is defined and d.image != '' %}{{ site.iaddress }}mod_user/{{ d.image }}{% endif %}" data-initial-id="{{ d.id|default('') }}">
+						{% if d.image is defined and d.image != '' %}
+							<img src="{{ site.iaddress }}mod_user/{{ d.image }}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+							<button type="button" class="m3-hero-avatar-btn remove-btn" data-action="delete-avatar" data-id="{{ d.id|default('') }}" title="{{ lang.mod_user.button.delete }}">
+								<i class="bi bi-trash"></i>
+							</button>
+						{% else %}
+							<div class="m3-hero-avatar-placeholder" data-action="select-avatar">
+								<i class="bi bi-person-fill"></i>
+							</div>
+							<button type="button" class="m3-hero-avatar-btn upload-btn" data-action="select-avatar" title="{{ lang.mod_user.button.select_image }}">
+								<i class="bi bi-camera-fill"></i>
+							</button>
+						{% endif %}
+					</div>
+					<div class="m3-hero-info">
+						<h3 class="m3-hero-name">{{ d.name|default('') }} {{ d.last_name|default('') }}</h3>
+						<p class="m3-hero-email">{{ d.email|default('') }}</p>
+						{% if d.created_at is defined and d.created_at != '' %}
+							<span class="m3-hero-badge">
+								<i class="bi bi-calendar-event"></i> {{ lang.mod_user.membership_date }}: {{ d.created_at }}
+							</span>
+						{% endif %}
 					</div>
 				</div>
 
-				{# Card 2: Personal Info #}
-					<div class="edit-card" style="margin-top: 16px;">
+				{# Segmented Tab Pill Navigation #}
+				<div class="m3-profile-tabs" role="tablist">
+					<button type="button" class="m3-tab-btn active" data-action="switch-tab" data-tab-target="tab-basic-info" role="tab" aria-selected="true">
+						<i class="bi bi-person-vcard"></i>
+						<span>{{ lang.mod_user.tabs.basic_info }}</span>
+					</button>
+					<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-author-profile" role="tab" aria-selected="false">
+						<i class="bi bi-journal-text"></i>
+						<span>{{ lang.mod_user.tabs.author_profile }}</span>
+					</button>
+					<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-social-media" role="tab" aria-selected="false">
+						<i class="bi bi-share"></i>
+						<span>{{ lang.mod_user.tabs.social_media }}</span>
+					</button>
+				</div>
+
+				{# Tab 1: Basic Info (High Priority) #}
+				<div class="m3-tab-content active" id="tab-basic-info" role="tabpanel">
+					<div class="edit-card">
 						<div class="contact-grid">
 							<div class="form-row">
 								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="name" value="{{ d.name }}" type="text" id="name" placeholder=" " required>
-									<label class="m3-floating-label">{{ lang.mod_user.your_name }}</label>
+									<input class="m3-input-lg" name="name" value="{{ d.name|default('') }}" type="text" id="name" autocomplete="given-name" placeholder=" " required>
+									<label class="m3-floating-label" for="name">{{ lang.mod_user.your_name }}</label>
 								</div>
 							</div>
 
 							<div class="form-row">
 								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="last_name" value="{{ d.last_name }}" type="text" id="last_name" placeholder=" " required>
-									<label class="m3-floating-label">{{ lang.mod_user.your_surname }}</label>
-								</div>
-							</div>
-
-							<div class="form-row">
-								{% include 'mod_user/parts/phone_input.twig' with {
-                                'country_code_value': d.country_code,
-                                'phone_value': d.phone,
-                                'label_text': lang.mod_user.mobile_phone,
-                                'input_id': 'phone'
-                            } %}
-							</div>
-
-							<div class="form-row">
-								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="city" value="{{ d.city }}" type="text" id="city" placeholder=" ">
-									<label class="m3-floating-label">{{ lang.mod_user.city }}</label>
+									<input class="m3-input-lg" name="last_name" value="{{ d.last_name|default('') }}" type="text" id="last_name" autocomplete="family-name" placeholder=" " required>
+									<label class="m3-floating-label" for="last_name">{{ lang.mod_user.your_surname }}</label>
 								</div>
 							</div>
 						</div>
-					</div>
 
-				{# Card 3: Author Profile #}
-				<div class="edit-card" style="margin-top: 16px;">
-
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name }}" type="text" id="blog_name" placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.blog_name }}</label>
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="email" value="{{ d.email|default('') }}" type="email" id="email" autocomplete="email" placeholder=" " required>
+								<label class="m3-floating-label" for="email">{{ lang.mod_user.your_email }}</label>
+							</div>
 						</div>
-					</div>
 
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<textarea class="m3-input-lg" name="about" id="about" rows="4" placeholder=" " oninput="updateCharCounter(this, 'aboutCounter', 255)">{{ d.about }}</textarea>
-							<label class="m3-floating-label">{{ lang.mod_user.about_me }}</label>
+						<div class="form-row">
+							{% include 'mod_user/parts/phone_input.twig' with {
+								'country_code_value': d.country_code|default(''),
+								'phone_value': d.phone|default(''),
+								'label_text': lang.mod_user.mobile_phone,
+								'input_id': 'phone'
+							} %}
 						</div>
-						<div style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;" id="aboutCounter">
-							{{ d.about|length }} / 255
+
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="city" value="{{ d.city|default('') }}" type="text" id="city" autocomplete="address-level2" placeholder=" ">
+								<label class="m3-floating-label" for="city">{{ lang.mod_user.city }}</label>
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="current_password" type="password" id="current_password" autocomplete="current-password" placeholder=" " required>
+								<label class="m3-floating-label" for="current_password">{{ lang.mod_user.current_password }}</label>
+								<div class="input-icon-right" data-action="toggle-password" data-target="current_password" role="button" tabindex="0">
+									<i class="bi bi-eye"></i>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
 
-				{# Card 4: Social Media #}
-				<div class="edit-card" style="margin-top: 16px;">
-					<label class="filter-group-label">{{ lang.mod_user.admin.social_media }}</label>
-					{% include 'mod_user/parts/social_links.twig' with {
-                        'social_platforms': social_platforms,
-                        'social_links': d.social_links
-                    } %}
+				{# Tab 2: Author Profile (Medium Priority) #}
+				<div class="m3-tab-content" id="tab-author-profile" role="tabpanel">
+					<div class="edit-card">
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name|default('') }}" type="text" id="blog_name" placeholder=" ">
+								<label class="m3-floating-label" for="blog_name">{{ lang.mod_user.blog_name }}</label>
+							</div>
+						</div>
+
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<textarea class="m3-input-lg" name="about" id="about" rows="5" placeholder=" " data-counter-id="aboutCounter" data-counter-max="255">{{ d.about|default('') }}</textarea>
+								<label class="m3-floating-label" for="about">{{ lang.mod_user.about_me }}</label>
+							</div>
+							<div class="m3-char-counter" id="aboutCounter">
+								{{ d.about|default('')|length }} / 255
+							</div>
+						</div>
+					</div>
 				</div>
 
-				{# Card 5: Image And Dates #}
-				<div class="edit-card" style="margin-top: 16px;">
-
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input type="file" name="image" id="image" style="display: none;" onchange="previewAvatar(this)">
-						</div>
-						<div class="image-preview-container" id="avatarPreviewContainer">
-							{% if d.image is defined and d.image != '' %}
-								<div id="image-container" style="display: flex; flex-direction: column; align-items: center;">
-									<img src="{{ site.iaddress }}mod_user/{{ d.image }}" id="avatarPreview" alt="Avatar">
-									<div style="text-align: center;">
-										<button type="button" class="m3-btn-outlined" onclick="deleteImage('{{ d.id }}')" style="color: var(--md-sys-color-error); border-color: var(--md-sys-color-error); font-size: 18px; padding: 8px; border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-											<i class="bi bi-trash"></i>
-										</button>
-									</div>
-								</div>
-							{% else %}
-                                <div class="upload-btn-wrapper">
-                                    <button type="button" class="m3-upload-button" onclick="document.getElementById('image').click()">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        {{ lang.mod_user.button.select_image }}
-                                    </button>
-                                    <div style="color: var(--md-sys-color-on-surface-variant); font-size: 12px;">{{ lang.mod_user.button.select_image }}</div>
-                                </div>
-							{% endif %}
-						</div>
+				{# Tab 3: Social Media (Secondary Priority) #}
+				<div class="m3-tab-content" id="tab-social-media" role="tabpanel">
+					<div class="edit-card">
+						<label class="filter-group-label">{{ lang.mod_user.admin.social_media }}</label>
+						{% include 'mod_user/parts/social_links.twig' with {
+							'social_platforms': social_platforms,
+							'social_links': d.social_links|default({})
+						} %}
 					</div>
+				</div>
 
-					<div class="form-row" style="margin-top: 24px;">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" value="{{ d.created_at }}" type="text" disabled placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.membership_date }}</label>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" value="{{ d.updated_at }}" type="text" disabled placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.update_date }}</label>
-						</div>
-					</div>
+				{# Action Bar #}
+				<div class="m3-form-actions-sticky">
+					<button type="submit" name="edit" value="{{ lang.mod_user.button.save }}" class="m3-btn-filled full-width">
+						<i class="bi bi-check-lg"></i>
+						<span>{{ lang.mod_user.button.save }}</span>
+					</button>
 				</div>
 			</form>
 		{% endif %}
 	</div>
 {% endblock %}
 
-{% block fixed_bottom %}
-	<style>
-		.m3-final-bar {
-			position: fixed !important;
-			bottom: 0 !important;
-			left: 0 !important;
-			right: 0 !important;
-			height: 80px !important;
-			background: var(--md-sys-color-surface-container) !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 12px !important;
-			padding: 0 16px !important;
-			z-index: 1000 !important;
-			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
-			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
-		}
-			.m3-btn-half {
-				flex: 0 0 auto !important;
-				width: 56px !important;
-				height: 56px !important;
-				border-radius: 50% !important;
-				display: flex !important;
-				align-items: center !important;
-				justify-content: center !important;
-				text-decoration: none !important;
-			border: none !important;
-			cursor: pointer !important;
-			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-		}
-		.m3-btn-half:active {
-			transform: scale(0.98) !important;
-			opacity: 0.9 !important;
-		}
-		@media(min-width: 600px) {
-			.m3-final-bar {
-				max-width: 480px !important;
-				left: 50% !important;
-				transform: translateX(-50%) !important;
-				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-bottom-left-radius: 32px !important;
-				border-bottom-right-radius: 32px !important;
-				bottom: 8px !important;
-				height: 88px !important;
-				width: calc(100% - 16px) !important;
-			}
-		}
-	</style>
-	{% if oke is not defined %}
-		<div class="m3-final-bar">
-				<a href="{{ site.saddress }}mod_user/panel" class="m3-btn-half" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
-					<i class="bi bi-x-lg"></i>
-					<span class="sr-only">{{ lang.mod_user.button.cancel }}</span>
-				</a>
-				<button type="submit" form="bilgiForm" name="edit" value="{{ lang.mod_user.change }}" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
-					<i class="bi bi-check-lg"></i>
-					<span class="sr-only">{{ lang.mod_user.change }}</span>
-				</button>
-		</div>
-	{% endif %}
-{% endblock %}
-
-{% block scripts %}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script>
-		function previewAvatar(input) {
-			if (input.files && input.files[0]) {
-				var reader = new FileReader();
-				reader.onload = function (e) {
-					var container = document.getElementById('avatarPreviewContainer');
-					container.innerHTML = `
-                        <div id="image-container" style="display: flex; flex-direction: column; align-items: center;">
-                            <img src="${e.target.result}" id="avatarPreview" alt="Avatar">
-                            <div style="text-align: center;">
-                                <button type="button" class="m3-btn-outlined" onclick="location.reload()" style="color: var(--md-sys-color-outline); border-color: var(--md-sys-color-outline); font-size: 12px; padding: 4px 16px; border-radius: 20px;">
-                                    <i class="bi bi-x-circle"></i> {{ lang.mod_user.button.cancel }}
-                                </button>
-                            </div>
-                        </div>`;
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
-
-		function updateCharCounter(input, counterId, max) {
-			const currentLength = input.value.length;
-			const counter = document.getElementById(counterId);
-			if (counter) {
-				counter.innerText = `${currentLength} / ${max}`;
-				if (currentLength > max) {
-					counter.style.color = 'var(--md-sys-color-error)';
-				} else {
-					counter.style.color = 'var(--md-sys-color-on-surface-variant)';
-				}
-			}
-		}
-
-        function deleteImage(id) {
-            Swal.fire({
-                title: '{{ lang.mod_user.admin.confirm_remove_image }}',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ba1a1a',
-                cancelButtonColor: '#6e7881',
-                confirmButtonText: '{{ lang.mod_user.admin.yes }}',
-                cancelButtonText: '{{ lang.mod_user.admin.no }}'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formData = new FormData();
-                    formData.append('id', id);
-
-                    fetch("{{ site.address }}mod_user/delete_image", {
-                        method: "POST",
-                        body: formData
-                    })
-                    .then(r => r.text())
-                    .then(msg => {
-                        if (msg === 'Oke') {
-                            Swal.fire('{{ lang.mod_user.admin.image_removed_success }}', '', 'success');
-                            document.getElementById('avatarPreviewContainer').innerHTML = `
-                                <div class="upload-btn-wrapper">
-                                    <button type="button" class="m3-upload-button" onclick="document.getElementById('image').click()">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        {{ lang.mod_user.button.select_image }}
-                                    </button>
-                                    <div style="color: var(--md-sys-color-on-surface-variant); font-size: 12px;">{{ lang.mod_user.button.select_image }}</div>
-                                </div>`;
-                        } else {
-                            Swal.fire('{{ lang.mod_user.error_label }}', msg, 'error');
-                        }
-                    });
-                }
-            });
-        }
-	</script>
-{% endblock %}
+{% block fixed_bottom %}{% endblock %}

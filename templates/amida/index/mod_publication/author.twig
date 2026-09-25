@@ -1,0 +1,178 @@
+{% extends "layouts/base.twig" %}
+
+{% set author = ctx_get('author') %}
+{% set publications = ctx_get('publications') %}
+{% set pagination = ctx_get('pagination') %}
+{% set page = ctx_get('page') %}
+{% set username = ctx_get('username') %}
+{% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+{% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') %}
+{% set author_description = (author.about is defined and author.about is not empty ? author.about|striptags|trim : '') %}
+{% if author_description == '' and d is defined and d.description is defined and d.description is not empty %}
+    {% set author_description = d.description|striptags|trim %}
+{% endif %}
+{% if author_description == '' %}
+    {% set author_description = site.description %}
+{% endif %}
+{% set author_share_image = site.iaddress ~ 'mod_settings/logo.png' %}
+{% if author.user_image is defined and author.user_image is not empty %}
+    {% set author_share_image = site.iaddress ~ 'mod_user/' ~ author.user_image %}
+{% endif %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
+{% endblock %}
+
+{% block title %}
+    <title>{{ author_name }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block meta_tags %}
+    <meta name="author" content="{{ author_name }}">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta property="og:type" content="profile">
+    <meta property="og:url" content="{{ author_url }}">
+    <meta property="og:title" content="{{ author_name }} - {{ site.title }}">
+    <meta property="og:description" content="{{ author_description }}">
+    <meta property="og:image" content="{{ author_share_image }}">
+    <meta property="og:image:secure_url" content="{{ author_share_image }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    {% set og_locale = site.lang ~ '_SE' %}
+    {% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+    {% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+    {% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+    {% endif %}
+    <meta property="og:locale" content="{{ og_locale }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ author_url }}">
+    <meta name="twitter:title" content="{{ author_name }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ author_description }}">
+    <meta name="twitter:image" content="{{ author_share_image }}">
+{% endblock %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/author.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
+
+{% block content %}
+<section id="publication-author-page">
+    <div class="container author-shell">
+        <ol class="author-breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                <meta itemprop="position" content="1" />
+            </li>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}authors"><span itemprop="name">{{ lang.index.mod_publication.authors }}</span></a>
+                <meta itemprop="position" content="2" />
+            </li>
+            <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <span itemprop="name">{{ author_name }}</span>
+                <meta itemprop="position" content="3" />
+            </li>
+        </ol>
+
+        <div class="author-layout">
+            <main class="author-main">
+                <section class="author-identity western-modern" itemscope itemtype="https://schema.org/Person">
+                    <div class="author-identity-inner">
+                        <div class="author-avatar">
+                            {% if author.user_image is defined and author.user_image is not empty %}
+                                <img src="{{ site.iaddress }}mod_user/{{ author.user_image }}" alt="{{ author_name }}" loading="lazy">
+                            {% else %}
+                                <span>{{ author_initials }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="author-copy">
+                            <h1 class="author-title" itemprop="name">{{ author_name }}</h1>
+                            {% if author.about is defined and author.about is not empty %}
+                            <div class="author-bio">
+                                {{ author.about|raw }}
+                            </div>
+                            {% endif %}
+                            <div class="author-meta">
+                                <span class="author-role">{{ lang.index.mod_publication.author }}</span>
+                                <span class="meta-divider">·</span>
+                                <span class="author-handle">
+                                    <i class="bi bi-at"></i>{{ username }}
+                                </span>
+                                {% if username is not empty %}
+                                    <span class="meta-divider">·</span>
+                                    <a class="author-social-link author-pm" href="{{ site.saddress }}dm/{{ username|url_encode }}">
+                                        <i class="bi bi-envelope"></i><span>{{ lang.index.mod_user_pm.send_message }}</span>
+                                    </a>
+                                {% endif %}
+                                {% if author_social_links is defined and author_social_links is not empty %}
+                                    {% for link in author_social_links %}
+                                        <span class="meta-divider">·</span>
+                                        <a class="author-social-link author-{{ link.platform }}" href="{{ link.url }}" target="_blank" rel="noopener">
+                                            <i class="{{ link.icon_class }}"></i><span>{{ link.label }}</span>
+                                        </a>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {% if publications %}
+                    <div class="author-stream">
+                        {% for publication in publications %}
+                            {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                            <article class="publication-row">
+                                <div class="publication-topline">
+                                    <span class="publication-date">
+                                        <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                    </span>
+                                    {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
+                                        <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
+                                    {% endif %}
+                                </div>
+                                <h2 class="publication-title">
+                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication_title }}</a>
+                                </h2>
+                            </article>
+                        {% endfor %}
+                    </div>
+
+                    {% if pagination %}
+                        <div class="pagination-wrap">
+                            <nav aria-label="{{ author_name }}">
+                                <ul class="pagination justify-content-center">
+                                    {% for s in pagination %}
+                                        {% if s == '...' %}
+                                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                                        {% elseif s == page %}
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link">{{ s }}</span>
+                                            </li>
+                                        {% elseif s == 1 %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}">{{ s }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}/{{ s }}">{{ s }}</a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </nav>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </main>
+
+            <aside class="author-sidebar">
+                {{ include("index/mod_publication/other_authors.twig") }}
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -9,6 +9,6 @@ if (file_exists($localConfig)) {
 }
 
 $db = array();
-Kayit::ekle('database', 'installed');
-Kayit::ekle('db_config', $db);
+Registry::add('database', 'installed');
+Registry::add('db_config', $db);
 unset($db);

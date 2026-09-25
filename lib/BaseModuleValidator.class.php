@@ -6,14 +6,14 @@ class BaseModuleValidator
     protected $validation_lang;
     protected $module_name;
     protected $rules = [];
-    protected $hatalar = [];
+    protected $errors = [];
     protected $current_lang;
     
     public function __construct($module_name)
     {
         $this->module_name = $module_name;
         $this->lang = Load::lang($module_name);
-        $this->current_lang = Kayit::getir('lang');
+        $this->current_lang = Registry::get('lang');
         $this->loadValidationLanguage();
         $this->setupRules();
     }
@@ -26,8 +26,8 @@ class BaseModuleValidator
             include $validation_lang_file;
             $this->validation_lang = isset($lang['validation']) ? $lang['validation'] : [];
         } else {
-            // Fallback to Turkish if language file doesn't exist
-            $fallback_file = root_dir . 'lang' . DS . 'validator' . DS . 'tr.php';
+            // Fallback to English if language file doesn't exist
+            $fallback_file = root_dir . 'lang' . DS . 'validator' . DS . 'en.php';
             if (file_exists($fallback_file)) {
                 include $fallback_file;
                 $this->validation_lang = isset($lang['validation']) ? $lang['validation'] : [];
@@ -44,22 +44,22 @@ class BaseModuleValidator
     
     public function check($id = null)
     {
-        $this->hatalar = [];
-        
+        $this->errors = [];
+
         // Use the existing Validator system
         $validator = Load::lib('Validator');
-        
+
         foreach ($this->rules as $field => $fieldRules) {
             foreach ($fieldRules as $rule => $params) {
                 $this->validateField($validator, $field, $rule, $params);
             }
         }
-        
+
         if ($validator->check()) {
-            $this->hatalar = $validator->list_errors();
+            $this->errors = $validator->list_errors();
             return true; // Has errors
         }
-        
+
         return false; // No errors
     }
     
@@ -72,9 +72,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('required', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'required',
+                    'func' => 'required',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -82,12 +82,12 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('length', $fieldLabel, $params['min'], $params['max']);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'length',
+                    'func' => 'length',
                     'arg' => [
                         'min' => $params['min'],
                         'max' => $params['max']
                     ],
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -95,9 +95,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('in', $fieldLabel, implode(', ', $params));
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'array',
+                    'func' => 'array',
                     'arg' => $params,
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -105,9 +105,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('email', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'email',
+                    'func' => 'email',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -115,9 +115,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('date', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'date',
+                    'func' => 'date',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -125,9 +125,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('numeric', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'num',
+                    'func' => 'num',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -135,9 +135,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('alpha', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'char',
+                    'func' => 'char',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
                 
@@ -145,9 +145,9 @@ class BaseModuleValidator
                 $message = $this->getValidationMessage('alphaNum', $fieldLabel);
                 $validator->add([
                     'name' => $field,
-                    'fonk' => 'alphanum',
+                    'func' => 'alphanum',
                     'arg' => '',
-                    'mesaj' => $message
+                    'message' => $message
                 ]);
                 break;
         }
@@ -170,19 +170,19 @@ class BaseModuleValidator
             return sprintf($this->validation_lang[$rule], ...$params);
         }
         
-        // Fallback to default messages if validation language not available
+        // Fallback to default English messages if validation language not available
         $defaultMessages = [
-            'required' => '%s alanı gereklidir',
-            'length' => '%s %s ile %s karakter arasında olmalıdır',
-            'email' => '%s geçerli bir e-posta adresi olmalıdır',
-            'date' => '%s geçerli bir tarih olmalıdır',
-            'numeric' => '%s sayısal bir değer olmalıdır',
-            'alpha' => '%s sadece harf içerebilir',
-            'alphaNum' => '%s sadece harf ve rakam içerebilir',
-            'in' => '%s şu değerlerden biri olmalıdır: %s',
-            'unique' => '%s benzersiz olmalıdır',
-            'min' => '%s en az %s olmalıdır',
-            'max' => '%s en fazla %s olabilir'
+            'required' => '%s field is required',
+            'length' => '%s must be between %s and %s characters',
+            'email' => '%s must be a valid email address',
+            'date' => '%s must be a valid date',
+            'numeric' => '%s must be a numeric value',
+            'alpha' => '%s must contain only letters',
+            'alphaNum' => '%s must contain only letters and numbers',
+            'in' => '%s must be one of: %s',
+            'unique' => '%s must be unique',
+            'min' => '%s must be at least %s',
+            'max' => '%s can be at most %s'
         ];
         
         if (isset($defaultMessages[$rule])) {
@@ -190,11 +190,11 @@ class BaseModuleValidator
         }
         
         // Ultimate fallback
-        return $params[0] . ' alanı geçersiz';
+        return $params[0] . ' field is invalid';
     }
     
     public function getErrors()
     {
-        return $this->hatalar;
+        return $this->errors;
     }
 }

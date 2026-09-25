@@ -10,6 +10,7 @@ class mod_content_mod extends BaseModuleController
 
     protected $has_gallery = true;
     protected $has_files = true;
+    protected $has_faq = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -17,8 +18,13 @@ class mod_content_mod extends BaseModuleController
     ];
 
     protected $need_nested_data = [
-        'mod_category' => 'select_nested_category_id_result',
+        'mod_content_category' => 'select_nested_category_id_result',
         'mod_menu' => 'select_nested_menu_result'
+    ];
+
+    protected $need_content_refs = [
+        'mod_gallery_mod' => ['mod_content_gallery_id'],
+        'mod_attachment' => ['mod_content_file_id']
     ];
 
     protected $image_fields = [
@@ -26,12 +32,12 @@ class mod_content_mod extends BaseModuleController
             'name' => 'image',
             'sizes' => [
                 '/' => [
-                    'width' => 1200,
+                    'width' => 1600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
                 '/thumb' => [
-                    'width' => 250,
+                    'width' => 600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
@@ -49,6 +55,44 @@ class mod_content_mod extends BaseModuleController
     public function __construct()
     {
         parent::__construct('mod_content');
+
+        $table = 'mod_content';
+        $column = 'slider';
+        $safeTable = addslashes($table);
+        $safeColumn = addslashes($column);
+        $adapter = (string) $this->db->getAdapterType();
+        $exists = false;
+
+        if (strpos($adapter, 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+            $rows = $this->db->toArray();
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    if (isset($row['name']) && $row['name'] === $column) {
+                        $exists = true;
+                        break;
+                    }
+                }
+            }
+        } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+            $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+            $this->db->fetch_array($sql);
+            $exists = ($this->db->getSize() !== 0);
+        } else {
+            $this->db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+            $exists = ($this->db->getSize() !== 0);
+        }
+
+        if (!$exists) {
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider TEXT CHECK(slider IN ('y', 'n')) NOT NULL DEFAULT 'n'";
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider VARCHAR(1) NOT NULL DEFAULT 'n'";
+            } else {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `slider` ENUM('y', 'n') NOT NULL DEFAULT 'n'";
+            }
+            $this->db->query($sql);
+        }
     }
 
     protected function getFormData()
@@ -56,7 +100,7 @@ class mod_content_mod extends BaseModuleController
         $data = parent::getFormData();
 
         // Get All Categories for Wizard (Flat List with Lang)
-        $mod_category = Load::model('mod_category');
+        $mod_category = Load::model('mod_content_category');
         $mod_category->select('id, name, lang');
         $mod_category->addWhere("root != 'y'");
         $mod_category->order('order', 'ASC')->all();
@@ -67,23 +111,11 @@ class mod_content_mod extends BaseModuleController
 
     protected function beforeSave($model)
     {
-        $model->created_at = Req::Post_Safe('created_at') ? Req::Post_Safe('created_at') : date('Y-m-d H:i:s');
+        $model->created_at = $this->normalizeDateTime(Req::Post_Safe('created_at'));
         $model->updated_at = date('Y-m-d H:i:s');
 
         // Handle serialization of video references
-        $videos = explode(',', Req::Post_Safe('video'));
-        $data = [];
-        foreach ($videos as $video_key) {
-            if ($video_key !== '') {
-                $data[] = $video_key;
-            }
-        }
-        if (!empty($data)) {
-            $data = array_unique($data);
-            $model->video = serialize($data);
-        } else {
-            $model->video = '';
-        }
+        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
         $model->user_id = $this->session->get('id');
 
@@ -93,21 +125,12 @@ class mod_content_mod extends BaseModuleController
     protected function beforeUpdate($model, $id)
     {
         $model->updated_at = date('Y-m-d H:i:s');
+        if (isset($model->created_at)) {
+            $model->created_at = $this->normalizeDateTime($model->created_at);
+        }
 
         // Handle serialization of video references
-        $videos = explode(',', Req::Post_Safe('video'));
-        $data = [];
-        foreach ($videos as $video_key) {
-            if ($video_key !== '') {
-                $data[] = $video_key;
-            }
-        }
-        if (!empty($data)) {
-            $data = array_unique($data);
-            $model->video = serialize($data);
-        } else {
-            $model->video = '';
-        }
+        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
         return $model;
     }
@@ -184,7 +207,7 @@ class mod_content_mod extends BaseModuleController
             }
         }
 
-        if (Roll::hasPermission('mod_content', 'moderate_edit') !== TRUE && Roll::hasPermission('mod_content', 'moderate_delete') !== TRUE) {
+        if (Role::hasPermission('mod_content', 'moderate_edit') !== TRUE && Role::hasPermission('mod_content', 'moderate_delete') !== TRUE) {
             $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
@@ -223,7 +246,7 @@ class mod_content_mod extends BaseModuleController
         }
 
         $user_map = [];
-        if (!empty($user_ids)) {
+        if ($user_ids !== []) {
             $user_ids = array_unique($user_ids);
             $user_model = Load::model('mod_user.user');
             $user_model->select('id, name, last_name');
@@ -239,26 +262,26 @@ class mod_content_mod extends BaseModuleController
         if ($getCount > 0 && is_array($records)) {
             foreach ($records as $content) {
                 $last = "";
-                if (Roll::hasPermission('mod_content', 'edit')) {
-                    $last .= '<button onclick="mod_content_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple hidden-xs">
+                if (Role::hasPermission('mod_content', 'edit')) {
+                    $last .= '<button data-action="edit" data-id="' . $content['id'] . '" class="btn default btn-xs purple hidden-xs">
     <i class="fa fa-edit"></i> <span class="hidden-xs">' . $this->lang['mod_content']['button']['edit'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_content', 'delete')) {
-                    $last .= '<button onclick="mod_content_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red hidden-xs">
+                if (Role::hasPermission('mod_content', 'delete')) {
+                    $last .= '<button data-action="delete" data-id="' . $content['id'] . '" class="btn default btn-xs red hidden-xs">
     <i class="fa fa-trash-o"></i> <span class="hidden-xs">' . $this->lang['mod_content']['button']['delete'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_content', 'gallery')) {
-                    $last .= '<button onclick="mod_content_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue hidden-xs">
+                if (Role::hasPermission('mod_content', 'gallery')) {
+                    $last .= '<button data-action="gallery" data-id="' . $content['id'] . '" class="btn default btn-xs blue hidden-xs">
     <i class="fa fa-file-image-o"></i> <span class="hidden-xs">' . $this->lang['mod_content']['button']['gallery'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_content', 'file')) {
-                    $last .= '<button onclick="mod_content_table_ajax.akm.processFile(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green hidden-xs">
+                if (Role::hasPermission('mod_content', 'file')) {
+                    $last .= '<button data-action="file" data-id="' . $content['id'] . '" class="btn default btn-xs green hidden-xs">
     <i class="fa fa-file-zip-o"></i> <span class="hidden-xs">' . $this->lang['mod_content']['button']['file'] . '</span> </button>';
                 }
                 if ($content['status'] == 'y') {
-                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" onclick="mod_content_table_ajax.akm.processQuickUnpublish(' . $content['id'] . '); return false;" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-check"></i></button>';
+                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" data-action="unpublish" data-id="' . $content['id'] . '" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-check"></i></button>';
                 } else {
-                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" onclick="mod_content_table_ajax.akm.processQuickPublish(' . $content['id'] . '); return false;" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-times"></i></button>';
+                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" data-action="publish" data-id="' . $content['id'] . '" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-times"></i></button>';
                 }
 
                 $author_name = isset($user_map[$content['user_id']]) ? $user_map[$content['user_id']] : 'Admin';
@@ -267,8 +290,8 @@ class mod_content_mod extends BaseModuleController
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<div style="cursor:pointer;" onclick="mod_content_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_content']['resim_yukle_degistir'] . '">' .
-                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_content/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_content']['resim_add'] . '</span></button>') .
+                    '<div class="table-img-trigger" data-action="upload-image" data-id="' . $content['id'] . '" title="' . $this->lang['mod_content']['upload_change_image'] . '">' .
+                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_content/thumb/' . $content['image'] . '" width="50" height="50" class="table-thumb-cover">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . (isset($this->lang['mod_content']['add_image']) ? $this->lang['mod_content']['add_image'] : 'Add Image') . '</span></button>') .
                     '</div>',
                     $content['lang'],
                     $content['created_at'],
@@ -281,65 +304,45 @@ class mod_content_mod extends BaseModuleController
             }
         }
 
-        if (ob_get_level() > 0) ob_clean();
-        $totalModel = Load::model('mod_content');
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        $modelClass = Load::modelfile('mod_content');
+        $totalModel = new $modelClass();
+        if (
+            (Role::hasPermission('mod_content', 'moderate_edit') !== TRUE)
+            and
+            (Role::hasPermission('mod_content', 'moderate_delete') !== TRUE)
+        ) {
+            $totalModel->addWhere("user_id='" . $this->session->get('id') . "'");
+        }
+        $totalCount = $totalModel->getCount();
+
+        $draftModel = new $modelClass();
+        $draftModel->addWhere("status='n'");
+        if (
+            (Role::hasPermission('mod_content', 'moderate_edit') !== TRUE)
+            and
+            (Role::hasPermission('mod_content', 'moderate_delete') !== TRUE)
+        ) {
+            $draftModel->addWhere("user_id='" . $this->session->get('id') . "'");
+        }
+        $draftCount = $draftModel->getCount();
+        $publishedCount = max(0, $totalCount - $draftCount);
+
         echo json_encode([
             'data' => $data,
             'recordsFiltered' => $getCount,
-            'recordsTotal' => $totalModel->getCount(),
+            'recordsTotal' => $totalCount,
+            'totalContent' => $totalCount,
+            'publishedContent' => $publishedCount,
+            'draftContent' => $draftCount,
         ]);
-    }
-
-    public function image_remove_image()
-    {
-        if ($this->user->hasPermission('mod_content', 'edit', $this->lang['mod_content']['role_errors']['edit'], 1) === False) {
-            return FALSE;
-        }
-
-        $id = intval(Req::Post_Safe('id'));
-
-        $this->mod_content_model = Load::model('mod_content');
-        $this->mod_content_model->where_id($id)->gRo();
-        if ($this->mod_content_model->getSize() === 0) {
-            echo $this->lang['mod_content']['errors']['record'];
-            return FALSE;
-        }
-
-        $this->mod_content_model->sync();
-        if ($this->user->checkPermission('mod_content', 'moderate_edit', $this->mod_content_model->user_id, $this->lang['mod_content']['role_errors']['moderate_edit']) === False) {
-            echo $this->lang['mod_content']['role_errors']['moderate_edit'];
-            return False;
-        }
-
-        if ($this->mod_content_model->image != '') {
-            $image = Load::mod('image');
-            $image->mod = 'mod_content';
-            $image->url = $this->mod_content_model->image;
-            $option = [
-                '/' => ['width' => 1200, 'height' => NULL, 'option' => 'width'],
-                '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width'],
-            ];
-            try {
-                if ($image->_delete_files($option)) {
-                    $this->mod_content_model->image = '';
-                    $this->mod_content_model->update('id');
-                    echo 'Success';
-                } else {
-                    echo $image->error;
-                    return FALSE;
-                }
-            } catch (Throwable $e) {
-                echo $e->getMessage();
-                return FALSE;
-            }
-        } else {
-            echo 'Success';
-        }
     }
 
     public function all_video()
     {
-        if (Roll::hasPermission('mod_content', 'add') === FALSE && Roll::hasPermission('mod_content', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_content', 'add') === FALSE && Role::hasPermission('mod_content', 'edit') === FALSE) {
             exit();
         }
 
@@ -357,7 +360,7 @@ class mod_content_mod extends BaseModuleController
             foreach ($video_model->toArray() as $item) {
                 $results[] = [
                     'id'   => 'video:' . $item['id'],
-                    'name' => $item['name'] . ' (' . $this->lang['mod_content']['lokal'] . ')'
+                    'name' => $item['name'] . ' (' . $this->lang['mod_content']['local'] . ')'
                 ];
             }
         }
@@ -378,14 +381,16 @@ class mod_content_mod extends BaseModuleController
             }
         }
 
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
 
     public function all_video_get($str = NULL)
     {
-        if (Roll::hasPermission('mod_content', 'add') === FALSE && Roll::hasPermission('mod_content', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_content', 'add') === FALSE && Role::hasPermission('mod_content', 'edit') === FALSE) {
             exit();
         }
         if ($str === NULL) {
@@ -404,7 +409,7 @@ class mod_content_mod extends BaseModuleController
 
         foreach($data as $prefixed_id) {
             $parts = explode(':', $prefixed_id, 2);
-            if (count($parts) == 2) {
+            if (count($parts) === 2) {
                 if ($parts[0] == 'video') {
                     $video_ids[] = $parts[1];
                 } elseif ($parts[0] == 'vid') {
@@ -415,20 +420,20 @@ class mod_content_mod extends BaseModuleController
 
         $results = [];
 
-        if (!empty($video_ids)) {
+        if ($video_ids !== []) {
             $video_model = Load::model('mod_video');
             $video_model->select('id, name')->where_id($video_ids)->gR();
             if ($video_model->getSize() > 0) {
                 foreach ($video_model->toArray() as $item) {
                     $results[] = [
                         'id'   => 'video:' . $item['id'],
-                        'name' => $item['name'] . ' (' . $this->lang['mod_content']['lokal'] . ')'
+                        'name' => $item['name'] . ' (' . $this->lang['mod_content']['local'] . ')'
                     ];
                 }
             }
         }
 
-        if (!empty($vid_ids)) {
+        if ($vid_ids !== []) {
             $vid_model = Load::model('mod_video_embed');
             $vid_model->select('id, name')->where_id($vid_ids)->gR();
             if ($vid_model->getSize() > 0) {
@@ -447,7 +452,7 @@ class mod_content_mod extends BaseModuleController
 
     public function ajax_get_files()
     {
-        if (Roll::hasPermission('mod_content', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_content', 'edit') === FALSE) {
             exit();
         }
         $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
@@ -467,7 +472,9 @@ class mod_content_mod extends BaseModuleController
                 ];
             }
         }
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
@@ -475,8 +482,10 @@ class mod_content_mod extends BaseModuleController
     public function ajax_get_current_media()
     {
         $id = intval(Req::Post_Safe('id'));
-        if (!$id) {
-            if (ob_get_level() > 0) ob_clean();
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found']]);
             return;
@@ -485,7 +494,9 @@ class mod_content_mod extends BaseModuleController
         $content_model = Load::model('mod_content');
         $content_model->select('id, file_id, gallery_id, video')->where_id($id)->gRo();
         if ($content_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found']]);
             return;
@@ -498,7 +509,9 @@ class mod_content_mod extends BaseModuleController
             $video = is_array($unserialized) ? $unserialized : [];
         }
 
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'file_id'    => intval($content_model->file_id ?? 0),
@@ -510,7 +523,9 @@ class mod_content_mod extends BaseModuleController
     public function ajax_update_relation()
     {
         if ($this->user->hasPermission('mod_content', 'edit', $this->lang['mod_content']['role_errors']['edit'], 1) === False) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['role_errors']['edit']]);
             return;
@@ -520,8 +535,10 @@ class mod_content_mod extends BaseModuleController
         $type = Req::Post_Safe('type');
         $value = Req::Post('value');
 
-        if (!$id) {
-            if (ob_get_level() > 0) ob_clean();
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found']]);
             return;
@@ -530,7 +547,9 @@ class mod_content_mod extends BaseModuleController
         $content_model = Load::model('mod_content');
         $content_model->where_id($id)->gRo();
         if ($content_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found']]);
             return;
@@ -554,7 +573,7 @@ class mod_content_mod extends BaseModuleController
                     $existed[] = $value;
                 }
             }
-            $content_model->video = !empty($existed) ? serialize(array_values(array_unique($existed))) : '';
+            $content_model->video = $existed !== [] ? serialize(array_values(array_unique($existed))) : '';
         } elseif ($type === 'gallery' || $type === 'files') {
             $val_int = intval($value);
             if ($type === 'gallery') {
@@ -563,7 +582,9 @@ class mod_content_mod extends BaseModuleController
                 $content_model->file_id = $val_int;
             }
         } else {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['unknown_type']]);
             return;
@@ -571,11 +592,15 @@ class mod_content_mod extends BaseModuleController
 
         $content_model->id = $id;
         if ($content_model->update('id')) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'success', 'message' => $this->lang['mod_content']['ajax']['relation_updated']]);
         } else {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['database_error']]);
         }
@@ -617,5 +642,47 @@ class mod_content_mod extends BaseModuleController
             return;
         }
         echo 'ERROR';
+    }
+
+    public function toggle_hero_slider()
+    {
+        if ($this->user->hasPermission('mod_content', 'edit', $this->lang['mod_content']['role_errors']['edit'] ?? 'Access denied', 1) === False) {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_content']['role_errors']['edit'] ?? 'Access denied']);
+            return;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        if ($id === 0) {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found'] ?? 'Record not found']);
+            return;
+        }
+
+        $this->mod_content_model = Load::model('mod_content');
+        $this->mod_content_model->where_id($id)->gRo();
+        if ($this->mod_content_model->getSize() === 0) {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_content']['ajax']['record_not_found'] ?? 'Record not found']);
+            return;
+        }
+        $this->mod_content_model->sync();
+
+        $new_slider = (($this->mod_content_model->slider ?? 'n') === 'y') ? 'n' : 'y';
+
+        $update_model = Load::model('mod_content');
+        $update_model->id = $id;
+        $update_model->slider = $new_slider;
+        $update_model->updated_at = date('Y-m-d H:i:s');
+
+        if ($update_model->update('id')) {
+            $this->jsonResponse([
+                'status' => 'success',
+                'slider' => $new_slider,
+                'in_hero_slider' => $new_slider === 'y',
+                'message' => $new_slider === 'y'
+                    ? ($this->lang['mod_content']['hero_slider_added'] ?? 'Added to slider')
+                    : ($this->lang['mod_content']['hero_slider_removed'] ?? 'Removed from slider')
+            ]);
+        } else {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_content']['hero_slider_error'] ?? 'Slider update failed']);
+        }
     }
 }

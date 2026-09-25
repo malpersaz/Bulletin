@@ -9,23 +9,36 @@ class mod_menu_mod extends indexMain
 {
     public $mod_menu_model;
     private $slotAliases = [
-        'header' => ['##HEADER MENU', 'HEADER MENU', '##HEADER', 'HEADER', 'UST MENU', 'TOP MENU', 'MAIN MENU'],
-        'footer' => ['##FOOTER MENU', 'FOOTER MENU', '##FOOTER', 'FOOTER', 'ALT MENU', 'BOTTOM MENU'],
-        'sidebar' => ['##SIDEBAR', 'SIDEBAR', 'SOL MENU', 'SIDE MENU'],
+        'header' => [
+            '##HEADER MENU', 'HEADER MENU', '##HEADER', 'HEADER', 'UST MENU', 'TOP MENU', 'MAIN MENU',
+            'MAINMENU', 'ANA MENU', 'ANAMENU', 'SERPESEK', 'SER PESEK', 'HAUPTMENU', 'HAUPT MENU',
+            'MENU PRINCIPAL', 'MENUPRINCIPAL', 'MENUYOSEREN', 'MENUYO SEREN', '##القائمةالرئيسية', 'القائمةالرئيسية', 'القائمة الرئيسية'
+        ],
+        'footer' => [
+            '##FOOTER MENU', 'FOOTER MENU', '##FOOTER', 'FOOTER', 'ALT MENU', 'BOTTOM MENU',
+            'FOOTERMENU', 'ALTMENU', 'BINPESEK', 'BIN PESEK', 'FUSSMENU', 'FUSS MENU',
+            'MENU PIED', 'MENU DU PIED'
+        ],
+        'sidebar' => ['##SIDEBAR', 'SIDEBAR', 'SOL MENU', 'SIDE MENU', 'SIDEBARMENU', 'PALPESEK'],
+        'action' => [
+            '##ACTION MENU', 'ACTION MENU', '##ACTION', 'ACTION', 'CTA MENU', '##CTA MENU',
+            'ACTIONMENU', 'ACTION_MENU', 'PESEKA CALAKIYE', 'ÇALAKÎ', 'AKTIONSMENU', 'AKTIONSMENÜ',
+            'EYLEM MENUSU', 'EYLEMMENUSU', 'قائمة الإجراءات'
+        ],
     ];
     function __construct()
     {
         parent::__construct();
         // Load Template Library
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         // Load Database Library
         $this->db = Load::lib('Database');
         // Get site settings
-        //$this->site = Kayit::getir('site_config');
+        //$this->site = Registry::get('site_config');
         // Load Language File
         $this->lang = Load::lang('mod_menu');
         // Send Language File to Template
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         // Session Library
         $this->session = Load::lib('Session');
         // User Model
@@ -81,7 +94,7 @@ class mod_menu_mod extends indexMain
     {
         $name = isset($row['name']) ? $row['name'] : '';
         
-        if ($this->isContainerRow($row) && (int)($row['parent_id'] ?? -1) === 0) {
+        if ($this->isLanguageRootRow($row)) {
             $langCode = isset($row['lang']) ? $row['lang'] : '';
             foreach ($visibleLanguages as $l) {
                 if ($l['seo'] === $langCode) {
@@ -234,7 +247,7 @@ class mod_menu_mod extends indexMain
 
     private function buildNestedRows(array $rows)
     {
-        if (empty($rows)) {
+        if ($rows === []) {
             return [];
         }
 
@@ -310,6 +323,74 @@ class mod_menu_mod extends indexMain
         return $branchRootId !== null ? (int) $branchRootId : $newParentId;
     }
 
+    public function ensureSlotRootsForLanguage($lang)
+    {
+        $lang = trim((string) $lang);
+        if ($lang === '') {
+            return;
+        }
+
+        $rows = $this->getAllMenuRows();
+        $languageRootRow = $this->findLanguageRootRow($rows, $lang);
+
+        if ($languageRootRow === null) {
+            $visibleLangs = $this->getVisibleLanguages($lang);
+            $langName = strtoupper($lang);
+            foreach ($visibleLangs as $l) {
+                if (isset($l['seo']) && (string) $l['seo'] === $lang) {
+                    $langName = isset($l['name']) ? (string) $l['name'] : strtoupper($lang);
+                    break;
+                }
+            }
+
+            $modelClass = Load::modelfile('mod_menu');
+            $langModel = new $modelClass();
+            $langModel->lang = $lang;
+            $langModel->name = '##' . $langName;
+            $langModel->url = '##';
+            $langModel->parent_id = 0;
+            $langModel->order = 0;
+            $langModel->target = 'n';
+            $langModel->status = 'y';
+            $langModel->user_id = 1;
+            $langModel->save(true);
+
+            $rows = $this->getAllMenuRows();
+            $languageRootRow = $this->findLanguageRootRow($rows, $lang);
+        }
+
+        if ($languageRootRow === null) {
+            return;
+        }
+
+        $languageRootId = (int) $languageRootRow['id'];
+
+        $requiredSlots = [
+            'header' => '##Header_Menu',
+            'footer' => '##Footer_Menu',
+            'action' => '##Action_Menu',
+        ];
+
+        foreach ($requiredSlots as $slotKey => $slotName) {
+            $slotRootId = $this->findSlotBranchRootId($rows, $slotKey, $lang);
+            if ($slotRootId === null) {
+                $modelClass = Load::modelfile('mod_menu');
+                $slotModel = new $modelClass();
+                $slotModel->lang = $lang;
+                $slotModel->name = $slotName;
+                $slotModel->url = '##';
+                $slotModel->parent_id = $languageRootId;
+                $slotModel->order = 0;
+                $slotModel->target = 'n';
+                $slotModel->status = 'y';
+                $slotModel->user_id = 1;
+                $slotModel->save(true);
+
+                $rows = $this->getAllMenuRows();
+            }
+        }
+    }
+
     private function getParentMenuContext($lang, $currentId = null, $selectedParentId = null)
     {
         $rows = $this->getAllMenuRows();
@@ -358,14 +439,31 @@ class mod_menu_mod extends indexMain
             $languageRootLabel = str_replace(':language', $resolvedLanguageName, $this->lang['mod_menu']['parent_labels']['language_root']);
         }
 
-        $selectedParentId = $selectedParentId !== null ? (int) $selectedParentId : null;
-        $showLanguageRootOption = $languageRootId > 0 && $selectedParentId === $languageRootId;
+        $tree = $this->buildNestedRows($filtered);
+
+        $defaultParentId = '';
+        if ($selectedParentId !== null && trim((string) $selectedParentId) !== '') {
+            $defaultParentId = (string) $selectedParentId;
+        } elseif (!empty($tree[$languageRootId])) {
+            foreach ($tree[$languageRootId] as $topItem) {
+                if ($this->isContainerRow($topItem) || !empty($tree[(int)$topItem['id']])) {
+                    $defaultParentId = (string) $topItem['id'];
+                    break;
+                }
+            }
+            if ($defaultParentId === '' && !empty($tree[$languageRootId][0]['id'])) {
+                $defaultParentId = (string) $tree[$languageRootId][0]['id'];
+            }
+        }
+
+        $selectedParentIdNum = $selectedParentId !== null ? (int) $selectedParentId : null;
+        $showLanguageRootOption = $languageRootId > 0 && $selectedParentIdNum === $languageRootId;
         $allowSystemParent = $currentRow !== null && $this->isLanguageRootRow($currentRow);
 
         return [
-            'tree' => $this->buildNestedRows($filtered),
+            'tree' => $tree,
             'root_parent_id' => $languageRootId,
-            'default_parent_id' => '',
+            'default_parent_id' => $defaultParentId,
             'language_root_label' => $languageRootLabel,
             'show_language_root_option' => $showLanguageRootOption,
             'allow_system_parent' => $allowSystemParent,
@@ -374,18 +472,19 @@ class mod_menu_mod extends indexMain
 
     private function prepareMenuFormContext($selectedLang, $currentId = null, $selectedParentId = null)
     {
+        $this->ensureSlotRootsForLanguage($selectedLang);
         $parentContext = $this->getParentMenuContext($selectedLang, $currentId, $selectedParentId);
         $resolvedSelectedParentId = $selectedParentId !== null && trim((string) $selectedParentId) !== ''
             ? (string) $selectedParentId
             : (string) $parentContext['default_parent_id'];
-        $this->tema->veri('selected_lang', $selectedLang);
-        $this->tema->veri('select_nested_parent_id_result', $parentContext['tree']);
-        $this->tema->veri('menu_parent_root_id', $parentContext['root_parent_id']);
-        $this->tema->veri('menu_parent_default_id', $parentContext['default_parent_id']);
-        $this->tema->veri('menu_selected_parent_id', $resolvedSelectedParentId);
-        $this->tema->veri('menu_language_root_label', $parentContext['language_root_label']);
-        $this->tema->veri('menu_show_language_root_option', $parentContext['show_language_root_option']);
-        $this->tema->veri('menu_allow_system_parent', $parentContext['allow_system_parent']);
+        $this->theme->set('selected_lang', $selectedLang);
+        $this->theme->set('select_nested_parent_id_result', $parentContext['tree']);
+        $this->theme->set('menu_parent_root_id', $parentContext['root_parent_id']);
+        $this->theme->set('menu_parent_default_id', $parentContext['default_parent_id']);
+        $this->theme->set('menu_selected_parent_id', $resolvedSelectedParentId);
+        $this->theme->set('menu_language_root_label', $parentContext['language_root_label']);
+        $this->theme->set('menu_show_language_root_option', $parentContext['show_language_root_option']);
+        $this->theme->set('menu_allow_system_parent', $parentContext['allow_system_parent']);
     }
 
     private function ensureEditParentPostValue(array $record)
@@ -404,15 +503,17 @@ class mod_menu_mod extends indexMain
 
     private function nextSiblingOrder($parentId, $lang)
     {
-        $query = "SELECT MAX(`order`) AS max_order FROM `mod_menu` WHERE parent_id=" . intval($parentId);
+        $query = "SELECT `order` FROM `mod_menu` WHERE parent_id=" . intval($parentId);
         $lang = trim((string) $lang);
         if ($lang !== '') {
             $query .= " AND lang='" . Req::Clear($lang) . "'";
         }
+        $query .= " ORDER BY `order` DESC LIMIT 1";
 
         $this->db->fetch_array($query);
         $rows = $this->db->getResult()->toArray();
-        $maxOrder = isset($rows[0]['max_order']) && Req::isNumeric((string) $rows[0]['max_order']) ? (int) $rows[0]['max_order'] : 0;
+        $rows = is_array($rows) ? $rows : [];
+        $maxOrder = isset($rows[0]['order']) && Req::isNumeric((string) $rows[0]['order']) ? (int) $rows[0]['order'] : 0;
 
         return $maxOrder + 1;
     }
@@ -430,13 +531,13 @@ class mod_menu_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_menu']['add'];
-        $this->tema->tpl('mod_menu/add');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_menu/add');
+        $this->theme->set('site', $this->site);
         $selectedLang = $this->resolveSelectedLanguage();
-        $this->tema->veri('lang_lang', $this->getVisibleLanguages());
+        $this->theme->set('lang_lang', $this->getVisibleLanguages());
         $this->prepareMenuFormContext($selectedLang);
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY name DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     /**
@@ -453,7 +554,7 @@ class mod_menu_mod extends indexMain
         if ($this->mod_menu_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_menu']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_menu/edit');
+            $this->theme->tpl('mod_menu/edit');
             return;
         }
 
@@ -472,15 +573,15 @@ class mod_menu_mod extends indexMain
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_menu']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
         $selectedLang = Req::is_Post('lang') ? Req::Post_Safe('lang') : $d['lang'];
         $selectedParentId = Req::is_Post('parent_id') ? Req::Post_Safe('parent_id') : $d['parent_id'];
-        $this->tema->tpl('mod_menu/edit');
-        $this->tema->veri('lang_lang', $this->getVisibleLanguages($d['lang']));
+        $this->theme->tpl('mod_menu/edit');
+        $this->theme->set('lang_lang', $this->getVisibleLanguages($d['lang']));
         $this->prepareMenuFormContext($selectedLang, $d['id'], $selectedParentId);
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY name DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     /**
@@ -495,21 +596,45 @@ class mod_menu_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_menu']['list'];
-        $this->tema->tpl('mod_menu/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_menu/list');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('module_lang_key', 'mod_menu');
         $visibleLangsFull = $this->getVisibleLanguages();
         $visibleLangs = $this->getVisibleLanguageCodes();
-        $mod_menu_nested = Load::model('mod_menu');
-        $mod_menu_nested->order('order', 'ASC')->all();
+        foreach ($visibleLangs as $langCode) {
+            $this->ensureSlotRootsForLanguage($langCode);
+        }
         $visibleRows = [];
-        foreach ($mod_menu_nested->toArray() as $row) {
+        foreach ($this->getAllMenuRows() as $row) {
             if (!isset($row['lang']) || in_array((string) $row['lang'], $visibleLangs, TRUE)) {
                 $row['display_name'] = $this->resolveDisplayName($row, $visibleLangsFull);
+                $slotKey = '';
+                foreach (array_keys($this->slotAliases) as $s) {
+                    if ($this->rowMatchesSlotAlias($row, $s)) {
+                        $slotKey = $s;
+                        break;
+                    }
+                }
+                $row['slot_key'] = $slotKey;
                 $visibleRows[] = $row;
             }
         }
         $select_nested_mod_menu_result = $this->buildNestedRows($visibleRows);
-        $this->tema->veri('select_nested_mod_menu_result', $select_nested_mod_menu_result);
+        $this->theme->set('select_nested_mod_menu_result', $select_nested_mod_menu_result);
+
+        $totalMenus = count($visibleRows);
+        $publishedMenus = 0;
+        $draftMenus = 0;
+        foreach ($visibleRows as $row) {
+            if (isset($row['status']) && $row['status'] === 'y') {
+                $publishedMenus++;
+            } else {
+                $draftMenus++;
+            }
+        }
+        $this->theme->set('total_menus', $totalMenus);
+        $this->theme->set('published_menus', $publishedMenus);
+        $this->theme->set('draft_menus', $draftMenus);
     }
     public function _order_change()
     {
@@ -530,9 +655,9 @@ class mod_menu_mod extends indexMain
 
 
     /**
-     * mod_menu Move
+     * mod_menu Move / Reorder
      */
-    public function tasi()
+    public function reorder()
     {
         // Check Move Permission
         if ($this->user->hasPermission('mod_menu', 'edit', $this->lang['mod_menu']['role_errors']['edit']) === False) {
@@ -562,7 +687,7 @@ class mod_menu_mod extends indexMain
         if ($mod_menu_model->update('id')) {
             // Update Order
             if ($this->_order_change()) {
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo 'Error: Order';
             }
@@ -579,9 +704,9 @@ class mod_menu_mod extends indexMain
         $this->val = Load::validator('mod_menu.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_menu_model = Load::model('mod_menu');
 
@@ -604,8 +729,8 @@ class mod_menu_mod extends indexMain
             $this->mod_menu_model->order = $this->nextSiblingOrder($this->mod_menu_model->parent_id, $this->mod_menu_model->lang);
 
             if ($this->mod_menu_model->save(TRUE)) {
-                $this->_oke_message($this->lang['mod_menu']['message']['oke']['add']);
-                Helper::yonlendir($this->site['saddress'] . 'mod_menu/list', 1);
+                $this->_success_message($this->lang['mod_menu']['message']['success']['add']);
+                Helper::redirect($this->site['saddress'] . 'mod_menu/list', 1);
             } else {
                 $this->_error_message($this->lang['mod_menu']['message']['error']['add']);
             }
@@ -620,9 +745,9 @@ class mod_menu_mod extends indexMain
         $this->val = Load::validator('mod_menu.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_menu_model = Load::model('mod_menu');
 
@@ -655,8 +780,8 @@ class mod_menu_mod extends indexMain
             // If the record exists
             $this->mod_menu_model->id = $id;
             if ($this->mod_menu_model->update('id')) {
-                $this->_oke_message($this->lang['mod_menu']['message']['oke']['edit']);
-                Helper::yonlendir($this->site['saddress'] . 'mod_menu/list', 1);
+                $this->_success_message($this->lang['mod_menu']['message']['success']['edit']);
+                Helper::redirect($this->site['saddress'] . 'mod_menu/list', 1);
             } else {
                 // If the update fails
                 $this->_error_message($this->lang['mod_menu']['message']['error']['edit']);
@@ -684,46 +809,55 @@ class mod_menu_mod extends indexMain
         if ($this->user->hasPermission('mod_menu',  'delete', $this->lang['mod_menu']['role_errors'][ 'delete'], 1) === False) {
             return False;
         }
-        $sil = Req::Post_Safe( 'delete');
-        if ($this->_dragdrop_delete($sil) === TRUE) {
-            echo 'Oke';
+        $deleteId = Req::Post_Safe('delete');
+        if (is_array($deleteId)) {
+            $deleteId = reset($deleteId);
+        }
+        if ($this->_dragdrop_delete($deleteId) === TRUE) {
+            echo 'Success';
         } else {
             echo 'ERROR';
-            //print_r($this->mod_menu_model);
         }
     }
 
     /**
      * Delete Function
      */
-    private function _dragdrop_delete($sil = NULL)
+    private function _dragdrop_delete($deleteId = NULL)
     {
         // Load mod_menu Model
         $this->mod_menu_model = Load::model('mod_menu');
 
-        $this->mod_menu_model->getid($sil)->getResultOne(TRUE, TRUE);
+        $this->mod_menu_model->getid($deleteId)->getResultOne(TRUE, TRUE);
         if ($this->mod_menu_model->getSize() === 0) {
             print($this->lang['mod_menu']['errors']['record']);
             return FALSE;
         }
         $this->mod_menu_model->sync();
 
+        $menuRecord = $this->mod_menu_model->toArray();
+        if (is_array($menuRecord) && $this->isContainerRow($menuRecord)) {
+            return FALSE;
+        }
+
         // If record belongs to someone else, check permission
         if ($this->user->checkPermission('mod_menu', 'moderate_delete', $this->mod_menu_model->user_id, $this->lang['mod_menu']['role_errors']['moderate_delete']) === False) {
             return False;
         }
         $new_model = new mod_menu_model();
-        if ($new_model->exists_parent_id($sil)) {
-            foreach ($new_model->toArray() as $s) {
-                if ($this->_dragdrop_delete($s['id']) === TRUE) {
-                    continue;
+        if ($new_model->exists_parent_id($deleteId)) {
+            $childRows = $new_model->toArray();
+            if (is_array($childRows)) {
+                foreach ($childRows as $s) {
+                    if ($this->_dragdrop_delete($s['id']) === TRUE) {
+                        continue;
+                    }
+                    return FALSE;
                 }
-                return FALSE;
             }
         }
 
-
-        $this->mod_menu_model->getid($sil);
+        $this->mod_menu_model->getid($deleteId);
         // Check if module exists and Gallery is being added
         $this->mod = Load::model('mod_gallery_mod');
         if ($this->mod->exists_mod_name("mod_menu") === TRUE) {
@@ -746,19 +880,19 @@ class mod_menu_mod extends indexMain
     /**
      * Success Message
      */
-    private function _oke_message($mesaj)
+    private function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     /**
      * Error Message
      */
-    private function _error_message($mesaj)
+    private function _error_message($message)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
     /**
@@ -767,10 +901,10 @@ class mod_menu_mod extends indexMain
     /**
      * Error Message
      */
-    private function _error($mesaj)
+    private function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
     }
 
     /**
@@ -779,6 +913,8 @@ class mod_menu_mod extends indexMain
     public function approve()
     {
         if ($this->user->hasPermission('mod_menu', 'edit', $this->lang['mod_menu']['role_errors']['edit']) === False) {
+            http_response_code(403);
+            echo 'Permission Denied';
             return False;
         }
         $query = Req::Post_Safe('query');
@@ -791,19 +927,21 @@ class mod_menu_mod extends indexMain
 
     private function _approve($query = NULL)
     {
-        $this->mod_menu_model = Load::model('mod_menu');
-        if (is_array($query)) {
-            foreach ($query as $s) {
-                $this->mod_menu_model->id = $s;
-                $this->mod_menu_model->status = 'y';
-                if ($this->mod_menu_model->update('id')) {
-                    continue;
-                }
+        if (!is_array($query)) {
+            $query = ($query !== null && $query !== '') ? [$query] : [];
+        }
+        if (empty($query)) {
+            return FALSE;
+        }
+        foreach ($query as $s) {
+            $m = Load::model('mod_menu');
+            $m->id = (int)$s;
+            $m->status = 'y';
+            if (!$m->update('id')) {
                 return FALSE;
             }
-            return TRUE;
         }
-        return FALSE;
+        return TRUE;
     }
 
     /**
@@ -812,6 +950,8 @@ class mod_menu_mod extends indexMain
     public function unapprove()
     {
         if ($this->user->hasPermission('mod_menu', 'edit', $this->lang['mod_menu']['role_errors']['edit']) === False) {
+            http_response_code(403);
+            echo 'Permission Denied';
             return False;
         }
         $query = Req::Post_Safe('query');
@@ -824,19 +964,21 @@ class mod_menu_mod extends indexMain
 
     private function _unapprove($query = NULL)
     {
-        $this->mod_menu_model = Load::model('mod_menu');
-        if (is_array($query)) {
-            foreach ($query as $s) {
-                $this->mod_menu_model->id = $s;
-                $this->mod_menu_model->status = 'n';
-                if ($this->mod_menu_model->update('id')) {
-                    continue;
-                }
+        if (!is_array($query)) {
+            $query = ($query !== null && $query !== '') ? [$query] : [];
+        }
+        if (empty($query)) {
+            return FALSE;
+        }
+        foreach ($query as $s) {
+            $m = Load::model('mod_menu');
+            $m->id = (int)$s;
+            $m->status = 'n';
+            if (!$m->update('id')) {
                 return FALSE;
             }
-            return TRUE;
         }
-        return FALSE;
+        return TRUE;
     }
 
     private function resolveSelectedLanguage()
@@ -853,7 +995,7 @@ class mod_menu_mod extends indexMain
             return $this->site['lang'];
         }
 
-        $defaultLang = Kayit::getir('default_lang');
+        $defaultLang = Registry::get('default_lang');
         if (is_string($defaultLang) && $defaultLang !== '') {
             return $defaultLang;
         }

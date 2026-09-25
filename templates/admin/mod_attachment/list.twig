@@ -2,7 +2,6 @@
 {% set show_navbar = false %}
 {% set show_search = true %}
 {% set show_search_filter_button = false %}
-{% set show_sidebar = true %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -467,7 +466,7 @@
 
 {% if not is_global_list %}
     <!-- Main FAB Button -->
-    <button type="button" class="main-fab" id="mainFab" onclick="openAttachmentUpload()" aria-label="{{ lang.mod_attachment.add|default('Pela Lêzêde Bike') }}">
+    <button type="button" class="main-fab" id="mainFab" onclick="openAttachmentUpload()" aria-label="{{ lang.mod_attachment.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endif %}

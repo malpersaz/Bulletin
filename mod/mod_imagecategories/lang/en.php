@@ -54,14 +54,15 @@ $lang['mod_imagecategories'] = [
         'unique' => 'The %s value already exists. Please choose another %s.',
         'inarray' => 'The %s field can only accept these values: %s.',
     ],
-    'roll' => [
-        'ad' => 'Image Category Management Roles',
+    'role' => [
+        'name' => 'Image Category Management Roles',
         'add' => 'Can add image categories',
         'edit' => 'Can edit image categories',
         'delete' => 'Can delete image categories',
         'list' => 'Can view image category management',
         'moderate_edit' => 'Can edit image categories owned by others',
         'moderate_delete' => 'Can delete image categories owned by others',
+        'gallery' => 'Can add gallery to image categories',
     ],
     'role_errors' => [
         'add' => 'You do not have permission to add image categories.',
@@ -70,6 +71,7 @@ $lang['mod_imagecategories'] = [
         'list' => 'You do not have permission to view image category management.',
         'moderate_edit' => 'You cannot edit image categories owned by other users.',
         'moderate_delete' => 'You cannot delete image categories owned by other users.',
+        'gallery' => 'You do not have permission to add gallery to image categories.',
     ],
     'status' => [
         'root' => 'Root',

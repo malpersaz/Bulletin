@@ -27,8 +27,7 @@ $lang['mod_user'] = [
         'reset' => 'Sıfırla',
     ],
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'success' => 'Tamam!',
+ 'Tamam!',
     'last_step' => 'Son Adım',
     'error_title' => 'Hata Oluştu!',
     'error_label' => 'Hata!',
@@ -52,11 +51,11 @@ $lang['mod_user'] = [
     'error_fatal' => 'Ölümcül Hata Oluştu!',
     'database_error' => 'Kayıt kaydedilemedi. Lütfen tekrar deneyin.',
     'remove_image' => 'Resmi kaldırmak istediğinize emin misiniz?',
-    'remove_image_oke' => 'Resim Kaldırıldı',
+    'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Lütfen yapmak istediğiniz işlemi seçin',
     'remove_record' => 'Bu kaydı silmek istediğinize emin misiniz?',
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Üye Eklendi!',
             'edit' => 'Üye Düzenlendi!',
         ],
@@ -471,8 +470,13 @@ $lang['mod_user'] = [
         'more_sheet_title' => 'Diğer Araçlar',
         'more_sheet_copy' => 'Ana çalışma çubuğunu kalabalıklaştırmadan daha düşük frekanslı yönetim yüzeylerini açın.',
         'more_sheet_open_drawer' => 'Tam modül dizinini aç',
+    'link_list' => 'Liste',
+    'link_add' => 'Ekle',
+    'link_categories' => 'Kategoriler',
+    'link_submissions' => 'Başvurular',
+    'clear_search' => 'Temizle',
         'home_title' => 'Ana Sayfa',
-        'admin_brand' => 'AKM Business Yönetim',
+        'admin_brand' => 'AKM Rojname Yönetim',
     ],
     'fab' => [
         'add_announcement' => 'Duyuru Ekle',

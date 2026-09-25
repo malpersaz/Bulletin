@@ -24,14 +24,13 @@ $lang['mod_gallery_mod'] = [
     'add' => 'Gallery Modu Ekle',
     'edit' => 'Gallery Modunu Düzenle',
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ölümcül Hata Oluştu!',
+    'success' => 'İşlem Başarılı!',
+    'error' => 'Hata Oluştu!',
     'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Gallery Modu Başarıyla Eklendi!',
             'edit' => 'Gallery Modu Başarıyla Güncellendi!',
         ],
@@ -48,26 +47,26 @@ $lang['mod_gallery_mod'] = [
     'button' => [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
+        'cancel' => 'Vazgeç',
+        'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
         'gallery' => 'Galeri',
         'file' => 'Dosyalar',
     ],
 
     'grid' => [
-        0 => 'Toplam {total} Sonuçtan {from} den {to}\'a Kadar Olanlar Görüntüleniyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler Yükleniyor, Lütfen Bekleyin...',
-        4 => 'Hiçbir Veri Bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen En Az Bir Satır Seçin',
-        8 => 'Lütfen Sadece Bir Satır Seçin',
+        'showing_results' => 'Toplam {total} Sonuçtan {from} den {to}\'a Kadar Olanlar Görüntüleniyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler Yükleniyor, Lütfen Bekleyin...',
+        'no_data' => 'Hiçbir Veri Bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Arama',
+        'select_at_least_one' => 'Lütfen En Az Bir Satır Seçin',
+        'select_only_one' => 'Lütfen Sadece Bir Satır Seçin',
     ],
 
     'validator' => [
@@ -78,8 +77,8 @@ $lang['mod_gallery_mod'] = [
         'inarray' => '%s Alanı Sadece \' %s \' Değerlerini Kabul Eder',
     ],
 
-    'roll' => [
-        'ad' => 'Gallery Modülü Yönetim Rolleri',
+    'role' => [
+        'name' => 'Gallery Modülü Yönetim Rolleri',
         'add' => 'Gallery Modülü Ekleyebilir',
         'edit' => 'Gallery Modülünü Düzenleyebilir',
         'delete' => 'Gallery Modülünü Silebilir',
@@ -100,7 +99,7 @@ $lang['mod_gallery_mod'] = [
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'ad' => 'Gallery Modülü Adı',
+            'name' => 'Gallery Modülü Adı',
             'mod_name' => 'Modül Adı',
             'mod_key' => 'Modül Anahtarı (ID)',
             'mod_value' => 'Modül Değeri (Ad)',

@@ -24,15 +24,14 @@ $lang['mod_news_category'] = [
     'add' => 'Kategorî Zêde Bike',
     'edit' => 'Biguhere',
     'information' => 'Agahî',
-    'oke' => 'Çalakî Serkeftî',
-    'hata' => 'Çewtî Çêbû',
-    'error' => 'Çewtiya Giran Çêbû',
+    'success' => 'Çalakî Serkeftî',
+    'error' => 'Çewtî Çêbû',
     'remove_record' => 'Ji vê tomarê jê bibin tu pê bawer î?',
     'choose_wish' => 'Hilbijêre',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Kategorî bi serkeftî hat zêdekirin!',
             'edit' => 'Kategorî bi serkeftî hat guhertin!',
         ],
@@ -64,26 +63,25 @@ $lang['mod_news_category'] = [
     'button' => [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Jê Bibe',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
         'save' => 'Tomar Bike',
-        'remove' => 'Jêbibe',
     ],
 
     'grid' => [
-        0 => 'Ji {total} encaman {from} - {to} tê xuyan',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên tê barkirin, ji kerema xwe re bisekinin...',
-        4 => 'Daneyên nehate dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe re kêmî tayek hilbijêrin',
-        8 => 'Ji kerema xwe re tenê tayek hilbijêrin',
+        'showing_results' => 'Ji {total} encaman {from} - {to} tê xuyan',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên tê barkirin, ji kerema xwe re bisekinin...',
+        'no_data' => 'Daneyên nehate dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe re kêmî tayek hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe re tenê tayek hilbijêrin',
     ],
 
     'validator' => [
@@ -94,8 +92,8 @@ $lang['mod_news_category'] = [
         'inarray' => 'Qada %s tenê nirxên \' %s \' dipejirîne',
     ],
 
-    'roll' => [
-        'ad' => 'Rênîşana Rola Rêveberiya Kategoriyan',
+    'role' => [
+        'name' => 'Rênîşana Rola Rêveberiya Kategoriyan',
         'add' => 'Dikare Kategoriyan Zêde Bike',
         'edit' => 'Dikare Kategoriyan biguhere',
         'delete' => 'Dikare Kategoriyan Jê Bibe',
@@ -207,9 +205,6 @@ $lang['mod_news_category'] = [
         'edit' => 'Hilbijartinê Biguhere',
         'delete' => 'Hilbijartinan Jê Bibe',
         'refresh' => 'Nû Bike',
-        'add' => 'Zêde Bike',
-        'edit' => 'Biguhere',
-        'delete' => 'Jê Bibe',
         'cancel' => 'Betal',
         'remove' => 'Rake',
         'yes' => 'Erê',

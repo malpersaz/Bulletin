@@ -24,13 +24,13 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
   private $_factory;
   
   /** Collection of set Headers */
-  private $_headers = array();
+  private $_headers = [];
   
   /** Field ordering details */
-  private $_order = array();
+  private $_order = [];
   
   /** List of fields which are required to be displayed */
-  private $_required = array();
+  private $_required = [];
   
   /** The charset used by Headers */
   private $_charset;
@@ -107,7 +107,7 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
    * @param array $params
    */
   public function addParameterizedHeader($name, $value = null,
-    $params = array())
+    $params = [])
   {
     $this->_storeHeader($name,
       $this->_factory->createParameterizedHeader($name, $value,
@@ -201,7 +201,7 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
   {
     if (!isset($name))
     {
-      $headers = array();
+      $headers = [];
       foreach ($this->_headers as $collection)
       {
         $headers = array_merge($headers, $collection);
@@ -212,7 +212,7 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
     $lowerName = strtolower($name);
     if (!array_key_exists($lowerName, $this->_headers))
     {
-      return array();
+      return [];
     }
     return $this->_headers[$lowerName];
   }
@@ -297,7 +297,7 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
     $headers = $this->_headers;
     if ($this->_canSort())
     {
-      uksort($headers, array($this, '_sortHeaders'));
+      uksort($headers, [$this, '_sortHeaders']);
     }
     foreach ($headers as $collection)
     {
@@ -331,7 +331,7 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
   {
     if (!isset($this->_headers[strtolower($name)]))
     {
-      $this->_headers[strtolower($name)] = array();
+      $this->_headers[strtolower($name)] = [];
     }
     if (!isset($offset))
     {
@@ -360,14 +360,12 @@ class Swift_Mime_SimpleHeaderSet implements Swift_Mime_HeaderSet
     $bPos = array_key_exists($lowerB, $this->_order)
       ? $this->_order[$lowerB]
       : -1;
-      
-    if ($aPos == -1)
-    {
-      return 1;
+    if ($aPos == -1) {
+        return 1;
     }
-    elseif ($bPos == -1)
-    {
-      return -1;
+      
+    if ($bPos == -1) {
+        return -1;
     }
     
     return ($aPos < $bPos) ? -1 : 1;

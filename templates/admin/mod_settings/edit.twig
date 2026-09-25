@@ -112,26 +112,26 @@
 
 {% block content %}
 <div class="settings-page">
-    {% if hata is defined %}
+    {% if error is defined %}
         <div class="settings-banner error">
             <i class="bi bi-exclamation-octagon-fill"></i>
-            <span>{{ mesaj }}</span>
+            <span>{{ message }}</span>
         </div>
     {% endif %}
 
-    {% if oke is defined %}
+    {% if success is defined %}
         <div class="settings-banner success">
             <i class="bi bi-check-circle-fill"></i>
-            <span>{{ mesaj }}</span>
+            <span>{{ message }}</span>
         </div>
     {% endif %}
 
-    {% if hatalar is defined %}
+    {% if errors is defined %}
         <div class="settings-banner error">
             <i class="bi bi-exclamation-triangle-fill"></i>
             <div>
-                {% for hata_mesaji in hatalar %}
-                    <div>{{ hata_mesaji }}</div>
+                {% for error_message in errors %}
+                    <div>{{ error_message }}</div>
                 {% endfor %}
             </div>
         </div>
@@ -146,6 +146,8 @@
 
         <input type="hidden" name="lang" value="{{ selected_lang }}">
         <input type="hidden" name="edit" value="1">
+        <input type="hidden" name="logo_type" value="{{ setting.logo_type|default('rectangle') }}">
+        <input type="hidden" name="show_logo" value="{{ setting.show_logo|default('y') }}">
 
         <section class="settings-topbar">
             <div class="settings-lang-inline">
@@ -171,6 +173,11 @@
                 <div class="m3-input-wrapper">
                     <input type="text" class="m3-input-lg" name="title" id="title" placeholder=" " value="{{ setting.title|default('') }}">
                     <label class="m3-floating-label">{{ lang.mod_settings.title }}</label>
+                </div>
+
+                <div class="m3-input-wrapper">
+                    <input type="text" class="m3-input-lg" name="site_name" id="site_name" placeholder=" " value="{{ setting.site_name|default('') }}">
+                    <label class="m3-floating-label">{{ lang.mod_settings.site_name }}</label>
                 </div>
 
                 <div class="m3-input-wrapper">
@@ -261,243 +268,23 @@
             </div>
         </details>
 
+    </form>
 
-
-        <details class="settings-section-toggle" id="assetsSection" open>
-            <summary>
-                <span class="settings-section-icon"><i class="bi bi-images"></i></span>
-                <span class="settings-section-label">
-                    <strong>{{ lang.mod_settings.sections.assets_title }}</strong>
-                    <span>{{ lang.mod_settings.sections.assets_description }}</span>
-                </span>
-                <span class="settings-section-chevron"><i class="bi bi-chevron-down"></i></span>
-            </summary>
-            <div class="settings-section-body">
-
-                <!-- Hidden inputs for cropped base64 image data -->
-                <input type="hidden" name="cropped_square" id="croppedSquare">
-                <input type="hidden" name="cropped_rect" id="croppedRect">
-                <input type="hidden" name="cropped_symbol" id="croppedSymbol">
-                <input type="hidden" name="logo_type" id="logoTypeInput" value="{{ setting.logo_type is not empty ? setting.logo_type : 'rectangle' }}">
-                <input type="hidden" name="show_logo" value="y">
-
-                <!-- Header Display Style Selector (4 Vebijêrk) -->
-                <section class="settings-asset-card" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; align-items: stretch;">
-                    <div class="settings-asset-top" style="border-bottom: none; padding-bottom: 0; margin-bottom: 4px;">
-                        <div>
-                            <h3 style="margin-bottom: 2px;">{{ lang.mod_settings.header_style_title }}</h3>
-                            <p style="margin-bottom: 0; font-size: 11px;">{{ lang.mod_settings.header_style_desc }}</p>
-                        </div>
-                    </div>
-
-                    <div class="header-style-options" style="display: flex; flex-direction: column; gap: 6px; width: 100%;">
-                        <!-- Vebijêrk 1: Tenê Kare Logo -->
-                        <div class="selection-card {% if setting.logo_type == 'square' %}active{% endif %}" id="opt-style-1" onclick="setHeaderDisplayStyle('square')" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--md-sys-color-surface-variant); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <i class="bi bi-person-square" style="font-size: 16px;"></i>
-                                </span>
-                                <span style="font-size: 12px; font-weight: 600;">{{ lang.mod_settings.header_style_square }}</span>
-                            </div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-
-                        <!-- Vebijêrk 2: Tenê Asoyî Logo -->
-                        <div class="selection-card {% if setting.logo_type is empty or setting.logo_type == 'rectangle' %}active{% endif %}" id="opt-style-2" onclick="setHeaderDisplayStyle('rectangle')" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--md-sys-color-surface-variant); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <i class="bi bi-image" style="font-size: 16px;"></i>
-                                </span>
-                                <span style="font-size: 12px; font-weight: 600;">{{ lang.mod_settings.header_style_rect }}</span>
-                            </div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-
-                        <!-- Vebijêrk 3: Kare Logo + Navê Malperê -->
-                        <div class="selection-card {% if setting.logo_type == 'square_name' %}active{% endif %}" id="opt-style-3" onclick="setHeaderDisplayStyle('square_name')" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--md-sys-color-surface-variant); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <i class="bi bi-layout-text-sidebar" style="font-size: 16px;"></i>
-                                </span>
-                                <span style="font-size: 12px; font-weight: 600;">{{ lang.mod_settings.header_style_square_name }}</span>
-                            </div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-
-                        <!-- Vebijêrk 4: Asoyî Logo + Navê Malperê -->
-                        <div class="selection-card {% if setting.logo_type == 'rectangle_name' %}active{% endif %}" id="opt-style-4" onclick="setHeaderDisplayStyle('rectangle_name')" style="position: relative; display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-radius: 10px; cursor: pointer;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="width: 32px; height: 32px; border-radius: 8px; background: var(--md-sys-color-surface-variant); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <i class="bi bi-layout-text-window" style="font-size: 16px;"></i>
-                                </span>
-                                <span style="font-size: 12px; font-weight: 600;">{{ lang.mod_settings.header_style_rect_name }}</span>
-                            </div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-                    </div>
-                </section>
-
-
-                <!-- Side-by-Side Logo Upload Areas -->
-                <section class="settings-asset-card" style="padding: 16px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-                    <h3 style="margin-bottom: 2px;">{{ lang.mod_settings.logo_rect_title }}, {{ lang.mod_settings.logo_square_title }} & {{ lang.mod_settings.logo_symbol_title }}</h3>
-                    <p style="margin-bottom: 12px; color: var(--md-sys-color-on-surface-variant); font-size: 10px;">{{ lang.mod_settings.logo_help_text }}</p>
-
-                    <div class="form-row" style="display: flex; gap: 16px; align-items: flex-end; margin-bottom: 8px; flex-wrap: wrap;">
-                        <!-- Rectangle Logo Upload Box -->
-                        <div style="flex: none; width: 150px;">
-                            <label style="display:block; margin-bottom:6px; font-size:11px; font-weight:700; color:var(--md-sys-color-on-surface-variant);">{{ lang.mod_settings.logo_rect_title }}</label>
-                            <label for="inputRect" class="image-upload-area" id="areaRect" style="width: 150px; height: 90px !important; min-height: 90px !important; padding: 4px;">
-                                {% if setting.logo_path %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.logo_path }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain; border-radius:8px;">
-                                    <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('logo_path');" style="top:4px; right:4px; width:24px; height:24px; min-width:24px;">
-                                        <i class="bi bi-trash" style="font-size:12px;"></i>
-                                    </button>
-                                {% else %}
-                                    <i class="bi bi-display" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
-                                {% endif %}
-                            </label>
-                            <input type="file" id="inputRect" style="display:none;" accept="image/png" onchange="processSelectedImage(this, 2)">
-                        </div>
-
-                        <!-- Square Logo Upload Box -->
-                        <div style="flex: none; width: 90px;">
-                            <label style="display:block; margin-bottom:6px; font-size:11px; font-weight:700; color:var(--md-sys-color-on-surface-variant);">{{ lang.mod_settings.logo_square_title }}</label>
-                            <label for="inputSquare" class="image-upload-area" id="areaSquare" style="width: 90px; height: 90px !important; min-height: 90px !important; padding: 4px;">
-                                {% if setting.site_icon %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.site_icon }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain; border-radius:8px;">
-                                    <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('site_icon');" style="top:4px; right:4px; width:24px; height:24px; min-width:24px;">
-                                        <i class="bi bi-trash" style="font-size:12px;"></i>
-                                    </button>
-                                {% else %}
-                                    <i class="bi bi-phone" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
-                                {% endif %}
-                            </label>
-                            <input type="file" id="inputSquare" style="display:none;" accept="image/png" onchange="processSelectedImage(this, 1)">
-                        </div>
-
-                        <!-- Logo Symbol/Icon Upload Box -->
-                        <div style="flex: none; width: 90px;">
-                            <label style="display:block; margin-bottom:6px; font-size:11px; font-weight:700; color:var(--md-sys-color-on-surface-variant);">{{ lang.mod_settings.logo_symbol_title }}</label>
-                            <label for="inputSymbol" class="image-upload-area" id="areaSymbol" style="width: 90px; height: 90px !important; min-height: 90px !important; padding: 4px;">
-                                {% if setting.logo_symbol %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.logo_symbol }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain; border-radius:8px;">
-                                    <button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeAsset('logo_symbol');" style="top:4px; right:4px; width:24px; height:24px; min-width:24px;">
-                                        <i class="bi bi-trash" style="font-size:12px;"></i>
-                                    </button>
-                                {% else %}
-                                    <i class="bi bi-circle-square" style="font-size:24px; color:var(--md-sys-color-primary);"></i>
-                                {% endif %}
-                            </label>
-                            <input type="file" id="inputSymbol" style="display:none;" accept="image/png" onchange="processSelectedImage(this, 3)">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Generated icons list table -->
-                <h4 style="margin: 8px 0 4px 0; font-size: 11px; font-weight: 700; color: var(--md-sys-color-on-surface-variant); text-transform: uppercase;">{{ lang.mod_settings.sections.assets_title }}</h4>
-
-                <div class="generated-asset-list" style="margin-bottom: 12px;">
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbFavicon" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.favicon_path %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.favicon_path }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain;">
-                                {% else %}
-                                    <i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.favicon_path }} (32x32)</span>
-                        </div>
-                        <span id="statusFavicon" class="status-badge {% if setting.favicon_path %}ready{% endif %}">
-                            {% if setting.favicon_path %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
-
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbFavicon96" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.favicon_96 %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.favicon_96 }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain;">
-                                {% else %}
-                                    <i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.favicon_96 }}</span>
-                        </div>
-                        <span id="statusFavicon96" class="status-badge {% if setting.favicon_96 %}ready{% endif %}">
-                            {% if setting.favicon_96 %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
-
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbApple" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.apple_touch_icon %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.apple_touch_icon }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain;">
-                                {% else %}
-                                    <i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.apple_touch_icon }}</span>
-                        </div>
-                        <span id="statusApple" class="status-badge {% if setting.apple_touch_icon %}ready{% endif %}">
-                            {% if setting.apple_touch_icon %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
-
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbManifest192" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.manifest_192 %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.manifest_192 }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain;">
-                                {% else %}
-                                    <i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.manifest_icon_192 }}</span>
-                        </div>
-                        <span id="statusManifest192" class="status-badge {% if setting.manifest_192 %}ready{% endif %}">
-                            {% if setting.manifest_192 %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
-
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbManifest512" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.manifest_512 %}
-                                    <img src="{{ site.address }}static/mod_settings/{{ setting.manifest_512 }}?t={{ 'now'|date('U') }}" style="width:100%; height:100%; object-fit:contain;">
-                                {% else %}
-                                    <i class="bi bi-image" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.manifest_icon_512 }}</span>
-                        </div>
-                        <span id="statusManifest512" class="status-badge {% if setting.manifest_512 %}ready{% endif %}">
-                            {% if setting.manifest_512 %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
-
-                    <div class="generated-asset-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: #fff; border-bottom: 1px solid #f1f5f9;">
-                        <div style="display: flex; align-items: center; gap: 8px;">
-                            <span id="iconThumbWebManifest" style="width: 24px; height: 24px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; background:#f1f5f9; overflow:hidden;">
-                                {% if setting.site_webmanifest %}
-                                    <i class="bi bi-file-earmark-code-fill" style="font-size:12px; color:#22c55e;"></i>
-                                {% else %}
-                                    <i class="bi bi-file-earmark-code" style="font-size:10px; color:#94a3b8;"></i>
-                                {% endif %}
-                            </span>
-                            <span>{{ lang.mod_settings.web_manifest }} (site.webmanifest)</span>
-                        </div>
-                        <span id="statusWebManifest" class="status-badge {% if setting.site_webmanifest %}ready{% endif %}">
-                            {% if setting.site_webmanifest %}{{ lang.mod_settings.button.confirm }}{% else %}{{ lang.mod_settings.not_uploaded }}{% endif %}
-                        </span>
-                    </div>
+        <section class="settings-mcp-card">
+            <div class="settings-mcp-head">
+                <i class="bi bi-plug-fill settings-mcp-icon"></i>
+                <div>
+                    <div class="settings-mcp-title">{{ lang.mod_settings.mcp_link_title }}</div>
+                    <div class="settings-mcp-desc">{{ lang.mod_mcp.page_intro }}</div>
                 </div>
             </div>
-        </details>
-
-    </form>
+            <a
+                href="{{ site.saddress }}mod_mcp/list"
+                class="m3-btn-half m3-btn-half-neutral settings-mcp-link"
+                data-skip-unsaved-warning="true">
+                {{ lang.mod_settings.mcp_link_button }}
+            </a>
+        </section>
 </div>
 {% endblock %}
 

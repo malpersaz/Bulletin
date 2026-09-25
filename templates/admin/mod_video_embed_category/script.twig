@@ -1,0 +1,111 @@
+<script type="text/javascript">
+    function reloadTable() {
+        window.location.reload();
+    }
+    var simpleTreeCollection;
+    $(document).ready(function() {
+        simpleTreeCollection = $('.simpleTree').simpleTree({
+            autoclose: false,
+
+            afterClick:function(node) {
+            },
+            afterDblClick:function(node) {
+            },
+            afterMove:function(destination, source, pos) {
+                return moveCategory(destination.attr('id'), source.attr('id'));
+            },
+            animate:true,
+            docToFolderConvert:true
+        });
+    });
+
+    function removeCategory(id) {
+        $.prompt('{{ lang.mod_video_embed_category.remove_record }}',
+        {
+            buttons:[
+                {title: '{{ lang.mod_video_embed_category.button.yes }}',value:true},
+                {title: '{{ lang.mod_video_embed_category.button.no }}',value:false}
+            ],
+            submit: function(v, m, f) {
+                if (v === true) {
+                    Del(id);
+                }
+            }
+        });
+    }
+
+    function Del(id) {
+        $.post('{{ site.address }}mod_video_embed_category/dragdrop_delete', { delete: id},
+                function(data) {
+                    if (data == 'Success') {
+                        $.achtung({
+                            className: 'achtungSuccess',
+                            message: '{{ lang.mod_video_embed_category.success }}',
+                            timeout:5
+                        });
+                        reloadTable();
+                    } else {
+                        $.achtung({
+                            className: 'achtungFail',
+                            message: data,
+                            timeout:5
+                        });
+                    }
+                });
+        return false;
+    }
+
+    function editCategory(id) {
+        window.location = '{{ site.address }}mod_video_embed_category/edit/' + id;
+        return false;
+    }
+
+    {% if session.permissions.mod_video_embed_category.gallery is defined %}
+        function gallery(id){
+            var url = '{{ site.saddress }}mod_gallery/list/mod_video_embed_category/' + id;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(url, { skipHistory: true });
+            } else {
+                window.location = url;
+            }
+            return false;
+        }
+    {% endif %}
+
+    {% if session.permissions.mod_video_embed_category.file is defined %}
+        function viewAttachment(id){
+            var url = '{{ site.saddress }}mod_attachment/list/mod_video_embed_category/' + id;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(url, { skipHistory: true });
+            } else {
+                window.location = url;
+            }
+            return false;
+        }
+    {% endif %}
+
+    function moveCategory(parent_id, id) {
+        var order = new Array();
+        $(".root li").each(function() {
+            var rez = $(this).attr("id");
+            if (rez != "") {
+                order.push(rez);
+            }
+        });
+        $.post('{{ site.address }}mod_video_embed_category/move', { id:  id, parent_id: parent_id, sira:order },
+                function(data) {
+                    if (data == 'Success') {
+                        $.achtung({
+                            className: 'achtungSuccess',
+                            message: '{{ lang.mod_video_embed_category.success }}',
+                            timeout:5
+                        });
+                    } else {
+                        $.prompt(data, {
+                            submit : reloadTable,
+                            buttons: { Ok:true }
+                        });
+                    }
+                });
+    }
+</script>

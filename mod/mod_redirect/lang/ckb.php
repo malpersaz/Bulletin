@@ -1,70 +1,69 @@
 <?php
 
-$lang['mod_redirect'] = array (
-    'list' => 'بەڕێوەبردنی ئاراستەکردنەوە',
-    'add' => 'زیادکردنی ئاراستەکردنەوەی نوێ',
-    'edit' => 'دەستکاریکردنی ئاراستەکردنەوە',
-    'information' => 'زانیاری',
-    'oke' => 'سەرکەوتوو',
-    'hata' => 'هەڵەیەک ڕوویدا',
-    'error' => 'هەڵەی جددی',
-    'remove_record' => 'ئایا دڵنیایت لە سڕینەوەی ئەم ئاراستەکردنەوەیە؟',
-    'message' => array (
-        'oke' => array (
-            'add' => 'ئاراستەکردنەوەکە بە سەرکەوتوویی زیادکرا!',
-            'edit' => 'ئاراستەکردنەوەکە بە سەرکەوتوویی نوێکرایەوە!',
-            'delete' => 'ئاراستەکردنەوەکە بە سەرکەوتوویی سڕدرایەوە!',
-        ),
-        'error' => array (
-            'add' => 'زیادکردنی ئاراستەکردنەوەکە سەرکەوتوو نەبوو!',
-            'edit' => 'نوێکردنەوەی ئاراستەکردنەوەکە سەرکەوتوو نەبوو!',
-        ),
-    ),
-    'errors' => array (
-        'record' => 'ئاراستەکردنەوەی دیاریکراو نەدۆزرایەوە!',
-    ),
-    'button' => array (
-        'add' => 'زیادکردن',
-        'edit' => 'دەستکاریکردن',
-        'delete' => 'سڕینەوە',
-        'cancel' => 'پاشگەزبوونەوە',
-        'yes' => 'بەڵێ',
-        'no' => 'نەخێر',
-    ),
-    'validator' => array (
-        'required' => 'تکایە بەشی %s بە بەتاڵی جێمەهێڵە',
-        'length' => 'درێژی %s دەبێت لە نێوان %s و %s پیتدا بێت',
-        'unique_old_url' => 'ئەم ناونیشانە کۆنە پێشتر لە سیستمدا تۆمارکراوە!',
-        'inarray' => 'بەشی %s تەنها دەتوانێت بەهای \'%s\' وەربگرێت',
-    ),
-    'roll' => array (
-        'ad' => 'ڕۆڵەکانی بەڕێوەبردنی ئاراستەکردنەوە',
-        'add' => 'دەتوانێت ئاراستەکردنی نوێ زیاد بکات',
-        'edit' => 'دەتوانێت ئاراستەکردنەکان دەستکاری بکات',
-        'delete' => 'دەتوانێت ئاراستەکردنەکان بسڕێتەوە',
-        'list' => 'دەتوانێت بەڕێوەبردنی ئاراستەکردنەکان ببینێت',
-    ),
-    'role_errors' => array (
-        'add' => 'تۆ دەسەڵاتی زیادکردنی ئاراستەکردنت نییە',
-        'edit' => 'تۆ دەسەڵاتی دەستکاریکردنی ئاراستەکردنت نییە',
-        'list' => 'تۆ دەسەڵاتی بینینی بەڕێوەبردنی ئاراستەکردنت نییە',
-        'delete' => 'تۆ دەسەڵاتی سڕینەوەی ئاراستەکردنت نییە',
-    ),
-    'admin' => array (
-        'search_placeholder' => 'گەڕان لە ئاراستەکردنەکاندا...',
-        'intro_add' => 'بۆ زیادکردنی ئاراستەکردنی نوێ، ناونیشانی کۆن و نوێ بنووسە و کۆدی دۆخەکە هەڵبژێرە.',
-        'intro_edit' => 'لێرە دەتوانیت ناونیشانەکانی ئاراستەکردنەوە و کۆدی دۆخەکە دەستکاری بکەیت.',
-        'empty_description' => 'هیچ ئاراستەکردنەوەیەکی تۆمارکراو نەدۆزرایەوە.',
-        'dashboard' => array (
-            'active_redirects' => 'ئاراستەکردنەوە چالاکەکان',
-            'standard_type' => 'جۆری ستاندارد',
-        ),
-        'columns' => array (
-            'id' => 'ID',
-            'old_url' => 'ناونیشانی کۆن (سەرچاوە)',
-            'new_url' => 'ناونیشانی نوێ (ئامانج)',
-            'status_code' => 'کۆدی دۆخ (Status Code)',
-            'created_at' => 'ڕێکەوتی دروستکردن',
-        ),
-    ),
-);
+$lang['mod_redirect'] = [
+    'list' => 'Rêveberiya Arastekirinê',
+    'add' => 'Arastekirina Nû Zêde Bike',
+    'edit' => 'Arastekirinê Biguherîne',
+    'information' => 'Zanyarî',
+    'success' => 'Serkeftin',
+    'error' => 'Çewtiya cidî',
+    'remove_record' => 'Tu bi rastî dixwazî vê arastekirinê jê bibî?',
+    'message' => [
+        'success' => [
+            'add' => 'Arastekirin bi serkeftî hate zêdekirin!',
+            'edit' => 'Arastekirin bi serkeftî hate nûjenkirin!',
+            'delete' => 'Arastekirin bi serkeftî hate jêbirin!',
+        ],
+        'error' => [
+            'add' => 'Zêdekirina arastekirinê bi ser neket!',
+            'edit' => 'Nûjenkirina arastekirinê bi ser neket!',
+        ],
+    ],
+    'errors' => [
+        'record' => 'Arastekirina diyarkirî nehat dîtin!',
+    ],
+    'button' => [
+        'add' => 'Zêde Bike',
+        'edit' => 'Biguherîne',
+        'delete' => 'Jê Bibe',
+        'cancel' => 'Betal Bike',
+        'yes' => 'Erê',
+        'no' => 'Na',
+    ],
+    'validator' => [
+        'required' => 'Ji kerema xwe re qada %s vala nehêle',
+        'length' => '%s divê di navbera %s û %s tîpan de be',
+        'unique_old_url' => 'Ev URL-a kevin jixwe li pergalê qeydkirî ye!',
+        'inarray' => '%s tenê dikare nirxên \'%s\' bistîne',
+    ],
+    'role' => [
+        'name' => 'Rolên Rêveberiya Arastekirinê',
+        'add' => 'Dikare arastekirina nû zêde bike',
+        'edit' => 'Dikare arastekirinan biguherîne',
+        'delete' => 'Dikare arastekirinan jê bibe',
+        'list' => 'Dikare rêveberiya arastekirinan bibîne',
+    ],
+    'role_errors' => [
+        'add' => 'Destûra te ya zêdekirina arastekirinê tune ye',
+        'edit' => 'Destûra te ya guherandina arastekirinê tune ye',
+        'list' => 'Destûra te ya dîtina rêveberiya arastekirinê tune ye',
+        'delete' => 'Destûra te ya jêbirina arastekirinê tune ye',
+    ],
+    'admin' => [
+        'search_placeholder' => 'Lêgerîna arastekirinan...',
+        'intro_add' => 'Ji bo zêdekirina arastekirineke nû, URL-a kevin û URL-a nû binivîse û koda statuyê hilbijêre.',
+        'intro_edit' => 'Li vir tu dikarî URL-ên arastekirinê û koda statuyê biguherînî.',
+        'empty_description' => 'Li vir tu arastekirineke tomarkirî nehat dîtin.',
+        'dashboard' => [
+            'active_redirects' => 'Arastekirinên Çalak',
+            'standard_type' => 'Cureyê Standard',
+        ],
+        'columns' => [
+            'id' => 'Nasname (ID)',
+            'old_url' => 'URL-a Kevin (Çavkanî)',
+            'new_url' => 'URL-a Nû (Armanc)',
+            'status_code' => 'Koda Statuyê (Status Code)',
+            'created_at' => 'Dîroka Afirandinê',
+        ],
+    ],
+];

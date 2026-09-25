@@ -79,7 +79,7 @@ class management_mod extends indexBase
         if (!empty($_SERVER['HTTP_REFERER'])) {
             $target = $_SERVER['HTTP_REFERER'];
         }
-        Helper::yonlendir($target, 0);
+        Helper::redirect($target, 0);
     }
 
     private function loadRegistryRow($moduleName)
@@ -132,9 +132,11 @@ class management_mod extends indexBase
     {
         parent::__construct();
 
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
+        $this->tema = $this->theme;
+        $this->view = $this->theme;
         $this->lang = Load::lang('management');
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         $this->db = Load::lib('Database');
         $this->session = Load::lib('Session');
         $this->user = Load::model('mod_user.user');
@@ -143,19 +145,18 @@ class management_mod extends indexBase
     public function _index()
     {
         $this->_site();
-        $this->tema->lang(Load::lang('mod_user'));
-        $this->tema->lang(Load::lang('mod_user_pm'));
-        $this->tema->lang(Load::lang('mod_user_group'));
-        $this->tema->lang(Load::lang('mod_acl'));
-        $this->tema->lang(Load::lang('mod_seo'));
+        $this->theme->lang(Load::lang('mod_user'));
+        $this->theme->lang(Load::lang('mod_user_pm'));
+        $this->theme->lang(Load::lang('mod_user_group'));
+        $this->theme->lang(Load::lang('mod_acl'));
+        $this->theme->lang(Load::lang('mod_seo'));
+        $this->theme->lang(Load::lang('mod_settings'));
 
         $sharedModules = [
             'mod_content' => $this->isFeatureReady('content.front'),
             'mod_news' => $this->isFeatureReady('news.front'),
             'mod_publication' => $this->isFeatureReady('publication.front'),
             'mod_video_embed' => $this->isFeatureReady('video_embed.front'),
-            'mod_product' => $this->runtime()->isModuleReady('mod_product'),
-            'mod_service' => $this->runtime()->isModuleReady('mod_service'),
             'mod_page' => $this->runtime()->isModuleReady('mod_page'),
         ];
         $sharedModuleHealth = [
@@ -163,17 +164,17 @@ class management_mod extends indexBase
             'mod_news' => $this->getModuleHealth('mod_news'),
             'mod_publication' => $this->getModuleHealth('mod_publication'),
             'mod_video_embed' => $this->getModuleHealth('mod_video_embed'),
-            'mod_category' => $this->getModuleHealth('mod_category'),
+            'mod_content_category' => $this->getModuleHealth('mod_content_category'),
             'mod_news_category' => $this->getModuleHealth('mod_news_category'),
             'mod_publication_category' => $this->getModuleHealth('mod_publication_category'),
             'mod_video_embed_category' => $this->getModuleHealth('mod_video_embed_category'),
         ];
 
-        $this->tema->setGlobal('shared_admin_modules', $sharedModules);
-        $this->tema->setGlobal('shared_admin_module_health', $sharedModuleHealth);
+        $this->theme->setGlobal('shared_admin_modules', $sharedModules);
+        $this->theme->setGlobal('shared_admin_module_health', $sharedModuleHealth);
 
         $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo ASC");
-        $this->tema->setGlobal('lang_lang', $this->db->getResult()->toArray());
+        $this->theme->setGlobal('lang_lang', $this->db->getResult()->toArray());
 
         if (
             $this->isModuleInstalled('mod_video_embed_category')
@@ -183,23 +184,23 @@ class management_mod extends indexBase
             $mod_video_category->select('id, name, lang');
             $mod_video_category->addWhere("parent_id != '0'");
             $mod_video_category->all();
-            $this->tema->setGlobal('video_embed_categories', $mod_video_category->toArray());
+            $this->theme->setGlobal('video_embed_categories', $mod_video_category->toArray());
         } else {
-            $this->tema->setGlobal('video_embed_categories', []);
+            $this->theme->setGlobal('video_embed_categories', []);
         }
     }
 
     public function _site()
     {
-        $this->site['title'] = $this->lang['management']['1'];
-        $this->tema->setGlobal('site', $this->site);
+        $this->site['title'] = $this->lang['management']['dashboard'] ?? 'Dashboard';
+        $this->theme->setGlobal('site', $this->site);
     }
 
 
     public function _lang()
     {
         $this->db->fetch_array("SELECT name,seo FROM `lang` LIMIT 0,3");
-        $this->tema->setGlobal('_lang_list', $this->db->result);
+        $this->theme->setGlobal('_lang_list', $this->db->result);
     }
 
     public function module_status($moduleName = null, $status = null)

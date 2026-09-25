@@ -1,6 +1,8 @@
 <?php
 /*
- * Koberz Content Management System
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
  * @ 2010
  * Session Class
  * Session.class.php
@@ -10,8 +12,7 @@ class Session
     public $sid;
     public $ip;
     public $agent;
-    public $sad;
-    private $basla;
+    public $sessionName;
 
     public function __construct()
     {
@@ -25,28 +26,39 @@ class Session
         ini_set('session.gc_probability', 100);
         ini_set('session.gc_divisor', 100);
         ini_set('session.auto_start', 0);
-        ini_set('session.gc_maxlifetime', Kayit::getir('session_life_time') * 60);
+        ini_set('session.gc_maxlifetime', Registry::get('session_life_time') * 60);
 
 
-        if (Kayit::varmi('session_sid')) {
-            session_id(Kayit::getir('session_sid'));
-            $this->sid = Kayit::getir('session_sid');
+        if (Registry::has('session_sid')) {
+            session_id(Registry::get('session_sid'));
+            $this->sid = Registry::get('session_sid');
         }
 
-        if (Kayit::varmi('session_name')) {
-            session_name(Kayit::getir('session_name'));
-            $this->sad = Kayit::getir('session_name');
+        if (Registry::has('session_name')) {
+            session_name(Registry::get('session_name'));
+            $this->sessionName = Registry::get('session_name');
         }
         @session_start();
 
         if (!$this->sid) {
             $this->sid = session_id();
         }
-        if (!$this->sad) {
-            $this->sad = session_name();
+        if (!$this->sessionName) {
+            $this->sessionName = session_name();
         }
 
-        if (Kayit::getir('session_check_ip') == true) {
+        // Enforce the configured inactivity lifetime (session_life_time, in minutes).
+        // Liveness pings (mod_user/session_check) are passive: they exist to DETECT
+        // expiry on the client side, so they must not reset the inactivity clock.
+        $lifetime = (int) Registry::get('session_life_time') * 60;
+        $lastActivity = (int) $this->get('last_activity');
+        $isLivenessPing = strpos($_SERVER['REQUEST_URI'] ?? '', 'mod_user/session_check') !== false;
+        if ($lifetime > 0 && $lastActivity > 0 && (time() - $lastActivity) > $lifetime) {
+            $this->clear();
+        } elseif ($lifetime > 0 && $isLivenessPing === false) {
+            $this->set('last_activity', time());
+        }
+        if (Registry::get('session_check_ip') == true) {
             if ($this->has('ip') && $this->get('ip') != $this->ip) {
                 print('Please log in again: 1!');
                 $this->clear();
@@ -54,7 +66,7 @@ class Session
             }
             $this->set('ip', $this->ip);
         }
-        if (Kayit::getir('session_check_agent') == true) {
+        if (Registry::get('session_check_agent') == true) {
             if ($this->has('agent') && $this->get('agent') != md5($this->agent)) {
                 print('Please log in again: 2!');
                 $this->clear();
@@ -66,8 +78,8 @@ class Session
         if ($this->has('sid') === false) {
             $this->set('sid', $this->sid);
         }
-        if ($this->has('sad') === false) {
-            $this->set('sad', $this->sad);
+        if ($this->has('session_name') === false) {
+            $this->set('session_name', $this->sessionName);
         }
         //var_dump(ini_get('session.auto_start'));
     }
@@ -82,6 +94,12 @@ class Session
     public function get($name)
     {
         return isset($_SESSION[$name]) ? $_SESSION[$name] : false;
+    }
+
+    // Return all session values.
+    public function all()
+    {
+        return isset($_SESSION) && is_array($_SESSION) ? $_SESSION : [];
     }
 
     // Check whether a session key exists.

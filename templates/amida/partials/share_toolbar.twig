@@ -1,0 +1,99 @@
+{#
+    Social Share & Action Toolbar Component
+    Params:
+      - share_url_path: string (e.g. 'announcement', 'article', 'news', 'publication', 'page')
+      - share_url: string (optional explicit URL)
+      - share_title: string (optional explicit title)
+      - mod_name: string (e.g. 'mod_announcements', 'mod_content', 'mod_news', 'mod_publication', 'mod_page', 'mod_imagecategories')
+      - item_id: int/string (record ID)
+      - show_tools: bool (default true if mod_name and item_id provided)
+      - show_share: bool (default true)
+      - has_gallery: bool (whether to show download all images)
+      - share_wrap_class: string (optional wrapper class)
+#}
+{% set target_url = share_url|default(d.seo ? (site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo) : (site.canonical_url|default(site.saddress))) %}
+{% set target_title = share_title|default(d.name|default(d.title|default(site.name))) %}
+{% set target_mod = mod_name|default('') %}
+{% set target_id = item_id|default(d.id|default(null)) %}
+{% set can_show_tools = show_tools|default(true) and target_mod is not empty and target_id is not empty %}
+{% set can_show_share = show_share|default(true) %}
+
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ "now"|date("U") }}">
+
+<div class="share-toolbar-wrapper d-print-none {{ share_wrap_class|default('') }}">
+    {% if can_show_share %}
+    <div class="share-toolbar-heading">
+        <span class="share-toolbar-title">
+            <i class="bi bi-share me-1"></i>{{ lang.index.share }}
+        </span>
+    </div>
+    {% endif %}
+
+    <div class="share-toolbar">
+        {% if can_show_share %}
+        <div class="share-toolbar-section">
+            <button type="button" class="social-share-btn btn-native-share" title="{{ lang.index.share }}" aria-label="{{ lang.index.share }}" data-share-title="{{ target_title|escape('html_attr') }}" data-share-url="{{ target_url }}">
+                <i class="bi bi-share"></i>
+            </button>
+
+            <div class="share-buttons-list d-flex gap-2 flex-wrap">
+                {# Facebook #}
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-facebook" aria-label="Facebook" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook">
+                    <i class="bi bi-facebook"></i>
+                </a>
+
+                {# X (Twitter) #}
+                <a href="https://twitter.com/intent/tweet?text={{ target_title|url_encode }}&url={{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-twitter" aria-label="X (Twitter)" data-bs-toggle="tooltip" data-bs-placement="top" title="X (Twitter)">
+                    <i class="bi bi-twitter-x"></i>
+                </a>
+
+                {# WhatsApp #}
+                <a href="https://api.whatsapp.com/send?text={{ target_title|url_encode }}%0A{{ target_url|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp">
+                    <i class="bi bi-whatsapp"></i>
+                </a>
+
+                {# TikTok #}
+                <button type="button" class="social-share-btn btn-tiktok border-0" aria-label="TikTok" data-bs-toggle="tooltip" data-bs-placement="top" title="TikTok" data-share-network="tiktok" data-share-title="{{ target_title|escape('html_attr') }}" data-share-url="{{ target_url }}" data-copied-text="{{ lang.index.link_copied }}">
+                    <i class="bi bi-tiktok"></i>
+                </button>
+
+                {# LinkedIn #}
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ target_url|url_encode }}&title={{ target_title|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-linkedin" aria-label="LinkedIn" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn">
+                    <i class="bi bi-linkedin"></i>
+                </a>
+
+                {# Email #}
+                <a href="mailto:?subject={{ target_title|url_encode }}&body={{ target_url|url_encode }}" class="social-share-btn btn-email" aria-label="Email" data-bs-toggle="tooltip" data-bs-placement="top" title="Email">
+                    <i class="bi bi-envelope"></i>
+                </a>
+
+                {# Copy Link #}
+                <button type="button" class="social-share-btn btn-copy border-0" aria-label="{{ lang.index.copy_link }}" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.copy_link }}" data-copy-url="{{ target_url }}" data-copied-text="{{ lang.index.link_copied }}" data-original-text="{{ lang.index.copy_link }}">
+                    <i class="bi bi-link-45deg fs-5"></i>
+                </button>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if can_show_tools %}
+        <div class="share-toolbar-section share-toolbar-tools">
+            <a href="{{ site.saddress }}tools/saveHtml/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-html" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_html }}" aria-label="{{ lang.index.download_html }}">
+                <i class="bi bi-file-earmark-arrow-down"></i>
+            </a>
+            <a href="{{ site.saddress }}tools/saveText/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_text }}" aria-label="{{ lang.index.download_text }}">
+                <i class="bi bi-file-text"></i>
+            </a>
+            {% if has_gallery|default(false) %}
+            <a href="{{ site.saddress }}tools/saveAll/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-zip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_all }}" aria-label="{{ lang.index.download_all }}">
+                <i class="bi bi-images"></i>
+            </a>
+            {% endif %}
+            <button type="button" data-action="print" class="tool-action-btn btn-tool-print border-0" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.print }}" aria-label="{{ lang.index.print }}">
+                <i class="bi bi-printer"></i>
+            </button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ "now"|date("U") }}"></script>

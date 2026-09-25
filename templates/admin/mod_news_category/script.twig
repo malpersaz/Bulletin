@@ -107,7 +107,7 @@
             formData.append('parent_id', parentId);
             siblingIds.forEach(sid => formData.append('order[]', sid));
 
-            fetch(SITE_URL + 'mod_news_category/tasi', {
+            fetch(SITE_URL + 'mod_news_category/reorder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: formData
@@ -115,7 +115,7 @@
             .then(response => response.text())
             .then(resp => {
                 if(card) card.style.opacity = "1";
-                if (resp.trim() === 'Oke') {
+                if (resp.trim() === 'Success') {
                     const Toast = Swal.mixin({
                         toast: true, position: 'top-end', showConfirmButton: false, timer: 2000, timerProgressBar: true
                     });
@@ -238,7 +238,7 @@
         })
         .then(response => response.text())
         .then(resp => {
-            if (resp.trim() === 'Oke') {
+            if (resp.trim() === 'Success') {
                 const Toast = Swal.mixin({
                     toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
                 });
@@ -287,7 +287,7 @@
                 })
                 .then(response => response.text())
                 .then(resp => {
-                    if (resp.trim() === 'Oke') {
+                    if (resp.trim() === 'Success') {
                         Swal.fire({ icon: 'success', title: '{{ lang.mod_news_category.success_messages.operation_completed }}', timer: 1000, showConfirmButton: false });
                         setTimeout(() => window.location.reload(), 1000);
                     } else {

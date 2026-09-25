@@ -1,0 +1,92 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_popup.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_popup.edit }}{% endblock %}
+
+{% block content %}
+<div class="popup-form-shell">
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="popupEditForm" class="popup-form-inner">
+        <div class="form-card">
+            <h3 class="form-card-title">{{ lang.mod_popup.basic_info }}</h3>
+
+            <!-- Language -->
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="lang">
+                    {% set selected_lang = d.lang|default(site.lang) %}
+                    {% for item in lang_lang %}
+                        {% if item.status == 'y' or item.seo == selected_lang %}
+                            <option value="{{ item.seo }}" {% if item.seo == selected_lang %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_popup.lang }}</label>
+            </div>
+
+            <!-- Name -->
+            <div class="m3-input-wrapper mb-12">
+                <input class="m3-input-lg" type="text" name="name" id="popup-name" value="{{ d.name|default('') }}" placeholder=" " maxlength="255" required>
+                <label class="m3-floating-label">{{ lang.mod_popup.name }}</label>
+            </div>
+
+            <!-- Status -->
+            <div class="m3-input-wrapper mb-12">
+                <select class="m3-input-lg" name="status">
+                    <option value="y" {% if d.status|default('y') == 'y' %}selected{% endif %}>{{ lang.mod_popup.active }}</option>
+                    <option value="n" {% if d.status|default('y') == 'n' %}selected{% endif %}>{{ lang.mod_popup.passive }}</option>
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_popup.status }}</label>
+            </div>
+
+            <!-- Link -->
+            <div class="m3-input-wrapper mb-12">
+                <input class="m3-input-lg" type="text" name="link" id="popup-link" value="{{ d.link|default('') }}" placeholder=" " maxlength="255">
+                <label class="m3-floating-label">{{ lang.mod_popup.link }}</label>
+            </div>
+
+            <!-- Duration -->
+            <div class="m3-input-wrapper mb-12">
+                <input class="m3-input-lg" type="number" name="duration" id="popup-duration" value="{{ d.duration|default(10) }}" placeholder=" ">
+                <label class="m3-floating-label">{{ lang.mod_popup.duration }}</label>
+            </div>
+
+            <!-- Image -->
+            <div class="m3-input-wrapper mb-12">
+                <input class="m3-input-lg" type="file" name="image" id="popup-image" accept="image/*">
+                <label class="m3-floating-label">{{ lang.mod_popup.image }}</label>
+                {% if d.image %}
+                    <div class="mt-8"><img src="{{ site.iaddress }}mod_popup/thumb/{{ d.image }}" alt="" class="img-thumbnail img-preview-thumb"></div>
+                {% endif %}
+            </div>
+
+            <!-- Content -->
+            <div class="m3-input-wrapper mb-12">
+                <textarea class="m3-input-lg" name="content" id="popup-content" rows="4" placeholder=" ">{{ d.content|default('') }}</textarea>
+                <label class="m3-floating-label">{{ lang.mod_popup.content }}</label>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" name="edit" value="1" class="btn-primary">{{ lang.mod_popup.save }}</button>
+            <a href="{{ site.saddress }}mod_popup/list" class="btn-secondary">{{ lang.mod_popup.cancel }}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

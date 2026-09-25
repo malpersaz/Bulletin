@@ -19,8 +19,7 @@ $lang['mod_user'] = [
     'edit' => 'Benutzer bearbeiten',
     'list' => 'Benutzerliste',
     'information' => 'Information!',
-    'oke' => 'Vorgang erfolgreich!',
-    'success' => 'Erfolg!',
+ 'Erfolg!',
     'last_step' => 'Letzter Schritt',
     'error_title' => 'Fehler aufgetreten!',
     'error_label' => 'Fehler!',
@@ -44,12 +43,12 @@ $lang['mod_user'] = [
     'error_fatal' => 'Ein kritischer Fehler ist aufgetreten!',
     'database_error' => 'Der Datensatz konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.',
     'remove_image' => 'Sind Sie sicher, dass Sie dieses Bild entfernen möchten?',
-    'remove_image_oke' => 'Bild entfernt',
+    'remove_image_success' => 'Bild entfernt',
     'choose_wish' => 'Bitte wählen Sie aus, falls gewünscht',
     'remove_record' => 'Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?',
     'message' =>
         [
-            'oke' =>
+            'success' =>
                 [
                     'add' => 'Benutzer hinzugefügt!',
                     'edit' => 'Benutzer aktualisiert!',
@@ -482,8 +481,13 @@ $lang['mod_user']['panel'] = [
     'more_sheet_title' => 'Weitere Tools',
     'more_sheet_copy' => 'Öffnen Sie seltener genutzte System- und Verwaltungsoberflächen, ohne die Hauptleiste zu überfüllen.',
     'more_sheet_open_drawer' => 'Vollständiges Modulverzeichnis öffnen',
+    'link_list' => 'Liste',
+    'link_add' => 'Hinzufügen',
+    'link_categories' => 'Kategorien',
+    'link_submissions' => 'Einreichungen',
+    'clear_search' => 'Löschen',
     'home_title' => 'Startseite',
-    'admin_brand' => 'AKM Business Admin'
+    'admin_brand' => 'AKM Rojname Admin'
 ];
 
 $lang['mod_user']['fab'] = [

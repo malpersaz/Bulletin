@@ -4,7 +4,6 @@
 {% set show_search_filter_button = false %}
 {% set hide_contextual_bar = true %}
 {% set search_placeholder = lang.mod_user_pm.search %}
-{% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -92,7 +91,7 @@
     {% endif %}
 
     <form id="filterForm" hidden>
-        <input type="hidden" name="arama[subject]" id="filterSearch" value="">
+        <input type="hidden" name="search[subject]" id="filterSearch" value="">
     </form>
 </div>
 {% endblock %}
@@ -418,7 +417,7 @@
         }
     });
 
-    const RADRES_URL = '{{ site.iaddress }}';
+    const IADDRESS_URL = '{{ site.iaddress }}';
     const PM_LANG = {
         read: "{{ lang.mod_user_pm.view_action|e('js') }}",
         reply: "{{ lang.mod_user_pm.reply_action|e('js') }}",

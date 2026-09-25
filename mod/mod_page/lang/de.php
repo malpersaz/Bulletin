@@ -12,17 +12,25 @@ $lang['mod_page'] = [
     'add' => 'Seite hinzufügen',
     'edit' => 'Seite bearbeiten',
     'list' => 'Seitenliste',
+    'total_pages' => 'Gesamtseiten',
+    'published_pages' => 'Veröffentlicht',
+    'draft_pages' => 'Entwürfe',
+    'expand_all' => 'Alle aufklappen',
+    'collapse_all' => 'Alle zuklappen',
+    'search_placeholder' => 'Seiten durchsuchen...',
 
     // === System Messages ===
     'information' => 'Information',
-    'oke' => 'Vorgang erfolgreich',
-    'hata' => 'Fehler aufgetreten',
-    'error' => 'Kritischer Fehler',
+    'success' => 'Vorgang erfolgreich',
+    'error' => 'Fehler aufgetreten',
 
     // === Confirmation Messages ===
     'remove_image' => 'Sind Sie sicher, dass Sie dieses Bild entfernen möchten?',
-    'remove_image_oke' => 'Bild erfolgreich entfernt',
+    'remove_image_success' => 'Bild erfolgreich entfernt',
     'choose_wish' => 'Bitte falls gewünscht auswählen',
+    'empty' => [
+        'no_pages' => 'Keine Seiten gefunden',
+    ],
     'menu_options' => [
         'none' => 'Nicht zum Menü hinzufügen',
         'top_level' => 'Als Menüpunkt auf oberster Ebene hinzufügen',
@@ -38,9 +46,10 @@ $lang['mod_page'] = [
 
     // === System Messages ===
     'messages' => [
-        'oke' => [
+        'success' => [
             'add' => 'Seite erfolgreich hinzugefügt',
             'edit' => 'Seite erfolgreich aktualisiert',
+            'delete' => 'Seite erfolgreich gelöscht',
         ],
         'error' => [
             'add' => 'Seite konnte nicht hinzugefügt werden',
@@ -53,9 +62,6 @@ $lang['mod_page'] = [
         'warning' => [
             'reorder' => 'Seitenreihenfolge ändern?',
             'delete' => 'Sind Sie sicher, dass Sie diese Seite löschen möchten?',
-        ],
-        'success' => [
-            'delete' => 'Seite erfolgreich gelöscht',
         ],
     ],
 
@@ -82,13 +88,13 @@ $lang['mod_page'] = [
         'add' => 'Hinzufügen',
         'edit' => 'Bearbeiten',
         'delete' => 'Löschen',
-        'vazgec' => 'Abbrechen',
-        'kaldir' => 'Entfernen',
-        'evet' => 'Ja',
-        'hayir' => 'No',
+        'cancel' => 'Abbrechen',
+        'remove' => 'Entfernen',
+        'yes' => 'Ja',
+        'no' => 'Nein',
         'gallery' => 'Bildergalerie',
         'file' => 'Dateimanager',
-        'tamam' => 'OK',
+        'ok' => 'OK',
         'upload' => 'Hochladen',
     ],
 
@@ -108,11 +114,12 @@ $lang['mod_page'] = [
         'email' => 'Bitte geben Sie eine gültige E-Mail-Adresse im Feld %s ein',
         'unique' => 'Das von Ihnen eingegebene %s ist bereits registriert, bitte wählen Sie ein anderes %s',
         'inarray' => 'Das Feld %s akzeptiert nur die Werte: \' %s \'',
+        'deck_length' => 'Bitte geben Sie einen Einleitungstext zwischen 90 und 120 Zeichen ein.',
     ],
 
     // === Role Permissions ===
-    'roll' => [
-        'ad' => 'Rollen der Seitenverwaltung',
+    'role' => [
+        'name' => 'Rollen der Seitenverwaltung',
         'add' => 'Kann Seiten hinzufügen',
         'edit' => 'Kann Seiten bearbeiten',
         'delete' => 'Kann Seiten entfernen',
@@ -198,6 +205,18 @@ $lang['mod_page'] = [
         'page_summary' => 'Zusammenfassung der Seite',
         'previous' => 'Zurück',
         'next' => 'Weiter',
+        'image' => [
+            'drop_title' => 'Ziehen Sie ein Bild hierher',
+            'drop_description' => 'Hochladen, einfügen oder ein Bild ablegen.',
+            'upload_link' => 'Datei hochladen',
+            'link_separator' => 'ODER',
+            'link_placeholder' => 'Bild-Link einfügen',
+            'link_action' => 'Importieren',
+            'hint_loading' => 'Bild wird importiert...',
+            'hint_invalid_type' => 'Hier werden nur Bilddateien unterstützt.',
+            'hint_no_drop_data' => 'Im abgelegten Inhalt wurde kein verwendbares Bild gefunden.',
+            'hint_remote_failed' => 'Das Bild konnte nicht aus dieser Quelle importiert werden.',
+        ],
     ],
     'quick_unpublish_confirm' => 'Sind Sie sicher, dass Sie diese Seite depublizieren möchten?',
     'quick_publish_confirm' => 'Sind Sie sicher, dass Sie diese Seite veröffentlichen möchten?',
@@ -206,5 +225,14 @@ $lang['mod_page'] = [
     'status_badge' => [
         'active' => 'Veröffentlicht',
         'draft' => 'Entwurf',
+    ],
+    'picker' => [
+        'file' => 'Vorhandene Datei auswählen',
+    ],
+    'ajax' => [
+        'database_error' => 'Datenbankfehler',
+        'record_not_found' => 'Seite nicht gefunden!',
+        'unknown_type' => 'Unbekannter Beziehungstyp',
+        'relation_updated' => 'Beziehung erfolgreich aktualisiert',
     ],
 ];

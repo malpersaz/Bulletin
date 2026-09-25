@@ -23,7 +23,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
    * @var string[]
    * @access private
    */
-  private $_mailboxes = array();
+  private $_mailboxes = [];
   
   /**
    * Creates a new MailboxHeader with $name.
@@ -221,7 +221,7 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
    */
   protected function normalizeMailboxes(array $mailboxes)
   {
-    $actualMailboxes = array();
+    $actualMailboxes = [];
     
     foreach ($mailboxes as $key => $value)
     {
@@ -278,14 +278,14 @@ class Swift_Mime_Headers_MailboxHeader extends Swift_Mime_Headers_AbstractHeader
    */
   private function _createNameAddressStrings(array $mailboxes)
   {
-    $strings = array();
+    $strings = [];
     
     foreach ($mailboxes as $email => $name)
     {
       $mailboxStr = $email;
       if (!is_null($name))
       {
-        $nameStr = $this->createDisplayNameString($name, empty($strings));
+        $nameStr = $this->createDisplayNameString($name, $strings === []);
         $mailboxStr = $nameStr . ' <' . $mailboxStr . '>';
       }
       $strings[] = $mailboxStr;

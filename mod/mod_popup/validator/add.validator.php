@@ -1,62 +1,62 @@
 <?php
-class ekle_validator
+class add_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File
         $this->lang = Load::lang('mod_popup');
     }
     public function check()
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['language'])
+                'message' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['language'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
-        // created_at Required
-        $this->valid->ekle(
+        // publish_at Required
+        $this->valid->add(
             [
-                'name' => 'created_at',
-                'fonk' => 'required',
+                'name' => 'publish_at',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['created_at'])
+                'message' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['publish_at'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
-        // etarih Required
-        $this->valid->ekle(
+        // expired_at Required
+        $this->valid->add(
             [
-                'name' => 'etarih',
-                'fonk' => 'required',
+                'name' => 'expired_at',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['etarih'])
+                'message' => sprintf($this->lang['mod_popup']['validator']['required'], $this->lang['mod_popup']['admin']['columns']['expired_at'])
             ]
         );
         if ($this->_check() === True) {
@@ -65,15 +65,15 @@ class ekle_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['length'], $this->lang['mod_popup']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_popup']['validator']['length'], $this->lang['mod_popup']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -83,12 +83,12 @@ class ekle_validator
         #Check inarray
 
         // video in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'video',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['url', 'youtube', 'vimeo', 'instagram'],
-                'mesaj' => sprintf($this->lang['mod_popup']['validator']['inarray'], $this->lang['mod_popup']['admin']['columns']['video'], 'url,youtube,vimeo,instagram')
+                'message' => sprintf($this->lang['mod_popup']['validator']['inarray'], $this->lang['mod_popup']['admin']['columns']['video'], 'url,youtube,vimeo,instagram')
             ]
         );
         if ($this->_check() === True) {
@@ -97,7 +97,7 @@ class ekle_validator
 
         #Check Email
 
-        #Check Tcno
+        #Check National ID
 
         #Check Unique
 
@@ -110,10 +110,10 @@ class ekle_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

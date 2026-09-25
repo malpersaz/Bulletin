@@ -34,12 +34,9 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
   {
     $this->_path = $path;
     
-    if (!file_exists($this->_path))
+    if (!file_exists($this->_path) && !mkdir($this->_path, 0777, true))
     {
-      if (!mkdir($this->_path, 0777, true))
-      {
-        throw new Swift_IoException('Unable to create Path ['.$this->_path.']');
-      }
+      throw new Swift_IoException('Unable to create Path ['.$this->_path.']');
     }
   }
   
@@ -100,13 +97,10 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
         fclose($fp);
         
         return;
-      } 
-      else 
-      {
-        /* The file allready exists, we try a longer fileName
-         */
-        $fileName.=$this->getRandomString(1);
       }
+      /* The file allready exists, we try a longer fileName
+       */
+      $fileName.=$this->getRandomString(1);
     }
     
     throw new Swift_IoException('Unable to create a file for enqueuing Message');
@@ -123,7 +117,7 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     {
       $file = $file->getRealPath();
 
-      if (substr($file, -16)=='.message.sending')
+      if (substr($file, -16) === '.message.sending')
       {
         $lockedtime=filectime($file);
         if ((time()-$lockedtime)>$timeout) 
@@ -156,7 +150,7 @@ class Swift_FileSpool extends Swift_ConfigurableSpool
     {
       $file = $file->getRealPath();
 
-      if (substr($file, -8) != '.message')
+      if (substr($file, -8) !== '.message')
       {
         continue;
       }

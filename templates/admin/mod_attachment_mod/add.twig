@@ -1,7 +1,6 @@
 {% set show_navbar = false %}
 {% set show_fab = false %}
 {% set show_search = false %}
-{% set show_sidebar = true %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -113,11 +112,11 @@
         <p>{{ lang.mod_attachment_mod.admin.intro_add }}</p>
     </section>
 
-    {% if oke is defined %}
-        <div class="form-status success">{{ mesaj }}</div>
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
     {% endif %}
     {% if error is defined %}
-        <div class="form-status error">{{ mesaj }}</div>
+        <div class="form-status error">{{ message }}</div>
     {% endif %}
     {% if errors is defined %}
         <div class="form-status error">

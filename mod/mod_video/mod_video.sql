@@ -5,6 +5,7 @@ CREATE TABLE  `mod_video` (
 `duration` VARCHAR(8)  NOT NULL ,
 `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 `status` ENUM( 'y', 'n' ) NOT NULL DEFAULT 'y' ,
+`slider` ENUM( 'y', 'n' ) NOT NULL DEFAULT 'n' ,
 `description` TEXT DEFAULT NULL ,
 `image` VARCHAR(20),
 `acl_id` VARCHAR(255)  DEFAULT NULL ,

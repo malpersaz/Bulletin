@@ -40,7 +40,7 @@
 
                     <div class="card-thumb">
                         {% if entry.image %}
-                            <img src="{{ site.saddress }}static/mod_news_category/thumb/{{ entry.image }}" style="width:100%; height:100%; object-fit:cover;">
+                            <img src="{{ site.iaddress }}mod_news_category/thumb/{{ entry.image }}" style="width:100%; height:100%; object-fit:cover;">
                         {% else %}
                             <i class="bi bi-folder2-fill"></i>
                         {% endif %}
@@ -121,7 +121,7 @@
     </div>
 
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_news_category/add'" aria-label="{{ lang.mod_news_category.add|default('Beşa Nûçeyê Lêzêde Bike') }}">
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_news_category/add'" aria-label="{{ lang.mod_news_category.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endblock %}

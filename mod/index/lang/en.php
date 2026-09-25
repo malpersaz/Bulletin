@@ -132,6 +132,10 @@ $lang['index']['mod_pictures']['latest_pictures'] = [
 ];
 
 $lang['index']['mod_attachment'] = [
+    'title' => 'Content Files',
+    'subtitle' => 'There are no files attached to this content!',
+    'file' => 'Content Files',
+    'no_files' => 'There are no files attached to this content!',
     '1' => 'Content Files',
     '2' => 'There are no files attached to this content!'
 ];
@@ -182,6 +186,13 @@ $lang['index']['mod_announcements']['aylar'] = [
 ];
 #   mod_gallery
 $lang['index']['mod_gallery'] = [
+    'export' => 'Export',
+    'save_html' => 'Save as HTML File',
+    'save_txt' => 'Save as Text File',
+    'save_images' => 'Save with Images',
+    'print' => 'Print',
+    'save_original' => 'Save Original Image',
+    'full_screen' => 'Full Screen View',
     '1' => 'Save as HTML File',
     '2' => 'Save as Text File',
     '3' => 'Save with Images',
@@ -340,23 +351,87 @@ $lang['index']['mod_news'] = [
         '3' => 'No published news is available yet.',
     ]
 ];
-$lang['index']['mod_publication'] = $lang['index']['mod_content'];
-$lang['index']['mod_publication']['2'] = 'All Publications';
-$lang['index']['mod_publication']['3'] = 'publication,journal,issue';
-$lang['index']['mod_publication']['4'] = 'No publications found in this category!';
-$lang['index']['mod_publication']['5'] = '%s Publication Archive - Page %s';
-$lang['index']['mod_publication']['7'] = 'This publication was published on %s in <a href="%s" title="%s">%s</a> category';
-$lang['index']['mod_publication']['18'] = 'No publications available in this category.';
+$lang['index']['comments'] = 'Comments';
+$lang['index']['add_comment'] = 'Add Comment';
+$lang['index']['comment_placeholder'] = 'Write your comment here...';
+$lang['index']['full_name'] = 'Full Name';
+$lang['index']['submit_comment'] = 'Submit Comment';
+$lang['index']['warning'] = 'Warning';
+$lang['index']['comment_rules'] = 'Comments containing insults, abuse, or unreadable formatting may not be approved.';
+$lang['index']['read_more'] = 'Read More';
+$lang['index']['latest_publications'] = 'Latest Publications';
+$lang['index']['view_all_publications'] = 'View All Publications';
+$lang['index']['publications'] = 'Publications';
+
+$lang['index']['mod_publication'] = array_merge($lang['index']['mod_content'], [
+    'all_publications' => 'All Publications',
+    'hero_description' => 'Discover latest research papers, technical reports, academic publications, and deep dives.',
+    'search_placeholder' => 'Search publications by title or topic...',
+    'search_publications' => 'Search publications',
+    'view_label' => 'View:',
+    'grid_view' => 'Grid View',
+    'list_view' => 'List View',
+    'no_matching_found' => 'No matching publications found',
+    'try_adjusting_search' => 'Try adjusting your search terms or filter keywords.',
+    'keywords' => 'publication,journal,issue',
+    'no_content_found' => 'No publications found in this category!',
+    'archive_page_title' => '%s Publication Archive - Page %s',
+    'published_in_category' => 'This publication was published on %s in <a href="%s" title="%s">%s</a> category',
+    'no_content_available' => 'No publications available in this category.',
+    'category' => 'Category',
+    'year' => 'Year',
+    'month' => 'Month',
+    'view' => 'View',
+    'archive' => 'Archive',
+    'archive_title' => 'Publication Archive',
+    'search_results' => 'Search Results',
+    'no_data_found' => 'No publications found for the selected date.',
+    '1' => 'All Publications',
+    '2' => 'All Publications',
+    '3' => 'publication,journal,issue',
+    '4' => 'No publications found in this category!',
+    '5' => '%s Publication Archive - Page %s',
+    '6' => 'Publication Archive',
+    '7' => 'This publication was published on %s in <a href="%s" title="%s">%s</a> category',
+    '10' => 'No publications found for the selected date.',
+    '11' => 'Search Results',
+    '14' => 'Month',
+    '15' => 'View',
+    '18' => 'No publications available in this category.',
+]);
+$lang['index']['mod_publication']['latest_content'] = [
+    'title' => 'Our Articles',
+    'all_items' => 'View All Content',
+    'no_items_found' => 'No published content is available yet.',
+];
 $lang['index']['mod_publication']['authors'] = 'Our Authors';
 $lang['index']['mod_publication']['author'] = 'Author';
 $lang['index']['mod_publication']['other_authors'] = 'Other Authors';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Latest publication';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'There are no author records to display yet.';
 $lang['index']['mod_publication']['latest_publications'] = [
+    'title' => 'Our Publications',
+    'all_items' => 'View All Publications',
+    'no_items_found' => 'No published content is available yet.',
     '1' => 'Our Publications',
     '2' => 'All Publications',
     '3' => 'No published content is available yet.',
 ];
+$lang['index']['mod_publication']['months'] = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+];
+$lang['index']['mod_publication']['aylar'] = $lang['index']['mod_publication']['months'];
 $lang['index']['mod_publication']['comments'] = [
     'title' => 'Comments',
     'add_title' => 'Add Comment',
@@ -371,8 +446,9 @@ $lang['index']['mod_user_pm'] = [
 ];
 
 $lang['index']['error'] = [
+    'title' => 'Error',
     '1' => 'Error',
-    'method' => ['ad' => 'Invalid Method', 'mesaj' => 'Method %s not found'],
-    'mod' => ['ad' => 'Module Error', 'mesaj' => 'Module %s not found'],
-    'not' => ['ad' => 'Page Not Found', 'mesaj' => 'Requested page %s not found'],
+    'method' => ['title' => 'Invalid Method', 'message' => 'Method %s not found', 'ad' => 'Invalid Method', 'mesaj' => 'Method %s not found'],
+    'mod' => ['title' => 'Module Error', 'message' => 'Module %s not found', 'ad' => 'Module Error', 'mesaj' => 'Module %s not found'],
+    'not' => ['title' => 'Page Not Found', 'message' => 'Requested page %s not found', 'ad' => 'Page Not Found', 'mesaj' => 'Requested page %s not found'],
 ];

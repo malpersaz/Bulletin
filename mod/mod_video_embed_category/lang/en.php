@@ -46,6 +46,8 @@ $lang['mod_video_embed_category'] = [
         'cancel' => 'Cancel',
         'save' => 'Save',
         'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
     ],
     'validator' => [
         'required' => 'Please do not leave the %s field empty.',
@@ -53,8 +55,8 @@ $lang['mod_video_embed_category'] = [
         'unique' => 'The %s value already exists. Please choose another %s.',
         'inarray' => 'The %s field can only accept these values: %s.',
     ],
-    'roll' => [
-        'ad' => 'Video Category Management Roles',
+    'role' => [
+        'name' => 'Video Category Management Roles',
         'add' => 'Can add video categories',
         'edit' => 'Can edit video categories',
         'delete' => 'Can delete video categories',

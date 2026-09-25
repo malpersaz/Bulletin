@@ -1,0 +1,46 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+
+{% block title %}{{ lang.mod_popup.list }}{% endblock %}
+{% block headline %}{{ lang.mod_popup.list }}{% endblock %}
+
+{% block content %}
+<div id="popup-list-container" class="content-list popup-list-content">
+    {% if popups is defined and popups|length > 0 %}
+        {% for item in popups %}
+            <div class="content-card" data-id="{{ item.id }}">
+                <div class="content-card-body">
+                    <div class="content-card-title">{{ item.name }}</div>
+                    <div class="content-card-meta">
+                        <span class="badge {% if item.status == 'y' %}badge-success{% else %}badge-secondary{% endif %}">
+                            {{ item.status == 'y' ? lang.mod_popup.active : lang.mod_popup.passive }}
+                        </span>
+                        <span class="badge badge-info">{{ item.lang|upper }}</span>
+                    </div>
+                </div>
+                <div class="content-card-actions">
+                    <a href="{{ site.saddress }}mod_popup/edit/{{ item.id }}" class="btn-icon" aria-label="{{ lang.mod_popup.edit }}">
+                        <i class="bi bi-pencil-fill"></i>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <i class="bi bi-window-stack"></i>
+            <strong>{{ lang.mod_popup.no_records|default('No popups found') }}</strong>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if session.permissions.mod_popup.add is defined or true %}
+    <a href="{{ site.saddress }}mod_popup/add" class="main-fab" id="mainFab" aria-label="{{ lang.mod_popup.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+{% endif %}
+{% endblock %}

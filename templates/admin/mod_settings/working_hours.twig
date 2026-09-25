@@ -1,0 +1,485 @@
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set back_url = site.saddress ~ 'mod_settings/edit' %}
+
+{% set day_names = {
+    1: lang.mod_settings.day_monday,
+    2: lang.mod_settings.day_tuesday,
+    3: lang.mod_settings.day_wednesday,
+    4: lang.mod_settings.day_thursday,
+    5: lang.mod_settings.day_friday,
+    6: lang.mod_settings.day_saturday,
+    7: lang.mod_settings.day_sunday
+} %}
+
+{% block title %}{{ lang.mod_settings.working_hours_title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.working_hours_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/working_hours.css?v=2.2">
+{% endblock %}
+
+{% block content %}
+<div class="wh-page"
+     data-modal-title="{{ lang.mod_settings.working_hours_title }}"
+     data-modal-icon="bi-clock-history"
+     data-save-url="{{ site.saddress }}mod_settings/working_hours"
+     data-confirm-delete="{{ lang.mod_settings.closure_delete_confirm }}"
+     data-delete-btn="{{ lang.mod_settings.delete_closure }}"
+     data-cancel-btn="{{ lang.mod_settings.button.cancel }}"
+     data-status-open="{{ lang.mod_settings.status_open }}"
+     data-status-closed="{{ lang.mod_settings.status_closed }}"
+     data-auto-saving="{{ lang.mod_settings.auto_saving }}"
+     data-auto-saved="{{ lang.mod_settings.auto_saved }}"
+     data-error-msg="{{ lang.mod_settings.working_hours_saved_error }}"
+     data-delete-success="{{ lang.mod_settings.closure_deleted_success }}"
+     data-add-success="{{ lang.mod_settings.closure_saved_success }}"
+     data-type-holiday="{{ lang.mod_settings.type_holiday }}"
+     data-type-vacation="{{ lang.mod_settings.type_vacation }}"
+     data-type-maintenance="{{ lang.mod_settings.type_maintenance }}"
+     data-type-emergency="{{ lang.mod_settings.type_emergency }}"
+     data-full-day="{{ lang.mod_settings.is_full_day }}"
+     data-yearly-recurring="{{ lang.mod_settings.yearly_recurring }}"
+     data-no-closures="{{ lang.mod_settings.no_closures_found }}"
+     data-copy-weekdays-success="{{ lang.mod_settings.copy_weekdays_success }}"
+     data-closed-summary="{{ lang.mod_settings.closed_summary }}"
+     data-break-label="{{ lang.mod_settings.break_time_label }}">
+
+    {% if message is defined and message %}
+        <div class="wh-banner {{ Success is defined and Success ? 'success' : 'error' }}" role="alert">
+            <i class="bi {{ Success is defined and Success ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill' }} wh-banner-icon"></i>
+            <div class="wh-banner-text">{{ message }}</div>
+        </div>
+    {% endif %}
+
+    <!-- SECTION 1: Weekly Schedule Form -->
+    <form id="workingHoursForm" class="wh-form" action="{{ site.saddress }}mod_settings/working_hours?direct=1" method="post">
+        <input type="hidden" name="save_working_hours" value="1">
+
+        <section class="wh-section-card">
+            <div class="wh-section-header">
+                <div class="wh-section-title-wrap">
+                    <div class="wh-section-icon">
+                        <i class="bi bi-calendar-week"></i>
+                    </div>
+                    <h2 class="wh-section-title">{{ lang.mod_settings.section_weekly_hours }}</h2>
+                    <div class="wh-autosave-indicator is-hidden" id="whAutosaveIndicator" aria-live="polite">
+                        <span class="wh-sync-dot"></span>
+                        <span class="wh-sync-text"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wh-days-list">
+                {% if working_hours is defined and working_hours is not empty %}
+                    {% for day in working_hours %}
+                        {% set d_num = day.day_of_week %}
+                        {% set is_closed = (day.is_closed == 'y') %}
+                        {% set day_title = day_names[d_num]|default(lang.mod_settings.day_monday) %}
+                        {% set has_break = (day.break_start_time is not empty and day.break_end_time is not empty) %}
+
+                        <article class="wh-day-card{% if is_closed %} is-closed{% endif %}" data-day="{{ d_num }}" id="whDayCard_{{ d_num }}">
+                            <div class="wh-day-top-row">
+                                <div class="wh-day-badge-wrap">
+                                    <span class="wh-day-number">{{ d_num }}</span>
+                                    <span class="wh-day-name">{{ day_title }}</span>
+                                </div>
+
+                                <div class="wh-toggle-wrap">
+                                    <span class="wh-status-indicator" id="whStatusLabel_{{ d_num }}">
+                                        {{ is_closed ? lang.mod_settings.status_closed : lang.mod_settings.status_open }}
+                                    </span>
+                                    <label class="wh-switch" for="dayToggle_{{ d_num }}">
+                                        <input type="checkbox"
+                                               class="wh-toggle-checkbox"
+                                               id="dayToggle_{{ d_num }}"
+                                               data-day="{{ d_num }}"
+                                               {% if not is_closed %}checked{% endif %}
+                                               aria-label="{{ day_title }} {{ lang.mod_settings.status_open }}">
+                                        <span class="wh-slider"></span>
+                                    </label>
+                                    <input type="hidden"
+                                           name="days[{{ d_num }}][is_closed]"
+                                           id="isClosedInput_{{ d_num }}"
+                                           value="{{ day.is_closed }}">
+                                </div>
+                            </div>
+
+                            <!-- Closed Summary Banner (Shown when day is closed) -->
+                            <div class="wh-day-closed-summary" id="whClosedSummary_{{ d_num }}">
+                                <i class="bi bi-moon-stars"></i>
+                                <span>{{ lang.mod_settings.closed_summary }}</span>
+                            </div>
+
+                            <!-- Monday Productivity Action: Copy hours to weekdays -->
+                            {% if d_num == 1 %}
+                                <div class="wh-day-actions-bar" id="whDayActions_{{ d_num }}">
+                                    <button type="button" class="wh-btn-copy-weekdays" id="copyWeekdaysBtn" title="{{ lang.mod_settings.copy_to_weekdays }}">
+                                        <i class="bi bi-copy"></i>
+                                        <span>{{ lang.mod_settings.copy_to_weekdays }}</span>
+                                    </button>
+                                </div>
+                            {% endif %}
+
+                            <!-- Day Interactive Form Body (Collapses smoothly when closed) -->
+                            <div class="wh-day-body" id="whDayBody_{{ d_num }}">
+                                <!-- Operating Hours Row -->
+                                <div class="wh-time-row">
+                                    <div class="wh-time-field">
+                                        <label for="openTime_{{ d_num }}" class="wh-time-label">
+                                            <i class="bi bi-sun"></i> {{ lang.mod_settings.open_time_label }}
+                                        </label>
+                                        <input type="time"
+                                               id="openTime_{{ d_num }}"
+                                               name="days[{{ d_num }}][open_time]"
+                                               class="wh-time-input wh-open-time"
+                                               data-day="{{ d_num }}"
+                                               value="{{ day.open_time|slice(0, 5) }}"
+                                               {% if is_closed %}disabled{% endif %}
+                                               step="300">
+                                    </div>
+
+                                    <div class="wh-time-sep" aria-hidden="true">
+                                        <i class="bi bi-arrow-right"></i>
+                                    </div>
+
+                                    <div class="wh-time-field">
+                                        <label for="closeTime_{{ d_num }}" class="wh-time-label">
+                                            <i class="bi bi-moon"></i> {{ lang.mod_settings.close_time_label }}
+                                        </label>
+                                        <input type="time"
+                                               id="closeTime_{{ d_num }}"
+                                               name="days[{{ d_num }}][close_time]"
+                                               class="wh-time-input wh-close-time"
+                                               data-day="{{ d_num }}"
+                                               value="{{ day.close_time|slice(0, 5) }}"
+                                               {% if is_closed %}disabled{% endif %}
+                                               step="300">
+                                    </div>
+                                </div>
+
+                                <!-- Break Details Toggle & Fields -->
+                                <div class="wh-break-section">
+                                    <div class="wh-break-btn-wrap">
+                                        <button type="button"
+                                                class="wh-break-btn{% if has_break %} is-active has-break{% endif %}"
+                                                data-action="toggle-break"
+                                                data-day="{{ d_num }}"
+                                                data-target="breakFields_{{ d_num }}"
+                                                id="breakToggleBtn_{{ d_num }}"
+                                                {% if is_closed %}disabled{% endif %}>
+                                            <i class="bi bi-cup-hot"></i>
+                                            <span class="wh-break-btn-text" id="breakBtnText_{{ d_num }}">
+                                                {% if has_break %}
+                                                    {{ lang.mod_settings.break_time_label }}: {{ day.break_start_time|slice(0, 5) }} - {{ day.break_end_time|slice(0, 5) }}
+                                                {% else %}
+                                                    {{ lang.mod_settings.break_time_label }}
+                                                {% endif %}
+                                            </span>
+                                            <i class="bi bi-chevron-down wh-break-chevron"></i>
+                                        </button>
+                                    </div>
+
+                                    <div class="wh-break-fields{% if has_break %} is-visible{% endif %}" id="breakFields_{{ d_num }}">
+                                        <div class="wh-break-fields-header">
+                                            <span class="wh-break-fields-title">{{ lang.mod_settings.break_time_label }}</span>
+                                            <button type="button"
+                                                    class="wh-btn-clear-break"
+                                                    data-action="clear-break"
+                                                    data-day="{{ d_num }}"
+                                                    title="{{ lang.mod_settings.clear_break }}">
+                                                <i class="bi bi-x-circle"></i>
+                                                <span>{{ lang.mod_settings.clear_break }}</span>
+                                            </button>
+                                        </div>
+                                        <div class="wh-time-row break-row">
+                                            <div class="wh-time-field">
+                                                <label for="breakStart_{{ d_num }}" class="wh-time-label">
+                                                    {{ lang.mod_settings.break_start_label }}
+                                                </label>
+                                                <input type="time"
+                                                       id="breakStart_{{ d_num }}"
+                                                       name="days[{{ d_num }}][break_start_time]"
+                                                       class="wh-time-input wh-break-input wh-break-start"
+                                                       data-day="{{ d_num }}"
+                                                       value="{{ day.break_start_time ? day.break_start_time|slice(0, 5) : '' }}"
+                                                       {% if is_closed %}disabled{% endif %}
+                                                       step="300">
+                                            </div>
+
+                                            <div class="wh-time-sep" aria-hidden="true">
+                                                <i class="bi bi-arrow-right"></i>
+                                            </div>
+
+                                            <div class="wh-time-field">
+                                                <label for="breakEnd_{{ d_num }}" class="wh-time-label">
+                                                    {{ lang.mod_settings.break_end_label }}
+                                                </label>
+                                                <input type="time"
+                                                       id="breakEnd_{{ d_num }}"
+                                                       name="days[{{ d_num }}][break_end_time]"
+                                                       class="wh-time-input wh-break-input wh-break-end"
+                                                       data-day="{{ d_num }}"
+                                                       value="{{ day.break_end_time ? day.break_end_time|slice(0, 5) : '' }}"
+                                                       {% if is_closed %}disabled{% endif %}
+                                                       step="300">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Note Field -->
+                                <div class="wh-note-field">
+                                    <label for="dayNote_{{ d_num }}" class="wh-note-label">
+                                        <i class="bi bi-chat-square-text"></i> {{ lang.mod_settings.note_label }}
+                                    </label>
+                                    <div class="wh-note-input-wrap">
+                                        <input type="text"
+                                               id="dayNote_{{ d_num }}"
+                                               name="days[{{ d_num }}][note]"
+                                               class="wh-note-input"
+                                               value="{{ day.note|default('') }}"
+                                               placeholder="{{ lang.mod_settings.note_placeholder }}"
+                                               {% if is_closed %}disabled{% endif %}
+                                               maxlength="255">
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </section>
+    </form>
+
+    <!-- SECTION 2: Special Closures & Holidays -->
+    <section class="wh-section-card closures-card">
+        <div class="wh-section-header closures-header">
+            <div class="wh-section-header-main">
+                <div class="wh-section-icon closures-icon">
+                    <i class="bi bi-calendar2-x-fill"></i>
+                </div>
+                <div class="wh-section-titles">
+                    <h2 class="wh-section-title">{{ lang.mod_settings.section_closures }}</h2>
+                </div>
+            </div>
+            <button type="button" class="wh-btn-add" id="openAddClosureBtn">
+                <i class="bi bi-plus-lg"></i>
+                <span>{{ lang.mod_settings.add_closure }}</span>
+            </button>
+        </div>
+
+        <div class="wh-closures-list" id="closuresList">
+            {% if closures is defined and closures is not empty %}
+                {% for c in closures %}
+                    {% set is_full = (c.is_full_day == 'y') %}
+                    <article class="wh-closure-item" data-id="{{ c.id }}">
+                        <div class="wh-closure-meta">
+                            <div class="wh-closure-top">
+                                <span class="wh-closure-type-badge type-{{ c.closure_type }}">
+                                    {% if c.closure_type == 'vacation' %}
+                                        <i class="bi bi-person-walking"></i> {{ lang.mod_settings.type_vacation }}
+                                    {% elseif c.closure_type == 'maintenance' %}
+                                        <i class="bi bi-tools"></i> {{ lang.mod_settings.type_maintenance }}
+                                    {% elseif c.closure_type == 'emergency' %}
+                                        <i class="bi bi-exclamation-triangle-fill"></i> {{ lang.mod_settings.type_emergency }}
+                                    {% else %}
+                                        <i class="bi bi-calendar-event"></i> {{ lang.mod_settings.type_holiday }}
+                                    {% endif %}
+                                </span>
+
+                                {% if c.is_recurring_yearly == 'y' %}
+                                    <span class="wh-recurring-badge" title="{{ lang.mod_settings.yearly_recurring }}">
+                                        <i class="bi bi-repeat"></i>
+                                    </span>
+                                {% endif %}
+                            </div>
+
+                            <h3 class="wh-closure-reason">{{ c.reason }}</h3>
+
+                            <div class="wh-closure-details">
+                                <span class="wh-closure-date">
+                                    <i class="bi bi-calendar3"></i>
+                                    {{ c.start_date }}{% if c.end_date != c.start_date %} &rarr; {{ c.end_date }}{% endif %}
+                                </span>
+
+                                <span class="wh-closure-time">
+                                    {% if is_full %}
+                                        <i class="bi bi-clock"></i> {{ lang.mod_settings.is_full_day }}
+                                    {% else %}
+                                        <i class="bi bi-clock"></i> {{ c.open_time|slice(0, 5) }} - {{ c.close_time|slice(0, 5) }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="wh-closure-actions">
+                            <button type="button"
+                                    class="wh-btn-delete"
+                                    data-action="delete-closure"
+                                    data-id="{{ c.id }}"
+                                    aria-label="{{ lang.mod_settings.delete_closure }}">
+                                <i class="bi bi-trash3-fill"></i>
+                            </button>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <div class="wh-empty-state">
+                    <div class="wh-empty-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <p class="wh-empty-text">{{ lang.mod_settings.no_closures_found }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+</div>
+
+<!-- Hidden Delete Closure Form -->
+<form id="deleteClosureForm" action="{{ site.saddress }}mod_settings/working_hours?direct=1" method="post">
+    <input type="hidden" name="delete_closure_id" id="deleteClosureIdInput" value="">
+</form>
+
+<!-- Add Closure Bottom Sheet Modal -->
+<div class="wh-modal-overlay is-hidden" id="addClosureModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="wh-modal-sheet">
+        <div class="wh-sheet-drag-handle" aria-hidden="true"></div>
+
+        <div class="wh-modal-header">
+            <div class="wh-modal-title-wrap">
+                <i class="bi bi-calendar-plus wh-modal-title-icon"></i>
+                <h3 class="wh-modal-title" id="modalTitle">{{ lang.mod_settings.add_closure }}</h3>
+            </div>
+            <button type="button" class="wh-modal-close-btn" id="closeAddClosureModalBtn" aria-label="{{ lang.mod_settings.button.cancel }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <form id="addClosureForm" action="{{ site.saddress }}mod_settings/working_hours?direct=1" method="post" class="wh-modal-body">
+            <input type="hidden" name="add_closure" value="1">
+
+            <!-- Reason Field -->
+            <div class="wh-form-group">
+                <label for="closure_reason" class="wh-form-label">
+                    {{ lang.mod_settings.closure_reason }} <span class="wh-req">*</span>
+                </label>
+                <input type="text"
+                       id="closure_reason"
+                       name="closure_reason"
+                       class="wh-form-input"
+                       placeholder="{{ lang.mod_settings.closure_reason_placeholder }}"
+                       required
+                       maxlength="255">
+            </div>
+
+            <!-- Date Range -->
+            <div class="wh-form-row">
+                <div class="wh-form-group">
+                    <label for="closure_start_date" class="wh-form-label">
+                        {{ lang.mod_settings.start_date }} <span class="wh-req">*</span>
+                    </label>
+                    <input type="date"
+                           id="closure_start_date"
+                           name="start_date"
+                           class="wh-form-input"
+                           required>
+                </div>
+                <div class="wh-form-group">
+                    <label for="closure_end_date" class="wh-form-label">
+                        {{ lang.mod_settings.end_date }}
+                    </label>
+                    <input type="date"
+                           id="closure_end_date"
+                           name="end_date"
+                           class="wh-form-input">
+                </div>
+            </div>
+
+            <!-- Closure Type Dropdown -->
+            <div class="wh-form-group">
+                <label for="closure_type" class="wh-form-label">
+                    {{ lang.mod_settings.closure_type }}
+                </label>
+                <select id="closure_type" name="closure_type" class="wh-form-select">
+                    <option value="holiday">{{ lang.mod_settings.type_holiday }}</option>
+                    <option value="vacation">{{ lang.mod_settings.type_vacation }}</option>
+                    <option value="maintenance">{{ lang.mod_settings.type_maintenance }}</option>
+                    <option value="emergency">{{ lang.mod_settings.type_emergency }}</option>
+                </select>
+            </div>
+
+            <!-- Full Day Toggle -->
+            <div class="wh-checkbox-row">
+                <label class="wh-checkbox-label" for="is_full_day">
+                    <input type="checkbox"
+                           id="is_full_day"
+                           name="is_full_day"
+                           value="y"
+                           checked
+                           class="wh-custom-checkbox">
+                    <span class="wh-checkbox-title">{{ lang.mod_settings.is_full_day }}</span>
+                </label>
+            </div>
+
+            <!-- Custom Hours (shown if not full day) -->
+            <div class="wh-custom-hours is-hidden" id="customHoursWrap">
+                <div class="wh-form-row">
+                    <div class="wh-form-group">
+                        <label for="closure_open_time" class="wh-form-label">
+                            {{ lang.mod_settings.open_time_label }}
+                        </label>
+                        <input type="time"
+                               id="closure_open_time"
+                               name="open_time"
+                               class="wh-form-input"
+                               value="09:00">
+                    </div>
+                    <div class="wh-form-group">
+                        <label for="closure_close_time" class="wh-form-label">
+                            {{ lang.mod_settings.close_time_label }}
+                        </label>
+                        <input type="time"
+                               id="closure_close_time"
+                               name="close_time"
+                               class="wh-form-input"
+                               value="13:00">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Yearly Recurring Toggle -->
+            <div class="wh-checkbox-row">
+                <label class="wh-checkbox-label" for="is_recurring_yearly">
+                    <input type="checkbox"
+                           id="is_recurring_yearly"
+                           name="is_recurring_yearly"
+                           value="y"
+                           class="wh-custom-checkbox">
+                    <span class="wh-checkbox-title"><i class="bi bi-repeat"></i> {{ lang.mod_settings.yearly_recurring }}</span>
+                </label>
+            </div>
+
+            <div class="wh-modal-footer">
+                <button type="button" class="wh-btn-secondary" id="cancelAddClosureBtn">
+                    {{ lang.mod_settings.button.cancel }}
+                </button>
+                <button type="submit" class="wh-btn-primary" id="saveClosureSubmitBtn">
+                    <i class="bi bi-check-lg"></i>
+                    <span>{{ lang.mod_settings.save }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/working_hours.js?v=2.2"></script>
+{% endblock %}

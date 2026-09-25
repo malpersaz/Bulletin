@@ -15,15 +15,15 @@ class mod_popup_mod extends indexMain
     {
         parent::__construct();
         // Load Template Library
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         // Load Database Library
         $this->db = Load::lib('Database');
         // Get site settings
-        //$this->site = Kayit::getir('site_config');
+        //$this->site = Registry::get('site_config');
         // Load Language File
         $this->lang = Load::lang('mod_popup');
         // Send Language File to Template
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         // Session Library
         $this->session = Load::lib('Session');
         // User Model
@@ -44,10 +44,10 @@ class mod_popup_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_popup']['add'];
-        $this->tema->tpl('mod_popup/ekle');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_popup/add');
+        $this->theme->set('site', $this->site);
         $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
+        $this->theme->set('lang_lang', $this->db->getResult()->toArray());
     }
 
     /**
@@ -64,7 +64,7 @@ class mod_popup_mod extends indexMain
         if ($this->mod_popup_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_popup']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_popup/duzenle');
+            $this->theme->tpl('mod_popup/edit');
             return;
         }
 
@@ -82,11 +82,11 @@ class mod_popup_mod extends indexMain
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_popup']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_popup/duzenle');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->tpl('mod_popup/edit');
         $this->db->fetch_array("SELECT * FROM `lang` ORDER BY seo DESC");
-        $this->tema->veri('lang_lang', $this->db->getResult()->toArray());
+        $this->theme->set('lang_lang', $this->db->getResult()->toArray());
     }
 
     /**
@@ -101,8 +101,8 @@ class mod_popup_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_popup']['list'];
-        $this->tema->tpl('mod_popup/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_popup/list');
+        $this->theme->set('site', $this->site);
     }
 
     public function image_remove_image()
@@ -149,13 +149,13 @@ class mod_popup_mod extends indexMain
             if ($image->_delete_files($option)) {
                 $this->mod_popup_model->image = '';
                 $this->mod_popup_model->update('id');
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo $image->error;
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -164,12 +164,12 @@ class mod_popup_mod extends indexMain
      */
     private function _add()
     {
-        $this->val = Load::validator('mod_popup.ekle');
+        $this->val = Load::validator('mod_popup.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_popup_model = Load::model('mod_popup');
 
@@ -226,14 +226,14 @@ class mod_popup_mod extends indexMain
             }
 
             if ($this->mod_popup_model->save(TRUE)) {
-                $this->_oke_message($this->lang['mod_popup']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_popup']['message']['success']['add']);
             } else {
                 // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
 
-                $this->_error_message($this->lang['mod_popup']['message']['oke']['add']);
+                $this->_error_message($this->lang['mod_popup']['message']['success']['add']);
             }
         }
     }
@@ -243,12 +243,12 @@ class mod_popup_mod extends indexMain
      */
     private function _edit($id = NULL)
     {
-        $this->val = Load::validator('mod_popup.duzenle');
+        $this->val = Load::validator('mod_popup.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_popup_model = Load::model('mod_popup');
 
@@ -307,7 +307,7 @@ class mod_popup_mod extends indexMain
 
             $this->mod_popup_model->id = $id;
             if ($this->mod_popup_model->update('id')) {
-                $this->_oke_message($this->lang['mod_popup']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_popup']['message']['success']['edit']);
             } else {
                 // If Image exists
                 if (isset($image->url)) {
@@ -320,27 +320,27 @@ class mod_popup_mod extends indexMain
 
 
 
-    function sil()
+    public function delete()
     {
-        // Check Delete Permission
-        if ($this->user->hasPermission('mod_popup',  'delete', $this->lang['mod_popup']['role_errors'][ 'delete']) === False) {
+        // Check List Permission
+        if ($this->user->hasPermission('mod_popup',  'delete', $this->lang['mod_popup']['role_errors']['delete']) === False) {
             return False;
         }
-        if (Req::is_Post( 'delete')) {
-            if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
+        if (Req::is_Post('delete')) {
+            if ($this->_delete(Req::Post_Safe('delete'))) {
+                echo 'Success';
             } else {
-                echo 'HATA';
+                echo 'ERROR';
             }
         } else {
             exit($this->lang['mod_popup']['errors']['record']);
         }
     }
 
-    public function _delete($sil)
+    public function _delete($ids)
     {
         $this->mod_popup_model = Load::model('mod_popup');
-        foreach ($sil as $s) {
+        foreach ($ids as $s) {
             $this->mod_popup_model->flush();
             $this->mod_popup_model->where_id($s)->gRo();
             if ($this->mod_popup_model->getSize() === 0) {
@@ -416,8 +416,8 @@ class mod_popup_mod extends indexMain
         $colomns[] = 'name';
         $colomns[] = 'image';
         $colomns[] = 'lang';
-        $colomns[] = 'created_at';
-        $colomns[] = 'etarih';
+        $colomns[] = 'publish_at';
+        $colomns[] = 'expired_at';
         $colomns[] = 'status';
         $i->select($colomns);
         $limit = 50;
@@ -442,23 +442,23 @@ class mod_popup_mod extends indexMain
 
         $wheres = [];
 
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
+        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+            foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
                 }
             }
         }
 
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+            foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
             }
         }
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
+        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+            foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
                         $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
@@ -475,9 +475,9 @@ class mod_popup_mod extends indexMain
             }
         }
         if (
-            (Roll::hasPermission('mod_popup', 'moderate_edit') !== TRUE)
+            (Role::hasPermission('mod_popup', 'moderate_edit') !== TRUE)
             and
-            (Roll::hasPermission('mod_popup', 'moderate_delete') !== TRUE)
+            (Role::hasPermission('mod_popup', 'moderate_delete') !== TRUE)
         ) {
             $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
@@ -521,7 +521,7 @@ class mod_popup_mod extends indexMain
             foreach ($i->toArray() as $content) {
 
                 $last = "";
-                if (Roll::hasPermission('mod_popup', 'edit')) {
+                if (Role::hasPermission('mod_popup', 'edit')) {
                     $last .= '<button onclick="mod_popup_table_ajax.akm.processpublish(\'' . $content['id'] . '\');return false;" class="btn default btn-xs green">
     <i class="fa fa-arrow-circle-up"></i> ' . $this->lang['mod_popup']['grid']['publish']['key'] . ' </button>';
 
@@ -531,18 +531,18 @@ class mod_popup_mod extends indexMain
                     $last .= '<button onclick="mod_popup_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_popup']['button']['edit'] . ' </button>';
                 }
-                if (Roll::hasPermission('mod_popup',  'delete')) {
-                    $last .= '<button onclick="mod_popup_table_ajax.akm.processSil(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
-    <i class="fa fa-trash-o"></i> ' . $this->lang['mod_popup']['button'][ 'delete'] . ' </button>';
+                if (Role::hasPermission('mod_popup',  'delete')) {
+                    $last .= '<button onclick="mod_popup_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
+    <i class="fa fa-trash-o"></i> ' . $this->lang['mod_popup']['button']['delete'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_popup', 'gallery')) {
+                if (Role::hasPermission('mod_popup', 'gallery')) {
                     $last .= '<button onclick="mod_popup_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue">
     <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_popup']['button']['gallery'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_popup', 'file')) {
-                    $last .= '<button onclick="mod_popup_table_ajax.akm.processDosya(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
+                if (Role::hasPermission('mod_popup', 'file')) {
+                    $last .= '<button onclick="mod_popup_table_ajax.akm.processFile(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_popup']['button']['file'] . ' </button>';
                 }
                 $data[] = [
@@ -551,8 +551,8 @@ class mod_popup_mod extends indexMain
                     $content['name'],
                     '<img src="' . $this->site['iaddress'] . 'mod_popup/thumb/' . $content['image'] . '">',
                     $content['lang'],
-                    $content['created_at'],
-                    $content['etarih'],
+                    $content['publish_at'],
+                    $content['expired_at'],
                     '<span class="label label-' . $status_list[$content['status']]['0'] . '">' . $status_list[$content['status']]['1'] . '</span>',
                     $last
                 ];
@@ -564,7 +564,7 @@ class mod_popup_mod extends indexMain
             'recordsFiltered' => $getCount,
             'recordsTotal' => $ii->getCount(),
             // 'customActionStatus'=>'OK',
-            ///'customActionMessage'=>'Oldumu Şimdi?'
+            ///'customActionMessage'=>'Is it done?'
         ]);
     }
 
@@ -580,7 +580,7 @@ class mod_popup_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_publish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -623,7 +623,7 @@ class mod_popup_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_unpublish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -650,27 +650,27 @@ class mod_popup_mod extends indexMain
     /**
      * Success Message
      */
-    private function _oke_message($mesaj)
+    private function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     /**
      * Error Message
      */
-    private function _error_message($mesaj)
+    private function _error_message($message)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
     /**
      * Error Message
      */
-    private function _error($mesaj)
+    private function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
     }
 }

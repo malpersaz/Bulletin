@@ -4,16 +4,15 @@
   'edit' => 'Full Manşeti Düzenle',
   'list' => 'Full Manşet Listesi',
   'information' => 'Bilgi!',
-  'oke' => 'İşlem Başarılı!',
-  'hata' => 'Hata Oluştu!',
-  'error' => 'Ölümcül Hata Oluştu!',
+  'success' => 'İşlem Başarılı!',
+  'error' => 'Hata Oluştu!',
   'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
-  'remove_image_oke' => 'Resim Kaldırıldı',
+  'remove_image_success' => 'Resim Kaldırıldı',
   'choose_wish' => 'Dilerseniz Seçin',
   'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
   'message' => 
    [
-    'oke' => 
+    'success' => 
      [
       'add' => 'Full Manşet Eklendi!',
       'edit' => 'Full Manşet Düzenlendi!',
@@ -37,25 +36,25 @@
    [
     'add' => 'Ekle',
     'edit' => 'Düzenle',
-    'yenile' => 'Yenile',
+    'refresh' => 'Yenile',
     'delete' => 'Sil',
     'gallery' => 'Resim Galerisi',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Evet',
-    'hayir' => 'Hayır',
+    'cancel' => 'Vazgeç',
+    'remove' => 'Kaldır',
+    'yes' => 'Evet',
+    'no' => 'Hayır',
   ],
   'grid' => 
    [
-    0 => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
-    1 => 'Sayfa',
-    2 => 'Sayfa Sayısı',
-    3 => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
-    4 => 'Hiçbir Veri Bulunamadı',
-    5 => 'Bağlantı Hatası',
-    6 => 'Arama',
-    7 => 'Lütfen En Az Bir Satır Seçin',
-    8 => 'Lütfen Sadece Bir Satır Seçin',
+    'showing_results' => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
+    'page' => 'Sayfa',
+    'page_count' => 'Sayfa Sayısı',
+    'loading' => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
+    'no_data' => 'Hiçbir Veri Bulunamadı',
+    'connection_error' => 'Bağlantı Hatası',
+    'search' => 'Arama',
+    'select_at_least_one' => 'Lütfen En Az Bir Satır Seçin',
+    'select_only_one' => 'Lütfen Sadece Bir Satır Seçin',
     'publish' => 
      [
       'key' => 'Yayınla',
@@ -75,9 +74,9 @@
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
   ],
-  'roll' => 
+  'role' => 
    [
-    'ad' => 'Full Manşet Yönetim Rolleri',
+    'name' => 'Full Manşet Yönetim Rolleri',
     'add' => 'Full Manşet Ekleyebilir',
     'edit' => 'Full Manşet Düzenleyebilir',
     'delete' => 'Full Manşet Silebilir',
@@ -100,9 +99,10 @@
      [
       'id' => 'ID',
       'language' => 'Dil',
-      'ad' => 'Full Manşet Adı',
+      'name' => 'Full Manşet Adı',
       'status' => 'Yayınlansın mı?',
-      'tarih' => 'Tarih',
+      'date' => 'Tarih',
+      'created_at' => 'Tarih',
       'image' => 'Resim 2000x750 formatında olmalı',
     ],
     'radio' => 

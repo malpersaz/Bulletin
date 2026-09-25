@@ -2,7 +2,7 @@
 
 class mod_user extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
     public $model;
     public $lang;
 
@@ -10,18 +10,18 @@ class mod_user extends installerbase implements installerbaseinterface
     {
         parent::__construct();
         $this->mod = 'mod_user';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_user',
             'mod_user_social',
             'mod_user_activation',
             'mod_user_settings',
             'mod_user_log',
             'mod_user_perm',
-            'mod_user_roll',
+            'mod_user_role',
             'mod_user_password_reset',
             'sessions'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit', 'delete', 'list', 'acl', 'settings', 'link'
         );
         $this->lang = Load::lang('mod_user');
@@ -29,16 +29,16 @@ class mod_user extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        // Create Tables
+        // Create tables
         if ($this->create_tables() === FALSE) {
             return FALSE;
         }
-        // Add Module
+        // Add module
         if ($this->insert_mods() === FALSE) {
             return FALSE;
         }
-        // Add Roles and Permissions
-        if ($this->insert_roll() === FALSE) {
+        // Insert roles and permissions
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
 
@@ -53,17 +53,17 @@ class mod_user extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Add User
-        if ($this->adduser() === FALSE) {
+        if ($this->add_user() === FALSE) {
             return FALSE;
         }
         // Add User Settings
-        if ($this->loaduserconfig() === FALSE) {
+        if ($this->load_user_config() === FALSE) {
             return FALSE;
         }
         return TRUE;
     }
 
-    private function loaduserconfig()
+    private function load_user_config()
     {
         $model = Load::model('mod_user.mod_user_settings');
         $conf = array(
@@ -81,7 +81,7 @@ class mod_user extends installerbase implements installerbaseinterface
                 $model->k = $c['k'];
                 $model->v = $c['v'];
                 if ($model->save()) {
-                    $this->oke(sprintf($this->lang['mod_user']['installer']['settings_added'], $c['k']));
+                    $this->success(sprintf($this->lang['mod_user']['installer']['settings_added'], $c['k']));
                     continue;
                 } else {
                     $this->error($this->lang['mod_user']['installer']['settings_error'] . print_r($model, TRUE));
@@ -95,12 +95,12 @@ class mod_user extends installerbase implements installerbaseinterface
         return TRUE;
     }
 
-    private function adduser()
+    private function add_user()
     {
         $model = Load::model('mod_user');
         $model->id = 1;
-        $model->name = "Business";
-        $model->last_name = "CMS";
+        $model->name = "AKM";
+        $model->last_name = "Business";
         $model->group_id = 1;
         $model->username = "admin";
         $model->password = md5("admin123");
@@ -118,7 +118,7 @@ class mod_user extends installerbase implements installerbaseinterface
         $model->where_id($model->id)->getResult(TRUE, TRUE);
         if ($model->getSize() === 0) {
             if ($model->save()) {
-                $this->oke(sprintf($this->lang['mod_user']['installer']['user_added'], $model->username));
+                $this->success(sprintf($this->lang['mod_user']['installer']['user_added'], $model->username));
             } else {
                 $this->error(sprintf($this->lang['mod_user']['installer']['user_error'], $model->username));
                 return FALSE;
@@ -172,7 +172,7 @@ class mod_user extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

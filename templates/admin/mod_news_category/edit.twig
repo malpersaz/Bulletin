@@ -254,7 +254,7 @@
                     document.addEventListener('DOMContentLoaded', function() {
                         Swal.fire({
                             icon: 'warning',
-                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
 	                            confirmButtonText: '{{ lang.mod_news_category.buttons.yes }}',
                             confirmButtonColor: '#ba1a1a'
                         });
@@ -262,12 +262,12 @@
                 </script>
             {% endif %}
 
-            {% if hatalar is defined %}
+            {% if errors is defined %}
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         let errorHtml = '<div style="text-align: left;">';
-                        {% for hata in hatalar %}
-                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                        {% for error in errors %}
+                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
                         {% endfor %}
                         errorHtml += '</div>';
 
@@ -281,10 +281,10 @@
                 </script>
             {% endif %}
 
-            {% if oke is defined %}
+            {% if success is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
-                    <span>{{ mesaj }}</span>
+                    <span>{{ message }}</span>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -445,63 +445,12 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-	<style>
-		.m3-final-bar {
-			position: fixed !important;
-			bottom: 0 !important;
-			left: 0 !important;
-			right: 0 !important;
-			height: 80px !important;
-			background: var(--md-sys-color-surface-container) !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 12px !important;
-			padding: 0 16px !important;
-			z-index: 1000 !important;
-			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
-			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
-		}
-		.m3-btn-half {
-			flex: 1 !important;
-			height: 52px !important;
-			border-radius: 26px !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 8px !important;
-			font-size: 14px !important;
-			font-weight: 600 !important;
-			text-decoration: none !important;
-			border: none !important;
-			cursor: pointer !important;
-			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-		}
-		.m3-btn-half:active {
-			transform: scale(0.98) !important;
-			opacity: 0.9 !important;
-		}
-		@media(min-width: 600px) {
-			.m3-final-bar {
-				max-width: 480px !important;
-				left: 50% !important;
-				transform: translateX(-50%) !important;
-				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-bottom-left-radius: 32px !important;
-				border-bottom-right-radius: 32px !important;
-				bottom: 8px !important;
-				height: 88px !important;
-				width: calc(100% - 16px) !important;
-			}
-		}
-	</style>
 	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_news_category/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+		<button type="button" class="m3-btn-half m3-btn-half-neutral" onclick="window.location.href='{{ site.saddress }}mod_news_category/list'">
 			<i class="bi bi-x-lg"></i>
 				{{ lang.mod_news_category.buttons.cancel }}
 		</button>
-		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+		<button type="button" class="m3-btn-half m3-btn-half-primary" onclick="submitEditForm('editForm')">
 			<i class="bi bi-check-lg"></i>
 				{{ lang.mod_news_category.buttons.edit }}
 		</button>
@@ -567,28 +516,36 @@
 	        });
 	    });
 
-    function temizle(veri) {
-        var temiz = veri.replace(/[^a-zA-ZıIğĞüÜşŞöÖçÇîêûÎÊÛ1234567890\s_]/g, " ");
-        temiz = temiz.replace(/^\s+|\s+$/g, "");
-        return temiz.replace(/\s+/g, ' ');
-    }
-
-    function makeSeoValue(veri) {
-        return temizle(veri).replace(/\s+/g, "_").replace(/İ/g, 'i').toLowerCase();
-    }
-
-    function makeKeywordsValue(veri) {
-        return temizle(veri).replace(/\s+/g, ",").toLowerCase().replace(/İ/g, 'i');
+    function sanitizeInput(val) {
+        var clean = val.replace(/[^a-zA-Z\u0131I\u011f\u011e\u00fc\u00dc\u015f\u015e\u00f6\u00d6\u00e7\u00c7\u00ee\u00ea\u00fb\u00ce\u00ca\u00db1234567890\s_]/g, " ");
+        clean = clean.replace(/^\s+|\s+$/g, "");
+        return clean.replace(/\s+/g, ' ');
     }
 
     function updateMetaFields() {
-        const name = document.getElementById('name').value;
-        const seoInput = document.getElementById('seo');
+        var locale = typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en';
+        var nameInput = document.getElementById('name');
+        if (!nameInput) return;
+        var name = typeof normalizeKurdishTypos === 'function' ? normalizeKurdishTypos(nameInput.value, locale) : nameInput.value;
+        nameInput.value = name;
         
-	        document.getElementById('seo').value = makeSeoValue(name);
-        document.getElementById('title').value = temizle(name);
-        document.getElementById('keywords').value = makeKeywordsValue(name);
-        document.getElementById('description').value = temizle(name);
+        const seoInput = document.getElementById('seo');
+        if (seoInput && (!seoInput.value || seoInput.dataset.touched !== 'true')) {
+            seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(name, locale) : name;
+        }
+        
+        const titleInput = document.getElementById('title');
+        if (titleInput && titleInput.dataset.touched !== 'true') {
+            titleInput.value = typeof sanitizeText === 'function' ? sanitizeText(name) : (typeof sanitizeInput === 'function' ? sanitizeInput(name) : name);
+        }
+        const keywordsInput = document.getElementById('keywords');
+        if (keywordsInput && keywordsInput.dataset.touched !== 'true') {
+            keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(name, locale) : name;
+        }
+        const descriptionInput = document.getElementById('description');
+        if (descriptionInput && descriptionInput.dataset.touched !== 'true') {
+            descriptionInput.value = typeof sanitizeText === 'function' ? sanitizeText(name).substring(0, 255) : (typeof sanitizeInput === 'function' ? sanitizeInput(name).substring(0, 255) : name.substring(0, 255));
+        }
     }
 
     function toggleAdvanced() {
@@ -647,8 +604,8 @@
                 })
                 .then(r => r.text())
                 .then(data => {
-                    if (data.trim() === 'Oke') {
-	                        Swal.fire('{{ lang.mod_news_category.oke }}', '{{ lang.mod_news_category.messages.success.image_removed }}', 'success');
+                    if (data.trim() === 'Success') {
+	                        Swal.fire('{{ lang.mod_news_category.success }}', '{{ lang.mod_news_category.messages.success.image_removed }}', 'success');
                         const area = document.querySelector('.image-upload-area');
                         area.innerHTML = `
                             <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
@@ -656,7 +613,7 @@
                         `;
                         document.getElementById('editImgInput').value = '';
                     } else {
-	                        Swal.fire('{{ lang.mod_news_category.hata }}', data, 'error');
+	                        Swal.fire('{{ lang.mod_news_category.error }}', data, 'error');
                     }
                 });
             }

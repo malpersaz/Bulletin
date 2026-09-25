@@ -1,0 +1,86 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_seo.google_settings }}{% endblock %}
+{% block headline %}{{ lang.mod_seo.google_settings }}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/templates/admin/assets/css/mod_seo.css?v=1.1">
+{% endblock %}
+
+{% block content %}
+<div class="seo-settings-page">
+    {% if flash_success %}
+        <div class="m3-card seo-credentials-card-ok seo-flash-card">
+            <i class="bi bi-check-circle-fill seo-ok-icon"></i>
+            <div>
+                <span class="seo-card-badge seo-badge-ok">{{ flash_success }}</span>
+            </div>
+        </div>
+    {% endif %}
+    {% if flash_error %}
+        <div class="m3-card seo-credentials-card-missing seo-flash-card">
+            <i class="bi bi-exclamation-circle-fill seo-error-icon"></i>
+            <div>
+                <span class="seo-card-badge seo-badge-error">{{ flash_error }}</span>
+            </div>
+        </div>
+    {% endif %}
+
+    <form action="{{ site.saddress }}mod_seo/google_settings" method="post" enctype="multipart/form-data" id="googleSettingsForm" class="seo-settings-form">
+        
+        <!-- Form fields inside an MD3 card -->
+        <div class="m3-card seo-form-card">
+            <!-- GCS Bucket Name Input -->
+            <div class="seo-form-group">
+                <label for="bucket_name" class="seo-form-label">
+                    {{ lang.mod_seo.google.bucket_name }}
+                </label>
+                <input type="text" id="bucket_name" name="bucket_name" value="{{ bucket_name }}" class="m3-input" placeholder="e.g. af-artist-cms-media">
+            </div>
+
+            <!-- Gemini API Key Input -->
+            <div class="seo-form-group">
+                <label for="gemini_api_key" class="seo-form-label">
+                    {{ lang.mod_seo.google.gemini_api_key }}
+                </label>
+                <input type="text" id="gemini_api_key" name="gemini_api_key" value="{{ gemini_api_key }}" class="m3-input" placeholder="e.g. AIzaSy...">
+            </div>
+
+            <!-- JSON Credentials Upload Input -->
+            <div class="seo-form-group">
+                <div class="seo-badge-row">
+                    <label for="credentials_file" class="seo-form-label seo-badge-label">
+                        {{ lang.mod_seo.google.credentials_file }}
+                    </label>
+                    {% if not has_credentials %}
+                        <span class="seo-card-badge seo-badge-error">
+                            <i class="bi bi-exclamation-circle-fill"></i> {{ lang.mod_seo.google.credentials_missing }}
+                        </span>
+                    {% endif %}
+                </div>
+                <input type="file" id="credentials_file" name="credentials_file" accept=".json" class="m3-input">
+            </div>
+        </div>
+        
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+	<div class="m3-final-bar">
+		<button type="button" class="m3-btn-half m3-btn-half-neutral" data-url="{{ site.saddress }}mod_user/panel">
+			<i class="bi bi-x-lg"></i>
+			{{ lang.mod_seo.button.back }}
+		</button>
+		<button type="submit" form="googleSettingsForm" class="m3-btn-half m3-btn-half-primary">
+			<i class="bi bi-check-lg"></i>
+			{{ lang.mod_seo.button.save }}
+		</button>
+	</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/templates/admin/assets/js/mod_seo.js?v=1.1"></script>
+{% endblock %}

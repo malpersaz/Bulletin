@@ -2,17 +2,17 @@
 
 class mod_attachment_mod extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
     public $model;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_attachment_mod';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_attachment_mod'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list', 'moderate_edit','moderate_delete'
         );
     }
@@ -28,7 +28,7 @@ class mod_attachment_mod extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions.
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
 
@@ -90,28 +90,13 @@ class mod_attachment_mod extends installerbase implements installerbaseinterface
                 'mod_key' => 'id',
                 'mod_value' => 'name',
                 'user_id' => 1
-            ),
-            array(
-                'name' => 'Product Files',
-                'mod_name' => 'mod_product',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
-                'name' => 'Service Files',
-                'mod_name' => 'mod_service',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
             )
-
         );
 
         $this->model = Load::model('mod_attachment_mod');
         foreach ($records as $record) {
             if ($this->model->exists_mod_name($record['mod_name']) === FALSE) {
-                $this->oke(" -----<b>" . $record['name'] . "</b> file module registered");
+                $this->success(" -----<b>" . $record['name'] . "</b> file module registered");
                 $keys = array_keys($record);
                 foreach ($keys as $key) {
                     $this->model->$key = $record[$key];
@@ -134,7 +119,7 @@ class mod_attachment_mod extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

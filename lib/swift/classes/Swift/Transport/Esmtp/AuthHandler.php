@@ -23,7 +23,7 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    * @var Swift_Transport_Esmtp_Authenticator[]
    * @access private
    */
-  private $_authenticators = array();
+  private $_authenticators = [];
   
   /**
    * The username for authentication.
@@ -51,7 +51,7 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    * @var string[]
    * @access private
    */
-  private $_esmtpParams = array();
+  private $_esmtpParams = [];
   
   /**
    * Create a new AuthHandler with $authenticators for support.
@@ -185,7 +185,7 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    */
   public function getMailParams()
   {
-    return array();
+    return [];
   }
   
   /**
@@ -193,14 +193,14 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    */
   public function getRcptParams()
   {
-    return array();
+    return [];
   }
   
   /**
    * Not used.
    */
   public function onCommand(Swift_Transport_SmtpAgent $agent,
-    $command, $codes = array(), &$failedRecipients = null, &$stop = false)
+    $command, $codes = [], &$failedRecipients = null, &$stop = false)
   {
   }
     
@@ -221,7 +221,7 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    */
   public function exposeMixinMethods()
   {
-    return array('setUsername', 'getUsername', 'setPassword', 'getPassword', 'setAuthMode', 'getAuthMode');
+    return ['setUsername', 'getUsername', 'setPassword', 'getPassword', 'setAuthMode', 'getAuthMode'];
   }
   
   /**
@@ -241,16 +241,16 @@ class Swift_Transport_Esmtp_AuthHandler implements Swift_Transport_EsmtpHandler
    */
   protected function _getAuthenticatorsForAgent()
   {
-    if (!$mode = strtolower((string)$this->_auth_mode))
+    if ((($mode = strtolower($this->_auth_mode))) === '' || (($mode = strtolower($this->_auth_mode))) === '0')
     {
       return $this->_authenticators;
     }
 
     foreach ($this->_authenticators as $authenticator)
     {
-      if (strtolower($authenticator->getAuthKeyword()) == $mode)
+      if (strtolower($authenticator->getAuthKeyword()) === $mode)
       {
-        return array($authenticator);
+        return [$authenticator];
       }
     }
 

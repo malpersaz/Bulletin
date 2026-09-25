@@ -3,13 +3,23 @@ $lang['mod_page'] = [
   'add' => 'Sayfa Ekle',
   'edit' => 'Sayfayı Düzenle',
   'list' => 'Sayfa Listesi',
+  'total_pages' => 'Toplam Sayfa',
+  'published_pages' => 'Yayında',
+  'draft_pages' => 'Taslak',
+  'expand_all' => 'Tümünü Aç',
+  'collapse_all' => 'Tümünü Kapat',
+  'search_placeholder' => 'Sayfalarda ara...',
   'information' => 'Bilgi',
-  'oke' => 'İşlem Başarılı',
-  'hata' => 'Hata Oluştu',
-  'error' => 'Kritik Hata',
-  'remove_image' => 'Bu resmi kaldırmak istediğinize emin misiniz?',
-  'remove_image_oke' => 'Resim Başarıyla Kaldırıldı',
+  'success' => 'İşlem Başarılı',
+  'error' => 'Hata Oluştu',
+  'remove_image' => 'Resmi Kaldır',
+  'remove_image_question' => 'Bu resmi kaldırmak istediğinize emin misiniz?',
+  'remove_image_success' => 'Resim Başarıyla Kaldırıldı',
   'choose_wish' => 'Dilerseniz Seçin',
+  'empty' => [
+    'no_pages' => 'Sayfa Bulunamadı',
+    'description' => 'Henüz hiç sayfa bulunmuyor. Yeni bir sayfa ekleyerek içerik ağacınızı oluşturabilirsiniz.',
+  ],
   'menu_options' => [
     'none' => 'Menüye ekleme',
     'top_level' => 'Üst seviye menü öğesi olarak ekle',
@@ -23,9 +33,10 @@ $lang['mod_page'] = [
   'remove_record' => 'Bu kaydı silmek istediğinize emin misiniz?',
   'seo_meta' => 'SEO Meta Verileri',
   'messages' => [
-    'oke' => [
+    'success' => [
       'add' => 'Sayfa Başarıyla Eklendi',
       'edit' => 'Sayfa Başarıyla Düzenlendi',
+      'delete' => 'Sayfa başarıyla silindi',
     ],
     'error' => [
       'add' => 'Sayfa Eklenemedi',
@@ -38,9 +49,6 @@ $lang['mod_page'] = [
     'warning' => [
       'reorder' => 'Sayfa sırası değiştirilsin mi?',
       'delete' => 'Bu sayfayı silmek istediğinize emin misiniz?',
-    ],
-    'success' => [
-      'delete' => 'Sayfa başarıyla silindi',
     ],
   ],
   'confirmations' => [
@@ -59,21 +67,21 @@ $lang['mod_page'] = [
     'add' => 'Ekle',
     'edit' => 'Düzenle',
     'delete' => 'Sil',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Evet',
-    'hayir' => 'Hayır',
+    'cancel' => 'Vazgeç',
+    'remove' => 'Kaldır',
+    'yes' => 'Evet',
+    'no' => 'Hayır',
     'gallery' => 'Resim Galerisi',
     'file' => 'Dosya Yöneticisi',
-    'tamam' => 'Tamam',
+    'ok' => 'Tamam',
     'upload' => 'Yükle',
   ],
   'actions' => [
     'cancel' => 'Vazgeç',
     'edit' => 'Düzenle',
     'delete' => 'Sil',
-    'unlock_reorder' => 'Sürükle-Bırak Modunu Aç',
-    'lock_reorder' => 'Sürükle-Bırak Modunu Kapat',
+    'unlock_reorder' => 'Sırala',
+    'lock_reorder' => 'Kilitle',
   ],
   'validator' =>
   [
@@ -82,10 +90,11 @@ $lang['mod_page'] = [
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
     'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
+    'deck_length' => 'Lütfen 90 ile 120 karakter arasında bir giriş metni giriniz.',
   ],
-  'roll' =>
+  'role' =>
   [
-    'ad' => 'Sayfa Yönetim Rolleri',
+    'name' => 'Sayfa Yönetim Rolleri',
     'add' => 'Sayfa Ekleyebilir',
     'edit' => 'Sayfa Düzenleyebilir',
     'delete' => 'Sayfa Silebilir',
@@ -175,6 +184,18 @@ $lang['mod_page'] = [
     'page_summary' => 'Sayfa Özeti',
     'previous' => 'Önceki',
     'next' => 'Sonraki',
+    'image' => [
+      'drop_title' => 'Yükleyin, yapıştırın veya taşıyın',
+      'drop_description' => 'Yükleyin, yapıştırın veya taşıyın',
+      'upload_link' => 'Görsel Yükle',
+      'link_separator' => 'VEYA',
+      'link_placeholder' => 'Görsel bağlantısını yapıştırın',
+      'link_action' => 'İçe Aktar',
+      'hint_loading' => 'Görsel içe aktarılıyor...',
+      'hint_invalid_type' => 'Burada yalnızca görsel dosyaları desteklenir.',
+      'hint_no_drop_data' => 'Bırakılan içerikte kullanılabilir bir görsel bulunamadı.',
+      'hint_remote_failed' => 'Bu kaynaktaki görsel içe aktarılamadı.',
+    ],
   ],
   'quick_unpublish_confirm' => 'Bu sayfayı yayından kaldırmak istediğinizden emin misiniz?',
   'quick_publish_confirm' => 'Bu sayfayı yayınlamak istediğinizden emin misiniz?',
@@ -183,5 +204,14 @@ $lang['mod_page'] = [
   'status_badge' => [
     'active' => 'Yayında',
     'draft' => 'Taslak',
+  ],
+  'picker' => [
+    'file' => 'Mevcut Dosyayı Seç',
+  ],
+  'ajax' => [
+    'database_error' => 'Veritabanı Hatası',
+    'record_not_found' => 'Sayfa bulunamadı!',
+    'unknown_type' => 'Bilinmeyen ilişki türü',
+    'relation_updated' => 'İlişki başarıyla güncellendi',
   ],
 ];

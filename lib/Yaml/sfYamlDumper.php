@@ -34,7 +34,7 @@ class sfYamlDumper
     $output = '';
     $prefix = $indent ? str_repeat(' ', $indent) : '';
 
-    if ($inline <= 0 || !is_array($input) || empty($input))
+    if ($inline <= 0 || !is_array($input) || $input === [])
     {
       $output .= $prefix.sfYamlInline::dump($input);
     }
@@ -44,7 +44,7 @@ class sfYamlDumper
 
       foreach ($input as $key => $value)
       {
-        $willBeInlined = $inline - 1 <= 0 || !is_array($value) || empty($value);
+        $willBeInlined = $inline - 1 <= 0 || !is_array($value) || $value === [];
 
         $output .= sprintf('%s%s%s%s',
           $prefix,

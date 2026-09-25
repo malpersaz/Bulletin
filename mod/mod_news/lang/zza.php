@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -24,11 +24,11 @@ $lang['mod_news'] = [
     'edit' => 'Nûçeyê Biguherîne',
     'list' => 'Nûçe',
     'information' => 'Agahî!',
-    'oke' => 'Çêbû!',
+    'success' => 'Çêbû!',
     'error_occurred' => 'Çewtî Çêbû!',
     'error' => 'Çewtiya Giran Çêbû!',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
     'delete_confirm' => 'Ma tu bawer î ku dixwazî vê nûçeyê jêbibî?',
@@ -65,7 +65,7 @@ $lang['mod_news'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Nûçe Hate Zêdekirin!',
             'edit' => 'Nûçe Hate Sererastkirin!',
         ],
@@ -101,17 +101,17 @@ $lang['mod_news'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        4 => 'Tu dane nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
-        104 => 'Tê barkirin...',
-        105 => 'Tu nûçe nehat dîtin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+        'no_data' => 'Tu dane nehat dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        'loading' => 'Tê barkirin...',
+        'no_data' => 'Tu nûçe nehat dîtin',
         'approve' => [
             'key' => 'Weşandin',
             'value' => 'Ma tu bawer î ku dixwazî vê nûçeyê biweşînî?',
@@ -133,12 +133,12 @@ $lang['mod_news'] = [
         'title_length' => 'Divê tu sernavekî herî kêm ji 1 tîpê û herî pir ji 70 tîpan pêk tê binivîsî.',
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
-        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku herî kêm 110 tîp û herî pir 280 tîp pêk tê binivîsin.',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
     // === Permission Roles ===
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Rolên Rêveberiya Nûçeyan',
         'add' => 'Dikare nûçeyan lê zêde bike',
         'edit' => 'Dikare nûçeyan biguhere',
@@ -229,7 +229,6 @@ $lang['mod_news'] = [
         'default_sort' => 'Yên Nû',
         'default_lang' => 'ZZA',
         'date_locale' => 'zza-TR',
-        'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
         'filter_applied' => 'Parzûn hatin sepandin',
         'sort_label' => 'Rêzkirin',
@@ -314,7 +313,7 @@ $lang['mod_news'] = [
             'category' => 'Beşa nûçeyê lê were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
-            'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
+            'intro' => 'Kin û zelal binivîse. (90 - 120 tîp)',
             'news' => 'Edîtorê nivîsa dewlemend.',
             'image' => 'Tu dikarî wêneyekî tenê hilbijêrî.',
             'finish' => 'Saxtîkirina dawî û şandin.',
@@ -366,6 +365,7 @@ $lang['mod_news'] = [
         'edit' => 'Biguhere',
         'gallery' => 'Operasyonên Galeriyê',
         'files' => 'Operasyonên Pelan',
+        'video' => 'Vîdeo Nûçeyê Zêde Biki',
         'status' => 'Rewşê Biguherîne',
         'delete' => 'Rake',
         'delete_error' => 'Jêbirin biserneket!',
@@ -382,31 +382,31 @@ $lang['mod_news'] = [
         'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
-        'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Nûçe hat jêbirin!',
     ],
 
+    // === Hero Slider ===
+    'hero_slider_add' => 'Slayderî rê Bişaw',
+    'hero_slider_remove' => 'Slayderî ra Wedare',
+    'hero_slider_added' => 'Nûçe ke Slayderî rê ameye dekerdene.',
+    'hero_slider_removed' => 'Nûçe Slayderî ra ameye kerdene.',
+    'hero_slider_error' => 'Rewşa Slayderî nêbı nûjenkerdene.',
+    'hero_slider_badge' => 'Slayder',
+
     // === Latest News ===
     'latest_news' => [
-        1 => 'Nûçeyên Dawî (ZZA)',
-        2 => 'Hemû Nûçeyan Bibîne (ZZA)',
-        3 => 'Hîna tu nûçe nehatine weşandin. (ZZA)',
+        'title' => 'Nûçeyên Dawî (ZZA)',
+        'subtitle' => 'Hemû Nûçeyan Bibîne (ZZA)',
+        'description' => 'Hîna tu nûçe nehatine weşandin. (ZZA)',
     ],
 
-    'mock' => [
-        'titles' => [
-            "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",
-            "Bernameya Festîvala Çand û Hunerê ya Amedê hat eşkerekirin",
-            "Komxebata Rojnamegeriya Herêmî bi dawî bû",
-            "Nîşeyên li ser Têkiliya Aqilê Çêkirî û Medyayê",
-            "Derbasbûna ji Rojnamegeriya Kevneşopî bo Medyaya Dijîtal",
-            "Amarên Bikaranîna Medyaya Civakî 2024",
-            "Kurteya Teknolojiya Heftane: Çi Qewimî?",
-            "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
-            "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a Rojname hat nûkirin"
-        ],
-        'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
-        'authors' => [],
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Serkeftî (ZZA)',
+        'error' => 'Çewtî derket (ZZA)',
+        'database_error' => 'Çewtiya Database (ZZA)',
+        'record_not_found' => 'Nûçe nehat dîtin! (ZZA)',
+        'unknown_type' => 'Cureyê nenas (ZZA)',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûjenkirin (ZZA)',
     ],
 ];

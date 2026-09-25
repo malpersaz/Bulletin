@@ -4,7 +4,7 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
 
     public function __construct()
     {
@@ -14,81 +14,81 @@ class edit_validator
 
     public function check($id)
     {
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'name',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['name']),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['name']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_name',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_name']),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_name']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_key',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_key']),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_key']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_value',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value']),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['required'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'name',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '2', 'max' => '255'],
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['name'], '2', '255'),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['name'], '2', '255'),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_name',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '2', 'max' => '255'],
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_name'], '2', '255'),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_name'], '2', '255'),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_key',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '2', 'max' => '255'],
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_key'], '2', '255'),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_key'], '2', '255'),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'mod_value',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '2', 'max' => '255'],
-            'mesaj' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value'], '2', '255'),
+            'message' => sprintf($this->lang['mod_attachment_mod']['validator']['length'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value'], '2', '255'),
         ]);
         if ($this->_check() === true) {
             return true;
@@ -101,7 +101,7 @@ class edit_validator
     {
         $mod_value = trim((string) Req::Post_Safe('mod_value'));
         if ($mod_value !== '' && ($mod_value === 'id' || substr($mod_value, -3) === '_id')) {
-            $this->hatalar[] = sprintf($this->lang['mod_attachment_mod']['validator']['display_field'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value']);
+            $this->errors[] = sprintf($this->lang['mod_attachment_mod']['validator']['display_field'], $this->lang['mod_attachment_mod']['admin']['columns']['mod_value']);
             return true;
         }
 
@@ -111,9 +111,9 @@ class edit_validator
     public function _check()
     {
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        return count($this->hatalar) > 0;
+        return count($this->errors) > 0;
     }
 }

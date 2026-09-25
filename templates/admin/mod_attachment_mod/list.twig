@@ -2,7 +2,6 @@
 {% set show_fab = false %}
 {% set show_search = true %}
 {% set show_search_filter_button = false %}
-{% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -139,7 +138,7 @@
     <div id="attachmentModList" class="attachment-mod-list"></div>
     <section id="attachmentModEmpty" class="attachment-mod-empty" style="display:none;">
         <div class="empty-icon-box"><i class="bi bi-link-45deg"></i></div>
-        <h3>{{ lang.mod_attachment_mod.grid[4] }}</h3>
+        <h3>{{ lang.mod_attachment_mod.grid.no_data }}</h3>
         <p>{{ lang.mod_attachment_mod.admin.empty_description }}</p>
     </section>
 </div>
@@ -164,7 +163,7 @@
 </div>
 
 <!-- Main FAB Button -->
-<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_attachment_mod/add'" aria-label="{{ lang.mod_attachment_mod.add|default('Pêveka Modulê Lêzêde Bike') }}">
+<button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_attachment_mod/add'" aria-label="{{ lang.mod_attachment_mod.add }}">
     <i class="bi bi-plus-lg"></i>
 </button>
 {% endblock %}
@@ -326,7 +325,7 @@
                         throw new Error(text);
                     }
 
-                    showSnackbar('{{ lang.mod_attachment_mod.message.oke.delete|e('js') }}', 'success');
+                    showSnackbar('{{ lang.mod_attachment_mod.message.success.delete|e('js') }}', 'success');
                     loadAttachmentModRecords();
                 })
                 .catch((error) => showSnackbar(String(error.message || error), 'error'));

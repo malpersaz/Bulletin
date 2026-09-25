@@ -2,20 +2,19 @@
 
 class mod_news extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
-    public $model;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_news';
         // Slider is part of the content schema, not a separate module table.
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_news',
             'newses'
         );
         // Hero slider management reuses edit permission on content records.
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list','gallery','file','edit_status','change_status','approval', 'moderate_edit','moderate_delete','video_download'
         );
     }
@@ -31,7 +30,7 @@ class mod_news extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         return TRUE;
@@ -42,7 +41,7 @@ class mod_news extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

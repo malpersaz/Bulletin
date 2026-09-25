@@ -112,7 +112,7 @@ class File
             return True;
         }
         if (is_file($str)) {
-            return $this->filesil($str);
+            return $this->deletefile($str);
         }
         if (is_dir($str)) {
             $scan = glob(rtrim($str, '/') . '/*');

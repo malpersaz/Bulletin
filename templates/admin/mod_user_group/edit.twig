@@ -16,8 +16,8 @@
     {% endif %}
 {% endmacro %}
 
-{% block title %}{{ lang.mod_user_group.admin.2 }}{% endblock %}
-{% block headline %}{{ lang.mod_user_group.admin.2 }}{% endblock %}
+{% block title %}{{ lang.mod_user_group.admin.edit_area }}{% endblock %}
+{% block headline %}{{ lang.mod_user_group.admin.edit_area }}{% endblock %}
 
 {% block content %}
 <style>
@@ -55,15 +55,15 @@
     <form method="POST" action="" id="editUserGroupForm" class="user-group-form-card">
         <div class="m3-input-wrapper">
             <input class="m3-input-lg" name="name" value="{{ d.name }}" type="text" id="name" placeholder=" ">
-            <label class="m3-floating-label">{{ lang.mod_user_group.admin.7 }}</label>
+            <label class="m3-floating-label">{{ lang.mod_user_group.admin.group_name }}</label>
         </div>
 
         <div class="m3-input-wrapper">
             <select class="m3-input-lg" name="parent_id" id="parent_id">
-                <option value="0" {% if d.parent_id == '0' or d.parent_id == 0 %}selected{% endif %}>{{ lang.mod_user_group[5] }}</option>
+                <option value="0" {% if d.parent_id == '0' or d.parent_id == 0 %}selected{% endif %}>{{ lang.mod_user_group.select_optional }}</option>
                 {{ _self.select(0, 0, d.group_id, d.parent_id, user_groupm, false) }}
             </select>
-            <label class="m3-floating-label">{{ lang.mod_user_group.admin.22 }}</label>
+            <label class="m3-floating-label">{{ lang.mod_user_group.admin.sub_group }}</label>
         </div>
     </form>
 </div>

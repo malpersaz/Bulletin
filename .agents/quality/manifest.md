@@ -6,7 +6,7 @@ This manifest defines how repository quality agents are expected to operate duri
 
 It is the operational companion to:
 
-- `/CODE_QUALITY_AGENT_STRATEGY.md`
+- `/docs/CODE_QUALITY_AGENT_STRATEGY.md`
 
 ## Active Agents
 
@@ -16,7 +16,6 @@ It is the operational companion to:
 - `template-guard`
 - `cleanup-guard`
 - `modernization-guard`
-- `parity-guard`
 - `policy-gate`
 
 ## Source Prompts
@@ -28,7 +27,6 @@ It is the operational companion to:
 - `/.agents/quality/prompts/template-guard.md`
 - `/.agents/quality/prompts/cleanup-guard.md`
 - `/.agents/quality/prompts/modernization-guard.md`
-- `/.agents/quality/prompts/parity-guard.md`
 - `/.agents/quality/prompts/policy-gate.md`
 
 ## Scope Model
@@ -84,8 +82,7 @@ The following are usually `Warning` conditions:
 5. `template-guard` reviews UI-layer strings.
 6. `cleanup-guard` reviews leftovers.
 7. `modernization-guard` reviews alignment with the modernization standard.
-8. `parity-guard` reviews synchronization and parity with sibling repositories.
-9. `policy-gate` consolidates final findings.
+8. `policy-gate` consolidates final findings.
 
 ## Standard Decision Rule
 
@@ -142,14 +139,14 @@ When a task is completed and repository documentation is updated, agents must tr
 - Every time a version-note update is needed, re-run the version-log checks from the start.
 - Before writing any version note, verify the latest Git-uploaded version from actual Git history first; do not infer it only from `/docs/VERSION.md` or from the current worktree state.
 - After identifying that Git-uploaded version, inspect the developments that exist after it and compare them against `/docs/VERSION.md`.
-- Treat the latest Git-uploaded version as the latest shipped version, and keep its section frozen unless the user explicitly asks to repair shipped historical notes.
+- Treat the latest Git-uploaded version as the latest shipped version, and keep that shipped section frozen unless the user explicitly requests a historical shipped-note repair.
+- Always synchronize `$site['version']` in `config/site.config.php` to match the active version code in `/docs/VERSION.md` in the same pass.
 - If still-unuploaded developments are missing from `/docs/VERSION.md`, do not backfill them under the shipped version section; create or use the next unpublished version section and place those notes there first.
 - When the current task represents unpublished work after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
 - If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
 - Before appending to any existing version section, explicitly verify whether the note belongs to a shipped Git version or to the next unpublished version.
-- A user-provided version code overrides the auto-detected Git version for that task.
-- All version notes written in `/docs/VERSION.md` must be written in English. Do not write version notes in Kurdish or Turkish, even if communicating with the user in Kurdish.
-- Before proposing any walkthrough or finishing a task, the agent must run the `task-validation` skill checks.
+- If that section does not exist yet, create it first and then append the note there.
+- A user-provided version code still overrides the auto-detected Git version for that task.
 
 ## Repository Boundary Rule
 

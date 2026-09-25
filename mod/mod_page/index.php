@@ -10,6 +10,7 @@ class mod_page_mod extends BaseModuleController
 
     protected $has_gallery = true;
     protected $has_files = true;
+    protected $has_faq = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -21,12 +22,12 @@ class mod_page_mod extends BaseModuleController
             'name' => 'image',
             'sizes' => [
                 '/' => [
-                    'width' => 1200,
+                    'width' => 1600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
                 '/thumb' => [
-                    'width' => 250,
+                    'width' => 600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
@@ -52,6 +53,7 @@ class mod_page_mod extends BaseModuleController
         'header' => ['##HEADER MENU', 'HEADER MENU', '##HEADER', 'HEADER', 'UST MENU', 'UST MENÜ', 'ÜST MENU', 'ÜST MENÜ', 'TOP MENU', 'MAIN MENU'],
         'footer' => ['##FOOTER MENU', 'FOOTER MENU', '##FOOTER', 'FOOTER', 'ALT MENU', 'ALT MENÜ', 'BOTTOM MENU'],
         'sidebar' => ['##SIDEBAR', 'SIDEBAR', 'SOL MENU', 'SOL MENÜ', 'SIDE MENU'],
+        'action' => ['##ACTION MENU', 'ACTION MENU', '##ACTION', 'ACTION', 'CTA MENU', '##CTA MENU', 'ACTIONMENU', 'ACTION_MENU', 'PESEKA CALAKIYE', 'ÇALAKÎ', 'AKTIONSMENU', 'AKTIONSMENÜ', 'EYLEM MENUSU'],
     ];
 
     public function __construct()
@@ -265,7 +267,7 @@ class mod_page_mod extends BaseModuleController
 
     private function buildNestedRows($rows)
     {
-        if (!is_array($rows) || empty($rows)) {
+        if (!is_array($rows) || $rows === []) {
             return [];
         }
 
@@ -481,8 +483,8 @@ class mod_page_mod extends BaseModuleController
             }
         }
 
-        $this->tema->veri('lang_lang', $langs);
-        $this->tema->veri('selected_lang', $selectedLang);
+        $this->theme->set('lang_lang', $langs);
+        $this->theme->set('selected_lang', $selectedLang);
 
         $mod_page_nested = Load::model('mod_page');
         $mod_page_nested->flush();
@@ -490,25 +492,25 @@ class mod_page_mod extends BaseModuleController
             $mod_page_nested->where_lang($selectedLang);
         }
         $mod_page_nested->order('order', 'ASC')->all();
-        $this->tema->veri('select_nested_parent_id_result', $this->buildNestedRows($mod_page_nested->toArray()));
+        $this->theme->set('select_nested_parent_id_result', $this->buildNestedRows($mod_page_nested->toArray()));
 
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
-        $this->tema->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
 
-        $mod_category_nested = Load::model('mod_category');
+        $mod_category_nested = Load::model('mod_content_category');
         $mod_category_nested->flush();
         if ($selectedLang !== '') {
             $mod_category_nested->where_lang($selectedLang);
         }
         $mod_category_nested->order('order', 'ASC')->all();
-        $this->tema->veri('select_nested_category_id_result', $this->buildNestedRows($mod_category_nested->toArray()));
+        $this->theme->set('select_nested_category_id_result', $this->buildNestedRows($mod_category_nested->toArray()));
 
         $menuContext = $this->getMenuParentContext($selectedLang, $selectedMenuSlot);
-        $this->tema->veri('select_nested_menu_result', $menuContext['tree']);
-        $this->tema->veri('menu_parent_root_id', $menuContext['root_parent_id']);
-        $this->tema->veri('selected_menu_slot', $selectedMenuSlot);
-        $this->tema->veri('menu_slot_options', $this->getMenuSlotOptions());
-        $this->tema->veri('menu_binding_value', $this->getPostedMenuSelectionValue($menuBindingValue));
+        $this->theme->set('select_nested_menu_result', $menuContext['tree']);
+        $this->theme->set('menu_parent_root_id', $menuContext['root_parent_id']);
+        $this->theme->set('selected_menu_slot', $selectedMenuSlot);
+        $this->theme->set('menu_slot_options', $this->getMenuSlotOptions());
+        $this->theme->set('menu_binding_value', $this->getPostedMenuSelectionValue($menuBindingValue));
 
         $pageQuery = "SELECT id, name, lang FROM `mod_page`";
         $where = [];
@@ -518,14 +520,14 @@ class mod_page_mod extends BaseModuleController
         if ((int) $excludePageId !== 0) {
             $where[] = "id!='" . (int) $excludePageId . "'";
         }
-        if (!empty($where)) {
+        if ($where !== []) {
             $pageQuery .= " WHERE " . implode(' AND ', $where);
         }
         $pageQuery .= " ORDER BY id DESC";
         $this->db->fetch_array($pageQuery);
         $pageReferences = $this->db->getResult()->toArray();
-        $this->tema->veri('mod_page_gallery_id', $pageReferences);
-        $this->tema->veri('mod_page_file_id', $pageReferences);
+        $this->theme->set('mod_page_gallery_id', $pageReferences);
+        $this->theme->set('mod_page_file_id', $pageReferences);
     }
 
     private function syncMenuRecord(array $menuBinding, $oldUrl = '', $menuUserId = 0)
@@ -544,14 +546,17 @@ class mod_page_mod extends BaseModuleController
         if (!$menuExists) {
             $mod_menu_model = Load::model('mod_menu');
             $mod_menu_model->user_id = (int) $menuUserId;
-            $nextOrderQuery = "SELECT MAX(`order`) AS max_order FROM `mod_menu` WHERE parent_id='" . (int) $menuBinding['parent_id'] . "'";
+            
+            $maxMenu = Load::model('mod_menu');
+            $maxMenu->select('`order`');
+            $maxMenu->addWhere("parent_id='" . (int) $menuBinding['parent_id'] . "'");
             if ($this->mod_page_model->lang !== '') {
-                $nextOrderQuery .= " AND lang='" . $this->mod_page_model->lang . "'";
+                $maxMenu->addWhere("lang='" . $this->mod_page_model->lang . "'");
             }
-            $this->db->fetch_array($nextOrderQuery);
-            $orderRows = $this->db->getResult()->toArray();
-            $orderResult = isset($orderRows[0]) ? $orderRows[0] : [];
-            $maxOrder = isset($orderResult['max_order']) && Req::isNumeric((string) $orderResult['max_order']) ? (int) $orderResult['max_order'] : 0;
+            $maxMenu->order('`order`', 'DESC')->limit(1)->all();
+            $maxRows = $maxMenu->toArray();
+            $maxOrder = isset($maxRows[0]['order']) && Req::isNumeric((string) $maxRows[0]['order']) ? (int) $maxRows[0]['order'] : 0;
+            
             $mod_menu_model->order = $maxOrder + 1;
             $menuRecord = $mod_menu_model;
         }
@@ -582,8 +587,8 @@ class mod_page_mod extends BaseModuleController
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_page']['add'];
-        $this->tema->tpl('mod_page/add');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_page/add');
+        $this->theme->set('site', $this->site);
         $selectedLang = $this->resolveSelectedLang();
         $selectedMenuSlot = $this->resolveSelectedMenuSlot('none');
         $this->loadFormLookups($selectedLang, 0, self::MENU_SELECTION_NONE, $selectedMenuSlot);
@@ -601,7 +606,7 @@ class mod_page_mod extends BaseModuleController
         if ($this->mod_page_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_page']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_page/edit');
+            $this->theme->tpl('mod_page/edit');
             return;
         }
 
@@ -617,11 +622,7 @@ class mod_page_mod extends BaseModuleController
             // Keep posted values in the form after validation errors.
             if (isset($this->val) && $this->val->check($id)) {
                 foreach ($_POST as $key => $val) {
-                    if ($key == 'content') {
-                        $d[$key] = Req::Post('content');
-                    } else {
-                        $d[$key] = Req::Post_Safe($key);
-                    }
+                    $d[$key] = $key == 'content' ? Req::Post('content') : Req::Post_Safe($key);
                 }
             }
         }
@@ -629,9 +630,9 @@ class mod_page_mod extends BaseModuleController
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_page']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_page/edit');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->tpl('mod_page/edit');
         $menuBindingContext = $this->resolveMenuBindingContext($d);
         $selectedMenuSlot = $this->resolveSelectedMenuSlot($menuBindingContext['slot']);
         $this->loadFormLookups(
@@ -652,41 +653,60 @@ class mod_page_mod extends BaseModuleController
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_page']['list'];
-        $this->tema->tpl('mod_page/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_page/list');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('module_lang_key', 'mod_page');
         $visibleLangs = $this->getVisibleLanguageCodes();
         $mod_page_nested = Load::model('mod_page');
         $mod_page_nested->order('order', 'ASC')->all();
         $visibleRows = [];
-        foreach ($mod_page_nested->toArray() as $row) {
-            if (!isset($row['lang']) || in_array((string) $row['lang'], $visibleLangs, TRUE)) {
-                $visibleRows[] = $row;
+        $pageRows = $mod_page_nested->toArray();
+        if (is_array($pageRows)) {
+            foreach ($pageRows as $row) {
+                if (!isset($row['lang']) || in_array((string) $row['lang'], $visibleLangs, TRUE)) {
+                    $visibleRows[] = $row;
+                }
             }
         }
         $select_nested_mod_page_result = $this->buildNestedRows($visibleRows);
-        $this->tema->veri('select_nested_mod_page_result', $select_nested_mod_page_result);
+        $this->theme->set('select_nested_mod_page_result', $select_nested_mod_page_result);
+
+        $totalPages = count($visibleRows);
+        $publishedPages = 0;
+        $draftPages = 0;
+        foreach ($visibleRows as $row) {
+            if (isset($row['status']) && $row['status'] === 'y') {
+                $publishedPages++;
+            } else {
+                $draftPages++;
+            }
+        }
+        $this->theme->set('total_pages', $totalPages);
+        $this->theme->set('published_pages', $publishedPages);
+        $this->theme->set('draft_pages', $draftPages);
     }
     // mod_page order change
-    public function _sira_degis()
+    public function _update_order()
     {
         $b = Req::Post_Safe('order');
         $mod_page_model = new mod_page_model();
         $x = 1;
-        foreach ($b as $a) {
-            $mod_page_model->id = $a;
-            $mod_page_model->order = $x;
-            if ($mod_page_model->update('id') === False) {
-                //print_r($mod_page_model,TRUE);
-                return FALSE;
+        if (is_array($b)) {
+            foreach ($b as $a) {
+                $mod_page_model->id = $a;
+                $mod_page_model->order = $x;
+                if ($mod_page_model->update('id') === False) {
+                    return FALSE;
+                }
+                $x++;
             }
-            $x++;
         }
         return TRUE;
     }
 
 
     // mod_page drag/drop move
-    public function tasi()
+    public function reorder()
     {
         // Check move permission
         if ($this->user->hasPermission('mod_page', 'edit', $this->lang['mod_page']['role_errors']['edit']) === False) {
@@ -695,69 +715,10 @@ class mod_page_mod extends BaseModuleController
         $mod_page_model = Load::model('mod_page');
         $mod_page_model->id = Req::Post_Safe('id');
         $mod_page_model->parent_id = Req::Post_Safe('parent_id');
-        if ($mod_page_model->update('id')  and $this->_sira_degis()) {
-            echo 'Oke';
+        if ($mod_page_model->update('id') && $this->_update_order()) {
+            echo 'Success';
         } else {
             echo 'Error';
-            //print_r($mod_page_model);
-        }
-    }
-    public function image_remove_image()
-    {
-        // Check edit permission
-        if ($this->user->hasPermission('mod_page', 'edit', $this->lang['mod_page']['role_errors']['edit'], 1) === False) {
-            return FALSE;
-        }
-
-        $id = intval(Req::Post_Safe('id'));
-
-        $this->mod_page_model = Load::model('mod_page');
-        $this->mod_page_model->where_id($id)->gRo();
-        if ($this->mod_page_model->getSize() === 0) {
-            echo $this->lang['mod_page']['errors']['record'];
-            return FALSE;
-        }
-
-
-        $this->mod_page_model->sync();
-        // Check moderate permission if content belongs to another user
-        if ($this->user->checkPermission('mod_page', 'moderate_edit', $this->mod_page_model->user_id, $this->lang['mod_page']['role_errors']['moderate_edit']) === False) {
-            echo $this->lang['mod_page']['role_errors']['moderate_edit'];
-            return False;
-        }
-
-        if ($this->mod_page_model->image != '') {
-            $image = Load::mod('image');
-            $image->mod = 'mod_page';
-            $image->url = $this->mod_page_model->image;
-            $option = [
-                '/' =>
-                [
-                    'width' => 1200,
-                    'height' => NULL,
-                ],
-                '/thumb' =>
-                [
-                    'width' => 250,
-                    'height' => NULL,
-                    'option' => 'width',
-                ],
-            ];
-            try {
-                if ($image->_delete_files($option)) {
-                    $this->mod_page_model->image = '';
-                    $this->mod_page_model->update('id');
-                    echo 'Oke';
-                } else {
-                    echo $image->error;
-                    return FALSE;
-                }
-            } catch (Throwable $e) {
-                echo $e->getMessage();
-                return FALSE;
-            }
-        } else {
-            echo 'Oke';
         }
     }
 
@@ -765,20 +726,20 @@ class mod_page_mod extends BaseModuleController
     protected function _add()
     {
         $postedWizardStep = $this->getOptionalInt('wizard_step', 1);
-        $this->tema->veri('wizard_step', $postedWizardStep);
+        $this->theme->set('wizard_step', $postedWizardStep);
 
         $this->val = Load::validator('mod_page.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
                 if ($key == 'content') {
-                    $this->tema->veri($key, Req::Post('content'));
+                    $this->theme->set($key, Req::Post('content'));
                 } elseif ($key == 'lang') {
-                    $this->tema->veri('selected_lang', Req::Post_Safe('lang'));
+                    $this->theme->set('selected_lang', Req::Post_Safe('lang'));
                 } else {
-                    $this->tema->veri($key, Req::Post_Safe($key));
+                    $this->theme->set($key, Req::Post_Safe($key));
                 }
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_page_model = Load::model('mod_page');
 
@@ -829,12 +790,12 @@ class mod_page_mod extends BaseModuleController
                 $option = [
                     '/' =>
                     [
-                        'width' => 1200,
+                        'width' => 1600,
                         'height' => NULL,
                     ],
                     '/thumb' =>
                     [
-                        'width' => 250,
+                        'width' => 600,
                         'height' => NULL,
                         'option' => 'width',
                     ],
@@ -859,8 +820,20 @@ class mod_page_mod extends BaseModuleController
                     $this->_error_message($this->lang['mod_page']['messages']['error']['add']);
                     return FALSE;
                 }
-                $this->_oke_message($this->lang['mod_page']['messages']['oke']['add']);
-                Helper::yonlendir($this->site['saddress'] . 'mod_page/list', 1);
+                $this->_success_message($this->lang['mod_page']['messages']['success']['add']);
+                
+                // Notify Google Indexing API of new page
+                if ($this->mod_page_model->status === 'y') {
+                    $site_config = Registry::get('site_config');
+                    $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                    if (!empty($baseUrl)) {
+                        $absoluteUrl = rtrim($baseUrl, '/') . '/' . $this->mod_page_model->lang . '/page/' . $this->mod_page_model->seo;
+                        $indexingService = new GoogleIndexingService();
+                        $indexingService->notifyUpdate($absoluteUrl);
+                    }
+                }
+
+                Helper::redirect($this->site['saddress'] . 'mod_page/list', 1);
             } else {
                 // If image exists
                 if (isset($image->url)) {
@@ -879,12 +852,12 @@ class mod_page_mod extends BaseModuleController
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
                 if ($key == 'content') {
-                    $this->tema->veri($key, Req::Post('content'));
+                    $this->theme->set($key, Req::Post('content'));
                 } else {
-                    $this->tema->veri($key, Req::Post_Safe($key));
+                    $this->theme->set($key, Req::Post_Safe($key));
                 }
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_page_model = Load::model('mod_page');
 
@@ -940,12 +913,12 @@ class mod_page_mod extends BaseModuleController
                 $option = [
                     '/' =>
                     [
-                        'width' => 1200,
+                        'width' => 1600,
                         'height' => NULL,
                     ],
                     '/thumb' =>
                     [
-                        'width' => 250,
+                        'width' => 600,
                         'height' => NULL,
                         'option' => 'width',
                     ],
@@ -972,9 +945,35 @@ class mod_page_mod extends BaseModuleController
                     return FALSE;
                 }
 
+                $newUrl = $this->mod_page_model->lang . '/page/' . $this->mod_page_model->seo;
+                if ($url !== $newUrl) {
+                    $this->db->query("UPDATE `mod_menu` SET `url` = " . $this->db->quote($newUrl) . " WHERE `url` = " . $this->db->quote($url));
+                }
 
-                $this->_oke_message($this->lang['mod_page']['messages']['oke']['edit']);
-                Helper::yonlendir($this->site['saddress'] . 'mod_page/list', 1);
+                $this->_success_message($this->lang['mod_page']['messages']['success']['edit']);
+
+                // Notify Google Indexing API of page update
+                $site_config = Registry::get('site_config');
+                $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                if (!empty($baseUrl)) {
+                    $indexingService = new GoogleIndexingService();
+                    $newUrl = $this->mod_page_model->lang . '/page/' . $this->mod_page_model->seo;
+                    $absoluteNewUrl = rtrim($baseUrl, '/') . '/' . $newUrl;
+                    
+                    if ($this->mod_page_model->status === 'y') {
+                        $indexingService->notifyUpdate($absoluteNewUrl);
+                    } elseif ($this->mod_page_model->status === 'n') {
+                        $indexingService->notifyDelete($absoluteNewUrl);
+                    }
+                    
+                    // If URL changed and it was published, notify deletion of old URL
+                    if ($url !== $newUrl && $this->mod_page_model->status === 'y') {
+                        $absoluteOldUrl = rtrim($baseUrl, '/') . '/' . $url;
+                        $indexingService->notifyDelete($absoluteOldUrl);
+                    }
+                }
+
+                Helper::redirect($this->site['saddress'] . 'mod_page/list', 1);
             } else {
                 // If image exists
                 if (isset($image->url)) {
@@ -999,25 +998,24 @@ class mod_page_mod extends BaseModuleController
     public function dragdrop_delete()
     {
         // Check delete permission
-        if ($this->user->hasPermission('mod_page',  'delete', $this->lang['mod_page']['role_errors'][ 'delete'], 1) === False) {
+        if ($this->user->hasPermission('mod_page', 'delete', $this->lang['mod_page']['role_errors']['delete'], 1) === False) {
             return False;
         }
-        $sil = Req::Post_Safe( 'delete');
-        if ($this->_dragdrop_delete($sil) === TRUE) {
-            echo 'Oke';
+        $deleteId = Req::Post_Safe('delete');
+        if ($this->_dragdrop_delete($deleteId) === TRUE) {
+            echo 'Success';
         } else {
             echo 'ERROR';
-            //print_r($this->mod_page_model);
         }
     }
 
     // Delete Function
-    protected function _dragdrop_delete($sil = NULL)
+    protected function _dragdrop_delete($deleteId = NULL)
     {
         // Load mod_page model
         $this->mod_page_model = Load::model('mod_page');
 
-        $this->mod_page_model->getid($sil)->getResultOne(TRUE, TRUE);
+        $this->mod_page_model->getid($deleteId)->getResultOne(TRUE, TRUE);
         if ($this->mod_page_model->getSize() === 0) {
             print($this->lang['mod_page']['errors']['record']);
             return FALSE;
@@ -1029,12 +1027,15 @@ class mod_page_mod extends BaseModuleController
             return False;
         }
         $new_model = new mod_page_model();
-        if ($new_model->exists_parent_id($sil)) {
-            foreach ($new_model->toArray() as $s) {
-                if ($this->_dragdrop_delete($s['id']) === TRUE) {
-                    continue;
+        if ($new_model->exists_parent_id($deleteId)) {
+            $childRows = $new_model->toArray();
+            if (is_array($childRows)) {
+                foreach ($childRows as $s) {
+                    if ($this->_dragdrop_delete($s['id']) === TRUE) {
+                        continue;
+                    }
+                    return FALSE;
                 }
-                return FALSE;
             }
         }
 
@@ -1047,12 +1048,12 @@ class mod_page_mod extends BaseModuleController
             $option = [
                 '/' =>
                 [
-                    'width' => 1200,
+                    'width' => 1600,
                     'height' => NULL,
                 ],
                 '/thumb' =>
                 [
-                    'width' => 250,
+                    'width' => 600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
@@ -1063,7 +1064,7 @@ class mod_page_mod extends BaseModuleController
         }
 
 
-        $this->mod_page_model->getid($sil);
+        $this->mod_page_model->getid($deleteId);
         // Check if gallery module is mapped
         $this->mod = Load::model('mod_gallery_mod');
         if ($this->mod->exists_mod_name("mod_page") === TRUE) {
@@ -1075,6 +1076,15 @@ class mod_page_mod extends BaseModuleController
         if ($this->mod->exists_mod_name("mod_page") === TRUE) {
             // Delete related files if exists
             Run::import('mod_attachment', '_remove', ['mod_page', $this->mod_page_model->id]);
+        }
+
+        // Notify Google Indexing API of deletion
+        $site_config = Registry::get('site_config');
+        $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+        if (!empty($baseUrl)) {
+            $absoluteUrl = rtrim($baseUrl, '/') . '/' . $this->mod_page_model->lang . '/page/' . $this->mod_page_model->seo;
+            $indexingService = new GoogleIndexingService();
+            $indexingService->notifyDelete($absoluteUrl);
         }
 
         $this->mod_page_model->delete();
@@ -1114,6 +1124,14 @@ class mod_page_mod extends BaseModuleController
                     if ($menuRecord !== NULL) {
                         $menuRecord->status = 'y';
                         $menuRecord->update();
+                    }
+                    // Notify Google Indexing API of approval
+                    $site_config = Registry::get('site_config');
+                    $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                    if (!empty($baseUrl)) {
+                        $absoluteUrl = rtrim($baseUrl, '/') . '/' . $page->lang . '/page/' . $page->seo;
+                        $indexingService = new GoogleIndexingService();
+                        $indexingService->notifyUpdate($absoluteUrl);
                     }
                     continue;
                 }
@@ -1158,6 +1176,14 @@ class mod_page_mod extends BaseModuleController
                         $menuRecord->status = 'n';
                         $menuRecord->update();
                     }
+                    // Notify Google Indexing API of unapproval
+                    $site_config = Registry::get('site_config');
+                    $baseUrl = isset($site_config['address']) ? $site_config['address'] : '';
+                    if (!empty($baseUrl)) {
+                        $absoluteUrl = rtrim($baseUrl, '/') . '/' . $page->lang . '/page/' . $page->seo;
+                        $indexingService = new GoogleIndexingService();
+                        $indexingService->notifyDelete($absoluteUrl);
+                    }
                     continue;
                 }
                 return FALSE;
@@ -1168,23 +1194,177 @@ class mod_page_mod extends BaseModuleController
     }
 
     // Valid Message
-    protected function _oke_message($mesaj)
+    protected function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     // Error Message
-    protected function _error_message($mesaj)
+    protected function _error_message($message)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
     // Error Message
-    protected function _error($mesaj)
+    protected function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
+    }
+
+    public function ajax_get_files()
+    {
+        if ($this->user->hasPermission('mod_page', 'file', $this->lang['mod_page']['role_errors']['file'] ?? 'Permission denied', 1) === false && Role::hasPermission('mod_page', 'edit') === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            return false;
+        }
+
+        $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
+        $model = Load::model('mod_attachment');
+        $model->select('id, original_name as name');
+        if ($q_param) {
+            $model->addWhere("original_name LIKE '%" . $q_param . "%'");
+        }
+        $model->order('id', 'DESC')->gR();
+
+        $results = [];
+        if ($model->getSize() > 0) {
+            foreach ($model->toArray() as $item) {
+                $results[] = [
+                    'id'   => intval($item['id']),
+                    'name' => $item['name'],
+                    'text' => $item['name']
+                ];
+            }
+        }
+
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($results);
+        return true;
+    }
+
+    public function ajax_get_current_media()
+    {
+        $id = intval(Req::Post_Safe('id'));
+        if ($id <= 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'file_id' => 0,
+                'gallery_id' => 0,
+                'video' => [],
+            ]);
+            return false;
+        }
+
+        $page_model = Load::model('mod_page');
+        $page_model->select('id, file_id, gallery_id')->where_id($id)->gRo();
+        if ($page_model->getSize() === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'file_id' => 0,
+                'gallery_id' => 0,
+                'video' => [],
+            ]);
+            return false;
+        }
+        $page_model->sync();
+
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'file_id' => intval($page_model->file_id ?? 0),
+            'gallery_id' => intval($page_model->gallery_id ?? 0),
+            'video' => [],
+        ]);
+        return true;
+    }
+
+    public function ajax_update_relation()
+    {
+        if ($this->user->hasPermission('mod_page', 'file', $this->lang['mod_page']['role_errors']['file'] ?? 'Permission denied', 1) === false && Role::hasPermission('mod_page', 'edit') === false) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $this->lang['mod_page']['role_errors']['file'] ?? ($this->lang['mod_page']['role_errors']['edit'] ?? 'Permission denied'),
+            ]);
+            return false;
+        }
+
+        $id = intval(Req::Post_Safe('id'));
+        $type = Req::Post_Safe('type');
+        $value = Req::Post('value');
+
+        if ($id <= 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $this->lang['mod_page']['errors']['record'] ?? 'Record not found',
+            ]);
+            return false;
+        }
+
+        $page_model = Load::model('mod_page');
+        $page_model->where_id($id)->gRo();
+        if ($page_model->getSize() === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'error',
+                'message' => $this->lang['mod_page']['errors']['record'] ?? 'Record not found',
+            ]);
+            return false;
+        }
+        $page_model->sync();
+
+        if ($type === 'gallery' || $type === 'files') {
+            $column = ($type === 'gallery') ? 'gallery_id' : 'file_id';
+            $page_model->$column = intval($value);
+            $page_model->update('id');
+
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'success',
+                'message' => $this->lang['mod_page']['ajax']['relation_updated'] ?? ($this->lang['mod_page']['messages']['success']['edit'] ?? 'Relation updated successfully'),
+            ]);
+            return true;
+        }
+
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status' => 'error',
+            'message' => $this->lang['mod_page']['ajax']['unknown_type'] ?? 'Unknown type',
+        ]);
+        return false;
     }
 }

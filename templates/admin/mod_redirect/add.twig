@@ -80,7 +80,7 @@
                 document.addEventListener('DOMContentLoaded', function() {
                     Swal.fire({
                         icon: 'warning',
-                        html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
+                        html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
                         confirmButtonText: '{{ lang.mod_redirect.button.yes }}',
                         confirmButtonColor: '#ba1a1a'
                     });
@@ -88,12 +88,12 @@
             </script>
         {% endif %}
 
-        {% if hatalar is defined %}
+        {% if errors is defined %}
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     let errorHtml = '<div style="text-align: left;">';
-                    {% for hata in hatalar %}
-                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                    {% for error in errors %}
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
                     {% endfor %}
                     errorHtml += '</div>';
 

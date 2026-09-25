@@ -2,29 +2,30 @@
 
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/23/11 - 7:09 PM
- * Telif Hakkı:AKM Software
+ * User: AKM
+ * Date: 4/23/11 - 7:09 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Sınıfı: Error
- * Dosya: Error.class.php
- * Açıklama:
+ * Class: Error
+ * File: Error.class.php
+ * Description: Error handling utility class
  */
 class Error
 {
     public static $lang;
-    public static $tema;
+    public static $theme;
 
-    public static function error($sayfa, $a = NULL)
+    public static function error($page, $argument = NULL)
     {
         header("HTTP/1.1 404 Not Found");
         self::$lang = Load::lang('index');
-        self::$tema = Load::lib('TwigTemplate');
-        $hata = self::$lang['index']['hata'][$sayfa];
-        self::$tema->setGlobal('title', self::$lang['index']['hata']['1'] . " : " . $hata['ad']);
-        self::$tema->setGlobal('mesaj', sprintf($hata['mesaj'], $a));
-        self::$tema->setGlobal('tpl', 'index/hata.tpl');
+        self::$theme = Load::lib('TwigTemplate');
+        $error = self::$lang['index']['error'][$page] ?? [];
+        $errorTitle = self::$lang['index']['error']['title'] ?? 'Error';
+        self::$theme->setGlobal('title', $errorTitle . " : " . ($error['title'] ?? ($error['name'] ?? 'Error')));
+        self::$theme->setGlobal('message', sprintf($error['message'] ?? '%s', $argument));
+        self::$theme->setGlobal('tpl', 'index/error.twig');
         Run::import('index', '_index');
     }
 
@@ -51,7 +52,7 @@ class Error
         return self::error('method', $a);
         /*echo Helper::red_text(Req::Clear($a));
           echo "</br>";
-          echo Helper::black_text(" Methodu Bulunamadı!");*/
+          echo Helper::black_text(" Method Not Found!");*/
         //exit();
     }
 
@@ -60,7 +61,7 @@ class Error
         return self::error('mod', $a);
         /*echo Helper::red_text(Req::Clear($a));
           echo "</br>";
-          echo Helper::black_text(" Modülü Bulunamadı!");*/
+          echo Helper::black_text(" Module Not Found!");*/
         //exit();
     }
 
@@ -69,7 +70,7 @@ class Error
         return self::error('not', $a);
         /*echo Helper::red_text(Req::Clear($a));
           echo "</br>";
-          echo Helper::black_text(" Method Çalıştırılamaz!");
+          echo Helper::black_text(" Method Cannot Be Executed!");
           exit();*/
     }
 
@@ -77,6 +78,6 @@ class Error
     {
         echo Helper::red_text($a);
         echo "</br>";
-        echo Helper::black_text(" Modülünün " . $a . " Dil Dosyası Bulunamadı");
+        echo Helper::black_text(" Language file not found for module " . $a);
     }
 }

@@ -2,7 +2,7 @@
 
 /**
  * Amed Framework
- * User: a.k.mutlu
+ * User: AKM
  * Date: 4/23/11 - 7:12 PM
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
@@ -14,36 +14,41 @@
 
 class LoadFileException extends Exception
 {
-    public $mesaj;
+    public $message;
     public $type;
     public $filePath;
-    public function __construct($mesaj, $type, $file)
+    public function __construct($message, $type, $file)
     {
-        $this->mesaj = $mesaj;
+        $this->message = $message;
         $this->type = $type;
         $this->filePath = $file;
     }
 
     public function show()
     {
-        $indexLang = $this->loadIndexLanguage();
-        if (!isset($indexLang['index']['file_not_found'])) {
-            throw new RuntimeException('Missing index language key: index.file_not_found');
+        $msg = 'File not found';
+        try {
+            $indexLang = $this->loadIndexLanguage();
+            if (isset($indexLang['index']['file_not_found'])) {
+                $msg = $indexLang['index']['file_not_found'];
+            }
+        } catch (\Exception $e) {
+            // Fallback to English if language file fails to load
         }
 
-        echo sprintf($this->mesaj, $this->type);
+        echo sprintf($this->message, $this->type);
         echo "<br>";
-        echo $indexLang['index']['file_not_found'] . ":\n";
+        echo $msg . ":\n";
         echo "<b>" . $this->filePath . "</b>";
     }
 
     private function loadIndexLanguage()
     {
-        if (Kayit::varmi('index-lang') !== False) {
-            return Kayit::getir('index-lang');
+        if (Registry::has('index-lang') !== False) {
+            return Registry::get('index-lang');
         }
 
-        $currentLang = Kayit::getir('lang');
+        $currentLang = Registry::get('lang');
         $file = mod_dir . 'index' . DS . lang_dir . $currentLang . '.php';
 
         if (file_exists($file) === FALSE) {
@@ -51,7 +56,7 @@ class LoadFileException extends Exception
         }
 
         require($file);
-        Kayit::ekle('index-lang', $lang);
+        Registry::add('index-lang', $lang);
 
         return $lang;
     }
@@ -59,12 +64,12 @@ class LoadFileException extends Exception
 
 class ClassException extends Exception
 {
-    public $mesaj;
+    public $message;
     public $type;
     public $filePath;
-    public function __construct($mesaj, $type, $file)
+    public function __construct($message, $type, $file)
     {
-        $this->mesaj = $mesaj;
+        $this->message = $message;
         $this->type = $type;
         $this->filePath = $file;
     }
@@ -73,7 +78,7 @@ class ClassException extends Exception
     {
         echo "<h2>Class Exception</h2>";
         echo "<br>";
-        echo sprintf("%s File <b>%s</b> Class Not Defined", $this->type, $this->mesaj);
+        echo sprintf("%s File <b>%s</b> Class Not Defined", $this->type, $this->message);
         echo "<br>";
         echo "\nFile:\n";
         echo "<b>" . $this->filePath . "</b>";
@@ -112,7 +117,7 @@ class Load
             $file = mod_dir . $val . DS . helper_dir . $val . '.helper.php';
         }
 
-        $tmp = Kayit::varmi('helperfile') === FALSE ? [] : Kayit::getir('helperfile');
+        $tmp = Registry::has('helperfile') === FALSE ? [] : Registry::get('helperfile');
         if (in_array($file, $tmp) === FALSE) {
             try {
                 self::loadfile($file, 'Helper');
@@ -121,19 +126,19 @@ class Load
                 exit();
             }
             $tmp[] = $file;
-            Kayit::yenile('helperfile', $tmp);
+            Registry::set('helperfile', $tmp);
         }
 
 
-        $classadi = $class . '_helper';
-        if (!class_exists($classadi)) {
-            throw new ClassException($classadi, 'Helper', $file);
+        $className = $class . '_helper';
+        if (!class_exists($className)) {
+            throw new ClassException($className, 'Helper', $file);
         }
         unset($tmp);
         unset($file);
         unset($class);
         unset($val);
-        return $classadi;
+        return $className;
     }
 
     // Loads Model File
@@ -152,7 +157,7 @@ class Load
             $file = mod_dir . $val . DS . model_dir . $val . '.model.php';
         }
 
-        $tmp = Kayit::varmi('modelfile') === FALSE ? [] : Kayit::getir('modelfile');
+        $tmp = Registry::has('modelfile') === FALSE ? [] : Registry::get('modelfile');
         if (in_array($file, $tmp) === FALSE) {
             try {
                 self::loadfile($file, 'Model');
@@ -161,25 +166,25 @@ class Load
                 exit();
             }
             $tmp[] = $file;
-            Kayit::yenile('modelfile', $tmp);
+            Registry::set('modelfile', $tmp);
         }
 
 
-        $classadi = $class . '_model';
-        if (!class_exists($classadi)) {
-            throw new ClassException($classadi, 'Model', $file);
+        $className = $class . '_model';
+        if (!class_exists($className)) {
+            throw new ClassException($className, 'Model', $file);
         }
         unset($tmp);
         unset($file);
         unset($class);
         unset($val);
-        return $classadi;
+        return $className;
     }
 
     // Loads Library File
     public static function libfile($val)
     {
-        $tmp = Kayit::varmi('libfile') === FALSE ? [] : Kayit::getir('libfile');
+        $tmp = Registry::has('libfile') === FALSE ? [] : Registry::get('libfile');
         if (in_array($val, $tmp) === FALSE) {
             $file = lib_dir . $val . '.class.php';
             try {
@@ -189,7 +194,7 @@ class Load
                 exit();
             }
             $tmp[] = $val;
-            Kayit::yenile('libfile', $tmp);
+            Registry::set('libfile', $tmp);
             if (!class_exists($val)) {
                 throw new ClassException($val, 'Library', $file);
                 exit("<h2>Class Exception</h2>Library File <b>" . $val . "</b> Class Not Defined<br>
@@ -206,7 +211,7 @@ class Load
     // Library Loader
     public static function lib($val)
     {
-        if (Kayit::varmi($val . '-lib') === False) {
+        if (Registry::has($val . '-lib') === False) {
             try {
                 self::libfile($val);
             } catch (ClassException   $e) {
@@ -215,17 +220,17 @@ class Load
             }
 
             //self::libfile($val);
-            $sonuc = new $val();
-            Kayit::ekle($val . '-lib', $sonuc);
-            return $sonuc;
+            $instance = new $val();
+            Registry::add($val . '-lib', $instance);
+            return $instance;
         }
-        return Kayit::getir($val . '-lib');
+        return Registry::get($val . '-lib');
     }
 
     // Model Loader
     public static function model($val)
     {
-        if (Kayit::varmi($val . '-model') === False) {
+        if (Registry::has($val . '-model') === False) {
 
             try {
                 $class = self::modelfile($val);
@@ -235,19 +240,19 @@ class Load
             }
 
 
-            $sonuc = new $class();
+            $instance = new $class();
 
-            Kayit::ekle($val . '-model', $sonuc);
-            return $sonuc;
+            Registry::add($val . '-model', $instance);
+            return $instance;
         }
-        return Kayit::getir($val . '-model');
+        return Registry::get($val . '-model');
     }
 
 
     // Helper Loader
     public static function helper($val)
     {
-        if (Kayit::varmi($val . '-helper') === False) {
+        if (Registry::has($val . '-helper') === False) {
 
             try {
                 $class = self::helperfile($val);
@@ -257,18 +262,18 @@ class Load
             }
 
 
-            $sonuc = new $class();
+            $instance = new $class();
 
-            Kayit::ekle($val . '-helper', $sonuc);
-            return $sonuc;
+            Registry::add($val . '-helper', $instance);
+            return $instance;
         }
-        return Kayit::getir($val . '-helper');
+        return Registry::get($val . '-helper');
     }
 
     // Mod Loader
     public static function mod($val)
     {
-        if (Kayit::varmi($val . '-mod') === False) {
+        if (Registry::has($val . '-mod') === False) {
             $file = mod_dir . $val . DS . 'index.php';
             try {
                 self::loadfile($file, 'Module');
@@ -282,11 +287,11 @@ class Load
                 throw new ModException($class . " Class Not Found!");
                 return FALSE;
             }
-            $sonuc = new $class();
-            Kayit::ekle($val . '-mod', $sonuc);
-            return $sonuc;
+            $instance = new $class();
+            Registry::add($val . '-mod', $instance);
+            return $instance;
         }
-        return Kayit::getir($val . '-mod');
+        return Registry::get($val . '-mod');
     }
 
     // Config Loader
@@ -306,14 +311,14 @@ class Load
     public static function lang($val)
     {
         global $lang;
-        if (Kayit::varmi($val . '-lang') === False) {
-            $tmp = Kayit::varmi('langfile') === FALSE ? [] : Kayit::getir('langfile');
+        if (Registry::has($val . '-lang') === False) {
+            $tmp = Registry::has('langfile') === FALSE ? [] : Registry::get('langfile');
             if (in_array($val, $tmp) === FALSE) {
-                $file = mod_dir . $val . DS . lang_dir . Kayit::getir('lang') . '.php';
+                $file = mod_dir . $val . DS . lang_dir . Registry::get('lang') . '.php';
                 
                 // Fallback to default lang or English if requested language file is missing
                 if (file_exists($file) === FALSE) {
-                    $defaultLang = Kayit::varmi('default_lang') ? Kayit::getir('default_lang') : 'en';
+                    $defaultLang = Registry::has('default_lang') ? Registry::get('default_lang') : 'en';
                     $file = mod_dir . $val . DS . lang_dir . $defaultLang . '.php';
                     
                     if (file_exists($file) === FALSE) {
@@ -334,27 +339,27 @@ class Load
                 
                 require_once($file);
                 $tmp[] = $val;
-                Kayit::yenile('langfile', $tmp);
-                Kayit::ekle($val . '-lang', $lang);
+                Registry::set('langfile', $tmp);
+                Registry::add($val . '-lang', $lang);
             }
             unset($tmp);
             unset($file);
         }
-        return Kayit::getir($val . '-lang');
+        return Registry::get($val . '-lang');
     }
 
     // Validator Loader
     public static function validator($val)
     {
-        if (Kayit::varmi($val . '-validator') === False) {
+        if (Registry::has($val . '-validator') === False) {
 
             $class = self::validatorfile($val);
 
-            $sonuc = new $class();
-            Kayit::ekle($val . '-validator', $sonuc);
-            return $sonuc;
+            $instance = new $class();
+            Registry::add($val . '-validator', $instance);
+            return $instance;
         }
-        return Kayit::getir($val . '-validator');
+        return Registry::get($val . '-validator');
     }
 
 
@@ -385,7 +390,7 @@ class Load
             $file = mod_dir . $val . DS . validator_dir . $val . '.validator.php';
         }
 
-        $tmp = Kayit::varmi('validatorfile') === FALSE ? [] : Kayit::getir('validatorfile');
+        $tmp = Registry::has('validatorfile') === FALSE ? [] : Registry::get('validatorfile');
         if (in_array($file, $tmp) === FALSE) {
             try {
                 self::loadfile($file, 'Validator');
@@ -394,18 +399,18 @@ class Load
                 exit();
             }
             $tmp[] = $file;
-            Kayit::yenile('validatorfile', $tmp);
+            Registry::set('validatorfile', $tmp);
         }
 
 
-        $classadi = $class . '_validator';
-        if (!class_exists($classadi)) {
-            throw new ClassException($classadi, 'Validator', $file);
+        $className = $class . '_validator';
+        if (!class_exists($className)) {
+            throw new ClassException($className, 'Validator', $file);
         }
         unset($tmp);
         unset($file);
         unset($class);
         unset($val);
-        return $classadi;
+        return $className;
     }
 }

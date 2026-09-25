@@ -20,66 +20,66 @@ if (!defined('AKM_LOADED')) {
 $lang['mod_gallery_mod'] = [
 
     // === Basic Navigation ===
-    'list' => 'Lîsteya Gallery Mod',
-    'add' => 'Gallery Mod Zêde Bike',
-    'edit' => 'Gallery Mod Biguhere',
-    'information' => 'Agahî!',
-    'oke' => 'Operasyon Serkeft!',
-    'hata' => 'Çewtî Çêbû!',
+    'list' => 'Lîsteya Pêvekên Galeriyê',
+    'add' => 'Pêveka Galeriyê Lêke',
+    'edit' => 'Pêveka Galeriyê Biguhere',
+    'information' => 'Agahî',
+    'success' => 'Çalakî Bi Ser Keft!',
     'error' => 'Çewtiya Giran Çêbû!',
-    'remove_record' => 'Ji rakirana vê tomarê bawer î?',
+    'remove_record' => 'Ji bo jêbirina vê tomarê tu pê bawer î?',
+    'choose_wish' => 'Hilbijêre',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
-            'add' => 'Gallery Modu Zêde Bikendi!',
-            'edit' => 'Gallery Modu Biguherendi!',
+        'success' => [
+            'add' => 'Pêveka Galeriyê bi serkeftî hate lêkirin!',
+            'edit' => 'Pêveka Galeriyê bi serkeftî hate guhartin!',
         ],
         'error' => [
-            'add' => 'Gallery Modu Zêde Bikenemedi!',
-            'edit' => 'Gallery Modu Biguherenemedi!',
+            'add' => 'Pêveka Galeriyê nehat lêkirin!',
+            'edit' => 'Pêveka Galeriyê nehat guhartin!',
         ],
     ],
 
     'errors' => [
-        'record' => 'Belirttiğiniz Kayıt Ne Hate Dîtin!',
+        'record' => 'Tomara ku te diyar kiriye nehat dîtin!',
     ],
 
     'button' => [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Jê Bibe',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
         'gallery' => 'Galeri',
         'file' => 'Pel',
     ],
 
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tê xuyakirin.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên tên barkirin, ji kerema xwe bisekinin...',
-        4 => 'Daneyek nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzek hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzek hilbijêrin',
+        'showing_results' => 'Ji nav {total} encaman ji {from} heta {to} tê xwiyakirin.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên tê barkirin, ji kerema xwe li hêviyê bimîne ...',
+        'no_data' => 'Tu dane nehatin dîtin',
+        'connection_error' => 'Şaşiya Pêwendiyê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzikekê hilbijêre',
+        'select_only_one' => 'Ji kerema xwe tenê rêzikekê hilbijêre',
     ],
 
     'validator' => [
-        'required' => 'Ji kerema xwe qada %s vala nebinin',
-        'length' => '%s dikare herî kurt %s herî dirêj %s tîpan be',
-        'email' => 'Di qada %s de ji kerema xwe navnîşana e-postayê derbasdar binivîsin.',
-        'unique' => '%s ku nivîsandîn di pergalê de tomar kirin. Ji kerema xwe %s din ake!',
-        'inarray' => 'Qada %s tenê nirxên \' %s \' qebûl dike',
+        'required' => 'Ji kerema xwe qada %s vala nehêle',
+        'length' => '%s divê herî kêm %s û herî zêde %s tîpan pêk wore',
+        'email' => 'Ji kerema xwe ji bo qada %s navnîşaneke e-poste ya derbasdar binivîse.',
+        'unique' => '%s ku te nivîsî di pergalê de qeydkirî ye. Ji kerema xwe %s-ekê din destnîşan bikin!',
+        'inarray' => 'Qada %s dikare tenê nirxên \' %s \' bigire',
     ],
 
-    'roll' => [
-        'ad' => 'Rolenên Rêveberiya Gallery Mod',
+    'role' => [
+        'name' => 'Rolenên Rêveberiya Gallery Mod',
         'add' => 'Gallery Mod dikare zêde bike',
         'edit' => 'Gallery Mod dikare Biguhere',
         'delete' => 'Gallery Mod dikare jê bibe',
@@ -100,7 +100,8 @@ $lang['mod_gallery_mod'] = [
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'ad' => 'Navê Gallery Mod',
+            'name' => 'Navê Gallery Mod',
+            'title' => 'Navê Gallery Mod',
             'mod_name' => 'Navê Mod',
             'mod_key' => 'Mifteya Mod (ID)',
             'mod_value' => 'Nirxa Mod (Nav)',

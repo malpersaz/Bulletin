@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 08.04.2011 - 18:56
- * Sınıf İsmi: Mysql
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 08.04.2011 - 18:56
+ * Class Name: Mysql
  */
 class Adapter_Mysqli
 {
@@ -24,7 +24,7 @@ class Adapter_Mysqli
     public function __construct($database)
     {
         //echo "$database - CALLED";
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         $this->_con_setting = $db_config[$database]['conf'];
 
         if ($this->_connect() === false) {
@@ -123,9 +123,11 @@ class Adapter_Mysqli
         if (isset($this->_con) && $this->_con->error) {
             return $this->_con->error;
         }
+
         if (isset($this->_con) && $this->_con->connect_error) {
             return "Connect failed: " . $this->_con->connect_error;
         }
+
         return "Unknown MySQLi Error (Check DatabaseException traces)";
     }
 

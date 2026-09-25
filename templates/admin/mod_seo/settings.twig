@@ -5,55 +5,55 @@
 {% block title %}{{ lang.mod_seo.settings }}{% endblock %}
 {% block headline %}{{ lang.mod_seo.settings }}{% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="/templates/admin/assets/css/mod_seo.css?v=1.2">
+{% endblock %}
+
 {% block content %}
-<div class="settings-page" style="padding: 16px 0;">
-    <form action="{{ site.saddress }}seo/settings" method="post" enctype="multipart/form-data" id="seoSettingsForm">
+<div class="seo-settings-page">
+    <form action="{{ site.saddress }}mod_seo/settings" method="post" enctype="multipart/form-data" id="seoSettingsForm" class="seo-settings-form">
         
         <!-- API Credentials Status Card -->
         {% if has_credentials %}
-            <div class="m3-card" style="border-left: 5px solid #2E7D32; background: rgba(46, 125, 50, 0.08); color: #2E7D32; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <i class="bi bi-check-circle-fill" style="font-size: 24px;"></i>
-                    <div>
-                        <h4 style="margin: 0; font-size: 15px; font-weight: 700;">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
-                        <span style="font-size: 13px; opacity: 0.9;">{{ lang.mod_seo.admin.labels.credentials_ok }}</span>
-                    </div>
+            <div class="m3-card seo-credentials-card-ok">
+                <i class="bi bi-check-circle-fill seo-ok-icon"></i>
+                <div>
+                    <h4 class="seo-badge-label">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
+                    <span class="seo-error-desc">{{ lang.mod_seo.admin.labels.credentials_ok }}</span>
                 </div>
             </div>
         {% else %}
-            <div class="m3-card" style="border-left: 5px solid var(--md-sys-color-error); background: var(--md-sys-color-error-container); color: var(--md-sys-color-on-error-container); margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <i class="bi bi-exclamation-circle-fill" style="font-size: 24px;"></i>
-                    <div>
-                        <h4 style="margin: 0; font-size: 15px; font-weight: 700;">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
-                        <span style="font-size: 13px; opacity: 0.9;">{{ lang.mod_seo.admin.labels.credentials_missing }}</span>
-                    </div>
+            <div class="m3-card seo-credentials-card-missing">
+                <i class="bi bi-exclamation-circle-fill seo-error-icon"></i>
+                <div>
+                    <h4 class="seo-badge-label">{{ lang.mod_seo.admin.labels.credentials_status }}</h4>
+                    <span class="seo-error-desc">{{ lang.mod_seo.admin.labels.settings_credentials_missing }}</span>
                 </div>
             </div>
         {% endif %}
 
         <!-- Form fields inside an MD3 card -->
-        <div class="m3-card" style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="m3-card seo-form-card">
             <!-- Property URL Input -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label for="property_url" style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface-variant);">
+            <div class="seo-form-group">
+                <label for="property_url" class="seo-form-label">
                     {{ lang.mod_seo.admin.labels.property_url }}
                 </label>
-                <input type="text" id="property_url" name="property_url" value="{{ property_url }}" class="m3-input" required placeholder="sc-domain:example.com">
+                <input type="text" id="property_url" name="property_url" value="{{ property_url }}" class="m3-input" required placeholder="{{ lang.mod_seo.admin.labels.property_url_placeholder }}">
             </div>
 
             <!-- JSON Upload Input -->
-            <div style="display: flex; flex-direction: column; gap: 6px;">
-                <label for="json_file" style="font-size: 14px; font-weight: 500; color: var(--md-sys-color-on-surface-variant);">
+            <div class="seo-form-group">
+                <label for="json_file" class="seo-form-label">
                     {{ lang.mod_seo.admin.labels.json_file }}
                 </label>
-                <input type="file" id="json_file" name="json_file" accept=".json" class="m3-input" style="padding: 10px 16px;">
+                <input type="file" id="json_file" name="json_file" accept=".json" class="m3-input">
             </div>
         </div>
         
         <!-- Bottom Action Bar (sticky) -->
         <div class="m3-final-bar">
-            <button type="button" class="m3-btn-half m3-btn-half-neutral" onclick="location.href='{{ site.saddress }}seo'">
+            <button type="button" class="m3-btn-half m3-btn-half-neutral" data-url="{{ site.saddress }}mod_seo">
                 <i class="bi bi-x-lg"></i>
                 <span>{{ lang.mod_seo.button.back }}</span>
             </button>
@@ -65,4 +65,8 @@
 
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/templates/admin/assets/js/mod_seo.js?v=1.2"></script>
 {% endblock %}

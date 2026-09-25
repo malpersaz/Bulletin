@@ -1,6 +1,6 @@
 /**
  * mod_slider.js
- * Handles fetching slider data from other modules and managing dashboard card toggles.
+ * Handles fetching data from existing Datatable JSON endpoint and rendering M3 Cards.
  */
 
 class SliderManager {
@@ -11,6 +11,7 @@ class SliderManager {
 
         this.isLoading = false;
         this.hasMore = true;
+        this.selectedId = null;
 
         this.start = 0;
         this.length = 10;
@@ -22,6 +23,7 @@ class SliderManager {
     init() {
         this.createLoadMoreButton();
         this.loadData();
+        this.initSearchListener();
         this.initPullToRefresh();
     }
 
@@ -95,9 +97,14 @@ class SliderManager {
 
             if (data.recordsFiltered === 0 && this.emptyState) {
                 this.emptyState.style.display = 'flex';
+                const searchInput = document.getElementById('filterSearch');
                 const descEl = document.getElementById('empty-state-desc');
                 if (descEl) {
-                    descEl.innerHTML = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.empty_no_data) ? CONTENT_LANG.empty_no_data : 'No data yet.';
+                    if (searchInput && searchInput.value.trim() !== '') {
+                        descEl.innerHTML = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.empty_no_search_results) ? CONTENT_LANG.empty_no_search_results : 'No search results.';
+                    } else {
+                        descEl.innerHTML = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.empty_no_data) ? CONTENT_LANG.empty_no_data : 'No data yet.';
+                    }
                 }
             }
 
@@ -122,55 +129,48 @@ class SliderManager {
         const fragment = document.createDocumentFragment();
 
         items.forEach((item) => {
-            const compoundId = this.stripHtml(item[1]);
-            const titleText = this.stripHtml(item[2]);
+            const id = this.stripHtml(item[1]);
+            const titleHtml = item[2];
             const imgHtml = item[3];
             const lang = this.stripHtml(item[4]);
             const date = this.stripHtml(item[5]);
-            const badgeText = this.stripHtml(item[6]); 
+            const statusHtml = item[6]; 
 
-            // Extract src from img tag
             const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = titleHtml;
+            const titleText = tempDiv.textContent || tempDiv.innerText;
+
             tempDiv.innerHTML = imgHtml;
             const imgTag = tempDiv.querySelector('img');
             const imgSrc = imgTag ? imgTag.src : '';
 
             const card = document.createElement('div');
-            card.className = 'content-card';
-            card.dataset.id = compoundId;
-
-            // Thumbnail background style
-            const thumbStyle = imgSrc && !imgSrc.includes('slider_no_image') 
-                ? `background-image: url('${imgSrc}');` 
-                : `background-color: var(--md-sys-color-surface-container-high, #f0f0f0); display:flex; align-items:center; justify-content:center;`;
+            card.className = 'm3-card content-card';
+            card.dataset.id = id;
+            card.onclick = () => window.sliderManager.selectContent(id, card);
 
             card.innerHTML = `
-                <!-- Thumbnail -->
-                <div class="card-thumbnail" style="${thumbStyle}">
-                    ${!imgSrc || imgSrc.includes('slider_no_image') ? '<i class="bi bi-image" style="font-size: 24px; color: #999;"></i>' : ''}
-                </div>
-                
-                <!-- Card Body -->
-                <div class="card-body-col">
-                    <!-- Top Row -->
-                    <div class="card-header-row">
-                        <span class="module-badge">${badgeText}</span>
-                        <div class="switch-container">
-                            <span class="switch-label">${CONTENT_LANG.unpublish}</span>
-                            <label class="m3-switch">
-                                <input type="checkbox" checked onchange="window.sliderManager.toggleItemStatus('${compoundId}', this)">
-                                <span class="slider"></span>
-                            </label>
-                        </div>
+                <div class="card-content-layout">
+                    <!-- Thumbnail -->
+                    <div class="card-thumbnail" 
+                         style="display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc && !imgSrc.includes('slider_no_image') ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
+                        ${!imgSrc ? '<i class="bi bi-image" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
-                    <!-- Title -->
-                    <h3 class="card-title">${titleText}</h3>
-                    
-                    <!-- Meta Row -->
-                    <div class="card-meta-row">
-                        <span class="meta-item"><i class="bi bi-translate"></i> ${lang}</span>
-                        <span class="meta-item"><i class="bi bi-calendar3"></i> ${date}</span>
+                    <div class="card-body-col">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                             <div>
+                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
+                                    ${statusHtml}
+                                </div>
+                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
+                             </div>
+                        </div>
+
+                        <div class="meta-row" style="margin-top:8px;">
+                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${lang}</span>
+                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${date}</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -188,68 +188,150 @@ class SliderManager {
         return tmp.textContent || tmp.innerText || "";
     }
 
+    initSearchListener() {
+        const searchInput = document.getElementById('searchInput'); 
+        if (searchInput) {
+            let timeout = null;
+            searchInput.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    const filterSearch = document.getElementById('filterSearch');
+                    if (filterSearch) {
+                        filterSearch.value = e.target.value;
+                        this.loadData(true);
+                    }
+                }, 500);
+            });
+        }
+    }
+
     initPullToRefresh() {
         window.refreshContent = () => this.loadData(true);
     }
 
-    async toggleItemStatus(compoundId, checkboxEl) {
-        const checked = checkboxEl.checked;
-        const labelEl = checkboxEl.closest('.switch-container').querySelector('.switch-label');
-        const cardEl = checkboxEl.closest('.content-card');
+    selectContent(id, cardElement) {
+        const isCurrent = cardElement.classList.contains('selected');
 
-        // Update label text immediately
-        labelEl.textContent = checked ? CONTENT_LANG.unpublish : CONTENT_LANG.publish;
+        document.querySelectorAll('.m3-card.selected, .content-card.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
 
-        if (!checked) {
-            // Unpublish (Remove from slider)
-            const formData = new FormData();
-            formData.append('query[]', compoundId);
-
-            try {
-                const response = await fetch(MODULE_URL + 'unpublish', {
-                    method: 'POST',
-                    body: formData
-                });
-                const msg = await response.text();
-
-                if (msg.trim() === 'Oke') {
-                    // Smooth exit animation
-                    cardEl.classList.add('fade-out');
-                    
-                    // Wait for transition to finish before removing from DOM
-                    cardEl.addEventListener('transitionend', () => {
-                        cardEl.remove();
-                        // If no cards left, refresh or show empty state
-                        if (this.container.querySelectorAll('.content-card').length === 0) {
-                            this.loadData(true);
-                        }
-                    }, { once: true });
-                    
-                    // Vibrate if supported
-                    if (window.navigator && window.navigator.vibrate) {
-                        window.navigator.vibrate(10);
-                    }
-                } else {
-                    // Revert state
-                    checkboxEl.checked = true;
-                    labelEl.textContent = CONTENT_LANG.unpublish;
-                    if (typeof showSnackbar === 'function') {
-                        showSnackbar(msg, 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Unpublish Error:', error);
-                // Revert state
-                checkboxEl.checked = true;
-                labelEl.textContent = CONTENT_LANG.unpublish;
-                if (typeof showSnackbar === 'function') {
-                    showSnackbar(CONTENT_LANG.error_general, 'error');
-                }
-            }
+        if (!isCurrent) {
+            cardElement.classList.add('selected');
+            this.selectedId = id;
+            this.updateToolbar(true);
+            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+        } else {
+            this.selectedId = null;
+            this.updateToolbar(false);
         }
+    }
+
+    updateToolbar(active) {
+        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFile', 'toolbarDelete'];
+        ids.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            if (active) {
+                btn.classList.add('active');
+                btn.style.pointerEvents = 'auto';
+                btn.style.opacity = '1';
+            } else {
+                btn.classList.remove('active');
+                btn.style.pointerEvents = 'none';
+                btn.style.opacity = '0.3';
+            }
+        });
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     window.sliderManager = new SliderManager();
 });
+
+window.editSelected = function () {
+    const mgr = window.sliderManager;
+    if (mgr && mgr.selectedId) {
+        window.location.href = MODULE_URL + 'edit/' + mgr.selectedId;
+    }
+};
+
+window.gallerySelected = function () {
+    const mgr = window.sliderManager;
+    if (mgr && mgr.selectedId) {
+        const url = SITE_URL + 'mod_gallery/list/mod_slider/' + mgr.selectedId;
+        if (window.AFModalEngine) {
+            AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            window.location.href = url;
+        }
+    }
+};
+
+window.filesSelected = function () {
+    const mgr = window.sliderManager;
+    if (mgr && mgr.selectedId) {
+        const url = SITE_URL + 'mod_attachment/list/mod_slider/' + mgr.selectedId;
+        if (window.AFModalEngine) {
+            AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            window.location.href = url;
+        }
+    }
+};
+
+window.deleteSelected = function () {
+    const mgr = window.sliderManager;
+    if (!mgr || !mgr.selectedId) return;
+    const id = mgr.selectedId;
+
+    let confirmMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.confirm_delete) ? CONTENT_LANG.confirm_delete : 'Are you sure?';
+
+    Swal.fire({
+        title: confirmMsg,
+        icon: 'warning',
+        showCancelButton: true,
+        showDenyButton: false,
+        confirmButtonColor: '#B71C1C',
+        cancelButtonColor: '#6750A4',
+        confirmButtonText: '<i class="bi bi-trash3"></i> ' + ((typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.yes) ? CONTENT_LANG.yes : 'Yes'),
+        cancelButtonText: '<i class="bi bi-x-lg"></i> ' + ((typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.no) ? CONTENT_LANG.no : 'No'),
+        background: 'var(--md-sys-color-surface-container-high, #fff)',
+        color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const formData = new FormData();
+            formData.append('delete[]', id);
+
+            fetch(MODULE_URL + 'delete', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(msg => {
+                if (msg === 'Success') {
+                    mgr.selectedId = null;
+                    mgr.updateToolbar(false);
+                    mgr.loadData(true);
+                    let successMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.success_delete) ? CONTENT_LANG.success_delete : 'Successfully deleted';
+                    if(typeof showSnackbar === 'function') {
+                        showSnackbar(successMsg, 'success');
+                    } else {
+                        let okMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.ok) ? CONTENT_LANG.ok : 'OK';
+                        Swal.fire(okMsg, successMsg, 'success');
+                    }
+                } else {
+                    if(typeof showSnackbar === 'function') showSnackbar(msg, 'error');
+                    else Swal.fire('Error', msg, 'error');
+                }
+            })
+            .catch(err => {
+                console.error('Delete error:', err);
+                if(typeof showSnackbar === 'function') {
+                    let errMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.error_general) ? CONTENT_LANG.error_general : 'Error';
+                    showSnackbar(errMsg, 'error');
+                }
+            });
+        }
+    });
+};

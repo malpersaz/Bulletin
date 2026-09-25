@@ -1,15 +1,18 @@
-CREATE TABLE  `mod_menu` (
-`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-`lang` VARCHAR(11) NOT NULL ,
-`name` VARCHAR(255)  NOT NULL ,
-`url` VARCHAR(255)  DEFAULT NULL ,
-`file` VARCHAR(255)  DEFAULT NULL ,
-`parent_id` INT(11) NOT NULL,
-`order` INT(11) NOT NULL,
-`target` ENUM('y', 'n') NOT NULL DEFAULT 'n' ,
-`status` ENUM( 'y', 'n' ) NOT NULL DEFAULT 'y' ,
-`html` VARCHAR(255)  DEFAULT NULL ,
-`icon` VARCHAR(255)  DEFAULT NULL ,
-`acl_id` INT(11) DEFAULT 0 ,
-`user_id` INT(11) NOT NULL
-)  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `mod_menu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang` varchar(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `file` varchar(255) DEFAULT NULL,
+  `parent_id` int(11) NOT NULL,
+  `order` int(11) NOT NULL,
+  `target` enum('y','n') NOT NULL DEFAULT 'n',
+  `status` enum('y','n') NOT NULL DEFAULT 'y',
+  `html` varchar(255) DEFAULT NULL,
+  `icon` varchar(255) DEFAULT NULL,
+  `acl_id` int(11) DEFAULT 0,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_menu_lang` (`lang`),
+  INDEX `idx_menu_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

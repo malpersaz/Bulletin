@@ -94,7 +94,7 @@ $lang['mod_gallery'] = [
         'status_draft' => 'Pêşnûma',
         'toolbar_edit' => 'Biguhere',
         'toolbar_status' => 'Weşandin/Pêşnûma',
-        'toolbar_start' => 'Menuya Destpêkê',
+        'toolbar_start' => 'Pêşeka Destpêkê',
         'toolbar_manage' => 'Wêneyan Birêve Bibe',
         'toolbar_delete' => 'Jê Bibe',
     ],
@@ -119,12 +119,14 @@ $lang['mod_gallery'] = [
     ],
 
     // === Role Management ===
-    'roll' => [
-        'ad' => 'Erkên Rêveberiya Galeriyê',
+    'role' => [
+        'name' => 'Erkên Wênedankê',
         'add' => 'Dikare galerî û wêneyan lê zêde bike',
         'edit' => 'Dikare tiştên galeriyê serast bike',
         'delete' => 'Dikare wêneyên galeriyê jê bibe',
         'list' => 'Dikare rêveberiya galeriyê bibîne',
+        'moderate_edit' => 'Dikare tiştên wênedankê yên kesên din serast bike',
+        'moderate_delete' => 'Dikare tiştên wênedankê yên kesên din jê bibe',
     ],
 
     // === Role Errors ===
@@ -133,11 +135,13 @@ $lang['mod_gallery'] = [
         'edit' => 'Erka te ya serastkirina wêneyên galeriyê tune ye.',
         'delete' => 'Erka te ya jêbirina wêneyan tune ye.',
         'list' => 'Erka te ya dîtina rêveberiya galeriyê tune ye.',
+        'moderate_edit' => 'Erka te ya serastkirina tiştên wênedankê yên kesên din tune ye.',
+        'moderate_delete' => 'Erka te ya jêbirina tiştên wênedankê yên kesên din tune ye.',
         'gallery' => 'Erka te ya rêveberiya vê galeriyê tune ye.',
         'file' => 'Erka te ya barkirina pelan bo vê galeriyê tune ye.',
     ],
 
-    'hata' => [
+    'error' => [
         'get_source_failed' => 'Çavkaniya wêne nehate xwendin.',
     ],
 

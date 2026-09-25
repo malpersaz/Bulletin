@@ -9,8 +9,8 @@ class TwigTemplate
 {
     public $dir;
     public $out = [];
-    public $dil;
-    public $assing_data = [];
+    public $lang;
+    public $assign_data = [];
 
     public $twig;
     public $twigLibs;
@@ -20,8 +20,9 @@ class TwigTemplate
     {
         // Set up Twig environment
         $loader = new FilesystemLoader([
-            template_dir . Kayit::getir('admin_template') . DS,
-            template_dir . Kayit::getir('app_template') . DS,
+            template_dir . Registry::get('admin_template') . DS,
+            template_dir . Registry::get('app_template') . DS,
+            template_dir . 'amida' . DS,
             template_dir // Add templates root for macros
         ]);
         $this->twig = new Environment($loader, [
@@ -32,7 +33,7 @@ class TwigTemplate
             'auto_reload' => false,
         ]);
 
-        // $this->twig->addGlobal('site', Kayit::getir('site_config'));
+        // $this->twig->addGlobal('site', Registry::get('site_config'));
         $this->twig->addGlobal('twigLibsVersion', '1.0.0');
 
         // Add debug extension if in debug mode
@@ -51,35 +52,88 @@ class TwigTemplate
         $this->twig->addGlobal('twigLibsFilters', array_keys($this->twigLibs->getFilters()));
     }
 
-    public function getVeri($a)
+    public function get($a)
     {
         return isset($this->twig->getGlobals()[$a]) ? $this->twig->getGlobals()[$a] : NULL;
-        // return isset($this->assing_data[$a]) ?  $this->assing_data[$a] : NULL;
     }
 
 
     // single key value data
     public function ctx_set($a, $b)
     {
+        if ($this->twigLibs === null) {
+            $this->ctx = $this->ctx ?? new TemplateContext();
+            $this->twigLibs = new TwigLibs($this->ctx);
+        }
         $this->twigLibs->ctx_set($a, $b);
     }
 
     // array datas
     public function ctx_add($a, $b)
     {
+        if ($this->twigLibs === null) {
+            $this->ctx = $this->ctx ?? new TemplateContext();
+            $this->twigLibs = new TwigLibs($this->ctx);
+        }
         $this->twigLibs->ctx_add($a, $b);
     }
 
 
-    public function veri($a, $b)
+    public function set($key, $value = null)
     {
-        $this->assing_data[$a] = $b;
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                $this->set($k, $v);
+            }
+            return;
+        }
+        $this->assign_data[$key] = $value;
         try {
-            $this->twig->addGlobal($a, $b);
+            $this->twig->addGlobal($key, $value);
         } catch (\LogicException $e) {
             // Runtime already initialized, ignore
         }
-        $this->ctx_set($a, $b);
+        $this->ctx_set($key, $value);
+    }
+
+    /**
+     * Backward-compatibility forwarding for legacy 'veri' calls.
+     * Maps to canonical set().
+     *
+     * @param string|array $key
+     * @param mixed $value
+     * @return void
+     */
+    public function veri($key, $value = null)
+    {
+        return $this->set($key, $value);
+    }
+
+    /**
+     * Alias for set() to support Smarty/legacy callers.
+     *
+     * @param string|array $key
+     * @param mixed $value
+     * @return void
+     */
+    public function assign($key, $value = null)
+    {
+        return $this->set($key, $value);
+    }
+
+    /**
+     * Magic call fallback to handle legacy method aliases safely.
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     */
+    public function __call($name, $arguments)
+    {
+        if ($name === 'veri' || $name === 'assign') {
+            return $this->set(...$arguments);
+        }
+        throw new \BadMethodCallException("Call to undefined method " . __CLASS__ . "::{$name}()");
     }
 
     public function setGlobal($key, $value)
@@ -105,7 +159,7 @@ class TwigTemplate
         if (is_array($this->out)) {
             foreach ($this->out as $template) {
                 //var_dump($template);
-                echo $this->twig->render($template . '.twig', $this->assing_data);
+                echo $this->twig->render($template . '.twig', $this->assign_data);
             }
         }
     }
@@ -113,11 +167,11 @@ class TwigTemplate
     public function lang($a)
     {
         if (is_array($a)) {
-            $this->dil = is_array($this->dil) && count($this->dil) > 0 ? array_merge($this->dil, $a) : $a;
+            $this->lang = is_array($this->lang) && count($this->lang) > 0 ? array_merge($this->lang, $a) : $a;
         }
-        $this->assing_data['lang'] = $this->dil;
+        $this->assign_data['lang'] = $this->lang;
         try {
-            $this->twig->addGlobal('lang', $this->dil);
+            $this->twig->addGlobal('lang', $this->lang);
         } catch (\LogicException $e) {
             // Runtime already initialized, ignore
         }
@@ -125,11 +179,11 @@ class TwigTemplate
 
     public function fetch_tpl($tpl)
     {
-        return $this->twig->render($tpl . '.twig', $this->assing_data);
+        return $this->twig->render($tpl . '.twig', $this->assign_data);
     }
 
     public function fetch($tpl)
     {
-        return $this->twig->render($tpl . '.twig', $this->assing_data);
+        return $this->twig->render($tpl . '.twig', $this->assign_data);
     }
 }

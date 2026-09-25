@@ -259,14 +259,8 @@ $installerLang = [
       'mod_video_embed' => 'Cihdayışê vîdyoyî',
       'mod_news' => 'Xeber',
       'mod_publication' => 'Weşan',
-      'mod_category' => 'Kategori',
+      'mod_content_category' => 'Kategori',
       'mod_content' => 'Naverok',
-      'mod_client' => 'Müşteriy',
-      'mod_product_category' => 'Kategoriyê hilberan',
-      'mod_service_category' => 'Kategoriyê xizmetan',
-      'mod_product' => 'Hilber',
-      'mod_service' => 'Xizmet',
-      'mod_reference' => 'Referans',
     ],
     'checks' => [
       'php_version' => [

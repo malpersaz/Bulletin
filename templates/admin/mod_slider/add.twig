@@ -143,7 +143,7 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         let errorHtml = '<div style="text-align: left;">';
-                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ mesaj }}</b></div>';
+                        errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ message }}</b></div>';
                         {% if errors is defined and errors|length > 0 %}
                             errorHtml += '<ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #ba1a1a;">';
                             {% for e in errors %}
@@ -162,10 +162,10 @@
                     });
                 </script>
             {% endif %}
-            {% if oke is defined %}
+            {% if success is defined %}
                 <div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
                     <i class="bi bi-check-circle-fill"></i>
-                    <span>{{ mesaj }}</span>
+                    <span>{{ message }}</span>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -301,64 +301,13 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <style>
-        .m3-final-bar {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            height: 80px !important;
-            background: var(--md-sys-color-surface-container) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 12px !important;
-            padding: 0 16px !important;
-            z-index: 1000 !important;
-            border-top: 1px solid var(--md-sys-color-outline-variant) !important;
-            box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
-        }
-        .m3-btn-half {
-            flex: 1 !important;
-            height: 52px !important;
-            border-radius: 26px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            gap: 8px !important;
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            text-decoration: none !important;
-            border: none !important;
-            cursor: pointer !important;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        }
-        .m3-btn-half:active {
-            transform: scale(0.98) !important;
-            opacity: 0.9 !important;
-        }
-        @media(min-width: 600px) {
-            .m3-final-bar {
-                max-width: 480px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                border-left: 1px solid var(--md-sys-color-outline-variant) !important;
-                border-right: 1px solid var(--md-sys-color-outline-variant) !important;
-                border-bottom-left-radius: 32px !important;
-                border-bottom-right-radius: 32px !important;
-                bottom: 8px !important;
-                height: 88px !important;
-                width: calc(100% - 16px) !important;
-            }
-        }
-    </style>
     <div class="m3-final-bar">
-        <button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_slider/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+        <button type="button" class="m3-btn-half m3-btn-half-neutral" onclick="window.location.href='{{ site.saddress }}mod_slider/list'">
             <i class="bi bi-x-lg"></i>
             {{ lang.mod_slider.button.cancel }}
         </button>
-        <button type="button" class="m3-btn-half" onclick="submitAddForm()" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
-            <i class="bi bi-check-lg"></i>
+        <button type="button" class="m3-btn-half m3-btn-half-primary" onclick="submitAddForm('addForm')">
+            <i class="bi bi-plus-lg"></i>
             {{ lang.mod_slider.button.add }}
         </button>
     </div>
@@ -398,7 +347,7 @@
                         allowOutsideClick: false,
                         showCancelButton: true,
                         confirmButtonText: '{{ lang.mod_slider.cropper.finish|escape("js") }}',
-                        cancelButtonText: '{{ lang.mod_slider.button.vazgec|escape("js") }}',
+                        cancelButtonText: '{{ lang.mod_slider.button.cancel|escape("js") }}',
                         didOpen: () => {
                             const img = document.getElementById('cropperObjDesk');
                             const initCropper = () => { window.jQuery(img).cropper({ aspectRatio: 16 / 9, strict: true }); };
@@ -453,7 +402,7 @@
                         allowOutsideClick: false,
                         showCancelButton: true,
                         confirmButtonText: '{{ lang.mod_slider.cropper.finish|escape("js") }}',
-                        cancelButtonText: '{{ lang.mod_slider.button.vazgec|escape("js") }}',
+                        cancelButtonText: '{{ lang.mod_slider.button.cancel|escape("js") }}',
                         didOpen: () => {
                             const img = document.getElementById('cropperObjMob');
                             const initCropper = () => { window.jQuery(img).cropper({ aspectRatio: 9 / 16, strict: true }); };

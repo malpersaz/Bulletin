@@ -11,13 +11,13 @@ if (!file_exists($bootstrapDbConfig)) {
     $stubConfig .= "    return;\n";
     $stubConfig .= "}\n\n";
     $stubConfig .= "\$db = array();\n";
-    $stubConfig .= "Kayit::ekle('database', 'installed');\n";
-    $stubConfig .= "Kayit::ekle('db_config', \$db);\n";
+    $stubConfig .= "Registry::add('database', 'installed');\n";
+    $stubConfig .= "Registry::add('db_config', \$db);\n";
     $stubConfig .= "unset(\$db);\n";
     file_put_contents($bootstrapDbConfig, $stubConfig);
 }
 
-require_once('../koberz.init.php');
+require_once('../init.php');
 define('installer_dir', root_dir . 'installer' . DS);
 require_once(lib_dir . 'InstallationState.php');
 
@@ -62,14 +62,14 @@ class installer extends installerbase
         }
     }
 
-    public function load_mod($modul)
+    public function load_mod($module)
     {
-        if (file_exists(installer_dir . $modul . DS . 'index.php') === false) {
-            throw new Exception("Module '" . $modul . "' was not found");
+        if (file_exists(installer_dir . $module . DS . 'index.php') === false) {
+            throw new Exception("Module '" . $module . "' was not found");
         }
 
-        require_once(installer_dir . $modul . DS . 'index.php');
-        return new $modul();
+        require_once(installer_dir . $module . DS . 'index.php');
+        return new $module();
     }
 
     public function uninstall($mods)
@@ -93,6 +93,11 @@ class installer extends installerbase
 function installer_available_languages()
 {
     return InstallerLang::availableLanguages();
+}
+
+function installer_is_rtl($languageCode)
+{
+    return in_array(strtolower((string) $languageCode), array('ar', 'fa', 'ckb'), true);
 }
 
 function installer_language_option($languageCode, array $ui)
@@ -295,7 +300,12 @@ function installer_normalize_contact_number($number, $countryCode = '')
     return '+' . $countryDigits . $digits;
 }
 
-Load::lib('Session');
+$session = Load::lib('Session');
+foreach (['id', 'username', 'group_id', 'permissions', 'sid', 'session_token', 'okunmamis'] as $authKey) {
+    if ($session->has($authKey)) {
+        $session->remove($authKey);
+    }
+}
 $stateStore = new InstallerStateStore();
 $catalog = new InstallerModuleCatalog();
 $resolver = new InstallerDependencyResolver();
@@ -306,10 +316,22 @@ $projectLanguages = installer_project_languages();
 $state = $stateStore->getState();
 installer_capture_project_setup_state($state);
 
+$localDbConfigFile = root_dir . 'config' . DIRECTORY_SEPARATOR . 'db.config.local.php';
+$hasLocalDbConfig = file_exists($localDbConfigFile);
+$registeredDbConfig = Registry::has('db_config') ? Registry::get('db_config') : array();
+$isDbConfigured = $hasLocalDbConfig && !empty($registeredDbConfig['installed']) && is_array($registeredDbConfig['installed']);
+
 if ($state['step'] === 'finish') {
-    // Heke pergal ne sazkirî be lê di sessionê de rewş wekî 'finish' xuya bike,
-    // em rewşê paqij dikin da ku Sazker ji nû ve dest pê bike.
+    // If the system is not installed but the session state shows 'finish',
+    // we clear the state so that the installer can restart cleanly.
     $state = $stateStore->reset();
+}
+
+if (!$isDbConfigured && in_array($state['step'], array('setup', 'sample', 'progress', 'finish'))) {
+    $state = $stateStore->merge(array(
+        'database_configured' => false,
+        'step' => 'database',
+    ));
 }
 
 if ($state['step'] === 'modules') {
@@ -325,7 +347,7 @@ if (empty($state['requested_modules'])) {
 }
 
 if (isset($availableInstallerLanguages[$state['installer_language']])) {
-    Kayit::yenile('lang', $state['installer_language']);
+    Registry::set('lang', $state['installer_language']);
 }
 
 $lang = InstallerLang::load();
@@ -348,6 +370,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $action = '';
     }
 
+    if (!$isDbConfigured && in_array($action, array('save_setup', 'go_back_to_setup', 'run_install', 'retry_install'))) {
+        $errorMessage = isset($ui['errors']['database_not_configured']) ? $ui['errors']['database_not_configured'] : 'Database configuration was not found. Please configure the database before continuing.';
+        $state = $stateStore->merge(array(
+            'database_configured' => false,
+            'step' => 'database',
+        ));
+        $action = '';
+    }
+
     if ($action === 'go_language') {
         $state = $stateStore->merge(array('step' => 'language'));
     }
@@ -361,10 +392,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $state = $stateStore->merge(array(
             'installer_language' => $installerLanguage,
             'installer_language_confirmed' => true,
+            'project_default_language' => $installerLanguage,
             'step' => 'environment',
         ));
         installer_capture_project_setup_state($state);
-        Kayit::yenile('lang', $installerLanguage);
+        Registry::set('lang', $installerLanguage);
         InstallerLang::reset($installerLanguage);
         $lang = InstallerLang::load($installerLanguage);
         $ui = $lang['installer_mobile'];
@@ -381,10 +413,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $state = $stateStore->merge(array(
             'installer_language' => $installerLanguage,
             'installer_language_confirmed' => false,
+            'project_default_language' => $installerLanguage,
             'step' => 'language',
         ));
         installer_capture_project_setup_state($state);
-        Kayit::yenile('lang', $installerLanguage);
+        Registry::set('lang', $installerLanguage);
         InstallerLang::reset($installerLanguage);
         $lang = InstallerLang::load($installerLanguage);
         $ui = $lang['installer_mobile'];
@@ -437,6 +470,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             if ($writer->write($dbParams)) {
+                $localDbConfigFile = root_dir . 'config' . DIRECTORY_SEPARATOR . 'db.config.local.php';
+                if (file_exists($localDbConfigFile)) {
+                    require_once $localDbConfigFile;
+                }
+                $registeredDbConfig = Registry::has('db_config') ? Registry::get('db_config') : array();
+                $isDbConfigured = !empty($registeredDbConfig['installed']) && is_array($registeredDbConfig['installed']);
                 $state = $stateStore->merge(array('database_configured' => true, 'step' => 'setup'));
                 $checks = $environment->run();
                 $isBlocked = $environment->hasBlockingFailures($checks);
@@ -449,8 +488,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if ($action === 'save_setup') {
+        $defaultLangFallback = isset($state['project_default_language']) && !empty($state['project_default_language'])
+            ? $state['project_default_language']
+            : (isset($state['installer_language']) ? $state['installer_language'] : 'en');
         $projectName = isset($_POST['project_name']) ? trim($_POST['project_name']) : installer_site_build_name();
-        $projectLanguage = isset($_POST['project_default_language']) ? $_POST['project_default_language'] : 'ku';
+        $projectLanguage = isset($_POST['project_default_language']) ? $_POST['project_default_language'] : $defaultLangFallback;
         $projectDescription = isset($_POST['project_description']) ? trim($_POST['project_description']) : '';
         $projectOwnerName = isset($_POST['project_owner_name']) ? trim($_POST['project_owner_name']) : '';
         $projectEstablishedYear = isset($_POST['project_established_year']) ? trim($_POST['project_established_year']) : '';
@@ -467,7 +509,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!isset($projectLanguages[$projectLanguage])) {
-            $projectLanguage = 'ku';
+            $projectLanguage = $defaultLangFallback;
         }
 
         if ($projectName === '') {
@@ -523,643 +565,80 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'resolved_modules' => $selection['resolved'],
             ));
             installer_capture_project_setup_state($state);
-            $installer = new installer();
-            $previousResult = array();
-            if ($action === 'retry_install' && is_array($state['install_result'])) {
-                $previousResult = $state['install_result'];
-            }
-            $result = $taskRunner->run($installer, $selection['resolved'], $catalog, $sampleContent, $previousResult);
-            if (!empty($result['success'])) {
-                $projectAddress = isset($state['project_address']) ? $state['project_address'] : '';
-                if ($projectAddress !== '') {
-                    $projectAddress = rtrim($projectAddress, '/') . '/';
-                    $localConfigFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'site.config.local.php';
-                    $localConfigContent = "<?php\n\n";
-                    $localConfigContent .= "/**\n * Amed Framework - Site Local Configuration\n";
-                    $localConfigContent .= " * Generated by Installer\n";
-                    $localConfigContent .= " * Date: " . date('Y-m-d H:i:s') . "\n */\n\n";
-                    $localConfigContent .= "if (defined('root_dir') === False) exit(':)');\n\n";
-                    $localConfigContent .= "\$site_local = array(\n";
-                    $localConfigContent .= "    'address' => '" . addslashes($projectAddress) . "',\n";
-                    $localConfigContent .= "    'saddress' => '" . addslashes($projectAddress) . "',\n";
-                    $localConfigContent .= "    'iaddress' => '" . addslashes($projectAddress) . "static/',\n";
-                    $localConfigContent .= "    'taddress' => '" . addslashes($projectAddress) . "templates/',\n";
-                    $localConfigContent .= ");\n";
-                    @file_put_contents($localConfigFile, $localConfigContent);
+            try {
+                $installer = new installer();
+                $previousResult = array();
+                if ($action === 'retry_install' && is_array($state['install_result'])) {
+                    $previousResult = $state['install_result'];
                 }
+                $result = $taskRunner->run($installer, $selection['resolved'], $catalog, $sampleContent, $previousResult);
+                if (!empty($result['success'])) {
+                    $projectAddress = isset($state['project_address']) ? $state['project_address'] : '';
+                    if ($projectAddress !== '') {
+                        $configWriter = new InstallerConfigWriter();
+                        $configWriter->writeSiteConfig($projectAddress);
+                    }
+                }
+                $state = $stateStore->merge(array(
+                    'install_result' => $result,
+                    'step' => !empty($result['success']) ? 'finish' : 'progress',
+                ));
+            } catch (Throwable $e) {
+                $errorMessage = sprintf($ui['errors']['database_connect_failed'], $e->getMessage());
+                $state = $stateStore->merge(array(
+                    'database_configured' => false,
+                    'step' => 'database',
+                ));
             }
-            $state = $stateStore->merge(array(
-                'install_result' => $result,
-                'step' => !empty($result['success']) ? 'finish' : 'progress',
-            ));
         }
     }
-
 }
 
 $state = $stateStore->getState();
 $selection = $resolver->buildSelection($state['requested_modules'], $catalog);
 $summary = $selection['summary'];
 $result = isset($state['install_result']) ? $state['install_result'] : null;
+$isRtl = installer_is_rtl($state['installer_language']);
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo htmlspecialchars($state['installer_language'], ENT_QUOTES, 'UTF-8'); ?>">
+<html lang="<?php echo htmlspecialchars($state['installer_language'], ENT_QUOTES, 'UTF-8'); ?>" dir="<?php echo $isRtl ? 'rtl' : 'ltr'; ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <title><?php echo htmlspecialchars($ui['hero']['badge'], ENT_QUOTES, 'UTF-8'); ?></title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/css/intlTelInput.css">
-    <style>
-        :root {
-            --bg: #f4efe6;
-            --surface: #fffaf2;
-            --surface-strong: #fff;
-            --ink: #1f1f18;
-            --muted: #6c6758;
-            --accent: #0f766e;
-            --accent-strong: #115e59;
-            --danger: #b42318;
-            --danger-soft: #fef3f2;
-            --ok: #166534;
-            --ok-soft: #ecfdf3;
-            --border: #e7dcc9;
-            --warning: #b54708;
-            --warning-soft: #fffaeb;
-            --shadow: 0 18px 42px rgba(63, 46, 20, 0.10);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background:
-                radial-gradient(circle at top, rgba(15, 118, 110, 0.14), transparent 28%),
-                linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%);
-            color: var(--ink);
-            font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-            display: flex;
-            justify-content: center;
-            padding: 20px 14px 104px;
-        }
-
-        .shell {
-            width: 100%;
-            max-width: 430px;
-            background: rgba(255, 250, 242, 0.92);
-            border: 1px solid rgba(231, 220, 201, 0.9);
-            border-radius: 28px;
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .hero {
-            padding: 24px 20px 16px;
-            background: linear-gradient(180deg, rgba(15, 118, 110, 0.12), rgba(255,255,255,0));
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            border-radius: 999px;
-            background: rgba(15, 118, 110, 0.10);
-            color: var(--accent-strong);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-        }
-
-        h1, h2, h3, p { margin: 0; }
-
-        .hero h1 {
-            margin-top: 14px;
-            font-size: 28px;
-            line-height: 1.1;
-        }
-
-        .hero p {
-            margin-top: 10px;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .steps {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 0 20px 16px;
-        }
-
-        .step-pill {
-            flex: 1 1 calc(25% - 8px);
-            min-width: 0;
-            border-radius: 999px;
-            padding: 10px 12px;
-            background: rgba(255,255,255,0.72);
-            border: 1px solid var(--border);
-            color: var(--muted);
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .step-pill.is-active {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: #fff;
-        }
-
-        .content { padding: 0 20px 20px; }
-
-        .panel,
-        .group-panel {
-            background: var(--surface-strong);
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            padding: 18px;
-            margin-bottom: 14px;
-        }
-
-        .finish-panel {
-            background: linear-gradient(180deg, rgba(15, 118, 110, 0.12), rgba(255,255,255,0.98));
-        }
-
-        .panel h2,
-        .group-panel h3 {
-            font-size: 20px;
-            line-height: 1.2;
-            margin-bottom: 8px;
-        }
-
-        .group-panel h3 {
-            font-size: 16px;
-        }
-
-        .panel p,
-        .group-panel p {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .status-list,
-        .summary-list,
-        .module-list,
-        .module-grid,
-        .output-list {
-            display: grid;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .status-item,
-        .summary-item,
-        .module-item,
-        .output-item {
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            padding: 14px;
-            background: var(--surface);
-        }
-
-        .status-item.is-ok,
-        .module-item.is-completed {
-            background: var(--ok-soft);
-            border-color: rgba(22, 101, 52, 0.18);
-        }
-
-        .status-item.is-fail,
-        .module-item.is-failed {
-            background: var(--danger-soft);
-            border-color: rgba(180, 35, 24, 0.16);
-        }
-
-        .module-item.is-skipped {
-            background: rgba(255,255,255,0.88);
-        }
-
-        .status-top,
-        .summary-top,
-        .module-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .status-label,
-        .summary-label,
-        .module-label {
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .status-chip,
-        .module-state,
-        .chip {
-            border-radius: 999px;
-            padding: 6px 10px;
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .status-chip.is-ok,
-        .module-state.is-completed,
-        .chip.is-accent {
-            background: rgba(22, 101, 52, 0.12);
-            color: var(--ok);
-        }
-
-        .status-chip.is-fail,
-        .module-state.is-failed {
-            background: rgba(180, 35, 24, 0.12);
-            color: var(--danger);
-        }
-
-        .module-state.is-skipped,
-        .chip.is-neutral {
-            background: rgba(108, 103, 88, 0.10);
-            color: var(--muted);
-        }
-
-        .module-state.is-warning {
-            background: rgba(181, 71, 8, 0.12);
-            color: var(--warning);
-        }
-
-        .chip.is-warning {
-            background: rgba(181, 71, 8, 0.12);
-            color: var(--warning);
-        }
-
-        .status-detail,
-        .summary-detail,
-        .module-detail {
-            margin-top: 8px;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .language-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .language-option input,
-        .module-checkbox input {
-            display: none;
-        }
-
-        .language-card {
-            display: flex;
-            flex-direction: column;
-            min-height: 74px;
-            align-items: center;
-            justify-content: center;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            gap: 6px;
-            text-align: center;
-            line-height: 1.15;
-        }
-
-        .language-card small {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            color: var(--muted);
-        }
-
-        .language-option input:checked + .language-card {
-            background: rgba(15, 118, 110, 0.12);
-            color: var(--accent-strong);
-            border-color: rgba(15, 118, 110, 0.4);
-        }
-
-        .field { margin-top: 16px; }
-
-        .choice-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 8px;
-        }
-
-        .choice-card {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            min-height: 56px;
-            padding: 14px;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: var(--surface);
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--ink);
-        }
-
-        .choice-card input {
-            display: none;
-        }
-
-        .choice-indicator {
-            width: 18px;
-            height: 18px;
-            border-radius: 999px;
-            border: 2px solid rgba(108, 103, 88, 0.45);
-            background: #fff;
-            flex: 0 0 auto;
-        }
-
-        .choice-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--ink);
-        }
-
-        .choice-card:has(input:checked) {
-            border-color: rgba(15, 118, 110, 0.42);
-            background: rgba(15, 118, 110, 0.08);
-        }
-
-        .choice-card:has(input:checked) .choice-indicator {
-            border-color: var(--accent);
-            box-shadow: inset 0 0 0 4px #fff;
-            background: var(--accent);
-        }
-
-        .panel-actions {
-            display: grid;
-            gap: 10px;
-            margin-top: 18px;
-        }
-
-        .field label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--muted);
-        }
-
-        .field input,
-        .field select,
-        .field textarea {
-            width: 100%;
-            min-height: 48px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            padding: 12px 14px;
-            color: var(--ink);
-            font-size: 15px;
-        }
-
-        .phone-field {
-            display: grid;
-            gap: 8px;
-        }
-
-        .phone-shell {
-            position: relative;
-            width: 100%;
-            min-height: 48px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            padding: 8px 12px;
-        }
-
-        .phone-shell .iti {
-            width: 100%;
-        }
-
-        .phone-shell .iti--allow-dropdown {
-            width: 100%;
-        }
-
-        .phone-shell .iti__country-list {
-            background: var(--surface-strong);
-            color: var(--ink);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            box-shadow: var(--shadow);
-        }
-
-        .phone-shell .iti__selected-country-primary {
-            height: 32px;
-            border-radius: 10px;
-        }
-
-        .phone-shell .iti__flag-container {
-            top: 8px;
-            bottom: 8px;
-            left: 4px;
-        }
-
-        .phone-shell input[type="tel"] {
-            border: 0;
-            background: transparent;
-            min-height: 32px;
-            padding: 0 0 0 52px;
-        }
-
-        .phone-shell input[type="tel"]:focus {
-            outline: none;
-            box-shadow: none;
-        }
-
-        .module-card {
-            display: block;
-            border-radius: 18px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            padding: 14px;
-        }
-
-        .module-checkbox input:checked + .module-card {
-            border-color: rgba(15, 118, 110, 0.42);
-            background: rgba(15, 118, 110, 0.08);
-        }
-
-        .module-checkbox input:disabled + .module-card {
-            opacity: 0.9;
-        }
-
-        .chip-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 12px;
-        }
-
-        .radio-group {
-            display: grid;
-            gap: 10px;
-            margin-top: 14px;
-        }
-
-        .radio-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-height: 52px;
-            padding: 14px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            background: var(--surface);
-            color: var(--ink);
-            font-size: 14px;
-        }
-
-        .notice,
-        .warning-box,
-        .error-box {
-            margin-bottom: 14px;
-            border-radius: 18px;
-            padding: 14px;
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .notice {
-            border: 1px solid rgba(15, 118, 110, 0.18);
-            background: rgba(15, 118, 110, 0.08);
-            color: var(--accent-strong);
-            margin-top: 16px;
-        }
-
-        .warning-box {
-            border: 1px solid rgba(181, 71, 8, 0.16);
-            background: var(--warning-soft);
-            color: var(--warning);
-        }
-
-        .error-box {
-            background: var(--danger-soft);
-            border: 1px solid rgba(180, 35, 24, 0.16);
-            color: var(--danger);
-        }
-
-        .details {
-            margin-top: 10px;
-            border-top: 1px solid rgba(231, 220, 201, 0.9);
-            padding-top: 10px;
-        }
-
-        .details summary {
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--accent-strong);
-        }
-
-        .details-list {
-            display: grid;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .detail-log {
-            font-size: 12px;
-            color: var(--muted);
-            background: rgba(255,255,255,0.72);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 12px;
-        }
-
-        .actions {
-            position: sticky;
-            bottom: 0;
-            display: grid;
-            gap: 10px;
-            padding: 14px 20px 20px;
-            background: linear-gradient(180deg, rgba(244,239,230,0), rgba(244,239,230,0.98) 30%);
-        }
-
-        .button,
-        .button-link {
-            width: 100%;
-            min-height: 52px;
-            border: 0;
-            border-radius: 18px;
-            font-size: 15px;
-            font-weight: 800;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-        }
-
-        .button-primary,
-        .button-link {
-            background: var(--accent);
-            color: #fff;
-        }
-
-        .button-secondary {
-            background: #fff;
-            color: var(--ink);
-            border: 1px solid var(--border);
-        }
-
-        @media (max-width: 360px) {
-            .step-pill {
-                flex-basis: calc(33.333% - 8px);
-            }
-
-            .choice-grid,
-            .language-grid {
-                grid-template-columns: minmax(0, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/installer.css">
 </head>
 <body>
     <div class="shell">
-        <div class="hero">
+        <header class="hero">
             <div class="eyebrow"><?php echo htmlspecialchars($ui['hero']['badge'], ENT_QUOTES, 'UTF-8'); ?></div>
             <h1><?php echo htmlspecialchars($ui['hero']['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
             <?php if (!empty($ui['hero']['body'])): ?>
                 <p><?php echo htmlspecialchars($ui['hero']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
             <?php endif; ?>
-        </div>
+        </header>
 
-        <div class="steps">
+        <nav class="steps" aria-label="Progress">
             <div class="<?php echo installer_step_class($state['step'], 'language'); ?>"><?php echo htmlspecialchars($ui['steps']['language'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'environment'); ?>"><?php echo htmlspecialchars($ui['steps']['checks'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'database'); ?>"><?php echo htmlspecialchars($ui['steps']['database'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'setup'); ?>"><?php echo htmlspecialchars($ui['steps']['setup'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'sample'); ?>"><?php echo htmlspecialchars($ui['steps']['sample'], ENT_QUOTES, 'UTF-8'); ?></div>
             <div class="<?php echo installer_step_class($state['step'], 'finish'); ?>"><?php echo htmlspecialchars($ui['steps']['finish'], ENT_QUOTES, 'UTF-8'); ?></div>
-        </div>
+        </nav>
 
-        <div class="content">
+        <main class="content">
             <?php if ($errorMessage !== ''): ?>
-                <div class="error-box"><?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?></div>
+                <div class="error-box" role="alert"><?php echo htmlspecialchars($errorMessage, ENT_QUOTES, 'UTF-8'); ?></div>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'language'): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['language']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                    <p><?php echo htmlspecialchars($ui['language']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <?php if (!empty($ui['language']['body'])): ?>
+                        <p><?php echo htmlspecialchars($ui['language']['body'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <?php endif; ?>
                     <form method="post" id="language-form">
                         <input type="hidden" name="action" value="preview_language" id="language-action">
                         <div class="language-grid">
@@ -1167,19 +646,29 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                                 <?php $languageOption = installer_language_option($languageCode, $ui); ?>
                                 <label class="language-option">
                                     <input type="radio" name="installer_language" value="<?php echo htmlspecialchars($languageCode, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $state['installer_language'] === $languageCode ? 'checked' : ''; ?>>
-                                    <span class="language-card"><?php echo htmlspecialchars($languageOption['label'], ENT_QUOTES, 'UTF-8'); ?><small><?php echo htmlspecialchars($languageOption['code'], ENT_QUOTES, 'UTF-8'); ?></small></span>
+                                    <span class="language-card">
+                                        <span class="language-meta">
+                                            <span class="language-name"><?php echo htmlspecialchars($languageOption['label'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="language-code"><?php echo htmlspecialchars($languageOption['code'], ENT_QUOTES, 'UTF-8'); ?></span>
+                                        </span>
+                                        <span class="language-check" aria-hidden="true">
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </span>
+                                    </span>
                                 </label>
                             <?php endforeach; ?>
                         </div>
                         <div class="actions">
-                            <button type="submit" class="button button-primary" onclick="document.getElementById('language-action').value='save_language';"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
+                            <button type="submit" class="button button-primary" id="language-save-button"><?php echo htmlspecialchars($ui['actions']['continue'], ENT_QUOTES, 'UTF-8'); ?></button>
                         </div>
                     </form>
-                </div>
+                </section>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'environment'): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['environment']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <div class="status-list">
                         <?php foreach ($checks as $check): ?>
@@ -1195,7 +684,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                             </div>
                         <?php endforeach; ?>
                     </div>
-                </div>
+                </section>
 
                 <form method="post" class="actions">
                     <input type="hidden" name="action" value="continue_to_setup">
@@ -1208,51 +697,51 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <?php endif; ?>
 
             <?php if ($state['step'] === 'database'): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['database']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
 
-                    <form method="post" id="db_form">
+                    <form method="post" id="db_form" data-adapter="<?php echo htmlspecialchars($state['database_adapter'], ENT_QUOTES, 'UTF-8'); ?>">
                         <input type="hidden" name="action" value="save_database">
                         
                         <div class="field">
                             <label><?php echo htmlspecialchars($ui['database']['adapter_label'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <div class="choice-grid">
                                 <label class="choice-card">
-                                    <input type="radio" name="database_adapter" value="PDO_MYSQL" <?php echo $state['database_adapter'] === 'PDO_MYSQL' ? 'checked' : ''; ?> onchange="toggleDbFields()">
+                                    <input type="radio" name="database_adapter" value="PDO_MYSQL" <?php echo $state['database_adapter'] === 'PDO_MYSQL' ? 'checked' : ''; ?>>
                                     <span class="choice-indicator" aria-hidden="true"></span>
                                     <span class="choice-label"><?php echo htmlspecialchars($ui['database']['adapter_mysql'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                                 <label class="choice-card">
-                                    <input type="radio" name="database_adapter" value="PDO_SQLITE" <?php echo $state['database_adapter'] === 'PDO_SQLITE' ? 'checked' : ''; ?> onchange="toggleDbFields()">
+                                    <input type="radio" name="database_adapter" value="PDO_SQLITE" <?php echo $state['database_adapter'] === 'PDO_SQLITE' ? 'checked' : ''; ?>>
                                     <span class="choice-indicator" aria-hidden="true"></span>
                                     <span class="choice-label"><?php echo htmlspecialchars($ui['database']['adapter_sqlite'], ENT_QUOTES, 'UTF-8'); ?></span>
                                 </label>
                             </div>
                         </div>
 
-                        <div id="mysql_fields" style="display: <?php echo $state['database_adapter'] === 'PDO_MYSQL' ? 'block' : 'none'; ?>;">
+                        <div id="mysql_fields">
                             <div class="field">
                                 <label for="database_host"><?php echo htmlspecialchars($ui['database']['mysql_host_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input id="database_host" name="database_host" type="text" value="<?php echo htmlspecialchars($state['database_host'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <input id="database_host" name="database_host" type="text" value="<?php echo htmlspecialchars($state['database_host'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off" spellcheck="false">
                             </div>
                             <div class="field">
                                 <label for="database_user"><?php echo htmlspecialchars($ui['database']['mysql_user_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input id="database_user" name="database_user" type="text" value="<?php echo htmlspecialchars($state['database_user'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <input id="database_user" name="database_user" type="text" value="<?php echo htmlspecialchars($state['database_user'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off" spellcheck="false">
                             </div>
                             <div class="field">
                                 <label for="database_pass"><?php echo htmlspecialchars($ui['database']['mysql_pass_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input id="database_pass" name="database_pass" type="password" value="<?php echo htmlspecialchars($state['database_pass'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <input id="database_pass" name="database_pass" type="password" value="<?php echo htmlspecialchars($state['database_pass'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off">
                             </div>
                             <div class="field">
                                 <label for="database_name"><?php echo htmlspecialchars($ui['database']['mysql_name_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input id="database_name" name="database_name" type="text" value="<?php echo htmlspecialchars($state['database_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <input id="database_name" name="database_name" type="text" value="<?php echo htmlspecialchars($state['database_name'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off" spellcheck="false">
                             </div>
                         </div>
 
-                        <div id="sqlite_fields" style="display: <?php echo $state['database_adapter'] === 'PDO_SQLITE' ? 'block' : 'none'; ?>;">
+                        <div id="sqlite_fields">
                             <div class="field">
                                 <label for="database_path"><?php echo htmlspecialchars($ui['database']['sqlite_path_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                                <input id="database_path" name="database_path" type="text" value="<?php echo htmlspecialchars($state['database_path'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <input id="database_path" name="database_path" type="text" value="<?php echo htmlspecialchars($state['database_path'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="off" spellcheck="false">
                             </div>
                         </div>
 
@@ -1264,31 +753,25 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         <input type="hidden" name="action" value="go_back_to_environment">
                         <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
-
-                    <script>
-                        function toggleDbFields() {
-                            const adapter = document.querySelector('input[name="database_adapter"]:checked').value;
-                            document.getElementById('mysql_fields').style.display = adapter === 'PDO_MYSQL' ? 'block' : 'none';
-                            document.getElementById('sqlite_fields').style.display = adapter === 'PDO_SQLITE' ? 'block' : 'none';
-                        }
-                    </script>
-                </div>
+                </section>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'setup'): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['setup']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <form method="post">
                         <input type="hidden" name="action" value="save_setup">
                         <div class="field">
                             <label for="project_name"><?php echo htmlspecialchars($ui['setup']['project_name_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input id="project_name" name="project_name" type="text" value="<?php echo htmlspecialchars($state['project_name'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <input id="project_name" name="project_name" type="text" value="<?php echo htmlspecialchars($state['project_name'], ENT_QUOTES, 'UTF-8'); ?>" required>
                         </div>
                         <div class="field">
                             <label for="project_default_language"><?php echo htmlspecialchars($ui['setup']['project_default_language_label'], ENT_QUOTES, 'UTF-8'); ?></label>
                             <select id="project_default_language" name="project_default_language">
-                                <?php foreach ($projectLanguages as $languageCode => $languageLabel): ?>
-                                    <option value="<?php echo htmlspecialchars($languageCode, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $state['project_default_language'] === $languageCode ? 'selected' : ''; ?>>
+                                <?php
+                                $selectedProjectLanguage = !empty($state['project_default_language']) ? $state['project_default_language'] : (!empty($state['installer_language']) ? $state['installer_language'] : 'en');
+                                foreach ($projectLanguages as $languageCode => $languageLabel): ?>
+                                    <option value="<?php echo htmlspecialchars($languageCode, ENT_QUOTES, 'UTF-8'); ?>" <?php echo $selectedProjectLanguage === $languageCode ? 'selected' : ''; ?>>
                                         <?php echo htmlspecialchars($languageLabel, ENT_QUOTES, 'UTF-8'); ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -1296,7 +779,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         </div>
                         <div class="field">
                             <label for="project_address"><?php echo htmlspecialchars($ui['setup']['project_address_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input id="project_address" name="project_address" type="url" value="<?php echo htmlspecialchars($state['project_address'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <input id="project_address" name="project_address" type="url" value="<?php echo htmlspecialchars($state['project_address'], ENT_QUOTES, 'UTF-8'); ?>" placeholder="https://example.com/">
                         </div>
                         <div class="field">
                             <label for="project_description"><?php echo htmlspecialchars($ui['setup']['project_description_label'], ENT_QUOTES, 'UTF-8'); ?></label>
@@ -1330,7 +813,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         </div>
                         <div class="field">
                             <label for="project_email"><?php echo htmlspecialchars($ui['setup']['project_email_label'], ENT_QUOTES, 'UTF-8'); ?></label>
-                            <input id="project_email" name="project_email" type="email" value="<?php echo htmlspecialchars($state['project_email'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <input id="project_email" name="project_email" type="email" value="<?php echo htmlspecialchars($state['project_email'], ENT_QUOTES, 'UTF-8'); ?>" autocomplete="email">
                         </div>
                         <div class="field">
                             <label for="project_office_address"><?php echo htmlspecialchars($ui['setup']['project_office_address_label'], ENT_QUOTES, 'UTF-8'); ?></label>
@@ -1348,11 +831,11 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         <input type="hidden" name="action" value="go_back_to_environment">
                         <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
-                </div>
+                </section>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'sample'): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['sample']['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <form method="post">
                         <input type="hidden" name="action" value="run_install">
@@ -1377,11 +860,11 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                         <input type="hidden" name="action" value="go_back_to_setup">
                         <button type="submit" class="button button-secondary"><?php echo htmlspecialchars($ui['actions']['back'], ENT_QUOTES, 'UTF-8'); ?></button>
                     </form>
-                </div>
+                </section>
             <?php endif; ?>
 
             <?php if ($state['step'] === 'progress' && $result): ?>
-                <div class="panel">
+                <section class="panel">
                     <h2><?php echo htmlspecialchars($ui['progress']['failure_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <p><?php echo htmlspecialchars($ui['progress']['failure_body'], ENT_QUOTES, 'UTF-8'); ?></p>
                     <div class="summary-list">
@@ -1425,7 +908,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                             </div>
                         </details>
                     <?php endif; ?>
-                </div>
+                </section>
 
                 <?php if (!empty($result['failure_recoverable'])): ?>
                     <form method="post" class="actions">
@@ -1441,7 +924,7 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
             <?php endif; ?>
 
             <?php if ($state['step'] === 'finish' && $result && !empty($result['success'])): ?>
-                <div class="panel finish-panel">
+                <section class="panel finish-panel">
                     <h2><?php echo htmlspecialchars($ui['finish']['success_title'], ENT_QUOTES, 'UTF-8'); ?></h2>
                     <?php if (!empty($result['warnings'])): ?>
                         <div class="summary-list">
@@ -1453,112 +936,15 @@ $result = isset($state['install_result']) ? $state['install_result'] : null;
                             </div>
                         </div>
                     <?php endif; ?>
-                </div>
+                </section>
 
                 <div class="actions">
                     <a class="button-link" href="../mod_user/panel"><?php echo htmlspecialchars($ui['actions']['open_admin'], ENT_QUOTES, 'UTF-8'); ?></a>
                 </div>
             <?php endif; ?>
-        </div>
+        </main>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@25.3.0/build/js/intlTelInput.min.js"></script>
-    <script>
-        (function () {
-            var languageForm = document.getElementById('language-form');
-            if (!languageForm) {
-                return;
-            }
-
-            var languageInputs = languageForm.querySelectorAll('input[name="installer_language"]');
-            for (var i = 0; i < languageInputs.length; i += 1) {
-                languageInputs[i].addEventListener('change', function () {
-                    languageForm.submit();
-                });
-            }
-        }());
-
-        (function () {
-            function initInstallerPhoneInput(inputId) {
-                var input = document.getElementById(inputId);
-                if (!input || input.dataset.intlReady === '1') {
-                    return;
-                }
-
-                var hiddenInput = document.getElementById(input.dataset.countryTargetId);
-                var form = input.closest('form');
-                var iti = window.intlTelInput(input, {
-                    initialCountry: 'tr',
-                    preferredCountries: ['tr', 'iq', 'de', 'gb', 'us'],
-                    separateDialCode: true,
-                    strictMode: true,
-                    autoPlaceholder: 'aggressive'
-                });
-
-                function syncCountryCode() {
-                    if (!hiddenInput) {
-                        return;
-                    }
-
-                    var countryData = iti.getSelectedCountryData();
-                    if (countryData && countryData.dialCode) {
-                        hiddenInput.value = '+' + countryData.dialCode;
-                    }
-                }
-
-                if (input.value.trim() !== '') {
-                    iti.setNumber(input.value.trim());
-                }
-
-                syncCountryCode();
-
-                input.addEventListener('input', function () {
-                    var value = input.value.trim();
-                    if (value.indexOf('0') === 0) {
-                        input.value = value.replace(/^0+/, '');
-                    }
-                });
-
-                input.addEventListener('countrychange', function () {
-                    syncCountryCode();
-                });
-
-                if (form && form.dataset.installerPhoneSubmitBound !== '1') {
-                    form.addEventListener('submit', function () {
-                        var phoneInputs = form.querySelectorAll('input[data-phone-store-mode="full"]');
-
-                        for (var i = 0; i < phoneInputs.length; i += 1) {
-                            var phoneInput = phoneInputs[i];
-                            var phoneIti = window.intlTelInput.getInstance(phoneInput);
-                            var countryTarget = document.getElementById(phoneInput.dataset.countryTargetId);
-
-                            if (!phoneIti) {
-                                continue;
-                            }
-
-                            var countryData = phoneIti.getSelectedCountryData();
-                            if (countryTarget && countryData && countryData.dialCode) {
-                                countryTarget.value = '+' + countryData.dialCode;
-                            }
-
-                            var digits = phoneInput.value.replace(/\D/g, '');
-                            if (countryData && countryData.dialCode) {
-                                digits = digits.replace(/^0+/, '');
-                                phoneInput.value = '+' + countryData.dialCode + digits;
-                            } else {
-                                phoneInput.value = digits;
-                            }
-                        }
-                    });
-
-                    form.dataset.installerPhoneSubmitBound = '1';
-                }
-
-                input.dataset.intlReady = '1';
-            }
-
-            initInstallerPhoneInput('project_phone');
-            initInstallerPhoneInput('project_whatsapp');
-        }());
-    </script>
+    <script src="assets/js/installer.js" defer></script>
 </body>
 </html>

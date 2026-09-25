@@ -7,9 +7,9 @@ class group_bulk_validator
 
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_user_pm');
     }
 

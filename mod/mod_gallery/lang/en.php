@@ -119,12 +119,14 @@ $lang['mod_gallery'] = [
     ],
 
     // === Role Management ===
-    'roll' => [
-        'ad' => 'Gallery Management Roles',
+    'role' => [
+        'name' => 'Gallery Management Roles',
         'add' => 'Can add galleries and images',
         'edit' => 'Can edit gallery items',
         'delete' => 'Can delete gallery items',
         'list' => 'Can view gallery management',
+        'moderate_edit' => 'Can edit gallery items owned by others',
+        'moderate_delete' => 'Can delete gallery items owned by others',
     ],
 
     // === Role Errors ===
@@ -133,11 +135,13 @@ $lang['mod_gallery'] = [
         'edit' => 'You do not have permission to edit gallery items.',
         'delete' => 'You do not have permission to delete items.',
         'list' => 'You do not have permission to view gallery management.',
+        'moderate_edit' => 'You do not have permission to edit gallery items owned by others.',
+        'moderate_delete' => 'You do not have permission to delete gallery items owned by others.',
         'gallery' => 'You do not have permission to manage this gallery.',
         'file' => 'You do not have permission to upload files to this gallery.',
     ],
 
-    'hata' => [
+    'error' => [
         'get_source_failed' => 'Image source could not be read.',
     ],
 

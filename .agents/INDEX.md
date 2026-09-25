@@ -19,10 +19,10 @@ Use it to quickly locate:
 - `/docs/VERSION.md`
   - active version log and development note target
 
-- `/CODE_QUALITY_AGENT_STRATEGY.md`
+- `/docs/CODE_QUALITY_AGENT_STRATEGY.md`
   - primary quality-agent policy
 
-- `/PILOT_AGENT_REVIEW_FLOW.md`
+- `/docs/PILOT_AGENT_REVIEW_FLOW.md`
   - practical first-pass review workflow
 
 ## Quality Agents
@@ -60,8 +60,20 @@ Use it to quickly locate:
 
 ## Skills
 
+- `/.agents/skills/admin-mobile-check/SKILL.md`
+  - Admin Mobile Layout Check: audit admin templates/assets for mobile layout compliance
+
 - `/.agents/skills/frontend-theme/SKILL.md`
   - public frontend theme creation, registration, audit, and validation workflow
+
+- `/.agents/skills/github-release/SKILL.md`
+  - GitHub Upload & Release Process: validate version parity across Git history, config/site.config.php, and docs/VERSION.md
+
+- `/.agents/skills/i18n-guard/SKILL.md`
+  - automated quality guard to audit localization completeness, code language standards, forbidden aliases, code separation, and missing keys
+
+- `/.agents/skills/impeccable/SKILL.md`
+  - Impeccable Design: design vocabulary and refinement protocol (/polish, /distill, /clarify, /audit, /critique)
 
 - `/.agents/skills/lang-refactor/SKILL.md`
   - language-key refactoring helper for descriptive English key migrations
@@ -69,14 +81,11 @@ Use it to quickly locate:
 - `/.agents/skills/module-modernization-check/SKILL.md`
   - Internal Modernization Check: module modernization standards, SQLite compatibility, and validation rules
 
-- `/.agents/skills/sibling-parity-check/SKILL.md`
-  - Sibling Repositories Parity Check: checklist to verify cross-repository synchronization and parity
-
 - `/.agents/skills/task-validation/SKILL.md`
   - Task Completion & Release Validation: version logging in VERSION.md and running project quality guards before release
 
-- `/.agents/skills/admin-mobile-check/SKILL.md`
-  - Admin Mobile Layout Check: audit admin templates/assets for mobile layout compliance
+- `/.agents/skills/taste-skill/SKILL.md`
+  - Taste Skill: anti-slop frontend design framework, brief inference, and dial controls (VARIANCE, MOTION, DENSITY)
 
 
 ## Prompt Set
@@ -110,12 +119,12 @@ Use it to quickly locate:
 
 ## Recommended Reading Order
 
-1. `/CODE_QUALITY_AGENT_STRATEGY.md`
-2. `/PILOT_AGENT_REVIEW_FLOW.md`
+1. `/docs/CODE_QUALITY_AGENT_STRATEGY.md`
+2. `/docs/PILOT_AGENT_REVIEW_FLOW.md`
 3. `/.agents/quality/manifest.md`
 4. `/.agents/quality/examples.md`
 5. prompt files under `/.agents/quality/prompts/`
-6. for public theme work, `.agents/skills/frontend-theme/SKILL.md`
+6. for public theme work, `/.agents/skills/frontend-theme/SKILL.md`
 7. for public theme agent work, `/.agents/theme/manifest.md`
 8. for visual public theme or admin design work, `/.agents/design/INDEX.md`
 
@@ -133,7 +142,7 @@ The repository currently uses mixed enforcement:
 
 When quality-agent policy changes, update these files together:
 
-- `/CODE_QUALITY_AGENT_STRATEGY.md`
+- `/docs/CODE_QUALITY_AGENT_STRATEGY.md`
 - `/.agents/quality/manifest.md`
 - `/.agents/quality/examples.md`
 - any affected prompt files
@@ -146,13 +155,13 @@ When quality-agent policy changes, update these files together:
 - Before writing any version note, verify the latest Git-uploaded version from actual Git history first; do not infer it only from `/docs/VERSION.md` or from the current worktree state.
 - After identifying that Git-uploaded version, inspect the developments that exist after it and compare them against `/docs/VERSION.md`.
 - Treat the latest Git-uploaded version as the latest shipped version, and keep its section frozen unless the user explicitly asks to repair shipped historical notes.
+- Immediately upon marking a version header with a release date (pushed/shipped to GitHub), automatically open the next `## vX.X.X.XX (In Progress)` version section at the top of `/docs/VERSION.md`.
+- Always synchronize `$site['version']` in `config/site.config.php` to match the active version code in `/docs/VERSION.md` in the same pass.
 - If still-unuploaded developments are missing from `/docs/VERSION.md`, do not backfill them under the shipped version section; create or use the next unpublished version section and place those notes there first.
 - When the current task represents unpublished work after that Git version, create the next version section in `/docs/VERSION.md` first and append the completed notes under that new version code.
 - If the current task continues the same unpublished cycle, keep using the already-open next unpublished version section instead of the shipped version section.
 - Before appending to any existing version section, explicitly verify whether the note belongs to a shipped Git version or to the next unpublished version.
 - A user-provided version code overrides the auto-detected Git version for that task.
-- All version notes written in `/docs/VERSION.md` must be written in English. Do not write version notes in Kurdish or Turkish, even if communicating with the user in Kurdish.
-- Before proposing any walkthrough or finishing a task, the agent must run the `task-validation` skill checks.
 
 ## Repository Boundary Rule
 
@@ -169,8 +178,7 @@ When quality-agent policy changes, update these files together:
 
 ## Admin Mobile Rule
 
-- The admin panel is a phone-only admin/screen surface.
+- The admin panel is a phone-only product surface.
 - Agents must design, implement, and validate admin interfaces for phone screens only.
 - Tablet and desktop admin layouts are out of scope unless the user explicitly overrides the rule.
 - Validation and browser checks for admin work must use phone-sized viewports or the repository's phone simulator shell.
-

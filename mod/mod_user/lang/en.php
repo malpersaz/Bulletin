@@ -19,8 +19,7 @@ $lang['mod_user'] = [
     'edit' => 'Edit User',
     'list' => 'User List',
     'information' => 'Information!',
-    'oke' => 'Operation Successful!',
-    'success' => 'Success!',
+ 'Success!',
     'last_step' => 'Last Step',
     'error_title' => 'Error Occurred!',
     'error_label' => 'Error!',
@@ -44,12 +43,12 @@ $lang['mod_user'] = [
     'error_fatal' => 'Fatal Error Occurred!',
     'database_error' => 'The record could not be saved. Please try again.',
     'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image Removed',
+    'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
     'message' =>
         [
-            'oke' =>
+            'success' =>
                 [
                     'add' => 'User Added!',
                     'edit' => 'User Updated!',
@@ -494,8 +493,13 @@ $lang['mod_user']['panel'] = [
     'more_sheet_title' => 'More Tools',
     'more_sheet_copy' => 'Open lower-frequency system and administration surfaces without crowding the main workspace bar.',
     'more_sheet_open_drawer' => 'Open full module directory',
+    'link_list' => 'List',
+    'link_add' => 'Add',
+    'link_categories' => 'Categories',
+    'link_submissions' => 'Submissions',
+    'clear_search' => 'Clear',
     'home_title' => 'Home',
-    'admin_brand' => 'AKM Business Admin'
+    'admin_brand' => 'AKM Rojname Admin'
 ];
 
 $lang['mod_user']['fab'] = [

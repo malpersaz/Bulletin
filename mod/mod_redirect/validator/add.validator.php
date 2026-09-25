@@ -4,7 +4,7 @@ class add_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
 
     public function __construct()
     {
@@ -14,51 +14,51 @@ class add_validator
 
     public function check()
     {
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'old_url',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_redirect']['validator']['required'], $this->lang['mod_redirect']['admin']['columns']['old_url']),
+            'message' => sprintf($this->lang['mod_redirect']['validator']['required'], $this->lang['mod_redirect']['admin']['columns']['old_url']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'new_url',
-            'fonk' => 'required',
+            'func' => 'required',
             'arg' => '',
-            'mesaj' => sprintf($this->lang['mod_redirect']['validator']['required'], $this->lang['mod_redirect']['admin']['columns']['new_url']),
+            'message' => sprintf($this->lang['mod_redirect']['validator']['required'], $this->lang['mod_redirect']['admin']['columns']['new_url']),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'old_url',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '2', 'max' => '250'],
-            'mesaj' => sprintf($this->lang['mod_redirect']['validator']['length'], $this->lang['mod_redirect']['admin']['columns']['old_url'], '2', '250'),
+            'message' => sprintf($this->lang['mod_redirect']['validator']['length'], $this->lang['mod_redirect']['admin']['columns']['old_url'], '2', '250'),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'new_url',
-            'fonk' => 'length',
+            'func' => 'length',
             'arg' => ['min' => '1', 'max' => '250'],
-            'mesaj' => sprintf($this->lang['mod_redirect']['validator']['length'], $this->lang['mod_redirect']['admin']['columns']['new_url'], '1', '250'),
+            'message' => sprintf($this->lang['mod_redirect']['validator']['length'], $this->lang['mod_redirect']['admin']['columns']['new_url'], '1', '250'),
         ]);
         if ($this->_check() === true) {
             return true;
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'status_code',
-            'fonk' => 'inarray',
+            'func' => 'inarray',
             'arg' => '301,302',
-            'mesaj' => sprintf($this->lang['mod_redirect']['validator']['inarray'], $this->lang['mod_redirect']['admin']['columns']['status_code'], '301,302'),
+            'message' => sprintf($this->lang['mod_redirect']['validator']['inarray'], $this->lang['mod_redirect']['admin']['columns']['status_code'], '301,302'),
         ]);
         if ($this->_check() === true) {
             return true;
@@ -69,7 +69,7 @@ class add_validator
         $db = Load::model('mod_redirect');
         $exists = $db->where('old_url', $old_url)->single();
         if ($exists) {
-            $this->hatalar[] = $this->lang['mod_redirect']['validator']['unique_old_url'];
+            $this->errors[] = $this->lang['mod_redirect']['validator']['unique_old_url'];
             return true;
         }
 
@@ -79,9 +79,9 @@ class add_validator
     public function _check()
     {
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        return count($this->hatalar) > 0;
+        return count($this->errors) > 0;
     }
 }

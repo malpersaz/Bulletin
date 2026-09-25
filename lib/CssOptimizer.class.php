@@ -17,7 +17,7 @@ class CssOptimizer
         } else {
             $this->css_files[] = $css;
         }
-        //$this->site = Kayit::getir('site_config');
+        //$this->site = Registry::get('site_config');
 
         $this->make_cache();
         $this->make_cache_file();
@@ -29,14 +29,13 @@ class CssOptimizer
             foreach ($this->css_files as $css) {
                 $file = root_dir . $css;
                 if (file_exists($file) and $this->getExt($css) === 'css') {
-                    // Bulunduğü Dizini bulalım $e['0']
+                    // Find directory: $e[0]
                     $e = explode(basename($css), $css);
-                    // Dosyayı Alalım
+                    // Get file contents
                     $source = file_get_contents($file);
-                    // Tek dosya olduğunda hata vermemesi için url'yi fixleyip
-                    // CSSmin ile sıkıştırıp temizleyelim
+                    // Minify and fix URL
                     $this->css_source .= cssmin::minify($this->fix_url($source, $e['0']));
-                    // Yukardaki ile aynı şey fakat resimleri datauri şekline getirelim
+                    // Convert images to data URI
                     $this->data_uri_css_source .= cssmin::minify($this->data_uri_fix_url($source, $e['0']));
                 }
             }
@@ -72,7 +71,7 @@ class CssOptimizer
         return $this->css_cache_file . '.gz';
     }
 
-    // Uzantı Bulmak için
+    // Get file extension
     private function getExt($file)
     {
         $array = explode('.', $file);
@@ -80,7 +79,6 @@ class CssOptimizer
         return $array[$size];
     }
 
-    // 	75 Yola Sıfır
     private function data_uri_fix_url($data, $dizin)
     {
         $k1 = ['url("', 'url(\''];
@@ -94,7 +92,7 @@ class CssOptimizer
         $data = preg_replace($desen, $replace, $data);
         $data = preg_replace($desen1, $replace1, $data);
         preg_match_all('#url\("(.*)"\)#', $data, $cikti);
-        $s = count($cikti[1]) - 1; // Sayıp bir eksiltelim
+        $s = count($cikti[1]) - 1;
         for ($i = 0; $i <= $s; $i++) {
             if (isset($cikti['1'][$i])) {
                 $file = root_dir . $cikti['1'][$i];
@@ -111,7 +109,6 @@ class CssOptimizer
     }
 
 
-    // 	75 Yola Sıfır
     private function fix_url($data, $dizin)
     {
         $k1 = ['url("', 'url(\''];

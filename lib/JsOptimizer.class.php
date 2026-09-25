@@ -14,7 +14,7 @@ class JsOptimizer
             $this->js_files[] = $js;
         }
 
-        // Cache file path oluştur
+        // Generate cache file path
         $hash = md5(implode('', $this->js_files));
         $cache_dir = root_dir . 'cache/js/';
         if (!is_dir($cache_dir)) {
@@ -35,7 +35,7 @@ class JsOptimizer
                 $file = root_dir . $js;
                 if (file_exists($file) and $this->getExt($js) === 'js') {
                     $content = file_get_contents($file);
-                    if (!empty(trim($content))) { // Boş dosyaları kontrol et
+                    if (!empty(trim($content))) { // Skip empty files
                         $this->js_source .= JSMin::minify($content);
                     }
                 }
@@ -70,7 +70,7 @@ class JsOptimizer
         return $this->js_cache_file . '.gz';
     }
 
-    // Uzantı Bulmak için
+    // Extract file extension
     private function getExt($file)
     {
         $array = explode('.', $file);

@@ -14,7 +14,7 @@ class mod_content_helper extends indexBase
             return;
         }
 
-        $mod_category_nested = Load::model('mod_category');
+        $mod_category_nested = Load::model('mod_content_category');
         $mod_category_nested->where_lang_and_root($this->site['lang'], 'n');
         $mod_category_nested->order('order', 'ASC')->gR();
         
@@ -22,9 +22,9 @@ class mod_content_helper extends indexBase
         $content_model = Load::model('mod_content.contents');
         
         if (is_array($categories)) {
-            foreach ($categories as &$kat) {
+            foreach ($categories as &$category_item) {
                 $content_model->flush();
-                $kat['content_count'] = $content_model->where_category_seo_and_status_and_lang($kat['seo'], 'y', $this->site['lang'])->getCount();
+                $category_item['content_count'] = $content_model->where_category_seo_and_status_and_lang($category_item['seo'], 'y', $this->site['lang'])->getCount();
             }
         }
         
@@ -89,7 +89,7 @@ class mod_content_helper extends indexBase
 
 
         $content = Load::model('mod_content.contents');
-        $category_model = Load::model('mod_category');
+        $category_model = Load::model('mod_content_category');
 
         if ($category == NULL or $category == 'all') {
             $content->where_status_and_lang('y', $this->site['lang'])->all();
@@ -185,7 +185,7 @@ class mod_content_helper extends indexBase
         $content->fetch_array($sql);
         $content->getResultOne();
         $this->tema->ctx_set('arsiv_yil', $content->toArray());
-        $category = Load::model('mod_category');
+        $category = Load::model('mod_content_category');
         $category->where_lang_and_root($this->site['lang'], 'n');
         $category->order('parent_id, order', 'DESC');
         $category->gR();

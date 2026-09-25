@@ -14,15 +14,15 @@ class mod_gallery_mod_mod extends indexMain
     {
         parent::__construct();
         // Load the admin template library.
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         // Load the database library.
         $this->db = Load::lib('Database');
         // Load site settings when needed.
-        //$this->site = Kayit::getir('site_config');
+        //$this->site = Registry::get('site_config');
         // Load the language file.
         $this->lang = Load::lang('mod_gallery_mod');
         // Share the language file with the template layer.
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         // Load the session library.
         $this->session = Load::lib('Session');
         // Load the user model.
@@ -39,10 +39,8 @@ class mod_gallery_mod_mod extends indexMain
 
         // Handle Cancel URL Referer tracking
         $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false) {
-            if (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false) {
-                $this->session->set('gallery_mod_cancel_url', $referer);
-            }
+        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false && (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false)) {
+            $this->session->set('gallery_mod_cancel_url', $referer);
         }
         $cancel_url = $this->session->get('gallery_mod_cancel_url') ?: $this->site['saddress'] . 'mod_gallery_mod/list';
 
@@ -51,9 +49,9 @@ class mod_gallery_mod_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_gallery_mod']['add'];
-        $this->tema->tpl('mod_gallery_mod/add');
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('cancel_url', $cancel_url);
+        $this->theme->tpl('mod_gallery_mod/add');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('cancel_url', $cancel_url);
     }
 
     // Edit page.
@@ -68,7 +66,7 @@ class mod_gallery_mod_mod extends indexMain
         if ($this->mod_gallery_mod_model->exists_id($id) === False) {
             $this->_error($this->lang['mod_gallery_mod']['errors']['record']);
             Run::import('management', '_index');
-            $this->tema->tpl('mod_gallery_mod/edit');
+            $this->theme->tpl('mod_gallery_mod/edit');
             return;
         }
 
@@ -81,10 +79,8 @@ class mod_gallery_mod_mod extends indexMain
 
         // Handle Cancel URL Referer tracking
         $referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false) {
-            if (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false) {
-                $this->session->set('gallery_mod_cancel_url', $referer);
-            }
+        if ($referer && strpos($referer, 'mod_gallery_mod/add') === false && strpos($referer, 'mod_gallery_mod/edit') === false && (strpos($referer, $this->site['saddress']) !== false || strpos($referer, $this->site['address']) !== false)) {
+            $this->session->set('gallery_mod_cancel_url', $referer);
         }
         $cancel_url = $this->session->get('gallery_mod_cancel_url') ?: $this->site['saddress'] . 'mod_gallery_mod/list';
 
@@ -95,10 +91,10 @@ class mod_gallery_mod_mod extends indexMain
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_gallery_mod']['edit'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->tpl('mod_gallery_mod/edit');
-        $this->tema->veri('cancel_url', $cancel_url);
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->tpl('mod_gallery_mod/edit');
+        $this->theme->set('cancel_url', $cancel_url);
     }
 
     // List page.
@@ -111,19 +107,19 @@ class mod_gallery_mod_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_gallery_mod']['list'];
-        $this->tema->tpl('mod_gallery_mod/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_gallery_mod/list');
+        $this->theme->set('site', $this->site);
     }
 
     // Add handler.
     private function _add()
     {
-        $this->val = Load::validator('mod_gallery_mod.ekle');
+        $this->val = Load::validator('mod_gallery_mod.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_gallery_mod_model = Load::model('mod_gallery_mod');
 
@@ -143,7 +139,7 @@ class mod_gallery_mod_mod extends indexMain
 
             // Persist the new record.
             if ($this->mod_gallery_mod_model->save(TRUE)) {
-                $this->_oke_message($this->lang['mod_gallery_mod']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_gallery_mod']['message']['success']['add']);
             } else {
                 // Report the save failure with the matching error message.
                 $this->_error_message($this->lang['mod_gallery_mod']['message']['error']['add']);
@@ -154,12 +150,12 @@ class mod_gallery_mod_mod extends indexMain
     // Edit handler.
     private function _edit($id = NULL)
     {
-        $this->val = Load::validator('mod_gallery_mod.duzenle');
+        $this->val = Load::validator('mod_gallery_mod.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('hatalar', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $this->mod_gallery_mod_model = Load::model('mod_gallery_mod');
 
@@ -183,7 +179,7 @@ class mod_gallery_mod_mod extends indexMain
             // Persist the updated record.
             $this->mod_gallery_mod_model->id = $id;
             if ($this->mod_gallery_mod_model->update('id')) {
-                $this->_oke_message($this->lang['mod_gallery_mod']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_gallery_mod']['message']['success']['edit']);
             } else {
                 // Report the update failure with the matching error message.
                 $this->_error_message($this->lang['mod_gallery_mod']['message']['error']['edit']);
@@ -192,27 +188,27 @@ class mod_gallery_mod_mod extends indexMain
     }
 
 
-    function sil()
+    public function delete()
     {
         // Check delete permission.
-        if ($this->user->hasPermission('mod_gallery_mod',  'delete', $this->lang['mod_gallery_mod']['role_errors'][ 'delete']) === False) {
+        if ($this->user->hasPermission('mod_gallery_mod', 'delete', $this->lang['mod_gallery_mod']['role_errors']['delete']) === False) {
             return False;
         }
-        if (Req::is_Post( 'delete')) {
-            if ($this->_delete(Req::Post_Safe( 'delete'))) {
-                echo 'Oke';
+        if (Req::is_Post('delete')) {
+            if ($this->_delete(Req::Post_Safe('delete'))) {
+                echo 'Success';
             } else {
-                echo 'HATA';
+                echo 'ERROR';
             }
         } else {
             exit($this->lang['mod_gallery_mod']['errors']['record']);
         }
     }
 
-    public function _delete($sil)
+    public function _delete($ids)
     {
         $this->mod_gallery_mod_model = Load::model('mod_gallery_mod');
-        foreach ($sil as $s) {
+        foreach ($ids as $s) {
             $this->mod_gallery_mod_model->flush();
             $this->mod_gallery_mod_model->where_id($s)->gRo();
             if ($this->mod_gallery_mod_model->getSize() === 0) {
@@ -275,23 +271,23 @@ class mod_gallery_mod_mod extends indexMain
 
         $wheres = [];
 
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
+        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+            foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
                 }
             }
         }
 
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+            foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
             }
         }
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
+        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+            foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $colomns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
                         $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
@@ -308,9 +304,9 @@ class mod_gallery_mod_mod extends indexMain
             }
         }
         if (
-            (Roll::hasPermission('mod_gallery_mod', 'moderate_edit') !== TRUE)
+            (Role::hasPermission('mod_gallery_mod', 'moderate_edit') !== TRUE)
             and
-            (Roll::hasPermission('mod_gallery_mod', 'moderate_delete') !== TRUE)
+            (Role::hasPermission('mod_gallery_mod', 'moderate_delete') !== TRUE)
         ) {
             $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
@@ -341,22 +337,22 @@ class mod_gallery_mod_mod extends indexMain
             foreach ($i->toArray() as $content) {
 
                 $last = "";
-                if (Roll::hasPermission('mod_gallery_mod', 'edit')) {
+                if (Role::hasPermission('mod_gallery_mod', 'edit')) {
                     $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_gallery_mod']['button']['edit'] . ' </button>';
                 }
-                if (Roll::hasPermission('mod_gallery_mod',  'delete')) {
-                    $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processSil(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
-    <i class="fa fa-trash-o"></i> ' . $this->lang['mod_gallery_mod']['button'][ 'delete'] . ' </button>';
+                if (Role::hasPermission('mod_gallery_mod', 'delete')) {
+                    $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
+    <i class="fa fa-trash-o"></i> ' . $this->lang['mod_gallery_mod']['button']['delete'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_gallery_mod', 'gallery')) {
+                if (Role::hasPermission('mod_gallery_mod', 'gallery')) {
                     $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue">
     <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_gallery_mod']['button']['gallery'] . ' </button>';
                 }
 
-                if (Roll::hasPermission('mod_gallery_mod', 'file')) {
-                    $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processDosya(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
+                if (Role::hasPermission('mod_gallery_mod', 'file')) {
+                    $last .= '<button onclick="mod_gallery_mod_table_ajax.akm.processFile(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_gallery_mod']['button']['file'] . ' </button>';
                 }
                 $data[] = [
@@ -380,23 +376,23 @@ class mod_gallery_mod_mod extends indexMain
 
 
     // Success message helper.
-    private function _oke_message($mesaj)
+    private function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     // Validation error helper.
-    private function _error_message($mesaj)
+    private function _error_message($message)
     {
-        $this->tema->veri('hata', True);
-        $this->tema->veri('hatalar', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
     // Fatal error helper.
-    private function _error($mesaj)
+    private function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
     }
 }

@@ -1,42 +1,43 @@
 <?php
 $lang['mod_user_group']=[
-	'1'=>'Rêveberiya Komela Bikarhêner',
-	'2'=>'Komelên Bikarhêner',
-	'5'=>'---Ji kerema xwe hilbijêre--- ',
-	'8'=>'Tu ji bo jêbirina vê Komela Bikarhêner î li ku dixwazî?<br/> Heke tu vê komelê jêbibî, hemû bin-komelên wê jî werin jêbirin!',
-	'9'=>'Komela Bikarhêner Hate Jêbirin!',
-	'10'=>'Rêza Komela Bikarhêner Hate Guherandin!',
-	'11'=>'Komela Bikarhênerê Jêbibe',
-	'12'=>'Komela Bikarhênerê Biguherîne',
-	'13'=>'Biguherîne',
-	'15'=>'Erê',
-	'16'=>'Betal',
-	'17'=>'Lîsteya Komela Bikarhêner',
-	'18'=>'Ji bo jêbirin an guherandina Komela Bikarhênerê ku hêvî dikî li ser navê wê du car bitikîne',
-	'19'=>'Komelên Bikarhênerên ku hêvî dikî rêzê wan biguherîne bikşî û biavêje',
-	'20'=>'Komela Bikarhênerên Nû Lê Zêde Bike'
+	'add'=>'Komela Bikarhêner Zêde Bike',
+	'management_title'=>'Rêveberiya Komela Bikarhêner',
+	'user_groups'=>'Komelên Bikarhêner',
+	'select_optional'=>'---Ji kerema xwe hilbijêre--- ',
+	'confirm_delete'=>'Tu ji bo jêbirina vê Komela Bikarhêner î li ku dixwazî?<br/> Heke tu vê komelê jêbibî, hemû bin-komelên wê jî werin jêbirin!',
+	'group_deleted'=>'Komela Bikarhêner Hate Jêbirin!',
+	'order_changed'=>'Rêza Komela Bikarhêner Hate Guherandin!',
+	'delete_group'=>'Komela Bikarhênerê Jêbibe',
+	'edit_group'=>'Komela Bikarhênerê Biguherîne',
+	'edit'=>'Biguherîne',
+	'yes'=>'Erê',
+	'cancel'=>'Betal',
+	'group_list'=>'Lîsteya Komela Bikarhêner',
+	'double_click_instruction'=>'Ji bo jêbirin an guherandina Komela Bikarhênerê ku hêvî dikî li ser navê wê du car bitikîne',
+	'drag_drop_instruction'=>'Komelên Bikarhênerên ku hêvî dikî rêzê wan biguherîne bikşî û biavêje',
+	'add_new_group'=>'Komela Bikarhênerên Nû Lê Zêde Bike'
 ];
 
 $lang['mod_user_group']['admin']=[
-	'1'=>'Qada Zêdekirina Komela Bikarhêner',
-	'2'=>'Qada Guherandina Komela Bikarhêner',
-	'3'=>'Rêveberiya Komela Bikarhêner',
-	'4'=>'Forma Zêdekirina Komela Bikarhêner',
-	'5'=>'Forma Guherandina Komela Bikarhêner',
-	'7'=>'Navê Komela Bikarhêner',
-	'8'=>'Lê Zêde Bike',
-	'9'=>'Biguherîne',
-	'10'=>'Lîsteya Komela Bikarhêner',
+	'add_area'=>'Qada Zêdekirina Komela Bikarhêner',
+	'edit_area'=>'Qada Guherandina Komela Bikarhêner',
+	'management'=>'Rêveberiya Komela Bikarhêner',
+	'add_form'=>'Forma Zêdekirina Komela Bikarhêner',
+	'edit_form'=>'Forma Guherandina Komela Bikarhêner',
+	'group_name'=>'Navê Komela Bikarhêner',
+	'add'=>'Lê Zêde Bike',
+	'edit'=>'Biguherîne',
+	'group_list'=>'Lîsteya Komela Bikarhêner',
 	'list'=>'Lîsteya Komela Bikarhêner',
-	'12'=>'Komela Bikarhêner Hate Zêdekirin!',
-	'13'=>'Komela Bikarhêner Hate Guherandin',
-	'22'=>'Binxetê Komela Bikarhêner'
+	'group_added'=>'Komela Bikarhêner Hate Zêdekirin!',
+	'group_edited'=>'Komela Bikarhêner Hate Guherandin',
+	'sub_group'=>'Binxetê Komela Bikarhêner'
 ];
 
 $lang['mod_user_group']['hata']=[
-	'1'=>'Ji kerema xwe navekî ji bo Komela Bikarhênerê diyar bike',
-	'2'=>'Ji kerema xwe li navekî ji bo Komela Bikarhênerê diyar bike.',
-	'3'=>'Ji kerema xwe li navekî din ji bo Komela Bikarhênerê diyar bike <br/>Çima li nava Komela Bikarhênerê ku tu diyar kiri hatî tomar kirin'
+	'name_required'=>'Ji kerema xwe navekî ji bo Komela Bikarhênerê diyar bike',
+	'link_required'=>'Ji kerema xwe li navekî ji bo Komela Bikarhênerê diyar bike.',
+	'link_unique'=>'Ji kerema xwe li navekî din ji bo Komela Bikarhênerê diyar bike <br/>Çima li nava Komela Bikarhênerê ku tu diyar kiri hatî tomar kirin'
 ];
 
 // Modern language keys (not numbered)
@@ -48,7 +49,7 @@ $lang['mod_user_group']['buttons'] = [
     'save' => 'Tomar Bike'
 ];
 
-$lang['mod_user_group']['roll']=[
+$lang['mod_user_group']['role']=[
 	'name'=>'Rênîşanên Komela Bikarhêner',
 	'add' =>'Dikare Komela Bikarhêner Lê Zêde Bike:',
 	'edit' =>'Dikare Komela Bikarhênerê ku Xwe Lê Zêde Kirine Biguherîne.',
@@ -65,8 +66,8 @@ $lang['mod_user_group']['ajax'] = [
 ];
 
 $lang['mod_user_group']['role_errors']=[
-	'1'=>'Tu Destûra Guherandina Komelên Bikarhênerên yên Giştî Nîne.',
-	'2'=>'Tu Destûra Jêbirina Komelên Bikarhênerên yên Giştî Nîne.',
+	'management_title'=>'Tu Destûra Guherandina Komelên Bikarhênerên yên Giştî Nîne.',
+	'user_groups'=>'Tu Destûra Jêbirina Komelên Bikarhênerên yên Giştî Nîne.',
 	'move'=>'Tu Destûra Guherandina Rêza Komelên Bikarhêner Nîne.',
 	'add' =>'Tu Destûra Zêdekirina Komelên Bikarhêner Nîne.',
 	'delete'=>'Tu Destûra Jêbirina Komelên Bikarhêner Nîne.',

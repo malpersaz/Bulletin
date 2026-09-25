@@ -41,11 +41,11 @@
 <!-- Quick Stats -->
 <div style="padding: 0 16px 16px 16px; display: flex; gap: 12px; margin-bottom: 8px;">
     <div class="stat-card" style="flex: 1; background: var(--md-sys-color-surface-container); padding: 16px; border-radius: var(--af-radius-md); text-align: center;">
-        <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.total }}</div>
+        <div id="statTotalDocument" style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.total }}</div>
         <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 500;">{{ lang.mod_document.list_ui.total_stat }}</div>
     </div>
     <div class="stat-card" style="flex: 1; background: var(--md-sys-color-surface-container); padding: 16px; border-radius: var(--af-radius-md); text-align: center;">
-        <div style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.live }}</div>
+        <div id="statLiveDocument" style="font-size: 24px; font-weight: 700; color: var(--md-sys-color-primary);">{{ document_stats.live }}</div>
         <div style="font-size: 12px; color: var(--md-sys-color-on-surface-variant); font-weight: 500;">{{ lang.mod_document.list_ui.live_stat }}</div>
     </div>
 </div>
@@ -104,7 +104,7 @@
 
 {% if session.permissions.mod_document.add is defined %}
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_document/add'" aria-label="{{ lang.mod_document.add|default('Belgeyê Lêzêde Bike') }}">
+    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_document/add'" aria-label="{{ lang.mod_document.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endif %}

@@ -8,7 +8,7 @@ class mod_user_group_model extends ORM
     public $name;
     public $order;
     public $parent_id;
-    public $rolls;
+    public $roles;
     public $user_id;
 
     /**
@@ -47,6 +47,6 @@ class mod_user_group_model extends ORM
     /**
      * Dynamic data storage for non-declared properties
      */
-    private $data = array();
+    private $data = [];
 
 }

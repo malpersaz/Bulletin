@@ -15,11 +15,11 @@ class edit_validator
     public function check($id)
     {
         foreach (['lang', 'name', 'parent_id', 'seo', 'title', 'keywords', 'description'] as $field) {
-            $this->valid->ekle([
+            $this->valid->add([
                 'name' => $field,
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns'][$field]),
+                'message' => sprintf($this->lang['mod_imagecategories']['validator']['required'], $this->lang['mod_imagecategories']['admin']['columns'][$field]),
             ]);
             if ($this->_check() === true) {
                 return true;
@@ -35,22 +35,22 @@ class edit_validator
         ];
 
         foreach ($lengthRules as $field => $range) {
-            $this->valid->ekle([
+            $this->valid->add([
                 'name' => $field,
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => ['min' => $range[0], 'max' => $range[1]],
-                'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns'][$field], $range[0], $range[1]),
+                'message' => sprintf($this->lang['mod_imagecategories']['validator']['length'], $this->lang['mod_imagecategories']['admin']['columns'][$field], $range[0], $range[1]),
             ]);
             if ($this->_check() === true) {
                 return true;
             }
         }
 
-        $this->valid->ekle([
+        $this->valid->add([
             'name' => 'root',
-            'fonk' => 'array',
+            'func' => 'array',
             'arg' => ['y', 'n'],
-            'mesaj' => sprintf($this->lang['mod_imagecategories']['validator']['inarray'], $this->lang['mod_imagecategories']['admin']['columns']['root'], 'y,n'),
+            'message' => sprintf($this->lang['mod_imagecategories']['validator']['inarray'], $this->lang['mod_imagecategories']['admin']['columns']['root'], 'y,n'),
         ]);
         if ($this->_check() === true) {
             return true;

@@ -1,11 +1,9 @@
 <?php
 
 /**
- * Koberz Content Management System
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * User: Kobim
- * Date: 13.04.2011 - 20:33
+ * Amed Framework Content Management System
+ * File: Orm.php
+ * Description: Object-Relational Mapping (ORM) Base Class
  */
 
 interface Orm_interface
@@ -43,65 +41,48 @@ interface Orm_interface
     public function toSerialize();
 }
 
+#[AllowDynamicProperties]
 abstract class ORM extends Database implements Orm_interface
 {
-    private $_ai;
-    private $_orm_table;
-    private $_orm_coloms;
-    private $_orm_pk;
+    public $_ai;
+    public $_pk = 'id';
+    public $_table;
+    public $_orm_table;
+    public $_orm_coloms = [];
+    public $_orm_pk;
     public $_orm_ai;
 
 
     public function __call($name, $value)
     {
         try {
-            // id|ad|seo
-            $desen = implode("|", $this->_orm_coloms);
-            // $model->id(1);
-            $colom_desen = "!^(" . $desen . ")$!";
-            // $model->getid(1);
-            // $model->Getid(1);
-            $get_desen = "!^(g|G)et(.+)$!";
-            // $model->delete_id(1);
-            // $model->Delete_id(1);
-            $delete_desen = "!^(d|D)elete_(.+)$!";
-            // $model->where_id(1); $model->Where_id(1);
-            // $model->where_id_and_seo(1,'seo-key');
-            //$where_desen = "!^(w|W)here_((".$this->wdesen."|_)+)!";
-            $where_desen = "!^(w|W)here_(.+)!";
+            $column_list = implode("|", $this->_orm_coloms);
+            $column_pattern = "!^(" . $column_list . ")$!i";
+            $get_pattern = "!^(g|G)et(.+)$!";
+            $delete_pattern = "!^(d|D)elete_(.+)$!";
+            $where_pattern = "!^(w|W)here_(.+)!";
+            $exists_pattern = "!^(e|E)xists_(.+)!";
 
-            // $model->exists_id('1');
-            // $model->Exists_id_and_seo('1','example');
-            $exists_desen = "!^(e|E)xists_(.+)!";
-
-            // Oke
-            if (preg_match($exists_desen, $name, $result)) {
+            if (preg_match($exists_pattern, $name, $result)) {
                 return $this->_call_exists($result, $value);
             }
-            // Oke
-            if (preg_match($where_desen, $name, $result)) {
+            if (preg_match($where_pattern, $name, $result)) {
                 $this->_call_where($result, $value);
                 return $this;
             }
-            // Oke
-            if (preg_match($delete_desen, $name, $result)) {
+            if (preg_match($delete_pattern, $name, $result)) {
                 $this->_call_delete($result, $value);
                 return $this;
             }
-            // Oke
-            if (preg_match($colom_desen, $name, $result)) {
+            if (preg_match($column_pattern, $name, $result)) {
                 $this->_call_colom($result, $value);
                 return $this;
             }
-            // Oke
-            if (preg_match($get_desen, $name, $result)) {
+            if (preg_match($get_pattern, $name, $result)) {
                 $this->_call_get($result, $value);
                 return $this;
             }
-            throw new OrmException(
-                "'" . $name . "' Function Not Found\n" .
-                    "'" . $name . "' Function Not Found!"
-            );
+            throw new OrmException("Function '{$name}' not found!");
         } catch (OrmException $e) {
             $e->show();
         }
@@ -109,26 +90,12 @@ abstract class ORM extends Database implements Orm_interface
 
     private function _call_delete($result, $value)
     {
-        //$this->where(Obuilder::where($result['2'], $value));
         $this->make_delete($this->_orm_table, Obuilder::where($result['2'], $value, $this->_orm_coloms, $this->_orm_table));
         return $this;
     }
 
     private function _call_exists($result, $value)
     {
-        /*try {
-            // Column names with underscores need escaping.
-            // Escape names such as user_id before building the condition.
-            $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), Obuilder::$valid_after_key, $this->_orm_coloms));
-            $d = '#_((' . $wdesen . ')+)#';
-            $cikti = preg_replace($d, '\_$1', $result[2]);
-            $this->where(Obuilder::where($cikti, $value, $this->_orm_coloms));
-            $this->getResult(TRUE, TRUE);
-            return $this->_result === NULL ? FALSE : TRUE;
-        } catch (OrmException $e) {
-            $e->show();
-            exit();
-        }*/
         $this->_call_where($result, $value);
         $this->getResult(true, true);
         return $this->_result !== null;
@@ -144,126 +111,147 @@ abstract class ORM extends Database implements Orm_interface
         try {
             // Column names with underscores need escaping.
             // Escape names such as user_id before building the condition.
-            $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), Obuilder::$valid_after_key, $this->_orm_coloms));
-            $d = '#_?((' . $wdesen . ')+)#';
-            $cikti = preg_replace($d, '\_$1', $result[2]);
+            $pattern_terms = implode("|", array_merge(array_keys(Obuilder::$equations), Obuilder::$valid_after_key, $this->_orm_coloms));
+            $d = '#_?((' . $pattern_terms . ')+)#';
+            $parsed_clause = preg_replace($d, '\_$1', $result[2]);
             // Remove a leading escaped underscore so the condition remains valid.
             $dd = '#^\\\_(.)#';
-            $cikti = preg_replace($dd, '$1', $cikti);
-            $where = Obuilder::where($cikti, $value, $this->_orm_coloms, $this->_orm_table);
+            $parsed_clause = preg_replace($dd, '$1', $parsed_clause);
+            $where = Obuilder::where($parsed_clause, $value, $this->_orm_coloms, $this->_orm_table);
             $this->where($where);
         } catch (OrmException $e) {
             $e->show();
             exit();
         }
-        /*
-                try {
-
-
-                    // Column names with underscores need escaping.
-                    $wdesen = implode("|", array_merge(array_keys(Obuilder::$equations), $this->_orm_coloms));
-
-                    $cikti=preg_replace("@(".$wdesen.")@", '$1\\', $result['2']);
-
-                    $cikti=rtrim($cikti,"\\");
-
-
-                    $this->where(Obuilder::where($cikti, $value, $this->_orm_coloms, $this->_orm_table));
-                    //$this->getResult(TRUE, TRUE);
-                } catch (OrmException $e) {
-                    $e->show();
-                    exit();
-                }
-        */
     }
 
     private function _call_colom($colom, $value)
     {
+        $targetCol = $this->resolve_column($colom['1']) ?? $colom['1'];
         try {
-            Obuilder::check_key_exists($colom['1'], $this->_orm_coloms);
+            Obuilder::check_key_exists($targetCol, $this->_orm_coloms);
         } catch (OrmException $e) {
             $e->show();
         }
 
-        $this->where($colom['1'] . "='" . $value['0'] . "'");
-        //$this->getResult(TRUE, TRUE);
+        $this->where($targetCol . "='" . $value['0'] . "'");
     }
 
     private function _call_get($colom, $value)
     {
+        $targetCol = $this->resolve_column($colom['2']) ?? $colom['2'];
         try {
-            Obuilder::check_key_exists($colom['2'], $this->_orm_coloms);
+            Obuilder::check_key_exists($targetCol, $this->_orm_coloms);
         } catch (OrmException $e) {
             $e->show();
             exit();
         }
-        $this->where($colom['2'] . "='" . $value['0'] . "'");
-        //$this->getResultOne(TRUE, TRUE);
+        $this->where($targetCol . "='" . $value['0'] . "'");
         if ($this->_result !== null) {
-            // Sync
-            foreach ($this->_orm_coloms as $value) {
-                $this->$value = isset($this->_result[$value]) ? $this->_result[$value] : null;
+            // Sync with case-insensitive column resolution
+            $lowerResult = [];
+            foreach ($this->_result as $k => $v) {
+                $lowerResult[strtolower($k)] = $v;
+            }
+            foreach ($this->_orm_coloms as $c) {
+                $lowerCol = strtolower($c);
+                if (array_key_exists($c, $this->_result)) {
+                    $this->$c = $this->_result[$c];
+                } elseif (array_key_exists($lowerCol, $lowerResult)) {
+                    $this->$c = $lowerResult[$lowerCol];
+                } else {
+                    $this->$c = null;
+                }
             }
             return true;
         }
         return false;
     }
 
-    // Sync the current object when getResultOne has loaded a record.
-    public function sync($results = false)
+    /**
+     * Resolve column name case-insensitively against registered schema columns.
+     *
+     * @param string $column_name
+     * @return string|null
+     */
+    public function resolve_column($column_name)
     {
-        if ($results === false) {
-            if (!is_array($this->_result)) {
-                logla(print_r($this, true), "sync");
-                throw new OrmException(
-                    "Result Not Found in Sync\n" .
-                        "Result to be synced not found!"
-                );
+        if (is_array($this->_orm_coloms)) {
+            foreach ($this->_orm_coloms as $col) {
+                if (strcasecmp($col, $column_name) === 0) {
+                    return $col;
+                }
             }
-            foreach ($this->_orm_coloms as $value) {
-                $this->$value = isset($this->_result[$value]) ? $this->_result[$value] : null;
+        }
+        return null;
+    }
+
+    /**
+     * Case-insensitive setter for ORM properties.
+     *
+     * @param string|array $key
+     * @param mixed $value
+     * @return $this
+     */
+    public function set($key, $value = null)
+    {
+        if (is_array($key)) {
+            foreach ($key as $k => $v) {
+                $this->set($k, $v);
             }
             return $this;
         }
 
-        if (!isset($this->_result[0])) {
-            logla(print_r($this, true), "sync1");
-            throw new OrmException(
-                "Result Not Found in Sync\n" .
-                    "Result to be synced not found!"
-            );
+        $resolved = $this->resolve_column($key);
+        $target = $resolved !== null ? $resolved : $key;
+        $this->$target = $value;
+        return $this;
+    }
+
+    // Sync the current object when getResultOne has loaded a record.
+    public function sync($results = false)
+    {
+        $targetResult = null;
+        if ($results === false) {
+            if (!is_array($this->_result)) {
+                throw new OrmException("Result to be synced not found!");
+            }
+            $targetResult = $this->_result;
+        } else {
+            if (!isset($this->_result[0])) {
+                throw new OrmException("Result to be synced not found!");
+            }
+            $targetResult = $this->_result[0];
         }
-        foreach ($this->_orm_coloms as $value) {
-            $this->$value = isset($this->_result['0'][$value]) ? $this->_result['0'][$value] : null;
+
+        if (is_array($this->_orm_coloms)) {
+            $lowerResult = [];
+            foreach ($targetResult as $k => $v) {
+                $lowerResult[strtolower($k)] = $v;
+            }
+
+            foreach ($this->_orm_coloms as $colom) {
+                $lowerCol = strtolower($colom);
+                if (array_key_exists($colom, $targetResult)) {
+                    $this->$colom = $targetResult[$colom];
+                } elseif (array_key_exists($lowerCol, $lowerResult)) {
+                    $this->$colom = $lowerResult[$lowerCol];
+                } else {
+                    $this->$colom = null;
+                }
+            }
         }
         return $this;
     }
 
     public function size()
     {
-        return count($this->_result);
+        return count($this->_result ?? []);
     }
 
-    /*
-        public function delete()
-        {
-            $this->db->delete();
-        }
-    */
     public function __construct()
     {
-
-        /* $disable = array(
-            '_after_update', '_before_update',
-            '_after_insert', '_before_insert',
-            '_after_delete', '_before_delete',
-            '_model_table', '_model_coloms',
-            '_db_result','_result','_db','_query_count','_adapter','_coloms','_limit','_order','_where','_cache'
-        );*/
-        /*if (in_array($key, $disable)) {
-            continue;
-        }*/
-
+        $this->_orm_coloms = [];
         foreach ($this as $key => $value) {
             if (substr($key, 0, 1) === '_' && $key != '_table') {
                 continue;
@@ -274,49 +262,50 @@ abstract class ORM extends Database implements Orm_interface
             } else {
                 $this->_orm_table = $value;
             }
-            //unset($this->$key);
         }
 
-
-        //$this->_model_coloms = $_coloms;
-        //$this->_model_table = $_table;
-        // Get DB
-        //$this->db= new Database();
         $this->connect();
-        $this->table($this->_orm_table);
-        //Obuilder::$_orm_coloms = $this->_orm_coloms;
-        $this->_orm_pk = $this->_pk;
+        if ($this->_orm_table !== null) {
+            $this->table($this->_orm_table);
+        }
+        $this->_orm_pk = isset($this->_pk) ? $this->_pk : 'id';
         $this->_orm_ai = isset($this->_ai) ? $this->_ai : null;
     }
 
-
     public function __destruct()
     {
-        /*$this->db->build();
-        echo $this->db->sql_text;
-*/
-        //$this->result = $this->db->result;
     }
-
 
     // Save the current ORM record.
     public function save($sync = false)
     {
         //OrmEvent::run('_before_insert');
         $data = [];
-        foreach ($this->_orm_coloms as $colom) {
-            isset($this->$colom) ? $data[$colom] = $this->$colom : null;
+        if (is_array($this->_orm_coloms)) {
+            foreach ($this->_orm_coloms as $colom) {
+                if (isset($this->$colom)) {
+                    $data[$colom] = $this->$colom;
+                }
+            }
         }
-        // Set orm_pk to NULL
-        if ($this->_orm_ai !== null && isset($data[$this->_orm_ai])) {
-            $data[$this->_orm_ai] = null;
+        // Exclude auto-increment primary key from insert payload so the database engine generates IDs cleanly
+        if ($this->_orm_ai !== null && array_key_exists($this->_orm_ai, $data)) {
+            unset($data[$this->_orm_ai]);
         }
 
         if ($this->db_insert($this->_orm_table, $data)) {
+            $insertId = $this->insert_id();
+            if ($this->_orm_ai !== null && $insertId) {
+                $aiKey = $this->_orm_ai;
+                $this->$aiKey = is_numeric($insertId) ? (int)$insertId : $insertId;
+            }
             if ($sync === true) {
-                $this->where(" " . $this->_orm_pk . "='" . $this->insert_id() . "'");
+                $pkCol = !empty($this->_orm_pk) ? $this->_orm_pk : 'id';
+                $pkValue = ($this->_orm_ai !== null && $insertId) ? $insertId : (isset($this->$pkCol) ? $this->$pkCol : $insertId);
+                $this->where(" " . $pkCol . "='" . $pkValue . "'");
                 $this->getResultOne(true, true);
                 $this->sync();
+                $this->_where = null;
             }
             return $this;
         }
@@ -326,59 +315,61 @@ abstract class ORM extends Database implements Orm_interface
     // Update the current ORM record.
     public function update($key = null)
     {
-        /*if ($key === NULL) {
-            $key = $this->_orm_pk;
-        }*/
-
         if ($key !== null) {
-            // if $key check key is exists?
-            // Is $key defined?
+            $resolvedKey = $this->resolve_column($key) ?? $key;
             try {
-                Obuilder::check_key_exists($key, $this->_orm_coloms);
+                Obuilder::check_key_exists($resolvedKey, $this->_orm_coloms);
             } catch (OrmException $e) {
                 $e->show();
                 exit();
             }
 
-            // Check Update Key is Exists?
             try {
-                $this->check_object_exists($key);
+                $this->check_object_exists($resolvedKey);
             } catch (OrmException $e) {
                 $e->show();
                 exit();
             }
-            $where = [$key => $this->$key];
+            $where = [$resolvedKey => $this->$resolvedKey];
         } elseif (isset($this->_where)) {
             $where = $this->_where;
         } else {
-            $key = $this->_orm_pk;
+            $pkCol = !empty($this->_orm_pk) ? $this->_orm_pk : 'id';
+            $resolvedKey = $this->resolve_column($pkCol) ?? $pkCol;
             try {
-                Obuilder::check_key_exists($key, $this->_orm_coloms);
+                Obuilder::check_key_exists($resolvedKey, $this->_orm_coloms);
             } catch (OrmException $e) {
                 $e->show();
                 exit();
             }
 
-            // Check Update Key is Exists?
             try {
-                $this->check_object_exists($key);
+                $this->check_object_exists($resolvedKey);
             } catch (OrmException $e) {
                 $e->show();
                 exit();
             }
-            $where = [$key => $this->$key];
+            $where = [$resolvedKey => $this->$resolvedKey];
         }
-
 
         $data = [];
-        foreach ($this->_orm_coloms as $colom) {
-            isset($this->$colom) ? $data[$colom] = $this->$colom : null;
+        if (is_array($this->_orm_coloms)) {
+            foreach ($this->_orm_coloms as $colom) {
+                if (isset($this->$colom)) {
+                    $data[$colom] = $this->$colom;
+                }
+            }
         }
 
-        // unset
-        if ($this->_orm_ai !== null && isset($data[$this->_orm_ai])) {
+        // Exclude auto-increment primary key from update payload
+        if ($this->_orm_ai !== null && array_key_exists($this->_orm_ai, $data)) {
             unset($data[$this->_orm_ai]);
         }
+
+        if (empty($data)) {
+            return true;
+        }
+
         // DB update
         if ($this->db_update($this->_orm_table, $data, $where)) {
             return true;
@@ -389,7 +380,6 @@ abstract class ORM extends Database implements Orm_interface
     public function findByPk($id = null)
     {
         $this->where($this->_orm_pk . "='" . $id . "'");
-        //$this->getResult(TRUE, TRUE);
         return $this;
     }
 
@@ -398,22 +388,30 @@ abstract class ORM extends Database implements Orm_interface
         $this->getResult(true, true);
         return $this;
     }
+
     public function flush()
     {
         parent::flush();
-        foreach ($this->_orm_coloms as $key) {
-            $this->$key = null;
+        if ($this->_orm_table !== null) {
+            $this->table($this->_orm_table);
+        }
+        $this->_result = null;
+        $this->_db_result = null;
+        $this->_query_result = null;
+        $this->_cache_result = null;
+        if (is_array($this->_orm_coloms)) {
+            foreach ($this->_orm_coloms as $key) {
+                $this->$key = null;
+            }
         }
         return $this;
     }
 
     public function check_object_exists($key)
     {
-        if (isset($this->$key) === false) {
-            throw new OrmException(
-                " $key object is Undefined! - Update Key Not Found!\n" .
-                    " $key object is undefined - Update Key not found!"
-            );
+        $resolvedKey = $this->resolve_column($key) ?? $key;
+        if (isset($this->$resolvedKey) === false) {
+            throw new OrmException("Object '{$key}' is undefined - update key not found!");
             return false;
         }
         return true;

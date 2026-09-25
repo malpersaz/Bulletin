@@ -7,9 +7,9 @@ class register_validator
     public $errors = [];
 	function __construct()
 	{
-		// Validator Kütüphanesini Yükleyelim
+		// Load Validator Library
 		$this->valid = Load::lib('Validator');
-		// Dil Dosyası.
+		// Language File.
 		$this->lang = Load::lang('mod_user');
 		$this->captcha = Load::lib('Captcha');
 	}
@@ -118,7 +118,7 @@ class register_validator
 		$password = Req::Post_Safe('password');
 		if (!preg_match('/[A-Z]/', $password) || 
 			!preg_match('/[a-z]/', $password) || 
-			!preg_match('/[0-9]/', $password) || 
+			!preg_match('/\d/', $password) || 
 			!preg_match('/[^A-Za-z0-9]/', $password)) {
 			$this->errors[] = $this->lang['mod_user']['error']['password_complexity_error'];
 		}

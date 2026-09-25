@@ -18,6 +18,7 @@ if (!defined('AKM_LOADED')) {
  * Featured Content/Headline Management Language Translations
  */
 $lang['mod_headline'] = [
+    'add' => 'Add Full Headline',
 
     // === Navigation & Actions ===
     'actions' => [
@@ -153,8 +154,8 @@ $lang['mod_headline'] = [
 
     // === Access Control (ACL) ===
     // === Access Control (ACL) ===
-    'roll' => [
-        'ad' => 'Featured Content Management Permissions',
+    'role' => [
+        'name' => 'Featured Content Management Permissions',
         'add' => 'Can Add Featured Content',
         'edit' => 'Can Edit Featured Content',
         'delete' => 'Can Delete Featured Content',
@@ -287,8 +288,8 @@ $lang['mod_headline'] = [
     // === Publishing Workflow ===
     'publishing' => [
         'save_draft' => 'Save as Draft',
-        'schedule_publish' => 'Schedule Publishing',
-        'publish_noow' => 'Publish Now',
+        'schedule_publish' => 'Schedule Publish',
+        'publish_now' => 'Publish Now',
         'publish_later' => 'Publish Later',
         'expiry_options' => 'Expiry Options',
         'never_expires' => 'Never Expires',

@@ -1,11 +1,11 @@
 <?php
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 11.04.2011 - 17:37
- * Sınıf İsmi: AdapterException
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 11.04.2011 - 17:37
+ * Class Name: AdapterException
  */
 class AdapterException extends Exception
 {

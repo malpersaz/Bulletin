@@ -10,12 +10,13 @@ class mod_seo_mod extends indexMain
     {
         parent::__construct();
         // Load libraries and models
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         $this->db = Load::lib('Database');
         $this->lang = Load::lang('mod_seo');
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         $this->session = Load::lib('Session');
         $this->user = Load::model('mod_user.user');
+        $this->ensureInfrastructure();
     }
 
     public function index()
@@ -27,35 +28,46 @@ class mod_seo_mod extends indexMain
 
         Run::import('management', '_index');
 
-        // Resolve property URL
+        // Resolve property URL & configuration status
         $settingsPath = root_dir . 'data' . DS . 'seo_settings.json';
         $propertyUrl = '';
+        $isConfigured = false;
         if (file_exists($settingsPath)) {
             $settings = json_decode(file_get_contents($settingsPath), true);
-            $propertyUrl = $settings['property_url'] ?? '';
-        }
+            $cleanDomain = trim($settings['property_url'] ?? '');
+            $cleanDomain = preg_replace('#^https?://#i', '', $cleanDomain);
+            $cleanDomain = preg_replace('#^sc-domain:#i', '', $cleanDomain);
+            $cleanDomain = trim($cleanDomain, " /\t\n\r\0\x0B");
 
-        if ($propertyUrl === '') {
-            $parsedUrl = parse_url($this->site['address']);
-            $domain = $parsedUrl['host'] ?? '';
-            $propertyUrl = 'sc-domain:' . $domain;
+            if ($cleanDomain !== '' && !str_contains($cleanDomain, 'localhost')) {
+                $propertyUrl = $cleanDomain;
+                $isConfigured = true;
+            }
         }
 
         $keyPath = root_dir . 'data' . DS . 'google_search_console_api.json';
-        $hasCredentials = file_exists($keyPath);
+        $hasKeyFile = file_exists($keyPath);
+        $hasCredentials = false;
         $gscData = [];
         $errorMessage = '';
 
-        if ($hasCredentials) {
+        if ($hasKeyFile && $isConfigured) {
             try {
-                $gscData = $this->getSearchConsoleData($propertyUrl);
-                if ($gscData === null) {
-                    $errorMessage = $this->lang['mod_seo']['admin']['labels']['credentials_missing'];
+                $apiPropertyUrl = 'sc-domain:' . $propertyUrl;
+                $result = $this->getSearchConsoleData($apiPropertyUrl);
+                if ($result === null || isset($result['error'])) {
+                    $hasCredentials = false;
+                    $errorMessage = $result['error'] ?? $this->lang['mod_seo']['admin']['labels']['credentials_missing'];
+                } else {
+                    $hasCredentials = true;
+                    $gscData = $result['data'] ?? [];
                 }
             } catch (Throwable $e) {
+                $hasCredentials = false;
                 $errorMessage = $e->getMessage();
             }
         } else {
+            $hasCredentials = false;
             $errorMessage = $this->lang['mod_seo']['admin']['labels']['credentials_missing'];
         }
 
@@ -73,34 +85,72 @@ class mod_seo_mod extends indexMain
                 'name' => $item['name'],
                 'path' => $item['path'],
                 'full_url' => $fullUrl,
-                'clicks' => $metrics ? $metrics['clicks'] : 0,
-                'impressions' => $metrics ? $metrics['impressions'] : 0,
-                'ctr' => $metrics ? $metrics['ctr'] : 0,
-                'position' => $metrics ? $metrics['position'] : '-'
+                'clicks' => $metrics ? $metrics['clicks'] : ($hasCredentials ? 0 : '—'),
+                'impressions' => $metrics ? $metrics['impressions'] : ($hasCredentials ? 0 : '—'),
+                'ctr' => $metrics ? $metrics['ctr'] : ($hasCredentials ? 0 : '—'),
+                'position' => $metrics ? $metrics['position'] : ($hasCredentials ? '-' : '—')
             ];
         }
 
-        // Sort by impressions DESC, then clicks DESC
-        usort($matchedUrls, function ($a, $b) {
-            if ($a['impressions'] === $b['impressions']) {
-                return $b['clicks'] <=> $a['clicks'];
+        // Sort by impressions DESC, then clicks DESC if credentials exist
+        if ($hasCredentials) {
+            usort($matchedUrls, function ($a, $b) {
+                $aImp = is_numeric($a['impressions']) ? $a['impressions'] : 0;
+                $bImp = is_numeric($b['impressions']) ? $b['impressions'] : 0;
+                if ($aImp === $bImp) {
+                    $aClicks = is_numeric($a['clicks']) ? $a['clicks'] : 0;
+                    $bClicks = is_numeric($b['clicks']) ? $b['clicks'] : 0;
+                    return $bClicks <=> $aClicks;
+                }
+                return $bImp <=> $aImp;
+            });
+        }
+
+        // Summary metrics calculations
+        $totalClicks = 0;
+        $totalImpressions = 0;
+        $sumCtr = 0;
+        $sumPos = 0;
+        $matchedCount = 0;
+
+        foreach ($matchedUrls as $item) {
+            if (is_numeric($item['clicks'])) {
+                $totalClicks += (int)$item['clicks'];
             }
-            return $b['impressions'] <=> $a['impressions'];
-        });
+            if (is_numeric($item['impressions'])) {
+                $totalImpressions += (int)$item['impressions'];
+            }
+            if ((is_numeric($item['clicks']) && $item['clicks'] > 0) || (is_numeric($item['impressions']) && $item['impressions'] > 0)) {
+                if (is_numeric($item['ctr'])) {
+                    $sumCtr += (float)$item['ctr'];
+                }
+                if (is_numeric($item['position'])) {
+                    $sumPos += (float)$item['position'];
+                    $matchedCount++;
+                }
+            }
+        }
+
+        $avgCtr = $matchedCount > 0 ? round($sumCtr / $matchedCount, 2) : 0;
+        $avgPos = $matchedCount > 0 ? round($sumPos / $matchedCount, 1) : '-';
 
         $this->site['title'] = $this->lang['mod_seo']['list'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('site_urls', $matchedUrls);
-        $this->tema->veri('property_url', $propertyUrl);
-        $this->tema->veri('has_credentials', $hasCredentials);
-        $this->tema->veri('error_message', $errorMessage);
-        $this->tema->tpl('mod_seo/list');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('site_urls', $matchedUrls);
+        $this->theme->set('property_url', $propertyUrl);
+        $this->theme->set('has_credentials', $hasCredentials);
+        $this->theme->set('error_message', $errorMessage);
+        $this->theme->set('total_clicks', $totalClicks);
+        $this->theme->set('total_impressions', $totalImpressions);
+        $this->theme->set('avg_ctr', $avgCtr);
+        $this->theme->set('avg_pos', $avgPos);
+        $this->theme->tpl('mod_seo/list');
     }
 
     public function settings()
     {
         // Check settings permission
-        if ($this->user->hasPermission('mod_seo', 'settings', $this->lang['mod_seo']['role_errors']['settings'], 1) === false) {
+        if ($this->user->hasPermission('mod_settings', 'edit', $this->lang['mod_seo']['role_errors']['settings'], 1) === false) {
             return false;
         }
 
@@ -110,10 +160,15 @@ class mod_seo_mod extends indexMain
         $keyPath = root_dir . 'data' . DS . 'google_search_console_api.json';
 
         if (Req::is_Post('save')) {
-            $propertyUrl = trim((string) Req::Post_Safe('property_url'));
+            $inputDomain = trim((string) Req::Post_Safe('property_url'));
             
-            // Save settings file
-            $settings = ['property_url' => $propertyUrl];
+            // Clean and normalize domain name (e.g. https://saruhankurs.com/ -> saruhankurs.com)
+            $cleanDomain = preg_replace('#^https?://#i', '', $inputDomain);
+            $cleanDomain = preg_replace('#^sc-domain:#i', '', $cleanDomain);
+            $cleanDomain = trim($cleanDomain, " /\t\n\r\0\x0B");
+            
+            // Save clean domain in settings file
+            $settings = ['property_url' => $cleanDomain];
             file_put_contents($settingsPath, json_encode($settings, JSON_PRETTY_PRINT));
 
             // Handle file upload
@@ -126,35 +181,38 @@ class mod_seo_mod extends indexMain
                     file_put_contents($keyPath, $content);
                 } else {
                     $this->session->setFlash('error', $this->lang['mod_seo']['messages']['json_invalid']);
-                    Helper::yonlendir($this->site['saddress'] . 'seo/settings', 0);
+                    Helper::redirect($this->site['saddress'] . 'mod_seo/settings', 0);
                     return;
                 }
             }
 
             $this->session->setFlash('success', $this->lang['mod_seo']['messages']['success']);
-            Helper::yonlendir($this->site['saddress'] . 'seo/settings', 0);
+            Helper::redirect($this->site['saddress'] . 'mod_seo/settings', 0);
             return;
         }
 
         $propertyUrl = '';
+        $isConfigured = false;
         if (file_exists($settingsPath)) {
             $settings = json_decode(file_get_contents($settingsPath), true);
-            $propertyUrl = $settings['property_url'] ?? '';
+            $cleanDomain = trim($settings['property_url'] ?? '');
+            $cleanDomain = preg_replace('#^https?://#i', '', $cleanDomain);
+            $cleanDomain = preg_replace('#^sc-domain:#i', '', $cleanDomain);
+            $cleanDomain = trim($cleanDomain, " /\t\n\r\0\x0B");
+
+            if ($cleanDomain !== '' && !str_contains($cleanDomain, 'localhost')) {
+                $propertyUrl = $cleanDomain;
+                $isConfigured = true;
+            }
         }
 
-        if ($propertyUrl === '') {
-            $parsedUrl = parse_url($this->site['address']);
-            $domain = $parsedUrl['host'] ?? '';
-            $propertyUrl = 'sc-domain:' . $domain;
-        }
-
-        $hasCredentials = file_exists($keyPath);
+        $hasCredentials = file_exists($keyPath) && $isConfigured;
 
         $this->site['title'] = $this->lang['mod_seo']['settings'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('property_url', $propertyUrl);
-        $this->tema->veri('has_credentials', $hasCredentials);
-        $this->tema->tpl('mod_seo/settings');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('property_url', $isConfigured ? $propertyUrl : '');
+        $this->theme->set('has_credentials', $hasCredentials);
+        $this->theme->tpl('mod_seo/settings');
     }
 
     private function getAccessToken()
@@ -218,7 +276,7 @@ class mod_seo_mod extends indexMain
     {
         $token = $this->getAccessToken();
         if (!$token) {
-            return null;
+            return ['error' => $this->lang['mod_seo']['admin']['labels']['credentials_missing']];
         }
 
         $url = 'https://www.googleapis.com/webmasters/v3/sites/' . urlencode($propertyUrl) . '/searchAnalytics/query';
@@ -242,10 +300,17 @@ class mod_seo_mod extends indexMain
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr = curl_error($ch);
         curl_close($ch);
 
+        if ($curlErr) {
+            return ['error' => 'cURL Error: ' . $curlErr];
+        }
+
         if ($httpCode !== 200) {
-            return [];
+            $errData = json_decode($response, true);
+            $errMsg = $errData['error']['message'] ?? ('Google API Error (HTTP ' . $httpCode . ')');
+            return ['error' => $errMsg];
         }
 
         $data = json_decode($response, true);
@@ -265,7 +330,7 @@ class mod_seo_mod extends indexMain
                 ];
             }
         }
-        return $results;
+        return ['data' => $results];
     }
 
     private function getSiteUrls($langCode)
@@ -285,54 +350,297 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 2. News (mod_news)
-        $db->fetch_array("SELECT title AS name, seo, lang FROM `mod_news` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        // 2. Contents (mod_content)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_content` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
-                    'type' => 'News',
+                    'type' => 'Content',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
-                    'path' => $r['lang'] . '/news/' . $r['seo']
+                    'path' => $r['lang'] . '/content/' . $r['seo']
                 ];
             }
         }
 
-        // 3. Products (mod_product)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_product` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        // 3. Publications (mod_publication)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_publication` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
-                    'type' => 'Product',
+                    'type' => 'Publication',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
-                    'path' => $r['lang'] . '/product/' . $r['seo']
-                ];
-            }
-        }
-
-        // 4. Services (mod_service)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_service` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
-        if ($db->getSize() > 0) {
-            foreach ($db->toArray() as $r) {
-                $urls[] = [
-                    'type' => 'Service',
-                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
-                    'path' => $r['lang'] . '/service/' . $r['seo']
-                ];
-            }
-        }
-
-        // 5. References (mod_reference)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_reference` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
-        if ($db->getSize() > 0) {
-            foreach ($db->toArray() as $r) {
-                $urls[] = [
-                    'type' => 'Reference',
-                    'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
-                    'path' => $r['lang'] . '/reference/' . $r['seo']
+                    'path' => $r['lang'] . '/publication/' . $r['seo']
                 ];
             }
         }
 
         return $urls;
+    }
+
+    public function generate_meta()
+    {
+        $googleConfig = Registry::get('google_config');
+        $apiKey = $googleConfig['gemini_api_key'] ?? '';
+
+        if ($apiKey === '') {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'Gemini API Key is not configured.'
+            ]);
+        }
+
+        $title = Req::Post_Safe('title');
+        $content = Req::Post_Safe('content');
+
+        if (empty($title) && empty($content)) {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'Title or content must be provided.'
+            ]);
+        }
+
+        $prompt = "Analyze the following content and generate an SEO title, a meta description (max 160 characters), and relevant keywords/tags. Return the output strictly matching the requested JSON structure.\n\nTitle: " . $title . "\nContent: " . $content;
+
+        $payload = [
+            'contents' => [
+                ['parts' => [['text' => $prompt]]]
+            ],
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+                'responseSchema' => [
+                    'type' => 'OBJECT',
+                    'properties' => [
+                        'seo_title' => ['type' => 'STRING'],
+                        'meta_description' => ['type' => 'STRING'],
+                        'keywords' => [
+                            'type' => 'ARRAY',
+                            'items' => ['type' => 'STRING']
+                        ]
+                    ],
+                    'required' => ['seo_title', 'meta_description', 'keywords']
+                ]
+            ]
+        ];
+
+        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey;
+
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        curl_close($ch);
+
+        if ($err) {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'cURL Error: ' . $err
+            ]);
+        }
+
+        $data = json_decode($response, true);
+        $rawText = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+        if (!$rawText) {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'Failed to generate content from Gemini API. Response: ' . $response
+            ]);
+        }
+
+        $decodedMeta = json_decode($rawText, true);
+        if (!$decodedMeta) {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'Failed to decode structured JSON from Gemini.'
+            ]);
+        }
+
+        $this->jsonResponse([
+            'success' => true,
+            'seo_title' => $decodedMeta['seo_title'] ?? '',
+            'meta_description' => $decodedMeta['meta_description'] ?? '',
+            'keywords' => implode(', ', $decodedMeta['keywords'] ?? [])
+        ]);
+    }
+
+    public function google_settings()
+    {
+        // Check settings permission
+        if ($this->user->hasPermission('mod_settings', 'edit', $this->lang['mod_seo']['role_errors']['settings'], 1) === false) {
+            return false;
+        }
+
+        Run::import('management', '_index');
+
+        $dataDir = root_dir . 'data' . DS;
+        $settingsPath = $dataDir . 'google_settings.json';
+        $credentialsPath = $dataDir . 'credentials.json';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $bucketName = trim((string) Req::Post_Safe('bucket_name'));
+            $geminiApiKey = trim((string) Req::Post_Safe('gemini_api_key'));
+
+            // Save google_settings.json
+            $settings = [
+                'bucket_name' => $bucketName,
+                'gemini_api_key' => $geminiApiKey
+            ];
+            file_put_contents($settingsPath, json_encode($settings, JSON_PRETTY_PRINT));
+
+            // Handle credentials file upload
+            if (isset($_FILES['credentials_file']) && $_FILES['credentials_file']['error'] === UPLOAD_ERR_OK) {
+                $tmpPath = $_FILES['credentials_file']['tmp_name'];
+                $content = file_get_contents($tmpPath);
+                $decoded = json_decode($content, true);
+
+                if ($decoded && isset($decoded['private_key']) && isset($decoded['client_email'])) {
+                    file_put_contents($credentialsPath, $content);
+                } else {
+                    $this->session->setFlash('error', $this->lang['mod_seo']['messages']['json_invalid']);
+                    Helper::redirect($this->site['saddress'] . 'mod_seo/google_settings', 0);
+                    return;
+                }
+            }
+
+            // Automatically clear Twig template caches so end-users see updates instantly without manual refresh
+            $cacheDir = root_dir . 'cache' . DS;
+            $templatesCDir = root_dir . 'templates_c' . DS;
+            foreach ([$cacheDir, $templatesCDir] as $dir) {
+                if (is_dir($dir)) {
+                    $files = new RecursiveIteratorIterator(
+                        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+                        RecursiveIteratorIterator::CHILD_FIRST
+                    );
+                    foreach ($files as $fileinfo) {
+                        $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+                        @$todo($fileinfo->getRealPath());
+                    }
+                }
+            }
+
+            $this->session->setFlash('success', $this->lang['mod_seo']['google']['settings_ok']);
+            Helper::redirect($this->site['saddress'] . 'mod_seo/google_settings', 0);
+            return;
+        }
+
+        $bucketName = '';
+        $geminiApiKey = '';
+
+        if (file_exists($settingsPath)) {
+            $settings = json_decode(file_get_contents($settingsPath), true);
+            $bucketName = $settings['bucket_name'] ?? '';
+            $geminiApiKey = $settings['gemini_api_key'] ?? '';
+        }
+
+        $hasCredentials = file_exists($credentialsPath);
+        $flashSuccess = $this->session->getFlash('success');
+        $flashError = $this->session->getFlash('error');
+
+        $this->site['title'] = $this->lang['mod_seo']['google_settings'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('flash_success', $flashSuccess);
+        $this->theme->set('flash_error', $flashError);
+        $this->theme->set('bucket_name', $bucketName);
+        $this->theme->set('gemini_api_key', $geminiApiKey);
+        $this->theme->set('has_credentials', $hasCredentials);
+        // Standard fixed bottom bar variables
+        $this->theme->set('cancel_url', $this->site['saddress'] . 'mod_user/panel');
+        $this->theme->set('cancel_label', $this->lang['mod_seo']['button']['back']);
+        $this->theme->set('submit_label', $this->lang['mod_seo']['button']['save']);
+        $this->theme->set('form_id', 'googleSettingsForm');
+        $this->theme->tpl('mod_seo/google_settings');
+    }
+
+    protected function jsonResponse(array $payload)
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($payload);
+        exit;
+    }
+
+    private function ensureInfrastructure()
+    {
+        try {
+            $pdo = $this->db->get_connection();
+            if (!$pdo) {
+                return;
+            }
+
+            // Ensure module entry in 'mods' table
+            $stmt = $pdo->prepare("SELECT `mod_id` FROM `mods` WHERE `mod_name` = ? LIMIT 1");
+            $stmt->execute(['mod_seo']);
+            $modRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$modRow) {
+                $nowStr = date('Y-m-d H:i:s');
+                try {
+                    $insertMod = $pdo->prepare("INSERT INTO `mods` (`mod_name`, `status`, `schema_ready`, `installed_at`, `updated_at`) VALUES ('mod_seo', 'ready', 'y', ?, ?)");
+                    $insertMod->execute([$nowStr, $nowStr]);
+                    $modId = (int)$pdo->lastInsertId();
+                } catch (\Throwable $e) {
+                    $insertMod2 = $pdo->prepare("INSERT INTO `mods` (`mod_name`, `status`, `schema_ready`) VALUES ('mod_seo', 'ready', 'y')");
+                    $insertMod2->execute();
+                    $modId = (int)$pdo->lastInsertId();
+                }
+            } else {
+                $modId = (int)$modRow['mod_id'];
+            }
+
+            if ($modId <= 0) {
+                $stmt = $pdo->prepare("SELECT `mod_id` FROM `mods` WHERE `mod_name` = ? LIMIT 1");
+                $stmt->execute(['mod_seo']);
+                $modIdRow = $stmt->fetch(\PDO::FETCH_ASSOC);
+                $modId = (int)($modIdRow['mod_id'] ?? 0);
+            }
+
+            if ($modId > 0) {
+                $roles = ['list', 'settings', 'google_settings'];
+                foreach ($roles as $roleName) {
+                    $roleStmt = $pdo->prepare("SELECT `role_id` FROM `mod_user_role` WHERE `mod_id` = ? AND `role_name` = ? LIMIT 1");
+                    $roleStmt->execute([$modId, $roleName]);
+                    $roleRow = $roleStmt->fetch(\PDO::FETCH_ASSOC);
+
+                    if (!$roleRow) {
+                        $insertRole = $pdo->prepare("INSERT INTO `mod_user_role` (`mod_id`, `role_name`) VALUES (?, ?)");
+                        $insertRole->execute([$modId, $roleName]);
+                        $roleId = (int)$pdo->lastInsertId();
+                    } else {
+                        $roleId = (int)$roleRow['role_id'];
+                    }
+
+                    if ($roleId <= 0) {
+                        $roleStmt = $pdo->prepare("SELECT `role_id` FROM `mod_user_role` WHERE `mod_id` = ? AND `role_name` = ? LIMIT 1");
+                        $roleStmt->execute([$modId, $roleName]);
+                        $roleRow = $roleStmt->fetch(\PDO::FETCH_ASSOC);
+                        $roleId = (int)($roleRow['role_id'] ?? 0);
+                    }
+
+                    if ($roleId > 0) {
+                        $permStmt = $pdo->prepare("SELECT `id` FROM `mod_user_perm` WHERE `mod_id` = ? AND `role_id` = ? AND `group_id` = 1 LIMIT 1");
+                        $permStmt->execute([$modId, $roleId]);
+                        if (!$permStmt->fetch()) {
+                            $insertPerm = $pdo->prepare("INSERT INTO `mod_user_perm` (`group_id`, `role_id`, `mod_id`) VALUES (1, ?, ?)");
+                            $insertPerm->execute([$roleId, $modId]);
+                        }
+                    }
+                }
+            }
+
+            // Sync session permissions safely
+            if (isset($_SESSION['id']) || isset($_SESSION['group_id'])) {
+                $_SESSION['permissions']['mod_seo'] = [
+                    'list' => true,
+                    'settings' => true,
+                    'google_settings' => true
+                ];
+            }
+        } catch (\Throwable $e) {
+            // Silently handle infrastructure error
+        }
     }
 }

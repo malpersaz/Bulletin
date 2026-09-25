@@ -13,63 +13,70 @@ class mod_survey_helper extends indexBase
         if (!intval($anket_id)  || !intval($secenek_id)) {
             return FALSE;
         } */
-    /*
-      * Anket
-      */
-    public function oyver()
+    /**
+     * Submit vote for survey option
+     */
+    public function vote()
     {
-        $anket_id = Req::is_Post('anket_id') ? intval(Req::Post_Safe('anket_id')) : NULL;
-        $secenek_id = Req::is_Post('secenek_id') ? intval(Req::Post_Safe('secenek_id')) : NULL;
+        $survey_id = Req::is_Post('anket_id') ? intval(Req::Post_Safe('anket_id')) : (Req::is_Post('survey_id') ? intval(Req::Post_Safe('survey_id')) : NULL);
+        $option_id = Req::is_Post('secenek_id') ? intval(Req::Post_Safe('secenek_id')) : (Req::is_Post('option_id') ? intval(Req::Post_Safe('option_id')) : NULL);
 
+        $options = Load::model('mod_survey.secenek');
 
-        $secenek = Load::model('mod_survey.secenek');
+        if ($survey_id != '' && $option_id != '') {
 
-        if ($anket_id != '' and $secenek_id != '') {
-
-            if ($secenek_id != NULL && $secenek->exists_id($secenek_id) === False) {
+            if ($option_id != NULL && $options->exists_id($option_id) === False) {
                 exit();
             }
 
-            $anketip = Load::model('mod_survey.anketip');
+            $survey_ip = Load::model('mod_survey.anketip');
 
-            if ($anketip->exists_anket_id_and_ip($anket_id, $_SERVER['REMOTE_ADDR']) === False) {
+            if ($survey_ip->exists_anket_id_and_ip($survey_id, $_SERVER['REMOTE_ADDR']) === False) {
 
-                $secenek->getResultOne();
-                $secenek->sync();
-                // Seçeneğin Hitini Arttıralım
-                $secenek->id = $secenek_id;
-                $secenek->hit++;
-                $secenek->update('id');
-                // Oy Verenin İp Adresini Kaydedelim
-                $anketip->anket_id = $anket_id;
-                $anketip->ip = $_SERVER['REMOTE_ADDR'];
-                $anketip->save();
-                unset($anketip);
+                $options->getResultOne();
+                $options->sync();
+                // Increment option hit counter
+                $options->id = $option_id;
+                $options->hit++;
+                $options->update('id');
+                // Record voter IP address
+                $survey_ip->anket_id = $survey_id;
+                $survey_ip->ip = $_SERVER['REMOTE_ADDR'];
+                $survey_ip->save();
+                unset($survey_ip);
             }
         }
 
-        $secenek->where_anket_id($anket_id)->gR();
-        echo json_encode($secenek->toArray());
-        unset($secenek);
+        $options->where_anket_id($survey_id)->gR();
+        echo json_encode($options->toArray());
+        unset($options);
+    }
+
+    public function oyver()
+    {
+        return $this->vote();
+    }
+
+    public function _survey()
+    {
+        $survey = Load::model('mod_survey')->select('soru,id')->where_status_and_lang('y', $this->site['lang'])->gRo();
+        if ($survey->getSize() !== 0) {
+
+            $survey->sync();
+            $options = Load::model('mod_survey.secenek');
+            $options->where_anket_id($survey->id);
+            $options->gR();
+            if ($options->getSize() !== 0) {
+
+                return ['id' => $survey->id, 'soru' => $survey->soru, 'question' => $survey->soru, 'secenekler' => $options->toArray(), 'options' => $options->toArray()];
+            }
+            unset($options);
+        }
+        return false;
     }
 
     public function _anket()
     {
-        $anket = Load::model('mod_survey')->select('soru,id')->where_status_and_lang('y', $this->site['lang'])->gRo();
-        if ($anket->getSize() !== 0) {
-
-
-            $anket->sync();
-            $sec = Load::model('mod_survey.secenek');
-            $sec->where_anket_id($anket->id);
-            $sec->gR();
-            if ($sec->getSize() !== 0) {
-
-                return  ['id' => $anket->id, 'soru' => $anket->soru, 'secenekler' => $sec->toArray()];
-                // $this->tema->ctx_set('anket', array('id' => $anket->id, 'soru' => $anket->soru, 'secenekler' => $sec->toArray()));
-            }
-            unset($sec);
-        }
-        return false;
+        return $this->_survey();
     }
 }

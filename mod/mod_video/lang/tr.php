@@ -5,22 +5,21 @@
     'list' => 'Video Listesi',
     'video_management' => 'Video Yönetimi',
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ölümcül Hata Oluştu!',
+    'success' => 'İşlem Başarılı!',
+    'error' => 'Hata Oluştu!',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
-    'remove_image_oke' => 'Resim Kaldırıldı',
+    'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
     'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
     'converting' => 'Video Dönüştürülüyor Lütfen Bekleyin...',
     'converted' => 'Video Yükleme Tamamlandı! Şimdi Videoyu Dönüştürebilirsiniz.',
-    '19' => 'Video Dönüştürülürken Hatalar Oluştu %s',
-    '20' => 'Video Dönüştürülme Tamamlandı.<br>Bu İşlem %s Saniye Sürdü.',
-    'add_uzak' => 'Bu Videoyu Uzak Video Olarakta Sisteme Ekle',
+    'video_gallery' => 'Video Dönüştürülürken Hatalar Oluştu %s',
+    'video_list' => 'Video Dönüştürülme Tamamlandı.<br>Bu İşlem %s Saniye Sürdü.',
+    'add_remote' => 'Bu Videoyu Uzak Video Olarakta Sisteme Ekle',
     'unremove_original' => 'Bu Videonun Orjinal Halini Kaydet',
     'message' =>
     [
-        'oke' =>
+        'success' =>
         [
             'add' => 'Video Eklendi!',
             'edit' => 'Video Düzenlendi!',
@@ -38,9 +37,9 @@
     ],
     'errors' =>
     [
-        '1' => 'TMP dizininden FLV dosyası Taşınırken Hata Oluştu',
-        '2' => 'TMP dizininden Resim dosyası Taşınırken Hata Oluştu',
-        '3' => 'TMP dizininden ORjinal Video Dosyası Taşınırken Hata Oluştu',
+        'title' => 'TMP dizininden FLV dosyası Taşınırken Hata Oluştu',
+        'subtitle' => 'TMP dizininden Resim dosyası Taşınırken Hata Oluştu',
+        'description' => 'TMP dizininden ORjinal Video Dosyası Taşınırken Hata Oluştu',
         'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
         'in_valid_ext' => 'Geçersiz Bir Video Yükleme İstediniz.
 	 Yanlızca <font color="black">%s</font> uzantılı Videolar Yükleyebilirsiniz.',
@@ -51,27 +50,27 @@
     [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
         'gallery' => 'Resim Galerisi',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
-        'yukle' => 'Yükle',
-        'donustur' => 'Dönüştür'
+        'cancel' => 'Vazgeç',
+        'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
+        'upload' => 'Yükle',
+        'convert' => 'Dönüştür'
     ],
     'grid' =>
     [
-        0 => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
-        4 => 'Hiçbir Veri Bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen En Az Bir Satır Seçin',
-        8 => 'Lütfen Sadece Bir Satır Seçin',
+        'showing_results' => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
+        'no_data' => 'Hiçbir Veri Bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Arama',
+        'select_at_least_one' => 'Lütfen En Az Bir Satır Seçin',
+        'select_only_one' => 'Lütfen Sadece Bir Satır Seçin',
         'publish' =>
              [
                 'key' => 'Yayınla',
@@ -82,7 +81,12 @@
                 'key' => 'Yayından Al',
                 'value' => 'Bu Videoyu Yayından Kaldırmak İstediğinize Eminmisiniz?',
             ],
+        'publishing' => 'Yayınlanıyor...',
+        'unpublishing' => 'Yayından kaldırılıyor...',
+        'delete_confirm_title' => 'Emin misiniz?',
+        'delete_confirm_text' => 'Seçilen video silinecektir.',
     ],
+    'js_enable' => 'Bu videoyu görüntülemek için JavaScript gereklidir.',
     'validator' =>
     [
         'required' => 'Lütfen %s Alanını Boş Bırakmayın',
@@ -91,7 +95,7 @@
         'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
         'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
     ],
-    'roll' =>
+    'role' =>
     [
         'name' => 'Video Yönetim Rolleri',
         'add' => 'Video Ekleyebilir',
@@ -325,4 +329,45 @@
         'step3_title' => 'Videoyu Kaydet',
         'step3_instruction' => 'Video bilgilerini doldurun ve kaydedin.',
     ],
+    'context_menu' => [
+        'title' => 'Video İşlemleri',
+        'edit' => 'Düzenle',
+        'gallery' => 'Galeri İşlemleri',
+        'files' => 'Dosya İşlemleri',
+        'video' => 'Videoya Video Ekle',
+        'status' => 'Durum Değiştir',
+        'delete' => 'Sil',
+        'delete_error' => 'Silme işlemi başarısız!',
+        'video_success_sim' => 'Video Başarıyla Eklendi (Simülasyon)',
+        'video_embed_error' => 'Geçersiz Embed Kodu',
+        'video_title_error' => 'Geçersiz Başlık',
+        'publish' => 'Yayınla',
+        'unpublish' => 'Yayından Kaldır',
+        'published_msg' => 'Yayınlandı',
+        'unpublished_msg' => 'Yayından Kaldırıldı',
+        'confirm' => 'Evet',
+        'cancel' => 'Vazgeç',
+        'edit_alert' => "DÜZENLEME MODU:\nID: %s\nBaşlık: %s",
+        'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nVideo için resim galerisi açılıyor.",
+        'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nVideo için dosya yükleme ekranı açılıyor.",
+        'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
+        'delete_success' => 'Video silindi!',
+    ],
+    'status_badge' => [
+        'active' => 'Aktif',
+        'draft' => 'Taslak',
+    ],
+    'sheet' => [
+        'all' => 'Hepsi',
+        'lang_title' => 'Dil Filtresi',
+        'ok' => 'Tamam',
+        'category_title' => 'Kategori Seçin',
+    ],
+    // === Hero Slider ===
+    'hero_slider_add' => 'Slider\'a Ekle',
+    'hero_slider_remove' => 'Slider\'dan Kaldır',
+    'hero_slider_added' => 'Video başarıyla slider\'a eklendi.',
+    'hero_slider_removed' => 'Video slider\'dan kaldırıldı.',
+    'hero_slider_error' => 'Slider güncellemesi başarısız oldu.',
+    'hero_slider_badge' => 'Slider',
 ];

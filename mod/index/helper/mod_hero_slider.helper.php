@@ -4,8 +4,8 @@ class mod_hero_slider_helper extends indexBase
 {
     private function hasConfiguredDatabase()
     {
-        $database = Kayit::getir('database');
-        $dbConfig = Kayit::getir('db_config');
+        $database = Registry::get('database');
+        $dbConfig = Registry::get('db_config');
 
         if (!is_string($database) || $database === '') {
             return false;
@@ -34,8 +34,7 @@ class mod_hero_slider_helper extends indexBase
         $items = array_merge(
             $this->loadNewsItems(),
             $this->loadPublicationItems(),
-            $this->loadContentItems(),
-            $this->loadProductItems()
+            $this->loadContentItems()
         );
 
         if (empty($items)) {
@@ -72,7 +71,8 @@ class mod_hero_slider_helper extends indexBase
             'username',
             'lang',
         ]);
-        $news_model->addWhere("status='y' AND slider='y' AND lang='" . Req::Clear($this->site['lang']) . "'");
+        $currentLang = strtolower(Req::Clear($this->site['lang']));
+        $news_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
         $news_model->order('created_at', 'DESC');
         $news_model->gR();
 
@@ -119,7 +119,8 @@ class mod_hero_slider_helper extends indexBase
             'user_image',
             'lang',
         ]);
-        $publication_model->addWhere("status='y' AND slider='y' AND lang='" . Req::Clear($this->site['lang']) . "'");
+        $currentLang = strtolower(Req::Clear($this->site['lang']));
+        $publication_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
         $publication_model->order('created_at', 'DESC');
         $publication_model->gR();
 
@@ -163,11 +164,11 @@ class mod_hero_slider_helper extends indexBase
                 cat.name AS category_name,
                 cat.seo AS category_seo
             FROM mod_content c
-            LEFT JOIN mod_category cat ON cat.id = c.category_id
+            LEFT JOIN mod_content_category cat ON cat.id = c.category_id
             LEFT JOIN mod_user u ON u.id = c.user_id
             WHERE c.status = 'y'
               AND c.slider = 'y'
-              AND c.lang = '" . Req::Clear($this->site['lang']) . "'
+              AND LOWER(c.lang) = '" . strtolower(Req::Clear($this->site['lang'])) . "'
             ORDER BY c.created_at DESC, c.id DESC
         ")->getResult()->toArray();
 
@@ -259,11 +260,6 @@ class mod_hero_slider_helper extends indexBase
             $category_path = 'category/';
             $image_base = 'mod_content/';
             $thumb_base = 'mod_content/thumb/';
-        } elseif ($source_mod === 'mod_product') {
-            $detail_path = 'product/';
-            $category_path = 'products/';
-            $image_base = 'mod_product/';
-            $thumb_base = 'mod_product/thumb/';
         }
         $image = isset($record['image']) ? (string) $record['image'] : '';
         $category_seo = isset($record['category_seo']) ? (string) $record['category_seo'] : '';
@@ -390,70 +386,5 @@ class mod_hero_slider_helper extends indexBase
         });
 
         return empty($clean_ids) ? '0' : implode(',', $clean_ids);
-    }
-
-    private function loadProductItems()
-    {
-        $db = Load::lib('Database');
-        
-        $table_check = false;
-        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
-            $db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='mod_product'");
-            $result = $db->toArray();
-            if (!empty($result)) {
-                $table_check = true;
-            }
-        } else {
-            $db->fetch_array("SHOW TABLES LIKE 'mod_product'");
-            $result = $db->getResult()->toArray();
-            if (!empty($result)) {
-                $table_check = true;
-            }
-        }
-
-        if (!$table_check) {
-            return [];
-        }
-
-        $rows = $db->fetch_array("
-            SELECT
-                p.id,
-                p.name,
-                p.seo,
-                p.image,
-                p.summary,
-                p.created_at,
-                p.lang,
-                p.user_id,
-                u.name AS u_name,
-                u.last_name AS u_last_name,
-                u.username AS username,
-                cat.name AS category_name,
-                cat.seo AS category_seo
-            FROM mod_product p
-            LEFT JOIN mod_product_category cat ON cat.id = p.category_id
-            LEFT JOIN mod_user u ON u.id = p.user_id
-            WHERE p.status = 'y'
-              AND p.show_on_homepage = 'y'
-              AND p.lang = '" . Req::Clear($this->site['lang']) . "'
-            ORDER BY p.created_at DESC, p.id DESC
-        ")->getResult()->toArray();
-
-        if (!is_array($rows) || empty($rows)) {
-            return [];
-        }
-
-        $user_image_map = $this->loadUserImageMap($rows);
-        $items = [];
-
-        foreach ($rows as $row) {
-            $items[] = $this->normalizeItem(
-                'mod_product',
-                $row,
-                isset($user_image_map[(int) $row['user_id']]) ? $user_image_map[(int) $row['user_id']] : ''
-            );
-        }
-
-        return array_values(array_filter($items));
     }
 }

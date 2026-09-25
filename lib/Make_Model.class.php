@@ -1,11 +1,7 @@
 <?php
- /**
- * AKM Business İçerik Yönetim Sistemi
- * Web: www.akmsoftware.co.uk
- * E-Mail: info@akmsoftware.co.uk
- * Kullanıcı: a.k.mutlu
- * Zaman: 16.04.2011- 14:39
- * Sınıfı : Make_Model
+/**
+ * Amed Framework Model Generator Utility
+ * Class Make_Model
  */ 
 class Make_Model {
 
@@ -58,7 +54,7 @@ class Make_Model {
             $this->generate($table);
         }
         if(!isset($this->source[$table])){
-            throw new Exception($table.' Source Oluşturulamadı!');
+            throw new Exception($table.' Source could not be generated!');
         }
         echo '<pre>';
         echo htmlspecialchars($this->source[$table]);

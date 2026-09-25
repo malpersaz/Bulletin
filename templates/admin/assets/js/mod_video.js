@@ -64,6 +64,11 @@ class VideoManager {
             this.draw = 1;
             this.emptyState.style.display = 'none';
             this.loader.style.display = 'flex';
+            this.selectedVideoId = null;
+            this.selectedStatus = null;
+            this.selectedInHeroSlider = false;
+            this.updateToolbar(false);
+            this.updateFabState(false);
             if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
         } else {
             this.loader.style.display = 'flex';
@@ -144,6 +149,9 @@ class VideoManager {
             const imgTag = tempDiv.querySelector('img');
             const imgSrc = imgTag ? imgTag.src : '';
 
+            const inHeroSlider = String(item[9] || 'n') === 'y';
+            const safeSliderBadge = (typeof VIDEO_LANG !== 'undefined') ? (VIDEO_LANG.hero_slider_badge || 'Slider') : 'Slider';
+
             // Extract status from badge HTML
             const isPublished = statusHtml.includes('success');
             const statusVal = isPublished ? 'y' : 'n';
@@ -161,6 +169,7 @@ class VideoManager {
             card.className = 'm3-card content-card';
             card.dataset.id = id;
             card.dataset.status = statusVal;
+            card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
             card.onclick = () => window.videoManager.selectVideo(id, card);
 
             card.innerHTML = `
@@ -170,13 +179,16 @@ class VideoManager {
                          onclick="event.stopPropagation(); window.videoManager.processImageUpload('${id}', ${imgSrc ? 'true' : 'false'})"
                          style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; position:relative; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
                         ${!imgSrc ? '<i class="bi bi-youtube" style="font-size: 24px; color: #FF0000;"></i>' : ''}
-                        ${duration ? `<span style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:white; font-size:10px; padding:1px 6px; border-radius:4px; font-weight:600;">${duration}</span>` : ''}
+                         ${duration ? `<span style="position:absolute; bottom:4px; right:4px; background:rgba(0,0,0,0.75); color:white; font-size:10px; padding:1px 6px; border-radius:4px; font-weight:600;">${duration}</span>` : ''}
                     </div>
                     
                     <div class="card-body-col">
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
                                  <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
+                                     <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
+                                         <i class="bi bi-stars"></i> ${safeSliderBadge}
+                                     </span>
                                      <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${statusText}</span>
                                  </div>
                                  <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
@@ -300,7 +312,7 @@ class VideoManager {
         const isPublished = (status === 'y');
 
         if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, isPublished, ['gallery', 'files']);
+            openContextMenu(id, title, isPublished, ['video']);
         }
     }
 
@@ -308,25 +320,54 @@ class VideoManager {
     selectVideo(id, cardElement) {
         const isCurrent = cardElement.classList.contains('selected');
 
+        if (isCurrent) {
+            this.clearSelection();
+            return;
+        }
+
         document.querySelectorAll('.m3-card.selected, .content-card.selected').forEach(el => {
             el.classList.remove('selected');
         });
 
-        if (!isCurrent) {
-            cardElement.classList.add('selected');
-            this.selectedVideoId = id;
-            this.selectedStatus = cardElement.dataset.status || 'n';
-            this.updateToolbar(true);
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
-        } else {
-            this.selectedVideoId = null;
-            this.selectedStatus = null;
+        cardElement.classList.add('selected');
+        this.selectedVideoId = id;
+        this.selectedStatus = cardElement.dataset.status || 'n';
+        this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
+        this.updateToolbar(true);
+        this.updateFabState(true);
+        if (window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+
+    clearSelection() {
+        if (!this.selectedVideoId) {
+            document.querySelectorAll('.m3-card.selected, .content-card.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
             this.updateToolbar(false);
+            this.updateFabState(false);
+            return;
+        }
+
+        document.querySelectorAll('.m3-card.selected, .content-card.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+
+        this.selectedVideoId = null;
+        this.selectedStatus = null;
+        this.selectedInHeroSlider = false;
+        this.updateToolbar(false);
+        this.updateFabState(false);
+        if (window.navigator.vibrate) window.navigator.vibrate(8);
+    }
+
+    updateFabState(active) {
+        if (typeof window.updateGlobalFabState === 'function') {
+            window.updateGlobalFabState(active);
         }
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarImage', 'toolbarPublish', 'toolbarDelete'];
+        const ids = ['toolbarEdit', 'toolbarImage', 'toolbarPublish', 'toolbarDelete', 'toolbarSlider'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -352,13 +393,77 @@ class VideoManager {
             if (this.selectedStatus === 'y') {
                 // Currently published -> show "Unpublish"
                 publishIcon.className = 'bi bi-eye-slash-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.unpublish : 'Neweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.unpublish) ? VIDEO_LANG.unpublish : 'Unpublish';
             } else {
                 // Currently draft -> show "Publish"
                 publishIcon.className = 'bi bi-eye-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.publish : 'Biweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.publish) ? VIDEO_LANG.publish : 'Publish';
             }
         }
+
+        this.syncSliderToolbarState(active);
+    }
+
+    async toggleHeroSlider() {
+        if (!this.selectedVideoId) return;
+
+        const currentId = this.selectedVideoId;
+        const formData = new URLSearchParams();
+        formData.append('id', currentId);
+
+        try {
+            const response = await fetch(`${MODULE_URL}toggle_hero_slider`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || VIDEO_LANG.hero_slider_error, 'error');
+                return;
+            }
+
+            this.selectedInHeroSlider = Boolean(result.in_hero_slider);
+            this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
+            this.syncSliderToolbarState(true);
+            showSnackbar(
+                result.message || (this.selectedInHeroSlider ? VIDEO_LANG.hero_slider_added : VIDEO_LANG.hero_slider_removed),
+                'success'
+            );
+        } catch (error) {
+            console.error('Hero slider toggle error:', error);
+            showSnackbar(VIDEO_LANG.hero_slider_error, 'error');
+        }
+    }
+
+    getSelectedCard() {
+        if (!this.selectedVideoId) return null;
+        return document.querySelector(`.content-card[data-id="${this.selectedVideoId}"]`);
+    }
+
+    applyHeroSliderState(card, inHeroSlider) {
+        if (!card) return;
+
+        card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
+        const badge = card.querySelector('.hero-slider-badge');
+
+        if (badge) {
+            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+    }
+
+    syncSliderToolbarState(active) {
+        const sliderBtn = document.getElementById('toolbarSlider');
+        if (!sliderBtn) return;
+
+        const label = active && this.selectedInHeroSlider
+            ? (VIDEO_LANG.hero_slider_remove || 'Remove from Slider')
+            : (VIDEO_LANG.hero_slider_add || 'Send to Slider');
+
+        sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
+        sliderBtn.title = label;
+        sliderBtn.setAttribute('aria-label', label);
     }
 }
 
@@ -379,6 +484,13 @@ window.imageSelected = function () {
     const mgr = window.videoManager;
     if (mgr && mgr.selectedVideoId) {
         mgr.processImageUpload(mgr.selectedVideoId);
+    }
+};
+
+window.sliderSelected = function () {
+    const mgr = window.videoManager;
+    if (mgr && mgr.selectedVideoId) {
+        mgr.toggleHeroSlider();
     }
 };
 
@@ -414,7 +526,7 @@ window.deleteSelected = function () {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         mgr.selectedVideoId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -459,7 +571,7 @@ window.handleContextAction = function (action) {
                     })
                         .then(response => response.text())
                         .then(msg => {
-                            if (msg === 'Oke') {
+                            if (msg === 'Success') {
                                 window.videoManager.loadData(true);
                                 closeContextMenu();
                             } else {
@@ -474,10 +586,20 @@ window.handleContextAction = function (action) {
             });
             break;
         case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_video/${id}`;
+            const galleryUrl = `${SITE_URL}mod_gallery/list/mod_video/${id}`;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(galleryUrl, { skipHistory: true });
+            } else {
+                window.location.href = galleryUrl;
+            }
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_video/${id}`;
+            const filesUrl = `${SITE_URL}mod_attachment/list/mod_video/${id}`;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(filesUrl, { skipHistory: true });
+            } else {
+                window.location.href = filesUrl;
+            }
             break;
         case 'status':
             const currentStatus = activeContextItem.status ? 'y' : 'n';
@@ -511,7 +633,7 @@ window.toggleVideoStatus = function (id, currentStatus) {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         window.videoManager.loadData(true);
                     } else {
                         Swal.fire({ icon: 'error', text: msg });
@@ -519,4 +641,8 @@ window.toggleVideoStatus = function (id, currentStatus) {
                 });
         }
     });
+};
+
+window.clearSelection = function () {
+    window.videoManager?.clearSelection();
 };

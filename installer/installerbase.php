@@ -4,8 +4,15 @@ require_once(__DIR__ . DS . 'app' . DS . 'InstallerLang.php');
 
 function installer_site_build_name()
 {
-    if (Kayit::varmi('site_config') === TRUE) {
-        $siteConfig = Kayit::getir('site_config');
+    if (Registry::has('site_config') !== TRUE) {
+        $siteConfigFile = defined('root_dir') ? root_dir . 'config' . DS . 'site.config.php' : null;
+        if (is_string($siteConfigFile) && file_exists($siteConfigFile)) {
+            require_once($siteConfigFile);
+        }
+    }
+
+    if (Registry::has('site_config') === TRUE) {
+        $siteConfig = Registry::get('site_config');
         if (is_array($siteConfig)) {
             $build = isset($siteConfig['build']) ? trim((string) $siteConfig['build']) : '';
             if ($build !== '') {
@@ -14,17 +21,76 @@ function installer_site_build_name()
         }
     }
 
-    return 'Rojname';
+    return '';
+}
+
+function installer_get_project_setup_state()
+{
+    $defaultLang = Registry::has('lang') ? (string) Registry::get('lang') : 'en';
+    $defaults = array(
+        'project_name' => installer_site_build_name(),
+        'project_default_language' => $defaultLang,
+        'project_description' => '',
+        'project_owner_name' => '',
+        'project_established_year' => '',
+        'project_phone' => '',
+        'project_phone_country_code' => '',
+        'project_whatsapp' => '',
+        'project_whatsapp_country_code' => '',
+        'project_email' => '',
+        'project_office_address' => '',
+        'project_work_address' => '',
+    );
+
+    if (Registry::has('installer_project_setup') === TRUE) {
+        $state = Registry::get('installer_project_setup');
+        if (is_array($state)) {
+            return array_merge($defaults, $state);
+        }
+    }
+
+    $session = Load::lib('Session');
+    $state = $session->get('installer_mobile_state');
+    if (!is_array($state)) {
+        return $defaults;
+    }
+
+    return array_merge($defaults, $state);
+}
+
+function installer_extract_project_setup_state(array $state)
+{
+    $defaultLang = isset($state['installer_language']) ? (string) $state['installer_language'] : (Registry::has('lang') ? (string) Registry::get('lang') : 'en');
+    return array(
+        'project_name' => isset($state['project_name']) ? (string) $state['project_name'] : installer_site_build_name(),
+        'project_default_language' => isset($state['project_default_language']) ? (string) $state['project_default_language'] : $defaultLang,
+        'project_description' => isset($state['project_description']) ? (string) $state['project_description'] : '',
+        'project_owner_name' => isset($state['project_owner_name']) ? (string) $state['project_owner_name'] : '',
+        'project_established_year' => isset($state['project_established_year']) ? (string) $state['project_established_year'] : '',
+        'project_phone' => isset($state['project_phone']) ? (string) $state['project_phone'] : '',
+        'project_phone_country_code' => isset($state['project_phone_country_code']) ? (string) $state['project_phone_country_code'] : '',
+        'project_whatsapp' => isset($state['project_whatsapp']) ? (string) $state['project_whatsapp'] : '',
+        'project_whatsapp_country_code' => isset($state['project_whatsapp_country_code']) ? (string) $state['project_whatsapp_country_code'] : '',
+        'project_email' => isset($state['project_email']) ? (string) $state['project_email'] : '',
+        'project_office_address' => isset($state['project_office_address']) ? (string) $state['project_office_address'] : '',
+        'project_work_address' => isset($state['project_work_address']) ? (string) $state['project_work_address'] : '',
+    );
+}
+
+function installer_capture_project_setup_state(array $state)
+{
+    Registry::set('installer_project_setup', installer_extract_project_setup_state($state));
 }
 
 function installer_site_build_file_token()
 {
     $token = preg_replace('/[^A-Za-z0-9._-]+/', '', installer_site_build_name());
     if ($token === '') {
-        return 'Rojname';
+        $fallbackSource = defined('root_dir') ? basename(rtrim(str_replace('\\', '/', root_dir), '/')) : basename(dirname(__DIR__));
+        $token = preg_replace('/[^A-Za-z0-9._-]+/', '', (string) $fallbackSource);
     }
 
-    return $token;
+    return $token !== '' ? $token : md5(__DIR__);
 }
 
 function installer_default_sqlite_path()
@@ -236,7 +302,7 @@ function installer_replace_build_name($value)
         return $value;
     }
 
-    return str_replace('Rojname', installer_site_build_name(), $value);
+    return str_replace('{{build_name}}', installer_site_build_name(), $value);
 }
 
 // Installer interface contract.
@@ -255,7 +321,9 @@ class installerbase
     public $rolls;
     public $db;
     public $moduleRegistry;
+    public $tables = [];
     public $uninstall_blocked = FALSE;
+    protected $installer_state_session_key = 'installer_mobile_state';
 
     public function __construct()
     {
@@ -298,7 +366,7 @@ class installerbase
                 return FALSE;
             }
 
-            $this->oke("Module registry column '" . $column . "' added");
+            $this->success("Module registry column '" . $column . "' added");
         }
 
         return TRUE;
@@ -422,7 +490,7 @@ class installerbase
             return FALSE;
         }
 
-        if ($this->require_existing_tables(array('mod_user_roll', 'mod_user_perm')) === FALSE) {
+        if ($this->require_existing_tables(array('mod_user_role', 'mod_user_perm')) === FALSE) {
             $this->update_module_registry_state($this->mod, 'degraded', 'n');
             return FALSE;
         }
@@ -454,7 +522,7 @@ class installerbase
     {
 
         if($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false){
-            $this->db->fetch_array("SELECT name FROM sqlite_master WHERE type='table' AND name='" . $table . "'");
+            $this->db->fetch_array("SELECT name FROM sqlite_master WHERE type IN ('table', 'view') AND name='" . $table . "'");
         }else{
             $this->db->fetch_array("show tables like '" . $table . "'");
         }
@@ -499,7 +567,19 @@ class installerbase
         $mods_sql_text = $this->load_sql_file($this->mod . DS .$file);
         if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
             $mods_sql_text = SqliteSqlTransformer::transform($mods_sql_text);
+            
+            // For SQLite, we must split and run multiple statements individually
+            // because PDO::query doesn't support multiple statements at once.
+            $statements = array_filter(array_map('trim', explode(';', $mods_sql_text)));
+            foreach ($statements as $stmt) {
+                if ($stmt === '') continue;
+                if ($this->db->query($stmt) === FALSE) {
+                    return FALSE;
+                }
+            }
+            return TRUE;
         }
+
         if ($this->db->query($mods_sql_text)) {
             return TRUE;
         } else {
@@ -516,16 +596,17 @@ class installerbase
     }
 
 
-    public function oke($message)
+    public function success($message)
     {
         echo $this->mod . ": <font color='green'>" . $message . "</font>";
         echo "<br>";
     }
 
+
     public function error($message)
     {
         echo $this->mod . ": <font color='red'>" . $message . "</font>";
-        echo "<br><font color='red'>Database Error: " . $this->db->sql_error() . "</font>";
+        echo "<br><font color='red'>Database Error: " . $this->db->error() . "</font>";
         echo "<br>";
     }
 
@@ -535,7 +616,7 @@ class installerbase
         echo "<br>";
     }
 
-    public function system_mesaj($message)
+    public function system_message($message)
     {
         echo "<font style='color:green;font-size:20px;'>" . $message . "</font>";
         echo "<br>";
@@ -599,7 +680,7 @@ class installerbase
     }
 
     /**
-     * Inserts roles into 'mod_user_roll' table
+     * Inserts roles into 'mod_user_role' table
      */
     protected function insert_roll()
     {
@@ -607,24 +688,25 @@ class installerbase
             return FALSE;
         }
 
-        if (is_array($this->rolls)) {
-            foreach ($this->rolls AS $roll) {
-                $model = Load::model('mod_user.mod_user_roll');
-                $model->where_mod_id_and_roll_name($this->mod_id, $roll)->limit(1)->getResultOne(TRUE, TRUE);
+        $roles = $this->roles ?? $this->rolls ?? [];
+        if (is_array($roles) && !empty($roles)) {
+            foreach ($roles as $role) {
+                $model = Load::model('mod_user.mod_user_role');
+                $model->where_mod_id_and_role_name($this->mod_id, $role)->limit(1)->getResultOne(TRUE, TRUE);
                 if ($model->getSize() === 0) {
-                    $model->roll_id = NULL;
+                    $model->role_id = NULL;
                     $model->mod_id = $this->mod_id;
-                    $model->roll_name = $roll;
+                    $model->role_name = $role;
                     if ($model->save(TRUE) === FALSE) {
-                        $this->error(" ERROR OCCURRED WHILE ADDING ROLES:" . print_r($model));
+                        $this->error(" ERROR OCCURRED WHILE ADDING ROLES:" . print_r($model, TRUE));
                         return FALSE;
                     }
-                    $this->oke("Role '" . $roll . "' added");
+                    $this->success("Role '" . $role . "' added");
                 } else {
                     $model->sync();
-                    $this->warning("Role '" . $roll . "' already exists in database");
+                    $this->warning("Role '" . $role . "' already exists in database");
                 }
-                if ($this->addperm($model->roll_id, $model->roll_name) === FALSE) {
+                if ($this->addperm($model->role_id, $model->role_name) === FALSE) {
                     return FALSE;
                 }
             }
@@ -637,24 +719,35 @@ class installerbase
     /**
      * Inserts permissions into 'mod_user_perm' table
      */
-    protected function addperm($roll_id, $roll_name)
+    protected function addperm($role_id, $role_name)
     {
         $pmodel = Load::model('mod_user.mod_user_perm');
 
-        $pmodel->where_mod_id_and_roll_id_and_group_id($this->mod_id, $roll_id, '1')->limit(1)->getResultOne(TRUE, TRUE);
+        $pmodel->where_mod_id_and_role_id_and_group_id($this->mod_id, $role_id, '1')->limit(1)->getResultOne(TRUE, TRUE);
         if ($pmodel->getSize() === 0) {
             $pmodel->group_id = 1;
-            $pmodel->roll_id = $roll_id;
+            $pmodel->role_id = $role_id;
             $pmodel->mod_id = $this->mod_id;
             if ($pmodel->save() === FALSE) {
-                $this->error(" ERROR OCCURRED WHILE ADDING PERMISSIONS:" . print_r($pmodel));
+                $this->error(" ERROR OCCURRED WHILE ADDING PERMISSIONS:" . print_r($pmodel, TRUE));
                 return FALSE;
             }
-            $this->oke("Role '" . $roll_name . "' added as permission for Group ID 1");
+            $this->success("Role '" . $role_name . "' added as permission for Group ID 1");
         } else {
-            $this->warning("Role '" . $roll_name . "' already exists as permission for Group ID 1");
+            $this->warning("Role '" . $role_name . "' already exists as permission for Group ID 1");
         }
         return TRUE;
+    }
+
+    protected function get_installer_tables()
+    {
+        if (is_array($this->tables) && !empty($this->tables)) {
+            return $this->tables;
+        }
+        if (isset($this->tables) && is_array($this->tables)) {
+            return $this->tables;
+        }
+        return [];
     }
 
     protected function create_tables()
@@ -663,22 +756,35 @@ class installerbase
             return FALSE;
         }
 
-        foreach ($this->tablolar AS $tablo) {
-            if ($this->check_table_exists($tablo) === TRUE) {
-                $this->warning(" Table '" . $tablo . "' is already installed in database");
-            } elseif ($this->install_sql_file($tablo . ".sql")) {
-                $this->oke(" File '" . $tablo . ".sql' added to database");
+        foreach ($this->get_installer_tables() as $table) {
+            if ($this->check_table_exists($table) === TRUE) {
+                $this->warning(" Table '" . $table . "' is already installed in database");
+            } elseif ($this->install_sql_file($table . ".sql")) {
+                $this->success(" File '" . $table . ".sql' added to database");
             } else {
-                $this->error(" Database table '" . $tablo . "' could not be created");
+                $this->error(" Database table '" . $table . "' could not be created");
                 return FALSE;
             }
         }
     }
 
-    // Drop table.
+    // Drop table or view.
     public function drop_table($table)
     {
-        if ($this->db->query("DROP TABLE " . $table)) {
+        $sql = "DROP TABLE " . $table;
+        
+        // In SQLite, we must distinguish between TABLE and VIEW for dropping.
+        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("SELECT type FROM sqlite_master WHERE name='" . $table . "'");
+            if ($this->db->getSize() > 0) {
+                $res = $this->db->toArray();
+                if (isset($res[0]['type']) && $res[0]['type'] === 'view') {
+                    $sql = "DROP VIEW " . $table;
+                }
+            }
+        }
+
+        if ($this->db->query($sql)) {
             return TRUE;
         }
         return FALSE;
@@ -691,11 +797,11 @@ class installerbase
             return FALSE;
         }
 
-        foreach ($this->tablolar AS $tablo) {
-            if ($this->check_table_exists($tablo) === FALSE) {
-                $this->warning(" Table '" . $tablo . "' is not installed in database");
-            } elseif ($this->drop_table($tablo)) {
-                $this->oke(" Table '" . $tablo . "' dropped");
+        foreach ($this->get_installer_tables() as $table) {
+            if ($this->check_table_exists($table) === FALSE) {
+                $this->warning(" Table '" . $table . "' is not installed in database");
+            } elseif ($this->drop_table($table)) {
+                $this->success(" Table '" . $table . "' dropped");
             }
         }
     }
@@ -712,7 +818,7 @@ class installerbase
             $model->sync();
             $this->mod_id = $model->mod_id;
             if ($model->delete()) {
-                $this->oke(" Module removed from 'mods' table");
+                $this->success(" Module removed from 'mods' table");
             }
             $this->mod_id = $model->mod_id;
         } else {
@@ -727,13 +833,13 @@ class installerbase
             return FALSE;
         }
 
-        $model = Load::model('mod_user.mod_user_roll');
+        $model = Load::model('mod_user.mod_user_role');
         if ($this->mod_id == '') {
             return TRUE;
         }
         $model->where_mod_id($this->mod_id);
         if ($model->delete()) {
-            $this->oke(" Roles belonging to the module deleted from 'mod_user_roll' table");
+            $this->success(" Roles belonging to the module deleted from 'mod_user_role' table");
         }
         return TRUE;
     }
@@ -750,8 +856,288 @@ class installerbase
         }
         $model->where_mod_id($this->mod_id);
         if ($model->delete()) {
-            $this->oke(" Permissions belonging to the module deleted from 'mod_user_perm' table");
+            $this->success(" Permissions belonging to the module deleted from 'mod_user_perm' table");
         }
         return TRUE;
+    }
+
+    protected function installer_sample_content_enabled()
+    {
+        if (Registry::has($this->installer_state_session_key) === TRUE) {
+            $state = Registry::get($this->installer_state_session_key);
+            if (is_array($state) && isset($state['sample_content']) && $state['sample_content'] === 'yes') {
+                return TRUE;
+            }
+        }
+
+        $session = Load::lib('Session');
+        $state = $session->get($this->installer_state_session_key);
+
+        return is_array($state) && isset($state['sample_content']) && $state['sample_content'] === 'yes';
+    }
+
+    protected function installer_category_root_names()
+    {
+        return array(
+            'ar' => '##العربية_التصنيفات',
+            'de' => '##Deutsch_Kategorien',
+            'en' => '##English_Categories',
+            'fa' => '##فارسی_دسته‌بندی‌ها',
+            'fr' => '##Français_Catégories',
+            'ku' => '##Kurmancî_Kategorî',
+            'ckb' => '##کوردی_هاوپۆلەکان',
+            'sv' => '##Svenska_Kategorier',
+            'tr' => '##Türkçe_Kategoriler',
+            'zza' => '##Zazakî_Kategori',
+        );
+    }
+
+    protected function installer_category_starter_labels()
+    {
+        return array(
+            'contents' => array(
+                'ar' => 'المحتويات',
+                'de' => 'Inhalte',
+                'en' => 'Contents',
+                'fa' => 'محتواها',
+                'fr' => 'Contenus',
+                'ku' => 'Naverok',
+                'ckb' => 'ناوەڕۆکەکان',
+                'sv' => 'Innehåll',
+                'tr' => 'İçerikler',
+                'zza' => 'Naverok',
+            ),
+            'news' => array(
+                'ar' => 'الأخبار',
+                'de' => 'Nachrichten',
+                'en' => 'News',
+                'fa' => 'اخبار',
+                'fr' => 'Actualités',
+                'ku' => 'Nûçe',
+                'ckb' => 'هەواڵەکان',
+                'sv' => 'Nyheter',
+                'tr' => 'Haberler',
+                'zza' => 'Xeber',
+            ),
+            'products' => array(
+                'ar' => 'المنتجات',
+                'de' => 'Produkte',
+                'en' => 'Products',
+                'fa' => 'محصولات',
+                'fr' => 'Produits',
+                'ku' => 'Hilber',
+                'ckb' => 'کاڵاکان',
+                'sv' => 'Produkter',
+                'tr' => 'Ürünler',
+                'zza' => 'Hilber',
+            ),
+            'projects' => array(
+                'ar' => 'المشاريع',
+                'de' => 'Projekte',
+                'en' => 'Projects',
+                'fa' => 'پروژه‌ها',
+                'fr' => 'Projets',
+                'ku' => 'Proje',
+                'ckb' => 'پرۆژە',
+                'sv' => 'Projekt',
+                'tr' => 'Projeler',
+                'zza' => 'Proje',
+            ),
+            'services' => array(
+                'ar' => 'الخدمات',
+                'de' => 'Dienstleistungen',
+                'en' => 'Services',
+                'fa' => 'خدمات',
+                'fr' => 'Services',
+                'ku' => 'Xizmet',
+                'ckb' => 'خزمەتەکان',
+                'sv' => 'Tjänster',
+                'tr' => 'Hizmetler',
+                'zza' => 'Xızmet',
+            ),
+            'videos' => array(
+                'ar' => 'الفيديوهات',
+                'de' => 'Videos',
+                'en' => 'Videos',
+                'fa' => 'ویدیوها',
+                'fr' => 'Vidéos',
+                'ku' => 'Vîdyo',
+                'ckb' => 'ڤیدیۆکان',
+                'sv' => 'Videor',
+                'tr' => 'Videolar',
+                'zza' => 'Vîdyo',
+            ),
+            'publications' => array(
+                'ar' => 'المنشورات',
+                'de' => 'Publikationen',
+                'en' => 'Publications',
+                'fa' => 'انتشارات',
+                'fr' => 'Publications',
+                'ku' => 'Weşan',
+                'ckb' => 'بڵاوکراوەکان',
+                'sv' => 'Publikationer',
+                'tr' => 'Yayınlar',
+                'zza' => 'Weşan',
+            ),
+            'bulletin' => array(
+                'ar' => 'النشرة',
+                'de' => 'Bulletin',
+                'en' => 'Bulletin',
+                'fa' => 'بولتن',
+                'fr' => 'Bulletin',
+                'ku' => 'Bulten',
+                'ckb' => 'بولتین',
+                'sv' => 'Bulletin',
+                'tr' => 'Bülten',
+                'zza' => 'Bulten',
+            ),
+            'projects' => array(
+                'ar' => 'المشاريع',
+                'de' => 'Projekte',
+                'en' => 'Projects',
+                'fa' => 'پروژه‌ها',
+                'fr' => 'Projets',
+                'ku' => 'Proje',
+                'ckb' => 'پڕۆژەکان',
+                'sv' => 'Projekt',
+                'tr' => 'Projeler',
+                'zza' => 'Proje',
+            ),
+        );
+    }
+
+    protected function installer_category_default_record($lang, $name, $parentId, $isRoot)
+    {
+        return array(
+            'lang' => $lang,
+            'name' => $name,
+            'parent_id' => (int) $parentId,
+            'order' => 1,
+            'root' => $isRoot ? 'y' : 'n',
+            'seo' => '#',
+            'title' => '#',
+            'keywords' => '#',
+            'description' => '#',
+            'image' => null,
+            'menu' => 0,
+            'show_on_homepage' => 'n',
+            'acl_id' => 0,
+            'user_id' => 1,
+        );
+    }
+
+    protected function installer_seed_category_bootstrap($table, $starterKey = null)
+    {
+        $rootNames = $this->installer_category_root_names();
+
+        foreach (InstallerLang::availableLanguages() as $code => $language) {
+            if (!isset($rootNames[$code])) {
+                $this->error("Root category label is missing for language '" . $code . "'");
+                return FALSE;
+            }
+
+            $rootName = $rootNames[$code];
+            $rootRecord = $this->installer_category_default_record($code, $rootName, 0, true);
+            $rootId = $this->installer_ensure_category_record($table, $rootRecord, true);
+
+            if ($rootId === FALSE) {
+                return FALSE;
+            }
+
+            if ($starterKey === null || !$this->installer_sample_content_enabled()) {
+                continue;
+            }
+
+            $starterName = $this->installer_resolve_category_starter_label($starterKey, $code);
+            if ($starterName === FALSE) {
+                $this->error("Starter category label '" . $starterKey . "' is missing for language '" . $code . "'");
+                return FALSE;
+            }
+
+            $starterRecord = $this->installer_category_default_record($code, $starterName, $rootId, false);
+            if ($this->installer_ensure_category_record($table, $starterRecord, false) === FALSE) {
+                return FALSE;
+            }
+        }
+
+        return TRUE;
+    }
+
+    protected function installer_resolve_category_starter_label($starterKey, $lang)
+    {
+        $labels = $this->installer_category_starter_labels();
+        if (!isset($labels[$starterKey]) || !isset($labels[$starterKey][$lang])) {
+            return FALSE;
+        }
+
+        return $labels[$starterKey][$lang];
+    }
+
+    protected function installer_ensure_category_record($table, array $record, $isRoot)
+    {
+        $lang = addslashes($record['lang']);
+        $parentId = (int) $record['parent_id'];
+
+        if ($isRoot) {
+            $query = "SELECT id FROM `" . addslashes($table) . "` WHERE lang='" . $lang . "' AND root='y' AND parent_id=0 ORDER BY id ASC LIMIT 1";
+        } else {
+            $name = addslashes($record['name']);
+            $query = "SELECT id FROM `" . addslashes($table) . "` WHERE lang='" . $lang . "' AND parent_id=" . $parentId . " AND name='" . $name . "' ORDER BY id ASC LIMIT 1";
+        }
+
+        $this->db->fetch_array($query);
+        if ($this->db->getSize() !== 0) {
+            $rows = $this->db->getResult()->toArray();
+            $existingId = isset($rows[0]['id']) ? (int) $rows[0]['id'] : 0;
+            $this->warning($record['name'] . ' already exists');
+            return $existingId;
+        }
+
+        $insert = $this->installer_filter_existing_columns($table, $record);
+        $columns = array();
+        $values = array();
+
+        foreach ($insert as $column => $value) {
+            $columns[] = '`' . $column . '`';
+            $values[] = $this->installer_sql_value($value);
+        }
+
+        $sql = "INSERT INTO `" . addslashes($table) . "` (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $values) . ")";
+        if ($this->db->query($sql) === FALSE) {
+            $this->error($record['name'] . ' could not be added');
+            return FALSE;
+        }
+
+        $this->success($record['name'] . ' added');
+        $this->db->fetch_array("SELECT id FROM `" . addslashes($table) . "` ORDER BY id DESC LIMIT 1");
+        $rows = $this->db->getResult()->toArray();
+
+        return isset($rows[0]['id']) ? (int) $rows[0]['id'] : TRUE;
+    }
+
+    protected function installer_filter_existing_columns($table, array $record)
+    {
+        $filtered = array();
+
+        foreach ($record as $column => $value) {
+            if ($this->check_column_exists($table, $column) === TRUE) {
+                $filtered[$column] = $value;
+            }
+        }
+
+        return $filtered;
+    }
+
+    protected function installer_sql_value($value)
+    {
+        if ($value === null) {
+            return 'NULL';
+        }
+
+        if (is_int($value) || is_float($value)) {
+            return (string) $value;
+        }
+
+        return "'" . addslashes((string) $value) . "'";
     }
 }

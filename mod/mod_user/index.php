@@ -26,17 +26,17 @@ class mod_user_mod extends indexMain
     {
         parent::__construct();
         // Call the Theme Library
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
 
         $this->apptemplate = Load::lib('TwigTemplate');
         // Load Database Library
         //$this->db = Load::lib('Database');
         // Get site settings
-        $this->site = Kayit::getir('site_config');
+        $this->site = Registry::get('site_config');
         // Call Language File
         $this->lang = Load::lang('mod_user');
         // Send Language File to Theme
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
         $this->apptemplate->lang($this->lang);
         // User Model
         $this->user = Load::model('mod_user.user');
@@ -72,7 +72,7 @@ class mod_user_mod extends indexMain
                     }
                 }
             }
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -103,7 +103,7 @@ class mod_user_mod extends indexMain
                     $this->model->update('id');
                 }
             }
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -113,13 +113,13 @@ class mod_user_mod extends indexMain
     {
         $email = Load::lib('Email');
         $email->html = True;
-        $email->kime = [$this->model->email => $this->model->name . " " . $this->model->last_name];
-        $email->konu = $this->lang['mod_user']['activation']['membership_activation'];
-        $this->apptemplate->veri('name', $this->model->name);
-        $this->apptemplate->veri('last_name', $this->model->last_name);
-        $this->apptemplate->veri('site', $this->site);
-        $email->mesaj = $this->apptemplate->fetch('mod_user/email_admin_activation');
-        if ($email->gonder()) {
+        $email->to = [$this->model->email => $this->model->name . " " . $this->model->last_name];
+        $email->subject = $this->lang['mod_user']['activation']['membership_activation'];
+        $this->apptemplate->set('name', $this->model->name);
+        $this->apptemplate->set('last_name', $this->model->last_name);
+        $this->apptemplate->set('site', $this->site);
+        $email->message = $this->apptemplate->fetch('mod_user/email_admin_activation');
+        if ($email->send()) {
             return True;
         }
         return False;
@@ -132,7 +132,7 @@ class mod_user_mod extends indexMain
 
         Run::import('index', '_index');
         $d['title'] = $this->lang['mod_user']['admin_panel'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
         $this->_load_login_errors();
 
         if ($this->_check_login()) {
@@ -141,7 +141,7 @@ class mod_user_mod extends indexMain
 
         // Redirect to homepage with modal if accessed directly (non-AJAX GET)
         if ($_SERVER['REQUEST_METHOD'] !== 'POST' && !$this->_is_ajax_request()) {
-            Helper::yonlendir($this->site['saddress'] . "?login=modal", 0);
+            Helper::redirect($this->site['saddress'] . "?login=modal", 0);
             return;
         }
 
@@ -172,7 +172,7 @@ class mod_user_mod extends indexMain
             }
 
             if ($this->user->login($username, $password)) {
-                $this->_appmesaj($this->lang['mod_user']['login_success_wait']);
+                $this->_app_message($this->lang['mod_user']['login_success_wait']);
 
                 if ($is_ajax) {
                     $this->_respond_with_json([
@@ -182,7 +182,7 @@ class mod_user_mod extends indexMain
                     ]);
                 }
 
-                Helper::yonlen($r, 3);
+                Helper::jsRedirect($r, 3);
                 return;
             }
 
@@ -207,7 +207,7 @@ class mod_user_mod extends indexMain
     {
         $session = Load::lib('Session');
         if ($session->has('login_errors')) {
-            $this->apptemplate->veri('errors', $session->get('login_errors'));
+            $this->apptemplate->set('errors', $session->get('login_errors'));
             $session->remove('login_errors');
         }
     }
@@ -216,14 +216,16 @@ class mod_user_mod extends indexMain
     {
         return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
             strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') ||
-            (!empty($_POST['ajax_request']) && $_POST['ajax_request'] === 'true');
+            (!empty($_POST['ajax_request']) && $_POST['ajax_request'] === 'true') ||
+            (!empty($_GET['ajax']) && ($_GET['ajax'] === '1' || $_GET['ajax'] === 'true')) ||
+            (!empty($_GET['is_ajax']) && ($_GET['is_ajax'] === '1' || $_GET['is_ajax'] === 'true'));
     }
 
     private function _bind_login_form($username, $password, array $errors)
     {
-        $this->apptemplate->veri('username', $username);
-        $this->apptemplate->veri('password', $password);
-        $this->apptemplate->veri('errors', $errors);
+        $this->apptemplate->set('username', $username);
+        $this->apptemplate->set('password', $password);
+        $this->apptemplate->set('errors', $errors);
     }
 
     private function _respond_with_json(array $payload, $status_code = 200)
@@ -289,7 +291,7 @@ class mod_user_mod extends indexMain
 
         $r = $this->site['saddress'];
         
-        return Helper::yonlendir($r, 1);
+        return Helper::redirect($r, 1);
     }
 
     public function forgot_password()
@@ -302,17 +304,17 @@ class mod_user_mod extends indexMain
         Run::import('index', '_index');
 
         // Clear any previous success messages
-        $this->apptemplate->veri('oke', null);
-        $this->apptemplate->veri('mesaj', null);
+        $this->apptemplate->set('Success', null);
+        $this->apptemplate->set('message', null);
 
         if ($this->_is_post_request()) {
             $this->_forgot_password();
         }
         $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        $this->apptemplate->set('captcha_image', $this->captcha->image());
         
         $d['title'] = $this->lang['mod_user']['forgot_password']['forgot_password_title'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
 
         $this->apptemplate->tpl('mod_user/forgot-password');
     }
@@ -323,9 +325,9 @@ class mod_user_mod extends indexMain
         $has_errors = $this->val->check();
         if ($has_errors) {
             foreach ($_POST as $key => $val) {
-                $this->apptemplate->veri($key, Req::Post_Safe($key));
+                $this->apptemplate->set($key, Req::Post_Safe($key));
             }
-            $this->apptemplate->veri('errors', $this->val->errors);
+            $this->apptemplate->set('errors', $this->val->errors);
         } else {
             $email = Req::Post_Safe('email');
             $this->model = Load::model('mod_user');
@@ -338,7 +340,7 @@ class mod_user_mod extends indexMain
                 }
             }
 
-            $this->_appmesaj($this->lang['mod_user']['forgot_password']['info_1']);
+            $this->_app_message($this->lang['mod_user']['forgot_password']['info_1']);
         }
     }
 
@@ -367,15 +369,15 @@ class mod_user_mod extends indexMain
 
         $email = Load::lib('Email');
         $email->html = True;
-        $email->kime = [$this->model->email => $this->model->name . " " . $this->model->last_name];
-        $email->konu = $this->lang['mod_user']['password_reset']['title'];
-        $this->apptemplate->veri('name', $this->model->name);
-        $this->apptemplate->veri('last_name', $this->model->last_name);
-        $this->apptemplate->veri('code', $key);
-        $this->apptemplate->veri('site', $this->site);
-        $this->apptemplate->veri('ip', $_SERVER['REMOTE_ADDR']);
-        $email->mesaj = $this->apptemplate->fetch('mod_user/email_password_reset');
-        if ($email->gonder()) {
+        $email->to = [$this->model->email => $this->model->name . " " . $this->model->last_name];
+        $email->subject = $this->lang['mod_user']['password_reset']['title'];
+        $this->apptemplate->set('name', $this->model->name);
+        $this->apptemplate->set('last_name', $this->model->last_name);
+        $this->apptemplate->set('code', $key);
+        $this->apptemplate->set('site', $this->site);
+        $this->apptemplate->set('ip', $_SERVER['REMOTE_ADDR']);
+        $email->message = $this->apptemplate->fetch('mod_user/email_password_reset');
+        if ($email->send()) {
             return TRUE;
         }
         return FALSE;
@@ -412,16 +414,16 @@ class mod_user_mod extends indexMain
         Run::import('index', '_index');
         $clean_code = is_string($code) ? Req::Url_Clear($code) : '';
         if ($clean_code !== 'NULL' && preg_match('/^[A-Za-z0-9]{20,80}$/', $clean_code)) {
-            $this->apptemplate->veri('code', $clean_code);
+            $this->apptemplate->set('code', $clean_code);
         }
         if ($this->_is_post_request()) {
             $this->_password_reset();
         }
         $d['title'] = $this->lang['mod_user']['password_reset']['title'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
 
         $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        $this->apptemplate->set('captcha_image', $this->captcha->image());
 
         $this->apptemplate->tpl('mod_user/password_reset');
     }
@@ -431,9 +433,9 @@ class mod_user_mod extends indexMain
         $this->val = Load::validator('mod_user.password_reset');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->apptemplate->veri($key, Req::Post_Safe($key));
+                $this->apptemplate->set($key, Req::Post_Safe($key));
             }
-            $this->apptemplate->veri('errors', $this->val->errors);
+            $this->apptemplate->set('errors', $this->val->errors);
         } else {
             $this->password_reset = Load::model('mod_user.password_reset');
             $this->password_reset->Getcode(Req::Post_Safe('code'))->gro()->sync();
@@ -450,9 +452,9 @@ class mod_user_mod extends indexMain
 
             if ($this->model->update('id')) {
                 $this->password_reset->delete();
-                $this->_appmesaj($this->lang['mod_user']['password_reset']['success_message']);
+                $this->_app_message($this->lang['mod_user']['password_reset']['success_message']);
             } else {
-                $this->_appemesaj($this->lang['mod_user']['error']['system_error']);
+                $this->_app_emessage($this->lang['mod_user']['error']['system_error']);
             }
         }
     }
@@ -465,9 +467,9 @@ class mod_user_mod extends indexMain
             $this->_resend_activation();
         }
         $d['title'] = $this->lang['mod_user']['resend_activation']['activation_code_label'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
         $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        $this->apptemplate->set('captcha_image', $this->captcha->image());
         $this->apptemplate->tpl('mod_user/resend_activation');
     }
 
@@ -477,21 +479,21 @@ class mod_user_mod extends indexMain
         $this->val = Load::validator('mod_user.resend_activation');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->apptemplate->veri($key, Req::Post_Safe($key));
+                $this->apptemplate->set($key, Req::Post_Safe($key));
             }
-            $this->apptemplate->veri('errors', $this->val->errors);
+            $this->apptemplate->set('errors', $this->val->errors);
         } else {
             $this->activation = Load::model('mod_user.activation');
             $this->activation->getemail(Req::Post_Safe('email'))->gRo();
             if ($this->activation->getSize() === 0) {
-                $this->_appemesaj($this->lang['mod_user']['resend_activation']['error']['no_activation_code_found']);
+                $this->_app_emessage($this->lang['mod_user']['resend_activation']['error']['no_activation_code_found']);
                 return FALSE;
             }
             $this->activation->sync();
             if ($this->_email_at($this->activation->code)) {
-                $this->_appmesaj($this->lang['mod_user']['resend_activation']['code_sent']);
+                $this->_app_message($this->lang['mod_user']['resend_activation']['code_sent']);
             } else {
-                $this->_appemesaj($this->lang['mod_user']['resend_activation']['error']['invalid_captcha']);
+                $this->_app_emessage($this->lang['mod_user']['resend_activation']['error']['invalid_captcha']);
             }
         }
     }
@@ -506,14 +508,14 @@ class mod_user_mod extends indexMain
 
         $email = Load::lib('Email');
         $email->html = True;
-        $email->kime = [$this->model->email => $this->model->name . " " . $this->model->last_name];
-        $email->konu = $this->lang['mod_user']['register']['membership_activation'];
-        $this->apptemplate->veri('name', $this->model->name);
-        $this->apptemplate->veri('last_name', $this->model->last_name);
-        $this->apptemplate->veri('code', $key);
-        $this->apptemplate->veri('site', $this->site);
-        $email->mesaj = $this->apptemplate->fetch('mod_user/email_activation');
-        if ($email->gonder()) {
+        $email->to = [$this->model->email => $this->model->name . " " . $this->model->last_name];
+        $email->subject = $this->lang['mod_user']['register']['membership_activation'];
+        $this->apptemplate->set('name', $this->model->name);
+        $this->apptemplate->set('last_name', $this->model->last_name);
+        $this->apptemplate->set('code', $key);
+        $this->apptemplate->set('site', $this->site);
+        $email->message = $this->apptemplate->fetch('mod_user/email_activation');
+        if ($email->send()) {
             if ($code === NULL) {
                 $this->activation = Load::model('mod_user.activation');
                 $this->activation->email = $this->model->email;
@@ -540,15 +542,15 @@ class mod_user_mod extends indexMain
     {
         Run::import('index', '_index');
         if ($code != 'NULL' and strlen($code) == 20) {
-            $this->apptemplate->veri('code', Req::Url_Clear($code));
+            $this->apptemplate->set('code', Req::Url_Clear($code));
         }
         if (Req::is_Post('activation')) {
             $this->_activation();
         }
         $d['title'] = $this->lang['mod_user']['activation']['membership_activation'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
         $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        $this->apptemplate->set('captcha_image', $this->captcha->image());
 
         $this->apptemplate->tpl('mod_user/activation');
     }
@@ -559,9 +561,9 @@ class mod_user_mod extends indexMain
         $this->val = Load::validator('mod_user.activation');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->apptemplate->veri($key, Req::Post_Safe($key));
+                $this->apptemplate->set($key, Req::Post_Safe($key));
             }
-            $this->apptemplate->veri('errors', $this->val->errors);
+            $this->apptemplate->set('errors', $this->val->errors);
         } else {
             $this->m = Load::model('mod_user.activation');
             $this->m->Getcode(Req::Post_Safe('code'))->gRo()->sync();
@@ -570,7 +572,7 @@ class mod_user_mod extends indexMain
             $this->u->status = 'y';
             if ($this->u->update('id')) {
                 $this->m->delete();
-                $this->_appmesaj($this->lang['mod_user']['activation']['success_activated']);
+                $this->_app_message($this->lang['mod_user']['activation']['success_activated']);
             }
         }
     }
@@ -587,7 +589,7 @@ class mod_user_mod extends indexMain
         $d = $this->_load_register_settings();
 
         if ($d['status'] == '0') {
-            $this->_appemesaj($this->lang['mod_user']['register']['registration_stopped']);
+            $this->_app_emessage($this->lang['mod_user']['register']['registration_stopped']);
             $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
             return FALSE;
         }
@@ -600,7 +602,7 @@ class mod_user_mod extends indexMain
         }
 
         $d['title'] = $this->lang['mod_user']['register']['membership_registration'];
-        $this->apptemplate->veri('d', $d);
+        $this->apptemplate->set('d', $d);
         $this->_prepare_register_view_data();
         $this->apptemplate->tpl('mod_user/register');
     }
@@ -608,11 +610,11 @@ class mod_user_mod extends indexMain
     private function _load_register_flash_messages()
     {
         if ($this->session->get('success_message')) {
-            $this->apptemplate->veri('success_message', $this->session->get('success_message'));
+            $this->apptemplate->set('success_message', $this->session->get('success_message'));
         }
 
         if ($this->session->get('error_message')) {
-            $this->apptemplate->veri('error_message', $this->session->get('error_message'));
+            $this->apptemplate->set('error_message', $this->session->get('error_message'));
         }
     }
 
@@ -631,11 +633,11 @@ class mod_user_mod extends indexMain
 
     private function _prepare_register_view_data()
     {
-        $this->apptemplate->veri('js_lang', json_encode($this->_get_register_js_lang()));
-        $this->apptemplate->veri('country_codes', $this->_get_country_codes());
+        $this->apptemplate->set('js_lang', json_encode($this->_get_register_js_lang()));
+        $this->apptemplate->set('country_codes', $this->_get_country_codes());
 
         $this->captcha = Load::lib('Captcha');
-        $this->apptemplate->veri('captcha_image', $this->captcha->image());
+        $this->apptemplate->set('captcha_image', $this->captcha->image());
     }
 
     private function _get_register_js_lang()
@@ -674,17 +676,17 @@ class mod_user_mod extends indexMain
         $this->val = Load::validator('mod_user.register');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->apptemplate->veri($key, Req::Post_Safe($key));
+                $this->apptemplate->set($key, Req::Post_Safe($key));
             }
-            $this->apptemplate->veri('errors', $this->val->errors);
+            $this->apptemplate->set('errors', $this->val->errors);
             return;
         }
 
-        $this->apptemplate->veri('oke', True);
+        $this->apptemplate->set('Success', True);
         $this->model = $this->_build_registration_model();
 
         if (!$this->model->save()) {
-            $this->apptemplate->veri('error_message', $this->lang['mod_user']['database_error']);
+            $this->apptemplate->set('error_message', $this->lang['mod_user']['database_error']);
             return;
         }
 
@@ -716,14 +718,7 @@ class mod_user_mod extends indexMain
 
     private function _build_registration_phone()
     {
-        $country_code = isset($_POST['country_code']) ? $_POST['country_code'] : '';
-        $phone = Req::Post_Safe('phone');
-
-        if ($country_code && $phone) {
-            return $country_code . ' ' . $phone;
-        }
-
-        return $phone;
+        return $this->_get_combined_phone();
     }
 
     private function _resolve_registration_status()
@@ -760,7 +755,7 @@ class mod_user_mod extends indexMain
 
     private function _redirect_after_register()
     {
-        Helper::yonlen($this->site['address'] . 'register?success=1', 0);
+        Helper::jsRedirect($this->site['address'] . 'register?success=1', 0);
         session_write_close();
         exit;
     }
@@ -779,9 +774,9 @@ class mod_user_mod extends indexMain
         }
         $this->settings = Load::model('mod_user.mod_user_settings');
 
-        $sonuc = $this->settings->all()->toArray();
+        $settingsList = $this->settings->all()->toArray();
 
-        foreach ($sonuc as $val) {
+        foreach ($settingsList as $val) {
             $d[$val['k']] = $val['v'];
         }
         // Let's pull the Member Group
@@ -793,13 +788,13 @@ class mod_user_mod extends indexMain
         $activation = $d['activation'];
         $check_user_login = $d['check_user_login'];
         $this->site['title'] = $this->lang['mod_user']['admin']['management'];
-        $this->tema->tpl('mod_user/settings');
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('group', $group);
-        $this->tema->veri('status', $status);
-        $this->tema->veri('check_user_login', $check_user_login);
-        $this->tema->veri('d', $d);
-        $this->tema->veri('activation', $activation);
+        $this->theme->tpl('mod_user/settings');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('group', $group);
+        $this->theme->set('status', $status);
+        $this->theme->set('check_user_login', $check_user_login);
+        $this->theme->set('d', $d);
+        $this->theme->set('activation', $activation);
     }
 
     private function _settings($array)
@@ -812,13 +807,13 @@ class mod_user_mod extends indexMain
                     $this->settings->k = $key;
                     $this->settings->v = $val;
                     if ($this->settings->update('k') === False) {
-                        $this->_emesaj($this->lang['mod_user']['database_error']);
+                        $this->_emessage($this->lang['mod_user']['database_error']);
                         return False;
                     }
                 }
             }
         }
-        $this->_mesaj($this->lang['mod_user']['admin']['settings_updated']);
+        $this->_message($this->lang['mod_user']['admin']['settings_updated']);
         return True;
     }
 
@@ -830,133 +825,665 @@ class mod_user_mod extends indexMain
         }
 
         if (func_num_args() > 0 && $unused !== null && $unused !== '') {
-            Helper::yonlendir($this->site['saddress'] . 'mod_user/panel', 0);
+            Helper::redirect($this->site['saddress'] . 'mod_user/panel', 0);
             return FALSE;
         }
 
         Run::import('management', '_index');
         $this->_assert_panel_language_keys();
-        $this->site['title'] = $this->lang['mod_user']['user_panel'];
+        $this->site['title'] = $this->lang['mod_user']['panel']['panel_title'] ?? 'Control Panel';
 
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('panel_actions', $this->_build_panel_actions());
-        $this->tema->tpl('mod_user/panel');
+        if (!empty($_SESSION['group_id']) && $this->user instanceof user_model) {
+            $this->user->_loadPermissions((int)$_SESSION['group_id']);
+        }
+
+        $this->theme->set('site', $this->site);
+        $this->theme->set('panel_categories', $this->_build_panel_categories());
+        $this->theme->tpl('mod_user/panel');
     }
 
-    private function _build_panel_actions()
+    public function chat($unused = null)
     {
-        $management_lang = Load::lang('management');
-        $video_embed_lang = Load::lang('mod_video_embed');
-        $slider_lang = Load::lang('mod_slider');
-        $video_lang = Load::lang('mod_video');
-        $gallery_lang = Load::lang('mod_gallery');
-        $redirect_lang = Load::lang('mod_redirect');
+        if ($this->check() === FALSE) {
+            return FALSE;
+        }
 
-        $definitions = [
-            [
-                'module' => 'mod_content',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_content/list',
-                'icon' => 'bi bi-file-earmark-text-fill',
-                'title' => $management_lang['management']['content_management'],
-            ],
-            [
-                'module' => 'mod_page',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_page/list',
-                'icon' => 'bi bi-file-richtext',
-                'title' => $management_lang['management']['page_management'],
-            ],
-            [
-                'module' => 'mod_news',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_news/list',
-                'icon' => 'bi bi-newspaper',
-                'title' => $management_lang['management']['news_management'],
-            ],
-            [
-                'module' => 'mod_announcements',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_announcements/list',
-                'icon' => 'bi bi-megaphone-fill',
-                'title' => $management_lang['management']['announcement_management'],
-            ],
-            [
-                'module' => 'mod_publication',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_publication/list',
-                'icon' => 'bi bi-journal-richtext',
-                'title' => $management_lang['management']['publication_management'],
-            ],
-            [
-                'module' => 'mod_video_embed',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_video_embed/list',
-                'icon' => 'bi bi-youtube',
-                'title' => $video_embed_lang['mod_video_embed']['list'],
-            ],
-            [
-                'module' => 'mod_video',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_video/list',
-                'icon' => 'bi bi-video',
-                'title' => $video_lang['mod_video']['video_management'],
-            ],
-            [
-                'module' => 'mod_gallery',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_gallery/list',
-                'icon' => 'bi bi-images',
-                'title' => $gallery_lang['mod_gallery']['admin']['title'],
-            ],
-            [
-                'module' => 'mod_slider',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_slider/list',
-                'icon' => 'bi bi-stars',
-                'title' => $slider_lang['mod_slider']['list'],
-            ],
-            [
-                'module' => 'mod_product',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_product/list',
-                'icon' => 'bi bi-box-seam-fill',
-                'title' => $management_lang['management']['products'],
-            ],
-            [
-                'module' => 'mod_service',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_service/list',
-                'icon' => 'bi bi-briefcase-fill',
-                'title' => $management_lang['management']['services'],
-            ],
-            [
-                'module' => 'mod_reference',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_reference/list',
-                'icon' => 'bi bi-award',
-                'title' => $management_lang['management']['references'],
-            ],
-            [
-                'module' => 'mod_client',
-                'permission' => 'list',
-                'href' => $this->site['saddress'] . 'mod_client/list',
-                'icon' => 'bi bi-people-fill',
-                'title' => $management_lang['management']['clients'],
-            ],
+        if (func_num_args() > 0 && $unused !== null && $unused !== '') {
+            Helper::redirect($this->site['saddress'] . 'mod_user/chat', 0);
+            return FALSE;
+        }
+
+        Run::import('management', '_index');
+        $this->_assert_panel_language_keys();
+        $this->site['title'] = $this->lang['mod_user']['agent']['title'] ?? 'Amed Agentic';
+
+        // Fetch Gemini configuration from registry or json file
+        $googleConfig = Registry::get('google_config') ?? [];
+        $geminiApiKey = $googleConfig['gemini_api_key'] ?? '';
+        if (empty($geminiApiKey)) {
+            $settingsPath = root_dir . 'data' . DS . 'google_settings.json';
+            if (file_exists($settingsPath)) {
+                $raw = json_decode((string) file_get_contents($settingsPath), true);
+                $geminiApiKey = $raw['gemini_api_key'] ?? '';
+            }
+        }
+        $hasGemini = !empty($geminiApiKey);
+        $this->theme->set('site', $this->site);
+        $this->theme->set('has_gemini', $hasGemini);
+        $this->theme->set('gemini_model', 'gemini-3.8-flash');
+        $this->theme->set('agent_chat_url', $this->site['saddress'] . 'mod_user/ajax_agent_chat');
+        $this->theme->tpl('mod_user/chat');
+    }
+
+    /**
+     * AJAX endpoint for AI dialogue powered by Gemini
+     */
+    public function ajax_agent_chat()
+    {
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? 'Unauthorized.'
+            ]);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Method not allowed.'
+            ]);
+            exit;
+        }
+
+        $googleConfig = Registry::get('google_config') ?? [];
+        $apiKey = $googleConfig['gemini_api_key'] ?? '';
+        if (empty($apiKey)) {
+            $settingsPath = root_dir . 'data' . DS . 'google_settings.json';
+            if (file_exists($settingsPath)) {
+                $raw = json_decode((string) file_get_contents($settingsPath), true);
+                $apiKey = $raw['gemini_api_key'] ?? '';
+            }
+        }
+
+        if (empty($apiKey)) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Mifteya Gemini API nehatiye tomarkirin. Ji kerema xwe ji Google Services Hubê mifteya xwe tomar bike.'
+            ]);
+            exit;
+        }
+
+        $input = file_get_contents('php://input');
+        $data = json_decode($input, true);
+        $prompt = '';
+        $history = [];
+        if (is_array($data)) {
+            $prompt = trim((string) ($data['prompt'] ?? ''));
+            $history = is_array($data['history'] ?? null) ? $data['history'] : [];
+        } else {
+            $prompt = trim((string) Req::Post_Safe('prompt'));
+        }
+
+        if ($prompt === '') {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['empty_error'] ?? 'Ji kerema xwe fermanekê binivîse.'
+            ]);
+            exit;
+        }
+
+        // Build conversation messages array
+        $contents = [];
+        foreach ($history as $msg) {
+            if (isset($msg['role'], $msg['text']) && is_string($msg['text']) && trim($msg['text']) !== '') {
+                $role = ($msg['role'] === 'user') ? 'user' : 'model';
+                $contents[] = [
+                    'role' => $role,
+                    'parts' => [
+                        ['text' => trim($msg['text'])]
+                    ]
+                ];
+            }
+        }
+
+        // Add current user prompt
+        $contents[] = [
+            'role' => 'user',
+            'parts' => [
+                ['text' => $prompt]
+            ]
         ];
 
-        $actions = [];
-        foreach ($definitions as $definition) {
-            if (isset($definition['module'], $definition['permission']) &&
-                Roll::hasPermission($definition['module'], $definition['permission']) !== TRUE) {
+        // Strict system instructions for Kurdish dialect and MCP tool execution
+        $activeLang = $this->site['lang'] ?? 'ku';
+        $systemInstruction = "Tu alîkarê zana, jêhatî û rêveberê xweser ê pergala Amed CMS (Amed Business) yî.
+Rêgezên te yên sereke:
+1. Zimanê te her dem Kurdiya Kurmancî ya standard, resen û bi alfabeya Latînî (a-z, ç, ê, î, ş, û) ye.
+2. Peyvên taybet: ji bo 'update' peyva 'nûjenkirin', ji bo 'click' peyva 'tikandin', û ji bo 'add' peyva 'lêke' (mînak: gotarekê lêke, pêşekekê lêke) bi kar bîne.
+3. Şiyana te ya fermî heye ku bi riya amûrên Amed Business MCP rasterast di sîstemê de çalakiyan pêk bînî.
+4. Zimanê niha yê çalakiya rêveberiyê: '{$activeLang}'. Dema tu tiştekî çêdikî an lê digerî, heke ziman nehatibe diyarkirin vê zimanê '{$activeLang}' bi kar bîne.
+5. Rêbaza xebatê ya çalak, rasterast û lezgîn:
+   - Daxwaza rêveber di kêmtirîn gavan de (1 an 2 gavan) pêk bîne.
+   - Heke ji bo pêşekekê (menu) cîh an parent_id lazim be, pêşî bi list_menu_items bibîne, piştre rasterast bi create_menu_item yan update_menu_item çêke/nûjen bike.
+   - Ji bo rêzkirinê (order), qet pêdivî nîne tu hêmanên din jê bibî! Tenê nirxa order li gorî rêza xwestî diyar bike. Tu caran hêmanên din ên pergalê bêyî daxwaza rêveber jê mebe!
+6. Piştî ku amûr hat xebitandin, di gava din de bi lezgînî bi kurteyek zelal, kêrhatî û dilgerm bi Kurmancî ji rêveber re bibêje ku daxwaza wî bi serkeftî hat pêkanîn.";
+
+        // Initialize MCP Server for logged-in user
+        require_once(lib_dir . 'McpServer.class.php');
+        $mcpServer = new McpServer();
+        $userId = (int) $this->session->get('id');
+        $groupId = (int) $this->session->get('group_id');
+        if ($groupId === 0 && isset($_SESSION['group_id'])) {
+            $groupId = (int) $_SESSION['group_id'];
+        }
+        $mcpServer->initForUser($userId, $groupId);
+        $geminiTools = $mcpServer->getToolsForGemini();
+
+        $payload = [
+            'system_instruction' => [
+                'parts' => [
+                    ['text' => $systemInstruction]
+                ]
+            ],
+            'contents' => $contents,
+            'generationConfig' => [
+                'temperature' => 0.4,
+                'maxOutputTokens' => 2048,
+            ]
+        ];
+
+        if (!empty($geminiTools)) {
+            $payload['tools'] = [
+                [
+                    'functionDeclarations' => $geminiTools
+                ]
+            ];
+        }
+
+        // Multi-turn autonomous tool execution loop (up to 6 turns)
+        $maxToolTurns = 6;
+        $currentTurn = 0;
+        $replyText = '';
+        $usedModel = 'gemini-3.8-flash';
+        $lastError = '';
+        $executedTools = [];
+
+        while ($currentTurn < $maxToolTurns) {
+            $currentTurn++;
+            $turnRes = $this->_call_gemini_api($payload, $apiKey);
+
+            if (!$turnRes['success']) {
+                $lastError = $turnRes['error'];
+                break;
+            }
+
+            $usedModel = $turnRes['model'];
+            $resData = $turnRes['data'];
+            $candidate = $resData['candidates'][0] ?? null;
+            $parts = $candidate['content']['parts'] ?? [];
+
+            // Detect all functionCall parts in this turn (supporting parallel function calling)
+            $functionCalls = [];
+            foreach ($parts as $p) {
+                if (!empty($p['functionCall'])) {
+                    $functionCalls[] = $p['functionCall'];
+                }
+            }
+
+            if (!empty($functionCalls)) {
+                // Append model's turn with its exact parts (preserves thoughtSignature, functionCalls, etc.)
+                $payload['contents'][] = [
+                    'role' => 'model',
+                    'parts' => $parts
+                ];
+
+                // Execute all tools and collect their responses
+                $functionResponseParts = [];
+                foreach ($functionCalls as $fc) {
+                    $toolName = (string) ($fc['name'] ?? '');
+                    $toolArgs = is_array($fc['args'] ?? null) ? $fc['args'] : [];
+
+                    $executedTools[] = $toolName;
+                    $toolExecutionResult = $mcpServer->executeToolDirect($toolName, $toolArgs);
+
+                    $frItem = [
+                        'name' => $toolName,
+                        'response' => [
+                            'content' => $toolExecutionResult
+                        ]
+                    ];
+                    if (!empty($fc['id'])) {
+                        $frItem['id'] = $fc['id'];
+                    }
+
+                    $functionResponseParts[] = [
+                        'functionResponse' => $frItem
+                    ];
+                }
+
+                // Append tool responses as user turn
+                $payload['contents'][] = [
+                    'role' => 'user',
+                    'parts' => $functionResponseParts
+                ];
+
+                // Continue to next turn so Gemini generates confirmation or executes next tool
                 continue;
             }
 
-            $actions[] = $definition;
+            // Extract final text response (excluding thinking blocks)
+            $candidateText = '';
+            foreach ($parts as $p) {
+                if (!empty($p['thought'])) {
+                    continue;
+                }
+                if (!empty($p['text'])) {
+                    $candidateText .= $p['text'];
+                }
+            }
+            if ($candidateText === '' && !empty($parts[0]['text'])) {
+                $candidateText = $parts[0]['text'];
+            }
+
+            if ($candidateText !== '') {
+                $replyText = $candidateText;
+                break;
+            }
         }
 
-        return $actions;
+        // If tools executed but model did not produce a text summary yet, request summary
+        if ($replyText === '' && !empty($executedTools)) {
+            $summaryPayload = $payload;
+            unset($summaryPayload['tools']);
+            $summaryPayload['contents'][] = [
+                'role' => 'user',
+                'parts' => [
+                    ['text' => 'Amûrên pêwîst hatin xebitandin. Ji kerema xwe niha bi Kurmancî bersiveke kurt û zelal bide rêveber ku çi hat kirin.']
+                ]
+            ];
+            $summaryRes = $this->_call_gemini_api($summaryPayload, $apiKey);
+            if ($summaryRes['success']) {
+                $summaryCandidate = $summaryRes['data']['candidates'][0] ?? null;
+                $sParts = $summaryCandidate['content']['parts'] ?? [];
+                foreach ($sParts as $sp) {
+                    if (!empty($sp['text'])) {
+                        $replyText .= $sp['text'];
+                    }
+                }
+            }
+            if ($replyText === '') {
+                $replyText = "Daxwaza te bi serkeftî di pergalê de bi riya amûran (" . implode(', ', array_unique($executedTools)) . ") hat pêkanîn.";
+            }
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+
+        if ($replyText === '') {
+            $errMsg = !empty($lastError) ? $lastError : 'Tu bersiv ji modelê nehat standin.';
+            echo json_encode([
+                'success' => false,
+                'error' => $errMsg
+            ]);
+            exit;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'reply' => $replyText,
+            'model' => $usedModel,
+            'executed_tools' => $executedTools,
+        ]);
+        exit;
+    }
+
+    /**
+     * Executes resilient Gemini API calls with automated model fallback and transient error retry
+     */
+    private function _call_gemini_api(array $payload, string $apiKey): array
+    {
+        $modelsToTry = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.7-flash'];
+        $lastError = '';
+
+        foreach ($modelsToTry as $modelName) {
+            $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' . $modelName . ':generateContent?key=' . $apiKey;
+
+            for ($attempt = 0; $attempt < 2; $attempt++) {
+                if ($attempt > 0) {
+                    usleep(400000); // 400ms pause before retry
+                }
+
+                $ch = curl_init($apiUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ]);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+
+                $response = curl_exec($ch);
+                $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlErr = curl_error($ch);
+                curl_close($ch);
+
+                if ($curlErr) {
+                    $lastError = 'Çewtiya girêdanê (cURL): ' . $curlErr;
+                    continue;
+                }
+
+                $resData = json_decode((string) $response, true);
+                if ($httpCode === 200 && !empty($resData['candidates'])) {
+                    return [
+                        'success' => true,
+                        'data' => $resData,
+                        'model' => $modelName,
+                    ];
+                }
+
+                // If transient 503 or 429, retry once
+                if (($httpCode === 503 || $httpCode === 429) && $attempt === 0) {
+                    continue;
+                }
+
+                if (!empty($resData['error']['message'])) {
+                    $lastError = '[' . $modelName . '] ' . $resData['error']['message'];
+                } elseif ($httpCode !== 200) {
+                    $lastError = '[' . $modelName . '] Google API Error (HTTP ' . $httpCode . ')';
+                }
+                break;
+            }
+        }
+
+        return [
+            'success' => false,
+            'error' => !empty($lastError) ? $lastError : 'Tu bersiv ji modelê nehat standin.',
+        ];
+    }
+
+    private function _panel_module($module, $permAction, $title, $icon, array $links, array $extraKeywords = [])
+    {
+        if (Role::hasPermission($module, $permAction) !== TRUE) {
+            return null;
+        }
+
+        $labels = $this->lang['mod_user']['panel'];
+        $usableLinks = [];
+        foreach ($links as $link) {
+            if ($link !== null) {
+                $usableLinks[] = $link;
+            }
+        }
+
+        if ($usableLinks === []) {
+            return null;
+        }
+
+        $searchParts = [$title];
+        foreach ($usableLinks as $link) {
+            $searchParts[] = $link['label'];
+        }
+        foreach ($extraKeywords as $keyword) {
+            if (!empty($keyword)) {
+                $searchParts[] = $keyword;
+            }
+        }
+
+        return [
+            'title' => $title,
+            'icon' => $icon,
+            'links' => $usableLinks,
+            'search' => $this->_panel_search(implode(' ', $searchParts)),
+        ];
+    }
+
+    private function _panel_link($module, $permAction, $label, $url)
+    {
+        if (Role::hasPermission($module, $permAction) !== TRUE) {
+            return null;
+        }
+
+        return ['label' => $label, 'url' => $url];
+    }
+
+    private function _panel_action($module, $permAction, $label, $modalAction)
+    {
+        if (Role::hasPermission($module, $permAction) !== TRUE) {
+            return null;
+        }
+
+        return ['label' => $label, 'action' => $modalAction];
+    }
+
+    private function _panel_search(string $text): string
+    {
+        return str_replace(["\u{0307}", 'ı'], ['', 'i'], mb_strtolower($text, 'UTF-8'));
+    }
+
+    private function _build_panel_categories()
+    {
+        $management_lang = Load::lang('management');
+        $settings_lang = Load::lang('mod_settings');
+        
+        $seo_lang = Load::lang('mod_seo');
+        $pm_lang = Load::lang('mod_user_pm');
+        $faq_lang = Load::lang('mod_faq');
+        $gallery_lang = Load::lang('mod_gallery');
+        $attachment_lang = Load::lang('mod_attachment');
+        $menu_lang = Load::lang('mod_menu');
+        
+        $management = $management_lang['management'];
+        $base = $this->site['saddress'];
+        $p = $this->lang['mod_user']['panel'];
+
+        $menuSlots = $menu_lang['mod_menu']['slots'] ?? [];
+        $headerMenuLabel = $menuSlots['header'] ?? 'Header Menu';
+        $footerMenuLabel = $menuSlots['footer'] ?? 'Footer Menu';
+        $actionMenuLabel = $menuSlots['action'] ?? 'Action Menu';
+
+        $list = fn ($mod, $perm, $url) => $this->_panel_link($mod, $perm, $p['link_list'], $url);
+        $add = fn ($mod, $perm, $url) => $this->_panel_link($mod, $perm, Load::lang($mod)[$mod]['add'] ?? $p['link_add'], $url);
+        $cats = fn ($mod, $perm, $url) => $this->_panel_link($mod, $perm, $p['link_categories'], $url);
+
+        $mod = function ($module, $permAction, $title, $icon, array $links, array $extraKeywords = []) {
+            return $this->_panel_module($module, $permAction, $title, $icon, $links, $extraKeywords);
+        };
+
+        $categories = [
+            [
+                'label' => $management['content_and_page'],
+                'icon' => 'bi bi-rocket-takeoff-fill',
+                'modules' => array_filter([
+                    $mod('mod_content', 'list', $management['content_management'], 'bi bi-file-earmark-text-fill', [
+                        $list('mod_content', 'list', $base . 'mod_content/list'),
+                        $add('mod_content', 'add', $base . 'mod_content/add'),
+                        $cats('mod_content_category', 'list', $base . 'mod_content_category/list'),
+                    ]),
+                    $mod('mod_news', 'list', $management['news_management'], 'bi bi-newspaper', [
+                        $list('mod_news', 'list', $base . 'mod_news/list'),
+                        $add('mod_news', 'add', $base . 'mod_news/add'),
+                        $cats('mod_news_category', 'list', $base . 'mod_news_category/list'),
+                    ]),
+                    $mod('mod_publication', 'list', $management['publication_management'], 'bi bi-journal-richtext', [
+                        $list('mod_publication', 'list', $base . 'mod_publication/list'),
+                        $add('mod_publication', 'add', $base . 'mod_publication/add'),
+                        $cats('mod_publication_category', 'list', $base . 'mod_publication_category/list'),
+                    ]),
+                    $mod('mod_page', 'list', $management['page_management'], 'bi bi-file-richtext', [
+                        $list('mod_page', 'list', $base . 'mod_page/list'),
+                        $add('mod_page', 'add', $base . 'mod_page/add'),
+                    ]),
+                    $mod('mod_document', 'list', $management['file_management'], 'bi bi-folder-fill', [
+                        $list('mod_document', 'list', $base . 'mod_document/list'),
+                        $add('mod_document', 'add', $base . 'mod_document/add'),
+                    ]),
+                    $mod('mod_survey', 'list', $management['survey_management'], 'bi bi-ui-checks-grid', [
+                        $list('mod_survey', 'list', $base . 'mod_survey/list'),
+                        $add('mod_survey', 'add', $base . 'mod_survey/add'),
+                    ]),
+                    $mod('mod_faq', 'list', $faq_lang['mod_faq']['admin']['faq_management'], 'bi bi-patch-question-fill', [
+                        $list('mod_faq', 'list', $base . 'mod_faq/list'),
+                    ]),
+                    $mod('mod_faq_mod', 'list', Load::lang('mod_faq_mod')['mod_faq_mod']['list'], 'bi bi-patch-question', [
+                        $list('mod_faq_mod', 'list', $base . 'mod_faq_mod/list'),
+                        $add('mod_faq_mod', 'add', $base . 'mod_faq_mod/add'),
+                    ]),
+                    $mod('mod_menu', 'list', $management['menu_management'], 'bi bi-list', [
+                        $list('mod_menu', 'list', $base . 'mod_menu/list'),
+                        $add('mod_menu', 'add', $base . 'mod_menu/add'),
+                        $this->_panel_link('mod_menu', 'list', $headerMenuLabel, $base . 'mod_menu/list#header'),
+                        $this->_panel_link('mod_menu', 'list', $footerMenuLabel, $base . 'mod_menu/list#footer'),
+                        $this->_panel_link('mod_menu', 'list', $actionMenuLabel, $base . 'mod_menu/list#action'),
+                    ], ['menu', 'menü', 'pesek', 'pêşek', 'navigasyon', 'navigation', 'navbar', 'header', 'footer', 'ust menu', 'alt menu', 'eylem menusu', 'slot']),
+                    $mod('mod_redirect', 'list', $management['redirect_management'], 'bi bi-arrow-return-right', [
+                        $list('mod_redirect', 'list', $base . 'mod_redirect/list'),
+                    ]),
+                ]),
+            ],
+            [
+                'label' => $management['video_and_images'],
+                'icon' => 'bi bi-camera-video-fill',
+                'modules' => array_filter([
+                    $mod('mod_video', 'list', $management['videos'], 'bi bi-camera-reels-fill', [
+                        $list('mod_video', 'list', $base . 'mod_video/list'),
+                        $add('mod_video', 'add', $base . 'mod_video/add'),
+                    ]),
+                    $mod('mod_video_embed', 'list', $management['remote_video_category'], 'bi bi-collection-play-fill', [
+                        $list('mod_video_embed', 'list', $base . 'mod_video_embed/list'),
+                        $add('mod_video_embed', 'add', $base . 'mod_video_embed/add'),
+                        $cats('mod_video_embed_category', 'list', $base . 'mod_video_embed_category/list'),
+                    ]),
+                    $mod('mod_slider', 'list', $management['headline_management'], 'bi bi-card-image', [
+                        $list('mod_slider', 'list', $base . 'mod_slider/list'),
+                        $add('mod_slider', 'add', $base . 'mod_slider/add'),
+                    ]),
+                    $mod('mod_headline', 'list', $management['full_headline_management'], 'bi bi-layout-text-window-reverse', [
+                        $list('mod_headline', 'list', $base . 'mod_headline/list'),
+                        $add('mod_headline', 'add', $base . 'mod_headline/add'),
+                    ]),
+                    $mod('mod_imagecategories', 'list', $management['image_gallery'], 'bi bi-image-fill', [
+                        $list('mod_imagecategories', 'list', $base . 'mod_imagecategories/list'),
+                    ]),
+                    $mod('mod_gallery_mod', 'list', $management['gallery_modules'], 'bi bi-images', [
+                        $list('mod_gallery_mod', 'list', $base . 'mod_gallery_mod/list'),
+                    ]),
+                    $mod('mod_attachment_mod', 'list', $management['file_modules'], 'bi bi-paperclip', [
+                        $list('mod_attachment_mod', 'list', $base . 'mod_attachment_mod/list'),
+                    ]),
+                    $mod('mod_gallery', 'list', $gallery_lang['mod_gallery']['admin']['title'], 'bi bi-collection-fill', [
+                        $list('mod_gallery', 'list', $base . 'mod_gallery/list'),
+                    ]),
+                    $mod('mod_attachment', 'list', $attachment_lang['mod_attachment']['admin']['file_management'], 'bi bi-file-earmark-zip-fill', [
+                        $list('mod_attachment', 'list', $base . 'mod_attachment/list'),
+                    ]),
+                ]),
+            ],
+            [
+                'label' => $management['announcement_management'],
+                'icon' => 'bi bi-megaphone-fill',
+                'modules' => array_filter([
+                    $mod('mod_announcements', 'list', $management['announcement_management'], 'bi bi-volume-up-fill', [
+                        $list('mod_announcements', 'list', $base . 'mod_announcements/list'),
+                        $add('mod_announcements', 'add', $base . 'mod_announcements/add'),
+                    ]),
+                    $mod('mod_popup', 'list', $management['popup_announcements'], 'bi bi-layout-wtf', [
+                        $list('mod_popup', 'list', $base . 'mod_popup/list'),
+                        $add('mod_popup', 'add', $base . 'mod_popup/add'),
+                    ]),
+                    $mod('mod_newsletter', 'list', $management['newsletter_management'], 'bi bi-envelope-at-fill', [
+                        $list('mod_newsletter', 'list', $base . 'mod_newsletter/list'),
+                        $add('mod_newsletter', 'add', $base . 'mod_newsletter/add'),
+                    ]),
+                ]),
+            ],
+            [
+                'label' => $management['membership'],
+                'icon' => 'bi bi-people-fill',
+                'modules' => array_filter([
+                    $mod('mod_user', 'list', $management['members'], 'bi bi-person-gear', [
+                        $list('mod_user', 'list', $base . 'mod_user/list'),
+                        $add('mod_user', 'add', $base . 'mod_user/add'),
+                    ]),
+                    $mod('mod_user_group', 'list', $management['user_groups'], 'bi bi-diagram-2-fill', [
+                        $list('mod_user_group', 'list', $base . 'mod_user_group/list'),
+                        $add('mod_user_group', 'add', $base . 'mod_user_group/add'),
+                    ]),
+                    $mod('mod_user', 'acl', $management['user_permission_management_acl'], 'bi bi-shield-lock', [
+                        $this->_panel_link('mod_acl', 'list', $p['link_list'], $base . 'mod_acl/list'),
+                        $this->_panel_link('mod_user', 'acl', $management['acl'], $base . 'mod_user/acl'),
+                    ]),
+                    [
+                        'title' => $pm_lang['mod_user_pm']['inbox_link_label'],
+                        'icon' => 'bi bi-envelope-paper',
+                        'links' => array_values(array_filter([
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['inbox_title'], $base . 'mod_user_pm/inbox'),
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['sent_title'], $base . 'mod_user_pm/sent'),
+                            $this->_panel_link('mod_user_pm', 'send', $pm_lang['mod_user_pm']['new_message_action'], $base . 'mod_user_pm/send'),
+                        ])),
+                        'search' => $this->_panel_search($pm_lang['mod_user_pm']['inbox_link_label'] . ' ' . $pm_lang['mod_user_pm']['inbox_title'] . ' ' . $pm_lang['mod_user_pm']['sent_title'] . ' ' . $pm_lang['mod_user_pm']['new_message_action'] . ' ' . $pm_lang['mod_user_pm']['message_label']),
+                    ],
+                    [
+                        'title' => $management['profile'],
+                        'icon' => 'bi bi-person-circle',
+                        'links' => [
+                            ['label' => $management['edit_profile_menu'], 'url' => $base . 'mod_user/info'],
+                            ['label' => $management['change_password_menu'], 'url' => $base . 'mod_user/change_password'],
+                        ],
+                        'search' => $this->_panel_search($management['profile'] . ' ' . $management['edit_profile_menu'] . ' ' . $management['change_password_menu']),
+                    ],
+                ]),
+            ],
+            [
+                'label' => $management['system_tools'],
+                'icon' => 'bi bi-gear-fill',
+                'modules' => array_filter([
+                    $mod('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'bi bi-sliders', [
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['site_profile_title'], $base . 'mod_settings/edit'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['legal_info_title'], $base . 'mod_settings/legal_info'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['cookie_policy_title'], $base . 'mod_settings/cookie_policy'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['working_hours_title'] ?? 'Working Hours & Closures', $base . 'mod_settings/working_hours'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', $base . 'mod_settings/affiliations'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['social'], $base . 'mod_settings/social_media'),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_status_menu_title'], 'open-site-status'),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['stats_title'], 'open-stats'),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'open-site-settings-menu'),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['theme_management_title'], 'open-theme-management'),
+                        $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['logo_icon_management_title'], 'open-logo-icon-management'),
+                    ]),
+                    $mod('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', 'bi bi-building-check', [
+                        $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'mod_settings/affiliations'),
+                    ], ['affiliation', 'affiliations', 'kurum', 'baro', 'akreditasyon', 'baglanti', 'sazi', 'hevkari', 'meb', 'bakanlik', 'partner', 'oda', 'birlik', 'adliye', 'adalet']),
+                    $mod('mod_settings', 'edit', $settings_lang['mod_settings']['working_hours_title'] ?? 'Working Hours & Closures', 'bi bi-clock-history', [
+                        $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'mod_settings/working_hours'),
+                    ], ['saat', 'calisma saatleri', 'working hours', 'saeten xebate', 'tatil', 'closures', 'betlane', 'mesai', 'tatiller']),
+                    $mod('mod_seo', 'list', $seo_lang['mod_seo']['list'], 'bi bi-graph-up-arrow', [
+                        $this->_panel_link('mod_seo', 'list', $p['link_list'], $base . 'mod_seo/index'),
+                        $this->_panel_link('mod_settings', 'edit', $seo_lang['mod_seo']['google_settings'], $base . 'mod_seo/google_settings'),
+                    ]),
+                    $mod('mod_settings', 'edit', $management['language_management_menu'], 'bi bi-translate', [
+                        $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'lang/panel'),
+                    ]),
+                ]),
+            ],
+        ];
+
+        foreach ($categories as $index => $category) {
+            $category['modules'] = array_values(array_filter($category['modules'], fn ($module) => !empty($module['links'])));
+            if ($category['modules'] === []) {
+                unset($categories[$index]);
+                continue;
+            }
+            $categories[$index]['modules'] = $category['modules'];
+            $categories[$index]['search'] = $this->_panel_search($category['label']);
+        }
+
+        return array_values($categories);
     }
 
     private function _assert_panel_language_keys()
@@ -966,6 +1493,7 @@ class mod_user_mod extends indexMain
         $slider_lang = Load::lang('mod_slider');
         $video_lang = Load::lang('mod_video');
         $gallery_lang = Load::lang('mod_gallery');
+        $settings_lang = Load::lang('mod_settings');
 
         $required_keys = [
             [$this->lang, ['mod_user', 'panel', 'panel_title']],
@@ -974,28 +1502,25 @@ class mod_user_mod extends indexMain
             [$this->lang, ['mod_user', 'panel', 'welcome_main']],
             [$this->lang, ['mod_user', 'panel', 'recent_workspace']],
             [$this->lang, ['mod_user', 'panel', 'workspace_nav_media']],
-            [$this->lang, ['mod_user', 'panel', 'workspace_nav_products']],
             [$this->lang, ['mod_user', 'panel', 'workspace_nav_more']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_title']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_copy']],
             [$this->lang, ['mod_user', 'panel', 'more_sheet_open_drawer']],
-            [$management_lang, ['management', 'uyelik']],
+            [$this->lang, ['mod_user', 'panel', 'link_list']],
+            [$this->lang, ['mod_user', 'panel', 'link_add']],
+            [$this->lang, ['mod_user', 'panel', 'link_categories']],
+            [$this->lang, ['mod_user', 'panel', 'clear_search']],
+            [$management_lang, ['management', 'membership']],
             [$management_lang, ['management', 'content_workspace']],
             [$management_lang, ['management', 'content_and_page']],
             [$management_lang, ['management', 'content_management']],
             [$management_lang, ['management', 'news_management']],
             [$management_lang, ['management', 'publication_management']],
-            [$management_lang, ['management', 'products']],
-            [$management_lang, ['management', 'services']],
-            [$management_lang, ['management', 'product_categories']],
-            [$management_lang, ['management', 'service_categories']],
-            [$management_lang, ['management', 'clients']],
-            [$management_lang, ['management', 'references']],
             [$management_lang, ['management', 'system_tools']],
-            [$management_lang, ['management', 'uyeler']],
-            [$management_lang, ['management', 'uye_gruplari']],
+            [$management_lang, ['management', 'members']],
+            [$management_lang, ['management', 'user_groups']],
             [$management_lang, ['management', 'membership_setting']],
-            [$management_lang, ['management', 'uye_permission_yonetimi_acl']],
+            [$management_lang, ['management', 'user_permission_management_acl']],
             [$management_lang, ['management', 'acl']],
             [$management_lang, ['management', 'page_management']],
             [$management_lang, ['management', 'language_management_menu']],
@@ -1004,7 +1529,19 @@ class mod_user_mod extends indexMain
             [$video_embed_lang, ['mod_video_embed', 'list']],
             [$video_lang, ['mod_video', 'video_management']],
             [$gallery_lang, ['mod_gallery', 'admin', 'title']],
-            [$slider_lang, ['mod_slider', 'list']],
+            [$settings_lang, ['mod_settings', 'stats_title']],
+            [$settings_lang, ['mod_settings', 'site_settings_menu_title']],
+            [$settings_lang, ['mod_settings', 'site_profile_title']],
+            [$settings_lang, ['mod_settings', 'site_profile_description']],
+            [$settings_lang, ['mod_settings', 'legal_info_title']],
+            [$settings_lang, ['mod_settings', 'legal_info_description']],
+            [$settings_lang, ['mod_settings', 'theme_management_title']],
+            [$settings_lang, ['mod_settings', 'theme_select_label']],
+            [$this->lang, ['mod_user', 'fab', 'add_content']],
+            [$this->lang, ['mod_user', 'fab', 'add_page']],
+            [$this->lang, ['mod_user', 'fab', 'add_publication']],
+            [$this->lang, ['mod_user', 'fab', 'add_video']],
+            [$this->lang, ['mod_user', 'fab', 'add_announcement']],
         ];
 
         foreach ($required_keys as $required_key) {
@@ -1044,25 +1581,23 @@ class mod_user_mod extends indexMain
             ? $management_copy['route_error_page_title']
             : 'Administration Error';
 
-        $site = Kayit::getir('site_config');
+        $site = Registry::get('site_config');
         $site['title'] = $error_title;
 
-        $this->tema->lang($management_lang);
-        $this->tema->setGlobal('site', $site);
-        $this->tema->setGlobal('error_title', $error_title);
-        $this->tema->setGlobal('error_headline', $error_title);
-        $this->tema->setGlobal('error_heading', $key_path);
-        $this->tema->setGlobal('error_description', '');
-        $this->tema->setGlobal('hide_navbar', true);
-        $this->tema->setGlobal('hide_search', true);
-        $this->tema->setGlobal('show_fab', false);
-        $this->tema->setGlobal('show_sidebar', false);
-        $this->tema->setGlobal('show_navbar', false);
-        $this->tema->setGlobal('show_filter_sheet', false);
-        $this->tema->setGlobal('show_extra_sheets', false);
-        $this->tema->setGlobal('show_wizards', false);
-        $this->tema->tpl('pages/route_error');
-        $this->tema->output();
+        $this->theme->lang($management_lang);
+        $this->theme->setGlobal('site', $site);
+        $this->theme->setGlobal('error_title', $error_title);
+        $this->theme->setGlobal('error_headline', $error_title);
+        $this->theme->setGlobal('error_heading', $key_path);
+        $this->theme->setGlobal('error_description', '');
+        $this->theme->setGlobal('hide_navbar', true);
+        $this->theme->setGlobal('hide_search', true);
+        $this->theme->setGlobal('show_navbar', false);
+        $this->theme->setGlobal('show_filter_sheet', false);
+        $this->theme->setGlobal('show_extra_sheets', false);
+        $this->theme->setGlobal('show_wizards', false);
+        $this->theme->tpl('pages/route_error');
+        $this->theme->output();
         exit();
     }
 
@@ -1242,19 +1777,19 @@ class mod_user_mod extends indexMain
         // Prepare phone data for display (whether initial or after error)
         $this->_prepare_phone_data($d);
         
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('group', $group);
+        $this->theme->set('site', $this->site);
+        $this->theme->set('group', $group);
         
         // Pass country codes
-        $this->tema->veri('country_codes', $this->_get_country_codes());
-        $this->tema->veri('social_platforms', $this->_get_social_platforms());
+        $this->theme->set('country_codes', $this->_get_country_codes());
+        $this->theme->set('social_platforms', $this->_get_social_platforms());
         
         // Pass all data variables to template
         foreach($d as $k => $v) {
-            $this->tema->veri($k, $v);
+            $this->theme->set($k, $v);
         }
         
-        $this->tema->tpl('mod_user/add');
+        $this->theme->tpl('mod_user/add');
     }
 
     private function _add(&$d)
@@ -1270,7 +1805,7 @@ class mod_user_mod extends indexMain
         $d['social_links'] = $this->_extract_social_links($_POST['social_links'] ?? []);
 
         if ($this->val->check()) {
-            $this->tema->veri('errors', $this->val->errors);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $db = Load::lib('Database');
             $db->start_transaction();
@@ -1319,7 +1854,7 @@ class mod_user_mod extends indexMain
                 if ($image->_resize($option)) {
                     $u->image = $image->url;
                 } else {
-                    $this->tema->veri('errors', [$image->error]);
+                    $this->theme->set('errors', [$image->error]);
                     return FALSE;
                 }
             } else {
@@ -1329,12 +1864,12 @@ class mod_user_mod extends indexMain
             if ($u->save(true)) {
                 if ($this->_save_social_links($u->id, $_POST['social_links'] ?? []) === false) {
                     $db->rollback();
-                    $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
+                    $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
                     return FALSE;
                 }
 
                 $db->commit();
-                $this->_mesaj($this->lang['mod_user']['admin']['added']);
+                $this->_message($this->lang['mod_user']['admin']['added']);
                 $d = [
                     'username' => '', 'password' => '', 'email' => '',
                     'name' => '', 'last_name' => '', 'phone' => '', 'city' => '',
@@ -1343,9 +1878,21 @@ class mod_user_mod extends indexMain
                 ];
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
+                $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
             }
         }
+    }
+
+    public function ajax_get_info()
+    {
+        $_GET['ajax'] = '1';
+        return $this->info();
+    }
+
+    public function ajax_get_change_password()
+    {
+        $_GET['ajax'] = '1';
+        return $this->change_password();
     }
 
     // Change My Password
@@ -1356,15 +1903,21 @@ class mod_user_mod extends indexMain
             return FALSE;
         }
 
+        if (!$this->_is_ajax_request()) {
+            Helper::redirect($this->site['saddress'] . 'mod_user/panel?open_modal=change_password');
+            return FALSE;
+        }
+
         Run::import('management', '_index');
 
         if (Req::is_Post('edit')) {
             $this->_change_password();
         }
 
-        $this->site['title'] = $this->lang['mod_user']['password_change'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->tpl('mod_user/change_password');
+        $this->site['title'] = $this->lang['mod_user']['profile_menu']['change_password'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('is_ajax', $this->_is_ajax_request());
+        $this->theme->tpl('mod_user/change_password');
     }
 
 
@@ -1372,7 +1925,7 @@ class mod_user_mod extends indexMain
     {
         $this->val = Load::validator('mod_user.change_password');
         if ($this->val->check()) {
-            $this->tema->veri('errors', $this->val->errors);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $u = Load::model('mod_user');
             $new_password_hash = $this->_hash_password(Req::Post_Safe('new_password'));
@@ -1381,9 +1934,9 @@ class mod_user_mod extends indexMain
             if ($u->update('id')) {
                 $this->session->remove('password');
                 $this->session->set('password', $new_password_hash);
-                $this->_mesaj($this->lang['mod_user']['password_changed_success']);
+                $this->_message($this->lang['mod_user']['password_changed_success']);
             } else {
-                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
+                $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
             }
         }
     }
@@ -1396,35 +1949,55 @@ class mod_user_mod extends indexMain
             return FALSE;
         }
 
+        if (!$this->_is_ajax_request()) {
+            Helper::redirect($this->site['saddress'] . 'mod_user/panel?open_modal=info');
+            return FALSE;
+        }
+
         Run::import('management', '_index');
 
         if (Req::is_Post('edit')) {
             $this->_info();
         }
 
+        $userId = $this->session->get('id');
+        if (empty($userId)) {
+            if ($this->_is_ajax_request()) {
+                header('HTTP/1.1 401 Unauthorized');
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode(['status' => 'error', 'message' => 'Unauthorized access', 'redirect' => $this->site['saddress'] . "?login=modal"]);
+                exit();
+            }
+            Helper::redirect($this->site['saddress'] . "?login=modal", 0);
+            return FALSE;
+        }
+
         $u = Load::model('mod_user');
-        $u->Getid($this->session->get('id'))->gRo();
-        $d = $u->toArray();
-        $d['social_links'] = $this->_load_social_links($this->session->get('id'))['map'];
+        $u->Getid($userId)->gRo();
+        $userData = $u->toArray();
+        $d = is_array($userData) ? $userData : [];
+        $socialData = $this->_load_social_links($userId);
+        $d['social_links'] = (is_array($socialData) && isset($socialData['map']) && is_array($socialData['map'])) ? $socialData['map'] : [];
         
         // Use helper to parse phone data
         $this->_prepare_phone_data($d);
 
-        $this->site['title'] = $this->lang['mod_user']['info_change'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
+        $this->site['title'] = $this->lang['mod_user']['profile_menu']['edit_profile'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->set('is_ajax', $this->_is_ajax_request());
         
         // Pass country codes
-        $this->tema->veri('country_codes', $this->_get_country_codes());
-        $this->tema->veri('social_platforms', $this->_get_social_platforms());
-        $this->tema->tpl('mod_user/info');
+        $this->theme->set('country_codes', $this->_get_country_codes());
+        $this->theme->set('social_platforms', $this->_get_social_platforms());
+        $this->theme->tpl('mod_user/info');
     }
 
     private function _info()
     {
         $this->val = Load::validator('mod_user.info');
         if ($this->val->check()) {
-            $this->tema->veri('errors', $this->val->errors);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $db = Load::lib('Database');
             $db->start_transaction();
@@ -1466,7 +2039,7 @@ class mod_user_mod extends indexMain
                     $u->image = $image->url;
                     $this->session->set('image', $image->url);
                 } else {
-                    $this->_emesaj($image->error);
+                    $this->_emessage($image->error);
                     return FALSE;
                 }
             } else {
@@ -1477,11 +2050,105 @@ class mod_user_mod extends indexMain
             if ($u->update('id') && $this->_save_social_links($this->session->get('id'), $_POST['social_links'] ?? [])) {
                 $db->commit();
                 $this->session->set('full_name', Text::title($u->name . " " . $u->last_name));
-                $this->_mesaj($this->lang['mod_user']['info_updated_success']);
+                $this->_message($this->lang['mod_user']['info_updated_success']);
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
+                $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
             }
+        }
+    }
+
+    public function ajax_save_info()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($this->check() === FALSE) {
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+
+        $this->val = Load::validator('mod_user.info');
+        if ($this->val->check()) {
+            $errMsgs = is_array($this->val->errors) ? implode(', ', $this->val->errors) : (string)$this->val->errors;
+            echo json_encode(['status' => 'error', 'message' => $errMsgs]);
+            exit;
+        }
+
+        $db = Load::lib('Database');
+        $db->start_transaction();
+        $u = Load::model('mod_user');
+        $u->name = Req::Post_Safe('name');
+        $u->last_name = Req::Post_Safe('last_name');
+        $u->updated_at = date('Y-m-d H:i:s');
+        $u->email = Req::Post_Safe('email');
+        $u->phone = $this->_get_combined_phone();
+        $u->city = Req::Post_Safe('city');
+        $u->blog_name = Req::Post_Safe('blog_name');
+        $u->about = Req::Post_Safe('about');
+        $u->id = $this->session->get('id');
+
+        if (isset($_FILES['image']['name']) && $_FILES['image']['name'] != '') {
+            $image = Load::mod('image');
+            $image->mod = 'mod_user';
+            $image->name = 'image';
+            $option = [
+                '/' => ['width' => 200, 'height' => NULL, 'option' => 'width'],
+                '/thumb' => ['width' => 100, 'height' => NULL, 'option' => 'width']
+            ];
+            if ($image->_resize($option)) {
+                $u->image = $image->url;
+                $this->session->set('image', $image->url);
+            } else {
+                $db->rollback();
+                echo json_encode(['status' => 'error', 'message' => $image->error]);
+                exit;
+            }
+        }
+
+        $socialLinks = isset($_POST['social_links']) && is_array($_POST['social_links']) ? $_POST['social_links'] : [];
+        if ($u->update('id') && $this->_save_social_links($this->session->get('id'), $socialLinks)) {
+            $db->commit();
+            $this->session->set('full_name', Text::title($u->name . " " . $u->last_name));
+            echo json_encode([
+                'status' => 'success',
+                'message' => $this->lang['mod_user']['info_updated_success'],
+                'full_name' => Text::title($u->name . " " . $u->last_name),
+                'image' => $this->session->get('image')
+            ]);
+            exit;
+        } else {
+            $db->rollback();
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_user']['database_error']]);
+            exit;
+        }
+    }
+
+    public function ajax_save_change_password()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($this->check() === FALSE) {
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+
+        $this->val = Load::validator('mod_user.change_password');
+        if ($this->val->check()) {
+            $errMsgs = is_array($this->val->errors) ? implode(', ', $this->val->errors) : (string)$this->val->errors;
+            echo json_encode(['status' => 'error', 'message' => $errMsgs]);
+            exit;
+        }
+
+        $u = Load::model('mod_user');
+        $new_password_hash = $this->_hash_password(Req::Post_Safe('new_password'));
+        $u->password = $new_password_hash;
+        $u->id = $this->session->get('id');
+        if ($u->update('id')) {
+            $this->session->remove('password');
+            $this->session->set('password', $new_password_hash);
+            echo json_encode(['status' => 'success', 'message' => $this->lang['mod_user']['password_changed_success']]);
+            exit;
+        } else {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_user']['database_error']]);
+            exit;
         }
     }
 
@@ -1531,13 +2198,13 @@ class mod_user_mod extends indexMain
                 $this->mod_user->image = '';
                 $this->mod_user->update('id');
                 $this->session->set('image', '');
-            echo 'Oke';
+            echo 'Success';
             } else {
                 echo $image->error;
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
@@ -1552,8 +2219,8 @@ class mod_user_mod extends indexMain
         Run::import('management', '_index');
 
         $this->site['title'] = $this->lang['mod_user']['admin']['list'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->tpl('mod_user/list');
+        $this->theme->set('site', $this->site);
+        $this->theme->tpl('mod_user/list');
     }
 
 
@@ -1606,8 +2273,8 @@ class mod_user_mod extends indexMain
 
             $wheres = [];
 
-            if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-                foreach (Req::Post_Safe('arama') as $k => $v) {
+            if (Req::is_Post('filter') && count(Req::Post_Safe('filter')) > 0) {
+                foreach (Req::Post_Safe('filter') as $k => $v) {
                     if ($v == '') {
                         continue;
                     }
@@ -1631,8 +2298,8 @@ class mod_user_mod extends indexMain
                 }
             }
 
-            if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-                foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+            if (Req::is_Post('filter_radio') && count(Req::Post_Safe('filter_radio')) > 0) {
+                foreach (Req::Post_Safe('filter_radio') as $k => $v) {
                     if (in_array($k, $colomns) && $v != '') {
                         $wheres[] = $k . "='" . Req::Clear($v) . "'";
                     }
@@ -1674,12 +2341,12 @@ class mod_user_mod extends indexMain
                 foreach ($i->toArray() as $content) {
 
                     $last = "";
-                    if (Roll::hasPermission('mod_user', 'edit')) {
-                        $last .= '<button onclick="mod_user_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple">
+                    if (Role::hasPermission('mod_user', 'edit')) {
+                        $last .= '<button data-action="edit-user" data-id="' . $content['id'] . '" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_user']['button']['edit'] . ' </button>';
                     }
-                    if (Roll::hasPermission('mod_user', 'delete')) {
-                        $last .= '<button onclick="mod_user_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red">
+                    if (Role::hasPermission('mod_user', 'delete')) {
+                        $last .= '<button data-action="delete-user" data-id="' . $content['id'] . '" class="btn default btn-xs red">
     <i class="fa fa-trash-o"></i> ' . $this->lang['mod_user']['button']['delete'] . ' </button>';
                     }
 
@@ -1786,7 +2453,7 @@ class mod_user_mod extends indexMain
                 }
             }
         }
-        echo 'Oke';
+        echo 'Success';
     }
 
     public function edit($id = NULL)
@@ -1813,7 +2480,7 @@ class mod_user_mod extends indexMain
                     'errors' => [$this->lang['mod_user']['error']['user_not_found']],
                 ], 404);
             }
-            $this->_emesaj($this->lang['mod_user']['error']['user_not_found']);
+            $this->_emessage($this->lang['mod_user']['error']['user_not_found']);
             return;
         }
 
@@ -1838,14 +2505,14 @@ class mod_user_mod extends indexMain
         $group = Helper::nested($g->all()->toArray(), 'parent_id', 'group_id');
 
         $this->site['title'] = $this->lang['mod_user']['admin']['edit_area'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('d', $d);
-        $this->tema->veri('group', $group);
+        $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
+        $this->theme->set('group', $group);
         
         // Pass country codes
-        $this->tema->veri('country_codes', $this->_get_country_codes());
-        $this->tema->veri('social_platforms', $this->_get_social_platforms());
-        $this->tema->tpl('mod_user/edit');
+        $this->theme->set('country_codes', $this->_get_country_codes());
+        $this->theme->set('social_platforms', $this->_get_social_platforms());
+        $this->theme->tpl('mod_user/edit');
     }
 
 
@@ -1855,7 +2522,7 @@ class mod_user_mod extends indexMain
         $this->val = Load::validator('mod_user.edit');
 
         if ($this->val->check($id)) {
-            $this->tema->veri('errors', $this->val->errors);
+            $this->theme->set('errors', $this->val->errors);
             if ($is_ajax) {
                 return [
                     'status' => 422,
@@ -1913,7 +2580,7 @@ class mod_user_mod extends indexMain
                 if ($image->_resize($option)) {
                     $u->image = $image->url;
                 } else {
-                    $this->tema->veri('errors', [$image->error]);
+                    $this->theme->set('errors', [$image->error]);
                     if ($is_ajax) {
                         return [
                             'status' => 422,
@@ -1930,7 +2597,7 @@ class mod_user_mod extends indexMain
 
             if ($u->update('id') && $this->_save_social_links($id, $_POST['social_links'] ?? [])) {
                 $db->commit();
-                $this->_mesaj($this->lang['mod_user']['admin']['updated']);
+                $this->_message($this->lang['mod_user']['admin']['updated']);
                 if ($is_ajax) {
                     return [
                         'status' => 200,
@@ -1943,7 +2610,7 @@ class mod_user_mod extends indexMain
                 }
             } else {
                 $db->rollback();
-                $this->tema->veri('errors', [$this->lang['mod_user']['database_error']]);
+                $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
                 if ($is_ajax) {
                     return [
                         'status' => 500,
@@ -1987,49 +2654,49 @@ class mod_user_mod extends indexMain
         Load::modelfile('mod_user.mod_user_perm'); // Permissions Model
         $usergroup = Load::model('mod_user_group'); // Group Model
         $mods = Load::model('mods'); // Mod Model
-        $userroll = Load::model('mod_user.mod_user_roll'); // Role Model
+        $userrole = Load::model('mod_user.mod_user_role'); // Role Model
 
         $this->site['title'] = $this->lang['mod_user']['admin']['acl'];
 
-        $this->tema->veri('site', $this->site);
-        $this->tema->tpl('mod_user/acl');
-
+        $this->theme->set('site', $this->site);
+        $this->theme->tpl('mod_user/acl');
 
         // Pull All Groups
         $usergroup->all();
-        $gruplar = $usergroup->toArray();
-        // Send Groups to Theme
-        $this->tema->veri('gruplar', $gruplar);
-
+        $groups = $usergroup->toArray();
+        $this->theme->set('groups', $groups);
+        $this->theme->set('gruplar', $groups);
 
         // Pull Mods
         $mods->order('mod_id', 'DESC')->all('asc');
-
-
-        $modlar = $mods->toArray();
-        $this->tema->veri('modlar', $modlar);
+        $modules = $mods->toArray();
+        $this->theme->set('modules', $modules);
+        $this->theme->set('modlar', $modules);
 
         // Pull Roles
-        $userroll->all();
-        $roller = $userroll->toArray();
-
+        $userrole->all();
+        $allRoles = $userrole->toArray();
+        $groupedRoles = [];
 
         // Load Module Language Files
-        foreach ($modlar as $mod) {
-            $this->tema->lang(Load::lang($mod['mod_name']));
-            // Configure Modules and Roles
-            foreach ($roller as $roll) {
-                if ($roll['mod_id'] === $mod['mod_id']) {
-                    $sroll[$roll['mod_id']][] = $roll;
+        foreach ($modules as $mod) {
+            $modLangDir = mod_dir . $mod['mod_name'] . DS . lang_dir;
+            if (is_dir($modLangDir) && !empty(glob($modLangDir . '*.php'))) {
+                $this->theme->lang(Load::lang($mod['mod_name']));
+            }
+            foreach ($allRoles as $role) {
+                if ($role['mod_id'] === $mod['mod_id']) {
+                    $groupedRoles[$role['mod_id']][] = $role;
                 }
             }
         }
 
-        $permler = Load::model('mod_user.mod_user_perm');
-        $permler->order('mod_id', 'DESC')->all();
-        $this->tema->veri('permler', $permler->toArray());
-
-        $this->tema->veri('roller', $sroll);
+        $permissions = Load::model('mod_user.mod_user_perm');
+        $permissions->order('mod_id', 'DESC')->all();
+        $this->theme->set('permissions', $permissions->toArray());
+        $this->theme->set('permler', $permissions->toArray());
+        $this->theme->set('roles', $groupedRoles);
+        $this->theme->set('roller', $groupedRoles);
     }
 
 
@@ -2038,33 +2705,122 @@ class mod_user_mod extends indexMain
         Load::libfile('Database');
         $perm = Load::model('mod_user.mod_user_perm'); // Permissions Model
         $db = new Database();
-        $y = Req::Post_Safe('list');
+        $list = Req::Post_Safe('list');
 
         // Start Transaction
         $db->start_transaction();
         // Truncate Table
         $db->truncate("mod_user_perm");
 
-        foreach ($y as $d => $g) {
-            foreach ($g as $f => $m) {
-                foreach ($m as $k => $u) {
-
-                    $perm->group_id = $d;
-                    $perm->roll_id = $k;
-                    $perm->mod_id = $f;
-                    if ($perm->save() === False) {
-                        // If any error occurs, let's Rollback everything.
-                        $db->rollback();
-                        $this->_emesaj($this->lang['mod_user']['database_error']);
+        if (is_array($list)) {
+            foreach ($list as $groupId => $modulePerms) {
+                foreach ($modulePerms as $modId => $roles) {
+                    foreach ($roles as $roleId => $val) {
+                        $perm->group_id = $groupId;
+                        $perm->role_id = $roleId;
+                        $perm->mod_id = $modId;
+                        if ($perm->save() === False) {
+                            $db->rollback();
+                            $this->_emessage($this->lang['mod_user']['database_error']);
+                            return;
+                        }
                     }
                 }
             }
         }
-        // If there is no problem, Commit and Apply
+        // Commit and Apply
         $db->commit();
-        // Update administrator Roles
-        $this->user->_roll($this->session->get('group_id'));
-        $this->_mesaj($this->lang['mod_user']['admin']['permissions_updated']);
+        // Update administrator permissions in session
+        $this->user->_loadPermissions($this->session->get('group_id'));
+        $this->_message($this->lang['mod_user']['admin']['permissions_updated']);
+    }
+
+    /**
+     * AJAX endpoint to toggle a single permission or a batch of permissions for a module group
+     */
+    public function toggle_permission()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Method Not Allowed'
+            ], 405);
+            return;
+        }
+
+        // Check ACL permission
+        if ($this->user->hasPermission('mod_user', 'acl', $this->lang['mod_user']['role_errors']['acl'] ?? '', 1) === False) {
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => $this->lang['mod_user']['role_errors']['acl'] ?? 'Unauthorized'
+            ], 403);
+            return;
+        }
+
+        $groupId = (int) Req::Post_Safe('group_id');
+        $modId = (int) Req::Post_Safe('mod_id');
+        $roleId = Req::Post_Safe('role_id');
+        $state = Req::Post_Safe('state');
+        $isChecked = ($state === '1' || $state === 'true' || $state === true || $state === 1);
+
+        if ($groupId <= 0 || $modId <= 0) {
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Invalid module or group ID'
+            ], 400);
+            return;
+        }
+
+        $db = Load::lib('Database');
+
+        if (is_array($roleId)) {
+            // Batch toggle for multiple roles in this module and group
+            $roleIds = array_map('intval', $roleId);
+            $roleIds = array_values(array_filter($roleIds, fn($id) => $id > 0));
+            if (empty($roleIds)) {
+                $this->_respond_with_json([
+                    'success' => false,
+                    'message' => 'No valid role IDs specified'
+                ], 400);
+                return;
+            }
+
+            $db->start_transaction();
+            $inList = implode(',', $roleIds);
+            $db->query("DELETE FROM `mod_user_perm` WHERE `group_id` = {$groupId} AND `mod_id` = {$modId} AND `role_id` IN ({$inList})");
+
+            if ($isChecked) {
+                foreach ($roleIds as $rId) {
+                    $db->query("INSERT INTO `mod_user_perm` (`group_id`, `mod_id`, `role_id`) VALUES ({$groupId}, {$modId}, {$rId})");
+                }
+            }
+            $db->commit();
+        } elseif ($roleId !== null && (int)$roleId > 0) {
+            $rId = (int) $roleId;
+            $db->start_transaction();
+            $db->query("DELETE FROM `mod_user_perm` WHERE `group_id` = {$groupId} AND `mod_id` = {$modId} AND `role_id` = {$rId}");
+
+            if ($isChecked) {
+                $db->query("INSERT INTO `mod_user_perm` (`group_id`, `mod_id`, `role_id`) VALUES ({$groupId}, {$modId}, {$rId})");
+            }
+            $db->commit();
+        } else {
+            $this->_respond_with_json([
+                'success' => false,
+                'message' => 'Invalid role ID'
+            ], 400);
+            return;
+        }
+
+        // Synchronize permissions for currently logged-in user if their group was updated
+        if ((int)$this->session->get('group_id') === $groupId) {
+            $this->user->_loadPermissions($groupId);
+        }
+
+        $this->_respond_with_json([
+            'success' => true,
+            'message' => $this->lang['mod_user']['admin']['permissions_updated'] ?? 'Permissions updated'
+        ]);
     }
 
 
@@ -2073,7 +2829,7 @@ class mod_user_mod extends indexMain
     {
         // Is Logged In?
         if ($this->user->checklogin() === True) {
-            Helper::yonlendir($this->site['saddress'] . "mod_user/panel", 2);
+            Helper::redirect($this->site['saddress'] . "mod_user/panel", 2);
             return TRUE;
         }
         return FALSE;
@@ -2083,37 +2839,77 @@ class mod_user_mod extends indexMain
     public function check()
     {
         if ($this->user->checklogin() === False) {
+            $redirectUrl = $this->site['saddress'] . "?login=modal&session_expired=1";
+            if ($this->_is_ajax_request()) {
+                header('HTTP/1.1 401 Unauthorized');
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'error',
+                    'authenticated' => false,
+                    'code' => 'session_expired',
+                    'message' => 'Unauthorized access',
+                    'redirect' => $redirectUrl
+                ]);
+                exit();
+            }
             // Redirect to home with modal trigger instead of static login page
-            Helper::yonlendir($this->site['saddress'] . "?login=modal", 0);
+            Helper::redirect($redirectUrl, 0);
             return FALSE;
         }
+
         return TRUE;
     }
 
-    // Generic Message
-    private function _mesaj($mesaj)
+    // AJAX session liveness ping: 200 JSON when logged in, 401 JSON when not
+    public function session_check()
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        if ($this->user->checklogin() === False) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'status' => 'error',
+                'authenticated' => false,
+                'code' => 'session_expired',
+                'message' => 'Unauthorized access',
+                'redirect' => $this->site['saddress'] . "?login=modal&session_expired=1"
+            ]);
+            exit();
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status' => 'success',
+            'authenticated' => true,
+            'user_id' => (int) $this->session->get('id'),
+            'username' => (string) $this->session->get('username')
+        ]);
+        exit();
+    }
+
+    // Generic Message
+    private function _message($message)
+    {
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
     // Negative Message (Admin)
-    private function _emesaj($mesaj)
+    private function _emessage($message)
     {
-        $this->tema->veri('errors', (array)$mesaj);
+        $this->theme->set('errors', (array)$message);
     }
 
     // Positive Message (App)
-    private function _appmesaj($mesaj)
+    private function _app_message($message)
     {
-        $this->apptemplate->veri('oke', True);
-        $this->apptemplate->veri('mesaj', $mesaj);
+        $this->apptemplate->set('Success', True);
+        $this->apptemplate->set('message', $message);
     }
 
     // Negative Message (App)
-    private function _appemesaj($mesaj)
+    private function _app_emessage($message)
     {
-        $this->apptemplate->veri('errors', (array)$mesaj);
+        $this->apptemplate->set('errors', (array)$message);
     }
 
     private function _log_password_reset($message)
@@ -2130,7 +2926,7 @@ class mod_user_mod extends indexMain
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             if (!$this->_is_ajax_request()) {
-                Helper::yonlendir($this->site['saddress'], 0);
+                Helper::redirect($this->site['saddress'], 0);
                 return;
             }
             $this->_respond_with_json([
@@ -2160,7 +2956,7 @@ class mod_user_mod extends indexMain
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             if (!$this->_is_ajax_request()) {
-                Helper::yonlendir($this->site['saddress'], 0);
+                Helper::redirect($this->site['saddress'], 0);
                 return;
             }
             $this->_respond_with_json([
@@ -2190,7 +2986,7 @@ class mod_user_mod extends indexMain
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             if (!$this->_is_ajax_request()) {
-                Helper::yonlendir($this->site['saddress'], 0);
+                Helper::redirect($this->site['saddress'], 0);
                 return;
             }
             $this->_respond_with_json([
@@ -2220,7 +3016,7 @@ class mod_user_mod extends indexMain
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             if (!$this->_is_ajax_request()) {
-                Helper::yonlendir($this->site['saddress'], 0);
+                Helper::redirect($this->site['saddress'], 0);
                 return;
             }
             $this->_respond_with_json([
@@ -2255,7 +3051,7 @@ class mod_user_mod extends indexMain
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             if (!$this->_is_ajax_request()) {
-                Helper::yonlendir($this->site['saddress'], 0);
+                Helper::redirect($this->site['saddress'], 0);
                 return;
             }
             $this->_respond_with_json([

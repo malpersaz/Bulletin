@@ -8,6 +8,259 @@
 {% block title %}{{ lang.mod_video_embed.named }}{% endblock %}
 {% block headline %}{{ lang.mod_video_embed.named }}{% endblock %}
 
+{% block styles %}
+    {{ parent() }}
+    <style>
+        :root {
+            /* FAB & Tooltip Colors */
+            --color-fab-bg: var(--md-sys-color-blue, #0B57D0);
+            --color-fab-active-bg: var(--md-sys-color-blue, #0B57D0);
+            --color-tooltip-bg: #1E2022;
+        }
+
+        /* Floating Action Button (FAB) - Positioned HIGHER than Toolbar */
+        .main-fab {
+            position: fixed;
+            bottom: 84px;
+            bottom: calc(84px + env(safe-area-inset-bottom));
+            right: 18px;
+            width: 58px;
+            height: 58px;
+            border-radius: 20px;
+            background-color: var(--color-fab-bg);
+            color: #FFFFFF;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(11, 87, 208, 0.3);
+            z-index: 1050;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s, box-shadow 0.3s;
+        }
+
+        .main-fab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(11, 87, 208, 0.4);
+        }
+
+        .main-fab:active {
+            transform: translateY(0) scale(0.95);
+        }
+
+        .main-fab.active {
+            background-color: var(--color-fab-active-bg);
+            transform: rotate(135deg);
+            box-shadow: 0 8px 24px rgba(11, 87, 208, 0.25);
+        }
+
+        /* Blur Screen Overlay */
+        .overlay-panel {
+            position: fixed;
+            inset: 0;
+            background: rgba(248, 246, 250, 0.45);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            z-index: 1040;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+        }
+
+        [data-theme="dark"] .overlay-panel {
+            background: rgba(15, 23, 42, 0.45);
+        }
+
+        .overlay-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* FAB Menu Items Container - Positioned HIGHER than FAB */
+        .fab-menu-container {
+            position: fixed;
+            bottom: 158px;
+            bottom: calc(158px + env(safe-area-inset-bottom));
+            right: 18px;
+            z-index: 1055;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 16px;
+            pointer-events: none;
+        }
+
+        .fab-menu-container.active {
+            pointer-events: auto;
+        }
+
+        /* Individual FAB Menu Row */
+        .fab-menu-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translate3d(0, 20px, 0) scale(0.9);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1), opacity 0.18s ease;
+            cursor: pointer;
+        }
+
+        /* Sequential delay logic for animation (Fast snappy staggers) */
+        .fab-menu-container.active .fab-menu-row:nth-child(1) {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            transition-delay: 0.08s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(2) {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            transition-delay: 0.06s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(3) {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            transition-delay: 0.04s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(4) {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            transition-delay: 0.02s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(5),
+        .fab-menu-container.active .fab-menu-row:nth-child(6),
+        .fab-menu-container.active .fab-menu-row:nth-child(7) {
+            opacity: 1;
+            transform: translate3d(0, 0, 0) scale(1);
+            transition-delay: 0s;
+        }
+
+        /* Dark Tooltip Label */
+        .fab-label {
+            background-color: var(--color-tooltip-bg);
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 8px 14px;
+            border-radius: 10px;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translate3d(8px, 0, 0);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            transition: transform 0.18s cubic-bezier(0, 0, 0.2, 1), opacity 0.15s ease;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(1) .fab-label {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition-delay: 0.09s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(2) .fab-label {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition-delay: 0.07s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(3) .fab-label {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition-delay: 0.05s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(4) .fab-label {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition-delay: 0.03s;
+        }
+
+        .fab-menu-container.active .fab-menu-row:nth-child(5) .fab-label,
+        .fab-menu-container.active .fab-menu-row:nth-child(6) .fab-label,
+        .fab-menu-container.active .fab-menu-row:nth-child(7) .fab-label {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition-delay: 0.01s;
+        }
+
+        /* Mini FAB Circle Button */
+        .mini-fab {
+            width: 48px;
+            height: 48px;
+            border-radius: 16px;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s;
+        }
+
+        .mini-fab i:first-child {
+            font-size: 18px;
+        }
+
+        .mini-fab i.bi-plus-lg {
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .mini-fab:hover {
+            transform: scale(1.08);
+        }
+
+        .mini-fab:active {
+            transform: scale(0.95);
+        }
+
+        /* Themes for Mini FABs */
+        .fab-row-product .mini-fab {
+            background-color: #E3F2FD;
+            color: #0D47A1;
+            border-color: #BBDEFB;
+        }
+        .fab-row-project .mini-fab {
+            background-color: #E0F2FE;
+            color: #0369A1;
+            border-color: #BAE6FD;
+        }
+        .fab-row-service .mini-fab {
+            background-color: #F3E5F5;
+            color: #4A148C;
+            border-color: #E1BEE7;
+        }
+        .fab-row-page .mini-fab {
+            background-color: #E0F7FA;
+            color: #006064;
+            border-color: #B2EBF2;
+        }
+        .fab-row-video .mini-fab {
+            background-color: #E8EAF6;
+            color: #1A237E;
+            border-color: #C5CAE9;
+        }
+        .fab-row-announcement .mini-fab {
+            background-color: #FBE9E7;
+            color: #D84315;
+            border-color: #FFCCBC;
+        }
+        .fab-row-content .mini-fab {
+            background-color: #ECEFF1;
+            color: #37474F;
+            border-color: #CFD8DC;
+        }
+    </style>
+{% endblock %}
+
 {% macro select_nested_category_id_function(parent_id, level, allowed_langs) %}
     {% for entry in attribute(select_nested_category_id_result, parent_id) %}
         {% set parent_id = entry.id %}
@@ -50,19 +303,19 @@
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
-                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
+                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.ok }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
         </script>
     {% endif %}
-    {% if oke is defined %}
+    {% if success is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
-                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
+                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ message }}</b>',
                     showCancelButton: true,
                     confirmButtonText: '{{ lang.mod_video_embed.list }}',
                     cancelButtonText: '{{ lang.mod_video_embed.button.add }}',
@@ -78,18 +331,18 @@
             });
         </script>
     {% endif %}
-    {% if hatalar is defined %}
+    {% if errors is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 let errorHtml = '<div style="text-align: left;">';
-                {% for hata in hatalar %}
-                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                {% for error in errors %}
+                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
                 {% endfor %}
                 errorHtml += '</div>';
                 Swal.fire({
                     icon: 'warning',
                     html: errorHtml,
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam }}',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.ok }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
@@ -113,7 +366,7 @@
             <div id="embedPreview" class="embed-preview">
                 <div class="embed-placeholder">
                     <i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i>
-                    <span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span>
+                    <span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.preview }}</span>
                 </div>
             </div>
         </div>
@@ -130,11 +383,11 @@
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.sure }}</label>
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.duration }}</label>
                 <input type="text" name="sure" value="{{ sure|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.sure }}" required>
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.tarih }}</label>
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.date }}</label>
                 <input type="datetime-local" name="created_at" id="tarihInput" value="{{ created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
             </div>
         </div>
@@ -239,7 +492,7 @@
                 <input type="text" name="keywords" id="keywordsInput" value="{{ keywords|default('') }}" class="form-input" required>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.aciklama }}</label>
+                <label class="form-label">{{ lang.mod_video_embed.admin.columns.description }}</label>
                 <input type="text" name="description" id="aciklamaInput" value="{{ description|default('') }}" class="form-input" required>
             </div>
         </div>
@@ -249,21 +502,11 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video_embed/list'">
-            <i class="bi bi-x-lg"></i>
-            <span>{{ lang.mod_video_embed.button.cancel }}</span>
-        </button>
 
-        <div class="toolbar-fab" onclick="document.getElementById('videoAddForm').submit()">
-            <i class="bi bi-check-lg"></i>
-        </div>
-
-        <button class="toolbar-item active" onclick="document.getElementById('videoAddForm').submit()">
-            <i class="bi bi-floppy-fill"></i>
-            <span>{{ lang.mod_video_embed.button.save }}</span>
-        </button>
-    </div>
+<!-- Main FAB (Save Button) -->
+<button type="button" class="main-fab" style="background-color: #198754; color: #fff;" onclick="submitVideoFormViaAjax()" title="{{ lang.mod_video_embed.button.save }}">
+    <i class="bi bi-check-lg"></i>
+</button>
 {% endblock %}
 
 {% block scripts %}
@@ -293,7 +536,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function cleanMetaText(value) {
         let cleaned = (value || '').toString();
-        cleaned = cleaned.replace(/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"' ]+/g, ' ');
+        cleaned = cleaned.replace(/[^a-zA-Z\u0131\u011f\u00fc\u015f\u00f6\u00e7\u0130\u011e\u00dc\u015e\u00d6\u00c7\u00ee\u00ea\u00fb\u00ce\u00ca\u00db1234567890"' ]+/g, ' ');
         cleaned = cleaned.trim();
 
         for (let i = 0; i <= 15; i += 1) {
@@ -304,38 +547,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function saveFormData() {
-        if (!form) return;
-        const data = {};
-        const fields = form.querySelectorAll('input[name], select[name], textarea[name]');
-        fields.forEach(function(el) {
-            if (el.type === 'file' || el.type === 'hidden') return;
-            data[el.name] = el.value;
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // Disabled form auto-saving
     }
 
     function restoreFormData() {
-        if (!form) return;
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (!saved) return;
-        try {
-            const data = JSON.parse(saved);
-            Object.keys(data).forEach(function(name) {
-                const el = form.querySelector('[name="' + name + '"]');
-                if (!el || el.type === 'file' || el.type === 'hidden') return;
-                el.value = data[name];
-            });
-            document.getElementById('langSelect')?.dispatchEvent(new Event('change', { bubbles: true }));
-            document.getElementById('categorySelect')?.dispatchEvent(new Event('change', { bubbles: true }));
-        } catch (error) {}
+        // Disabled form auto-restoring
     }
 
-    {% if oke is defined %}
+    {% if success is defined %}
         localStorage.removeItem(STORAGE_KEY);
-    {% endif %}
-
-    {% if oke is not defined %}
-        restoreFormData();
     {% endif %}
 
     if (form) {
@@ -349,7 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
             embedPreview.innerHTML = embedInput.value;
             embedPreview.classList.add('has-content');
         } else {
-            embedPreview.innerHTML = '<div class="embed-placeholder"><i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i><span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.onizleme }}</span></div>';
+            embedPreview.innerHTML = '<div class="embed-placeholder"><i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i><span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.preview }}</span></div>';
             embedPreview.classList.remove('has-content');
         }
     }
@@ -364,7 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return cleanMetaText(value)
             .replace(/\s+/g, ',')
             .toLowerCase()
-            .replace(/İ/g, 'i');
+            .replace(/\u0130/g, 'i');
     }
 
     function setFieldValue(input, value) {
@@ -393,7 +613,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function slugifyVideoName(value) {
         let slug = cleanMetaText(value);
         slug = slug.replace(/\s+/g, '_');
-        slug = slug.replace(/İ/g, 'i');
+        slug = slug.replace(/\u0130/g, 'i');
 
         for (let i = 0; i <= 5; i += 1) {
             slug = slug.replace(/__/g, '_');
@@ -581,7 +801,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
                     text: '{{ lang.mod_video_embed.validator.unsupported_emoji|e('js')|replace({'%s': lang.mod_video_embed.admin.columns.content|e('js')}) }}',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.tamam|e('js') }}',
+                    confirmButtonText: '{{ lang.mod_video_embed.button.ok|e('js') }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             }
@@ -640,6 +860,53 @@ function clearSelectedImage() {
         <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
         <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
     `;
+}
+
+function submitVideoFormViaAjax() {
+    const form = document.getElementById('videoAddForm');
+    const formData = new FormData(form);
+    
+    // Add ajax parameter
+    formData.append('ajax_submit', '1');
+
+    Swal.fire({
+        title: '{{ lang.mod_video_embed.ajax.saving|e('js') }}',
+        text: '{{ lang.mod_video_embed.ajax.please_wait|e('js') }}',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    fetch(form.action || window.location.href, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(html => {
+        if (html.includes("icon: 'success'") || html.includes("bi-check-circle-fill")) {
+            Swal.fire({
+                icon: 'success',
+                title: '{{ lang.mod_video_embed.success|e('js') }}',
+                text: '{{ lang.mod_video_embed.ajax.save_success|e('js') }}',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                if (document.referrer && !document.referrer.includes('mod_video_embed/add')) {
+                    window.location.href = document.referrer;
+                } else {
+                    window.history.back();
+                }
+            });
+        } else {
+            document.open();
+            document.write(html);
+            document.close();
+        }
+    })
+    .catch(error => {
+        Swal.fire('{{ lang.mod_video_embed.error|e('js') }}', '{{ lang.mod_video_embed.message.error.add|e('js') }}', 'error');
+    });
 }
 </script>
 <!-- selection-card wizard_content wizard_page -->

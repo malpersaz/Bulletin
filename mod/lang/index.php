@@ -9,7 +9,7 @@ class lang_mod extends indexMain
         $this->db = Load::lib('Database');
         $this->session = Load::lib('Session');
         $this->user = Load::model('mod_user.user');
-        $this->site = Kayit::getir('site_config');
+        $this->site = Registry::get('site_config');
         $this->lang = Load::lang('lang');
         $this->tema->lang($this->lang);
     }
@@ -35,10 +35,10 @@ class lang_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['lang']['admin']['title'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('languages', $this->getLanguages());
-        $this->tema->veri('lang_admin_success', $this->pullFlash('lang_admin_success'));
-        $this->tema->veri('lang_admin_error', $this->pullFlash('lang_admin_error'));
+        $this->tema->set('site', $this->site);
+        $this->tema->set('languages', $this->getLanguages());
+        $this->tema->set('lang_admin_success', $this->pullFlash('lang_admin_success'));
+        $this->tema->set('lang_admin_error', $this->pullFlash('lang_admin_error'));
         $this->tema->tpl('lang/panel');
     }
 
@@ -72,7 +72,7 @@ class lang_mod extends indexMain
             $this->pushFlash('lang_admin_error', $response['message']);
         }
 
-        Helper::yonlendir($this->site['saddress'] . 'lang/panel', 0);
+        Helper::redirect($this->site['saddress'] . 'lang/panel', 0);
     }
 
     private function activateLanguage(array $language)
@@ -184,15 +184,15 @@ class lang_mod extends indexMain
         $this->site['default_lang'] = $defaultLanguage;
         $this->site['available_languages'] = $availableLanguages;
 
-        Kayit::yenile('active_langs', array_values(array_unique($activeCodes)));
-        Kayit::yenile('default_lang', $defaultLanguage);
-        Kayit::yenile('lang', isset($this->site['lang']) ? $this->site['lang'] : $defaultLanguage);
+        Registry::set('active_langs', array_values(array_unique($activeCodes)));
+        Registry::set('default_lang', $defaultLanguage);
+        Registry::set('lang', isset($this->site['lang']) ? $this->site['lang'] : $defaultLanguage);
 
-        $siteConfig = Kayit::getir('site_config');
+        $siteConfig = Registry::get('site_config');
         if (is_array($siteConfig)) {
             $siteConfig['default_lang'] = $defaultLanguage;
             $siteConfig['available_languages'] = $availableLanguages;
-            Kayit::yenile('site_config', $siteConfig);
+            Registry::set('site_config', $siteConfig);
         }
     }
 

@@ -2,8 +2,7 @@
 
 class mod_user_group extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
-    public $model;
+    public $tables;
 
     public function __construct()
     {
@@ -11,11 +10,11 @@ class mod_user_group extends installerbase implements installerbaseinterface
         // Module Name
         $this->mod = 'mod_user_group';
         // Roles
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list', 'move', 'moderate'
         );
         // Tables
-        $this->tablolar=array(
+        $this->tables=array(
             'mod_user_group'
         );
     }
@@ -31,11 +30,11 @@ class mod_user_group extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions.
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         // Add User Groups
-        if ($this->addgroups() === FALSE) {
+        if ($this->add_groups() === FALSE) {
             return FALSE;
         }
         return TRUE;
@@ -43,7 +42,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
 
 
 
-    private function addgroups()
+    private function add_groups()
     {
         $model = Load::model('mod_user_group');
         $groups = array(
@@ -52,7 +51,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
                 'name' => 'Site Management',
                 'order' => '1',
                 'parent_id' => '0',
-                'rolls' => '{}',
+                'roles' => '{}',
                 'user_id' => '1',
             ),
             array(
@@ -60,7 +59,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
                 'name' => 'Editors',
                 'order' => '2',
                 'parent_id' => '1',
-                'rolls' => '{}',
+                'roles' => '{}',
                 'user_id' => '1',
             ),
             array(
@@ -68,7 +67,15 @@ class mod_user_group extends installerbase implements installerbaseinterface
                 'name' => 'Normal User',
                 'order' => '3',
                 'parent_id' => '1',
-                'rolls' => '{}',
+                'roles' => '{}',
+                'user_id' => '1',
+            ),
+            array(
+                'group_id' => '4',
+                'name' => 'Employee',
+                'order' => '4',
+                'parent_id' => '1',
+                'roles' => '{}',
                 'user_id' => '1',
             ),
         );
@@ -78,12 +85,12 @@ class mod_user_group extends installerbase implements installerbaseinterface
             $model->name = $group['name'];
             $model->order = $group['order'];
             $model->parent_id = $group['parent_id'];
-            $model->rolls = $group['rolls'];
+            $model->roles = $group['roles'];
             $model->user_id = $group['user_id'];
 
             if ($model->getSize() === 0) {
                 if ($model->save()) {
-                    $this->oke("-----<b>" . $model->name . "</b> - User Group Added to Database!");
+                    $this->success("-----<b>" . $model->name . "</b> - User Group Added to Database!");
                 } else {
                     $this->error(" ERROR OCCURRED WHILE ADDING USER GROUPS" . print_r($model, TRUE));
                     return FALSE;
@@ -102,7 +109,7 @@ class mod_user_group extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

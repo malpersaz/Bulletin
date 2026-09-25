@@ -6,5 +6,7 @@ CREATE TABLE `mod_gallery` (
   `mod_name` varchar(250) NOT NULL,
   `vid` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  INDEX `idx_gal_mod_vid` (`mod_name`, `vid`),
+  INDEX `idx_gal_user` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

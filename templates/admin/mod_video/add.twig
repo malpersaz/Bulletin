@@ -65,19 +65,19 @@
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
-                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                    confirmButtonText: '{{ lang.mod_video.button.evet }}',
+                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
+                    confirmButtonText: '{{ lang.mod_video.button.yes }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
         </script>
     {% endif %}
-    {% if oke is defined %}
+    {% if success is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
-                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
+                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ message }}</b>',
                     confirmButtonText: '{{ lang.mod_video.list }}',
                     confirmButtonColor: '#2e7d32'
                 }).then(function() {
@@ -86,18 +86,18 @@
             });
         </script>
     {% endif %}
-    {% if hatalar is defined %}
+    {% if errors is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 let errorHtml = '<div style="text-align: left;">';
-                {% for hata in hatalar %}
-                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                {% for error in errors %}
+                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
                 {% endfor %}
                 errorHtml += '</div>';
                 Swal.fire({
                     icon: 'warning',
                     html: errorHtml,
-                    confirmButtonText: '{{ lang.mod_video.button.evet }}',
+                    confirmButtonText: '{{ lang.mod_video.button.yes }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
@@ -225,7 +225,7 @@
     <div class="standard-toolbar">
         <button type="button" class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video/list'">
             <i class="bi bi-x-lg"></i>
-            <span>{{ lang.mod_video.button.vazgec }}</span>
+            <span>{{ lang.mod_video.button.cancel }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="submitVideoForm()" id="save_btn_fab" style="opacity: 0.3; pointer-events: none;">
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (xhr.status === 200) {
                 try {
                     const res = JSON.parse(xhr.responseText.trim());
-                    if (res.oke) {
+                    if (res.success) {
                         document.getElementById('upload_area').style.display = 'none';
                         document.getElementById('upload_progress_container').style.display = 'none';
                         document.getElementById('d_video').value = res.file;
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             document.getElementById('step2Card').classList.remove('disabled');
                             document.getElementById('step2Card').classList.add('active');
 
-                            // Veguherandina bixweber dest pê dike
+                            // Automatic conversion starts
                             convertVideo();
                         } else {
                             // Skip conversion step completely and activate Step 3 immediately!
@@ -417,12 +417,12 @@ function convertVideo() {
         Swal.close();
         try {
             const res = JSON.parse(msg.trim());
-            if (res.hata) {
+            if (res.error) {
                 Swal.fire({ icon: 'error', text: res.mesaj });
                 return false;
             }
 
-            if (res.oke) {
+            if (res.success) {
                 Swal.fire({
                     icon: 'success',
                     html: res.mesaj,
@@ -487,7 +487,7 @@ function submitVideoForm() {
         Swal.fire({
             icon: 'warning',
             text: '{{ lang.mod_video.validator.required|replace({'%s': lang.mod_video.admin.columns.name})|e('js') }}',
-            confirmButtonText: '{{ lang.mod_video.button.evet|e('js') }}',
+            confirmButtonText: '{{ lang.mod_video.button.yes|e('js') }}',
             confirmButtonColor: '#ba1a1a'
         });
         if (nameInput) nameInput.focus();

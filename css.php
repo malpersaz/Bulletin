@@ -45,7 +45,7 @@ if (isset($_GET['css'])) {
     $css_cache_file = md5($css) . '-v-' . $version . '.css';
     $cachefile = $root_cache_dir . $css_cache_file;
     if (file_exists($cachefile) === FALSE) {
-        require_once(DIRNAME(__FILE__) . 'koberz.init.php');
+        require_once(DIRNAME(__FILE__) . 'init.php');
         $cssoptimizer = Load::lib('CssOptimizer');
         $cssoptimizer->cachefile = $cachefile;
         $cssoptimizer->css_cache_file = $css_cache_file;

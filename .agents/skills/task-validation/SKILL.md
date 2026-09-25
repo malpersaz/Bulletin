@@ -1,13 +1,13 @@
 ---
 name: task-validation
-description: Task Completion & Release Validation - Verify VERSION.md updates based on Git history and enforce project quality guards (comment-guard, i18n-guard, policy-gate) before completing a task.
+description: Task Completion Validation - Enforce project quality guards (comment-guard, i18n-guard, policy-gate) before completing a task.
 ---
 
-# Task Completion & Release Validation (Task Validation)
+# Task Completion Validation (Task Validation)
 
 ## Purpose
 
-This skill defines the checks and release gates required before completing a task in the repository. It ensures that development notes are correctly logged and that all code quality gates are passed.
+This skill defines the checks required before completing a task in the repository. It ensures that all code quality gates are passed.
 
 ## Operating Rule
 
@@ -16,16 +16,9 @@ This skill defines the checks and release gates required before completing a tas
 
 ## Step-by-Step Sequence
 
-1. **Version History Check:**
-   * Run `git log` or `git describe` to find the last tag or version code that was pushed/uploaded to GitHub.
-   * Open `/docs/VERSION.md`.
-   * Verify that the historical section corresponding to the latest Git-uploaded version is intact (frozen).
-2. **Version Note Appending:**
-   * If there is an open next/unpublished section in `VERSION.md` corresponding to the active unpublished version, append the new task changes there.
-   * If there is no open next/unpublished version section, create the next version code section and add the development notes under it.
-   * **Note Language:** All version notes appended to `/docs/VERSION.md` MUST be written in English. Never use Kurdish or Turkish in `/docs/VERSION.md` even if communicating with the user in Kurdish.
-3. **Execute Local Quality Guards:**
-   * Run `comment-guard` to clean Turkish/Kurdish comments in touched files. Ensure all comments, function names, variable names, translation keys, and documentation (except `implementation_plan.md`) are in English.
-   * Run `i18n-guard` to check for hard-coded visible strings.
+1. **Execute Local Quality Guards:**
+   * Run `comment-guard` to clean Turkish/Kurdish comments in touched files.
+   * Run `i18n-guard` (`python3 tools/i18n_guard.py`) to check for hard-coded visible strings and missing language keys.
+   * Run `code-separation-guard` (`python3 tools/code_separation_guard.py`) to enforce strict code separation (no inline styles or event handlers).
    * Run `policy-gate` to consolidate final findings.
-4. **Prepare Walkthrough:** Update or create the `walkthrough.md` artifact summarizing findings and verification results.
+2. **Prepare Walkthrough:** Update or create the `walkthrough.md` artifact summarizing findings and verification results.

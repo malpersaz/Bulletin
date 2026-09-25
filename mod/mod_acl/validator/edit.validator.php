@@ -1,26 +1,26 @@
 <?php
-class duzenle_validator
+class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File
         $this->lang = Load::lang('mod_acl');
     }
     public function check($id)
     {
         #Check Required
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_acl']['validator']['required'], $this->lang['mod_acl']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_acl']['validator']['required'], $this->lang['mod_acl']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
@@ -29,15 +29,15 @@ class duzenle_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_acl']['validator']['length'], $this->lang['mod_acl']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_acl']['validator']['length'], $this->lang['mod_acl']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -52,7 +52,7 @@ class duzenle_validator
 
         #Check Unique
 
-        #Check Unique with column düzenle
+        #Check Unique with edit column
 
         return False;
     }
@@ -61,10 +61,10 @@ class duzenle_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

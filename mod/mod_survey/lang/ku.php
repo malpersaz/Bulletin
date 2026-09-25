@@ -18,6 +18,8 @@ if (!defined('AKM_LOADED')) {
  * Poll/Survey Module Language Translations
  */
 $lang['mod_survey'] = [
+    'add' => 'Rave Zêde Bike',
+    'choose_wish' => 'Heke bixwazî hilbijêre',
 
     // === Navigation & Actions ===
     'actions' => [
@@ -202,6 +204,7 @@ $lang['mod_survey'] = [
     'results' => [
         'total_votes' => 'Dengên Giştî',
         'vote_count' => ':count deng',
+        'vote_saved' => 'Spas ji bo dengê te!',
         'percentage' => ':percentage%',
         'no_votes_yet' => 'Heta niha deng tune',
         'view_detailed_results' => 'Encamên Kûrtir Bibîne',

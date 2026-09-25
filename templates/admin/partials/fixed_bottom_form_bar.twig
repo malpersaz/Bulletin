@@ -1,16 +1,16 @@
-<div class="standard-toolbar">
-    <!-- Go to List -->
-    <a href="{{ cancel_url }}" class="toolbar-item" title="{{ cancel_label }}" aria-label="{{ cancel_label }}">
-        <i class="bi bi-chevron-left"></i>
+<div class="m3-final-bar">
+    <a
+        href="{{ cancel_url }}"
+        class="m3-btn-half m3-btn-half-neutral"
+        data-skip-unsaved-warning="true">
+        <i class="bi bi-x-lg"></i>
+        {{ cancel_label }}
     </a>
-
-    <!-- Symmetrical Center Menu Button (Purple Circle) -->
-    <button type="button" class="toolbar-start-btn" onclick="if(typeof toggleDrawer==='function')toggleDrawer();" title="{{ lang.management.start_menu }}" aria-label="{{ lang.management.start_menu }}">
-        <i class="bi bi-list"></i>
-    </button>
-
-    <!-- Submit Form -->
-    <button type="submit" form="{{ form_id }}" class="toolbar-item" title="{{ submit_label }}" aria-label="{{ submit_label }}">
+    <button
+        type="submit"
+        form="{{ form_id }}"
+        class="m3-btn-half m3-btn-half-primary">
         <i class="bi bi-check-lg"></i>
+        {{ submit_label }}
     </button>
 </div>

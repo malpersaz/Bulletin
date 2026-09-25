@@ -53,8 +53,8 @@ $lang['mod_video_embed_category'] = [
         'unique' => 'Erzişê %s xora est. Kerem ke %sê bîn hilweçine.',
         'inarray' => 'Qadê %s tenya nê erzişan qebul keno: %s.',
     ],
-    'roll' => [
-        'ad' => 'Rolê İdarekerdışê Kategoriyê Vîdyo',
+    'role' => [
+        'name' => 'Rolê İdarekerdışê Kategoriyê Vîdyo',
         'add' => 'Şıma şenê kategoriyê vîdyo cı zêde bikerê',
         'edit' => 'Şıma şenê kategoriyê vîdyo vurnayê',
         'delete' => 'Şıma şenê kategoriyê vîdyo besterê',

@@ -160,7 +160,7 @@ class Swift_Transport_MailTransport implements Swift_Transport
     
     unset($messageStr);
     
-    if ("\r\n" != PHP_EOL) //Non-windows (not using SMTP)
+    if ("\r\n" !== PHP_EOL) //Non-windows (not using SMTP)
     {
       $headers = str_replace("\r\n", PHP_EOL, $headers);
       $body = str_replace("\r\n", PHP_EOL, $body);

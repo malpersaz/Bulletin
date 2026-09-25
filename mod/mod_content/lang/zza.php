@@ -18,25 +18,27 @@ if (!defined('AKM_LOADED')) {
  * Content Management Module Language Translations
  */
 $lang['mod_content'] = [
+    'total_content' => 'Hemû Naverok',
+    'draft_content' => 'Pêşnûme',
 
     // === Basic Actions ===
     'add' => 'Lê Zêde Bike',
     'edit' => 'Biguhere',
     'list' => 'Naverok',
+    'search_placeholder' => 'Zerrek cı geyre (sername, xulasa)...',
     'information' => 'Agahî!',
-    'oke' => 'Çêbû!',
-    'hata' => 'Çewtî Çêbû!',
-    'error' => 'Çewtiya Giran Çêbû!',
+    'success' => 'Çêbû!',
+    'error' => 'Çewtî Çêbû!',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
     'remove_record' => 'Ma tu bawer î, ku dixwazî vê naverokê jêbibî?',
     'delete_confirm' => 'Ma tu bawer î ku dixwazî vê naverokê jêbibî?',
     'quick_unpublish_confirm' => 'Tu bawer î ku dixwazî vê naverokê ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î, ku dixwazî vê naverokê biweşînî?',
-    'resim_ekle' => 'Wêne lê zêde bike',
-    'resim_yukle_degistir' => 'Wêne Lê Bar Bike/Biguherîne',
-    'lokal' => 'Lokal',
+    'add_image' => 'Wêne lê zêde bike',
+    'upload_change_image' => 'Wêne Lê Bar Bike/Biguherîne',
+    'local' => 'Lokal',
     'embed' => 'Embed',
 
     // === Filter Menu ===
@@ -68,7 +70,7 @@ $lang['mod_content'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Naverok Hate Zêdekirin!',
             'edit' => 'Naverok Hate Sererastkirin!',
         ],
@@ -91,27 +93,28 @@ $lang['mod_content'] = [
         'prev' => 'Vegere',
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Jêbibe',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberê Pelan',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'save' => 'Qeyd bike',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        4 => 'Tu dane nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+        'no_data' => 'Tu dane nehat dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
         'approve' => [
             'key' => 'Weşandin',
             'value' => 'Ma tu bawer î, ku dixwazî vê naverokê ji weşanê rakî?',
@@ -133,13 +136,12 @@ $lang['mod_content'] = [
         'title_length' => 'Divê tu sernavekî herî kêm ji 1 tîpê û herî pir ji 70 tîpan pêk tê binivîsî.',
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
-        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku herî kêm 110 tîp û herî pir 280 tîp pêk tê binivîsin.',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
     // === Permission Roles ===
-    // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Rolenên Rêveberiya Naverokê',
+    'role' => [
+        'name' => 'Rolenên Rêveberiya Naverokê',
         'add' => 'Dikare naverokan lê zêde bike',
         'edit' => 'Dikare naverokan biguhere',
         'delete' => 'Dikare naverokan rake',
@@ -194,30 +196,29 @@ $lang['mod_content'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Rêveberiya Tomaran',
-        'islem' => 'Operasyon',
-        'uygula' => 'Bisepîne',
-        'islem_column' => 'Çalakî',
+        'record_management' => 'Rêveberiya Tomaran',
+        'operation' => 'Operasyon',
+        'apply' => 'Bisepîne',
+        'action_column' => 'Çalakî',
         'select' => 'Hilbijêre',
-        'burdan' => 'Ji Vir',
-        'buraya' => 'Bo Vir',
-        'ara' => 'Lêbigere',
-        'sifirla' => 'Sifir Bike',
+        'from' => 'Ji Vir',
+        'to' => 'Bo Vir',
+        'search' => 'Lêbigere',
+        'reset' => 'Sifir Bike',
         'approval' => 'Bipejirîne',
-        'isleniyor' => 'Têkirîn',
+        'processing' => 'Têkirîn',
         'record_selected' => 'Tomar hate hilbijartin',
-        'islem_gerceklestirilemedi' => 'Operasyon nehat pêkanîn',
-        'islem_secin' => 'Ji kerema xwe operasyonekê hilbijêrin',
+        'operation_failed' => 'Operasyon nehat pêkanîn',
+        'select_operation' => 'Ji kerema xwe operasyonekê hilbijêrin',
         'all' => 'Hemû',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Çap Bike',
-        'yazdir_bilgi' => 'Agahiya Çapê',
-        'olusturan' => 'Afirîner',
-        'kopyala' => 'Ji Ber Bigire',
+        'print' => 'Çap Bike',
+        'print_info' => 'Agahiya Çapê',
+        'creator' => 'Afirîner',
+        'copy' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
-        'all' => 'Hemû',
         'filter_cleared' => 'Parzûn hatin paqijkirin û vegeriyan mîhengên xwerû.',
         'filter_applied' => 'Parzûn hatin sepandin',
         'sort_label' => 'Rêzkirin',
@@ -302,7 +303,7 @@ $lang['mod_content'] = [
             'category' => 'Beşa naverokê lê were weşandin hilbijêre.',
             'title' => 'Sernavekî balkêş binivîse. (Herî kin: 1, herî pir: 70 tîp)',
             'date' => 'Dîrok û dema nivîsê dikare li gor pêşerojê be jî.',
-            'intro' => 'Kin û zelal binivîse. (Herî kin: 110 - herî pir: 255 tîp)',
+            'intro' => 'Kin û zelal binivîse. (Herî kêm: 110 - herî zêde: 120 tîp)',
             'content' => 'Edîtorê nivîsa dewlemend.',
             'image' => 'Tu dikarî wêneyekî tenê hilbijêrî.',
             'finish' => 'Saxtîkirina dawî û şandin.',
@@ -367,7 +368,6 @@ $lang['mod_content'] = [
         'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
-        'delete_confirm' => 'Erê, Jêbibe!',
         'delete_success' => 'Naverok hat jêbirin!',
     ],
 
@@ -381,6 +381,14 @@ $lang['mod_content'] = [
 
     'picker' => [
         'file' => 'Pelê Heyî Hilbijêre',
+    ],
+
+    'empty_state' => [
+        'title' => 'Hona tu tewr dekerde nêbiyo',
+        'description' => 'Seba destpêkerdişî tewro verên dekere.',
+        'search_title' => 'Netîceyêk nêame vînayene',
+        'search_description' => 'Goreyê cigêrayîşê şima tu tewr nêvêriya. Kerem kerê yewna çekuye biceribnê.',
+        'clear_search' => 'Cigêrayîş Pak Bike',
     ],
 
     'ajax' => [

@@ -1,5 +1,5 @@
 /**
- * AKM Business - Private Messaging (mod_user_pm)
+ * AKM ARTIST CMS - Private Messaging (mod_user_pm)
  * Modernization with M3 Design & Infinite Scroll
  * @date 2026-03-12
  */
@@ -119,7 +119,7 @@ class MessageManager {
             const subject = msg[2];
             const statusHtml = msg[3];
             const createdAt = msg[4];
-            const username = msg[5] || 'Bikarhêner';
+            const username = msg[5] || 'User';
             const image = msg[6];
             const messageText = msg[7] || '';
 
@@ -127,7 +127,7 @@ class MessageManager {
             const initial = (username || '?').charAt(0).toUpperCase();
             let avatarHtml = '';
             if (image && image !== '' && image !== 'avatar.png') {
-                avatarHtml = `<img src="${RADRES_URL}mod_user/thumb/${this.escapeHtml(image)}" alt="${this.escapeHtml(username)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='${this.escapeHtml(initial)}'">`;
+                avatarHtml = `<img src="${IADDRESS_URL}mod_user/thumb/${this.escapeHtml(image)}" alt="${this.escapeHtml(username)}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='${this.escapeHtml(initial)}'">`;
             } else {
                 avatarHtml = this.escapeHtml(initial);
             }
@@ -448,7 +448,7 @@ function deleteMessage(id, type) {
             })
             .then(response => response.text())
             .then(msg => {
-                if (msg.trim() === 'Oke') {
+                if (msg.trim() === 'Success') {
                     showSnackbar(PM_LANG.delete_success || 'Hate jêbirin!', 'success');
                     const element = document.getElementById('alan_' + id);
                     if (element) {

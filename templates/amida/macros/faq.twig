@@ -1,0 +1,54 @@
+{# templates/amida/macros/faq.twig #}
+{% macro render(faqs, title) %}
+    {% if faqs is defined and faqs is iterable and faqs|length > 0 %}
+        <section class="faq-accordion-section" aria-labelledby="faq-section-heading">
+            {% if title %}
+                <h3 id="faq-section-heading" class="faq-section-title">{{ title }}</h3>
+            {% endif %}
+            <div class="faq-accordion">
+                {% for item in faqs %}
+                    {% if item.status == 'y' or item.status is not defined %}
+                        <details class="faq-item" id="faq-{{ item.id|default(loop.index) }}">
+                            <summary class="faq-question">
+                                <span class="faq-question-text">{{ item.question }}</span>
+                                <span class="faq-icon" aria-hidden="true"><i class="bi bi-chevron-down"></i></span>
+                            </summary>
+                            <div class="faq-answer">
+                                <p>{{ item.answer|nl2br }}</p>
+                            </div>
+                        </details>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+{% endmacro %}
+
+{% macro schema(faqs) %}
+    {% if faqs is defined and faqs is iterable and faqs|length > 0 %}
+        {% set main_entities = [] %}
+        {% for item in faqs %}
+            {% if item.status == 'y' or item.status is not defined %}
+                {% set entity = {
+                    "@type": "Question",
+                    "name": item.question,
+                    "acceptedAnswer": {
+                        "@type": "Answer",
+                        "text": item.answer
+                    }
+                } %}
+                {% set main_entities = main_entities|merge([entity]) %}
+            {% endif %}
+        {% endfor %}
+        {% if main_entities|length > 0 %}
+            {% set faq_schema = {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": main_entities
+            } %}
+            <script type="application/ld+json">
+{{ faq_schema|json_encode(constant('JSON_UNESCAPED_UNICODE') b-or constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_PRETTY_PRINT'))|raw }}
+            </script>
+        {% endif %}
+    {% endif %}
+{% endmacro %}

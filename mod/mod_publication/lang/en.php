@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - English Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -26,7 +26,9 @@ $lang['mod_publication'] = [
     'information' => 'Information!',
     'success' => 'Operation Successful!',
     'error' => 'Error Occurred!',
+    'error_occurred' => 'Error Occurred!',
     'fatal_error' => 'Fatal Error Occurred!',
+    'wizard_loading' => 'Wizard is loading...',
     'remove_image' => 'Are you sure you want to remove this image?',
     'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
@@ -102,15 +104,15 @@ $lang['mod_publication'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results.',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results.',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
         'approve' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this publication?',
@@ -132,11 +134,11 @@ $lang['mod_publication'] = [
         'title_length' => 'You must enter a title consisting of at least 1 and at most 70 characters.',
         'title_exists' => 'This title already exists, please change it',
         'title_unique' => 'Your title is unique',
-        'deck_length' => 'Please enter an introductory text of at least 110 characters and a maximum of 280 characters.',
+        'deck_length' => 'Please enter an introductory text between 90 and 120 characters.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Publication Management Roles',
         'add' => 'Can Add Publications',
         'edit' => 'Can Edit Publications',
@@ -227,7 +229,6 @@ $lang['mod_publication'] = [
         'default_sort' => 'Newest',
         'default_lang' => 'EN',
         'date_locale' => 'en-US',
-        'all' => 'All',
         'filter_cleared' => 'Filters cleared and reset to defaults.',
         'filter_applied' => 'Filters Applied',
         'sort_label' => 'Sorting',
@@ -314,7 +315,7 @@ $lang['mod_publication'] = [
             'category' => 'Select the category this publication belongs to.',
             'title' => 'Enter an engaging title. (Min: 1, Max: 70)',
             'date' => 'Date and time for publication.',
-            'intro' => 'Write a short and concise summary. (110 - 280 Characters)',
+            'intro' => 'Write a short and concise summary. (90 - 120 Characters)',
             'publication' => 'Rich text editor.',
             'image' => 'Upload a cover image.',
             'finish' => 'Final checks and publishing.',
@@ -329,7 +330,7 @@ $lang['mod_publication'] = [
             'change_image' => 'Change Image',
             'editor_placeholder' => 'Start writing your publication here...',
         ],
-'image' => [
+        'image' => [
             'drop_title' => 'Drag an image here',
             'drop_description' => 'Upload, paste, or drop an image.',
             'upload_link' => 'upload a file',
@@ -384,7 +385,6 @@ $lang['mod_publication'] = [
         'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for publication.",
         'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for publication.",
         'status_alert' => "STATUS UPDATED:\n%s",
-        'delete_confirm' => 'Yes, Delete!',
         'delete_success' => 'Publication deleted!',
         'video_unavailable' => 'Video management is not available for publications yet.',
     ],
@@ -400,7 +400,7 @@ $lang['mod_publication'] = [
             "Weekly Tech Summary: What Happened?",
             "Writers Union Elects New Board",
             "Photography Workshop Registrations Started",
-            "Rojname Mobile App Updated"
+            "AKM ARTIST CMS Mobile App Updated"
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
         'authors' => [],

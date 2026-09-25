@@ -1,84 +1,192 @@
 <?php
-$lang['mod_announcements'] = array (
-  'add' => 'Daxûyanî Zêde Bike',
-  'edit' => 'Daxûyanî Biguhere',
-  'list' => 'Lîsteya Daxûyaniyan',
+$lang['mod_announcements'] = [
+  'total_announcements' => 'Hemû Daxuyanî',
+  'draft_announcements' => 'Pêşnûme',
+  'status_badge' => [
+    'active' => 'Çalak',
+    'draft' => 'Pêşnûme',
+    'general' => 'Giştî',
+  ],
+  'empty_state' => [
+    'title' => 'Tu Daxuyanî Nehat Dîtin',
+    'description' => 'Hê tu daxuyanî nehatine lêkirin an li gorî pîvanên lêgerînê tiştek nehat dîtin.',
+    'search_title' => 'Encam Nehat Dîtin',
+    'search_description' => 'Li gorî lêgerîna te tu daxuyanî nehat dîtin.',
+    'clear_search' => 'Lêgerînê Paqij Bike',
+  ],
+  'wizard' => [
+    'step' => [
+      'language' => 'Hilbijartina Ziman',
+      'title' => 'Sernavê Daxuyaniyê',
+      'date' => 'Dîroka Daxuyaniyê',
+      'intro' => 'Pêşgotin',
+      'content' => 'Naveroka Daxuyaniyê',
+      'image' => 'Wêneyê Bergê',
+      'featured' => 'Nîşandan di Vitrînê de',
+      'acl' => 'Destûra Gihîştinê',
+      'finish' => 'Rewşa Weşanê',
+    ],
+    'subtitle' => [
+      'language' => 'Zimanê sereke yê daxuyaniyê hilbijêre.',
+      'title' => 'Sernavekî balkêş binivîse. (Herî kêm: 1, Herî zêde: 70 tîp)',
+      'date' => 'Dîrok û saeta derketina daxuyaniyê diyar bike.',
+      'intro' => 'Pêşgotineke kurt û zelal binivîse. (90 - 120 Tîp)',
+      'content' => 'Naveroka berfireh a daxuyaniyê binivîse.',
+      'image' => 'Wêneyê bergê yê daxuyaniyê lê bar bike (rêjeya 3:4).',
+      'featured' => 'Diyar bike ka ev daxuyanî dê di beşa vitrînê de bê nîşandan an na.',
+      'acl' => 'Diyar bike ka kîjan komên bikarhêneran dikarin vê daxuyaniyê bibînin.',
+      'finish' => 'Kontrola dawî bike û rewşa weşanê diyar bike.',
+    ],
+    'label' => [
+      'announcement_title' => 'Sernavê Daxuyaniyê',
+      'intro_text' => 'Teksta Pêşgotinê',
+      'featured_yes' => 'Di Vitrînê de Nîşan Bide',
+      'featured_yes_desc' => 'Daxuyanî li ser malperê di beşa sereke û vitrînê de tê pêşandan.',
+      'featured_no' => 'Tenê di Lîsteyê de Be',
+      'featured_no_desc' => 'Daxuyanî tenê di nav lîsteya daxuyaniyan a giştî de tê dîtin.',
+      'acl_select' => 'Koma Destûrê Hilbijêre...',
+      'acl_public' => 'Ji Her Kesî re Vekirî (Giştî)',
+      'acl_public_desc' => 'Hemû serdanvan dikarin vê daxuyaniyê bibînin.',
+      'publish_yes' => 'Weşandî',
+      'publish_yes_desc' => 'Daxuyanî yekser li ser malperê tê weşandin.',
+      'publish_no' => 'Pêşnûme / Nehatiye Weşandin',
+      'publish_no_desc' => 'Daxuyanî tenê ji bo rêveberiyê tê tomarkirin.',
+      'change_image' => 'Wêne Biguherîne',
+    ],
+    'summary' => [
+      'title' => 'Kurteya Daxuyaniyê',
+      'selected_none' => 'Nehatiye Hilbijartin',
+      'lang' => 'Ziman',
+      'name' => 'Sernav',
+      'date' => 'Dîrok',
+      'featured' => 'Vitrîn',
+      'acl' => 'Destûra Gihîştinê',
+      'status' => 'Rewşa Weşanê',
+    ],
+    'button' => [
+      'save' => 'Tomar Bike',
+      'next' => 'Pêşve',
+      'prev' => 'Vegere',
+      'finish' => 'Tomar Bike û Biqedîne',
+    ],
+    'image' => [
+      'drop_title' => 'Wêne Kaş Bike û Berde Vir',
+      'drop_description' => 'PNG, JPG, WEBP (Herî Zêde 5MB)',
+      'upload_link' => 'Wêne Hilbijêre',
+      'link_separator' => 'an bi rêya lînkê',
+      'link_placeholder' => 'https://nimune.com/wene.jpg',
+      'link_action' => 'Lê Bar Bike',
+      'hint_loading' => 'Wêne tê barkirin...',
+      'hint_invalid_type' => 'Cureyê pelê nederbasdar e',
+      'hint_no_drop_data' => 'Tu dane nehat wergirtin',
+      'hint_remote_failed' => 'Barkirina ji navnîşanê biserneket',
+    ],
+    'cropper' => [
+      'title' => 'Wêne Bibire (3:4)',
+      'instruction' => 'Wêne li gor pîvanên qertafa daxuyaniyê (3:4) saz bike û bibire.',
+      'zoom_in' => 'Nêzîk Bike',
+      'zoom_out' => 'Dûr Bixe',
+      'rotate_left' => 'Bizivirîne Çepê',
+      'rotate_right' => 'Bizivirîne Rastê',
+      'reset' => 'Rêk Bixe',
+      'apply' => 'Bibire û Tomar Bike',
+      'cancel' => 'Betal',
+      'error_plugin' => 'Pêveka Cropper nehat barkirin',
+    ],
+  ],
+  'add_image' => 'Wêne Lêke',
+  'upload_change_image' => 'Wêne Lê Bar Bike/Biguherîne',
+  'quick_publish_confirm' => 'Ma tu dixwazî vê daxuyaniyê biweşînî?',
+  'quick_unpublish_confirm' => 'Ma tu dixwazî vê daxuyaniyê ji weşanê rakî?',
+  'delete_confirm' => 'Ma tu bawer î ku dixwazî vê daxuyaniyê jêbibî?',
+  'image_updated' => 'Wêne bi serkeftî hate nûjenkirin',
+  'add' => 'Daxuyanî Lêke',
+  'edit' => 'Daxuyanî Biguhere',
+  'list' => 'Daxuyanî',
   'information' => 'Agahî!',
-  'oke' => 'Pêvajo Serkeftî!',
-  'hata' => 'Çewtî Çêbû!',
+  'success' => 'Pêvajo Serkeftî!',
   'error' => 'Çewtiyek Krîtîk Çêbû!',
   'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
-  'remove_image_oke' => 'Wêne hate jêbirin',
+  'remove_image_success' => 'Wêne hate jêbirin',
   'choose_wish' => 'Ku tu dixwazî, hilbijêre!',
   'remove_record' => 'Ma tu bawer î ku dixwazî vê tomariyê jêbibî?',
   'message' => 
-  array (
-    'oke' => 
-    array (
+   [
+    'success' => 
+     [
       'add' => 'Daxwiyanî hate zêdekirin!',
       'edit' => 'Daxwiyanî hate sererastkirin!',
-    ),
+    ],
     'error' => 
-    array (
+     [
       'add' => 'Daxwiyanî nehate zêdekirin!',
       'edit' => 'Daxwiyanî nehate sererastkirin!',
-    ),
+    ],
     'information' => 
-    array (
+     [
       'moderate' => 'Ji bo sererastkirinê du caran li ser naverokê bitikîne',
       'move' => 'Ji bo guhertina rêzê, naverokê kaş bike û berde',
-    ),
-  ),
+    ],
+  ],
   'errors' => 
-  array (
+   [
     'record' => 'Tomara ku te diyar kir nehate dîtin!',
-  ),
+  ],
   'button' => 
-  array (
-    'add' => 'Zêde Bike',
+   [
+    'add' => 'Lêke',
     'edit' => 'Biguhere',
-    'yenile' => 'Nû Bike',
+    'refresh' => 'Nûjen Bike',
     'delete' => 'Jê Bibe',
     'gallery' => 'Galeriya Wêneyan',
     'file' => 'Rêveberiya Pelan',
-    'vazgec' => 'Betal',
-    'kaldir' => 'Jê Bibe',
-    'evet' => 'Erê',
-    'hayir' => 'Na',
-  ),
+    'cancel' => 'Betal',
+    'remove' => 'Jê Bibe',
+    'yes' => 'Erê',
+    'no' => 'Na',
+    'ok' => 'Temam',
+  ],
   'grid' => 
-  array (
-    0 => 'Ji nav {total} encaman ji {from} heta {to} tê xwiyakirin.',
-    1 => 'Rûpel',
-    2 => 'Hejmara Rûpelan',
-    3 => 'Dane tên barkirin, ji kerema xwe li hêviyê bimîne ...',
-    4 => 'Tu dane nehatin dîtin',
-    5 => 'Şaşiya Pêwendiyê',
-    6 => 'Lêgerîn',
-    7 => 'Ji kerema xwe herî kêm rêzikekê hilbijêre',
-    8 => 'Ji kerema xwe tenê rêzikekê hilbijêre',
-    'publish' => 
+   [
+    'showing_results' => 'Li hemberî {total} qeydên bi tevahî, ji {from} heta {to} tên nîşandan',
+    'page' => 'Rûpel',
+    'page_count' => 'Hejmara Rûpelan',
+    'loading' => 'Dane tên lêbarkirin, ji kerema xwe re bisekine...',
+    'no_data' => 'Tu qeyd nehat dîtin',
+    'connection_error' => 'Şaşiya girêdanê',
+    'search' => 'Lêgerîn',
+    'select_at_least_one' => 'Ji kerema xwe re herî kêm rêzikekê hilbijêre',
+    'select_only_one' => 'Ji kerema xwe re tenê rêzikekê hilbijêre',
+    'loading' => 'Tê barkirin...',
+    'no_data' => 'Tu daxûyanî nehat dîtin',
+    'approve' => 
      [
-      'key' => 'Weşîne',
-      'value' => 'Hûn bawer in ku hûn dixwazin vê daxuyaniyê biweşînin?',
+      'key' => 'Ji bo biweşînî bitikîne',
+      'label' => 'Weşandin',
+      'ask' => 'Ma tu bawer î ku dixwazî vê daxûyaniyê biweşînî?',
+      'title' => 'Biweşîne',
     ],
-    'unpublish' => 
+    'unapprove' => 
      [
-      'key' => 'Ji Weşandinê Rake',
-      'value' => 'Hûn bawer in ku hûn dixwazin vê daxuyaniyê ji weşandinê rakin?',
+      'key' => 'Ji weşanê rake',
+      'label' => 'Ji weşanê rake',
+      'ask' => 'Ma tu bawer î ku dixwazî vê daxûyaniyê ji weşanê rakî?',
+      'title' => 'Ji Weşanê Rake',
     ],
-  ),
+  ],
   'validator' => 
-  array (
-    'required' => 'Ji kerema xwe qada %s vala nehêle',
-    'length' => '%s divê herî kêm %s û herî zêde %s tîpan pêk were',
-    'email' => 'Ji kerema xwe ji bo qada %s navnîşaneke e-poste ya derbasdar binivîse.',
+   [
+    'required' => 'Ji kerema xwe re qada %s vala nehêle',
+    'length' => '%s dikare herî kêm %s û herî zêde %s karakteran bistîne',
+    'email' => 'Ji kerema xwe re di qada %s de e-posteyeke derbasdar binivîse',
     'unique' => '%s a ku te nivîsandiye di pergalê de qeydkirî ye. Ji kerema xwe %s eke din diyar bike!',
     'inarray' => 'Qada %s tenê dikare nirxên \' %s \' bigire',
-  ),
-  'roll' => 
-  array (
-    'ad' => 'Rolên Rêveberiya Daxûyaniyan',
+    'title_length' => 'Divê tu sernavekî ji 1 heta 70 tîpan binivîsî.',
+    'deck_length' => 'Ji kerema xwe pêşgotinek ji 90 heta 120 tîpan binivîse.',
+  ],
+  'role' => 
+   [
+    'name' => 'Rolên Rêveberiya Daxûyaniyan',
     'add' => 'Dikare Daxûyanî Zêde Bike',
     'edit' => 'Dikare Daxûyanî Biguhere',
     'delete' => 'Dikare Daxûyanî Jê Bibe',
@@ -87,9 +195,9 @@ $lang['mod_announcements'] = array (
     'file' => 'Dikare Pel Zêde Bike?',
     'moderate_edit' => 'Dikare Daxûyaniyên Kesên Din Biguhere',
     'moderate_delete' => 'Dikare Daxûyaniyên Kesên Din Jê Bibe',
-  ),
+  ],
   'role_errors' => 
-  array (
+   [
     'moderate_edit' => 'Tu nikarî daxûyaniyên kesên din sererast bikî',
     'moderate_delete' => 'Tu nikarî daxûyaniyên kesên din jê bibî',
     'add' => 'Destûra te ya zêdekirina daxûyaniyê tune ye',
@@ -98,30 +206,32 @@ $lang['mod_announcements'] = array (
     'delete' => 'Destûra te ya jêbirina daxûyaniyê tune ye',
     'gallery' => 'Destûra te ya zêdekirina galeriyê bo daxûyaniyê tune ye',
     'file' => 'Destûra te ya zêdekirina pelan bo daxûyaniyê tune ye',
-  ),
+  ],
   'admin' => 
-  array (
+   [
     'columns' => 
-    array (
+     [
       'id' => 'ID',
       'language' => 'Ziman',
-      'ad' => 'Sernavê Daxûyaniyê',
+      'name' => 'Sernavê Daxûyaniyê',
+      'title' => 'Sernavê Daxûyaniyê',
       'seo' => 'SEO URL',
-      'tarih' => 'Dîrok',
+      'date' => 'Dîrok',
+      'created_at' => 'Dîrok',
       'status' => 'Rewşa Weşanê',
       'deck' => 'Ma Di Destpêkê De Biweşe?',
       'summary' => 'Destpêk',
       'content' => 'Naverok',
       'image' => 'Wêne',
       'acl_id' => 'Kî Dikare Vê Daxûyaniyê Bibîne? ( <a href=\'mod_acl/list/\' target=\'_blank\'>ACL - Lîsteya Kontrola Gihîştinê</a> )',
-    ),
+    ],
     'radio' => 
-    array (
+     [
       'publish_yes' => 'Erê',
       'publish_no' => 'Na',
       'deck_yes' => 'Erê',
       'deck_no' => 'Na',
-    ),
-  ),
-);
+    ],
+  ],
+];
 ?>

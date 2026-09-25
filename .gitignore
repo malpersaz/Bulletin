@@ -24,6 +24,8 @@ Thumbs.db
 config/*.local.php
 data/*.sqlite
 data/sqlite/*.sqlite
+data/*.sql
+data/sqlite/*.sql
 data/*.json
 
 # Runtime-generated static uploads and test artifacts
@@ -35,3 +37,4 @@ static/mod_*/**
 # Agent / MCP temporary files
 .playwright-mcp/
 page-*.yml
+.agents/worker_*/

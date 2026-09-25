@@ -2,18 +2,18 @@
 
 class mod_content extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
     public $model;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_content';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_content',
             'contents'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit',  'delete', 'list','gallery','file','edit_status','change_status','approval', 'moderate_edit','moderate_delete','video_download'
         );
     }
@@ -29,11 +29,11 @@ class mod_content extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         // Seed sample contents
-        if ($this->addcontent() === FALSE) {
+        if ($this->add_content() === FALSE) {
             return FALSE;
         }
 
@@ -45,271 +45,305 @@ class mod_content extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }
 
-    public function addcontent()
+    public function add_content()
     {
         if (!$this->installer_sample_content_enabled()) {
             return TRUE;
         }
 
-        $veri = array(
+        $data = array(
             // Turkish Content
             array(
-                'name' => 'Örnek İçerik',
+                'name' => 'AKM Business CMS\'in Modern Yönlerini Tanıyın',
                 'lang' => 'tr',
                 'category_id' => '10',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}}, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.',
-                'content' => '<p>{{build_name}}, modern web siteleri oluşturmak için geliştirilmiş kapsamlı bir içerik yönetim sistemidir. Kullanıcı dostu arayüzü ve güçlü özellikleri ile web dünyasında hak ettiğiniz yere taşımanızı sağlar.</p>
-                <p><strong>Öne Çıkan Özellikler:</strong></p>
-                    <ul>
-                        <li>Çoklu dil desteği</li>
-                        <li>Esnek içerik yönetimi</li>
-                        <li>SEO optimizasyonu</li>
-                        <li>Güvenli altyapı</li>
-                        <li>Mobil uyumlu tasarım</li>
-                    </ul>
-                <p>{{build_name}} sizi web dünyasında hakettiniz yere taşımak için var. Profesyonel çözümlerimizle işletmenizi dijital dünyada öne çıkarın.</p>',
-                'seo' => 'ornek-icerik',
-                'title' => 'Örnek İçerik - {{build_name}}',
-                'keywords' => 'örnek içerik, akm business cms, web sitesi, içerik yönetimi',
-                'description' => '{{build_name}} sizi web dünyasında hakettiniz yere taşımak için var.',
+                'summary' => 'AKM Business CMS; modern web siteleri, kurumsal yazılımlar ve dinamik platformlar oluşturmak için tasarlanmış yüksek performanslı ve modüler bir içerik yönetim sistemidir.',
+                'content' => '<p><strong>AKM Business CMS</strong>; modern web siteleri, kurumsal portallar ve ölçeklenebilir dijital çözümler sunmak üzere tasarlanmış kapsamlı ve yüksek performanslı bir içerik yönetim sistemidir. Kullanıcı dostu yönetim paneli, esnek veri mimarisi ve gelişmiş güvenlik standartları ile dijital varlığınızı bir üst seviyeye taşır.</p>
+                <p><strong>Öne Çıkan Güçlü Özellikler:</strong></p>
+                <ul>
+                    <li><strong>Gelişmiş Çoklu Dil Desteği:</strong> Tüm içerik, kategori ve sistem yapılandırmalarında kesintisiz dil yönetimi.</li>
+                    <li><strong>Esnek Modüler Mimari:</strong> İhtiyaçlarınıza göre genişletilebilir ve özelleştirilebilir modül altyapısı.</li>
+                    <li><strong>SEO & Performans Optimizasyonu:</strong> Arama motorları için optimize edilmiş dinamik URL, meta ve başlık yapısı.</li>
+                    <li><strong>Güvenli ve Modern Binaltı:</strong> Merkezi yetkilendirme (ACL) ve yüksek veri güvenliği.</li>
+                    <li><strong>Mobil Uyumlu Tasarım:</strong> Tüm cihaz ve ekran çözünürlüklerinde mükemmel kullanıcı deneyimi.</li>
+                </ul>
+                <p>AKM Business CMS ile kurumsal projelerinizi dijital dünyada öne çıkarın ve geleceğin web standartlarına kolayca uyum sağlayın.</p>',
+                'seo' => 'akm-business-cmsin-modern-yonlerini-taniyin',
+                'title' => 'AKM Business CMS\'in Modern Yönlerini Tanıyın - {{build_name}}',
+                'keywords' => 'akm business cms, içerik yönetim sistemi, kurumsal web yazılımı, çoklu dil cms, seo uyumlu cms',
+                'description' => 'AKM Business CMS; modern web siteleri ve kurumsal yazılımlar için geliştirilmiş yüksek performanslı ve modüler içerik yönetim sistemidir.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // English Content
             array(
-                'name' => 'Sample Content',
+                'name' => 'Explore the Modern Aspects of AKM Business CMS',
                 'lang' => 'en',
                 'category_id' => '11',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.',
-                'content' => '<p>{{build_name}} is a comprehensive content management system developed for creating modern websites. With its user-friendly interface and powerful features, it helps you reach your deserved place in the web world.</p>
-<p><strong>Featured Features:</strong></p>
+                'summary' => 'AKM Business CMS is a high-performance, modular content management system engineered for building modern websites and enterprise-grade applications.',
+                'content' => '<p><strong>AKM Business CMS</strong> is a comprehensive, enterprise-grade content management system developed for creating modern web applications, corporate portals, and dynamic platforms. Powered by an intuitive admin interface, flexible architecture, and robust security standards, it enables seamless digital transformation.</p>
+<p><strong>Key Highlights & Capabilities:</strong></p>
 <ul>
-<li>Multi-language support</li>
-<li>Flexible content management</li>
-<li>SEO optimization</li>
-<li>Secure infrastructure</li>
-<li>Mobile-responsive design</li>
+<li><strong>Native Multilingual Engine:</strong> Effortless translation and localization management across all modules and content types.</li>
+<li><strong>Modular Architecture:</strong> Scalable and flexible system design tailored for enterprise needs.</li>
+<li><strong>SEO & Performance Focused:</strong> Optimized routing, dynamic metadata, clean URLs, and high-speed execution.</li>
+<li><strong>Enterprise Security:</strong> Centralized access control (ACL), protected endpoints, and safe data handling.</li>
+<li><strong>Fully Mobile Responsive:</strong> Exceptional user experience across mobile, tablet, and desktop viewports.</li>
 </ul>
-<p>{{build_name}} exists to take you to your deserved place in the web world. Stand out in the digital world with our professional solutions.</p>',
-                'seo' => 'sample-content',
-                'title' => 'Sample Content - {{build_name}}',
-                'keywords' => 'sample content, akm business cms, website, content management',
-                'description' => '{{build_name}} exists to take you to your deserved place in the web world.',
+<p>Elevate your digital presence with AKM Business CMS and deliver state-of-the-art web solutions effortlessly.</p>',
+                'seo' => 'explore-modern-aspects-of-akm-business-cms',
+                'title' => 'Explore the Modern Aspects of AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, content management system, enterprise cms, multilingual cms, seo optimized cms',
+                'description' => 'Discover AKM Business CMS, a high-performance modular content management system designed for modern websites and enterprise applications.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // Arabic content
             array(
-                'name' => 'محتوى نموذجي',
+                'name' => 'استكشف الجوانب الحديثة لـ AKM Business CMS',
                 'lang' => 'ar',
                 'category_id' => '12',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.',
-                'content' => '<p>{{build_name}} هو نظام إدارة محتوى شامل تم تطويره لإنشاء مواقع الويب الحديثة. بواجهته سهلة الاستخدام وميزاته القوية، يساعدك على الوصول إلى مكانك المستحق في عالم الويب.</p>
-<p><strong>الميزات البارزة:</strong></p>
+                'summary' => 'AKM Business CMS هو نظام إدارة محتوى عالي الأداء وموحد تم تطويره لإنشاء مواقع الويب الحديثة والمنصات المؤسسية.',
+                'content' => '<p><strong>AKM Business CMS</strong> هو نظام إدارة محتوى متكامل ومؤسسي تم تطويره لبناء تطبيقات الويب الحديثة، البوابات الإلكترونية، والمنصات الديناميكية. بفضل واجهة الإدارة السلسة والبنية التحتية المرنة، يساعدك على الارتقاء بحضورك الرقمي إلى أعلى المستويات.</p>
+<p><strong>أبرز المميزات والقدرات:</strong></p>
 <ul>
-<li>دعم متعدد اللغات</li>
-<li>إدارة محتوى مرنة</li>
-<li>تحسين محركات البحث</li>
-<li>بنية تحتية آمنة</li>
-<li>تصميم متجاوب مع الجوال</li>
+<li><strong>دعم متعدد اللغات:</strong> إدارة سلسة للترجمة والتوطين عبر جميع الوحدات وأنواع المحتوى.</li>
+<li><strong>بنية نمطية مرنة:</strong> تصميم قابل للتوسع والتخصيص بما يناسب متطلبات المؤسسات.</li>
+<li><strong>تحسين محركات البحث والأداء:</strong> مسارات محسنة، عناوين URL ديناميكية، وأداء عالي السرعة.</li>
+<li><strong>أمان مؤسسي:</strong> نظام تحكم مركزي بالصلاحيات (ACL) وحماية متقدمة للبيانات.</li>
+<li><strong>تصميم متجاوب بالكامل:</strong> تجربة مستخدم متميزة على الهواتف والأجهزة المختلفة.</li>
 </ul>
-<p>{{build_name}} موجود لنقلك إلى مكانك المستحق في عالم الويب. تميز في العالم الرقمي بحلولنا الاحترافية.</p>',
-                'seo' => 'محتوى-نموذجي',
-                'title' => 'محتوى نموذجي - {{build_name}}',
-                'keywords' => 'محتوى نموذجي، akm business cms، موقع ويب، إدارة المحتوى',
-                'description' => '{{build_name}} موجود لنقلك إلى مكانك المستحق في عالم الويب.',
+<p>تميز في العالم الرقمي مع AKM Business CMS وابنِ حلول الويب المستقبلي بكل سهولة.</p>',
+                'seo' => 'استكشف-الجوانب-الحديثة-لـ-akm-business-cms',
+                'title' => 'استكشف الجوانب الحديثة لـ AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, نظام إدارة المحتوى, cms متعدد اللغات, cms مؤسسي, تحسين SEO',
+                'description' => 'تعرف على نظام AKM Business CMS، نظام إدارة المحتوى عالي الأداء المصمم للمواقع الحديثة والتطبيقات المؤسسية.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // German Content
             array(
-                'name' => 'Beispielinhalt',
+                'name' => 'Entdecken Sie die Modernen Aspekte von AKM Business CMS',
                 'lang' => 'de',
                 'category_id' => '13',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.',
-                'content' => '<p>{{build_name}} ist ein umfassendes Content-Management-System, das für die Erstellung moderner Websites entwickelt wurde. Mit seiner benutzerfreundlichen Oberfläche und leistungsstarken Funktionen hilft es Ihnen, Ihren verdienten Platz in der Webwelt zu erreichen.</p>
-<p><strong>Hervorgehobene Funktionen:</strong></p>
+                'summary' => 'AKM Business CMS ist ein leistungsstarkes und modulares Content-Management-System für die Erstellung moderner Unternehmens-Websites und dynamischer Plattformen.',
+                'content' => '<p><strong>AKM Business CMS</strong> ist ein umfassendes Enterprise-Content-Management-System, das für die Entwicklung moderner Webanwendungen, Unternehmensportale und dynamischer Plattformen konzipiert wurde. Mit einer intuitiven Verwaltungsoberfläche, flexibler Architektur und höchsten Sicherheitsstandards bringt es Ihre digitale Präsenz auf ein neues Niveau.</p>
+<p><strong>Wichtige Funktionen im Überblick:</strong></p>
 <ul>
-<li>Mehrsprachige Unterstützung</li>
-<li>Flexible Inhaltsverwaltung</li>
-<li>SEO-Optimierung</li>
-<li>Sichere Infrastruktur</li>
-<li>Mobiles responsives Design</li>
+<li><strong>Mehrsprachige Engine:</strong> Nahtlose Verwaltung von Übersetzungen und Lokalisierungen über alle Module hinweg.</li>
+<li><strong>Modulare Architektur:</strong> Skalierbares Systemdesign, perfekt angepasst an Unternehmensanforderungen.</li>
+<li><strong>SEO & Performance-Optimiert:</strong> Saubere URLs, dynamische Meta-Daten und blitzschnelle Ladezeiten.</li>
+<li><strong>Höchste Sicherheit:</strong> Zentrale Zugriffskontrolle (ACL) und geschützte Datenstrukturen.</li>
+<li><strong>Vollständig Responsive:</strong> Erstklassige Benutzererfahrung auf allen Geräten und Bildschirmgrößen.</li>
 </ul>
-<p>{{build_name}} existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen. Heben Sie sich in der digitalen Welt mit unseren professionellen Lösungen hervor.</p>',
-                'seo' => 'beispielinhalt',
-                'title' => 'Beispielinhalt - {{build_name}}',
-                'keywords' => 'Beispielinhalt, akm business cms, Website, Content-Management',
-                'description' => '{{build_name}} existiert, um Sie an Ihren verdienten Platz in der Webwelt zu bringen.',
+<p>Heben Sie Ihre digitalen Projekte mit AKM Business CMS von der Masse ab und setzen Sie auf moderne Webstandards.</p>',
+                'seo' => 'entdecken-sie-die-modernen-aspekte-von-akm-business-cms',
+                'title' => 'Entdecken Sie die Modernen Aspekte von AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, content management system, enterprise cms, mehrsprachiges cms, seo cms',
+                'description' => 'Lernen Sie AKM Business CMS kennen – das modulare Content-Management-System für moderne Unternehmens-Websites und Plattformen.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // French Content
             array(
-                'name' => 'Contenu d\'exemple',
+                'name' => 'Découvrez les Aspects Modernes d\'AKM Business CMS',
                 'lang' => 'fr',
                 'category_id' => '14',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.',
-                'content' => '<p>{{build_name}} est un système de gestion de contenu complet développé pour créer des sites web modernes. Avec son interface conviviale et ses fonctionnalités puissantes, il vous aide à atteindre votre place méritée dans le monde du web.</p>
-                <p><strong>Fonctionnalités en vedette :</strong></p>
+                'summary' => 'AKM Business CMS est un système de gestion de contenu modulaire et performant conçu pour créer des sites web modernes et des applications d\'entreprise.',
+                'content' => '<p><strong>AKM Business CMS</strong> est un système de gestion de contenu complet pour les entreprises, développé pour créer des applications web modernes, des portails d\'entreprise et des plateformes dynamiques. Doté d\'une interface d\'administration intuitive et d\'une architecture flexible, il propulse votre présence numérique.</p>
+                <p><strong>Fonctionnalités Principales :</strong></p>
                     <ul>
-                        <li>Support multilingue</li>
-                        <li>Gestion de contenu flexible</li>
-                        <li>Optimisation SEO</li>
-                        <li>Infrastructure sécurisée</li>
-                        <li>Design responsive mobile</li>
+                        <li><strong>Moteur Multilingue Intégré :</strong> Gestion fluide de la traduction et de la localisation dans tous les modules.</li>
+                        <li><strong>Architecture Modulaire :</strong> Conception évolutive adaptée aux besoins professionnels.</li>
+                        <li><strong>Optimisé pour le SEO :</strong> URLs propres, métadonnées dynamiques et performances ultra-rapides.</li>
+                        <li><strong>Sécurité Renforcée :</strong> Contrôle d\'accès centralisé (ACL) et protection des données.</li>
+                        <li><strong>Design Adaptatif :</strong> Expérience utilisateur optimale sur mobiles, tablettes et ordinateurs.</li>
                     </ul>
-                <p>{{build_name}} existe pour vous amener à votre place méritée dans le monde du web. Mettez-vous en avant dans le monde numérique avec nos solutions professionnelles.</p>',
-                'seo' => 'contenu-exemple',
-                'title' => 'Contenu d\'exemple - {{build_name}}',
-                'keywords' => 'contenu d\'exemple, akm business cms, site web, gestion de contenu',
-                'description' => '{{build_name}} existe pour vous amener à votre place méritée dans le monde du web.',
+                <p>Faites briller vos projets numériques avec AKM Business CMS et adoptez dès aujourd\'hui les standards du web de demain.</p>',
+                'seo' => 'decouvrez-les-aspects-modernes-dakm-business-cms',
+                'title' => 'Découvrez les Aspects Modernes d\'AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, systeme de gestion de contenu, cms entreprise, cms multilingue, cms optimise seo',
+                'description' => 'Découvrez AKM Business CMS, un système de gestion de contenu modulaire haut de gamme pour sites web et applications d\'entreprise.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // Kurdish Kurmancî Content
             array(
-                'name' => 'Naveroka Mînak',
+                'name' => 'Aliyên Nûjen ên AKM Business CMS Nas Bike',
                 'lang' => 'ku',
                 'category_id' => '15',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.',
-                'content' => '<p>{{build_name}} pergaleke rêveberiya naverokê ya berfireh e ku ji bo afirandina malperên nûjen hatî pêşve xistin. Bi navrûa bikarhêner-hezkir û xwediyên xwe yên hêzdar, dibe alîkar ku tu bigihîjî cihê xwe yê li cîhana webê.</p>
-                <p><strong>Xwediyên balkêş:</strong></p>
-                    <ul>
-                        <li>Piştgiriya zimanên pirjimar</li>
-                        <li>Rêveberiya naverokê ya fleksîbel</li>
-                        <li>Optîmîzasyona SEO</li>
-                        <li>Altyapî ya ewle</li>
-                        <li>Dîzayna mobîl-a bersivdar</li>
-                    </ul>
-                <p>{{build_name}} heye ku tu bigihîjî cihê xwe yê li cîhana webê. Bi çareseriya profesyonelên me xwe di cîhana dîjîtal de deynin pêş.</p>',
-                'seo' => 'naveroka-mînak',
-                'title' => 'Naveroka Mînak - {{build_name}}',
-                'keywords' => 'naveroka mînak, akm business cms, malper, rêveberiya naverokê',
-                'description' => '{{build_name}} heye ku tu bigihîjî cihê xwe yê li cîhana webê.',
+                'summary' => 'AKM Business CMS; pergaleke rêveberiya naverokê ya moduler û bi performansa bilind e ku ji bo avakirina malperên modern û nermalavên saziyê hatî pêşxistin.',
+                'content' => '<p><strong>AKM Business CMS</strong>; pergaleke rêveberiya naverokê ya berfireh û bi performansa bilind e ku ji bo avakirina serlêdanên webê yên modern, portalên kurmancî/saziyê û platformên dînamîk hatî amadekirin. Bi panela rêveberiyê ya bikarhêner-dost, mîmariya nerm û standardên bilind ên ewlehiyê hebûna we ya dîjîtal dikişîne asteke bilindtir.</p>
+<p><strong>Taybetmendiyên Sereke û Hêzdar:</strong></p>
+<ul>
+<li><strong>Piştgiriya Gelek Zimanan a Xweser:</strong> Rêveberiya bêkêmasî ya werger û ziman di hemû modulan û cûreyên naverokê de.</li>
+<li><strong>Mîmariya Moduler a Nerm:</strong> Sêwirana pergalê ya guherbar û nerm ku li gorî hewcedariyên saziyê tê adaptekirin.</li>
+<li><strong>Optimîzasyona SEO û Performansê:</strong> Avahiya URL ya paqij, meta-daneyên dînamîk û leza bilind a xebatê.</li>
+<li><strong>Ewlehiya Saziyê:</strong> Pergala navendî ya kontrola destûran (ACL) û parastina ewledar a daneyan.</li>
+<li><strong>Sêwirana Bi Temamî Mobîl-Uygum (Responsive):</strong> Ezmûneke mezin a bikarhêneriyê di hemû cîhaz û ekranan de.</li>
+</ul>
+<p>Bi AKM Business CMS re projeyên xwe yên dîjîtal derxînin pêş û standardên webê yên paşerojê bi hêsanî bi kar bînin.</p>',
+                'seo' => 'aliyên_nûjen_ên_akm_business_cms_nas_bike',
+                'title' => 'Aliyên Nûjen ên AKM Business CMS Nas Bike - {{build_name}}',
+                'keywords' => 'akm business cms, pergala rêveberiya naverokê, nermalava webê ya saziyê, cms bi gelek zimanan, cms a seo-uygum',
+                'description' => 'AKM Business CMS nas bikin; pergala rêveberiya naverokê ya moduler û bi performansa bilind ji bo malperên modern û nermalavên saziyê.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // Kurdish Soranî Content
             array(
-                'name' => 'ناوەڕۆکی نموونە',
+                'name' => 'لایەنە مۆدێرنەکانی AKM Business CMS بناسە',
                 'lang' => 'ckb',
                 'category_id' => '16',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.',
-                'content' => '<p>{{build_name}} سیستەمێکی بەڕێوەبردنی ناوەڕۆکی گشتگیرە کە بۆ دروستکردنی ماڵپەڕە مۆدێرنەکان پەرەپێدراوە. بە ڕووکاری ئاسانی بەکارهێنان و تایبەتمەندیە بەهێزەکانی، یارمەتیت دەدات کە بگەیتە شوێنی شایستەت لە جیهانی وێبدا.</p>
-<p><strong>تایبەتمەندیە سەرنجڕاکێشەکان:</strong></p>
+                'summary' => 'AKM Business CMS سیستەمێکی بەڕێوەبردنی ناوەڕۆکی مۆدێرن و ئاسایشبەرزە کە بۆ بەڕێوەبردنی ماڵپەڕە بازرگانی و دامەزراوەییەکان پەرەپێدراوە.',
+                'content' => '<p><strong>AKM Business CMS</strong> سیستەمێکی بەڕێوەبردنی ناوەڕۆکی مۆدێرن و گشتگیرە کە بۆ دروستکردنی ماڵپەڕە پێشکەوتووەکان، پۆرتالە بازرگانییەکان و پلاتفۆرمە دیجیتاڵییەکان پەرەپێدراوە. بە ڕووکاری بەڕێوەبردنی ئاسان، تەلارسازی نەرم و ستانداردە بەرزەکانی ئاسایش، بەرهەم و خزمەتگوزارییەکانت دەباتە ئاستێکی باڵاتر.</p>
+<p><strong>تایبەتمەندییە سەرەکییەکان:</strong></p>
 <ul>
-<li>پشتگیری فرەزمانی</li>
-<li>بەڕێوەبردنی ناوەڕۆکی نەرم</li>
-<li>باشکردنی SEO</li>
-<li>ژێرخانی پارێزراو</li>
-<li>دیزاینی وەڵامدەرەوەی مۆبایل</li>
+<li><strong>مۆتۆری فرەزمانی سروشتی:</strong> بەڕێوەبردنی ئاسانی وەرگێڕان و ناوەڕۆک لە هەموو مۆدۆلەکاندا.</li>
+<li><strong>تەلارسازی مۆدۆلاری نەرم:</strong> دیزاینی سیستەم کە بەپێی پێداویستییەکانی دامەزراوەکەت فراوان دەکرێت.</li>
+<li><strong>باشکراو بۆ SEO و خێرایی:</strong> لینکی دیجیتاڵی خاوێن، مێتا-داتای داینامیکی و خێرایی بەرزی کارکردن.</li>
+<li><strong>ئاسایشی ئاستی بەرز:</strong> کۆنترۆڵی ناوەندی دەسەڵاتەکان (ACL) و پاراستنی بەهێزی زانیارییەکان.</li>
+<li><strong>دیزاینی وەڵامدەرەوەی مۆبایل:</strong> ئەزموونی بەکارهێنانی بێ کەموکوڕی لە مۆبایل، تابلێت و کۆمپیوتەردا.</li>
 </ul>
-<p>{{build_name}} بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا. لە جیهانی دیجیتاڵدا بە چارەسەرە پیشەیییەکانمان جیاوازبە.</p>',
-                'seo' => 'ناوەڕۆکی-نموونە',
-                'title' => 'ناوەڕۆکی نموونە - {{build_name}}',
-                'keywords' => 'ناوەڕۆکی نموونە، akm business cms، ماڵپەڕ، بەڕێوەبردنی ناوەڕۆک',
-                'description' => '{{build_name}} بوونی هەیە بۆ ئەوەی تۆ بگەیەنێتە شوێنی شایستەت لە جیهانی وێبدا.',
+<p>لە جیهانی دیجیتاڵدا بە AKM Business CMS جیاوازبە و ڕێگەخۆشکەربە بۆ بەرەوپێشچوونی کارەکانت.</p>',
+                'seo' => 'لایەنە-مۆدێرنەکانی-akm-business-cms-بناسە',
+                'title' => 'لایەنە مۆدێرنەکانی AKM Business CMS بناسە - {{build_name}}',
+                'keywords' => 'akm business cms، سیستەمی بەڕێوەبردنی ناوەڕۆک، cms فرەزمان، cms بازرگانی، SEO cms',
+                'description' => 'لایەنە مۆدێرنەکانی AKM Business CMS بناسە؛ سیستەمێکی بەڕێوەبردنی ناوەڕۆکی مۆدێرن کە بۆ ماڵپەڕ و پلاتفۆرمە بازرگانییەکان گەشەی پێدراوە.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // Swedish Content
             array(
-                'name' => 'Exempelinnehåll',
+                'name' => 'Utforska de Moderna Aspekterna av AKM Business CMS',
                 'lang' => 'sv',
                 'category_id' => '17',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}} är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.',
-                'content' => '<p>{{build_name}} är ett omfattande innehållshanteringssystem utvecklat för att skapa moderna webbplatser. Med sitt användarvänliga gränssnitt och kraftfulla funktioner hjälper det dig att nå din förtjänta plats i webbvärlden.</p>
-<p><strong>Utmärkta funktioner:</strong></p>
+                'summary' => 'AKM Business CMS är ett modernt och säkert innehållshanteringssystem utvecklat för företagswebbplatser och dynamiska plattformar.',
+                'content' => '<p><strong>AKM Business CMS</strong> är ett omfattande publiceringssystem för företag som utvecklats för att skapa moderna webbapplikationer, företagsportaler och dynamiska plattformar. Med ett intuitivt administrationsgränssnitt, flexibel arkitektur och höga säkerhetsstandarder tar det din digitala närvaro till nästa nivå.</p>
+<p><strong>Viktiga Funktioner:</strong></p>
 <ul>
-<li>Flerspråkigt stöd</li>
-<li>Flexibel innehållshantering</li>
-<li>SEO-optimering</li>
-<li>Säker infrastruktur</li>
-<li>Mobilanpassad design</li>
+<li><strong>Inbyggd Flerspråkig Motor:</strong> Smidig hantering av översättningar och lokalisering i alla moduler.</li>
+<li><strong>Modulär Arkitektur:</strong> Skalbar systemdesign anpassad för företagets behov.</li>
+<li><strong>SEO & Prestandaoptimering:</strong> Rena URL:er, dynamisk metadata och blixtsnabb laddning.</li>
+<li><strong>Företagssäkerhet:</strong> Centraliserad behörighetskontroll (ACL) och säkert dataskydd.</li>
+<li><strong>Helt Mobilanpassad:</strong> Enastående användarupplevelse på mobiler, surfplattor och datorer.</li>
 </ul>
-<p>{{build_name}} finns för att ta dig till din förtjänta plats i webbvärlden. Stå ut i den digitala världen med våra professionella lösningar.</p>',
-                'seo' => 'exempelinnehall',
-                'title' => 'Exempelinnehåll - {{build_name}}',
-                'keywords' => 'exempelinnehåll, akm business cms, webbplats, innehållshantering',
-                'description' => '{{build_name}} finns för att ta dig till din förtjänta plats i webbvärlden.',
+<p>Stärk din digitala närvaro med AKM Business CMS och leverera moderna webblösningar enkelt.</p>',
+                'seo' => 'utforska-de-moderna-aspekterna-av-akm-business-cms',
+                'title' => 'Utforska de Moderna Aspekterna av AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, innehållshanteringssystem, företags-cms, flerspråkigt cms, seo cms',
+                'description' => 'Utforska de moderna aspekterna av AKM Business CMS, ett modernt och modult innehållshanteringssystem för företagswebbplatser och dynamiska plattformar.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             ),
             // Zazakî Content
             array(
-                'name' => 'Zerreyo Nimûne',
+                'name' => 'Dormaliyên Newejenê AKM Business CMS Bişasna',
                 'lang' => 'zza',
                 'category_id' => '18',
                 'status' => 'y',
                 'deck' => 'y',
-                'summary' => '{{build_name}}, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.',
-                'content' => '<p>{{build_name}}, yew sistemo averşiyaye yê idarekarda zerreyo ke seba viraştena malperanê modernan ameyo raverberdene. Bi interfaceê xo yo ke xebatkarî rê kîbar o û bi taybetmendiyanê xo yê quwetinan, şima resneno cayê şima yo heqkerde yê dınyaya webî.</p>
+                'summary' => 'AKM Business CMS, yew sistemo averşiyaye û ewle yê idarekarda zerreyî yo ke seba platformanê karsazî û malperanê modernan ameyo raverberdene.',
+                'content' => '<p><strong>AKM Business CMS</strong>, yew sistemo berfireh û ewle yê idarekarda zerreyî yo ke seba viraştena malperanê modernan, portalanê karsazî û platformanê dîjîtalan ameyo raverberdene. Bi panela idarekerdişi ya kîbare, binesaziya elastîk û pîvananê ewlehî yê berzan, karsaziya şima dinyaya dîjîtale de keno serek.</p>
                 <p><strong>Taybetmendiyê ke Vejênê Pêş:</strong></p>
                     <ul>
-                        <li>Paştdayışê zaf-ziwanî</li>
-                        <li>İdarekerdena zerreyo elastîk</li>
-                        <li>Optimîzasyonê SEO</li>
-                        <li>Altyapiyo ewle</li>
-                        <li>Dîzayno ke mobîlî rê munasib o</li>
+                        <li><strong>Motora Zaf-Ziwanî:</strong> İdarekerdena hêsan û bêkûsûr ya ziwan û zerreyî di pêro modulan de.</li>
+                        <li><strong>Avahiya Modulere:</strong> Dîzayno ke li gorî hewcedariyanê karsaziyê beno hîra û xwerû.</li>
+                        <li><strong>SEO û Optimîzasyonê Lezî:</strong> Linkê dînamîkî, metadata paqije û binesaziya pîroz seba motoranê lêgerînî.</li>
+                        <li><strong>Ewlehiya Berze:</strong> Sistemo navendî yê kontrola destûrî (ACL) û pawitişê daneyan.</li>
+                        <li><strong>Dîzayno Mobîlî rê Munasib:</strong> Ezmûno bêkûsûr di mobîl, tablet û kompîturan de.</li>
                     </ul>
-                <p>{{build_name}} esta ke şima dınyaya webî de berê cayê şima yo heqkerde. Bi çareseriyanê ma yê profesyonelan dınyaya dîjîtale de karsaziya xo vejên pêş.</p>',
-                'seo' => 'zerreyo-nimune',
-                'title' => 'Zerreyo Nimûne - {{build_name}}',
-                'keywords' => 'zerreyo nimûne, akm business cms, malper, idarekarda zerreyî',
-                'description' => '{{build_name}} esta ke şima dınyaya webî de berê cayê şima yo heqkerde.',
+                <p>Bi AKM Business CMS dinyaya dîjîtale de karsaziya xo biroşe pêş û malpera xo biresnê asteke berze.</p>',
+                'seo' => 'dormaliyen-newejene-akm-business-cms-bisasna',
+                'title' => 'Dormaliyên Newejenê AKM Business CMS Bişasna - {{build_name}}',
+                'keywords' => 'akm business cms, sistemo idarekarda zerreyî, cms karsazî, zaf ziwanî cms, seo cms',
+                'description' => 'Dormaliyên newejenê AKM Business CMS bişasna; yew sistemo averşiyaye û ewle yê idarekarda zerreyî yo ke seba platformanê karsazî ameyo raverberdene.',
+                'image' => 'akm_business_cms_cover.jpg',
+                'user_id' => '1'
+            ),
+            // Russian Content
+            array(
+                'name' => 'Познакомьтесь с современными возможностями AKM Business CMS',
+                'lang' => 'ru',
+                'category_id' => '19',
+                'status' => 'y',
+                'deck' => 'y',
+                'summary' => 'AKM Business CMS — это высокопроизводительная модульная система управления контентом, созданная для современных веб-сайтов и корпоративных платформ.',
+                'content' => '<p><strong>AKM Business CMS</strong> — это комплексная масштабируемая система управления контентом корпоративного уровня, разработанная для создания современных веб-приложений, корпоративных порталов и динамических платформ. Интуитивно понятная панель управления, гибкая архитектура и передовые стандарты безопасности выводят ваше цифровое присутствие на новый уровень.</p>
+                <p><strong>Ключевые преимущества и возможности:</strong></p>
+                <ul>
+                    <li><strong>Встроенная мультиязычность:</strong> Безупречное управление локализацией и переводами во всех модулях и типах контента.</li>
+                    <li><strong>Модульная архитектура:</strong> Гибкая и масштабируемая структура, адаптированная под требования современного бизнеса.</li>
+                    <li><strong>SEO и производительность:</strong> Оптимизированные ЧПУ (SEF URLs), динамические метаданные и высокая скорость загрузки.</li>
+                    <li><strong>Корпоративная безопасность:</strong> Централизованный контроль доступа (ACL), защищенные эндпоинты и надежное хранение данных.</li>
+                    <li><strong>Адаптивный дизайн:</strong> Безупречный пользовательский опыт на смартфонах, планшетах и компьютерах.</li>
+                </ul>
+                <p>Развивайте свой бизнес в цифровой среде с помощью AKM Business CMS и внедряйте передовые веб-стандарты с легкостью.</p>',
+                'seo' => 'poznakomtes-s-sovremennymi-vozmozhnostyami-akm-business-cms',
+                'title' => 'Познакомьтесь с современными возможностями AKM Business CMS - {{build_name}}',
+                'keywords' => 'akm business cms, система управления контентом, корпоративная cms, мультиязычная cms, seo оптимизация',
+                'description' => 'Откройте для себя AKM Business CMS — модульную высокопроизводительную платформу для современных корпоративных сайтов и веб-сервисов.',
+                'image' => 'akm_business_cms_cover.jpg',
                 'user_id' => '1'
             )
         );
         
-        $veri = installer_replace_build_name($veri);
+        $data = installer_replace_build_name($data);
 
         $this->model = Load::model('mod_content');
-        foreach ($veri AS $key => $value){
-            if ($this->model->exists_name($value['name']) === FALSE){
+        foreach ($data AS $key => $value){
+            if ($this->model->exists_name_and_lang($value['name'], $value['lang']) === FALSE){
                 $lang = $value['lang'];
                 $starterName = $this->installer_resolve_category_starter_label('bulletin', $lang);
                 if ($starterName === FALSE) {
                     $this->error("Starter category label not found for " . $lang);
                     return FALSE;
                 }
-                $query = "SELECT id FROM `mod_category` WHERE lang='" . addslashes($lang) . "' AND name='" . addslashes($starterName) . "' AND parent_id != 0 ORDER BY id ASC LIMIT 1";
+                $query = "SELECT id FROM `mod_content_category` WHERE lang='" . addslashes($lang) . "' AND name='" . addslashes($starterName) . "' AND parent_id != 0 ORDER BY id ASC LIMIT 1";
                 $this->db->fetch_array($query);
                 if ($this->db->getSize() === 0) {
-                    $this->error("Category ID not found in mod_category for language " . $lang . " and name " . $starterName);
+                    $this->error("Category ID not found in mod_content_category for language " . $lang . " and name " . $starterName);
                     return FALSE;
                 }
                 $rows = $this->db->getResult()->toArray();
                 $categoryId = (int) $rows[0]['id'];
                 $value['category_id'] = $categoryId;
 
-                $this->oke($value['name'] . " Eklendi");
+                $this->success("Added: " . $value['name']);
                 $keys = array_keys($value);
-                foreach ($keys AS $k){
+                foreach ($keys as $k){
                     $this->model->$k = $value[$k];
                 }
-                if ($this->model->save()===FALSE){
-                    $this->error($value['name'] . " Eklenirken hata oluştu");
+                if ($this->model->save() === FALSE){
+                    $this->error("Failed to add: " . $value['name']);
                     return FALSE;
                 }
                 continue;
             }
             else
             {
-                $this->warning($value['name'] . " daha önce eklenmiş");
+                $this->warning("Already exists: " . $value['name']);
             }
         }
         return TRUE;

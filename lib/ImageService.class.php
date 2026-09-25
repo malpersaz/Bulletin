@@ -44,10 +44,9 @@ class ImageService
                 $this->uploaded_url = $image->url;
                 $this->last_error = '';
                 return true;
-            } else {
-                $this->last_error = $image->error;
-                return false;
             }
+            $this->last_error = $image->error;
+            return false;
             
         } catch (Exception $e) {
             $this->last_error = 'Image upload failed: ' . $e->getMessage();
@@ -84,10 +83,9 @@ class ImageService
             if ($image->_delete_files($resize_options)) {
                 $this->last_error = '';
                 return true;
-            } else {
-                $this->last_error = $image->error;
-                return false;
             }
+            $this->last_error = $image->error;
+            return false;
             
         } catch (Exception $e) {
             $this->last_error = 'Image deletion failed: ' . $e->getMessage();
@@ -249,7 +247,7 @@ class ImageService
         }
         
         // Construct image path based on module structure
-        $site = Kayit::getir('site_config');
+        $site = Registry::get('site_config');
         return $site['iaddress'] . $module_name . $size . $image_url;
     }
 }

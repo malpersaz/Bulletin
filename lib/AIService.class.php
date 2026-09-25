@@ -15,7 +15,7 @@ class AIService
 
     public function __construct()
     {
-        $site = Kayit::varmi('site_config') ? Kayit::getir('site_config') : [];
+        $site = Registry::has('site_config') ? Registry::get('site_config') : [];
         $this->apiKey = $site['gemini_api_key'] ?? '';
         $this->model = $site['gemini_model'] ?? 'gemini-2.5-flash';
     }
@@ -99,10 +99,14 @@ class AIService
             return null;
         }
 
-        // Extract HTTP Response Code from special $http_response_header variable
+        // Extract HTTP Response Code from response headers
         $httpCode = 0;
-        if (isset($http_response_header) && is_array($http_response_header) && isset($http_response_header[0])) {
-            preg_match('{HTTP\/\S*\s(\d+)}', $http_response_header[0], $matches);
+        $headers = function_exists('http_get_last_response_headers')
+            ? http_get_last_response_headers()
+            : ($http_response_header ?? null);
+
+        if ($headers !== null && is_array($headers) && isset($headers[0])) {
+            preg_match('{HTTP\/\S*\s(\d+)}', $headers[0], $matches);
             $httpCode = isset($matches[1]) ? intval($matches[1]) : 0;
         }
 
@@ -135,7 +139,7 @@ class AIService
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         
-        if (curl_errno($ch)) {
+        if (curl_errno($ch) !== 0) {
             $error_msg = curl_error($ch);
             error_log("AIService cURL Error: " . $error_msg);
             curl_close($ch);

@@ -18,25 +18,27 @@ if (!defined('AKM_LOADED')) {
  * Content Management Module Language Translations
  */
 $lang['mod_content'] = [
+    'total_content' => 'Toplam İçerik',
+    'draft_content' => 'Taslak İçerik',
 
     // === Basic Actions ===
     'add' => 'İçerik Ekle',
     'edit' => 'İçeriği Düzenle',
     'list' => 'İçerik Listesi',
+    'search_placeholder' => 'İçerik ara (başlık, özet)...',
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ölümcül Hata Oluştu!',
+    'success' => 'İşlem Başarılı!',
+    'error' => 'Hata Oluştu!',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize emin misiniz?',
-    'remove_image_oke' => 'Resim Kaldırıldı',
+    'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
-    'remove_record' => 'Bu Kaydı Silmek İstediğinize emin misiniz?',
+    'remove_record' => 'Bu İçeriği Silmek İstediğinize emin misiniz?',
     'delete_confirm' => 'Bu içeriği silmek istediğinize emin misiniz?',
     'quick_unpublish_confirm' => 'Bu içeriği yayından kaldırmak istediğinizden emin misiniz?',
     'quick_publish_confirm' => 'Bu içeriği yayınlamak istediğinizden emin misiniz?',
-    'resim_ekle' => 'Resim Ekle',
-    'resim_yukle_degistir' => 'Resim Yükle/Değiştir',
-    'lokal' => 'Lokal',
+    'add_image' => 'Resim Ekle',
+    'upload_change_image' => 'Resim Yükle/Değiştir',
+    'local' => 'Lokal',
     'embed' => 'Embed',
 
     // === Filter Menu ===
@@ -64,7 +66,7 @@ $lang['mod_content'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'İçerik Eklendi!',
             'edit' => 'İçerik Düzenlendi!',
         ],
@@ -76,7 +78,7 @@ $lang['mod_content'] = [
 
     // === Error Messages ===
     'errors' => [
-        'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
+        'record' => 'Belirttiğiniz İçerik Bulunamadı!',
     ],
 
     'wizard_loading' => 'Sihirbaz yükleniyor...',
@@ -88,27 +90,28 @@ $lang['mod_content'] = [
         'send' => 'Gönder',
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
         'gallery' => 'Resim Galerisi',
         'file' => 'Dosya Yöneticisi',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
+        'cancel' => 'Vazgeç',
+        'save' => 'Kaydet',
+        'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
+        'showing_results' => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Arama',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
         'approve' => [
             'key' => 'Yayınla',
             'value' => 'Bu içeriği yayınlamak istediğinize emin misiniz?',
@@ -130,12 +133,12 @@ $lang['mod_content'] = [
         'title_length' => 'En az 1, en fazla 70 karakterden oluşan bir başlık girmelisiniz.',
         'title_exists' => 'Bu başlık zaten mevcut, lütfen değiştirin',
         'title_unique' => 'Başlığınız benzersiz',
-        'deck_length' => 'Lütfen en az 110, en fazla 280 karakterden oluşan bir giriş metni giriniz.',
+        'deck_length' => 'Lütfen 90 ile 120 karakter arasında bir giriş metni giriniz.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'İçerik Yönetim Rolleri',
+    'role' => [
+        'name' => 'İçerik Yönetim Rolleri',
         'add' => 'İçerik Ekleyebilir',
         'edit' => 'İçerik Düzenleyebilir',
         'delete' => 'İçerik Silebilir',
@@ -200,32 +203,31 @@ $lang['mod_content'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Kayıt Yönetimi',
-        'islem' => 'İşlem',
-        'uygula' => 'Uygula',
-        'islem_column' => 'Aksiyon',
+        'record_management' => 'Veri Yönetimi',
+        'operation' => 'İşlem',
+        'apply' => 'Uygula',
+        'action_column' => 'Aksiyon',
         'select' => 'Seçin',
-        'burdan' => 'Buradan',
-        'buraya' => 'Buraya',
-        'ara' => 'Ara',
-        'sifirla' => 'Sıfırla',
+        'from' => 'Buradan',
+        'to' => 'Buraya',
+        'search' => 'Ara',
+        'reset' => 'Sıfırla',
         'approval' => 'Onayla',
-        'isleniyor' => 'İşleniyor',
+        'processing' => 'İşleniyor',
         'record_selected' => 'Kayıt seçildi',
-        'islem_gerceklestirilemedi' => 'İşlem gerçekleştirilemedi',
-        'islem_secin' => 'Lütfen bir işlem seçin',
+        'operation_failed' => 'İşlem gerçekleştirilemedi',
+        'select_operation' => 'Lütfen bir işlem seçin',
         'all' => 'Tümü',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Yazdır',
-        'yazdir_bilgi' => 'Yazdır bilgisi',
-        'olusturan' => 'Oluşturan',
-        'kopyala' => 'Kopyala',
+        'print' => 'Yazdır',
+        'print_info' => 'Yazdır bilgisi',
+        'creator' => 'Oluşturan',
+        'copy' => 'Kopyala',
         'default_sort' => 'En Yeni',
         'default_lang' => 'TR',
         'date_locale' => 'tr-TR',
-        'all' => 'Tümü',
         'filter_cleared' => 'Filtreler temizlendi ve varsayılana döndürüldü.',
         'filter_applied' => 'Filtreler Uygulandı',
         'sort_label' => 'Sıralama',
@@ -310,7 +312,7 @@ $lang['mod_content'] = [
             'category' => 'İçeriğin ekleneceği kategoriyi belirleyin.',
             'title' => 'İlgi çekici bir başlık girin. (Min: 1, Max: 70)',
             'date' => 'İçeriğin yayınlanacağı tarih ve saat.',
-            'intro' => 'Kısa ve öz bir özet yazın. (110 - 280 Karakter)',
+            'intro' => 'Kısa ve öz bir özet yazın. (110 - 120 Karakter)',
             'content' => 'Zengin metin editörü.',
             'image' => 'Kapak görseli yükleyin.',
             'finish' => 'Son kontroller ve yayınlama.',
@@ -375,7 +377,6 @@ $lang['mod_content'] = [
         'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nİçerik için resim galerisi açılıyor.",
         'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nİçerik için dosya yükleme ekranı açılıyor.",
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
-        'delete_confirm' => 'Evet, Sil!',
         'delete_success' => 'İçerik silindi!',
     ],
 
@@ -389,6 +390,14 @@ $lang['mod_content'] = [
 
     'picker' => [
         'file' => 'Mevcut Dosyayı Seç',
+    ],
+
+    'empty_state' => [
+        'title' => 'Henüz içerik eklenmedi',
+        'description' => 'Başlamak için ilk içeriğinizi ekleyin.',
+        'search_title' => 'Eşleşen sonuç bulunamadı',
+        'search_description' => 'Arama kriterlerinize uygun içerik bulunamadı. Lütfen farklı bir arama terimi deneyin.',
+        'clear_search' => 'Aramayı Temizle',
     ],
 
     'ajax' => [

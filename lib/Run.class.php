@@ -15,27 +15,21 @@ class RunException extends Exception{
 }
 class Run
 {
-    public static function calistir($a, $b, $ext = NULL)
+    public static function execute($a, $b, $ext = NULL)
     {
-
         if (method_exists($a, $b)) {
-            if (isset($ext['0'])===FALSE) {
+            if (isset($ext['0']) === FALSE) {
                 return call_user_func([$a, $b]);
             }
             return call_user_func_array([$a, $b], $ext);
-
         }
-        throw new RunException($a,$b,$ext);
+        throw new RunException($a, $b, $ext);
         return FALSE;
     }
 
     public static function import($mod, $method, $array = NULL)
     {
-        // var_dump($mod, $method, $array);
-        // var_dump(gettype($mod), gettype($method), gettype($array));
-        // var_dump($array[0]);
-        // $array[0]->getx('menu');
         $mod = Load::mod($mod);
-        return self::calistir($mod, $method, $array);
+        return self::execute($mod, $method, $array);
     }
 }

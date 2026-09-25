@@ -1,11 +1,11 @@
 <?php
 /**
- * AKM Business İçerik Yönetim Sistemi
+ * AKM Business Content Management System
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
- * Kullanıcı: a.k.mutlu
- * Zaman: 11.04.2011 - 20:38
- * Sınıf İsmi: Register
+ * User: AKM
+ * Time: 11.04.2011 - 20:38
+ * Class Name: Register
  */
 class Register
 {

@@ -8,36 +8,58 @@ class search_helper extends indexBase
         parent::__construct();
     }
 
-    public function search($a = NULL)
+    public function search($query = null)
     {
-
         $url = Load::lib('Url');
-        $url->parse($a);
+        $url->parse($query);
 
-        $kelime = NULL;
+        $keyword = null;
 
-        if ($url->exists_get('kelime')) {
-            $kelime = $url->get_clear('kelime');
+        if ($url->exists_get('query')) {
+            $keyword = $url->get_clear('query');
+        } elseif ($url->exists_get('keyword')) {
+            $keyword = $url->get_clear('keyword');
+        } elseif ($url->exists_get('q')) {
+            $keyword = $url->get_clear('q');
+        } elseif (Req::is_Get('query')) {
+            $keyword = Req::Get_Safe('query');
+        } elseif (Req::is_Get('q')) {
+            $keyword = Req::Get_Safe('q');
+        } elseif (Req::is_Get('keyword')) {
+            $keyword = Req::Get_Safe('keyword');
+        } elseif (Req::is_Post('query')) {
+            $keyword = Req::Post_Safe('query');
+        } elseif (Req::is_Post('q')) {
+            $keyword = Req::Post_Safe('q');
+        } elseif (Req::is_Post('keyword')) {
+            $keyword = Req::Post_Safe('keyword');
+        } elseif (!empty($query) && is_string($query) && strpos($query, '=') === false) {
+            $keyword = Req::Url_Clear($query);
         }
 
-        if ($kelime === NULL) {
-            return $this->_404();
+        if ($keyword === null || mb_strlen($keyword, 'UTF-8') < 3) {
+            $searchLang = Load::lang('index')['index']['search'] ?? [];
+            $noticeKey = $keyword === null ? 'searched_word' : 'keyword_too_short';
+            if (!empty($searchLang[$noticeKey])) {
+                $this->theme->set('search_notice', $searchLang[$noticeKey]);
+            }
+            $this->theme->set('search_term', '');
+            $this->theme->set('keyword', $keyword ?? '');
+            $this->theme->set('query', $keyword ?? '');
+            $this->theme->set('search_query', $keyword ?? '');
+            $this->theme->tpl('index/search');
+            $this->_index();
+            return;
         }
 
-        if (mb_strlen($kelime, "UTF-8") < 3) {
-            return $this->_404();
-        }
-
-
-        $like_keyword = "%" . $kelime . "%";
+        $like_keyword = "%" . $keyword . "%";
         Load::libfile('Cache');
-        Cache::$sure = 60 * 60;
+        Cache::$ttl = 3600;
 
-
-        if (Cache::exists_cache($kelime . "-arama-mod_news")) {
-            $cached_data = Cache::get_cache();
+        if (Cache::exists($keyword . "-search-mod_news")) {
+            $cached_data = Cache::get($keyword . "-search-mod_news");
             if ($cached_data !== FALSE) {
-                $this->tema->veri('news', $cached_data);
+                $this->theme->set('news', $cached_data);
             }
         } else {
             $news = Load::model('mod_news');
@@ -45,16 +67,15 @@ class search_helper extends indexBase
             $news->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
             $news->gR();
             if ($news->getSize() !== 0) {
-                $this->tema->veri('news', $news->toArray());
+                $this->theme->set('news', $news->toArray());
             }
-            Cache::set($news->toArray(), $kelime . "-arama-mod_news");
+            Cache::set($news->toArray(), $keyword . "-search-mod_news");
         }
 
-
-        if (Cache::exists_cache($kelime . "-arama-mod_publication")) {
-            $cached_data = Cache::get_cache();
+        if (Cache::exists($keyword . "-search-mod_publication")) {
+            $cached_data = Cache::get($keyword . "-search-mod_publication");
             if ($cached_data !== FALSE) {
-                $this->tema->veri('publications', $cached_data);
+                $this->theme->set('publications', $cached_data);
             }
         } else {
             $publication = Load::model('mod_publication');
@@ -62,16 +83,15 @@ class search_helper extends indexBase
             $publication->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
             $publication->gR();
             if ($publication->getSize() !== 0) {
-                $this->tema->veri('publications', $publication->toArray());
+                $this->theme->set('publications', $publication->toArray());
             }
-            Cache::set($publication->toArray(), $kelime . "-arama-mod_publication");
+            Cache::set($publication->toArray(), $keyword . "-search-mod_publication");
         }
 
-
-        if (Cache::exists_cache($kelime . "-arama-mod_announcements")) {
-            $cached_data = Cache::get_cache();
+        if (Cache::exists($keyword . "-search-mod_announcements")) {
+            $cached_data = Cache::get($keyword . "-search-mod_announcements");
             if ($cached_data !== FALSE) {
-                $this->tema->veri('announcements', $cached_data);
+                $this->theme->set('announcements', $cached_data);
             }
         } else {
             $announcement = Load::model('mod_announcements');
@@ -79,132 +99,33 @@ class search_helper extends indexBase
             $announcement->where_lang_and_status_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword, $like_keyword);
             $announcement->gR();
             if ($announcement->getSize() !== 0) {
-                $this->tema->veri('announcements', $announcement->toArray());
+                $this->theme->set('announcements', $announcement->toArray());
             }
-            Cache::set($announcement->toArray(), $kelime . "-arama-mod_announcements");
+            Cache::set($announcement->toArray(), $keyword . "-search-mod_announcements");
         }
 
-        if (Cache::exists_cache($kelime . "-arama-mod_product")) {
-            $cached_data = Cache::get_cache();
+        if (Cache::exists($keyword . "-search-mod_page")) {
+            $cached_data = Cache::get($keyword . "-search-mod_page");
             if ($cached_data !== FALSE) {
-                $this->tema->veri('products', $cached_data);
+                $this->theme->set('sayfalar', $cached_data);
+                $this->theme->set('pages', $cached_data);
             }
         } else {
-            $db = Load::lib('Database');
-            $products = $db->fetch_array("
-                SELECT name, seo, summary
-                FROM mod_product
-                WHERE lang = '" . $this->site['lang'] . "'
-                  AND status = 'y'
-                  AND (
-                    content LIKE '" . addslashes($like_keyword) . "'
-                    OR summary LIKE '" . addslashes($like_keyword) . "'
-                    OR name LIKE '" . addslashes($like_keyword) . "'
-                  )
-                ORDER BY created_at DESC, id DESC
-            ")->getResult()->toArray();
-            if (!empty($products)) {
-                $this->tema->veri('products', $products);
+            $page = Load::model('mod_page');
+            $page->select('name,seo');
+            $page->where_lang_and_status_and_root_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', 'n', $like_keyword, $like_keyword, $like_keyword);
+            $page->gR();
+            if ($page->getSize() !== 0) {
+                $this->theme->set('sayfalar', $page->toArray());
+                $this->theme->set('pages', $page->toArray());
             }
-            Cache::set($products, $kelime . "-arama-mod_product");
+            Cache::set($page->toArray(), $keyword . "-search-mod_page");
         }
 
-        if (Cache::exists_cache($kelime . "-arama-mod_client")) {
-            $cached_data = Cache::get_cache();
+        if (Cache::exists($keyword . "-search-mod_video_embed")) {
+            $cached_data = Cache::get($keyword . "-search-mod_video_embed");
             if ($cached_data !== FALSE) {
-                $this->tema->veri('clients', $cached_data);
-            }
-        } else {
-            $db = Load::lib('Database');
-            $clients = $db->fetch_array("
-                SELECT name, seo, description
-                FROM mod_client
-                WHERE lang = '" . $this->site['lang'] . "'
-                  AND status = 'y'
-                  AND (
-                    content LIKE '" . addslashes($like_keyword) . "'
-                    OR description LIKE '" . addslashes($like_keyword) . "'
-                    OR name LIKE '" . addslashes($like_keyword) . "'
-                  )
-                ORDER BY created_at DESC, id DESC
-            ")->getResult()->toArray();
-            if (!empty($clients)) {
-                $this->tema->veri('clients', $clients);
-            }
-            Cache::set($clients, $kelime . "-arama-mod_client");
-        }
-
-        if (Cache::exists_cache($kelime . "-arama-mod_service")) {
-            $cached_data = Cache::get_cache();
-            if ($cached_data !== FALSE) {
-                $this->tema->veri('services', $cached_data);
-            }
-        } else {
-            $db = Load::lib('Database');
-            $services = $db->fetch_array("
-                SELECT name, seo, summary
-                FROM mod_service
-                WHERE lang = '" . $this->site['lang'] . "'
-                  AND status = 'y'
-                  AND (
-                    content LIKE '" . addslashes($like_keyword) . "'
-                    OR summary LIKE '" . addslashes($like_keyword) . "'
-                    OR name LIKE '" . addslashes($like_keyword) . "'
-                  )
-                ORDER BY created_at DESC, id DESC
-            ")->getResult()->toArray();
-            if (!empty($services)) {
-                $this->tema->veri('services', $services);
-            }
-            Cache::set($services, $kelime . "-arama-mod_service");
-        }
-
-        if (Cache::exists_cache($kelime . "-arama-mod_reference")) {
-            $cached_data = Cache::get_cache();
-            if ($cached_data !== FALSE) {
-                $this->tema->veri('references', $cached_data);
-            }
-        } else {
-            $db = Load::lib('Database');
-            $references = $db->fetch_array("
-                SELECT name, seo, description
-                FROM mod_reference
-                WHERE lang = '" . $this->site['lang'] . "'
-                  AND status = 'y'
-                  AND (
-                    content LIKE '" . addslashes($like_keyword) . "'
-                    OR description LIKE '" . addslashes($like_keyword) . "'
-                    OR name LIKE '" . addslashes($like_keyword) . "'
-                  )
-                ORDER BY created_at DESC, id DESC
-            ")->getResult()->toArray();
-            if (!empty($references)) {
-                $this->tema->veri('references', $references);
-            }
-            Cache::set($references, $kelime . "-arama-mod_reference");
-        }
-
-        if (Cache::exists_cache($kelime . "-arama-mod_page")) {
-            $cached_data = Cache::get_cache();
-            if ($cached_data !== FALSE) {
-                $this->tema->veri('sayfalar', $cached_data);
-            }
-        } else {
-            $sayfa = Load::model('mod_page');
-            $sayfa->select('name,seo');
-            $sayfa->where_lang_and_status_and_root_and_og_like_content_or_like_summary_or_like_name_cg($this->site['lang'], 'y', 'n', $like_keyword, $like_keyword, $like_keyword);
-            $sayfa->gR();
-            if ($sayfa->getSize() !== 0) {
-                $this->tema->veri('sayfalar', $sayfa->toArray());
-            }
-            Cache::set($sayfa->toArray(), $kelime . "-arama-mod_page");
-        }
-
-
-        if (Cache::exists_cache($kelime . "-arama-mod_video_embed")) {
-            $cached_data = Cache::get_cache();
-            if ($cached_data !== FALSE) {
-                $this->tema->veri('videos', $cached_data);
+                $this->theme->set('videos', $cached_data);
             }
         } else {
             $vid = Load::model('mod_video_embed');
@@ -212,16 +133,16 @@ class search_helper extends indexBase
             $vid->where_lang_and_status_and_og_like_content_or_like_name_cg($this->site['lang'], 'y', $like_keyword, $like_keyword);
             $vid->gR();
             if ($vid->getSize() !== 0) {
-                $this->tema->veri('videos', $vid->toArray());
+                $this->theme->set('videos', $vid->toArray());
             }
-            Cache::set($vid->toArray(), $kelime . "-arama-mod_video_embed");
+            Cache::set($vid->toArray(), $keyword . "-search-mod_video_embed");
         }
-        $this->tema->veri('product_lang', Load::lang('mod_product'));
-        $this->tema->veri('client_lang', Load::lang('mod_client'));
-        $this->tema->veri('service_lang', Load::lang('mod_service'));
-        $this->tema->veri('reference_lang', Load::lang('mod_reference'));
-        $this->tema->veri('kelime', $kelime);
-        $this->tema->tpl('index/search');
+        $this->theme->set('search_term', $keyword);
+        $this->theme->set('keyword', $keyword);
+        $this->theme->set('query', $keyword);
+        $this->theme->set('search_query', $keyword);
+        $this->theme->tpl('index/search');
         $this->_index();
     }
 }
+

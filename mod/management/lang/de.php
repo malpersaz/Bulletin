@@ -1,19 +1,12 @@
 <?php
 $lang['management'] = [
-    '1' => 'Benutzerpanel',
-    'anasayfa' => 'Startseite',
+    'home' => 'Startseite',
+    'site_home' => 'Website-Startseite',
     'dashboard' => 'Dashboard',
-    'uyelik' => 'Mitgliedschaft',
+    'membership' => 'Mitgliedschaft',
     'content_workspace' => 'Inhalts-Arbeitsbereich',
     'content_and_page' => 'Inhalte und Seiten',
     'video_and_images' => 'Videos und Bilder',
-    'products_workspace' => 'Produkte-Arbeitsbereich',
-    'products' => 'Produktmanagement',
-    'services' => 'Dienstleistungsmanagement',
-    'product_categories' => 'Produktkategorien',
-    'service_categories' => 'Dienstleistungskategorien',
-    'clients' => 'Kundenmanagement',
-    'references' => 'Referenzmanagement',
     'system_tools' => 'System-Tools',
     'recent_modules' => 'Kürzlich genutzte Module',
     'pinned_modules' => 'Angepinnte Module',
@@ -21,13 +14,13 @@ $lang['management'] = [
     'pin_module' => 'Modul anheften',
     'unpin_module' => 'Modul lösen',
     'recent_workspace_empty' => 'Kürzlich genutzte Module erscheinen hier',
-    'uyeler' => 'Mitglieder',
-    'uye_gruplari' => 'Benutzergruppen',
+    'members' => 'Mitglieder',
+    'user_groups' => 'Benutzergruppen',
     'membership_setting' => 'Mitgliedschaftseinstellungen',
-    'uye_permission_yonetimi_acl' => 'Benutzerberechtigungsverwaltung (ACL)',
+    'user_permission_management_acl' => 'Benutzerberechtigungsverwaltung (ACL)',
     'acl' => 'ACL',
-    'gallery_modulleri' => 'Galeriemodule',
-    'dosya_modulleri' => 'Dateimodule',
+    'gallery_modules' => 'Galeriemodule',
+    'file_modules' => 'Dateimodule',
     'locale_management' => 'Sprachverwaltung',
     'content_categories' => 'Inhaltskategorien',
     'news_categories' => 'Nachrichtenkategorien',
@@ -46,21 +39,15 @@ $lang['management'] = [
     'file_management' => 'Dateiverwaltung',
     'service_guide' => 'Serviceleitfaden',
     'survey_management' => 'Umfrageverwaltung',
-
-    // Video and Images Submenu
     'videos' => 'Videos',
     'remote_videos' => 'Externe Videos',
-    'uzak_video_kategorisi' => 'Externe Videokategorie',
-    'manset_yonetimi' => 'Schlagzeilenverwaltung',
-    'full_manset_yonetimi' => 'Vollständige Schlagzeilenverwaltung',
-    'resim_gallery' => 'Bildergalerie',
+    'remote_video_category' => 'Externe Videokategorie',
+    'headline_management' => 'Schlagzeilenverwaltung',
+    'full_headline_management' => 'Vollständige Schlagzeilenverwaltung',
     'image_gallery' => 'Bildergalerie',
-
-    // Announcement Management Submenu
     'announcement_management' => 'Ankündigungsverwaltung',
     'popup_announcements' => 'Popup-Ankündigungen',
-
-    // Additional UI Elements
+    'newsletter_management' => 'Newsletter-Abonnenten',
     'show_on_homepage' => 'Auf der Startseite anzeigen',
     'homepage_action' => 'Startseite',
     'parent_category' => 'Übergeordnete Kategorie',
@@ -71,9 +58,7 @@ $lang['management'] = [
     'settings' => 'Einstellungen',
     'management' => 'Verwaltung',
     'admin_panel' => 'Kontrollpanel',
-    'profil' => 'Profil',
-
-    // User Profile Menu
+    'profile' => 'Profil',
     'edit_profile_menu' => 'Profil bearbeiten',
     'change_password_menu' => 'Passwort ändern',
     'user_menu_title' => 'Benutzermenü',
@@ -82,8 +67,7 @@ $lang['management'] = [
     'administration_menu' => 'Verwaltung',
     'language_management_menu' => 'Sprachverwaltung',
     'logout_menu' => 'Abmelden',
-
-    // Quick Menu
+    'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'Schnellmenü',
     'under_construction_page_title' => 'Seite im Aufbau',
     'under_construction_module_title' => 'Modul im Aufbau',
@@ -99,6 +83,7 @@ $lang['management'] = [
     'private_method_heading' => 'Die angeforderte Administrationsaktion kann nicht direkt aufgerufen werden',
     'private_method_description' => 'Die Administrationsaktion "%s" ist intern und kann nicht direkt geöffnet werden.',
     'back_to_home' => 'Zur Startseite',
+    'back' => 'Zurück',
     'logo_upload_error' => 'Fehler beim Hochladen des Logos: ',
     'invalid_image_extension' => 'Ungültige Bilddateiendung: ',
     'module_health' => 'Modulstatus',
@@ -112,5 +97,7 @@ $lang['management'] = [
     'module_health_ready_count' => 'bereit',
     'yes' => 'Ja',
     'no' => 'Nein',
-    'start_menu' => 'Startmenü'
+    'start_menu' => 'Startmenü',
+    'no_records_found' => 'Keine Datensätze gefunden',
+    'module_search_empty' => 'Keine Module entsprechend Ihrer Suche gefunden.',
 ];

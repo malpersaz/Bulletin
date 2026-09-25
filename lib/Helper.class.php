@@ -2,22 +2,21 @@
 class Helper
 {
 
-    // uzantı Bul
-    static function extension($ad)
+    // Find extension
+    static function extension($filename)
     {
-
-        $array = explode('.', $ad);
+        $array = explode('.', $filename);
         $size = count($array) - 1;
         return $array[$size];
     }
 
-    // Kırmızı Yazı
+    // Red text
     static function red_text($a)
     {
         return '<font color="red"><b>' . $a . '</b></font>';
     }
 
-    // Yeşil Yazı
+    // Green text
     static function green_text($a)
     {
         return '<font color="green"><b>' . $a . '</b></font>';
@@ -28,71 +27,45 @@ class Helper
         return '<font color="black"><b>' . $a . '</b></font>';
     }
 
-    // Site Url
+    // Site URL
     static function site_url()
     {
         return site_url;
     }
 
-    //Yönlendirme Fonksiyonu yonlendir('index.php',3);
-    static function yonlendir($url, $saniye = 3)
+    // Redirect function: redirect('index.php', 3);
+    static function redirect($url, $seconds = 3)
     {
         if (!headers_sent()) {
-            @header("refresh: $saniye; url=$url");
+            @header("refresh: $seconds; url=$url");
         } else {
             echo '<script type="text/javascript">';
-            echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $saniye . '000);';
+            echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $seconds . '000);';
             echo '</script>';
             echo '<noscript>';
-            echo '<meta http-equiv="refresh" content="' . $saniye . ';url=' . $url . '" />';
+            echo '<meta http-equiv="refresh" content="' . $seconds . ';url=' . $url . '" />';
             echo '</noscript>';
         }
         exit();
     }
 
-    static function yonlen($url, $saniye = 3)
+    // JavaScript / Meta redirection without calling exit()
+    static function jsRedirect($url, $seconds = 3)
     {
         echo '<script type="text/javascript">';
-        echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $saniye . '000);';
+        echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $seconds . '000);';
         echo '</script>';
         echo '<noscript>';
-        echo '<meta http-equiv="refresh" content="' . $saniye . ';url=' . $url . '" />';
+        echo '<meta http-equiv="refresh" content="' . $seconds . ';url=' . $url . '" />';
         echo '</noscript>';
     }
 
-    //Yönlendirme Fonksiyonu yonlendir('index.php',3);
-    static function yon($url, $saniye = 3)
-    {
-        echo '<script type="text/javascript">';
-        echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $saniye . '000);';
-        echo '</script>';
-        echo '<noscript>';
-        echo '<meta http-equiv="refresh" content="' . $saniye . ';url=' . $url . '" />';
-        echo '</noscript>';
-    }
-
-    static function yonver($url, $saniye = 1)
-    {
-
-        $url = adres . $url;
-        if (!headers_sent()) {
-            @header("refresh: $saniye; url=$url");
-        } else {
-            echo '<script type="text/javascript">';
-            echo 'window.setTimeout("location.href=\'' . $url . '\'", ' . $saniye . '000);';
-            echo '</script>';
-            echo '<noscript>';
-            echo '<meta http-equiv="refresh" content="' . $saniye . ';url=' . $url . '" />';
-            echo '</noscript>';
-        }
-    }
-
-    // CSRF önlemi Referer Kontrolu yapıyoruz.
+    // CSRF protection - Referer validation.
     static function ref_control($script)
     {
-        $desen = '#^' . preg_quote(str_replace('www.', '', site_url) . $script, '#') . '#i';
+        $pattern = '#^' . preg_quote(str_replace('www.', '', site_url) . $script, '#') . '#i';
         $ref = str_replace('www.', '', (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : ''));
-        return !preg_match($desen, $ref) ? die(self::red('CSRF ATTACK')) : '';
+        return !preg_match($pattern, $ref) ? die(self::red('CSRF ATTACK')) : '';
     }
 
     static function convertArrayToObject($arr)
@@ -184,9 +157,9 @@ class Helper
 
     static function sefurl($s)
     {
-        $tr = ['ş', 'Ş', 'ı', 'İ', 'ğ', 'Ğ', 'ü', 'Ü', 'ö', 'Ö', 'Ç', 'ç'];
-        $eng = ['s', 'S', 'i', 'I', 'g', 'G', 'u', 'U', 'o', 'O', 'C', 'c'];
-        $s = str_replace($tr, $eng, $s);
+        $turkishChars = ['ş', 'Ş', 'ı', 'İ', 'ğ', 'Ğ', 'ü', 'Ü', 'ö', 'Ö', 'Ç', 'ç'];
+        $asciiChars   = ['s', 'S', 'i', 'I', 'g', 'G', 'u', 'U', 'o', 'O', 'C', 'c'];
+        $s = str_replace($turkishChars, $asciiChars, $s);
         $s = preg_replace('[^0-9A-Za-z]', " ", $s);
         $s = trim($s);
         $s = str_replace(' ', "-", $s);
@@ -198,10 +171,9 @@ class Helper
 
     static function legacy_seo($s)
     {
-        $s = preg_replace('[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890"\' ]', " ", $s);
+        $s = preg_replace('/[^\p{L}\p{N}"\' ]/u', " ", $s);
         $s = trim($s);
         $s = preg_replace('/\s+/', '_', $s);
-        $s = str_replace('İ', 'i', $s);
         for ($i = 0; $i <= 5; $i++) {
             $s = str_replace("__", "_", $s);
         }
@@ -209,7 +181,7 @@ class Helper
     }
     static function sef($s)
     {
-        $s = preg_replace('[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ1234567890]', " ", $s);
+        $s = preg_replace('/[^\p{L}\p{N}]/u', " ", $s);
         $s = trim($s);
         $s = str_replace(' ', "_", $s);
         for ($i = 0; $i <= 5; $i++) {
@@ -236,32 +208,32 @@ class Helper
         return false;
     }
 
-    static public function days_in_month($yil, $ay)
+    static public function days_in_month($year, $month)
     {
-        return $ay == 2 ? ($yil % 4 !== 0 ? 28 : ($yil % 100 !== 0 ? 29 : ($yil % 400 !== 0 ? 28 : 29))) : (($ay - 1) % 7 % 2 !== 0 ? 30 : 31);
+        return $month == 2 ? ($year % 4 !== 0 ? 28 : ($year % 100 !== 0 ? 29 : ($year % 400 !== 0 ? 28 : 29))) : (($month - 1) % 7 % 2 !== 0 ? 30 : 31);
     }
 
-    static function format_date($zaman)
+    static function format_date($timestamp)
     {
-        $gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
-        $aylar = [NULL, "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
-        return date("d", $zaman) . " " . $aylar[date("n", $zaman)] . " " . date("Y", $zaman) . " " . $gunler[date("w", $zaman)] . " " . date("H:i", $zaman);
+        $days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        $months = [NULL, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        return date("d", $timestamp) . " " . $months[date("n", $timestamp)] . " " . date("Y", $timestamp) . " " . $days[date("w", $timestamp)] . " " . date("H:i", $timestamp);
     }
 
-    // Verilen Parametrelere göre nested yapar
-    public static function nested($datas, $alt, $id)
+    // Build a nested array based on given parameters
+    public static function nested($datas, $parentKey, $idKey)
     {
         if (!is_array($datas)) {
             return FALSE;
         }
         $keys = array_keys(current($datas));
-        if (in_array($alt, $keys) === FALSE || in_array($id, $keys) === FALSE) {
+        if (in_array($parentKey, $keys) === FALSE || in_array($idKey, $keys) === FALSE) {
             return FALSE;
         }
         $array = [];
         foreach ($datas as $data) {
             foreach ($keys as $k) {
-                $array[$data[$alt]][$data[$id]][$k] = $data[$k];
+                $array[$data[$parentKey]][$data[$idKey]][$k] = $data[$k];
             }
         }
         return $array;
@@ -294,7 +266,7 @@ class Helper
         return '<a href="' . $mailto . $address_encode . '">' . $text_encode . '</a>';
     }
 
-    public static function clear_html($gel)
+    public static function clear_html($html)
     {
 
         $element = 'a,abbr,acronym,b,blockquote,br,caption,cite,code,dd,del,dfn,div,dl,dt,em,font,h1,h2,h3,h4,h5,h6,i,img,ins,kbd,li,ol,p,pre,s,span,strike,strong,sub,sup,table,tbody,td,tfoot,th,thead,tr,tt,u,ul,var,object,param,embed,hr';
@@ -322,6 +294,6 @@ class Helper
         $config->set('Output.FlashCompat', true);
 
         $purifier = new HTMLPurifier($config);
-        return $purifier->purify($gel);
+        return $purifier->purify($html);
     }
 }

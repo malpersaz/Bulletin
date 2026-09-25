@@ -6,7 +6,7 @@ class mod_user_perm_model extends ORM
     public $_ai = "id";
     public $id;
     public $group_id;
-    public $roll_id;
+    public $role_id;
     public $mod_id;
 
 }

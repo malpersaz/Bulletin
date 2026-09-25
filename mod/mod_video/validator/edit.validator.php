@@ -3,7 +3,7 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
 
     function __construct()
     {
@@ -17,48 +17,48 @@ class edit_validator
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['lang'])
+                'message' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['lang'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // duration Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'duration',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['duration'])
+                'message' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['duration'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // created_at Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'created_at',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['created_at'])
+                'message' => sprintf($this->lang['mod_video']['validator']['required'], $this->lang['mod_video']['admin']['columns']['created_at'])
             ]
         );
         if ($this->_check() === True) {
@@ -67,30 +67,30 @@ class edit_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // duration Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'duration',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '5',
                     'max' => '8'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['duration'], '5', '8')
+                'message' => sprintf($this->lang['mod_video']['validator']['length'], $this->lang['mod_video']['admin']['columns']['duration'], '5', '8')
             ]
         );
         if ($this->_check() === True) {
@@ -99,12 +99,12 @@ class edit_validator
 
         #Check inarray
         // status in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'status',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_video']['validator']['inarray'], $this->lang['mod_video']['admin']['columns']['status'], 'y,n')
+                'message' => sprintf($this->lang['mod_video']['validator']['inarray'], $this->lang['mod_video']['admin']['columns']['status'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
@@ -115,7 +115,7 @@ class edit_validator
 
         #Check Unique
 
-        #Check Unique with column düzenle
+        #Check Unique with edit column
 
         return False;
     }
@@ -124,10 +124,10 @@ class edit_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

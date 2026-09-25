@@ -5,12 +5,11 @@ $lang['mod_redirect'] = [
     'add' => 'Arastekirina Nû Zêde Bike',
     'edit' => 'Arastekirinê Biguherîne',
     'information' => 'Zanyarî',
-    'oke' => 'Serkeftin',
-    'hata' => 'Çewtî çêbû',
+    'success' => 'Serkeftin',
     'error' => 'Çewtiya cidî',
     'remove_record' => 'Tu bi rastî dixwazî vê arastekirinê jê bibî?',
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Arastekirin bi serkeftî hate zêdekirin!',
             'edit' => 'Arastekirin bi serkeftî hate nûjenkirin!',
             'delete' => 'Arastekirin bi serkeftî hate jêbirin!',
@@ -24,8 +23,9 @@ $lang['mod_redirect'] = [
         'record' => 'Arastekirina diyarkirî nehat dîtin!',
     ],
     'button' => [
-        'add' => 'Zêde Bike',
+        'add' => 'Lêke',
         'edit' => 'Biguherîne',
+        'save' => 'Guhertinan Tomar Bike',
         'delete' => 'Jê Bibe',
         'cancel' => 'Betal Bike',
         'yes' => 'Erê',
@@ -37,22 +37,25 @@ $lang['mod_redirect'] = [
         'unique_old_url' => 'Ev URL-a kevin jixwe li pergalê qeydkirî ye!',
         'inarray' => '%s tenê dikare nirxên \'%s\' bistîne',
     ],
-    'roll' => [
-        'ad' => 'Rolên Rêveberiya Arastekirinê',
-        'add' => 'Dikare arastekirina nû zêde bike',
+    'role' => [
+        'name' => 'Rolên Rêveberiya Arastekirinê',
+        'add' => 'Dikare arastekirina nû lêke',
         'edit' => 'Dikare arastekirinan biguherîne',
         'delete' => 'Dikare arastekirinan jê bibe',
         'list' => 'Dikare rêveberiya arastekirinan bibîne',
     ],
     'role_errors' => [
-        'add' => 'Destûra te ya zêdekirina arastekirinê tune ye',
+        'add' => 'Destûra te ya lêkirina arastekirinê tune ye',
         'edit' => 'Destûra te ya guherandina arastekirinê tune ye',
         'list' => 'Destûra te ya dîtina rêveberiya arastekirinê tune ye',
         'delete' => 'Destûra te ya jêbirina arastekirinê tune ye',
     ],
     'admin' => [
         'search_placeholder' => 'Lêgerîna arastekirinan...',
-        'intro_add' => 'Ji bo zêdekirina arastekirineke nû, URL-a kevin û URL-a nû binivîse û koda statuyê hilbijêre.',
+        'no_search_results' => 'Tu arastekirin li gorî lêgerîna te nehat dîtin.',
+        'clear_search' => 'Lêgerînê paqij bike',
+        'fill_required_fields' => 'Ji kerema xwe her du qadên URL-a çavkanî û armancê tijî bike.',
+        'intro_add' => 'Ji bo lêkirina arastekirineke nû, URL-a kevin û URL-a nû binivîse û koda statuyê hilbijêre.',
         'intro_edit' => 'Li vir tu dikarî URL-ên arastekirinê û koda statuyê biguherînî.',
         'empty_description' => 'Li vir tu arastekirineke tomarkirî nehat dîtin.',
         'dashboard' => [
@@ -64,6 +67,8 @@ $lang['mod_redirect'] = [
             'old_url' => 'URL-a Kevin (Çavkanî)',
             'new_url' => 'URL-a Nû (Armanc)',
             'status_code' => 'Koda Statuyê (Status Code)',
+            'status_code_301' => '301 - Mayinde (Permanent)',
+            'status_code_302' => '302 - Demkî (Temporary)',
             'created_at' => 'Dîroka Afirandinê',
         ],
     ],

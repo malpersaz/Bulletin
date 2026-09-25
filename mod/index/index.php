@@ -161,61 +161,6 @@ class index_mod extends indexBase
         unset($publication);
     }
 
-    public function product($seo = null)
-    {
-        $product = Load::helper("index.mod_product");
-        $product->product($seo);
-        unset($product);
-    }
-
-    public function products($category = null, $page = 1)
-    {
-        $product = Load::helper("index.mod_product");
-        $product->products($category, $page);
-        unset($product);
-    }
-
-    public function service($seo = null)
-    {
-        $service = Load::helper("index.mod_service");
-        $service->service($seo);
-        unset($service);
-    }
-
-    public function services($category = null, $page = 1)
-    {
-        $service = Load::helper("index.mod_service");
-        $service->services($category, $page);
-        unset($service);
-    }
-
-    public function client($seo = null)
-    {
-        $client = Load::helper("index.mod_client");
-        $client->client($seo);
-        unset($client);
-    }
-
-    public function clients()
-    {
-        $client = Load::helper("index.mod_client");
-        $client->clients();
-        unset($client);
-    }
-
-    public function reference($seo = null)
-    {
-        $reference = Load::helper("index.mod_reference");
-        $reference->reference($seo);
-        unset($reference);
-    }
-
-    public function references($page = 1)
-    {
-        $reference = Load::helper("index.mod_reference");
-        $reference->references($page);
-        unset($reference);
-    }
 
     public function announcement($id = null)
     {
@@ -342,10 +287,10 @@ class index_mod extends indexBase
         return $anket->oyver();
     }
 
-    public function search($kelime = null)
+    public function search($query = null)
     {
         $ara = Load::helper('index.search');
-        $ara->search($kelime);
+        $ara->search($query);
         unset($ara);
     }
 
@@ -438,37 +383,6 @@ class index_mod extends indexBase
         unset($helper);
     }
 
-    public function _latest_products($t, $limit, $select)
-    {
-        $helper = Load::helper('index.mod_product');
-        $result = $helper->_latest_products($limit, $select);
-        $t->ctx_set('latest_products', $result);
-        unset($helper);
-    }
-
-    public function _latest_services($t, $limit, $select)
-    {
-        $helper = Load::helper('index.mod_service');
-        $result = $helper->_latest_services($limit, $select);
-        $t->ctx_set('latest_services', $result);
-        unset($helper);
-    }
-
-    public function _latest_clients($t, $limit, $select)
-    {
-        $helper = Load::helper('index.mod_client');
-        $result = $helper->_latest_clients($limit, $select);
-        $t->ctx_set('latest_clients', $result);
-        unset($helper);
-    }
-
-    public function _latest_references($t, $limit, $select)
-    {
-        $helper = Load::helper('index.mod_reference');
-        $result = $helper->_latest_references($limit, $select);
-        $t->ctx_set('latest_references', $result);
-        unset($helper);
-    }
 
     public function _latest_authors($t, $limit)
     {
@@ -566,7 +480,7 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>';
         echo '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         
-        $active_langs = Kayit::getir('active_langs');
+        $active_langs = Registry::get('active_langs');
         if (!is_array($active_langs)) {
             $active_langs = array();
         }
@@ -582,18 +496,7 @@ class index_mod extends indexBase
                         <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
                       </sitemap>';
             }
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/productSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/serviceSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/referenceSitemap.xml</loc>
-                  </sitemap>';
-            echo '<sitemap>
-                    <loc>' . $this->site['address'] . $l . '/clientSitemap.xml</loc>
-                  </sitemap>';
+
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
                   </sitemap>';
@@ -679,117 +582,7 @@ class index_mod extends indexBase
         exit;
     }
 
-    public function productSitemap($page = 1)
-    {
-        header("content-type: text/xml");
-        $page_limit = 50000;
-        $page = (intval($page) === 0) ? 1 : intval($page);
-        $offset = ($page - 1) * $page_limit;
-        
-        $model = Load::model('mod_product');
-        $model->where_status_and_lang('y', $this->site['lang']);
-        $model->order('created_at', 'DESC');
-        $model->select(['seo', 'lang']);
-        $model->limit($page_limit, $offset);
-        $model->gR();
-        
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($model->getSize() != 0) {
-            foreach ($model->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/product/' . $o['seo'] . '</loc>
-                          <priority>0.85</priority>
-                    </url>';
-            }
-        }
-        echo '</urlset>';
-        exit;
-    }
 
-    public function serviceSitemap($page = 1)
-    {
-        header("content-type: text/xml");
-        $page_limit = 50000;
-        $page = (intval($page) === 0) ? 1 : intval($page);
-        $offset = ($page - 1) * $page_limit;
-        
-        $model = Load::model('mod_service');
-        $model->where_status_and_lang('y', $this->site['lang']);
-        $model->order('created_at', 'DESC');
-        $model->select(['seo', 'lang']);
-        $model->limit($page_limit, $offset);
-        $model->gR();
-        
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($model->getSize() != 0) {
-            foreach ($model->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/service/' . $o['seo'] . '</loc>
-                          <priority>0.85</priority>
-                    </url>';
-            }
-        }
-        echo '</urlset>';
-        exit;
-    }
-
-    public function referenceSitemap($page = 1)
-    {
-        header("content-type: text/xml");
-        $page_limit = 50000;
-        $page = (intval($page) === 0) ? 1 : intval($page);
-        $offset = ($page - 1) * $page_limit;
-        
-        $model = Load::model('mod_reference');
-        $model->where_status_and_lang('y', $this->site['lang']);
-        $model->order('created_at', 'DESC');
-        $model->select(['seo', 'lang']);
-        $model->limit($page_limit, $offset);
-        $model->gR();
-        
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($model->getSize() != 0) {
-            foreach ($model->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/reference/' . $o['seo'] . '</loc>
-                          <priority>0.70</priority>
-                    </url>';
-            }
-        }
-        echo '</urlset>';
-        exit;
-    }
-
-    public function clientSitemap($page = 1)
-    {
-        header("content-type: text/xml");
-        $page_limit = 50000;
-        $page = (intval($page) === 0) ? 1 : intval($page);
-        $offset = ($page - 1) * $page_limit;
-        
-        $model = Load::model('mod_client');
-        $model->where_status_and_lang('y', $this->site['lang']);
-        $model->order('created_at', 'DESC');
-        $model->select(['seo', 'lang']);
-        $model->limit($page_limit, $offset);
-        $model->gR();
-        
-        echo '<?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        if ($model->getSize() != 0) {
-            foreach ($model->toArray() as $o) {
-                echo '<url>
-                          <loc>' . $this->site['address'] . $o['lang'] . '/client/' . $o['seo'] . '</loc>
-                          <priority>0.70</priority>
-                    </url>';
-            }
-        }
-        echo '</urlset>';
-        exit;
-    }
 
     public function announcementSitemap($page = 1)
     {
@@ -943,30 +736,18 @@ class index_mod extends indexBase
             }
         }
 
-        $cat_prod = Load::model('mod_product_category');
-        $cat_prod->where_lang($this->site['lang'])->select(['seo', 'lang']);
-        $cat_prod->gR();
-        if ($cat_prod->getSize() != 0) {
-            foreach ($cat_prod->toArray() as $o) {
-                if ($o['seo'] !== '#' && $o['seo'] !== '') {
-                    echo '<url>
-                              <loc>' . $this->site['address'] . $o['lang'] . '/products/' . $o['seo'] . '</loc>
-                              <priority>0.60</priority>
-                        </url>';
-                }
-            }
-        }
-
-        $cat_serv = Load::model('mod_service_category');
-        $cat_serv->where_lang($this->site['lang'])->select(['seo', 'lang']);
-        $cat_serv->gR();
-        if ($cat_serv->getSize() != 0) {
-            foreach ($cat_serv->toArray() as $o) {
-                if ($o['seo'] !== '#' && $o['seo'] !== '') {
-                    echo '<url>
-                              <loc>' . $this->site['address'] . $o['lang'] . '/services/' . $o['seo'] . '</loc>
-                              <priority>0.60</priority>
-                        </url>';
+        if ($this->isFeatureReady('content.front')) {
+            $cat_content = Load::model('mod_content_category');
+            $cat_content->where_lang($this->site['lang'])->select(['seo', 'lang']);
+            $cat_content->gR();
+            if ($cat_content->getSize() != 0) {
+                foreach ($cat_content->toArray() as $o) {
+                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                        echo '<url>
+                                  <loc>' . $this->site['address'] . $o['lang'] . '/category/' . $o['seo'] . '</loc>
+                                  <priority>0.60</priority>
+                            </url>';
+                    }
                 }
             }
         }
@@ -991,7 +772,7 @@ class index_mod extends indexBase
         echo '<?xml version="1.0" encoding="UTF-8"?>
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        if ($this->site['lang'] == Kayit::getir('default_lang')) {
+        if ($this->site['lang'] == Registry::get('default_lang')) {
             echo '<url>
                       <loc>' . $this->site['address'] . '</loc>
                       <priority>1.0</priority>

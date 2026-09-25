@@ -10,9 +10,9 @@
  * Description: Multi-language settings
  */
 // Enable or disable multilingual support.
-Kayit::ekle('i18n', TRUE);
+Registry::add('i18n', TRUE);
 // Fallback bootstrap state. Runtime should prefer the database-backed registry when available.
-Kayit::ekle('i18n_bootstrap', array(
+Registry::add('i18n_bootstrap', array(
     'default_lang' => 'ku',
     'active_langs' => array('en', 'ku', 'ckb', 'zza', 'ar', 'de', 'fr', 'sv', 'tr', 'fa'),
 ));

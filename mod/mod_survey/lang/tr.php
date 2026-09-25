@@ -1,108 +1,224 @@
 <?php
-                $lang['mod_survey']= [
-  'add' => 'Anket Ekle',
-  'edit' => 'İçeriği Düzenle',
-  'list' => 'Anket Listesi',
-  'information' => 'Bilgi!',
-  'oke' => 'İşlem Başarılı!',
-  'hata' => 'Hata Oluştu!',
-  'error' => 'Ölümcül Hata Oluştu!',
-  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
-  'remove_image_oke' => 'Resim Kaldırıldı',
-  'choose_wish' => 'Dilerseniz Seçin',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-  'message' => 
-   [
-    'oke' => 
-     [
-      'add' => 'Anket Eklendi!',
-      'edit' => 'Anket Düzenlendi!',
+/**
+ * Poll/Survey Module - Turkish Language File
+ *
+ * @package AKM Business
+ * @module  mod_survey
+ * @version 1.0.0
+ * @author  AKM Software
+ * @license Proprietary
+ */
+
+// Prevent direct access
+if (!defined('AKM_LOADED')) {
+    die('Direct access to this file is not allowed.');
+}
+
+/**
+ * Poll/Survey Module Language Translations
+ */
+$lang['mod_survey'] = [
+    'add' => 'Anket Ekle',
+    'choose_wish' => 'Dilerseniz Seçin',
+
+    // === Navigation & Actions ===
+    'actions' => [
+        'add' => 'Anket Ekle',
+        'edit' => 'Anket Düzenle',
+        'list' => 'Anket Listesi',
+        'delete' => 'Anket Sil',
+        'cancel' => 'Vazgeç',
+        'save' => 'Kaydet',
+        'update' => 'Güncelle',
+        'remove' => 'Kaldır',
     ],
-    'error' => 
-     [
-      'add' => 'Anket Eklenemedi!',
-      'edit' => 'Anket Düzenlenemedi!',
+
+    // === System Messages ===
+    'messages' => [
+        'success' => [
+            'added' => 'Anket başarıyla eklendi!',
+            'updated' => 'Anket başarıyla güncellendi!',
+            'deleted' => 'Anket başarıyla silindi!',
+            'set_default' => 'Anket varsayılan olarak ayarlandı!',
+        ],
+        'error' => [
+            'not_added' => 'Anket eklenemedi!',
+            'not_updated' => 'Anket güncellenemedi!',
+            'not_deleted' => 'Anket silinemedi!',
+            'not_found' => 'Belirtilen anket kaydı bulunamadı!',
+        ],
+        'info' => [
+            'edit_double_click' => 'Düzenlemek istediğiniz ankete çift tıklayın',
+            'drag_reorder' => 'Sıralamak istediğiniz anketi sürükleyip bırakın',
+        ],
     ],
-    'information' => 
-     [
-      'moderate' => 'Düzenlemek İstediğiniz İçeriği İki Defa Tıklayın',
-      'move' => 'Sırasını Değiştirmek İstediğiniz İçeriği Sürükleyip Bırakın',
+
+    // === Status Types ===
+    'status' => [
+        'published' => 'Yayında',
+        'draft' => 'Taslak',
+        'archived' => 'Arşivlendi',
+        'default' => 'Varsayılan Anket',
     ],
-  ],
-  'errors' => 
-   [
-    'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
-  ],
-  'button' => 
-   [
-    'add' => 'Ekle',
-    'edit' => 'Düzenle',
-    'yenile' => 'Yenile',
-    'delete' => 'Sil',
-    'gallery' => 'Resim Galerisi',
-    'vazgec' => 'Vazgeç',
-    'kaldir' => 'Kaldır',
-    'evet' => 'Evet',
-    'hayir' => 'Hayır',
-  ],
-  'grid' => 
-   [
-    0 => 'Toplam {total} Sonuçtan {from} den {to}\\\'a Kadar Olanlar Görüntüleniyor.',
-    1 => 'Sayfa',
-    2 => 'Sayfa Sayısı',
-    3 => 'Veriler Yükleniyor, Lütfen Bekleyin ...',
-    4 => 'Hiçbir Veri Bulunamadı',
-    5 => 'Bağlantı Hatası',
-    6 => 'Arama',
-    7 => 'Lütfen En Az Bir Satır Seçin',
-    8 => 'Lütfen Sadece Bir Satır Seçin',
-    'varsayilanyap' => 
-     [
-      'key' => 'Varsayılan Yap',
-      'value' => 'Bu Anketi Varsayılan Yapmak İstediğinize Eminmisiniz?',
+
+    // === Yes/No Options ===
+    'options' => [
+        'yes' => 'Evet',
+        'no' => 'Hayır',
     ],
-  ],
-  'validator' => 
-   [
-    'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
-    'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
-  ],
-  'roll' => 
-   [
-    'ad' => 'Anket Yönetim Rolleri',
-    'add' => 'Anket Ekleyebilir',
-    'edit' => 'Anket Düzenleyebilir',
-    'delete' => 'Anket Silebilir',
-    'list' => 'Anket Yönetimini Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan Anket Kaydını Düzenleyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Anket Kaydını Düzenleyebilir',
-  ],
-  'role_errors' => 
-   [
-    'moderate_edit' => 'Size Ait Olmayan Anket Kaydını Düzenleyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan Anket Kaydını Silemezsiniz',
-    'add' => 'Anket Eklemeye Permissionniz Yok',
-    'edit' => 'Anket Düzenlemeye Permissionniz Yok',
-    'list' => 'Anket Yönetimini Görüntülemeye Permissionniz Yok',
-    'delete' => 'Anket Silmeye Permissionniz Yok',
-  ],
-  'admin' => 
-   [
-    'columns' => 
-     [
-      'id' => 'ID',
-      'language' => 'Anketin Görüntüleneceği Dil',
-      'soru' => 'Anket Sorusu',
-      'change_status' => 'Varsayılan Anketmi?',
-      'acl_id' => 'Bu İçeriği Kimler Görüntüleyebilir? ( <a href=\'mod_acl/list/\' target=\'_blank\'>ACL - Erişim kontrol listesi</a> )',
+
+    // === Form Labels ===
+    'form' => [
+        'basic_info' => 'Temel Bilgiler',
+        'display_settings' => 'Görüntüleme Ayarları',
+        'advanced_settings' => 'Gelişmiş Ayarlar',
+
+        'id' => 'ID',
+        'question' => 'Anket Sorusu',
+        'language' => 'Görüntüleme Dili',
+        'is_default' => 'Varsayılan Anket Yap',
+        'access_control' => 'Erişim Kontrolü',
+        'options' => 'Anket Seçenekleri',
+        'start_date' => 'Başlangıç Tarihi',
+        'end_date' => 'Bitiş Tarihi',
+        'multiple_choice' => 'Çoklu Seçime İzin Ver',
     ],
-    'radio' => 
-     [
-      'status_e' => 'Evet',
-      'status_h' => 'Hayır',
+
+    // === Table Columns ===
+    'columns' => [
+        'id' => 'ID',
+        'language' => 'Görüntüleme Dili',
+        'question' => 'Anket Sorusu',
+        'is_default' => 'Varsayılan Anket',
+        'status' => 'Durum',
+        'created_at' => 'Oluşturma Tarihi',
+        'access_level' => 'Erişim Seviyesi',
+        'actions' => 'İşlemler',
     ],
-  ],
+
+    // === Buttons ===
+    'buttons' => [
+        'add' => 'Yeni Anket Ekle',
+        'edit' => 'Seçileni Düzenle',
+        'delete' => 'Seçileni Sil',
+        'refresh' => 'Yenile',
+        'set_default' => 'Varsayılan Yap',
+        'view_results' => 'Sonuçları Görüntüle',
+        'export' => 'Sonuçları Dışa Aktar',
+    ],
+
+    // === Validation Messages ===
+    'validation' => [
+        'required' => '%s alanı zorunludur',
+        'min_length' => '%s alanı en az %s karakter olmalıdır',
+        'max_length' => '%s alanı en fazla %s karakter olmalıdır',
+        'unique' => '%s alanı benzersiz olmalıdır',
+        'email' => 'Lütfen geçerli bir e-posta adresi girin',
+        'min_options' => 'Anket en az 2 seçenek içermelidir',
+        'max_options' => 'Anket en fazla %s seçenek içerebilir',
+    ],
+
+    // === Access Control (ACL) ===
+    'role' => [
+        'name' => 'Anket Yönetim Yetkileri',
+        'list' => 'Anketleri Görüntüleyebilir',
+        'add' => 'Anket Eklenebilir',
+        'edit' => 'Kendi Anketini Düzenleyebilir',
+        'moderate_edit' => 'Tüm Anketleri Düzenleyebilir',
+        'delete' => 'Kendi Anketini Silebilir',
+        'moderate_delete' => 'Tüm Anketleri Silebilir',
+        'manage_access' => 'Erişimi Yönetebilir',
+        'view_results' => 'Anket Sonuçlarını Görebilir',
+    ],
+
+    // === Permission Errors ===
+    'permission_errors' => [
+        'view_denied' => 'Anket yönetimini görüntüleme yetkiniz yok',
+        'add_denied' => 'Anket ekleme yetkiniz yok',
+        'edit_denied' => 'Anket düzenleme yetkiniz yok',
+        'delete_denied' => 'Anket silme yetkiniz yok',
+        'results_denied' => 'Anket sonuçlarını görüntüleme yetkiniz yok',
+        'access_denied' => 'Bu anketi düzenleme/silme yetkiniz yok (size ait değil)',
+    ],
+
+    // === Confirmation Messages ===
+    'confirmations' => [
+        'delete_single' => 'Bu anketi silmek istediğinize emin misiniz?',
+        'delete_multiple' => 'Seçilen :count anketi silmek istediğinize emin misiniz?',
+        'set_default' => 'Bu anketi varsayılan yapmak istediğinize emin misiniz?',
+        'publish' => 'Bu anketi yayınlamak istediğinize emin misiniz?',
+        'unpublish' => 'Bu anketin yayınını kaldırmak istediğinize emin misiniz?',
+    ],
+
+    // === Helper Text ===
+    'help' => [
+        'poll_question' => 'Anketiniz için açık ve net bir soru girin',
+        'access_control' => 'Bu anketi hangi kullanıcı rollerinin görüp oy verebileceğini belirtin',
+        'default_poll' => 'Aynı anda yalnızca bir anket varsayılan olarak ayarlanabilir',
+        'multiple_choice' => 'Kullanıcıların birden fazla seçenek seçmesine izin ver',
+        'poll_options' => 'Kullanıcıların seçebileceği oylama seçeneklerini ekleyin',
+    ],
+
+    // === Placeholders ===
+    'placeholders' => [
+        'poll_question' => 'Anket sorusunu buraya girin...',
+        'poll_option' => 'Anket seçeneğini girin...',
+        'start_date' => 'Başlangıç tarihi seçin...',
+        'end_date' => 'Bitiş tarihi seçin (isteğe bağlı)...',
+    ],
+
+    // === Empty States ===
+    'empty' => [
+        'no_polls' => 'Henüz hiç anket oluşturulmadı',
+        'no_results' => 'Arama kriterlerinize uygun anket bulunamadı',
+        'add_first' => 'İlk anketi oluşturmak için butona tıklayın',
+        'no_votes' => 'Henüz hiç oy kullanılmadı',
+    ],
+
+    // === Loading States ===
+    'loading' => [
+        'saving' => 'Kaydediliyor...',
+        'loading' => 'Yükleniyor...',
+        'processing' => 'Oylar işleniyor...',
+        'counting' => 'Sonuçlar hesaplanıyor...',
+    ],
+
+    // === Success Messages ===
+    'success' => [
+        'operation_completed' => 'İşlem başarıyla tamamlandı!',
+        'changes_saved' => 'Değişiklikler kaydedildi!',
+        'poll_published' => 'Anket başarıyla yayınlandı!',
+        'poll_unpublished' => 'Anket yayını başarıyla kaldırıldı!',
+    ],
+
+    // === Error Messages ===
+    'errors' => [
+        'general' => 'Bir hata oluştu. Lütfen tekrar deneyin.',
+        'network' => 'Ağ hatası. Lütfen internet bağlantınızı kontrol edin.',
+        'server' => 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.',
+        'no_default_poll' => 'Varsayılan anket ayarlanmadı',
+        'multiple_defaults' => 'Birden fazla varsayılan anket tespit edildi',
+    ],
+
+    // === Results Display ===
+    'results' => [
+        'total_votes' => 'Toplam Oy',
+        'vote_count' => ':count oy',
+        'vote_saved' => 'Oyunuz kaydedildi!',
+        'percentage' => '%%:percentage%',
+        'no_votes_yet' => 'Henüz oy yok',
+        'view_detailed_results' => 'Detaylı Sonuçları Görüntüle',
+        'export_to_csv' => 'CSV Olarak Dışa Aktar',
+        'reset_results' => 'Sonuçları Sıfırla',
+    ],
+
+    // === Poll Options Management ===
+    'options_management' => [
+        'add_option' => 'Seçenek Ekle',
+        'remove_option' => 'Seçeneği Kaldır',
+        'option_text' => 'Seçenek Metni',
+        'vote_count' => 'Oy Sayısı',
+        'reorder_options' => 'Seçenekleri Sırala',
+    ],
+
 ];

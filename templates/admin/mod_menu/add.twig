@@ -1,15 +1,20 @@
 {% set hide_navbar = true %}
-{% extends 'admin/layout.twig' %}
-
 {% set hide_search = true %}
 {% set hide_fab = true %}
+{% set show_wizards = true %}
+{% extends 'admin/layout.twig' %}
 
 {% block title %}
-	{{ lang.mod_menu.add }}
+    {{ lang.mod_menu.wizard.title }}
 {% endblock %}
 
 {% block headline %}
-	{{ lang.mod_menu.add }}
+    {{ lang.mod_menu.wizard.title }}
+{% endblock %}
+
+{% block styles %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_menu_wizard.css?v=4.0">
 {% endblock %}
 
 {% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0, disable = false) %}
@@ -29,639 +34,570 @@
 {% endmacro %}
 
 {% block content %}
-    {% set selected_parent_id = menu_selected_parent_id is defined ? menu_selected_parent_id : (parent_id is defined and parent_id != '' ? parent_id : menu_parent_default_id) %}
-	<style>
-		.edit-container {
-			padding: 16px;
-			display: flex;
-			flex-direction: column;
-			gap: 16px;
-			padding-bottom: 120px;
-		}
-		.edit-card {
-			background: var(--md-sys-color-surface);
-			border-radius: 12px;
-			padding: 20px;
-			box-shadow: var(--md-sys-elevation-1);
-		}
-		.card-header-edit {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-bottom: 16px;
-			color: var(--md-sys-color-primary);
-		}
-		.card-header-edit i {
-			font-size: 20px;
-		}
-		.card-header-edit h3 {
-			margin: 0;
-			font-size: 16px;
-			font-weight: 500;
-		}
-		.form-row {
-			margin-bottom: 20px;
-		}
-		.m3-input-wrapper {
-			position: relative;
-			margin-bottom: 4px;
-		}
-		.m3-input-wrapper:focus-within {
-			z-index: 9999;
-		}
-		.m3-input-lg {
-			width: 100%;
-			padding: 12px 16px;
-			border-radius: 8px;
-			border: 1px solid var(--md-sys-color-outline);
-			background: transparent;
-			color: var(--md-sys-color-on-surface);
-			font-size: 16px;
-			outline: none;
-            box-sizing: border-box;
-		}
-		.m3-input-lg:focus {
-			border-color: var(--md-sys-color-primary);
-			border-width: 2px;
-			padding: 11px 15px;
-		}
-        textarea.m3-input-lg {
-            min-height: 112px;
-            resize: vertical;
-            line-height: 1.4;
-        }
-		.m3-floating-label {
-			position: absolute;
-			top: 12px;
-			left: 16px;
-			color: var(--md-sys-color-on-surface-variant);
-			font-size: 16px;
-			pointer-events: none;
-			transition: all 0.2s;
-            z-index: 10;
-		}
-        .m3-input-lg:focus ~ .m3-floating-label,
-		.m3-input-lg:not(:placeholder-shown) ~ .m3-floating-label,
-        select.m3-input-lg ~ .m3-floating-label,
-        .ts-wrapper.m3-input-lg ~ .m3-floating-label {
-			top: -10px;
-			left: 12px;
-			font-size: 12px;
-			color: var(--md-sys-color-on-surface-variant);
-			background: var(--md-sys-color-surface);
-			padding: 0 4px;
-		}
-        .m3-input-lg:focus ~ .m3-floating-label,
-        select.m3-input-lg:focus ~ .m3-floating-label,
-        .ts-wrapper.m3-input-lg.focus ~ .m3-floating-label {
-            color: var(--md-sys-color-primary);
-        }
-        /* TomSelect override */
-        .ts-wrapper.m3-input-lg {
-            padding: 0;
-            border: none;
-        }
-        .ts-wrapper.m3-input-lg .ts-control {
-            border-radius: 8px;
-            border: 1px solid var(--md-sys-color-outline);
-            background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(248,246,252,0.96) 100%);
-            padding: 12px 16px;
-            min-height: 48px;
-            font-size: 16px;
-            box-shadow: none;
-            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, transform 0.2s;
-        }
-        .ts-wrapper.m3-input-lg .ts-control,
-        .ts-wrapper.m3-input-lg .ts-control input,
-        .ts-wrapper.m3-input-lg.single .ts-control > .item,
-        .ts-wrapper.m3-input-lg.multi .ts-control > .item {
-            color: var(--md-sys-color-on-surface) !important;
-            -webkit-text-fill-color: var(--md-sys-color-on-surface) !important;
-            opacity: 1 !important;
-        }
-        .ts-wrapper.m3-input-lg.single .ts-control > .item {
-            display: block !important;
-            visibility: visible !important;
-            max-width: calc(100% - 18px);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .ts-wrapper.m3-input-lg.has-items .ts-control > input {
-            opacity: 0 !important;
-        }
-        .m3-ts-selected-value,
-        .m3-ts-option-value {
-            color: var(--md-sys-color-on-surface) !important;
-            -webkit-text-fill-color: var(--md-sys-color-on-surface) !important;
-        }
-        .m3-ts-selected-value {
-            display: block;
-            max-width: calc(100% - 18px);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-weight: 500;
-        }
-        .ts-wrapper.m3-input-lg.focus .ts-control {
-            border-color: var(--md-sys-color-primary);
-            border-width: 2px;
-            padding: 11px 15px;
-            box-shadow: 0 10px 24px rgba(103, 80, 164, 0.14);
-            transform: translateY(-1px);
-        }
-        .ts-wrapper.single .ts-control:after {
-            border-color: var(--md-sys-color-on-surface-variant) transparent transparent transparent;
-            border-width: 6px 5px 0 5px;
-            margin-top: -3px;
-            right: 14px;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-        .ts-wrapper.single.dropdown-active .ts-control:after {
-            transform: rotate(180deg);
-            border-color: var(--md-sys-color-primary) transparent transparent transparent;
-        }
-        .ts-dropdown {
-            border: 1px solid rgba(103, 80, 164, 0.16);
-            border-radius: 18px;
-            box-shadow: 0 18px 38px rgba(34, 24, 64, 0.16);
-            overflow: hidden;
-            padding: 8px;
-            margin-top: 8px;
-            background: rgba(255, 252, 255, 0.98);
-            backdrop-filter: blur(14px);
-        }
-        .ts-dropdown .ts-dropdown-content {
-            max-height: 280px;
-            padding: 0;
-        }
-        .ts-dropdown .option,
-        .ts-dropdown .create {
-            border-radius: 12px;
-            padding: 12px 14px;
-            font-size: 14px;
-            line-height: 1.35;
-            color: var(--md-sys-color-on-surface);
-            transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
-        }
-        .ts-dropdown .option:hover,
-        .ts-dropdown .option.active,
-        .ts-dropdown .create:hover {
-            background: rgba(103, 80, 164, 0.10);
-            color: var(--md-sys-color-primary);
-            transform: translateX(1px);
-        }
-        .ts-dropdown .optgroup-header {
-            padding: 10px 14px 6px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--md-sys-color-on-surface-variant);
-        }
-        .ts-wrapper.plugin-dropdown_input.focus.dropdown-active .ts-control,
-        .ts-wrapper.dropdown-active .ts-control {
-            border-color: var(--md-sys-color-primary);
-        }
-        .selection-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: 8px;
-        }
-        .selection-card {
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: 12px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-        .selection-card.active {
-            background: var(--md-sys-color-primary-container);
-            border-color: var(--md-sys-color-primary);
-        }
-        .check-icon {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            color: var(--md-sys-color-primary);
-            display: none;
-        }
-        .selection-card.active .check-icon {
-            display: block;
-        }
-        
-        /* Icon Input Enhancements */
-        .icon-input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-        .icon-preview-box {
-            position: absolute;
-            right: 8px;
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: var(--md-sys-color-surface-variant);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--md-sys-color-on-surface-variant);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        /* Helper Text Enhancements */
-        .m3-help-text {
-            font-size: 12px;
-            color: var(--md-sys-color-on-surface-variant);
-            margin-top: 6px;
-            margin-left: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .m3-help-text i {
-            font-size: 14px;
-            color: var(--md-sys-color-primary);
-        }
-        .m3-field-label {
-            display: block;
-            margin: 0 0 8px 4px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--md-sys-color-on-surface-variant);
-        }
-	</style>
-
-	<form id="addForm" method="POST" action="">
-		<div class="edit-container">
-            {% if error is defined %}
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        Swal.fire({
-                            icon: 'warning',
-                            html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                            confirmButtonText: '{{ lang.mod_menu.options.ok }}',
-                            confirmButtonColor: '#ba1a1a'
-                        });
-                    });
-                </script>
-            {% endif %}
-
-            {% if hatalar is defined %}
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        let errorHtml = '<div style="text-align: left;">';
-                        {% for hata in hatalar %}
-                            errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
-                        {% endfor %}
-                        errorHtml += '</div>';
-
-                        Swal.fire({
-                            icon: 'warning',
-                            html: errorHtml,
-                            confirmButtonText: '{{ lang.mod_menu.options.ok }}',
-                            confirmButtonColor: '#ba1a1a'
-                        });
-                    });
-                </script>
-            {% endif %}
-
-			{# Card 1: Basics #}
-			<div class="edit-card">
-				<div class="form-row">
-					<div class="m3-input-wrapper">
-                        <select class="m3-input-lg" name="lang" id="lang" required>
-                            {% for item in lang_lang %}
-                                <option value="{{ item.seo }}" {% if (selected_lang is defined ? selected_lang : site.lang)|lower == item.seo|lower %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
-                            {% endfor %}
-                        </select>
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.language }}</label>
-                    </div>
-				</div>
-
-					<div class="form-row">
-                        <label class="m3-field-label" for="name">{{ lang.mod_menu.admin.columns.name }}</label>
-						<div class="m3-input-wrapper">
-							<input type="text" class="m3-input-lg" name="name" id="name" placeholder="{{ lang.mod_menu.placeholders.menu_name }}" autocomplete="off" value="{{ name }}" required>
-						</div>
-				</div>
-
-                <div class="form-row">
-                    <div class="m3-input-wrapper">
-                        <select class="m3-input-lg" name="parent_id" id="parent_id" required>
-                            <option value="{{ menu_parent_default_id }}" {% if selected_parent_id is same as(menu_parent_default_id) %}selected{% endif %} disabled>{{ lang.mod_menu.parent_labels.select_parent }}</option>
-                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, menu_parent_root_id, selected_parent_id, 0) }}
-                        </select>
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.parent_id }}</label>
-                    </div>
-                </div>
-			</div>
-
-			{# Card 2: Links & Content #}
-			<div class="edit-card">
-
-                <div class="form-row">
-                    <label class="m3-field-label" for="url">{{ lang.mod_menu.admin.columns.url }}</label>
-                    <div class="m3-input-wrapper">
-                        <input type="text" class="m3-input-lg" name="url" id="url" placeholder="{{ lang.mod_menu.placeholders.menu_url }}" value="{{ url }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label class="m3-field-label" for="file">{{ lang.mod_menu.admin.columns.file }}</label>
-                    <div class="m3-input-wrapper">
-                        <input type="text" class="m3-input-lg" name="file" id="file" placeholder="{{ lang.mod_menu.placeholders.menu_file }}" value="{{ file }}">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label class="m3-field-label" for="icon">{{ lang.mod_menu.admin.columns.icon }}</label>
-                    <div class="m3-input-wrapper icon-input-group">
-                        <input type="text" class="m3-input-lg pr-5" name="icon" id="icon" placeholder="{{ lang.mod_menu.placeholders.icon_class }}" value="{{ icon }}">
-                        <div class="icon-preview-box" id="iconPreview">
-                            <i class="bi bi-question"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label class="m3-field-label" for="html">{{ lang.mod_menu.admin.columns.html }}</label>
-                    <div class="m3-input-wrapper">
-                        <textarea class="m3-input-lg" name="html" id="html" rows="3" placeholder="{{ lang.mod_menu.placeholders.menu_html }}">{{ html }}</textarea>
-                    </div>
-                </div>
-            </div>
-
-			{# Card 3: Display Settings #}
-			<div class="edit-card">
-
-                <div class="form-row">
-                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_menu.admin.columns.target }}</label>
-                    <input type="hidden" name="target" value="n" id="targetHidden">
-                    <div class="selection-grid">
-                        <div class="selection-card active" onclick="selectTargetStatus(this, 'n')">
-                            <i class="bi bi-box-arrow-in-right" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_menu.admin.select_value.target_h }}</div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-                        <div class="selection-card" onclick="selectTargetStatus(this, 'y')">
-                            <i class="bi bi-box-arrow-up-right" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_menu.admin.select_value.target_e }}</div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <label class="filter-group-label" style="font-size:14px; margin-bottom:8px; display:block; font-weight: 500;">{{ lang.mod_menu.admin.columns.status }}</label>
-                    <input type="hidden" name="status" value="y" id="statusHidden">
-                    <div class="selection-grid">
-                        <div class="selection-card active" onclick="updateStatusSelection(this, 'y')">
-                            <i class="bi bi-eye" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_menu.admin.radio.publish_yes }}</div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-                        <div class="selection-card" onclick="updateStatusSelection(this, 'n')">
-                            <i class="bi bi-eye-slash" style="font-size:24px;"></i>
-                            <div class="selection-label">{{ lang.mod_menu.admin.radio.publish_no }}</div>
-                            <i class="bi bi-check-circle-fill check-icon"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="m3-input-wrapper" style="display: flex; align-items: center; gap: 8px;">
-                        <select class="m3-input-lg" name="acl_id" id="acl_id" style="flex: 1;">
-                            <option value="0" selected>{{ lang.mod_menu.choose_wish }}</option>
-                            {% for item in mod_acl_acl_id %}
-                                <option value="{{ item.id }}">{{ item.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <a href="{{ site.saddress }}mod_acl/list" class="btn btn-sm btn-light" style="display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--md-sys-color-outline); color: var(--md-sys-color-primary); background: var(--md-sys-color-surface);" title="{{ lang.mod_menu.form.acl_settings }}">
-                            <i class="bi bi-gear" style="font-size: 20px;"></i>
-                        </a>
-                        <label class="m3-floating-label">{{ lang.mod_menu.admin.columns.acl_id|raw }}</label>
-                    </div>
-                </div>
-			</div>
-
-		</div>
-	</form>
+    <div class="menu-wizard-loader">
+        <div class="menu-wizard-spinner"></div>
+        <p>{{ lang.mod_menu.loading.loading }}</p>
+    </div>
 {% endblock %}
 
-{% block fixed_bottom %}
-	<style>
-		.m3-final-bar {
-			position: fixed !important;
-			bottom: 0 !important;
-			left: 0 !important;
-			right: 0 !important;
-			height: 80px !important;
-			background: var(--md-sys-color-surface-container) !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 12px !important;
-			padding: 0 16px !important;
-			z-index: 1000 !important;
-			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
-			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
-		}
-		.m3-btn-half {
-			flex: 1 !important;
-			height: 52px !important;
-			border-radius: 26px !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 8px !important;
-			font-size: 14px !important;
-			font-weight: 600 !important;
-			text-decoration: none !important;
-			border: none !important;
-			cursor: pointer !important;
-			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-		}
-		.m3-btn-half:active {
-			transform: scale(0.98) !important;
-			opacity: 0.9 !important;
-		}
-		@media(min-width: 600px) {
-			.m3-final-bar {
-				max-width: 480px !important;
-				left: 50% !important;
-				transform: translateX(-50%) !important;
-				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-bottom-left-radius: 32px !important;
-				border-bottom-right-radius: 32px !important;
-				bottom: 8px !important;
-				height: 88px !important;
-				width: calc(100% - 16px) !important;
-			}
-		}
-	</style>
-	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_menu/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
-			<i class="bi bi-x-lg"></i>
-			{{ lang.mod_menu.actions.cancel }}
-		</button>
-		<button type="button" onclick="submitAddForm('addForm')" class="m3-btn-half" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
-			<i class="bi bi-plus-lg"></i>
-			{{ lang.mod_menu.actions.add }}
-		</button>
-	</div>
+{% block wizards %}
+    {% set active_lang_code = (selected_lang is defined and selected_lang != '' ? selected_lang : site.lang)|lower %}
+    {% set selected_parent_id = menu_selected_parent_id is defined ? menu_selected_parent_id : (parent_id is defined and parent_id != '' ? parent_id : menu_parent_default_id) %}
+    {% set target_val = target is defined and target != '' ? target : 'n' %}
+    {% set status_val = status is defined and status != '' ? status : 'y' %}
+
+    <form id="menuWizardForm" method="POST" action="">
+        <input type="hidden" name="add" value="1">
+        <input type="hidden" name="lang" id="menuWizardLangInput" value="{{ active_lang_code }}">
+        <input type="hidden" name="target" id="menuWizardTargetHidden" value="{{ target_val }}">
+        <input type="hidden" name="status" id="menuWizardStatusHidden" value="{{ status_val }}">
+
+        <div id="menuWizardOverlay"
+            class="menu-wizard-overlay active"
+            data-has-errors="{{ (errors is defined and errors is not empty) ? 'true' : 'false' }}"
+            data-error-messages="{{ (errors is defined ? errors : [])|json_encode|e('html_attr') }}"
+            data-text-ok="{{ lang.mod_menu.options.ok }}"
+            data-step-title-1="{{ lang.mod_menu.wizard.steps.step_1 }}"
+            data-step-title-2="{{ lang.mod_menu.wizard.steps.step_2 }}"
+            data-step-title-3="{{ lang.mod_menu.wizard.steps.step_3 }}"
+            data-step-title-4="{{ lang.mod_menu.wizard.steps.step_4 }}"
+            data-step-title-5="{{ lang.mod_menu.wizard.steps.step_5 }}"
+            data-step-title-6="{{ lang.mod_menu.wizard.steps.step_6 }}"
+            data-step-title-7="{{ lang.mod_menu.wizard.steps.step_7 }}"
+            data-step-title-8="{{ lang.mod_menu.wizard.steps.step_8 }}"
+            data-step-title-9="{{ lang.mod_menu.wizard.steps.step_9 }}"
+            data-step-title-10="{{ lang.mod_menu.wizard.steps.step_10 }}"
+            data-text-same-window="{{ lang.mod_menu.wizard.summary.same_window }}"
+            data-text-new-window="{{ lang.mod_menu.wizard.summary.new_window }}"
+            data-text-published="{{ lang.mod_menu.wizard.summary.published }}"
+            data-text-draft="{{ lang.mod_menu.wizard.summary.draft }}">
+
+            <!-- Header -->
+            <header class="menu-wizard-header">
+                <button type="button"
+                    id="menuWizardCloseBtn"
+                    class="menu-wizard-close-btn"
+                    data-redirect-url="{{ site.saddress }}mod_menu/list"
+                    aria-label="{{ lang.mod_menu.actions.cancel }}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+                <div class="menu-wizard-header-title">
+                    <span id="menuWizardStepName" class="menu-wizard-step-name">{{ lang.mod_menu.wizard.steps.step_1 }}</span>
+                    <span id="menuWizardStepIndicator" class="menu-wizard-step-indicator">1 / 10</span>
+                </div>
+                <div class="menu-wizard-header-spacer"></div>
+            </header>
+
+            <!-- Progress Bar -->
+            <div class="menu-wizard-progress-bar">
+                <div id="menuWizardProgressFill" class="menu-wizard-progress-fill"></div>
+            </div>
+
+            <!-- Content -->
+            <div class="menu-wizard-content">
+
+                <!-- Step 1: Language -->
+                <div class="menu-wizard-step active" id="menuWizardStep1">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-translate"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 1 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_1 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_1 }}</p>
+
+                    <div class="menu-selection-grid">
+                        {% for item in lang_lang %}
+                            {% set is_active = (active_lang_code == item.seo|lower) %}
+                            <div class="menu-selection-card{% if is_active %} active{% endif %}" data-lang-code="{{ item.seo|lower }}">
+                                <span class="menu-card-badge">{{ item.seo|upper }}</span>
+                                <span class="menu-card-label">{{ item.name }}</span>
+                                <i class="bi bi-check-circle-fill menu-check-badge"></i>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Step 2: Menu Name -->
+                <div class="menu-wizard-step" id="menuWizardStep2">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-cursor-text"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 2 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_2 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_2 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardNameInput">{{ lang.mod_menu.admin.columns.name }} *</label>
+                        <div class="menu-input-with-icon">
+                            <i class="bi bi-card-heading menu-input-leading-icon"></i>
+                            <input type="text"
+                                class="menu-input-lg"
+                                name="name"
+                                id="menuWizardNameInput"
+                                placeholder="{{ lang.mod_menu.placeholders.menu_name }}"
+                                autocomplete="off"
+                                maxlength="255"
+                                value="{{ name|default('') }}"
+                                required>
+                        </div>
+                        <div class="menu-char-counter" id="menuCharCounter">0 / 255</div>
+                        <div class="menu-validation-text" id="menuNameValidation">
+                            {{ lang.mod_menu.wizard.validation.name_required }}
+                        </div>
+                    </div>
+
+                    <!-- Live Navigation Bar Preview Pill -->
+                    <div class="menu-live-nav-preview" id="menuLiveNavPreview">
+                        <span class="menu-live-nav-preview-label">{{ lang.mod_menu.wizard.labels.live_preview }}</span>
+                        <div class="menu-live-nav-pill">
+                            <i class="bi bi-list" id="menuLiveNavIcon"></i>
+                            <span id="menuLiveNavText">{{ name|default(lang.mod_menu.placeholders.menu_name) }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Parent Menu -->
+                <div class="menu-wizard-step" id="menuWizardStep3">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-diagram-3-fill"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 3 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_3 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_3 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardParentSelect">{{ lang.mod_menu.admin.columns.parent_id }} *</label>
+                        <div class="menu-select-wrapper">
+                            <i class="bi bi-diagram-3 menu-select-icon"></i>
+                            <select class="menu-select-lg" name="parent_id" id="menuWizardParentSelect" required>
+                                <option value="" {% if selected_parent_id == '' %}selected{% endif %} disabled>{{ lang.mod_menu.parent_labels.select_parent }}</option>
+                                {% if menu_show_language_root_option %}
+                                    <option value="{{ menu_parent_root_id }}" {% if selected_parent_id == menu_parent_root_id %}selected{% endif %}>{{ menu_language_root_label }}</option>
+                                {% endif %}
+                                {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, menu_parent_root_id, selected_parent_id, 0) }}
+                            </select>
+                            <i class="bi bi-chevron-down menu-select-chevron"></i>
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.parent_menu }}
+                        </div>
+                        <div class="menu-validation-text" id="menuParentValidation">
+                            {{ lang.mod_menu.wizard.validation.parent_required }}
+                        </div>
+                    </div>
+
+                    <!-- Live Hierarchy Placement Preview Card -->
+                    <div class="menu-hierarchy-preview-card" id="menuHierarchyPreviewCard">
+                        <div class="menu-preview-card-header">
+                            <div class="menu-preview-card-header-left">
+                                <i class="bi bi-diagram-2-fill"></i>
+                                <span>{{ lang.mod_menu.wizard.labels.placement_preview }}</span>
+                            </div>
+                            <i class="bi bi-check-circle text-success"></i>
+                        </div>
+                        <div class="menu-hierarchy-tree">
+                            <div class="menu-tree-node parent-node">
+                                <i class="bi bi-folder2-open"></i>
+                                <span id="menuHierarchyParentName">-</span>
+                            </div>
+                            <div class="menu-tree-branch">
+                                <div class="menu-tree-node child-node">
+                                    <i class="bi bi-arrow-return-right"></i>
+                                    <span id="menuHierarchyChildName">{{ name|default(lang.mod_menu.wizard.steps.step_2) }}</span>
+                                    <span class="menu-badge-new">{{ lang.mod_menu.wizard.labels.will_be_added_here }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Link (URL) -->
+                <div class="menu-wizard-step" id="menuWizardStep4">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-link-45deg"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 4 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_4 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_4 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardUrlInput">{{ lang.mod_menu.admin.columns.url }}</label>
+                        <div class="menu-input-with-icon">
+                            <i class="bi bi-link-45deg menu-input-leading-icon"></i>
+                            <input type="text"
+                                class="menu-input-lg"
+                                name="url"
+                                id="menuWizardUrlInput"
+                                placeholder="{{ lang.mod_menu.placeholders.menu_url }}"
+                                value="{{ url|default('') }}">
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.url }}
+                        </div>
+
+                        <!-- Quick Link Presets -->
+                        <div class="menu-preset-chips-wrap">
+                            <div class="menu-preset-chips-title">{{ lang.mod_menu.wizard.labels.quick_links }}</div>
+                            <div class="menu-preset-chips-list">
+                                <button type="button" class="menu-preset-chip" data-url="/">
+                                    <i class="bi bi-house"></i>
+                                    <span>{{ lang.mod_menu.wizard.labels.preset_home }}</span>
+                                </button>
+                                <button type="button" class="menu-preset-chip" data-url="https://">
+                                    <i class="bi bi-globe"></i>
+                                    <span>{{ lang.mod_menu.wizard.labels.preset_external }}</span>
+                                </button>
+                                <button type="button" class="menu-preset-chip" data-url="#">
+                                    <i class="bi bi-hash"></i>
+                                    <span>{{ lang.mod_menu.wizard.labels.preset_header_only }}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Icon -->
+                <div class="menu-wizard-step" id="menuWizardStep5">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-stars"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 5 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_5 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_5 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardIconInput">{{ lang.mod_menu.admin.columns.icon }}</label>
+                        <div class="menu-icon-input-wrap">
+                            <input type="text"
+                                class="menu-input-lg"
+                                name="icon"
+                                id="menuWizardIconInput"
+                                placeholder="{{ lang.mod_menu.placeholders.icon_class }}"
+                                value="{{ icon|default('') }}">
+                            <div class="menu-icon-preview-box" id="menuWizardIconPreview">
+                                <i class="bi bi-question"></i>
+                            </div>
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-stars"></i> {{ lang.mod_menu.help.icon }}
+                        </div>
+
+                        <!-- Quick Icon Chips -->
+                        <div class="menu-icon-chips-wrap">
+                            <div class="menu-chips-title">{{ lang.mod_menu.wizard.labels.popular_icons }}</div>
+                            <div class="menu-chips-scroll">
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-house">
+                                    <i class="bi bi-house"></i> bi-house
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-grid">
+                                    <i class="bi bi-grid"></i> bi-grid
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-info-circle">
+                                    <i class="bi bi-info-circle"></i> bi-info-circle
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-envelope">
+                                    <i class="bi bi-envelope"></i> bi-envelope
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-newspaper">
+                                    <i class="bi bi-newspaper"></i> bi-newspaper
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-folder">
+                                    <i class="bi bi-folder"></i> bi-folder
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-image">
+                                    <i class="bi bi-image"></i> bi-image
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-bag">
+                                    <i class="bi bi-bag"></i> bi-bag
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-telephone">
+                                    <i class="bi bi-telephone"></i> bi-telephone
+                                </button>
+                                <button type="button" class="menu-icon-chip" data-icon="bi bi-gear">
+                                    <i class="bi bi-gear"></i> bi-gear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Menu File (Optional) -->
+                <div class="menu-wizard-step" id="menuWizardStep6">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-file-earmark-code"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 6 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_6 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_6 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardFileInput">{{ lang.mod_menu.admin.columns.file }}</label>
+                        <div class="menu-input-with-icon">
+                            <i class="bi bi-file-earmark-code menu-input-leading-icon"></i>
+                            <input type="text"
+                                class="menu-input-lg"
+                                name="file"
+                                id="menuWizardFileInput"
+                                placeholder="{{ lang.mod_menu.placeholders.menu_file }}"
+                                value="{{ file|default('') }}">
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.file }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Custom HTML (Optional) -->
+                <div class="menu-wizard-step" id="menuWizardStep7">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-code-slash"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 7 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_7 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_7 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label" for="menuWizardHtmlInput">{{ lang.mod_menu.admin.columns.html }}</label>
+                        <div class="menu-input-wrapper">
+                            <textarea class="menu-input-lg"
+                                name="html"
+                                id="menuWizardHtmlInput"
+                                rows="3"
+                                placeholder="{{ lang.mod_menu.placeholders.menu_html }}">{{ html|default('') }}</textarea>
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-code-slash"></i> {{ lang.mod_menu.help.html }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 8: Target Window -->
+                <div class="menu-wizard-step" id="menuWizardStep8">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-box-arrow-up-right"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 8 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_8 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_8 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label">{{ lang.mod_menu.admin.columns.target }}</label>
+                        <div class="menu-selection-grid">
+                            <div class="menu-selection-card{% if target_val != 'y' %} active{% endif %}" data-target-value="n">
+                                <i class="bi bi-box-arrow-in-right menu-card-icon"></i>
+                                <span class="menu-card-label">{{ lang.mod_menu.admin.select_value.target_h }}</span>
+                                <span class="menu-card-desc">{{ lang.mod_menu.wizard.labels.target_same_desc }}</span>
+                                <i class="bi bi-check-circle-fill menu-check-badge"></i>
+                            </div>
+                            <div class="menu-selection-card{% if target_val == 'y' %} active{% endif %}" data-target-value="y">
+                                <i class="bi bi-box-arrow-up-right menu-card-icon"></i>
+                                <span class="menu-card-label">{{ lang.mod_menu.admin.select_value.target_e }}</span>
+                                <span class="menu-card-desc">{{ lang.mod_menu.wizard.labels.target_blank_desc }}</span>
+                                <i class="bi bi-check-circle-fill menu-check-badge"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 9: Access Level (ACL) -->
+                <div class="menu-wizard-step" id="menuWizardStep9">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-shield-check"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 9 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_9 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_9 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label">{{ lang.mod_menu.admin.columns.acl_id|striptags }}</label>
+
+                        <!-- Tactile ACL Role Selection Cards -->
+                        <div class="menu-acl-cards-grid" id="menuWizardAclCards">
+                            <div class="menu-acl-card{% if acl_id is not defined or acl_id == 0 or acl_id == '' %} active{% endif %}" data-acl-value="0">
+                                <div class="menu-acl-card-icon-box">
+                                    <i class="bi bi-globe2"></i>
+                                </div>
+                                <div class="menu-acl-card-content">
+                                    <span class="menu-acl-card-title">{{ lang.mod_menu.choose_wish }}</span>
+                                    <span class="menu-acl-card-subtitle">{{ lang.mod_menu.help.access_control }}</span>
+                                </div>
+                                <i class="bi bi-check-circle-fill menu-acl-card-check"></i>
+                            </div>
+                            {% for item in mod_acl_acl_id %}
+                                <div class="menu-acl-card{% if acl_id is defined and acl_id == item.id %} active{% endif %}" data-acl-value="{{ item.id }}">
+                                    <div class="menu-acl-card-icon-box">
+                                        <i class="bi bi-shield-lock-fill"></i>
+                                    </div>
+                                    <div class="menu-acl-card-content">
+                                        <span class="menu-acl-card-title">{{ item.name }}</span>
+                                        <span class="menu-acl-card-subtitle">ACL #{{ item.id }}</span>
+                                    </div>
+                                    <i class="bi bi-check-circle-fill menu-acl-card-check"></i>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Fallback & Form Synchronized Select -->
+                        <div class="menu-select-wrapper menu-acl-select-fallback">
+                            <i class="bi bi-shield-check menu-select-icon"></i>
+                            <select class="menu-select-lg" name="acl_id" id="menuWizardAclSelect">
+                                <option value="0" {% if acl_id is not defined or acl_id == 0 %}selected{% endif %}>{{ lang.mod_menu.choose_wish }}</option>
+                                {% for item in mod_acl_acl_id %}
+                                    <option value="{{ item.id }}" {% if acl_id is defined and acl_id == item.id %}selected{% endif %}>{{ item.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <i class="bi bi-chevron-down menu-select-chevron"></i>
+                        </div>
+                        <div class="menu-field-hint">
+                            <i class="bi bi-info-circle"></i> {{ lang.mod_menu.help.access_control }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 10: Publish Status & Summary -->
+                <div class="menu-wizard-step" id="menuWizardStep10">
+                    <div class="menu-step-badge-wrap">
+                        <div class="menu-step-avatar"><i class="bi bi-toggle-on"></i></div>
+                        <div class="menu-step-meta">
+                            <span class="menu-step-tag">{{ lang.mod_menu.wizard.labels.step_prefix }} 10 / 10</span>
+                            <h2 class="menu-step-headline">{{ lang.mod_menu.wizard.steps.step_10 }}</h2>
+                        </div>
+                    </div>
+                    <p class="menu-step-subhead">{{ lang.mod_menu.wizard.subtitles.step_10 }}</p>
+
+                    <div class="menu-field-group">
+                        <label class="menu-field-label">{{ lang.mod_menu.admin.columns.status }}</label>
+                        <div class="menu-selection-grid">
+                            <div class="menu-selection-card card-status-published{% if status_val != 'n' %} active{% endif %}" data-status-value="y">
+                                <i class="bi bi-eye menu-card-icon"></i>
+                                <span class="menu-card-label"><span class="menu-status-dot dot-published"></span> {{ lang.mod_menu.admin.radio.publish_yes }}</span>
+                                <span class="menu-card-desc">{{ lang.mod_menu.wizard.labels.status_published_desc }}</span>
+                                <i class="bi bi-check-circle-fill menu-check-badge"></i>
+                            </div>
+                            <div class="menu-selection-card card-status-draft{% if status_val == 'n' %} active{% endif %}" data-status-value="n">
+                                <i class="bi bi-eye-slash menu-card-icon"></i>
+                                <span class="menu-card-label"><span class="menu-status-dot dot-draft"></span> {{ lang.mod_menu.admin.radio.publish_no }}</span>
+                                <span class="menu-card-desc">{{ lang.mod_menu.wizard.labels.status_draft_desc }}</span>
+                                <i class="bi bi-check-circle-fill menu-check-badge"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="menu-wizard-summary">
+                        <div class="menu-summary-header">
+                            <div class="menu-summary-header-icon">
+                                <i class="bi bi-clipboard2-check-fill"></i>
+                            </div>
+                            <div class="menu-summary-header-text">
+                                <h3>{{ lang.mod_menu.wizard.summary.title }}</h3>
+                                <span>{{ lang.mod_menu.wizard.subtitles.step_10 }}</span>
+                            </div>
+                        </div>
+                        <div class="menu-summary-list">
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.language }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryLang">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="1" title="{{ lang.mod_menu.wizard.steps.step_1 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.name }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryName">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="2" title="{{ lang.mod_menu.wizard.steps.step_2 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.parent }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryParent">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="3" title="{{ lang.mod_menu.wizard.steps.step_3 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.url }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryUrl">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="4" title="{{ lang.mod_menu.wizard.steps.step_4 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.target }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryTarget">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="8" title="{{ lang.mod_menu.wizard.steps.step_8 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.acl }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryAcl">-</span>
+                                    <button type="button" class="menu-summary-jump-btn" data-jump-step="9" title="{{ lang.mod_menu.wizard.steps.step_9 }}">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="menu-summary-item">
+                                <span class="menu-summary-label">{{ lang.mod_menu.wizard.summary.status }}</span>
+                                <div class="menu-summary-right">
+                                    <span class="menu-summary-value" id="menuSummaryStatus">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="menu-wizard-footer">
+                <button type="button" class="menu-btn-prev" id="menuWizardBtnPrev" disabled>
+                    <i class="bi bi-arrow-left"></i>
+                    <span>{{ lang.mod_menu.wizard.buttons.prev }}</span>
+                </button>
+                <button type="button" class="menu-btn-next" id="menuWizardBtnNext">
+                    <span>{{ lang.mod_menu.wizard.buttons.next }}</span>
+                    <i class="bi bi-arrow-right"></i>
+                </button>
+                <button type="button" class="menu-btn-finish" id="menuWizardBtnFinish">
+                    <i class="bi bi-check-lg"></i>
+                    <span>{{ lang.mod_menu.wizard.buttons.finish }}</span>
+                </button>
+            </footer>
+        </div>
+    </form>
 {% endblock %}
 
 {% block scripts %}
-{{ parent() }}
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var langSelect = document.getElementById('lang');
-
-        function reloadForMenuContext() {
-            if (!langSelect) {
-                return;
-            }
-
-            var url = new URL(window.location.href);
-            url.searchParams.set('lang', langSelect.value);
-            window.location.href = url.toString();
-        }
-
-        if (langSelect) {
-            langSelect.addEventListener('change', reloadForMenuContext);
-        }
-
-        function initM3Select(selector, config) {
-            var element = document.querySelector(selector);
-            if (!element) {
-                return null;
-            }
-
-            return new TomSelect(selector, Object.assign({
-                create: false,
-                maxOptions: 200,
-                dropdownClass: 'm3-select-dropdown',
-                render: {
-                    item: function(data, escape) {
-                        return '<div class="m3-ts-selected-value" title="' + escape(data.text || '') + '">' + escape(data.text || '') + '</div>';
-                    },
-                    option: function(data, escape) {
-                        return '<div class="m3-ts-option-value">' + escape(data.text || '') + '</div>';
-                    }
-                }
-            }, config || {}));
-        }
-
-        initM3Select('#lang', {
-            searchField: ['text'],
-            sortField: [{ field: '$order' }]
-        });
-        initM3Select('#parent_id', {
-            searchField: ['text']
-        });
-        initM3Select('#acl_id', {
-            searchField: ['text']
-        });
-
-        // Icon Preview functionality
-        const iconInput = document.getElementById('icon');
-        const iconPreview = document.getElementById('iconPreview');
-        
-        if (iconInput && iconPreview) {
-            iconInput.addEventListener('input', function() {
-                const iconClass = this.value.trim();
-                
-                // Add pop animation effect
-                iconPreview.style.transform = 'scale(0.8)';
-                
-                setTimeout(() => {
-                    if (iconClass) {
-                        iconPreview.innerHTML = `<i class="${iconClass}"></i>`;
-                        iconPreview.style.color = 'var(--md-sys-color-primary)';
-                        iconPreview.style.background = 'var(--md-sys-color-primary-container)';
-                    } else {
-                        iconPreview.innerHTML = '<i class="bi bi-question"></i>';
-                        iconPreview.style.color = 'var(--md-sys-color-on-surface-variant)';
-                        iconPreview.style.background = 'var(--md-sys-color-surface-variant)';
-                    }
-                    iconPreview.style.transform = 'scale(1.1)';
-                    
-                    setTimeout(() => {
-                        iconPreview.style.transform = 'scale(1)';
-                    }, 150);
-                }, 150);
-            });
-        }
-
-        // Clear custom validity on input
-        document.querySelectorAll('[required]').forEach(input => {
-            input.addEventListener('input', () => input.setCustomValidity(''));
-            input.addEventListener('change', () => input.setCustomValidity(''));
-        });
-    });
-
-    function selectTargetStatus(el, val) {
-        document.querySelectorAll('#targetHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('targetHidden').value = val;
-    }
-
-    function updateStatusSelection(el, val) {
-        document.querySelectorAll('#statusHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
-        el.classList.add('active');
-        document.getElementById('statusHidden').value = val;
-    }
-
-    function submitAddForm(formId) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        // Clear current validation state.
-        const inputs = form.querySelectorAll('[required]');
-        inputs.forEach(input => input.setCustomValidity(''));
-
-        if (!form.checkValidity()) {
-            inputs.forEach(input => {
-                if (!input.validity.valid) {
-                    let msg = "";
-                    if (input.id === 'parent_id') {
-                        msg = "{{ lang.mod_menu.errors.parent_selection_required|e('js') }}";
-                    } else if (input.id === 'name') {
-                        msg = "{{ lang.mod_menu.validation.required|replace({':field': lang.mod_menu.admin.columns.name})|e('js') }}";
-                    } else if (input.id === 'lang') {
-                        msg = "{{ lang.mod_menu.validation.required|replace({':field': lang.mod_menu.admin.columns.language})|e('js') }}";
-                    } else {
-                        msg = "{{ lang.mod_menu.errors.general|e('js') }}";
-                    }
-                    input.setCustomValidity(msg);
-                }
-            });
-            form.reportValidity();
-            return;
-        }
-
-        // Add hidden field for 'add' button since we changed from type="submit"
-        if (!form.querySelector('input[name="add"]')) {
-            const hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = 'add';
-            hidden.value = '1';
-            form.appendChild(hidden);
-        }
-        form.submit();
-    }
-</script>
+    {{ parent() }}
+    <script src="{{ site.address }}templates/admin/assets/js/mod_menu_wizard.js?v=4.0"></script>
 {% endblock %}

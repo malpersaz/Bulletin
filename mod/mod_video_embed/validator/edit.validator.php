@@ -3,132 +3,132 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_video_embed');
     }
     public function check($id)
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['language'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['language'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // category_id Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'category_id',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['category_id'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['category_id'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // sure Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'sure',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['sure'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['duration'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // created_at Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'created_at',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['tarih'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['created_at'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // embed Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'embed',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['embed'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['embed'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // content Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'content',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['content'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['content'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['title'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['title'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['keywords'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['keywords'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // description Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['aciklama'])
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['required'], $this->lang['mod_video_embed']['admin']['columns']['description'])
             ]
         );
         if ($this->_check() === True) {
@@ -137,75 +137,75 @@ class edit_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // sure Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'sure',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '5',
                     'max' => '8'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['sure'], '5', '8')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['duration'], '5', '8')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // title Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'title',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['title'], '1', '255')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['title'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // keywords Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'keywords',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['keywords'], '1', '255')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['keywords'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // description Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'description',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '1',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['aciklama'], '1', '255')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['length'], $this->lang['mod_video_embed']['admin']['columns']['description'], '1', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -218,12 +218,12 @@ class edit_validator
 
         #Check inarray
         // status in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'status',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_video_embed']['validator']['inarray'], $this->lang['mod_video_embed']['admin']['columns']['status'], 'y,n')
+                'message' => sprintf($this->lang['mod_video_embed']['validator']['inarray'], $this->lang['mod_video_embed']['admin']['columns']['status'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
@@ -236,7 +236,7 @@ class edit_validator
 
         #Check Unique
 
-        #Check Unique with column düzenle
+        #Check Unique with edit column
 
         return False;
     }
@@ -248,30 +248,30 @@ class edit_validator
             'content' => $this->lang['mod_video_embed']['admin']['columns']['content'],
             'title' => $this->lang['mod_video_embed']['admin']['columns']['title'],
             'keywords' => $this->lang['mod_video_embed']['admin']['columns']['keywords'],
-            'description' => $this->lang['mod_video_embed']['admin']['columns']['aciklama'],
+            'description' => $this->lang['mod_video_embed']['admin']['columns']['description'],
         ];
 
         foreach ($fields as $field => $label) {
             $value = (string) Req::Post($field);
             if ($value !== '' && preg_match('/[\x{10000}-\x{10FFFF}]/u', $value) === 1) {
-                $this->hatalar[] = sprintf(
+                $this->errors[] = sprintf(
                     $this->lang['mod_video_embed']['validator']['unsupported_emoji'],
                     $label
                 );
             }
         }
 
-        return count($this->hatalar) > 0;
+        return count($this->errors) > 0;
     }
 
     public function _check()
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

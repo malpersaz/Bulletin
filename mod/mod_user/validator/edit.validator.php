@@ -7,9 +7,9 @@ class edit_validator
 
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_user');
     }
 
@@ -105,7 +105,7 @@ class edit_validator
         }
 
         if ($this->valid->check()) {
-            // Hataları Temaya Gönderelim
+            // Assign variables to theme template
             $this->errors = $this->valid->list_errors();
         }
 

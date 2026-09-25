@@ -18,25 +18,27 @@ if (!defined('AKM_LOADED')) {
  * Content Management Module Language Translations
  */
 $lang['mod_content'] = [
+    'total_content' => 'Gesamter Inhalt',
+    'draft_content' => 'Inhaltsentwürfe',
 
     // === Basic Actions ===
     'add' => 'Inhalt hinzufügen',
     'edit' => 'Inhalt bearbeiten',
     'list' => 'Inhaltsliste',
+    'search_placeholder' => 'Inhalte suchen (Titel, Zusammenfassung)...',
     'information' => 'Information!',
-    'oke' => 'Vorgang erfolgreich!',
-    'hata' => 'Ein Fehler ist aufgetreten!',
-    'error' => 'Ein kritischer Fehler ist aufgetreten!',
+    'success' => 'Vorgang erfolgreich!',
+    'error' => 'Ein Fehler ist aufgetreten!',
     'remove_image' => 'Sind Sie sicher, dass Sie dieses Bild entfernen möchten?',
-    'remove_image_oke' => 'Bild entfernt',
+    'remove_image_success' => 'Bild entfernt',
     'choose_wish' => 'Bitte wählen Sie aus, falls gewünscht',
     'remove_record' => 'Sind Sie sicher, dass Sie diesen Datensatz löschen möchten?',
     'delete_confirm' => 'Sind Sie sicher, dass Sie diesen Inhalt löschen möchten?',
     'quick_unpublish_confirm' => 'Möchten Sie die Veröffentlichung dieses Inhalts aufheben?',
     'quick_publish_confirm' => 'Möchten Sie diesen Inhalt veröffentlichen?',
-    'resim_ekle' => 'Bild hinzufügen',
-    'resim_yukle_degistir' => 'Bild hochladen/ändern',
-    'lokal' => 'Lokal',
+    'add_image' => 'Bild hinzufügen',
+    'upload_change_image' => 'Bild hochladen/ändern',
+    'local' => 'Lokal',
     'embed' => 'Einbetten',
 
     // === Filter Menu ===
@@ -64,7 +66,7 @@ $lang['mod_content'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Inhalt hinzugefügt!',
             'edit' => 'Inhalt aktualisiert!',
         ],
@@ -88,27 +90,28 @@ $lang['mod_content'] = [
         'send' => 'Senden',
         'add' => 'Hinzufügen',
         'edit' => 'Bearbeiten',
-        'yenile' => 'Aktualisieren',
+        'refresh' => 'Aktualisieren',
         'delete' => 'Löschen',
         'gallery' => 'Bildergalerie',
         'file' => 'Dateimanager',
-        'vazgec' => 'Abbrechen',
-        'kaldir' => 'Entfernen',
-        'evet' => 'Ja',
-        'hayir' => 'Nein',
+        'cancel' => 'Abbrechen',
+        'save' => 'Speichern',
+        'remove' => 'Entfernen',
+        'yes' => 'Ja',
+        'no' => 'Nein',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Anzeige {from} bis {to} von insgesamt {total} Ergebnissen.',
-        1 => 'Seite',
-        2 => 'Seitenanzahl',
-        3 => 'Daten werden geladen, bitte warten...',
-        4 => 'Keine Daten gefunden',
-        5 => 'Verbindungsfehler',
-        6 => 'Suche',
-        7 => 'Bitte wählen Sie mindestens eine Zeile aus',
-        8 => 'Bitte wählen Sie nur eine Zeile aus',
+        'showing_results' => 'Anzeige {from} bis {to} von insgesamt {total} Ergebnissen.',
+        'page' => 'Seite',
+        'page_count' => 'Seitenanzahl',
+        'loading' => 'Daten werden geladen, bitte warten...',
+        'no_data' => 'Keine Daten gefunden',
+        'connection_error' => 'Verbindungsfehler',
+        'search' => 'Suche',
+        'select_at_least_one' => 'Bitte wählen Sie mindestens eine Zeile aus',
+        'select_only_one' => 'Bitte wählen Sie nur eine Zeile aus',
         'approve' => [
             'key' => 'Veröffentlichen',
             'value' => 'Sind Sie sicher, dass Sie diesen Inhalt veröffentlichen möchten?',
@@ -130,11 +133,11 @@ $lang['mod_content'] = [
         'title_length' => 'Sie müssen einen Titel mit mindestens 1 und höchstens 70 Zeichen eingeben.',
         'title_exists' => 'Dieser Titel existiert bereits, bitte ändern Sie ihn',
         'title_unique' => 'Ihr Titel ist einzigartig',
-        'deck_length' => 'Bitte geben Sie einen Einleitungstext von mindestens 110 bis maximal 280 Zeichen ein.',
+        'deck_length' => 'Bitte geben Sie einen Einleitungstext von mindestens 90 bis maximal 120 Zeichen ein.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Inhaltsverwaltungs-Rollen',
         'add' => 'Kann Inhalt hinzufügen',
         'edit' => 'Kann Inhalt bearbeiten',
@@ -198,32 +201,31 @@ $lang['mod_content'] = [
 
     // === UI Elements ===
     'ui' => [
-        'kayit_yonetimi' => 'Datensatzverwaltung',
-        'islem' => 'Vorgang',
-        'uygula' => 'Anwenden',
-        'islem_column' => 'Aktion',
+        'record_management' => 'Datensatzverwaltung',
+        'operation' => 'Vorgang',
+        'apply' => 'Anwenden',
+        'action_column' => 'Aktion',
         'select' => 'Auswählen',
-        'burdan' => 'Von',
-        'buraya' => 'Bis',
-        'ara' => 'Suche',
-        'sifirla' => 'Zurücksetzen',
+        'from' => 'Von',
+        'to' => 'Bis',
+        'search' => 'Suche',
+        'reset' => 'Zurücksetzen',
         'approval' => 'Bestätigen',
-        'isleniyor' => 'Verarbeitung',
+        'processing' => 'Verarbeitung',
         'record_selected' => 'Datensatz ausgewählt',
-        'islem_gerceklestirilemedi' => 'Vorgang konnte nicht ausgeführt werden',
-        'islem_secin' => 'Bitte wählen Sie einen Vorgang aus',
+        'operation_failed' => 'Vorgang konnte nicht ausgeführt werden',
+        'select_operation' => 'Bitte wählen Sie einen Vorgang aus',
         'all' => 'Alle',
         'pdf' => 'PDF',
         'csv' => 'CSV',
         'excel' => 'Excel',
-        'yazdir' => 'Drucken',
-        'yazdir_bilgi' => 'Druckinfo',
-        'olusturan' => 'Erstellt von',
-        'kopyala' => 'Kopieren',
+        'print' => 'Drucken',
+        'print_info' => 'Druckinfo',
+        'creator' => 'Erstellt von',
+        'copy' => 'Kopieren',
         'default_sort' => 'Neueste',
         'default_lang' => 'DE',
         'date_locale' => 'de-DE',
-        'all' => 'Alle',
         'filter_cleared' => 'Filter gelöscht und auf Standardwerte zurückgesetzt.',
         'filter_applied' => 'Filter angewendet',
         'sort_label' => 'Sortierung',
@@ -308,7 +310,7 @@ $lang['mod_content'] = [
             'category' => 'Legen Sie die Kategorie für den Inhalt fest.',
             'title' => 'Geben Sie einen ansprechenden Titel ein. (Min: 1, Max: 70)',
             'date' => 'Datum und Uhrzeit der Veröffentlichung.',
-            'intro' => 'Schreiben Sie eine kurze Zusammenfassung. (110 - 280 Zeichen)',
+            'intro' => 'Schreiben Sie eine kurze Zusammenfassung. (110 - 120 Zeichen)',
             'content' => 'Rich-Text-Editor.',
             'image' => 'Laden Sie ein Vorschaubild hoch.',
             'finish' => 'Letzte Prüfungen und Veröffentlichung.',
@@ -377,7 +379,6 @@ $lang['mod_content'] = [
         'gallery_alert' => "GALERIEVERWALTUNG:\nID: %s\nTitel: %s\nBildergalerie wird geöffnet.",
         'files_alert' => "DATEIVERWALTUNG:\nID: %s\nTitel: %s\nDateivermaltung wird geöffnet.",
         'status_alert' => "STATUS AKTUALISIERT:\n%s",
-        'delete_confirm' => 'Ja, löschen!',
         'delete_success' => 'Inhalt gelöscht!',
     ],
 
@@ -391,6 +392,14 @@ $lang['mod_content'] = [
 
     'picker' => [
         'file' => 'Vorhandene Datei auswählen',
+    ],
+
+    'empty_state' => [
+        'title' => 'Noch keine Inhalte vorhanden',
+        'description' => 'Beginnen Sie, indem Sie Ihren ersten Inhalt erstellen.',
+        'search_title' => 'Keine passenden Ergebnisse',
+        'search_description' => 'Keine Inhalte entsprechen Ihren Suchkriterien. Bitte versuchen Sie es mit einem anderen Begriff.',
+        'clear_search' => 'Suche zurücksetzen',
     ],
 
     'ajax' => [

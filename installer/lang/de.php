@@ -259,14 +259,8 @@ $installerLang = [
       'mod_video_embed' => 'Video-Einbettung',
       'mod_news' => 'Nachrichten',
       'mod_publication' => 'Publikationen',
-      'mod_category' => 'Kategorien',
+      'mod_content_category' => 'Kategorien',
       'mod_content' => 'Inhalt',
-      'mod_client' => 'Kunden',
-      'mod_product_category' => 'Produktkategorien',
-      'mod_service_category' => 'Dienstkategorien',
-      'mod_product' => 'Produkte',
-      'mod_service' => 'Dienste',
-      'mod_reference' => 'Referenzen',
     ],
     'checks' => [
       'php_version' => [

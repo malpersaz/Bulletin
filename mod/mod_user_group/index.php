@@ -6,7 +6,7 @@
  */
 class mod_user_group_mod extends indexMain
 {
-	public $tema;
+	public $theme;
 	public $site;
 	public $lang;
 	public $user;
@@ -18,15 +18,15 @@ class mod_user_group_mod extends indexMain
 	{
         parent::__construct();
 		// Load the admin template library.
-		$this->tema = Load::lib('AdminTemplate');
+		$this->theme = Load::lib('AdminTemplate');
 		// Load the database library.
 		$this->db = Load::lib('Database');
 		// Site settings remain available through shared state when needed.
-		//$this->site = Kayit::getir('site_config');
+		//$this->site = Registry::get('site_config');
 		// Load the module language file.
 		$this->lang = Load::lang('mod_user_group');
 		// Pass language data to the template layer.
-		$this->tema->lang($this->lang);
+		$this->theme->lang($this->lang);
 		// Load the session library.
 		$this->session = Load::lib('Session');
 		// Load the user model.
@@ -48,16 +48,16 @@ class mod_user_group_mod extends indexMain
 		}
 
 
-		$this->site['title'] = $this->lang['mod_user_group']['admin']['1'];
-		$this->tema->tpl('mod_user_group/add');
-		$this->tema->veri('site', $this->site);
-		$this->tema->veri('name', '');
-		$this->tema->veri('parent_id', 0);
+		$this->site['title'] = $this->lang['mod_user_group']['admin']['add_area'];
+		$this->theme->tpl('mod_user_group/add');
+		$this->theme->set('site', $this->site);
+		$this->theme->set('name', '');
+		$this->theme->set('parent_id', 0);
 
-		$grup = Load::model('mod_user_group');
-		$grup->order('order', 'ASC')->all();
-		$gr = Helper::nested($grup->toArray(), 'parent_id', 'group_id');
-		$this->tema->veri('user_groupm', $gr);
+		$group = Load::model('mod_user_group');
+		$group->order('order', 'ASC')->all();
+		$gr = Helper::nested($group->toArray(), 'parent_id', 'group_id');
+		$this->theme->set('user_groupm', $gr);
 	}
 	// Render the edit form and handle updates.
 	public function edit($id = NULL)
@@ -70,15 +70,15 @@ class mod_user_group_mod extends indexMain
 
 		$id = Req::Url_Clear($id);
 
-		$grup = Load::model('mod_user_group');
+		$group = Load::model('mod_user_group');
 
-		$grup->where_group_id($id)->limit(1)->gRo();
-		if ($grup->getSize() === 0) {
+		$group->where_group_id($id)->limit(1)->gRo();
+		if ($group->getSize() === 0) {
 			exit('');
 		}
-		$d = $grup->toArray();
+		$d = $group->toArray();
 
-		if ($this->user->isAuthorized('mod_user_group', $d['user_id'], $this->lang['mod_user_group']['role_errors']['1'], 1) === False) {
+		if ($this->user->isAuthorized('mod_user_group', $d['user_id'], $this->lang['mod_user_group']['role_errors']['management_title'], 1) === False) {
 			return False;
 		}
 
@@ -87,16 +87,16 @@ class mod_user_group_mod extends indexMain
 		}
 		Run::import('management', '_index');
 
-		$this->site['title'] = $this->lang['mod_user_group']['admin']['2'];
-		$this->tema->veri('site', $this->site);
-		$this->tema->veri('d', $d);
-		$this->tema->veri('name', $d['name']);
-		$this->tema->tpl('mod_user_group/edit');
+		$this->site['title'] = $this->lang['mod_user_group']['admin']['edit_area'];
+		$this->theme->set('site', $this->site);
+		$this->theme->set('d', $d);
+		$this->theme->set('name', $d['name']);
+		$this->theme->tpl('mod_user_group/edit');
 
-		$grup->flush();
-		$grup->order('order', 'ASC')->all();
-		$gr = Helper::nested($grup->toArray(), 'parent_id', 'group_id');
-		$this->tema->veri('user_groupm', $gr);
+		$group->flush();
+		$group->order('order', 'ASC')->all();
+		$gr = Helper::nested($group->toArray(), 'parent_id', 'group_id');
+		$this->theme->set('user_groupm', $gr);
 	}
 
 	public function list()
@@ -108,18 +108,16 @@ class mod_user_group_mod extends indexMain
 		}
 		Run::import('management', '_index');
 
-		$grup = Load::model('mod_user_group');
+		$group = Load::model('mod_user_group');
 
-		$grup->order('order', 'ASC')->all();
-		$gr = Helper::nested($grup->toArray(), 'parent_id', 'group_id');
-		$this->tema->veri('user_groupm', $gr);
+		$group->order('order', 'ASC')->all();
+		$gr = Helper::nested($group->toArray(), 'parent_id', 'group_id');
+		$this->theme->set('user_groupm', $gr);
 
+		$this->site['title'] = $this->lang['mod_user_group']['admin']['list'];
+		$this->theme->set('site', $this->site);
 
-
-		$this->site['title'] = $this->lang['mod_user_group'][1];
-		$this->tema->veri('site', $this->site);
-
-		$this->tema->tpl('mod_user_group/list');
+		$this->theme->tpl('mod_user_group/list');
 	}
 	// Persist the visual order of user groups.
 	public function order()
@@ -170,9 +168,9 @@ class mod_user_group_mod extends indexMain
 		$this->val = Load::validator('mod_user_group.add');
 		if ($this->val->check()) {
 			foreach ($_POST as $key => $val) {
-				$this->tema->veri($key, Req::Post_Safe($key));
+				$this->theme->set($key, Req::Post_Safe($key));
 			}
-			$this->tema->veri('errors', $this->val->errors);
+			$this->theme->set('errors', $this->val->errors);
 		} else {
 			$this->model = Load::model('mod_user_group');
 			foreach ($_POST as $key => $val) {
@@ -181,8 +179,8 @@ class mod_user_group_mod extends indexMain
 			$this->model->user_id = $this->session->get('id');
             
             // Default empty role payload to an empty JSON object.
-            if (empty($this->model->rolls)) {
-                $this->model->rolls = '{}';
+            if (empty($this->model->roles)) {
+                $this->model->roles = '{}';
             }
 
             // Default order to zero when no explicit position is submitted.
@@ -194,9 +192,9 @@ class mod_user_group_mod extends indexMain
 			//$this->model->acl=serialize(Req::Post_Safe('group_id'));
 
 			if ($this->model->save()) {
-				$this->_success($this->lang['mod_user_group']['admin']['12']);
+				$this->_success($this->lang['mod_user_group']['admin']['group_added']);
 			} else {
-				$this->tema->veri('error', $this->model->db->sql_error());
+				$this->theme->set('error', $this->model->db->sql_error());
 			}
 		}
 	}
@@ -206,9 +204,9 @@ class mod_user_group_mod extends indexMain
 		$this->val = Load::validator('mod_user_group.edit');
 		if ($this->val->check($id)) {
 			foreach ($_POST as $key => $val) {
-				$this->tema->veri($key, Req::Post_Safe($key));
+				$this->theme->set($key, Req::Post_Safe($key));
 			}
-			$this->tema->veri('errors', $this->val->errors);
+			$this->theme->set('errors', $this->val->errors);
 		} else {
 			$this->model = Load::model('mod_user_group');
 
@@ -224,9 +222,9 @@ class mod_user_group_mod extends indexMain
 			//$this->model->acl=serialize(Req::Post_Safe('group_id'));
 
 			if ($this->model->update('group_id')) {
-				$this->_success($this->lang['mod_user_group']['admin']['13']);
+				$this->_success($this->lang['mod_user_group']['admin']['group_edited']);
 			} else {
-				$this->tema->veri('error', $this->model->db->sql_error());
+				$this->theme->set('error', $this->model->db->sql_error());
 			}
 		}
 	}
@@ -244,7 +242,7 @@ class mod_user_group_mod extends indexMain
 		$this->user_group->Getgroup_id($s)->gRo();
 		$d = $this->user_group->toObject();
 
-		if ($this->user->isAuthorized('mod_user_group', $d->user_id, $this->lang['mod_user_group']['role_errors']['2']) === False) {
+		if ($this->user->isAuthorized('mod_user_group', $d->user_id, $this->lang['mod_user_group']['role_errors']['user_groups']) === False) {
 			return False;
 		}
 
@@ -278,7 +276,7 @@ class mod_user_group_mod extends indexMain
 	// Check move permission and keep legacy Roll wiring intact.
 	private function _hasMovePermission()
 	{
-		if (Roll::hasPermission('mod_user_group', 'move') === True) {
+		if (Role::hasPermission('mod_user_group', 'move') === True) {
 			return True;
 		}
 
@@ -291,13 +289,13 @@ class mod_user_group_mod extends indexMain
 	// Store a success message for the template.
 	private function _success($message)
 	{
-		$this->tema->veri('success', True);
-		$this->tema->veri('message', $message);
+		$this->theme->set('success', True);
+		$this->theme->set('message', $message);
 	}
 	// Store an error message for the template.
 	private function _error($message)
 	{
-		$this->tema->veri('error', True);
-		$this->tema->veri('message', $message);
+		$this->theme->set('error', True);
+		$this->theme->set('message', $message);
 	}
 }

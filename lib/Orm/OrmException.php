@@ -1,11 +1,11 @@
 <?php
  /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 16.04.2011- 17:04
- * Sınıfı : OrmException
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 16.04.2011- 17:04
+ * Class: OrmException
  */
 class OrmException extends Exception
 {

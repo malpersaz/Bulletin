@@ -1,16 +1,19 @@
-CREATE TABLE  `mod_imagecategories` (
-`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-`lang` VARCHAR(11) NOT NULL ,
-`name` VARCHAR(255)  NOT NULL ,
-`content` TEXT DEFAULT NULL ,
-`parent_id` INT(11) NOT NULL,
-`order` INT(11) NOT NULL,
-`root` ENUM(  'y',  'n' ) NOT NULL DEFAULT 'n' ,
-`seo` VARCHAR(255)  NOT NULL ,
-`title` VARCHAR(255)  NOT NULL ,
-`keywords` VARCHAR(255)  NOT NULL ,
-`description` VARCHAR(255)  NOT NULL ,
-`acl_id` INT(11) DEFAULT 0 ,
-`image` VARCHAR(20),
-`user_id` INT(11) NOT NULL
-)  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+CREATE TABLE `mod_imagecategories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang` varchar(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `content` text DEFAULT NULL,
+  `parent_id` int(11) NOT NULL,
+  `order` int(11) NOT NULL,
+  `root` enum('y','n') NOT NULL DEFAULT 'n',
+  `seo` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `keywords` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `acl_id` int(11) DEFAULT 0,
+  `image` varchar(255) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_imgcat_lang_seo` (`lang`, `seo`),
+  INDEX `idx_imgcat_parent` (`parent_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

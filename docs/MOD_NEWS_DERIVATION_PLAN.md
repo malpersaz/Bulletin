@@ -1,66 +1,66 @@
-# `mod_news` / `mod_news_category` Türetme Planı
+# `mod_news` / `mod_news_category` Derivation Plan
 
-Bu doküman, mevcut `mod_content` ve `mod_category` modülleri yerinde bırakılarak bunlardan sırasıyla `mod_news` ve `mod_news_category` modüllerinin türetilmesi için uygulanacak planı tanımlar.
+This document defines the implementation plan for deriving `mod_news` and `mod_news_category` modules from existing `mod_content` and `mod_category` modules, while keeping the original modules intact.
 
-Amaç yeni özellik eklemek değildir. Amaç, mevcut davranışı koruyarak haber alanı için ayrı modül ailesi oluşturmaktır.
+The objective is not to add new features, but to create a dedicated module family for news while preserving existing runtime behavior.
 
-## Hedef
+## Goals
 
-- `mod_content` yerinde kalacak.
-- `mod_category` yerinde kalacak.
-- `mod_content` taban alınarak yeni bir `mod_news` modülü üretilecek.
-- `mod_category` taban alınarak yeni bir `mod_news_category` modülü üretilecek.
-- `mod_news`, kategori kaynağı olarak `mod_category` yerine `mod_news_category` kullanacak.
-- İlk aşamada davranış kopyalanacak; fonksiyonel genişleme yapılmayacak.
+- Keep `mod_content` intact.
+- Keep `mod_category` intact.
+- Create a new `mod_news` module based on `mod_content`.
+- Create a new `mod_news_category` module based on `mod_category`.
+- Configure `mod_news` to use `mod_news_category` instead of `mod_category` as its category source.
+- In the initial phase, replicate behavior without functional expansion.
 
-## Neden Bu Yol
+## Rationale
 
-Bu framework içinde modül adı yalnızca klasör adı değildir. Aşağıdaki katmanlar modül adına bağlıdır:
+In this framework, a module name is not merely a folder name. The following layers depend on the module name:
 
-- PHP sınıf adları
-- `Load::model()` ve `Load::lang()` çağrıları
-- izin anahtarları
-- installer kayıtları
-- SQL tablo adları
-- admin ve frontend template yolları
-- statik dosya klasörleri
-- diğer modüllerin string tabanlı bağımlılıkları
+- PHP class names
+- `Load::model()` and `Load::lang()` calls
+- Permission keys
+- Installer registrations
+- SQL table names
+- Admin and frontend template paths
+- Static asset directories
+- String-based dependencies of other modules
 
-Bu yüzden doğrudan rename yerine türetme yaklaşımı daha güvenlidir. Mevcut modüller bozulmadan kalır, yeni modüller parça parça doğrulanabilir.
+Therefore, a derivation approach is safer than an in-place rename. Existing modules remain unbroken, and new modules can be verified incrementally.
 
-## Kapsam
+## Scope
 
-Plan aşağıdaki alanları kapsar:
+The plan covers:
 
-- modül klasörleri
-- model ve validator sınıfları
-- dil dosyaları
-- installer dosyaları
-- SQL şemaları
-- admin template'leri
-- frontend template'leri
-- menü, izin ve ilişki referansları
-- veri taşıma ve doğrulama
+- Module folders
+- Model and validator classes
+- Language dictionary files
+- Installer files
+- SQL schemas
+- Admin templates
+- Frontend templates
+- Menu, permission, and relation references
+- Data migration and validation
 
-Plan aşağıdakileri kapsamaz:
+The plan does not cover:
 
-- yeni business rule eklemek
-- yeni alan eklemek
-- yeni UI akışı tasarlamak
-- `mod_content` veya `mod_category` davranışını değiştirmek
+- Adding new business rules
+- Adding new schema fields
+- Designing new UI flows
+- Modifying `mod_content` or `mod_category` behavior
 
-## Uygulama Stratejisi
+## Implementation Strategy
 
-İş iki büyük fazda yapılmalıdır:
+The work is organized in two major phases:
 
-1. `mod_news_category` türetilecek ve çalışır hale getirilecek.
-2. `mod_news`, `mod_news_category`'ye bağlanacak şekilde türetilecek.
+1. Derive `mod_news_category` and verify it is fully functional.
+2. Derive `mod_news` and wire it to `mod_news_category`.
 
-Bu sıra önemlidir. Çünkü `mod_news` içinde kategori seçimleri, nested kategori listeleri, join sorguları ve frontend içerik filtreleri kategori modülüne bağlıdır.
+This sequence is essential because category selectors, nested category trees, join queries, and frontend content filters in `mod_news` depend on the category module.
 
-## Etkilenen Ana Dosya Yüzeyi
+## Primary File Surface
 
-### Kaynak modüller
+### Source Modules
 
 `mod_category`:
 
@@ -96,7 +96,7 @@ Bu sıra önemlidir. Çünkü `mod_news` içinde kategori seçimleri, nested kat
 - `templates/artist/index/mod_content/*.twig`
 - `templates/soul/index/mod_content/*.twig`
 
-### Üretilecek hedef modüller
+### Target Derived Modules
 
 - `mod/mod_news/...`
 - `mod/mod_news_category/...`
@@ -104,297 +104,297 @@ Bu sıra önemlidir. Çünkü `mod_news` içinde kategori seçimleri, nested kat
 - `installer/mod_news_category/...`
 - `templates/admin/mod_news/...`
 - `templates/admin/mod_news_category/...`
-- gerekiyorsa `templates/admin_old/...`
-- gerekiyorsa frontend tema eşdeğerleri
+- `templates/admin_old/...` (if required)
+- Frontend theme counterparts (if required)
 
-## Faz 1: `mod_news_category` Türetme
+## Phase 1: Deriving `mod_news_category`
 
-Bu faz bağımsız tamamlanmalıdır.
+This phase must be completed independently.
 
-### 1. Dosya çoğaltma
+### 1. File Replication
 
-`mod_category` dosya yapısı `mod_news_category` adıyla çoğaltılacak:
+Replicate the `mod_category` directory structure under `mod_news_category`:
 
 - `mod/mod_category` -> `mod/mod_news_category`
 - `installer/mod_category` -> `installer/mod_news_category`
 - `templates/admin/mod_category` -> `templates/admin/mod_news_category`
-- gerekliyse `templates/admin_old/mod_category` -> `templates/admin_old/mod_news_category`
+- `templates/admin_old/mod_category` -> `templates/admin_old/mod_news_category` (if applicable)
 
-### 2. Sınıf ve loader referansları
+### 2. Class and Loader References
 
-Aşağıdaki anahtarlar yeni modüle çevrilecek:
+Migrate the following identifiers to the new module:
 
 - `mod_category` -> `mod_news_category`
 - `class mod_category_mod` -> `class mod_news_category_mod`
 - `class mod_category_model` -> `class mod_news_category_model`
 - `Load::lang('mod_category')` -> `Load::lang('mod_news_category')`
 - `Load::model('mod_category')` -> `Load::model('mod_news_category')`
-- izin kontrollerinde `mod_category` -> `mod_news_category`
+- Permission checks: `mod_category` -> `mod_news_category`
 
-### 3. SQL ve tablo isimleri
+### 3. SQL and Table Names
 
-Yeni kategori modülü kendi tablosunu kullanmalıdır:
+The new category module must use its own table:
 
-- `mod_category` tablosu kopyalanıp `mod_news_category` olarak üretilecek
-- installer SQL'i bu tabloyu oluşturacak şekilde güncellenecek
-- model içindeki `$_table` değeri `mod_news_category` olacak
+- Duplicate the `mod_category` table structure as `mod_news_category`
+- Update the installer SQL to create this table
+- Set the `$_table` property in the model to `mod_news_category`
 
-### 4. Dil anahtarları
+### 4. Language Keys
 
-Dil dosyalarında kök anahtar `mod_news_category` olacak.
+Set the root key in language dictionary files to `mod_news_category`.
 
-Örnek:
+Example:
 
 - `$lang['mod_category']` -> `$lang['mod_news_category']`
 
-Metinler ilk aşamada kategori mantığını koruyabilir; yalnız modül anahtarı ayrıştırılmalıdır.
+Strings may retain generic category terminology initially; isolating the root module key is the primary goal.
 
-### 5. Template yolları
+### 5. Template Paths
 
-Admin template referansları yeni yola çevrilecek:
+Update admin template references to the new path:
 
 - `admin/mod_category/add` -> `admin/mod_news_category/add`
 - `admin/mod_category/edit` -> `admin/mod_news_category/edit`
 - `admin/mod_category/list` -> `admin/mod_news_category/list`
 
-### 6. Menü ve izin kayıtları
+### 6. Menu and Permission Records
 
-Installer içinde:
+Within the installer:
 
-- modül kaydı `mod_news_category` adıyla oluşturulacak
-- varsayılan izinler `mod_news_category` anahtarıyla yazılacak
-- admin navigasyonda görünmesi gerekiyorsa yeni route bağlanacak
+- Create the module entry named `mod_news_category`
+- Register default permissions with the `mod_news_category` key
+- Wire new routes into admin navigation if required
 
-### 7. Doğrulama
+### 7. Verification
 
-Bu faz sonunda aşağıdakiler test edilmelidir:
+Verify the following at the end of this phase:
 
-- kategori listeleme
-- kategori ekleme
-- kategori düzenleme
-- kategori silme
-- kategori sıralama / parent-child yapısı
-- kategori görseli varsa yükleme/silme
-- admin template render zinciri
+- Category listing
+- Category creation
+- Category editing
+- Category deletion
+- Category ordering and parent-child hierarchy
+- Category image upload/delete (if applicable)
+- Admin template rendering pipeline
 
-## Faz 2: `mod_news` Türetme
+## Phase 2: Deriving `mod_news`
 
-Bu faz yalnız `mod_news_category` stabil olduktan sonra başlatılmalıdır.
+This phase must be initiated only after `mod_news_category` is stable.
 
-### 1. Dosya çoğaltma
+### 1. File Replication
 
-`mod_content` dosya yapısı `mod_news` adıyla çoğaltılacak:
+Replicate the `mod_content` structure under `mod_news`:
 
 - `mod/mod_content` -> `mod/mod_news`
 - `installer/mod_content` -> `installer/mod_news`
 - `templates/admin/mod_content` -> `templates/admin/mod_news`
-- gerekliyse `templates/admin_old/mod_content` -> `templates/admin_old/mod_news`
-- frontend tema template'leri `mod_news` altına kopyalanacak
+- `templates/admin_old/mod_content` -> `templates/admin_old/mod_news` (if applicable)
+- Replicate frontend theme templates under `mod_news`
 
-### 2. Sınıf ve loader referansları
+### 2. Class and Loader References
 
-Aşağıdaki anahtarlar yeni modüle çevrilecek:
+Migrate the following identifiers to the new module:
 
 - `mod_content` -> `mod_news`
 - `class mod_content_mod` -> `class mod_news_mod`
 - `class mod_content_model` -> `class mod_news_model`
 - `Load::lang('mod_content')` -> `Load::lang('mod_news')`
 - `Load::model('mod_content')` -> `Load::model('mod_news')`
-- izin kontrollerinde `mod_content` -> `mod_news`
+- Permission checks: `mod_content` -> `mod_news`
 
-### 3. Veritabanı ayrıştırması
+### 3. Database Isolation
 
-`mod_news` kendi tablo ailesini kullanmalıdır:
+`mod_news` must use its own table family:
 
-- `mod_content` tablosu kopyalanıp `mod_news` olarak oluşturulacak
-- `installer/mod_content/mod_content.sql` türevi `installer/mod_news/mod_news.sql` olacak
-- `installer/mod_content/contents.sql` türevi `installer/mod_news/contents.sql` olacak
-- ilgili model dosyalarında `$_table = "mod_news"` kullanılacak
+- Clone the `mod_content` table as `mod_news`
+- Derive `installer/mod_news/mod_news.sql` from `installer/mod_content/mod_content.sql`
+- Derive `installer/mod_news/contents.sql` from `installer/mod_content/contents.sql`
+- Configure `$_table = "mod_news"` in associated models
 
-### 4. Kategori bağımlılığını ayırma
+### 4. Category Dependency Decoupling
 
-Bu fazın en kritik işi budur. `mod_news`, `mod_category` yerine `mod_news_category` kullanmalıdır.
+This is the most critical step of Phase 2. `mod_news` must use `mod_news_category` instead of `mod_category`.
 
-Değiştirilecek ana bağımlılıklar:
+Key dependencies to migrate:
 
 - `Load::model('mod_category')` -> `Load::model('mod_news_category')`
-- kategori seçim listeleri
-- nested kategori helper kullanımı
-- SQL join'lerde `mod_category` -> `mod_news_category`
-- varsa kategori SEO / kategori isim eşlemeleri
-- frontend helper'larda kategori veri kaynağı
+- Category select option dropdowns
+- Nested category helper usage
+- SQL joins: `mod_category` -> `mod_news_category`
+- Category SEO and category name mappings
+- Frontend helper category data sources
 
-Not:
+Note:
 
-- `category_id` alan adı ilk aşamada korunabilir.
-- Ancak bu alan artık `mod_news_category.id` değerlerini işaret edecek şekilde çalışmalıdır.
+- The `category_id` column name may be preserved.
+- However, it must reference IDs in `mod_news_category.id`.
 
-### 5. Galeri, dosya ve diğer yardımcı modül ilişkileri
+### 5. Media, Attachment, and Gallery Relations
 
-`mod_news`, `mod_content` gibi ek medya ilişkileri kullanıyorsa yeni modül adıyla çalışmalıdır.
+If `mod_news` uses ancillary modules like `mod_content`, update them with the new module identifier.
 
-Kontrol edilecek alanlar:
+Areas to check:
 
 - `mod_gallery_mod.mod_name`
 - `mod_attachment_mod.mod_name`
-- araç modülleri içinde `exists_mod_name('mod_news')`
-- izin kontrolleri
-- indirme / medya erişim helper'ları
+- Tool modules checking `exists_mod_name('mod_news')`
+- Permission checks
+- Download and media access helpers
 
-### 6. Template ve route ayrıştırması
+### 6. Template and Route Separation
 
-Admin tarafında:
+Admin routes:
 
 - `mod_news/add`
 - `mod_news/edit`
 - `mod_news/list`
 
-Frontend tarafında:
+Frontend routes:
 
 - `mod_news/content`
 - `mod_news/contents`
 - `mod_news/arsiv`
 - `mod_news/latest_content`
 
-İlk aşamada görünüm birebir aynı kalabilir. Sadece veri kaynağı ve route adı ayrıştırılmalıdır.
+Initial views may mirror existing layouts; separating the data source and route names is the core requirement.
 
-### 7. Dil anahtarları
+### 7. Language Keys
 
-Dil dosyalarında kök anahtar `mod_news` olacak.
+Set the root key in language dictionary files to `mod_news`.
 
-Örnek:
+Example:
 
 - `$lang['mod_content']` -> `$lang['mod_news']`
 
-Metinlerde "content" yerine "news" karşılıkları gerekiyorsa sonradan ayrı temizlik yapılabilir. İlk geçişte kırılmayan, tutarlı anahtar yapısı daha önemlidir.
+Replacing "content" terminology with "news" can be refined later; consistent key naming takes precedence.
 
-### 8. Menü ve izin kayıtları
+### 8. Menu and Permission Records
 
-Installer ve yönetim menüsünde yeni modül ayrı bir varlık olarak tanımlanmalıdır:
+Register the new module as an independent entity in installer and admin menus:
 
-- modül kaydı `mod_news`
-- permission anahtarı `mod_news`
-- admin linkleri `mod_news/*`
-- gerekiyorsa dashboard kartları ve hızlı erişim bağlantıları
+- Module registration `mod_news`
+- Permission key `mod_news`
+- Admin links `mod_news/*`
+- Dashboard widgets and quick links (if applicable)
 
-## Faz 3: Çapraz Referans Temizliği
+## Phase 3: Cross-Reference Cleanup
 
-Her iki modül üretildikten sonra aşağıdaki alanlar taranmalıdır:
+After both modules are derived, audit the following surfaces:
 
-- `mod_user` içindeki admin menü linkleri
-- `management` içindeki ortak admin context verileri
-- `installer/index.php` modül yükleme sırası
-- ortak helper veya service sınıfları
-- frontend helper'lar
-- SQL view / rapor dosyaları
-- manuel string tabanlı route üretimleri
+- Admin navigation links in `mod_user`
+- Common admin context data in `management`
+- `installer/index.php` module loading order
+- Shared helpers or service classes
+- Frontend helpers
+- SQL views and reporting scripts
+- Manual string-based route generations
 
-Özellikle aşağıdaki ilişki yönleri kontrol edilmelidir:
+Specifically verify relation isolation:
 
-- `mod_news` yanlışlıkla `mod_content` template'ine gitmemeli
-- `mod_news` yanlışlıkla `mod_category` kullanmamalı
-- `mod_news_category` yanlışlıkla `mod_category` izinleriyle çalışmamalı
-- eski modüller yeni modüllerin tablolarını kullanmamalı
+- `mod_news` must not inadvertently render `mod_content` templates
+- `mod_news` must not query `mod_category`
+- `mod_news_category` must not check `mod_category` permissions
+- Legacy modules must not query new module tables
 
-## Faz 4: Veri Stratejisi
+## Phase 4: Data Strategy
 
-Burada iki seçenek vardır. Kod yazımından önce biri seçilmelidir.
+Two strategies are available. Select one prior to implementation.
 
-### Seçenek A: Boş başlangıç
+### Option A: Clean Slate
 
-- `mod_news_category` boş tabloyla başlar
-- `mod_news` boş tabloyla başlar
-- içerik ve kategori verileri sonradan manuel girilir
+- `mod_news_category` starts with an empty table
+- `mod_news` starts with an empty table
+- News content and categories are authored manually
 
-Avantaj:
+Advantages:
 
-- en düşük veri riski
+- Lowest data corruption risk
 
-Dezavantaj:
+Disadvantages:
 
-- admin tarafında test için örnek veri gerekir
+- Sample seed data required for admin verification
 
-### Seçenek B: Başlangıç kopyası
+### Option B: Initial Data Migration
 
-- `mod_category` verileri `mod_news_category` tablosuna kopyalanır
-- `mod_content` verileri `mod_news` tablosuna kopyalanır
-- `mod_news.category_id` değerleri yeni kategori ID'lerine göre eşlenir
+- Copy `mod_category` records into `mod_news_category`
+- Copy `mod_content` records into `mod_news`
+- Map `mod_news.category_id` values to new category IDs
 
-Avantaj:
+Advantages:
 
-- yeni modül ilk günden dolu gelir
+- Module is pre-populated immediately
 
-Dezavantaj:
+Disadvantages:
 
-- veri eşleme script'i gerekir
-- kategori ID eşleme hatası riski vardır
+- Requires data mapping scripts
+- Risk of mismatched category IDs
 
-Bu proje için teknik olarak en güvenli yol:
+The recommended technical approach for this project is:
 
-- önce kodu ayağa kaldırmak
-- sonra istenirse veri taşıma script'i yazmak
+- Deploy and verify code first
+- Run optional migration scripts subsequently
 
-Yani varsayılan plan `Seçenek A` olmalıdır.
+Therefore, Option A is the default plan.
 
-## Faz 5: Doğrulama Planı
+## Phase 5: Verification Plan
 
 ### `mod_news_category`
 
-- admin listesi açılıyor mu
-- ekleme kaydı DB'ye gidiyor mu
-- düzenleme çalışıyor mu
-- silme ve sıralama çalışıyor mu
-- nested kategori yapısı korunuyor mu
+- Admin list loads properly
+- Create record persists to database
+- Edit form updates record
+- Delete and ordering operations succeed
+- Nested category tree structure is preserved
 
 ### `mod_news`
 
-- admin listesi açılıyor mu
-- ekleme formunda `mod_news_category` verileri geliyor mu
-- kayıt sırasında `category_id` doğru tabloya bağlı mı
-- edit ekranı doğru veriyi çekiyor mu
-- galeri / dosya ilişki modülleri yeni modül adıyla çalışıyor mu
-- permission kontrolleri doğru modül anahtarıyla çalışıyor mu
+- Admin list loads properly
+- Create form populates `mod_news_category` options
+- Save action stores correct `category_id`
+- Edit view retrieves correct entity data
+- Gallery and attachment integrations function under new module key
+- Permission guards enforce `mod_news` permissions
 
 ### Frontend
 
-- haber listesi açılıyor mu
-- tekil haber sayfası açılıyor mu
-- kategori filtreleme doğru çalışıyor mu
-- ilgili içerik / arşiv sorguları yanlış modüle düşmüyor mu
+- News list renders correctly
+- Single news article page renders correctly
+- Category filtering operates properly
+- Related articles and archive queries target the correct table
 
-## Uygulama Sırası
+## Execution Order
 
-1. `mod_news_category` klasörlerini ve installer dosyalarını üret.
-2. `mod_news_category` sınıf, dil, SQL ve template referanslarını ayrıştır.
-3. `mod_news_category` admin akışını doğrula.
-4. `mod_news` klasörlerini ve installer dosyalarını üret.
-5. `mod_news` sınıf, dil, SQL ve template referanslarını ayrıştır.
-6. `mod_news` içindeki tüm kategori bağımlılıklarını `mod_news_category`'ye çevir.
-7. medya, izin, menü ve araç modülü ilişkilerini düzelt.
-8. admin akışlarını doğrula.
-9. frontend akışlarını doğrula.
-10. gerekiyorsa ayrı veri taşıma script'i yaz.
+1. Scaffold `mod_news_category` directories and installer files.
+2. Decouple `mod_news_category` class, language, SQL, and template references.
+3. Verify `mod_news_category` admin flow.
+4. Scaffold `mod_news` directories and installer files.
+5. Decouple `mod_news` class, language, SQL, and template references.
+6. Migrate all category dependencies in `mod_news` to `mod_news_category`.
+7. Update media, permission, menu, and tool module relations.
+8. Verify admin workflows.
+9. Verify frontend workflows.
+10. Execute data migration scripts if required.
 
-## Tahmini Riskler
+## Estimated Risks
 
-- string tabanlı referansların bir kısmının gözden kaçması
-- template yolunun eski modüle kalması
-- SQL join dosyalarında `mod_category` veya `mod_content` adının unutulması
-- installer yükleme sırasının eksik kalması
-- `mod_user` veya yönetim paneli linklerinin yeni modülleri göstermemesi
-- frontend helper'ların eski kategori kaynağını kullanmaya devam etmesi
+- Missed string-based references
+- Template path remaining pointing to legacy module
+- `mod_category` or `mod_content` table names retained in SQL join queries
+- Missing entry in installer loading order
+- Admin dashboard links failing to display new modules
+- Frontend helpers reading from legacy category sources
 
-## Karar Özeti
+## Decision Summary
 
-Bu iş doğrudan rename olarak yapılmayacak.
+This task is executed via derivation rather than in-place rename.
 
-Uygulanacak yöntem:
+Methodology:
 
-- `mod_category` korunacak, `mod_news_category` türetilecek
-- `mod_content` korunacak, `mod_news` türetilecek
-- önce kategori modülü üretilecek
-- sonra içerik modülü buna bağlanacak
-- yeni özellik eklenmeyecek
-- veri taşıma koddan ayrı, ikinci adım olarak ele alınacak
+- Preserve `mod_category`, derive `mod_news_category`
+- Preserve `mod_content`, derive `mod_news`
+- Generate category module first
+- Wire news content module to the category module
+- Keep functionality identical without feature bloat
+- Separate code deployment from data migration
 
-Bu plan; risk, doğrulanabilirlik, geri dönüş kolaylığı ve toplam efor açısından en dengeli yaklaşımdır.
+This approach provides optimal balance across risk management, verifiability, rollback safety, and implementation effort.

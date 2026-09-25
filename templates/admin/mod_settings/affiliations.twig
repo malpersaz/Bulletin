@@ -1,0 +1,248 @@
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set back_url = site.saddress ~ 'mod_settings/edit' %}
+
+{% block title %}{{ lang.mod_settings.affiliations_title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.affiliations_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/affiliations.css?v=1.0">
+{% endblock %}
+
+{% block content %}
+<div class="affil-page"
+     data-list-url="{{ site.saddress }}mod_settings/ajax_affiliation_list"
+     data-save-url="{{ site.saddress }}mod_settings/ajax_affiliation_save"
+     data-toggle-url="{{ site.saddress }}mod_settings/ajax_affiliation_toggle_status"
+     data-reorder-url="{{ site.saddress }}mod_settings/ajax_affiliation_reorder"
+     data-delete-url="{{ site.saddress }}mod_settings/ajax_affiliation_delete"
+     data-static-url="{{ site.address }}static/mod_settings/"
+     data-add-title="{{ lang.mod_settings.add_affiliation }}"
+     data-edit-title="{{ lang.mod_settings.edit_affiliation }}"
+     data-delete-title="{{ lang.mod_settings.delete_affiliation }}"
+     data-delete-confirm="{{ lang.mod_settings.affiliation_delete_confirm }}"
+     data-delete-btn="{{ lang.mod_settings.delete }}"
+     data-cancel-btn="{{ lang.mod_settings.button.cancel }}"
+     data-save-btn="{{ lang.mod_settings.save }}"
+     data-loading-text="{{ lang.mod_settings.loading_message }}"
+     data-no-records="{{ lang.mod_settings.no_affiliations_found }}">
+
+    <!-- Hero & Overview Card -->
+    <section class="affil-hero-card">
+        <div class="affil-hero-header">
+            <div class="affil-hero-icon">
+                <i class="bi bi-building-check"></i>
+            </div>
+            <div class="affil-hero-text">
+                <h3 class="affil-hero-title">{{ lang.mod_settings.affiliations_title }}</h3>
+                <p class="affil-hero-desc">{{ lang.mod_settings.affiliations_section_desc }}</p>
+            </div>
+        </div>
+
+        <!-- Filter Stat Pills -->
+        <div class="affil-stats-row">
+            <button type="button" class="affil-stat-pill active" data-filter="all">
+                <span>{{ lang.mod_settings.filter_all }}</span>
+                <span class="affil-stat-count" id="affilStatAllCount">{{ affiliation_items is defined ? affiliation_items|length : 0 }}</span>
+            </button>
+            <button type="button" class="affil-stat-pill" data-filter="active">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span>{{ lang.mod_settings.affiliation_status_active }}</span>
+                <span class="affil-stat-count" id="affilStatActiveCount">0</span>
+            </button>
+            <button type="button" class="affil-stat-pill" data-filter="inactive">
+                <i class="bi bi-dash-circle-fill text-muted"></i>
+                <span>{{ lang.mod_settings.affiliation_status_inactive }}</span>
+                <span class="affil-stat-count" id="affilStatInactiveCount">0</span>
+            </button>
+        </div>
+
+        <!-- Action Bar: Live Search & Add -->
+        <div class="affil-hero-actions">
+            <div class="affil-search-wrapper">
+                <i class="bi bi-search affil-search-icon"></i>
+                <input type="text" id="affilSearchInput" class="affil-search-input" placeholder="{{ lang.mod_settings.affiliation_name_placeholder }}" autocomplete="off" aria-label="{{ lang.mod_settings.affiliation_name_placeholder }}">
+                <button type="button" id="clearAffilSearchBtn" class="affil-search-clear is-hidden" aria-label="{{ lang.mod_settings.button.cancel }}">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+            <button type="button" class="affil-hero-add-btn" id="openAddAffilBtn" aria-label="{{ lang.mod_settings.add_affiliation }}">
+                <i class="bi bi-plus-lg"></i>
+                <span>{{ lang.mod_settings.add_affiliation }}</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Affiliation Cards List -->
+    <div class="affil-cards-list" id="affilCardsList">
+        {% if affiliation_items is defined and affiliation_items is not empty %}
+            {% for item in affiliation_items %}
+                {% set is_item_active = item.is_active == 'y' %}
+                <div class="affil-card{% if not is_item_active %} is-inactive{% endif %}"
+                     data-id="{{ item.id }}"
+                     data-name="{{ item.name }}"
+                     data-url="{{ item.url }}"
+                     data-logo="{{ item.logo }}"
+                     data-order="{{ item.display_order }}"
+                     data-active="{{ item.is_active }}">
+                    
+                    <div class="affil-card-top">
+                        <div class="affil-card-meta">
+                            <div class="affil-logo-box">
+                                {% if item.logo and item.logo|trim is not empty %}
+                                    <img src="{{ site.address }}static/mod_settings/{{ item.logo }}" alt="{{ item.name }}" class="affil-logo-img">
+                                {% else %}
+                                    <i class="bi bi-building affil-placeholder-icon"></i>
+                                {% endif %}
+                            </div>
+                            <div class="affil-card-info">
+                                <h4 class="affil-item-name">{{ item.name }}</h4>
+                                <span class="affil-status-tag {{ is_item_active ? 'active' : 'inactive' }}">
+                                    {{ is_item_active ? lang.mod_settings.affiliation_status_active : lang.mod_settings.affiliation_status_inactive }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="affil-switch-control">
+                            <label class="affil-switch" title="{{ is_item_active ? 'Active' : 'Inactive' }}">
+                                <input type="checkbox" {% if is_item_active %}checked{% endif %} aria-label="{{ item.name }} status">
+                                <span class="affil-switch-track"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="affil-url-container">
+                        {% if item.url and item.url|trim is not empty %}
+                            <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="affil-url-box" title="{{ item.url }}">
+                                <div class="affil-url-text-wrap">
+                                    <i class="bi bi-link-45deg affil-url-icon"></i>
+                                    <span class="affil-url-text">{{ item.url }}</span>
+                                </div>
+                                <i class="bi bi-box-arrow-up-right affil-url-external"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="affil-card-bottom">
+                        <div class="affil-reorder-group">
+                            <span class="affil-order-badge">#{{ loop.index }}</span>
+                            <button type="button" class="affil-action-btn icon-only reorder-up" title="Move Up" aria-label="Move Up" {% if loop.first %}disabled{% endif %}>
+                                <i class="bi bi-arrow-up"></i>
+                            </button>
+                            <button type="button" class="affil-action-btn icon-only reorder-down" title="Move Down" aria-label="Move Down" {% if loop.last %}disabled{% endif %}>
+                                <i class="bi bi-arrow-down"></i>
+                            </button>
+                        </div>
+                        <div class="affil-card-actions-right">
+                            <button type="button" class="affil-action-btn btn-edit" title="{{ lang.mod_settings.button.edit }}">
+                                <i class="bi bi-pencil-square"></i>
+                                <span>{{ lang.mod_settings.button.edit }}</span>
+                            </button>
+                            <button type="button" class="affil-action-btn icon-only btn-delete" title="{{ lang.mod_settings.delete }}" aria-label="{{ lang.mod_settings.delete }}">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Empty State -->
+    <div class="affil-empty-state{% if affiliation_items is defined and affiliation_items is not empty %} is-hidden{% endif %}" id="affilEmptyState">
+        <div class="affil-empty-icon-wrap">
+            <i class="bi bi-building"></i>
+        </div>
+        <h4 class="affil-empty-title">{{ lang.mod_settings.no_affiliations_found }}</h4>
+        <p class="affil-empty-desc">{{ lang.mod_settings.affiliations_section_desc }}</p>
+        <button type="button" class="affil-empty-btn" id="emptyAddAffilBtn">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_settings.add_affiliation }}</span>
+        </button>
+    </div>
+
+</div>
+
+<!-- Modal Bottom-Sheet for Add / Edit -->
+<div class="affil-modal-backdrop" id="affilItemModal" role="dialog" aria-modal="true" aria-labelledby="affilModalTitle">
+    <div class="affil-modal-sheet">
+        <div class="affil-modal-notch"></div>
+        <div class="affil-modal-header">
+            <h4 class="affil-modal-title" id="affilModalTitle">{{ lang.mod_settings.add_affiliation }}</h4>
+            <button type="button" class="affil-modal-close" data-action="close-modal" aria-label="{{ lang.mod_settings.button.close }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <form id="affilItemForm" class="affil-modal-form" enctype="multipart/form-data">
+            <input type="hidden" id="affil_item_id" name="id" value="0">
+            <div class="affil-modal-body">
+                
+                <div class="affil-form-group">
+                    <label for="affil_name_input" class="affil-form-label">{{ lang.mod_settings.affiliation_name }} *</label>
+                    <input type="text" id="affil_name_input" name="name" class="affil-form-input" required placeholder="{{ lang.mod_settings.affiliation_name_placeholder }}">
+                </div>
+
+                <div class="affil-form-group">
+                    <label for="affil_url_input" class="affil-form-label">{{ lang.mod_settings.affiliation_url }} *</label>
+                    <input type="url" id="affil_url_input" name="url" class="affil-form-input" required placeholder="{{ lang.mod_settings.affiliation_url_placeholder }}">
+                </div>
+
+                <div class="affil-form-group">
+                    <label for="affil_logo_file" class="affil-form-label">{{ lang.mod_settings.affiliation_logo }}</label>
+                    <div class="affil-logo-upload-wrap">
+                        <div class="affil-preview-thumb" id="affilLogoPreviewThumb">
+                            <i class="bi bi-image" id="affilLogoPlaceholder"></i>
+                            <img src="" alt="" id="affilLogoImgPreview" class="affil-preview-img is-hidden">
+                        </div>
+                        <div class="affil-file-input-col">
+                            <input type="file" id="affil_logo_file" name="logo" class="affil-file-input" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+                            <span class="affil-upload-hint">PNG, JPG, WEBP, SVG (Maks. 2MB)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="affil-form-group-switch">
+                    <div>
+                        <div class="affil-switch-label">{{ lang.mod_settings.affiliation_status_active }}</div>
+                        <div class="affil-switch-desc">Visible on public theme continuous affiliations band</div>
+                    </div>
+                    <label class="affil-switch">
+                        <input type="checkbox" id="affil_active_input" name="is_active" value="y" checked>
+                        <span class="affil-switch-track"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="affil-modal-footer">
+                <button type="button" class="affil-btn affil-btn-cancel" data-action="close-modal">
+                    {{ lang.mod_settings.button.cancel }}
+                </button>
+                <button type="submit" class="affil-btn affil-btn-primary" id="saveAffilBtn">
+                    <i class="bi bi-check-lg"></i>
+                    <span>{{ lang.mod_settings.save }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="m3-final-bar">
+    <a href="{{ site.saddress }}mod_settings/edit" class="m3-btn-half m3-btn-half-neutral">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ lang.mod_settings.button.close }}</span>
+    </a>
+    <button type="button" class="m3-btn-half m3-btn-half-primary" id="finalBarAddAffilBtn">
+        <i class="bi bi-plus-lg"></i>
+        <span>{{ lang.mod_settings.add_affiliation }}</span>
+    </button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ site.address }}templates/admin/assets/js/affiliations.js?v=1.0"></script>
+{% endblock %}

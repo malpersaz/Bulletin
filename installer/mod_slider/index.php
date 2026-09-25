@@ -2,13 +2,13 @@
 
 class mod_slider extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_slider';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_slider'
         );
         $this->rolls = array(

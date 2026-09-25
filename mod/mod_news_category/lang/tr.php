@@ -24,15 +24,14 @@ $lang['mod_news_category'] = [
     'add' => 'Kategori Ekle',
     'edit' => 'Kategoriyi Düzenle',
     'information' => 'Bilgilendirme',
-    'oke' => 'İşlem Başarılı',
-    'hata' => 'Hata Oluştu',
-    'error' => 'Kritik Hata Oluştu',
+    'success' => 'İşlem Başarılı',
+    'error' => 'Hata Oluştu',
     'remove_record' => 'Bu kaydı silmek istediğinizden emin misiniz?',
     'choose_wish' => 'Seçiniz',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Kategori başarıyla eklendi!',
             'edit' => 'Kategori başarıyla güncellendi!',
         ],
@@ -64,26 +63,25 @@ $lang['mod_news_category'] = [
     'button' => [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
-        'save' => 'Kaydet',
+        'cancel' => 'Vazgeç',
         'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
+        'save' => 'Kaydet',
     ],
 
     'grid' => [
-        0 => '{total} sonuçtan {from} - {to} arası gösteriliyor',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Ara',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
+        'showing_results' => '{total} sonuçtan {from} - {to} arası gösteriliyor',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Ara',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
     ],
 
     'validator' => [
@@ -94,8 +92,8 @@ $lang['mod_news_category'] = [
         'inarray' => '%s alanı sadece \' %s \' değerlerini kabul edebilir',
     ],
 
-    'roll' => [
-        'ad' => 'Kategori Yönetimi Rolleri',
+    'role' => [
+        'name' => 'Kategori Yönetimi Rolleri',
         'add' => 'Kategori Ekleyebilir',
         'edit' => 'Kategori Düzenleyebilir',
         'delete' => 'Kategori Silebilir',
@@ -207,9 +205,6 @@ $lang['mod_news_category'] = [
         'edit' => 'Seçileni Düzenle',
         'delete' => 'Seçilenleri Sil',
         'refresh' => 'Yenile',
-        'add' => 'Ekle',
-        'edit' => 'Düzenle',
-        'delete' => 'Sil',
         'cancel' => 'İptal',
         'remove' => 'Kaldır',
         'yes' => 'Evet',
@@ -378,7 +373,7 @@ $lang['mod_news_category'] = [
 
     // === Response Codes (for AJAX/PHP responses) ===
     'responses' => [
-        'success' => 'Oke',  // Keep 'Oke' as it's used in JavaScript comparisons
+        'success' => 'Success',  // Keep 'Success' as it's used in JavaScript comparisons
         'error' => 'Error',  // Keep 'Error' as it's used in JavaScript comparisons
         'fatal_error' => 'ERROR',  // Keep 'ERROR' as it's used in JavaScript comparisons
     ],

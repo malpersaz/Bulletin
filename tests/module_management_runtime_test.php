@@ -147,18 +147,18 @@ function test_registry_maps()
     $registry = new ModuleRegistry();
     $content = $registry->getFeatureConfig('content.front');
 
-    assert_same(['mod_content', 'mod_category'], $content['modules'], 'content.front module map changed unexpectedly');
-    assert_same(['mod_content', 'mod_category'], $content['tables'], 'content.front table map changed unexpectedly');
-    assert_same(['mod_content'], $registry->getUninstallDependents('mod_category'), 'mod_category uninstall dependents mismatch');
+    assert_same(['mod_content', 'mod_content_category'], $content['modules'], 'content.front module map changed unexpectedly');
+    assert_same(['mod_content', 'mod_content_category'], $content['tables'], 'content.front table map changed unexpectedly');
+    assert_same(['mod_content'], $registry->getUninstallDependents('mod_content_category'), 'mod_content_category uninstall dependents mismatch');
 }
 
 function test_runtime_ready_feature()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_category'],
+        ['mods', 'mod_content', 'mod_content_category'],
         [
             ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
@@ -172,23 +172,23 @@ function test_runtime_missing_table_reason()
         ['mods', 'mod_content'],
         [
             ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
-    assert_false($runtime->isReady('content.front'), 'content.front should fail when mod_category table is missing');
+    assert_false($runtime->isReady('content.front'), 'content.front should fail when mod_content_category table is missing');
     $failure = $runtime->getFailureReason('content.front');
     assert_same('missing_table', $failure['reason'], 'missing table reason mismatch');
-    assert_same(['mod_category'], $failure['missing_tables'], 'missing table payload mismatch');
+    assert_same(['mod_content_category'], $failure['missing_tables'], 'missing table payload mismatch');
 }
 
 function test_runtime_disabled_module_reason()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_category'],
+        ['mods', 'mod_content', 'mod_content_category'],
         [
             ['mod_name' => 'mod_content', 'status' => 'disabled', 'schema_ready' => 'n'],
-            ['mod_name' => 'mod_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
@@ -201,10 +201,10 @@ function test_runtime_disabled_module_reason()
 function test_module_health_detects_dependency_gaps()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_category'],
+        ['mods', 'mod_content', 'mod_content_category'],
         [
             ['mod_name' => 'mod_content', 'status' => 'degraded', 'schema_ready' => 'n'],
-            ['mod_name' => 'mod_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
@@ -220,7 +220,7 @@ function test_require_ready_logs_block()
         ['mods', 'mod_content'],
         [
             ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 

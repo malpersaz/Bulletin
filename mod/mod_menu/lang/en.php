@@ -19,15 +19,21 @@ if (!defined('AKM_LOADED')) {
  */
 $lang['mod_menu'] = [
 
-    // === Page Titles ===
+    // === Page Titles & Statistics ===
     'list' => 'Menu Management',
     'add' => 'Add Menu',
     'edit' => 'Edit Menu',
     'information' => 'Information',
+    'total_menus' => 'Total Menus',
+    'published_menus' => 'Published',
+    'draft_menus' => 'Drafts',
+    'expand_all' => 'Expand All',
+    'collapse_all' => 'Collapse All',
+    'search_placeholder' => 'Search menus...',
 
     // === Legacy Message Keys (used by index.php) ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Menu successfully added!',
             'edit' => 'Menu successfully updated!',
         ],
@@ -136,14 +142,14 @@ $lang['mod_menu'] = [
         'language' => 'Language',
         'name' => 'Menu Name',
         'url' => 'URL',
-        'parent_menu' => 'Submenu',
+        'parent_menu' => 'Parent Menu',
         'order' => 'Order',
         'target' => 'Target',
         'status' => 'Status',
         'icon' => 'Icon',
         'access_level' => 'Access Level',
         'actions' => 'Actions',
-        'parent_id' => 'Submenu',
+        'parent_id' => 'Parent Menu',
         'html' => 'HTML',
         'acl_id' => 'Access Permission',
         'file' => 'File',
@@ -155,7 +161,7 @@ $lang['mod_menu'] = [
             'name' => 'Menu Name',
             'url' => 'URL',
             'file' => 'File',
-            'parent_id' => 'Submenu',
+            'parent_id' => 'Parent Menu',
             'target' => 'Open Mode',
             'status' => 'Publish Status',
             'html' => 'HTML',
@@ -248,8 +254,13 @@ $lang['mod_menu'] = [
         'processing' => 'Processing...',
     ],
 
+    'success' => 'Success!',
+    'error' => 'Error!',
+    'success_title' => 'Success!',
+    'error_title' => 'Error!',
+
     // === Success Messages ===
-    'success' => [
+    'success_messages' => [
         'operation_completed' => 'Operation completed successfully!',
         'changes_saved' => 'Changes saved!',
     ],
@@ -271,8 +282,8 @@ $lang['mod_menu'] = [
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Menu Management Roles',
+    'role' => [
+        'name' => 'Menu Management Roles',
         'add' => 'Can Add Menus',
         'edit' => 'Can Edit Menus',
         'delete' => 'Can Delete Menus',
@@ -291,10 +302,83 @@ $lang['mod_menu'] = [
         'moderate_edit' => 'You do not have permission to edit other users\' menus',
         'moderate_delete' => 'You do not have permission to delete other users\' menus',
     ],
+
+    // === Mobile Wizard ===
+    'wizard' => [
+        'title' => 'Add Menu',
+        'steps' => [
+            'step_1' => 'Language',
+            'step_2' => 'Menu Name',
+            'step_3' => 'Parent Menu',
+            'step_4' => 'Link (URL)',
+            'step_5' => 'Icon',
+            'step_6' => 'Menu File',
+            'step_7' => 'Custom HTML',
+            'step_8' => 'Target Window',
+            'step_9' => 'Access Level',
+            'step_10' => 'Publish Status & Summary',
+        ],
+        'subtitles' => [
+            'step_1' => 'Select the language for this menu item.',
+            'step_2' => 'Enter the menu name.',
+            'step_3' => 'Specify the hierarchical parent menu.',
+            'step_4' => 'Enter the destination link URL for this menu item.',
+            'step_5' => 'Select or input an icon class for visual presentation.',
+            'step_6' => 'Specify optional controller file route.',
+            'step_7' => 'Add optional custom HTML markup.',
+            'step_8' => 'Choose whether the link opens in the same or new window.',
+            'step_9' => 'Set the access control level for this menu item.',
+            'step_10' => 'Select publication state, review summary and create the menu.',
+        ],
+        'buttons' => [
+            'next' => 'Next',
+            'prev' => 'Back',
+            'finish' => 'Add Menu',
+            'cancel' => 'Cancel',
+        ],
+        'summary' => [
+            'title' => 'Menu Summary',
+            'language' => 'Language',
+            'name' => 'Menu Name',
+            'parent' => 'Parent Menu',
+            'url' => 'Link (URL)',
+            'target' => 'Target Window',
+            'status' => 'Publish Status',
+            'acl' => 'Access Level',
+            'none' => 'None',
+            'root' => 'Top Level (Menu Root)',
+            'same_window' => 'Same Window (_self)',
+            'new_window' => 'New Window (_blank)',
+            'published' => 'Published',
+            'draft' => 'Draft',
+        ],
+        'labels' => [
+            'popular_icons' => 'Popular Icons',
+            'advanced_settings' => 'Advanced Settings (File & HTML)',
+            'placement_preview' => 'Placement Preview',
+            'will_be_added_here' => 'Will be added here',
+            'live_preview' => 'Live Preview',
+            'quick_links' => 'Quick Links',
+            'preset_home' => 'Home (/)',
+            'preset_external' => 'External (https://)',
+            'preset_header_only' => 'Header Only (#)',
+            'target_same_desc' => 'Link opens in current tab (_self)',
+            'target_blank_desc' => 'Link opens in a new tab (_blank)',
+            'status_published_desc' => 'Menu is immediately visible on site',
+            'status_draft_desc' => 'Hidden, visible only in admin panel',
+            'step_prefix' => 'Step',
+        ],
+        'validation' => [
+            'name_required' => 'Menu name is required.',
+            'name_min' => 'Menu name must be at least 2 characters.',
+            'parent_required' => 'Parent menu selection is required.',
+        ],
+    ],
 ];
 $lang['mod_menu']['slots'] = [
     'header' => 'Header Menu',
     'footer' => 'Footer Menu',
+    'action' => 'Action Menu',
 ];
 $lang['mod_menu']['parent_labels'] = [
     'select_parent' => 'Select parent menu',

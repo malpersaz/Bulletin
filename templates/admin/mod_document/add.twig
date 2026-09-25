@@ -199,11 +199,13 @@ function syncDocMeta() {
     const title = document.getElementById('doc-title');
     const keywords = document.getElementById('doc-keywords');
     const description = document.getElementById('doc-description');
+    const langSelect = document.querySelector('select[name="lang"]');
+    const locale = (langSelect && langSelect.value) ? String(langSelect.value).toLowerCase().trim() : (typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en');
 
-    if (!seo.dataset.touched) seo.value = typeof makeSeoValue === 'function' ? makeSeoValue(name) : name;
-    if (!title.dataset.touched) title.value = name;
-    if (!keywords.dataset.touched) keywords.value = name;
-    if (!description.dataset.touched) description.value = name.substring(0, 255);
+    if (!seo.dataset.touched) seo.value = typeof makeSeoValue === 'function' ? makeSeoValue(name, locale) : name;
+    if (!title.dataset.touched) title.value = typeof sanitizeText === 'function' ? sanitizeText(name) : name;
+    if (!keywords.dataset.touched) keywords.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(name, locale) : name;
+    if (!description.dataset.touched) description.value = (typeof sanitizeText === 'function' ? sanitizeText(name) : name).substring(0, 255);
 }
 
 document.addEventListener('DOMContentLoaded', function() {

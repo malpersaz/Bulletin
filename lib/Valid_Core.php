@@ -1,276 +1,282 @@
-<?php 
-class Valid_Core{
-	public function valid_required($arg)
-	{
-		if(Req::is_Request($arg['name'])===False)
-		{
-			return False;
-		}
-		return True;	
-	}
-	public function valid_not_empty($arg)
-	{
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(Req::Request($arg['name'])=='')
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	
-	public function valid_int($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(is_int(Req::Request($arg['name']))===False)
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	public function valid_num($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(filter_var(Req::Request($arg['name']),FILTER_VALIDATE_INT)===False)
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	public function valid_string($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(is_string(Req::Request($arg['name']))===False)
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	public function valid_alphanum($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(preg_match("/^[a-zA-Z0-9]+$/",Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	public function valid_char($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(preg_match("/^[a-zA-Z]+$/",Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-		
-	}
-	
-	public function valid_double($arg){
+<?php
+class Valid_Core
+{
+    public function valid_required($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/^\d+(\.\d{2}+)?$/',Req::Request($arg['name']))==0)
-		{
-			return False;
-		}
-		return True;
-	}
-	
-	// ^[a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ\s]+$
-	public function valid_trchar($arg){
+    public function valid_not_empty($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (Req::Request($arg['name']) == '') {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/[^a-zA-ZığüşöçİĞÜŞÖÇîêûÎÊÛ ]+$/',Req::Request($arg['name']))===1)
-		{
-			return False;
-		}
-		return True;
-	}
-	public function valid_date($arg){
+    public function valid_int($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (is_int(Req::Request($arg['name'])) === false) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/[\d]{4}-[\d]{2}-[\d]{2}/',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	// ^[0 (]+[4|3|2][\d]{2}\)\s[1-9][\d]{2}-[\d]{4}
-	//0 (455) 555-5555
-	public function valid_telii($arg){
+    public function valid_num($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (filter_var(Req::Request($arg['name']), FILTER_VALIDATE_INT) === false) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/^(0) \([4](\d){2}\) [1-9](\d){2}[-](\d){4}$/',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	//^http(s)?:\/\/([a-zA-Z0-9]+\.)?([a-z]+\.)([a-zA-Z]){2,4}(\.[a-zA-Z]{2,4})?
-	//http://www.mynet.com.tr
-	public function valid_web($arg){
+    public function valid_string($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (is_string(Req::Request($arg['name'])) === false) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/^http(s)?:\/\/([a-zA-Z0-9]+\.)?([a-z]+\.)([a-zA-Z]){2,4}(\.[a-zA-Z]{2,4})?/',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	
-	
-	//0 (555) 555-5555
-	public function valid_cepii($arg){
+    public function valid_alphanum($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match("/^[a-zA-Z0-9]+$/", Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/^(0) \([5](\d){2}\) [1-9](\d){2}[-](\d){4}$/',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	// 0 555 555 5555
-	public function valid_cepi($arg){
+    public function valid_char($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match("/^[a-zA-Z]+$/", Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('/^(0) [5](\d){2} [1-9](\d){2} (\d){4}$/',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	// 05555555555
-	public function valid_cep($arg){
+    public function valid_double($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^\d+(\.\d{2}+)?$/', Req::Request($arg['name'])) == 0) {
+            return false;
+        }
+        return true;
+    }
 
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}		
-		if(preg_match('^(05)([0-9]){2}[1-9]([0-9]){2}([0-9]){4}$',Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		return True;
-	}
-	
-	
-	public function valid_email($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if(preg_match("/.+@.+\..+./",Req::Request($arg['name']))===0)
-		{
-			return False;
-		}
-		/*if(checkdnsrr(array_pop(explode("@",Req::Request($arg['name']))),"MX")===False){
-			return False;
-		}*/
-		return True;
-		
-	}
-	
-	public function valid_length($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		$say=$this->_say(Req::Request($arg['name']));
-		if($say < $arg['arg']['min']){
-			return False;
-		}
-		if($say > $arg['arg']['max']){
-			return False;
-		}
-		return True;
-	}
-	
-	public function valid_tcno($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		if($this->_check_tcno(Req::Request($arg['name']))===False){
-			return False;
-		}
-		return True;
-	}
-	
-	public function valid_valid($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}
-		//$f=$arg['arg']['function'];
-		if($arg['arg']['function'](Req::Request($arg['name']))===False){
-			return False;
-		}
-		return False;
-	}
-	
-	public function valid_array($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}	
-		if(in_array(Req::Request($arg['name']),$arg['arg'])===False){
-			return False;
-		}
-		return True;
-	}
-	public function valid_equal($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}	
-		if(Req::Request($arg['name'])!=Req::Request($arg['arg'])){
-			return False;
-		}
-		return True;
-		
-	}
-	public function valid_not_equal($arg){
-		if(Req::is_Request($arg['name'])===False){
-			return False;
-		}	
-		if(Req::Request($arg['name'])==Req::Request($arg['arg'])){
-			return False;
-		}
-		return True;
-		
-	}
-	
-	private function _check_tcno($tcno) {
-		$sonIki='';
-		preg_replace('/([1-9]{1})([0-9]{1})([0-9]{1})([0-9]{1})([0-9]{1})([0-9]{1})([0-9]{1})([0-9]{1})([0-9]{1}).*$/e', "eval('\$on=((((\\1+\\3+\\5+\\7+\\9)*7)-(\\2+\\4+\\6+\\8))%10); \$onbir=(\\1+\\2+\\3+\\4+\\5+\\6+\\7+\\8+\\9+\$on)%10; \$sonIki = \$on.\$onbir;')", $tcno);
-		return(substr($tcno, -2) === $sonIki);
-	}
-	private function _say($str){
-		return mb_strlen($str,"utf-8");
-	}
+    // Unicode / multilingual alphabet validation
+    public function valid_alpha_unicode($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/[^\p{L}\s]+/u', Req::Request($arg['name'])) === 1) {
+            return false;
+        }
+        return true;
+    }
 
+    public function valid_date($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/[\d]{4}-[\d]{2}-[\d]{2}/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
 
+    // Landline phone format: 0 (455) 555-5555
+    public function valid_phone_landline($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^(0) \([1-9](\d){2}\) [1-9](\d){2}[-](\d){4}$/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_web($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^http(s)?:\/\/([a-zA-Z0-9]+\.)?([a-z]+\.)([a-zA-Z]){2,4}(\.[a-zA-Z]{2,4})?/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    // Mobile phone formatted: 0 (555) 555-5555
+    public function valid_phone_mobile_formatted($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^(0) \([5](\d){2}\) [1-9](\d){2}[-](\d){4}$/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    // Mobile phone spaced: 0 555 555 5555
+    public function valid_phone_mobile_spaced($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^(0) [5](\d){2} [1-9](\d){2} (\d){4}$/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    // Mobile phone raw: 05555555555
+    public function valid_phone_mobile($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match('/^(05)([0-9]){2}[1-9]([0-9]){2}([0-9]){4}$/', Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_email($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (preg_match("/.+@.+\..+./", Req::Request($arg['name'])) === 0) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_length($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        $count = $this->_count_chars(Req::Request($arg['name']));
+        if ($count < $arg['arg']['min']) {
+            return false;
+        }
+        if ($count > $arg['arg']['max']) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_national_id($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if ($this->_check_national_id(Req::Request($arg['name'])) === false) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_valid($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (is_callable($arg['arg']['function']) && $arg['arg']['function'](Req::Request($arg['name'])) === false) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_array($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (in_array(Req::Request($arg['name']), $arg['arg']) === false) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_equal($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (Req::Request($arg['name']) != Req::Request($arg['arg'])) {
+            return false;
+        }
+        return true;
+    }
+
+    public function valid_not_equal($arg)
+    {
+        if (Req::is_Request($arg['name']) === false) {
+            return false;
+        }
+        if (Req::Request($arg['name']) == Req::Request($arg['arg'])) {
+            return false;
+        }
+        return true;
+    }
+
+    private function _check_national_id($id)
+    {
+        $idStr = (string)$id;
+        if (strlen($idStr) !== 11 || !ctype_digit($idStr) || $idStr[0] === '0') {
+            return false;
+        }
+
+        $digits = array_map('intval', str_split($idStr));
+        $oddSum = $digits[0] + $digits[2] + $digits[4] + $digits[6] + $digits[8];
+        $evenSum = $digits[1] + $digits[3] + $digits[5] + $digits[7];
+
+        $tenthDigit = (($oddSum * 7) - $evenSum) % 10;
+        if ($tenthDigit < 0) {
+            $tenthDigit += 10;
+        }
+
+        if ($digits[9] !== $tenthDigit) {
+            return false;
+        }
+
+        $firstTenSum = array_sum(array_slice($digits, 0, 10));
+        $eleventhDigit = $firstTenSum % 10;
+
+        return ($digits[10] === $eleventhDigit);
+    }
+
+    private function _count_chars($str)
+    {
+        return mb_strlen((string)$str, "utf-8");
+    }
 }

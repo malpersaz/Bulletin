@@ -15,8 +15,8 @@
     {% endif %}
 {% endmacro %}
 
-{% block title %}{{ lang.mod_user_group.admin.1 }}{% endblock %}
-{% block headline %}{{ lang.mod_user_group.admin.1 }}{% endblock %}
+{% block title %}{{ lang.mod_user_group.admin.add_area }}{% endblock %}
+{% block headline %}{{ lang.mod_user_group.admin.add_area }}{% endblock %}
 
 {% block content %}
 <style>
@@ -54,15 +54,15 @@
     <form method="POST" action="" id="addUserGroupForm" class="user-group-form-card">
         <div class="m3-input-wrapper">
             <input class="m3-input-lg" name="name" value="{{ name }}" type="text" id="name" placeholder=" ">
-            <label class="m3-floating-label">{{ lang.mod_user_group.admin.7 }}</label>
+            <label class="m3-floating-label">{{ lang.mod_user_group.admin.group_name }}</label>
         </div>
 
         <div class="m3-input-wrapper">
             <select class="m3-input-lg" name="parent_id" id="parent_id">
-                <option value="0">{{ lang.mod_user_group[5] }}</option>
+                <option value="0">{{ lang.mod_user_group.select_optional }}</option>
                 {{ _self.select(0, 0, parent_id, user_groupm) }}
             </select>
-            <label class="m3-floating-label">{{ lang.mod_user_group.admin.22 }}</label>
+            <label class="m3-floating-label">{{ lang.mod_user_group.admin.sub_group }}</label>
         </div>
     </form>
 </div>

@@ -141,7 +141,7 @@
 
 <!-- Hidden filter form -->
 <form id="filterForm" style="display: none;">
-    <input type="text" name="arama[identity]" id="filterSearch" value="">
+    <input type="text" name="filter[identity]" id="filterSearch" value="">
 </form>
 {% endblock %}
 
@@ -170,7 +170,7 @@
     </div>
 
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="window.location.href='{{ site.saddress }}mod_user/add'" aria-label="{{ lang.mod_user.add|default('Bakarhêner Lêzêde Bike') }}">
+    <button class="main-fab" id="mainFab" onclick="window.location.href='{{ site.saddress }}mod_user/add'" aria-label="{{ lang.mod_user.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endblock %}
@@ -180,14 +180,14 @@
 <script>
 const DATA_URL = '{{ site.saddress }}mod_user/datatable_json';
 const MODULE_URL = '{{ site.saddress }}mod_user/';
-const RADRES_URL = '{{ site.iaddress }}';
+const IADDRESS_URL = '{{ site.iaddress }}';
 const USER_LANG = {
     confirm_delete: '{{ lang.mod_user.remove_record }}',
     confirm_activate: '{{ lang.mod_user.grid.status.value }}',
     confirm_deactivate: '{{ lang.mod_user.grid.deactivate_confirm.value }}',
     confirm_yes: '{{ lang.mod_user.button.yes }}',
     confirm_no: '{{ lang.mod_user.button.no }}',
-    oke: '{{ lang.mod_user.oke }}',
+    success: '{{ lang.mod_user.success }}',
     error: '{{ lang.mod_user.error_fatal }}',
     activate: '{{ lang.mod_user.grid.status.key }}',
     deactivate: '{{ lang.mod_user.grid.deactivate_confirm.key }}',
@@ -321,7 +321,7 @@ class UserManager {
             const initial = (name || username || '?').charAt(0).toUpperCase();
             let avatarHtml = '';
             if (image && image !== 'avatar.png') {
-                avatarHtml = `<img src="${RADRES_URL}mod_user/thumb/${image}" alt="${name}" onerror="this.replaceWith('${initial}')">`;
+                avatarHtml = `<img src="${IADDRESS_URL}mod_user/thumb/${image}" alt="${name}" onerror="this.replaceWith('${initial}')">`;
             } else {
                 avatarHtml = initial;
             }
@@ -528,7 +528,7 @@ window.activateSelected = function() {
             fetch(MODULE_URL + endpoint, { method: 'POST', body: formData })
                 .then(r => r.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         mgr.selectedUserId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -560,7 +560,7 @@ window.deleteSelected = function() {
             fetch(MODULE_URL + 'delete', { method: 'POST', body: formData })
                 .then(r => r.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         mgr.selectedUserId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);

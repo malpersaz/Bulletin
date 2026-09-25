@@ -1,0 +1,80 @@
+{% set module_lang_key = 'mod_survey' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_survey.actions.list }}{% endblock %}
+{% block headline %}{{ lang.mod_survey.actions.list }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_survey.css?v=1.0">
+{% endblock %}
+
+{% block content %}
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+</div>
+
+<div id="survey-list-container" class="content-list survey-list-content"></div>
+
+<div id="empty-state" class="survey-empty-state u-hidden">
+    <i class="bi bi-question-circle"></i>
+    <strong>{{ lang.mod_survey.empty.no_polls }}</strong>
+</div>
+
+<div id="infinite-loader" class="infinite-loader u-hidden">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+    <span>{{ lang.mod_survey.loading.loading }}</span>
+</div>
+
+<form id="filterForm" class="u-hidden">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="search[question]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar survey-toolbar">
+    {% if session.permissions.mod_survey.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item toolbar-disabled" title="{{ lang.mod_survey.buttons.delete }}">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_survey.edit is defined %}
+        <button id="toolbarDefault" class="toolbar-item toolbar-disabled" title="{{ lang.mod_survey.buttons.set_default }}">
+            <i class="bi bi-star-fill"></i>
+        </button>
+        <button id="toolbarEdit" class="toolbar-item toolbar-disabled" title="{{ lang.mod_survey.buttons.edit }}">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    {% endif %}
+</div>
+
+{% if session.permissions.mod_survey.add is defined %}
+    <!-- Main FAB Button -->
+    <button class="main-fab" id="mainFab" data-href="{{ site.saddress }}mod_survey/add" aria-label="{{ lang.mod_survey.buttons.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const MODULE_URL = SITE_URL + "mod_survey/";
+    const DATA_URL = SITE_URL + "mod_survey/datatable_json";
+    const SURVEY_LANG = {
+        active: "{{ lang.mod_survey.status.published|e('js') }}",
+        draft: "{{ lang.mod_survey.status.draft|e('js') }}",
+        delete_confirm: "{{ lang.mod_survey.confirmations.delete_single|e('js') }}",
+        set_default_confirm: "{{ lang.mod_survey.confirmations.set_default|e('js') }}",
+        set_default_success: "{{ lang.mod_survey.messages.success.set_default|e('js') }}"
+    };
+</script>
+<script src="/templates/admin/assets/js/mod_survey.js?v=1.1"></script>
+{% endblock %}

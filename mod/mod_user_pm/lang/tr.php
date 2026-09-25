@@ -43,7 +43,7 @@ $lang['mod_user_pm']=[
 						'recipient_col'=>'Alıcı',
 						'message_info_sent'=>'Bu mesaj <strong>%s</strong> kullanıcısına <strong>%s</strong> tarihinde gönderilmiştir.',
 						'sent_followup_note'=>'Son gönderimlerinizi gözden geçirip birkaç adımda yeniden aksiyon alın.',
-						'reply_action_alt'=>'Yanıtla',
+						'reply_action_tooltip' =>'Yanıtla',
 						'unread'=>'Okunmamış',
 						'total'=>'Toplam',
 						'loading'=>'Yükleniyor...',
@@ -89,16 +89,17 @@ $lang['mod_user_pm']['error']=[
 						'group_not_selected'=>'Lütfen üye grubu seçin.',
 						'group_not_found'=>'Belirttiğiniz üye grubu bulunamadı!'
 					];
-$lang['mod_user_pm']['roll']=[
-						'ad'=>'Özel Mesaj Rolleri',
+$lang['mod_user_pm']['role']=[
+						'name'=>'Özel Mesajlaşma Rolleri',
+						'roles'=>'Özel Mesajlar',
 						'send'=>'Özel mesaj gönderebilir',
-						'bulk'=>'Birden fazla kişiye aynı anda özel mesaj gönderebilir.',
-						'group_bulk'=>'İstediği üye grubuna toplu özel mesaj gönderebilir.',
-						'all'=>'Bütün üyelere aynı anda toplu özel mesaj gönderebilir'
+						'bulk'=>'Birden fazla üyeye aynı anda özel mesaj gönderebilir',
+						'group_bulk'=>'Üye gruplarına toplu özel mesaj gönderebilir',
+						'all'=>'Bütün üyelere aynı anda toplu özel mesaj gönderebilir',
 ];
 $lang['mod_user_pm']['role_errors']=[
-						'send'=>'Özel mesaj gönderebilmek için öncelikle <a href="register" style="color:#000">Kayıt olmalısınız</a>.',
+						'send'=>'Özel mesaj gönderebilmek için öncelikle <a href="register">Kayıt olmalısınız</a>.',
 						'bulk'=>'Toplu özel mesaj gönderme yetkiniz bulunmamaktadır.',
 						'group_bulk'=>'Gruplara toplu özel mesaj gönderme yetkiniz bulunmamaktadır.',
-						'all'=>'Bütün üyelere aynı anda mesaj gönderme yetkiniz bulunmamaktadır.'
+						'all'=>'Bütün üyelere aynı anda mesaj gönderme yetkiniz bulunmamaktadır.',
 ];

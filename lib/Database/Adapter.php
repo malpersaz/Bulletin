@@ -1,11 +1,11 @@
 <?php
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 11.04.2011 - 17:29
- * Sınıf İsmi: Adapter
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 11.04.2011 - 17:29
+ * Class Name: Adapter
  */
 class Adapter
 {
@@ -27,15 +27,14 @@ class Adapter
     {
         self::$database = $database;
         
-        // Daha Önce Çağrılmışmı?
+        // Has it been called before?
         if (array_key_exists(self::$database, self::$_instances)) {
             return self::$_instances[self::$database];
         }
         
         if ($database === null) {
             throw new AdapterException(
-                "\$database varitable not allowed NULL\n" .
-                "\$database NULL olamaz\n"
+                "\$database variable cannot be NULL\n"
             );
             exit();
         }
@@ -43,7 +42,7 @@ class Adapter
 
 
         // Check database is defined in db_config?
-        // İstenilen Database Bilgileri Kayıtlımı?
+        // Is the requested Database Information Registered?
         try {
             $this->check_database_config_exists(self::$database);
         } catch (AdapterException $e) {
@@ -52,7 +51,7 @@ class Adapter
         }
 
         // Check Adapter is Exists
-        // Adapter varmı?
+        // Does the Adapter exist?
         try {
             $this->adapter_exists(self::$database);
         } catch (AdapterException $e) {
@@ -75,18 +74,17 @@ class Adapter
     }
 
     /*
-    * Check Database Exists İn Db_Config
+    * Check Database Exists In Db_Config
     * @access public
     * @return boolean
     */
     public function check_database_config_exists($database)
     {
         // Get Db_Config
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         if (isset($db_config[$database]) === false) {
             throw new AdapterException(
-                "Undefined Database Error!\n'$database'' Database Name is not defined in db.config.php" .
-                "Tanımlanmamış Veritabanı Hatası!\n'$database' adlı Veritabanı db.config.php Dosyasında Tanımlanmamış"
+                "Undefined Database Error!\nDatabase '$database' is not defined in db.config.php"
             );
             return false;
         }
@@ -94,13 +92,13 @@ class Adapter
     }
     /*
      * Check Adapter File and Class is Exists
-     * Adapter Dosyası ve Sınıfı varmı yokmu kontrol eder
+     * Checks if the Adapter File and Class exist
      * @param string $database
      * @return bool
      */
     public function adapter_exists($database)
     {
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         //$adapterclass = 'Adapter_' . ucfirst(strtolower($db_config['adapter']));
         $this->adapterclass = 'Adapter_' . $db_config[$database]['adapter'];
         $this->adapterfile = lib_dir . 'Database' . DS . 'Adapter' .DS . $db_config[$database]['adapter'] . '.php';

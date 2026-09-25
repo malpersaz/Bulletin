@@ -197,13 +197,13 @@ function syncVideoCategoryMeta() {
         seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(nameInput.value) : nameInput.value;
     }
     if (!titleInput.dataset.touched) {
-        titleInput.value = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+        titleInput.value = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
     }
     if (!keywordsInput.dataset.touched) {
         keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(nameInput.value) : nameInput.value;
     }
     if (!descriptionInput.dataset.touched) {
-        const cleanedValue = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+        const cleanedValue = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
         descriptionInput.value = cleanedValue.substring(0, 255);
     }
 }
@@ -233,7 +233,7 @@ async function removeVideoCategoryImage(id) {
             body: body.toString()
         });
         const text = await response.text();
-        if (text.trim() === 'Oke') {
+        if (text.trim() === 'Success') {
             const currentImage = document.getElementById('video-category-current-image');
             if (currentImage) {
                 currentImage.remove();

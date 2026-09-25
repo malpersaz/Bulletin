@@ -2,7 +2,7 @@
 /**
  * News Management Module - English Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -24,11 +24,11 @@ $lang['mod_news'] = [
     'edit' => 'Edit News',
     'list' => 'News List',
     'information' => 'Information!',
-    'oke' => 'Operation Successful!',
+    'success' => 'Operation Successful!',
     'error_occurred' => 'Error Occurred!',
     'error' => 'Fatal Error Occurred!',
     'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image Removed',
+    'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
     'remove_record' => 'Are you sure you want to delete this record?',
     'delete_confirm' => 'Are you sure you want to delete this news item?',
@@ -65,7 +65,7 @@ $lang['mod_news'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'News Added!',
             'edit' => 'News Updated!',
         ],
@@ -101,17 +101,17 @@ $lang['mod_news'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results.',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
-        104 => 'Loading...',
-        105 => 'No News Found',
+        'showing_results' => 'Showing {from} to {to} of {total} results.',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
+        'loading' => 'Loading...',
+        'no_data' => 'No News Found',
         'approve' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this news item?',
@@ -133,11 +133,11 @@ $lang['mod_news'] = [
         'title_length' => 'You must enter a title consisting of at least 1 and at most 70 characters.',
         'title_exists' => 'This title already exists, please change it',
         'title_unique' => 'Your title is unique',
-        'deck_length' => 'Please enter an introductory text of at least 110 characters and a maximum of 280 characters.',
+        'deck_length' => 'Please enter an introductory text between 90 and 120 characters.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'News Management Roles',
         'add' => 'Can Add News',
         'edit' => 'Can Edit News',
@@ -228,7 +228,6 @@ $lang['mod_news'] = [
         'default_sort' => 'Newest',
         'default_lang' => 'EN',
         'date_locale' => 'en-US',
-        'all' => 'All',
         'filter_cleared' => 'Filters cleared and reset to defaults.',
         'filter_applied' => 'Filters Applied',
         'sort_label' => 'Sorting',
@@ -313,7 +312,7 @@ $lang['mod_news'] = [
             'category' => 'Determine the category to add the news item to.',
             'title' => 'Enter an engaging title. (Min: 1, Max: 70)',
             'date' => 'Date and time for publication.',
-            'intro' => 'Write a short and concise summary. (110 - 280 Characters)',
+            'intro' => 'Write a short and concise summary. (90 - 120 Characters)',
             'news' => 'Rich text editor.',
             'image' => 'Upload a cover image.',
             'finish' => 'Final checks and publishing.',
@@ -382,7 +381,6 @@ $lang['mod_news'] = [
         'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for news.",
         'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for news.",
         'status_alert' => "STATUS UPDATED:\n%s",
-        'delete_confirm' => 'Yes, Delete!',
         'delete_success' => 'News deleted!',
         'add_video' => 'Add Video',
         'add_file' => 'Add File',
@@ -404,26 +402,9 @@ $lang['mod_news'] = [
 
     // === Latest News ===
     'latest_news' => [
-        1 => 'Latest News',
-        2 => 'View All News',
-        3 => 'No news published yet.',
-    ],
-
-    'mock' => [
-        'titles' => [
-            "New Era Begins in Kurdish Press",
-            "Diyarbakir Culture and Arts Festival Schedule Announced",
-            "Local Journalism Workshop Concluded",
-            "Notes on AI and Media Relationship",
-            "Transition from Traditional Journalism to Digital Media",
-            "Social Media Usage Statistics 2024",
-            "Weekly Tech Summary: What Happened?",
-            "Writers Union Elects New Board",
-            "Photography Workshop Registrations Started",
-            "Rojname Mobile App Updated"
-        ],
-        'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
-        'authors' => [],
+        'title' => 'Latest News',
+        'subtitle' => 'View All News',
+        'description' => 'No news published yet.',
     ],
 
     // === AJAX & Relation Messages ===

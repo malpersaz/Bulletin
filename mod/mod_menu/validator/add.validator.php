@@ -3,48 +3,48 @@ class add_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
-        // Validator Kütüphanesini Yükleyelim
+        // Load Validator Library
         $this->valid = Load::lib('Validator');
-        // Dil Dosyası.
+        // Language File.
         $this->lang = Load::lang('mod_menu');
     }
     public function check()
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['language'] ?? 'language', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
+                'message' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['language'] ?? 'language', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['name'] ?? 'name', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
+                'message' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['name'] ?? 'name', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // parent_id Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'parent_id',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['parent_id'] ?? 'parent_id', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
+                'message' => str_replace(':field', $this->lang['mod_menu']['admin']['columns']['parent_id'] ?? 'parent_id', $this->lang['mod_menu']['validation']['required'] ?? '%s Pêwîst e')
             ]
         );
         if ($this->_check() === True) {
@@ -53,15 +53,15 @@ class add_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => str_replace([':field', ':min', ':max'], [$this->lang['mod_menu']['admin']['columns']['name'] ?? 'name', '2', '255'], $this->lang['mod_menu']['validation']['min_length'] ?? '%s Divê herî kêm %s tîpan be')
+                'message' => str_replace([':field', ':min', ':max'], [$this->lang['mod_menu']['admin']['columns']['name'] ?? 'name', '2', '255'], $this->lang['mod_menu']['validation']['min_length'] ?? '%s Divê herî kêm %s tîpan be')
             ]
         );
         if ($this->_check() === True) {
@@ -70,24 +70,24 @@ class add_validator
 
         #Check inarray
         // target in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'target',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => "Hedef xelet e"
+                'message' => "Hedef xelet e"
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // status in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'status',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => "Weşan xelet e"
+                'message' => "Weşan xelet e"
             ]
         );
         if ($this->_check() === True) {
@@ -96,7 +96,7 @@ class add_validator
 
         #Check Email
 
-        #Check Tcno
+        # Check national ID
 
         #Check Unique
 
@@ -109,10 +109,10 @@ class add_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

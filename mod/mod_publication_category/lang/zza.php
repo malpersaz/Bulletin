@@ -2,7 +2,7 @@
 /**
  * Publication Category Module - Kurdish Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication_category
  * @version 1.0.0
  * @author  AKM Software
@@ -24,15 +24,14 @@ $lang['mod_publication_category'] = [
     'add' => 'Kategorî Zêde Bike',
     'edit' => 'Biguhere',
     'information' => 'Agahî',
-    'oke' => 'Çalakî Serkeftî',
-    'hata' => 'Çewtî Çêbû',
-    'error' => 'Çewtiya Giran Çêbû',
+    'success' => 'Çalakî Serkeftî',
+    'error' => 'Çewtî Çêbû',
     'remove_record' => 'Ji vê tomarê jê bibin tu pê bawer î?',
     'choose_wish' => 'Hilbijêre',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Kategorî bi serkeftî hat zêdekirin!',
             'edit' => 'Kategorî bi serkeftî hat guhertin!',
         ],
@@ -48,42 +47,30 @@ $lang['mod_publication_category'] = [
 
     'errors' => [
         'record' => 'Toma hatiye spartin nehate dîtin!',
-        'parent_selection_required' => 'Ji kerema xwe re kategoriya jorîn hilbijêre.',
-        'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
-        'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
-        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
-        'menu_language_mismatch' => 'Zimanê menuya jorîn divê bi zimanê kategoriyê re yek be.',
-        'order_update_failed' => 'Rêza kategoriyê nehate rojanekirin.',
-    ],
-
-    'parent_labels' => [
-        'system_root' => 'Koka pergalê',
-        'language_root' => 'Koka :language',
     ],
 
     'button' => [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Jê Bibe',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
         'save' => 'Tomar Bike',
-        'remove' => 'Jêbibe',
     ],
 
     'grid' => [
-        0 => 'Ji {total} encaman {from} - {to} tê xuyan',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên tê barkirin, ji kerema xwe re bisekinin...',
-        4 => 'Daneyên nehate dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe re kêmî tayek hilbijêrin',
-        8 => 'Ji kerema xwe re tenê tayek hilbijêrin',
+        'showing_results' => 'Ji {total} encaman {from} - {to} tê xuyan',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên tê barkirin, ji kerema xwe re bisekinin...',
+        'no_data' => 'Daneyên nehate dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe re kêmî tayek hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe re tenê tayek hilbijêrin',
     ],
 
     'validator' => [
@@ -94,8 +81,8 @@ $lang['mod_publication_category'] = [
         'inarray' => 'Qada %s tenê nirxên \' %s \' dipejirîne',
     ],
 
-    'roll' => [
-        'ad' => 'Rênîşana Rola Rêveberiya Kategoriyan',
+    'role' => [
+        'name' => 'Rênîşana Rola Rêveberiya Kategoriyan',
         'add' => 'Dikare Kategoriyan Zêde Bike',
         'edit' => 'Dikare Kategoriyan biguhere',
         'delete' => 'Dikare Kategoriyan Jê Bibe',
@@ -147,7 +134,6 @@ $lang['mod_publication_category'] = [
         'info' => [
             'edit_double_click' => 'Ji bo sererastkirinê dubare li kategoriya xwe bitikîne',
             'drag_reorder' => 'Ji bo guherandina rêzê kategoriya xwe bişîvîne û biavêje',
-            'mode_unlocked' => 'Mod: Rêzkirin (Vekirî)',
         ],
         'warning' => [
             'reorder' => 'Cihê kategoriyê were guhertin?',
@@ -207,9 +193,6 @@ $lang['mod_publication_category'] = [
         'edit' => 'Hilbijartinê Biguhere',
         'delete' => 'Hilbijartinan Jê Bibe',
         'refresh' => 'Nû Bike',
-        'add' => 'Zêde Bike',
-        'edit' => 'Biguhere',
-        'delete' => 'Jê Bibe',
         'cancel' => 'Betal',
         'remove' => 'Rake',
         'yes' => 'Erê',
@@ -263,15 +246,11 @@ $lang['mod_publication_category'] = [
             'description' => 'Ji bo mîhengên SEO ravekirin (Description)',
             'menu' => 'Kategoriya Bişîne Menuyê',
             'image' => 'Wêne',
-            'image_select' => 'Wêne hilbijêre',
             'acl_id' => 'Kî dikare bibîne?',
         ],
         'select_values' => [
             'root_yes' => 'Erê',
             'root_no' => 'Na',
-        ],
-        'tooltips' => [
-            'acl_settings' => 'Mîhengên ACL',
         ],
     ],
 

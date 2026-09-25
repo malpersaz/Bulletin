@@ -24,6 +24,7 @@ CREATE VIEW newses AS SELECT
     mod_user.id AS user_id,
     mod_user.name AS u_name,
     mod_user.last_name AS u_last_name,
+    mod_user.image AS user_image,
     mod_user_group.name AS group_name,
     ( SELECT count(mod_gallery.id) AS count
            FROM mod_gallery

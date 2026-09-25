@@ -33,9 +33,9 @@ $site['default_lang'] = $site['lang'];
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
-$site['version'] = '1.0.58';
-$site['build'] = 'Rojname CMS';
-$site['app_template'] = 'default';
+$site['version'] = '1.0.1.93';
+$site['build'] = 'AKM LearnLy';
+$site['app_template'] = 'furniture';
 
 if (isset($_COOKIE['tema'])) {
     $full = template_dir . basename(Req::Clear($_COOKIE['tema']));
@@ -53,16 +53,16 @@ if (file_exists($localSiteConfig)) {
 }
 
 // Site theme
-Kayit::ekle('app_template', $site['app_template']);
+Registry::add('app_template', $site['app_template']);
 // Admin theme
-Kayit::ekle('admin_template', 'admin');
+Registry::add('admin_template', 'admin');
 // Default module
-Kayit::ekle('app_default_mod', 'index');
+Registry::add('app_default_mod', 'index');
 // Default function
-Kayit::ekle('app_default_function', 'index');
+Registry::add('app_default_function', 'index');
 // Site language
-Kayit::ekle('lang', $site['lang']);
-Kayit::ekle('default_lang', $site['default_lang']);
+Registry::add('lang', $site['lang']);
+Registry::add('default_lang', $site['default_lang']);
 
-Kayit::ekle('site_config', $site);
+Registry::add('site_config', $site);
 unset($site);

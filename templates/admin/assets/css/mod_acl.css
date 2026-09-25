@@ -1,0 +1,375 @@
+/* mod_acl CSS - Phone-only Admin Material Design 3 */
+
+.acl-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 120px;
+    box-sizing: border-box;
+}
+
+.acl-card-form {
+    background: var(--md-sys-color-surface);
+    border-radius: var(--af-radius-lg, 12px);
+    padding: 20px;
+    box-shadow: var(--md-sys-elevation-1);
+    box-sizing: border-box;
+}
+
+.acl-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: var(--md-sys-color-primary);
+}
+
+.acl-card-header i {
+    font-size: 20px;
+}
+
+.acl-card-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.acl-form-row {
+    margin-bottom: 16px;
+}
+
+.acl-form-row:last-child {
+    margin-bottom: 0;
+}
+
+.acl-form-description {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 14px;
+    margin: 0 0 16px 0;
+    line-height: 1.4;
+}
+
+/* Material Floating Inputs */
+.acl-input-wrapper {
+    position: relative;
+    margin-bottom: 4px;
+    width: 100%;
+}
+
+.acl-input-wrapper:focus-within {
+    z-index: 2;
+}
+
+.acl-input-lg {
+    width: 100%;
+    min-height: 48px;
+    padding: 14px 16px;
+    border-radius: var(--af-radius-md, 8px);
+    border: 1px solid var(--md-sys-color-outline);
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s, padding 0.2s;
+}
+
+.acl-input-lg:focus {
+    border-color: var(--md-sys-color-primary);
+    border-width: 2px;
+    padding: 13px 15px;
+}
+
+.acl-floating-label {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1;
+}
+
+.acl-input-lg:focus ~ .acl-floating-label,
+.acl-input-lg:not(:placeholder-shown) ~ .acl-floating-label {
+    top: -10px;
+    left: 12px;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+    background: var(--md-sys-color-surface, #ffffff);
+    padding: 0 6px;
+}
+
+.acl-input-lg:focus ~ .acl-floating-label {
+    color: var(--md-sys-color-primary);
+}
+
+/* Selection Cards / Roles Grid */
+.acl-selection-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+.acl-selection-card {
+    border: 1px solid var(--md-sys-color-outline);
+    border-radius: var(--af-radius-lg, 12px);
+    padding: 14px 16px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    position: relative;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.acl-selection-card:active {
+    background: rgba(0, 0, 0, 0.04);
+}
+
+.acl-selection-card.active {
+    background: var(--md-sys-color-primary-container);
+    border-color: var(--md-sys-color-primary);
+}
+
+.acl-selection-icon {
+    font-size: 22px;
+    color: var(--md-sys-color-on-surface-variant);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.acl-selection-card.active .acl-selection-icon {
+    color: var(--md-sys-color-primary);
+}
+
+.acl-selection-label {
+    flex: 1;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--md-sys-color-on-surface);
+}
+
+.acl-selection-card.active .acl-selection-label {
+    color: var(--md-sys-color-on-primary-container);
+}
+
+.acl-check-icon {
+    color: var(--md-sys-color-primary);
+    display: none;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.acl-selection-card.active .acl-check-icon {
+    display: block;
+}
+
+.acl-hidden-checkbox {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* List Layout */
+.acl-list-container {
+    padding: 16px 16px 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-sizing: border-box;
+}
+
+.acl-card {
+    background: var(--md-sys-color-surface-container, #f3edf7);
+    border-radius: var(--af-radius-lg, 16px);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.2s, border-color 0.2s, background-color 0.2s;
+    cursor: pointer;
+    position: relative;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+}
+
+.acl-card:active {
+    transform: scale(0.98);
+}
+
+.acl-card.selected {
+    border-color: var(--md-sys-color-primary);
+    background: var(--md-sys-color-primary-container);
+}
+
+.acl-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 600;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.acl-info {
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.acl-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.acl-id-tag {
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.acl-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+/* Touch targets >= 44x44px */
+.acl-action-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+.acl-action-btn:active {
+    background: rgba(0, 0, 0, 0.08);
+}
+
+.acl-action-btn.edit {
+    color: var(--md-sys-color-primary);
+}
+
+.acl-action-btn.delete {
+    color: var(--md-sys-color-error, #ba1a1a);
+}
+
+/* Empty State */
+.acl-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    background: var(--md-sys-color-surface);
+    border-radius: var(--af-radius-lg, 16px);
+    margin: 16px 0;
+    box-shadow: var(--md-sys-elevation-1);
+}
+
+.acl-empty-state i {
+    font-size: 56px;
+    color: var(--md-sys-color-outline);
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+
+.acl-empty-state h3 {
+    margin: 0;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Loaders & Spinners */
+.acl-pull-spinner,
+.acl-infinite-loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+}
+
+.acl-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--md-sys-color-outline-variant);
+    border-top-color: var(--md-sys-color-primary);
+    border-radius: 50%;
+    animation: acl-spin 0.8s linear infinite;
+}
+
+@keyframes acl-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Banners */
+.acl-banner-success {
+    background: #e6f4ea;
+    color: #1e4620;
+    padding: 14px 16px;
+    border-radius: var(--af-radius-lg, 12px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.acl-banner-success i {
+    font-size: 18px;
+    color: #137333;
+}
+
+.acl-load-more-btn {
+    display: none;
+    margin: 20px auto;
+    width: fit-content;
+    cursor: pointer;
+    padding: 10px 24px;
+    border-radius: 20px;
+    border: 1px solid var(--md-sys-color-outline);
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    font-weight: 500;
+}
+
+.acl-load-more-icon {
+    margin-right: 8px;
+}

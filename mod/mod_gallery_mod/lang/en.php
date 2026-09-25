@@ -24,9 +24,8 @@ $lang['mod_gallery_mod'] = [
     'add' => 'Add Gallery Module',
     'edit' => 'Edit Gallery Module',
     'information' => 'Information',
-    'oke' => 'Success',
-    'hata' => 'Error Occurred',
-    'error' => 'Fatal Error Occurred',
+    'success' => 'Success',
+    'error' => 'Error Occurred',
 
     // === Navigation & Actions ===
     'actions' => [
@@ -42,7 +41,7 @@ $lang['mod_gallery_mod'] = [
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Gallery Module successfully added!',
             'edit' => 'Gallery Module successfully updated!',
         ],
@@ -59,26 +58,26 @@ $lang['mod_gallery_mod'] = [
     'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
+        'cancel' => 'Cancel',
+        'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
         'gallery' => 'Gallery',
         'file' => 'Files',
     ],
 
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
     ],
 
     'validator' => [
@@ -89,8 +88,8 @@ $lang['mod_gallery_mod'] = [
         'inarray' => '%s field can only accept \' %s \' values',
     ],
 
-    'roll' => [
-        'ad' => 'Gallery Module Management Roles',
+    'role' => [
+        'name' => 'Gallery Module Management Roles',
         'add' => 'Can Add Gallery Module',
         'edit' => 'Can Edit Gallery Module',
         'delete' => 'Can Delete Gallery Module',
@@ -111,7 +110,7 @@ $lang['mod_gallery_mod'] = [
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'ad' => 'Gallery Module Name',
+            'name' => 'Gallery Module Name',
             'mod_name' => 'Module Name',
             'mod_key' => 'Module Key (ID)',
             'mod_value' => 'Module Value (Name)',

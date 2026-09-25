@@ -39,8 +39,6 @@ class Captcha
 			return $this->site['address'] . "captcha.php?" . base64_encode(file_get_contents($this->file));
 		}
         return "data:image/png;base64," . base64_encode(file_get_contents($this->file));
-		//return "data:image/png;base64,".base64_encode ( file_get_contents ( $this->file ) );
-		//return 'http://192.168.2.2/makina/captcha.php?str='.base64_encode ( file_get_contents ( $this->file ) );
 	}
 
 	private function create_image()

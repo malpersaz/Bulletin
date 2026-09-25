@@ -1,0 +1,46 @@
+{{ run({"mod": "index", "method": "_latest_publications", "extra": ["5", "image,name,seo,keywords,summary"]}) }}
+{% set latest_publications = ctx_get('latest_publications') %}
+{% if latest_publications is not empty %}
+    <section class="container my-4" aria-labelledby="latest-publications-heading">
+        <header>
+            <h2 id="latest-publications-heading" class="mb-4">{{ lang.index.mod_publication.latest_publications.title }}</h2>
+        </header>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for publication in latest_publications %}
+                <article class="col">
+                    <div class="card h-100 shadow-sm">
+                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" title="{{ publication.name }}">
+                            {% if publication.image is not empty %}
+                                <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}" class="card-img-top" alt="{{ publication.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{{ site.iaddress }}mod_settings/logo.png" class="card-img-top p-4 bg-light object-fit-contain" alt="{{ publication.name }}" loading="lazy">
+                            {% endif %}
+                        </a>
+                        <div class="card-body">
+                            <h3 class="card-title h5">
+                                <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="text-decoration-none text-dark">{{ publication.name }}</a>
+                            </h3>
+                            <p class="card-text">
+                                {% if publication.summary != '' %}
+                                    {{ publication.summary|raw|striptags|length > 150 ? publication.summary|raw|striptags|slice(0, 150) ~ '...' : publication.summary|raw|striptags }}
+                                {% else %}
+                                    {{ publication.name }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+        <footer class="text-center mt-4">
+            <a href="{{ site.saddress }}publications" class="btn btn-primary">{{ lang.index.mod_publication.latest_publications.all_items }}</a>
+        </footer>
+    </section>
+{% else %}
+    <section class="container my-4" aria-labelledby="latest-publications-heading">
+        <header>
+            <h2 id="latest-publications-heading" class="mb-4">{{ lang.index.mod_publication.latest_publications.title }}</h2>
+        </header>
+        <div class="alert alert-info mb-0">{{ lang.index.mod_publication.latest_publications.no_items_found }}</div>
+    </section>
+{% endif %}

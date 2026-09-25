@@ -40,7 +40,7 @@ $lang['mod_document'] = [
         'length' => '%s divê di navbera %s û %s karakteran de be.',
         'unique' => 'Nirxê %s berê heye. Ji kerema xwe %yekî din hilbijêrin.',
     ],
-    'roll' => [
+    'role' => [
         'name' => 'Rolên Birêvebirina Dosyayan',
         'add' => 'Dikare dosya zêde bike',
         'edit' => 'Dikare dosya serast bike',
@@ -76,13 +76,13 @@ $lang['mod_document'] = [
             'keywords' => 'Meta Keywords',
             'description' => 'Meta Description',
             'image' => 'Wêne',
-            'menu' => 'Bişîne Menûyê',
+            'menu' => 'Bişîne Pêşekê',
         ],
         'radio' => [
             'status_y' => 'Hate Weşandin',
             'status_n' => 'Mişorî',
-            'menu_y' => 'Bişîne Menûyê',
-            'menu_n' => 'Neyi Bişîne',
+            'menu_y' => 'Bişîne Pêşekê',
+            'menu_n' => 'Neyê Bişîne',
         ],
     ],
     'form' => [

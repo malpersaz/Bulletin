@@ -74,7 +74,7 @@
                 const Toast = Swal.mixin({
                     toast: true, position: 'top-end', showConfirmButton: false, timer: 1500
                 });
-                Toast.fire({ icon: 'info', title: 'Mode: Rêzkirin (Vekirî)' });
+                Toast.fire({ icon: 'info', title: '{{ lang.mod_user_group.reorder_active|e("js") }}' });
 
             } else {
                 document.body.classList.remove('reorder-active');
@@ -144,7 +144,7 @@
             .catch(err => {
                 if(card) card.style.opacity = "1";
                 console.error('Order update error:', err);
-                Swal.fire({ icon: 'error', title: 'Çewtî', text: String(err) });
+                Swal.fire({ icon: 'error', title: '{{ lang.management.error|e("js") }}', text: String(err) });
                 setTimeout(() => location.reload(), 1000);
             });
         }
@@ -262,15 +262,15 @@
                 .then(response => response.text())
                 .then(resp => {
                     if (resp.trim().toUpperCase() === 'OK') {
-                        Swal.fire({ icon: 'success', title: 'Serkeftî!', timer: 1000, showConfirmButton: false });
+                        Swal.fire({ icon: 'success', title: '{{ lang.management.success|e("js") }}', timer: 1000, showConfirmButton: false });
                         setTimeout(() => window.location.reload(), 1000);
                     } else {
-                        Swal.fire('Çewtî', resp, 'error');
+                        Swal.fire('{{ lang.management.error|e("js") }}', resp, 'error');
                     }
                 })
                 .catch(err => {
                     console.error('Delete error:', err);
-                    Swal.fire('Çewtî', 'Çewtiya torê', 'error');
+                    Swal.fire('{{ lang.management.error|e("js") }}', '{{ lang.management.network_error|e("js") }}', 'error');
                 });
             }
         });

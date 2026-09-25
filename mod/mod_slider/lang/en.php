@@ -4,11 +4,10 @@ $lang['mod_slider']= [
   'edit' => 'Edit Slider',
   'list' => 'Slider Management',
   'information' => 'Information!',
-  'oke' => 'Operation Successful!',
-  'hata' => 'An Error Occurred!',
-  'error' => 'Fatal Error Occurred!',
+  'success' => 'Operation Successful!',
+  'error' => 'An Error Occurred!',
   'remove_image' => 'Are you sure you want to remove this image?',
-  'remove_image_oke' => 'Image Removed',
+  'remove_image_success' => 'Image Removed',
   'choose_wish' => 'Select if you wish',
   'remove_record' => 'Are you sure you want to delete this record?',
   'messages' => [
@@ -16,7 +15,7 @@ $lang['mod_slider']= [
     'success_delete' => 'Record successfully deleted!',
   ],
   'message' => [
-    'oke' => 
+    'success' => 
      [
       'add' => 'Slider Added!',
       'edit' => 'Slider Edited!',
@@ -44,25 +43,22 @@ $lang['mod_slider']= [
     'no' => 'No',
     'add' => 'Add',
     'edit' => 'Edit',
-    'yenile' => 'Refresh',
+    'refresh' => 'Refresh',
     'delete' => 'Delete',
     'gallery' => 'Image Gallery',
-    'vazgec' => 'Cancel',
-    'kaldir' => 'Remove',
-    'evet' => 'Yes',
-    'hayir' => 'No',
+    'remove' => 'Remove',
   ],
   'grid' => 
    [
-    0 => 'Showing {from} to {to} out of {total} Results.',
-    1 => 'Page',
-    2 => 'Page Count',
-    3 => 'Data is loading, please wait...',
-    4 => 'No data found',
-    5 => 'Connection Error',
-    6 => 'Search',
-    7 => 'Please Select At Least One Row',
-    8 => 'Please Select Only One Row',
+    'showing_results' => 'Showing {from} to {to} out of {total} Results.',
+    'page' => 'Page',
+    'page_count' => 'Page Count',
+    'loading' => 'Data is loading, please wait...',
+    'no_data' => 'No data found',
+    'connection_error' => 'Connection Error',
+    'search' => 'Search',
+    'select_at_least_one' => 'Please Select At Least One Row',
+    'select_only_one' => 'Please Select Only One Row',
     'publish' => 
      [
       'key' => 'Publish',
@@ -82,9 +78,9 @@ $lang['mod_slider']= [
     'unique' => 'The %s you entered is registered. Please specify another %s!',
     'inarray' => '%s field can only take \' %s \' values',
   ],
-  'roll' => 
+  'role' => 
    [
-    'ad' => 'Slider Management Roles',
+    'name' => 'Slider Management Roles',
     'add' => 'Can Add Slider',
     'edit' => 'Can Edit Slider',
     'delete' => 'Can Delete Slider',
@@ -148,5 +144,6 @@ $lang['mod_slider']= [
     'publication' => 'Publication',
     'content' => 'Content',
     'product' => 'Product',
+    'video' => 'Video',
   ],
 ];

@@ -1,13 +1,13 @@
 <?php
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/26/11 - 1:58 PM
- * Telif Hakkı:AKM Software
+ * User: AKM
+ * Date: 4/26/11 - 1:58 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Dosya:email.config.php
- * Açıklama:E-Posta Ayarları
+ * File: email.config.example.php
+ * Description: E-Mail Settings
  */
 if(defined('root_dir')===False)	exit(':)');
 $email['smtp']=array(
@@ -16,7 +16,7 @@ $email['smtp']=array(
 					'pass'=>'************',
 					'port'=>'587',
 					'mail'=>'info@sitename.com',
-					'ad'=>'Your Site Name'
+					'name'=>'Your Site Name'
 					);
-Kayit::ekle('email_config',$email);
+Registry::add('email_config',$email);
 unset($email);

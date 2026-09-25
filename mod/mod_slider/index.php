@@ -1,7 +1,7 @@
 <?php
 /* AKM Software.
  * @2010
- * mod_slider Modül Sayfası
+ * mod_slider Module Page
  * mod/mod_slider/index.php
  */
 class mod_slider_mod extends indexMain
@@ -10,51 +10,51 @@ class mod_slider_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
-        $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Call the Theme Library
+        $this->theme = Load::lib('AdminTemplate');
+        // Load the Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
-        //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Get site settings
+        //$this->site = Registry::get('site_config');
+        // Call the Language File
         $this->lang = Load::lang('mod_slider');
-        // Dil Dosyasını Temaya Gönderelim
-        $this->tema->lang($this->lang);
-        // Session Kütüphanesi
+        // Send the Language File to Theme
+        $this->theme->lang($this->lang);
+        // Session Library
         $this->session = Load::lib('Session');
         // User Model
         $this->user = Load::model('mod_user.user');
     }
-    // Ekleme Sayfası
+    // Add Page
     public function add()
     {
         header("Location: " . $this->site['saddress'] . 'mod_slider/list');
         exit;
     }
 
-    // Düzenleme Sayfası
+    // Edit Page
     public function edit($id = NULL)
     {
         header("Location: " . $this->site['saddress'] . 'mod_slider/list');
         exit;
     }
 
-    // Listeleme Sayfası
+    // List Page
     public function list()
     {
-        // Listeleme Permissionsi varmı?
+        // Check List Permission
         if ($this->user->hasPermission('mod_slider', 'list', $this->lang['mod_slider']['role_errors']['list'], 1) === False) {
             return False;
         }
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_slider']['list'];
-        $this->tema->tpl('mod_slider/list');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_slider/list');
+        $this->theme->set('site', $this->site);
     }
     public function image_remove_image()
     {
-        // Düzenleme Permissionsi varmı?
+        // Check Edit Permission
         if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit'], 1) === False) {
             return FALSE;
         }
@@ -70,7 +70,7 @@ class mod_slider_mod extends indexMain
 
 
         $this->mod_slider_model->sync();
-        // Eğer Eklenen İçerik Başkasınınsa Yönetme Permissionsi Varmı ?
+        // Check Moderate Permission if content belongs to another user
         if ($this->user->checkPermission('mod_slider', 'moderate_edit', $this->mod_slider_model->user_id, $this->lang['mod_slider']['role_errors']['moderate_edit']) === False) {
             return False;
         }
@@ -128,22 +128,22 @@ class mod_slider_mod extends indexMain
 
         if ($isDeleted) {
             $this->mod_slider_model->update('id');
-            echo 'Oke';
+            echo 'Success';
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
-    // Ekleme Fonksiyonu
+    // Add Function
     private function _add()
     {
         $this->val = Load::validator('mod_slider.add');
         if ($this->val->check()) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('errors', $this->val->hatalar);
-            $this->tema->veri('error', TRUE);
+            $this->theme->set('errors', $this->val->errors);
+            $this->theme->set('error', TRUE);
         } else {
             $this->mod_slider_model = Load::model('mod_slider');
 
@@ -182,7 +182,7 @@ class mod_slider_mod extends indexMain
             $this->mod_slider_model->acl_id = Req::Post_Safe('acl_id');
             $this->mod_slider_model->user_id = $this->session->get('id');
 
-            // Eğer Resim varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_slider';
@@ -213,7 +213,7 @@ class mod_slider_mod extends indexMain
                 }
             }
 
-            // Eğer Mobile Resim varsa
+            // If Mobile Image exists
             if (isset($_FILES['image_mobile']['name']) &&  ($_FILES['image_mobile']['name'] != '')) {
                 $imageMobile = Load::mod('image');
                 $imageMobile->mod = 'mod_slider';
@@ -239,28 +239,28 @@ class mod_slider_mod extends indexMain
             }
 
             if ($this->mod_slider_model->save(TRUE)) {
-                $this->_oke_message($this->lang['mod_slider']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_slider']['message']['success']['add']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
 
-                $this->_error_message($this->lang['mod_slider']['message']['oke']['add']);
+                $this->_error_message($this->lang['mod_slider']['message']['success']['add']);
             }
         }
     }
 
-    // Düzenleme Fonksiyonu
+    // Edit Function
     private function _edit($id = NULL)
     {
         $this->val = Load::validator('mod_slider.edit');
         if ($this->val->check($id)) {
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('errors', $this->val->hatalar);
-            $this->tema->veri('error', TRUE);
+            $this->theme->set('errors', $this->val->errors);
+            $this->theme->set('error', TRUE);
         } else {
             $this->mod_slider_model = Load::model('mod_slider');
 
@@ -291,7 +291,7 @@ class mod_slider_mod extends indexMain
                 unset($this->mod_slider_model->user_id);
             }
 
-            // Eğer Resim Varsa
+            // If Image exists
             if (isset($_FILES['image']['name']) &&  ($_FILES['image']['name'] != '')) {
                 $image = Load::mod('image');
                 $image->mod = 'mod_slider';
@@ -322,7 +322,7 @@ class mod_slider_mod extends indexMain
                 }
             }
 
-            // Eğer Mobile Resim Varsa
+            // If Mobile Image exists
             if (isset($_FILES['image_mobile']['name']) &&  ($_FILES['image_mobile']['name'] != '')) {
                 $imageMobile = Load::mod('image');
                 $imageMobile->mod = 'mod_slider';
@@ -349,9 +349,9 @@ class mod_slider_mod extends indexMain
 
             $this->mod_slider_model->id = $id;
             if ($this->mod_slider_model->update('id')) {
-                $this->_oke_message($this->lang['mod_slider']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_slider']['message']['success']['edit']);
             } else {
-                // Eğer Resim varsa
+                // If Image exists
                 if (isset($image->url)) {
                     $image->_rollback();
                 }
@@ -400,7 +400,7 @@ class mod_slider_mod extends indexMain
 
         $db->fetch_array("SHOW COLUMNS FROM `" . $table . "` LIKE '" . addslashes($column) . "'");
         $result = $db->getResult()->toArray();
-        return is_array($result) && !empty($result);
+        return is_array($result) && $result !== [];
     }
 
     private function _tableExists($table)
@@ -421,9 +421,9 @@ class mod_slider_mod extends indexMain
     {
         $user_id_filter = "";
         if (
-            (Roll::hasPermission('mod_slider', 'moderate_edit') !== TRUE)
+            (Role::hasPermission('mod_slider', 'moderate_edit') !== TRUE)
             and
-            (Roll::hasPermission('mod_slider', 'moderate_delete') !== TRUE)
+            (Role::hasPermission('mod_slider', 'moderate_delete') !== TRUE)
         ) {
             $user_id_filter = " AND user_id='" . intval($this->session->get('id')) . "'";
         }
@@ -459,16 +459,25 @@ class mod_slider_mod extends indexMain
             ];
         }
         
-        // 4. mod_product
-        if ($this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
+        // 4. mod_publication
+        if ($this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
             $queries[] = [
-                'table' => 'mod_product',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_product' AS module FROM mod_product WHERE show_on_homepage = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_product WHERE show_on_homepage = 'y' AND status = 'y'" . $user_id_filter
+                'table' => 'mod_publication',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' AS module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
 
-        if (empty($queries)) {
+        // 5. mod_video
+        if ($this->_tableExists('mod_video') && $this->_hasColumn('mod_video', 'slider')) {
+            $queries[] = [
+                'table' => 'mod_video',
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_video' AS module FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) as total FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+            ];
+        }
+
+        if ($queries === []) {
             echo json_encode([
                 'data' => [],
                 'recordsFiltered' => 0,
@@ -509,7 +518,8 @@ class mod_slider_mod extends indexMain
             'mod_news' => isset($this->lang['mod_slider']['modules']['news']) ? $this->lang['mod_slider']['modules']['news'] : 'Nûçe',
             'mod_publication' => isset($this->lang['mod_slider']['modules']['publication']) ? $this->lang['mod_slider']['modules']['publication'] : 'Weşan',
             'mod_content' => isset($this->lang['mod_slider']['modules']['content']) ? $this->lang['mod_slider']['modules']['content'] : 'Naverok',
-            'mod_product' => isset($this->lang['mod_slider']['modules']['product']) ? $this->lang['mod_slider']['modules']['product'] : 'Hilber',
+            'mod_publication' => isset($this->lang['mod_slider']['modules']['publication']) ? $this->lang['mod_slider']['modules']['publication'] : 'Nivîs',
+            'mod_video' => isset($this->lang['mod_slider']['modules']['video']) ? $this->lang['mod_slider']['modules']['video'] : 'Vîdyo',
         ];
 
         $data = [];
@@ -519,7 +529,11 @@ class mod_slider_mod extends indexMain
                 
                 $thumb_url = '';
                 if (!empty($content['image'])) {
-                    $thumb_url = $this->site['iaddress'] . $content['module'] . '/thumb/' . $content['image'];
+                    if ($content['module'] === 'mod_video') {
+                        $thumb_url = $this->site['iaddress'] . 'mod_video/image/' . $content['image'];
+                    } else {
+                        $thumb_url = $this->site['iaddress'] . $content['module'] . '/thumb/' . $content['image'];
+                    }
                 }
                 
                 $module_label = isset($module_labels[$content['module']]) ? $module_labels[$content['module']] : $content['module'];
@@ -543,7 +557,7 @@ class mod_slider_mod extends indexMain
         ]);
     }
 
-    // publish Sayfası
+    // Publish Page
     public function publish()
     {
         if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit']) === False) {
@@ -551,7 +565,7 @@ class mod_slider_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_publish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -566,9 +580,9 @@ class mod_slider_mod extends indexMain
                 if (count($parts) === 2) {
                     $module = Req::Clear($parts[0]);
                     $id = intval($parts[1]);
-                    if ($module === 'mod_product' && $id > 0 && $this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
-                        $db->query("UPDATE `mod_product` SET show_on_homepage = 'y' WHERE id = " . $id);
-                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                    if ($module === 'mod_publication' && $id > 0 && $this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
+                        $db->query("UPDATE `mod_publication` SET slider = 'y' WHERE id = " . $id);
+                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
                         $db->query("UPDATE `" . $module . "` SET slider = 'y' WHERE id = " . $id);
                     }
                 }
@@ -578,7 +592,7 @@ class mod_slider_mod extends indexMain
         return FALSE;
     }
 
-    // unpublish Sayfası
+    // Unpublish Page
     public function unpublish()
     {
         if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit']) === False) {
@@ -586,7 +600,7 @@ class mod_slider_mod extends indexMain
         }
         $query = Req::Post_Safe('query');
         if ($this->_unpublish($query) === TRUE) {
-            echo 'Oke';
+            echo 'Success';
         } else {
             echo 'ERROR';
         }
@@ -601,9 +615,9 @@ class mod_slider_mod extends indexMain
                 if (count($parts) === 2) {
                     $module = Req::Clear($parts[0]);
                     $id = intval($parts[1]);
-                    if ($module === 'mod_product' && $id > 0 && $this->_tableExists('mod_product') && $this->_hasColumn('mod_product', 'show_on_homepage')) {
-                        $db->query("UPDATE `mod_product` SET show_on_homepage = 'n' WHERE id = " . $id);
-                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                    if ($module === 'mod_publication' && $id > 0 && $this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
+                        $db->query("UPDATE `mod_publication` SET slider = 'n' WHERE id = " . $id);
+                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
                         $db->query("UPDATE `" . $module . "` SET slider = 'n' WHERE id = " . $id);
                     }
                 }
@@ -613,24 +627,24 @@ class mod_slider_mod extends indexMain
         return FALSE;
     }
 
-    // Valid Mesaj
-    private function _oke_message($mesaj)
+    // Valid Message
+    private function _success_message($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', True);
+        $this->theme->set('message', $message);
     }
 
-    // Hata Mesaj
-    private function _error_message($mesaj)
+    // Error Message
+    private function _error_message($message)
     {
-        $this->tema->veri('error', True);
-        $this->tema->veri('errors', [$mesaj]);
+        $this->theme->set('error', True);
+        $this->theme->set('errors', [$message]);
     }
 
-    // Error Mesaj
-    private function _error($mesaj)
+    // Error Message
+    private function _error($message)
     {
-        $this->tema->veri('error', TRUE);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', TRUE);
+        $this->theme->set('message', $message);
     }
 }

@@ -110,12 +110,9 @@ class Swift_Mime_Headers_PathHeader extends Swift_Mime_Headers_AbstractHeader
    */
   public function getFieldBody()
   {
-    if (!$this->getCachedValue())
+    if (!$this->getCachedValue() && isset($this->_address))
     {
-      if (isset($this->_address))
-      {
-        $this->setCachedValue('<' . $this->_address . '>');
-      }
+      $this->setCachedValue('<' . $this->_address . '>');
     }
     return $this->getCachedValue();
   }

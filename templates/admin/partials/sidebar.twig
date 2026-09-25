@@ -1,9 +1,8 @@
 <div class="drawer-scrim" id="drawerScrim" onclick="toggleDrawer()"></div>
 
-{% set content_active = mod == 'mod_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' or mod == 'mod_service_guide' %}
+{% set content_active = mod == 'mod_content_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' %}
 {% set media_active = mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' %}
-{% set solutions_active = mod == 'mod_product' or mod == 'mod_product_category' or mod == 'mod_service' or mod == 'mod_service_category' or mod == 'mod_client' or mod == 'mod_reference' %}
-{% set announcements_active = mod == 'mod_announcements' or mod == 'mod_popup' %}
+{% set announcements_active = mod == 'mod_announcements' or mod == 'mod_popup' or mod == 'mod_newsletter' %}
 {% set seo_active = mod == 'mod_seo' or mod == 'mod_redirect' %}
 
 <aside class="nav-drawer" id="navDrawer">
@@ -37,9 +36,9 @@
                 <i class="bi bi-speedometer2 nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.dashboard }}</span>
             </a>
-            <a href="{{ site.saddress }}" target="_blank" class="nav-item nav-root-item" data-nav-track="0" data-nav-label="{{ lang.management.anasayfa }}">
+            <a href="{{ site.saddress }}" target="_blank" class="nav-item nav-root-item" data-nav-track="0" data-nav-label="{{ lang.management.site_home|default(lang.management.home|default('Home')) }}">
                 <i class="bi bi-house-door-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.anasayfa }}</span>
+                <span class="nav-item-label">{{ lang.management.site_home|default(lang.management.home|default('Home')) }}</span>
             </a>
         </div>
 
@@ -52,8 +51,8 @@
                 <i class="bi bi-chevron-down group-indicator"></i>
             </button>
             <div class="nav-group-items">
-                {% if session.permissions.mod_category.list is defined %}
-                    <a href="{{ site.saddress }}mod_category/list" class="nav-item {% if mod == 'mod_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_category" data-nav-label="{{ lang.management.content_categories }}">
+                {% if session.permissions.mod_content_category.list is defined %}
+                    <a href="{{ site.saddress }}mod_content_category/list" class="nav-item {% if mod == 'mod_content_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_content_category" data-nav-label="{{ lang.management.content_categories }}">
                         <i class="bi bi-tags-fill nav-item-icon"></i>
                         <span class="nav-item-label">{{ lang.management.content_categories }}</span>
                     </a>
@@ -89,12 +88,7 @@
                         <span class="nav-item-label">{{ lang.management.file_management }}</span>
                     </a>
                 {% endif %}
-                {% if session.permissions.mod_service_guide.list is defined %}
-                    <a href="{{ site.saddress }}mod_service_guide/list" class="nav-item {% if mod == 'mod_service_guide' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service_guide" data-nav-label="{{ lang.management.service_guide }}">
-                        <i class="bi bi-bank nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.service_guide }}</span>
-                    </a>
-                {% endif %}
+
                 {% if session.permissions.mod_survey.list is defined %}
                     <a href="{{ site.saddress }}mod_survey/list" class="nav-item {% if mod == 'mod_survey' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_survey" data-nav-label="{{ lang.management.survey_management }}">
                         <i class="bi bi-ui-checks-grid nav-item-icon"></i>
@@ -118,21 +112,21 @@
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_video_embed_category.list is defined %}
-                    <a href="{{ site.saddress }}mod_video_embed_category/list" class="nav-item {% if mod == 'mod_video_embed_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video_embed_category" data-nav-label="{{ lang.management.uzak_video_kategorisi }}">
+                    <a href="{{ site.saddress }}mod_video_embed_category/list" class="nav-item {% if mod == 'mod_video_embed_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_video_embed_category" data-nav-label="{{ lang.management.remote_video_category }}">
                         <i class="bi bi-collection-play-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.uzak_video_kategorisi }}</span>
+                        <span class="nav-item-label">{{ lang.management.remote_video_category }}</span>
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_slider.list is defined %}
-                    <a href="{{ site.saddress }}mod_slider/list" class="nav-item {% if mod == 'mod_slider' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_slider" data-nav-label="{{ lang.management.manset_yonetimi }}">
+                    <a href="{{ site.saddress }}mod_slider/list" class="nav-item {% if mod == 'mod_slider' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_slider" data-nav-label="{{ lang.management.headline_management }}">
                         <i class="bi bi-card-image nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.manset_yonetimi }}</span>
+                        <span class="nav-item-label">{{ lang.management.headline_management }}</span>
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_headline.list is defined %}
-                    <a href="{{ site.saddress }}mod_headline/list" class="nav-item {% if mod == 'mod_headline' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_headline" data-nav-label="{{ lang.management.full_manset_yonetimi }}">
+                    <a href="{{ site.saddress }}mod_headline/list" class="nav-item {% if mod == 'mod_headline' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_headline" data-nav-label="{{ lang.management.full_headline_management }}">
                         <i class="bi bi-layout-text-window-reverse nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.full_manset_yonetimi }}</span>
+                        <span class="nav-item-label">{{ lang.management.full_headline_management }}</span>
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_imagecategories.list is defined %}
@@ -142,61 +136,15 @@
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_gallery_mod.list is defined %}
-                    <a href="{{ site.saddress }}mod_gallery_mod/list" class="nav-item {% if mod == 'mod_gallery_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_gallery_mod" data-nav-label="{{ lang.management.gallery_modulleri }}">
+                    <a href="{{ site.saddress }}mod_gallery_mod/list" class="nav-item {% if mod == 'mod_gallery_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_gallery_mod" data-nav-label="{{ lang.management.gallery_modules }}">
                         <i class="bi bi-images nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.gallery_modulleri }}</span>
+                        <span class="nav-item-label">{{ lang.management.gallery_modules }}</span>
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_attachment_mod.list is defined %}
-                    <a href="{{ site.saddress }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_attachment_mod" data-nav-label="{{ lang.management.dosya_modulleri }}">
+                    <a href="{{ site.saddress }}mod_attachment_mod/list" class="nav-item {% if mod == 'mod_attachment_mod' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_attachment_mod" data-nav-label="{{ lang.management.file_modules }}">
                         <i class="bi bi-paperclip nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.dosya_modulleri }}</span>
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-
-        <div class="nav-group{% if solutions_active %} expanded{% endif %}" data-nav-group="products">
-            <button type="button" class="nav-group-header nav-group-header-spotlight" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.products_workspace }}">
-                <i class="bi bi-diagram-3-fill nav-item-icon"></i>
-                <span class="nav-item-label">{{ lang.management.products_workspace }}</span>
-                <i class="bi bi-chevron-down group-indicator"></i>
-            </button>
-            <div class="nav-group-items">
-                {% if session.permissions.mod_product.list is defined %}
-                    <a href="{{ site.saddress }}mod_product/list" class="nav-item {% if mod == 'mod_product' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_product" data-nav-label="{{ lang.management.products }}">
-                        <i class="bi bi-box-seam nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.products }}</span>
-                    </a>
-                {% endif %}
-                {% if session.permissions.mod_service.list is defined %}
-                    <a href="{{ site.saddress }}mod_service/list" class="nav-item {% if mod == 'mod_service' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service" data-nav-label="{{ lang.management.services }}">
-                        <i class="bi bi-briefcase-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.services }}</span>
-                    </a>
-                {% endif %}
-                {% if session.permissions.mod_reference.list is defined %}
-                    <a href="{{ site.saddress }}mod_reference/list" class="nav-item {% if mod == 'mod_reference' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_reference" data-nav-label="{{ lang.management.references }}">
-                        <i class="bi bi-journal-check nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.references }}</span>
-                    </a>
-                {% endif %}
-                {% if session.permissions.mod_client.list is defined %}
-                    <a href="{{ site.saddress }}mod_client/list" class="nav-item {% if mod == 'mod_client' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_client" data-nav-label="{{ lang.management.clients }}">
-                        <i class="bi bi-people-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.clients }}</span>
-                    </a>
-                {% endif %}
-                {% if session.permissions.mod_product_category.list is defined %}
-                    <a href="{{ site.saddress }}mod_product_category/list" class="nav-item {% if mod == 'mod_product_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_product_category" data-nav-label="{{ lang.management.product_categories }}">
-                        <i class="bi bi-diagram-2-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.product_categories }}</span>
-                    </a>
-                {% endif %}
-                {% if session.permissions.mod_service_category.list is defined %}
-                    <a href="{{ site.saddress }}mod_service_category/list" class="nav-item {% if mod == 'mod_service_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_service_category" data-nav-label="{{ lang.management.service_categories }}">
-                        <i class="bi bi-grid-3x3-gap-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.service_categories }}</span>
+                        <span class="nav-item-label">{{ lang.management.file_modules }}</span>
                     </a>
                 {% endif %}
             </div>
@@ -219,6 +167,12 @@
                     <a href="{{ site.saddress }}mod_popup/list" class="nav-item {% if mod == 'mod_popup' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_popup" data-nav-label="{{ lang.management.popup_announcements }}">
                         <i class="bi bi-layout-wtf nav-item-icon"></i>
                         <span class="nav-item-label">{{ lang.management.popup_announcements }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_newsletter.list is defined or session.user_id is defined %}
+                    <a href="{{ site.saddress }}mod_newsletter/list" class="nav-item {% if mod == 'mod_newsletter' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_newsletter" data-nav-label="{{ lang.management.newsletter_management|default('Newsletter') }}">
+                        <i class="bi bi-envelope-at-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.newsletter_management|default('Newsletter') }}</span>
                     </a>
                 {% endif %}
             </div>

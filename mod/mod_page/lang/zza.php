@@ -8,21 +8,29 @@
  */
 
 $lang['mod_page'] = [
-    // === Bingehîn Operasyon ===
-    'add' => 'Rûpel Zêde Bike',
-    'edit' => 'Rûpel Biguhere',
+    // === Core Operations ===
+    'add' => 'Rûpel Lê Zêde Bike',
+    'edit' => 'Rûpel Biguherîne',
     'list' => 'Lîsteya Rûpelan',
+    'total_pages' => 'Pêroyî Rûpelî',
+    'published_pages' => 'Weşîyaye',
+    'draft_pages' => 'Pêşnivîs',
+    'expand_all' => 'Pêroyan Ake',
+    'collapse_all' => 'Pêroyan Biqefilne',
+    'search_placeholder' => 'Rûpelan de bigêre...',
 
-    // === Peyamên Pergalê ===
+    // === System Messages ===
     'information' => 'Agahdarî',
-    'oke' => 'Çalakî Bi Serkeftin',
-    'hata' => 'Çewtî Çêbû',
-    'error' => 'Çewtiya Giran',
+    'success' => 'Çalakî Bi Serkeftin',
+    'error' => 'Çewtî Çêbû',
 
-    // === Peyamên Piştrastkirinê ===
+    // === Confirmation Messages ===
     'remove_image' => 'Bi rastî jî dixwazî vê wêneyê rakî?',
-    'remove_image_oke' => 'Wêne Bi Serkeftin Hate Rakirin',
+    'remove_image_success' => 'Wêne Bi Serkeftin Hate Rakirin',
     'choose_wish' => 'Ji kerema xwe re, ger bixwazî hilbijêre',
+    'empty' => [
+        'no_pages' => 'Peli Nêvêneyay',
+    ],
     'menu_options' => [
         'none' => 'Meni de cı nêke',
         'top_level' => 'Wek hêmana sero menu de ke',
@@ -38,9 +46,10 @@ $lang['mod_page'] = [
 
     // === System Messages ===
     'messages' => [
-        'oke' => [
+        'success' => [
             'add' => 'Rûpel Bi Serkeftin Hate Zêdekirin',
             'edit' => 'Rûpel Bi Serkeftin Hate guhertin',
+            'delete' => 'Rûpel bi serkeftî hate jêbirin',
         ],
         'error' => [
             'add' => 'Zêdekirina Rûpelê Serneket',
@@ -53,9 +62,6 @@ $lang['mod_page'] = [
         'warning' => [
             'reorder' => 'Cihê rûpelê were guhertin?',
             'delete' => 'Ma tu bawer î ku dixwazî vê rûpelê jê bibî?',
-        ],
-        'success' => [
-            'delete' => 'Rûpel bi serkeftî hate jêbirin',
         ],
     ],
 
@@ -71,24 +77,24 @@ $lang['mod_page'] = [
         'no' => 'Na',
     ],
 
-    // === Peyamên Çewtiyê ===
+    // === Error Messages ===
     'errors' => [
         'record' => 'Tomara ku hate nîşankirin nehate dîtin',
         'slot_branch_missing' => 'Rûye menuye ke zımanê nê de çareser nêbiyo',
     ],
 
-    // === Etîketên Bişkojan ===
+    // === Button Labels ===
     'button' => [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
         'delete' => 'Rake',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberiya Pelan',
-        'tamam' => 'Temam',
+        'ok' => 'Temam',
         'upload' => 'Bar Ke',
     ],
 
@@ -101,18 +107,19 @@ $lang['mod_page'] = [
         'lock_reorder' => 'Moda Kaşkirinê Bigire',
     ],
 
-    // === Peyamên Piştrastkirinê ===
+    // === Confirmation Messages ===
     'validator' => [
         'required' => 'Ji kerema xwe re qada %s vala nekin',
         'length' => '%s dikare herî kêm %s û herî zêde %s tîpan be',
         'email' => 'Ji kerema xwe re navnîşana e-postayê ya derbasdar li qada %s binivîsin',
         'unique' => '%s ku nivîsandî di pergala de hate tomar ji kerema xwe re %s-ekê din hilbijêre',
         'inarray' => 'Qada %s tenê nirxên \' %s \' digire',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
-    // === Destûrên Rêzê ===
-    'roll' => [
-        'ad' => 'Rêzên Rêveberiya Rûpelan',
+    // === Column Permissions ===
+    'role' => [
+        'name' => 'Rêzên Rêveberiya Rûpelan',
         'add' => 'Dikare Rûpel Zêde Bike',
         'edit' => 'Dikare Rûpel Biguhere',
         'delete' => 'Dikare Rûpel Rake',
@@ -124,7 +131,7 @@ $lang['mod_page'] = [
         'approval' => 'Şeno Rûpelan Bıweşîno/Nêweşîno?',
     ],
 
-    // === Çewtiyên Destûran ===
+    // === Permission Errors ===
     'role_errors' => [
         'moderate_edit' => 'Tu Nikarî Tomara Rûpelên Ku Ne TeNe Biguhere',
         'moderate_delete' => 'Tu Nikarî Tomara Rûpelên Ku Ne TeNe Rake',
@@ -137,7 +144,7 @@ $lang['mod_page'] = [
         'approval' => 'Destura Şıma Qandê Weşanayışê Rûpelan Çıniya',
     ],
 
-    // === Panela Rêveber ===
+    // === Admin Panel ===
     'admin' => [
         'columns' => [
             'id' => 'ID',
@@ -198,6 +205,18 @@ $lang['mod_page'] = [
         'page_summary' => 'Kurteya Rûpelî',
         'previous' => 'Peyser',
         'next' => 'Pêser',
+        'image' => [
+            'drop_title' => 'Wêneyekî kaşke ser vir an jî',
+            'drop_description' => 'Bar bike, pêve bike an jî wêneyekî berde vir.',
+            'upload_link' => 'pelekê bar bikin',
+            'link_separator' => 'AN JÎ',
+            'link_placeholder' => 'Lînka wêneyê binivîse',
+            'link_action' => 'Bîne',
+            'hint_loading' => 'Wêne tê anîn...',
+            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
+            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
+            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
+        ],
     ],
     'quick_unpublish_confirm' => 'Şıma bi raştî wazenê nê rûpelî weşan ra wedarê?',
     'quick_publish_confirm' => 'Şıma bi raştî wazenê nê rûpelî bıweşînê?',
@@ -206,5 +225,14 @@ $lang['mod_page'] = [
     'status_badge' => [
         'active' => 'Weşandî',
         'draft' => 'Pêşnûma',
+    ],
+    'picker' => [
+        'file' => 'Dosyaya Mewcude Weçine',
+    ],
+    'ajax' => [
+        'database_error' => 'Xetaya Database',
+        'record_not_found' => 'Pele nêame diyene!',
+        'unknown_type' => 'Babetê munasabetî nêzanaye',
+        'relation_updated' => 'Munasabet bi serkewtiş ame newekerdene',
     ],
 ];

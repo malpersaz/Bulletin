@@ -32,6 +32,8 @@
 
         <!-- Hidden Defaults -->
         <input type="hidden" name="deck" value="n">
+        <input type="hidden" name="highlighted" value="n">
+        <input type="hidden" name="show_on_homepage" value="y">
         <input type="hidden" name="gallery_id" value="0">
         <input type="hidden" name="file_id" value="0">
         <input type="hidden" name="acl_id" value="0">
@@ -51,13 +53,11 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                    {% if item.status == 'y' %}
-                    <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
-                        <div class="selection-icon">{{ item.seo|upper }}</div>
-                        <div class="selection-label">{{ item.name }}</div>
-                        <i class="bi bi-check-circle-fill check-icon"></i>
-                    </div>
-                    {% endif %}
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
+                    <div class="selection-icon">{{ item.seo|upper }}</div>
+                    <div class="selection-label">{{ item.name }}</div>
+                    <i class="bi bi-check-circle-fill check-icon"></i>
+                </div>
                 {% endfor %}
             </div>
         </div>
@@ -105,11 +105,11 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.intro }}</p>
 
             <div class="input-wrapper-lg">
-                <textarea class="m3-input-lg" name="summary" id="wizardIntroInput" rows="5" placeholder=" " maxlength="255"></textarea>
+                <textarea class="m3-input-lg" name="summary" id="wizardIntroInput" rows="5" placeholder=" " minlength="90" maxlength="120" required></textarea>
                 <label class="m3-floating-label">{{ wizard_lang.wizard.label.intro_text }}</label>
             </div>
-            <div class="char-counter" id="introCharCounter">0 / 255</div>
-            <div class="validation-msg" id="introValidationMsg">{{ wizard_lang.validator.deck_length }}</div>
+            <div class="char-counter" id="introCharCounter">0 / 120</div>
+            <div class="validation-msg" id="introValidationMsg"><i class="bi bi-exclamation-circle-fill"></i> <span>{{ wizard_lang.validator.deck_length }}</span></div>
         </div>
 
         <!-- Step 6: Content -->
@@ -124,61 +124,53 @@
 
         <!-- Step 7: Image -->
         <div class="wizard-step" id="wizardStep7">
-            {% if wizard_lang_key == 'mod_news' or wizard_lang_key == 'mod_content' or wizard_lang_key == 'mod_publication' %}
-                {% include 'admin/partials/image_uploader.twig' with {
-                    shell_id: 'wizardImageShell',
-                    shell_class: '',
-                    has_image: false,
-                    shell_attrs: {
-                        'data-drop-title': wizard_lang.wizard.image.drop_title,
-                        'data-drop-description': wizard_lang.wizard.image.drop_description,
-                        'data-upload-link': wizard_lang.wizard.image.upload_link,
-                        'data-link-separator': wizard_lang.wizard.image.link_separator,
-                        'data-link-placeholder': wizard_lang.wizard.image.link_placeholder,
-                        'data-link-action': wizard_lang.wizard.image.link_action,
-                        'data-hint-loading': wizard_lang.wizard.image.hint_loading,
-                        'data-hint-invalid-type': wizard_lang.wizard.image.hint_invalid_type,
-                        'data-hint-no-drop-data': wizard_lang.wizard.image.hint_no_drop_data,
-                        'data-hint-remote-failed': wizard_lang.wizard.image.hint_remote_failed,
-                        'data-empty-name': wizard_lang.wizard.summary.selected_none,
-                        'data-empty-meta': wizard_lang.wizard.image.drop_description
-                    },
-                    dropzone_id: 'wizardImageDropzone',
-                    trigger_picker_js: 'triggerWizardImagePicker()',
-                    empty_state_id: 'wizardImageEmptyState',
-                    drop_title: wizard_lang.wizard.image.drop_title,
-                    upload_link: wizard_lang.wizard.image.upload_link,
-                    preview_card_id: 'wizardImagePreviewCard',
-                    remove_btn_id: 'wizardImageRemoveBtn',
-                    remove_action_js: 'removeWizardImage()',
-                    preview_img_id: 'wizardImgPreview',
-                    preview_alt: wizard_lang.wizard.step.image,
-                    preview_hidden: true,
-                    meta_hidden: false,
-                    file_name_id: 'wizardImageFileName',
-                    file_name_text: wizard_lang.wizard.summary.selected_none,
-                    file_details_id: 'wizardImageFileDetails',
-                    file_details_text: wizard_lang.wizard.image.drop_description,
-                    divider_hidden: false,
-                    link_separator: wizard_lang.wizard.image.link_separator,
-                    url_row_hidden: false,
-                    url_input_id: 'wizardImageUrlInput',
-                    link_placeholder: wizard_lang.wizard.image.link_placeholder,
-                    import_btn_id: 'wizardImageUrlImportBtn',
-                    link_action: wizard_lang.wizard.image.link_action,
-                    file_input_id: 'wizardImgInput',
-                    file_input_onchange: 'previewWizardImage(this)'
-                } %}
-            {% else %}
-                <h2 class="step-headline">{{ wizard_lang.wizard.step.image }}</h2>
-                <p class="step-subhead">{{ wizard_lang.wizard.subtitle.image }}</p>
-                <div class="image-upload-area" onclick="document.getElementById('wizardImgInput').click()">
-                    <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                    <p>{{ wizard_lang.wizard.label.upload_text }}</p>
-                    <input type="file" name="image" id="wizardImgInput" hidden onchange="previewWizardImage(this)">
-                </div>
-                <img id="wizardImgPreview" class="wizard-img-preview" style="display:none;">
-            {% endif %}
+            <h2 class="step-headline">{{ wizard_lang.wizard.step.image }}</h2>
+            <p class="step-subhead">{{ wizard_lang.wizard.subtitle.image }}</p>
+            {% set wizard_img_lang = wizard_lang.wizard.image is defined and wizard_lang.wizard.image ? wizard_lang.wizard.image : (lang.mod_content.wizard.image is defined ? lang.mod_content.wizard.image : {}) %}
+            {% include 'admin/partials/image_uploader.twig' with {
+                shell_id: 'wizardImageShell',
+                shell_class: '',
+                has_image: false,
+                shell_attrs: {
+                    'data-drop-title': wizard_img_lang.drop_title,
+                    'data-drop-description': wizard_img_lang.drop_description,
+                    'data-upload-link': wizard_img_lang.upload_link,
+                    'data-link-separator': wizard_img_lang.link_separator,
+                    'data-link-placeholder': wizard_img_lang.link_placeholder,
+                    'data-link-action': wizard_img_lang.link_action,
+                    'data-hint-loading': wizard_img_lang.hint_loading,
+                    'data-hint-invalid-type': wizard_img_lang.hint_invalid_type,
+                    'data-hint-no-drop-data': wizard_img_lang.hint_no_drop_data,
+                    'data-hint-remote-failed': wizard_img_lang.hint_remote_failed,
+                    'data-empty-name': wizard_lang.wizard.summary.selected_none,
+                    'data-empty-meta': wizard_img_lang.drop_description
+                },
+                dropzone_id: 'wizardImageDropzone',
+                trigger_picker_js: 'triggerWizardImagePicker()',
+                empty_state_id: 'wizardImageEmptyState',
+                drop_title: wizard_img_lang.drop_title,
+                upload_link: wizard_img_lang.upload_link,
+                preview_card_id: 'wizardImagePreviewCard',
+                remove_btn_id: 'wizardImageRemoveBtn',
+                remove_action_js: 'removeWizardImage()',
+                preview_img_id: 'wizardImgPreview',
+                preview_alt: wizard_lang.wizard.step.image,
+                preview_hidden: true,
+                meta_hidden: false,
+                file_name_id: 'wizardImageFileName',
+                file_name_text: wizard_lang.wizard.summary.selected_none,
+                file_details_id: 'wizardImageFileDetails',
+                file_details_text: wizard_img_lang.drop_description,
+                divider_hidden: false,
+                link_separator: wizard_img_lang.link_separator,
+                url_row_hidden: false,
+                url_input_id: 'wizardImageUrlInput',
+                link_placeholder: wizard_img_lang.link_placeholder,
+                import_btn_id: 'wizardImageUrlImportBtn',
+                link_action: wizard_img_lang.link_action,
+                file_input_id: 'wizardImgInput',
+                file_input_onchange: 'previewWizardImage(this)'
+            } %}
         </div>
 
         <!-- Step 8: Publish -->

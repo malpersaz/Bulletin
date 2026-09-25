@@ -18,13 +18,13 @@ Primary sources:
 Required behavior:
 
 - Verify the real local theme state before making claims.
-- Treat `templates/default` as the active public baseline unless the current worktree proves otherwise.
+- Treat `templates/amida` as the active public baseline unless the current worktree proves otherwise.
 - Do not rely on missing `templates/artist`, `tema.php`, or sibling-repository implementation details.
 - Preserve the runtime contract of the active public frontend unless the user explicitly approves a change.
 - For visual creation or redesign, load only the public design contract, one matching profile, and `templates/<theme>/DESIGN.md` when present.
 - Keep `templates/admin` out of scope unless the user explicitly includes admin work; if included, apply the phone-only admin surface rule.
 - Use `{{ site.tadres }}{{ site.app_template }}/...` for theme-owned assets unless a different path is intentionally documented.
-- Keep Twig includes active-theme-relative. Do not pin copied templates to `default/` unless explicitly intentional.
+- Keep Twig includes active-theme-relative. Do not pin copied templates to `amida/` unless explicitly intentional.
 - Keep visible copy localized through language files.
 - Do not use `default(...)`, inline fallback text, or JavaScript visible-string literals to mask missing localization.
 - Do not leave Turkish, Kurdish, or other non-English comments in touched files.
@@ -32,7 +32,7 @@ Required behavior:
 
 Implementation workflow:
 
-1. Inventory `templates/`, `templates/default`, theme activation config, and relevant loader behavior.
+1. Inventory `templates/`, `templates/amida`, theme activation config, and relevant loader behavior.
 2. Identify the exact files to create or modify.
 3. If creating or redesigning a durable visual theme, select one design profile and draft or update `templates/<theme>/DESIGN.md` before visual implementation.
 4. If creating a theme, scaffold or build `templates/<theme>` according to guidelines.

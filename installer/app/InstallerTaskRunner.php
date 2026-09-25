@@ -116,7 +116,7 @@ class InstallerTaskRunner
             $instance = $installer->load_mod($module);
             $success = $instance->install() === true;
             $logs = $this->normalizeOutput(ob_get_clean());
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             if (ob_get_level() > 0) {
                 $logs = $this->normalizeOutput(ob_get_clean());
             }
@@ -148,7 +148,16 @@ class InstallerTaskRunner
             ob_start();
             $success = $modUserInstance->install_finish() === true;
             $logs = $this->normalizeOutput(ob_get_clean());
-        } catch (Exception $exception) {
+
+            if ($success === true) {
+                $session = Load::lib('Session');
+                foreach (['id', 'username', 'group_id', 'permissions', 'sid', 'session_token', 'okunmamis'] as $authKey) {
+                    if ($session->has($authKey)) {
+                        $session->remove($authKey);
+                    }
+                }
+            }
+        } catch (Throwable $exception) {
             if (ob_get_level() > 0) {
                 $logs = $this->normalizeOutput(ob_get_clean());
             }
@@ -359,9 +368,9 @@ class InstallerTaskRunner
             );
         }
 
-        if (isset($selectedMap['mod_category']) && $this->tableExists($db, 'mod_category')) {
+        if (isset($selectedMap['mod_content_category']) && $this->tableExists($db, 'mod_content_category')) {
             $deletedCategory = $this->deleteProjectDefaultCategorySeeds($db);
-            $results['mod_category'] = array(
+            $results['mod_content_category'] = array(
                 'state' => 'skipped',
                 'message' => $deletedCategory > 0
                     ? $this->buildCopyRef('category_seed_removed', array($deletedCategory))
@@ -374,41 +383,63 @@ class InstallerTaskRunner
 
     private function deleteProjectDefaultContentSeeds(Database $db)
     {
-        $queries = array(
-            "DELETE FROM mod_content WHERE user_id = '1' AND category_id IN (
-                SELECT child_rows.id FROM (
-                     SELECT child.id
-                     FROM mod_category AS child
-                     INNER JOIN mod_category AS root_rows
-                         ON child.parent_id = root_rows.id
-                     WHERE child.user_id = '1'
-                       AND child.root = 'n'
-                       AND root_rows.user_id = '1'
-                       AND root_rows.root = 'y'
-                       AND root_rows.seo = '#'
-                 ) AS child_rows
-            )",
-        );
+        $db->fetch_array("SELECT id FROM mod_content_category WHERE user_id = '1' AND root = 'y' AND seo = '#'");
+        $rootRows = $db->toArray();
+        if (empty($rootRows) || !is_array($rootRows)) {
+            return 0;
+        }
 
-        return $this->runDeleteQueries($db, $queries);
+        $rootIds = array();
+        foreach ($rootRows as $row) {
+            if (isset($row['id'])) {
+                $rootIds[] = (int) $row['id'];
+            }
+        }
+        if (empty($rootIds)) {
+            return 0;
+        }
+
+        $db->fetch_array("SELECT id FROM mod_content_category WHERE user_id = '1' AND root = 'n' AND parent_id IN (" . implode(',', $rootIds) . ")");
+        $childRows = $db->toArray();
+        if (empty($childRows) || !is_array($childRows)) {
+            return 0;
+        }
+
+        $childIds = array();
+        foreach ($childRows as $row) {
+            if (isset($row['id'])) {
+                $childIds[] = (int) $row['id'];
+            }
+        }
+        if (empty($childIds)) {
+            return 0;
+        }
+
+        $query = "DELETE FROM mod_content WHERE user_id = '1' AND category_id IN (" . implode(',', $childIds) . ")";
+        return $this->runDeleteQueries($db, array($query));
     }
 
     private function deleteProjectDefaultCategorySeeds(Database $db)
     {
+        $db->fetch_array("SELECT id FROM mod_content_category WHERE user_id = '1' AND root = 'y' AND seo = '#'");
+        $rootRows = $db->toArray();
+        if (empty($rootRows) || !is_array($rootRows)) {
+            return 0;
+        }
+
+        $rootIds = array();
+        foreach ($rootRows as $row) {
+            if (isset($row['id'])) {
+                $rootIds[] = (int) $row['id'];
+            }
+        }
+        if (empty($rootIds)) {
+            return 0;
+        }
+
         $queries = array(
-            "DELETE FROM mod_category
-             WHERE user_id = '1'
-               AND root = 'n'
-               AND parent_id IN (
-                 SELECT root_ids.id FROM (
-                     SELECT id
-                     FROM mod_category
-                     WHERE user_id = '1'
-                       AND root = 'y'
-                       AND seo = '#'
-                 ) AS root_ids
-               )",
-            "DELETE FROM mod_category WHERE user_id = '1' AND root = 'y' AND seo = '#'",
+            "DELETE FROM mod_content_category WHERE user_id = '1' AND root = 'n' AND parent_id IN (" . implode(',', $rootIds) . ")",
+            "DELETE FROM mod_content_category WHERE user_id = '1' AND root = 'y' AND seo = '#'",
         );
 
         return $this->runDeleteQueries($db, $queries);

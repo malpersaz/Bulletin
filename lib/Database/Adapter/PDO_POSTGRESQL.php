@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 06.08.2025 - PostgreSQL PDO Adapter
- * Sınıf İsmi: PDO PostgreSQL Adapter
+ * AKM Business Content Management System
+ * Web: www.akmsoftware.co.uk
+ * E-Mail: info@akmsoftware.co.uk
+ * User: AKM
+ * Time: 06.08.2025 - PostgreSQL PDO Adapter
+ * Class Name: PDO PostgreSQL Adapter
  */
 class Adapter_PDO_POSTGRESQL
 {
@@ -26,7 +26,7 @@ class Adapter_PDO_POSTGRESQL
      */
     public function __construct($database)
     {
-        $db_config = Kayit::getir('db_config');
+        $db_config = Registry::get('db_config');
         $this->_con_setting = $db_config[$database]['conf'];
 
         if ($this->_connect() === false) {

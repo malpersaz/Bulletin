@@ -5,22 +5,21 @@
     'list' => 'Lîsteya Vîdeoyan',
     'video_management' => 'Rêveberiya Vîdewoyan',
     'information' => 'Agahdarî!',
-    'oke' => 'Operasyon Serkeft!',
-    'hata' => 'Çewtî Çêbû!',
-    'error' => 'Çewtiya Giran Çêbû!',
+    'success' => 'Operasyon Serkeft!',
+    'error' => 'Çewtî Çêbû!',
     'remove_image' => 'Ji derxistina vê wêneyê bawer î?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Heke bixwazî hilbijêre',
     'remove_record' => 'Ji rakirana vê tomarê bawer î?',
     'converting' => 'Vîdeo tê veguherandin, jî kerema xwe bisekinin...',
     'converted' => 'Barkirina vîdeoyê qediya! Niha dikarî vîdeoyê veguherînî.',
-    '19' => 'Di dema veguheritina vîdeoyê de çewtî çêbû %s',
-    '20' => 'Veguhertina vîdeoyê qediya.<br>Vebijêrk %s çirkaniyan domand.',
-    'add_uzak' => 'Vê vîdeoyê wekî vîdeoyê dûr jî tevlî pergalê bike',
+    'video_gallery' => 'Di dema veguheritina vîdeoyê de çewtî çêbû %s',
+    'video_list' => 'Veguhertina vîdeoyê qediya.<br>Vebijêrk %s çirkaniyan domand.',
+    'add_remote' => 'Vê vîdeoyê wekî vîdeoyê dûr jî tevlî pergalê bike',
     'unremove_original' => 'Şêweya resen a vê vîdeoyê tomar bike',
     'message' =>
     [
-        'oke' =>
+        'success' =>
         [
             'add' => 'Vîdeo hate zêdekirin!',
             'edit' => 'Vîdeo hate sererastkirin!',
@@ -38,9 +37,9 @@
     ],
     'errors' =>
     [
-        '1' => 'Dema ku pelê FLV ji TMP rêzê hate barkirin çewtî çêbû',
-        '2' => 'Dema ku pelê wêneyê ji TMP rêzê hate barkirin çewtî çêbû',
-        '3' => 'Dema ku pelê vîdeoyê resen ji TMP rêzê hate barkirin çewtî çêbû',
+        'title' => 'Dema ku pelê FLV ji TMP rêzê hate barkirin çewtî çêbû',
+        'subtitle' => 'Dema ku pelê wêneyê ji TMP rêzê hate barkirin çewtî çêbû',
+        'description' => 'Dema ku pelê vîdeoyê resen ji TMP rêzê hate barkirin çewtî çêbû',
         'record' => 'Tomara ku texwîs kirî nehate dîtin!',
         'in_valid_ext' => 'Hûn ceribandibin vîdeoyekê barsekinin ê ku ne derbasdar e.
 	 Tenê vîdeoyên bi dirêjkariya <font color="black">%s</font> barkirin.',
@@ -51,27 +50,27 @@
     [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Rake',
         'gallery' => 'Galerîya Wêneyan',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
-        'yukle' => 'Bar Bike',
-        'donustur' => 'Veguherîne'
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
+        'upload' => 'Bar Bike',
+        'convert' => 'Veguherîne'
     ],
     'grid' =>
     [
-        0 => 'Ji {total} encamên {from} heta {to} tê xuyakirin.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên tên barkirin, ji kerema xwe bisekinin...',
-        4 => 'Tu daneyê nehate dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzêkê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzêkê hilbijêrin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tê xuyakirin.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên tên barkirin, ji kerema xwe bisekinin...',
+        'no_data' => 'Tu daneyê nehate dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzêkê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzêkê hilbijêrin',
         'publish' =>
              [
                 'key' => 'Weşîne',
@@ -91,7 +90,7 @@
         'unique' => '%s ku nivîsandîn di pergalê de tomar kirin. Ji kerema xwe %s din ake!',
         'inarray' => 'Qada %s tenê nirxên \' %s \' qebûl dike',
     ],
-    'roll' =>
+    'role' =>
     [
         'name' => 'Rolenên Rêveberiya Vîdeoyê',
         'add' => 'Dikare vîdeo zêde bike',
@@ -325,4 +324,45 @@
         'step3_title' => 'Vîdeoyê Tomar Bike',
         'step3_instruction' => 'Agahiyên vîdeoyê tije bikin û tomar bikin.',
     ],
+    'context_menu' => [
+        'title' => 'Operasyonên Vîdeoyan',
+        'edit' => 'Biguhere',
+        'gallery' => 'Operasyonên Galeriyê',
+        'files' => 'Operasyonên Pelan',
+        'video' => 'Vîdeo Lêke',
+        'status' => 'Rewşê Biguherîne',
+        'delete' => 'Rake',
+        'delete_error' => 'Jêbirin biserneket!',
+        'video_success_sim' => 'Vîdeo bi Serkeftî Hat Zêdekirin (Simulasyon)',
+        'video_embed_error' => 'Koda Embed Nederbasdar e',
+        'video_title_error' => 'Sernavê Nederbasdar',
+        'publish' => 'Biweşîne',
+        'unpublish' => 'Neweşîne',
+        'published_msg' => 'Hat Weşandin',
+        'unpublished_msg' => 'Ji Weşanê Hat Rakirin',
+        'confirm' => 'Erê',
+        'cancel' => 'Betal',
+        'edit_alert' => "MODA SERERASTKIRINÊ:\nID: %s\nSernav: %s",
+        'gallery_alert' => "RÊVEBERIYA GALERIYÊ:\nID: %s\nSernav: %s\nGaleriya wêneyan tê vekirin.",
+        'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
+        'status_alert' => "REWŞ HAT NÛJENKIRIN:\n%s",
+        'delete_success' => 'Vîdeo hat jêbirin!',
+    ],
+    'status_badge' => [
+        'active' => 'Çalak',
+        'draft' => 'Reşnivîs',
+    ],
+    'sheet' => [
+        'all' => 'Hemû',
+        'lang_title' => 'Zimanê Parzûnê',
+        'ok' => 'Temam',
+        'category_title' => 'Kategoriyê Hilbijêre',
+    ],
+    // === Hero Slider ===
+    'hero_slider_add' => 'Slider de Pêşkêş Bike',
+    'hero_slider_remove' => 'Slider ra Bıdarne',
+    'hero_slider_added' => 'Video be serkeftış kewa slider.',
+    'hero_slider_removed' => 'Video slider ra amey wedartene.',
+    'hero_slider_error' => 'Vurnayışê sliderî nêbı.',
+    'hero_slider_badge' => 'Slider',
 ];

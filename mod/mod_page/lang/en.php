@@ -12,17 +12,27 @@ $lang['mod_page'] = [
     'add' => 'Add Page',
     'edit' => 'Edit Page',
     'list' => 'Page List',
+    'total_pages' => 'Total Pages',
+    'published_pages' => 'Published',
+    'draft_pages' => 'Drafts',
+    'expand_all' => 'Expand All',
+    'collapse_all' => 'Collapse All',
+    'search_placeholder' => 'Search pages...',
 
     // === System Messages ===
     'information' => 'Information',
-    'oke' => 'Operation Successful',
-    'hata' => 'Error Occurred',
-    'error' => 'Critical Error',
+    'success' => 'Operation Successful',
+    'error' => 'Error Occurred',
 
     // === Confirmation Messages ===
-    'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image Removed Successfully',
+    'remove_image' => 'Remove Image',
+    'remove_image_question' => 'Are you sure you want to remove this image?',
+    'remove_image_success' => 'Image Removed Successfully',
     'choose_wish' => 'Please Select if Desired',
+    'empty' => [
+        'no_pages' => 'No Pages Found',
+        'description' => 'No pages found yet. You can start building your page hierarchy by adding a new page.',
+    ],
     'menu_options' => [
         'none' => 'Do Not Add to Menu',
         'top_level' => 'Add as Top-Level Menu Item',
@@ -38,9 +48,10 @@ $lang['mod_page'] = [
 
     // === System Messages ===
     'messages' => [
-        'oke' => [
+        'success' => [
             'add' => 'Page Added Successfully',
             'edit' => 'Page Updated Successfully',
+            'delete' => 'Page deleted successfully',
         ],
         'error' => [
             'add' => 'Failed to Add Page',
@@ -53,9 +64,6 @@ $lang['mod_page'] = [
         'warning' => [
             'reorder' => 'Change page order?',
             'delete' => 'Are you sure you want to delete this page?',
-        ],
-        'success' => [
-            'delete' => 'Page deleted successfully',
         ],
     ],
 
@@ -82,13 +90,13 @@ $lang['mod_page'] = [
         'add' => 'Add',
         'edit' => 'Edit',
         'delete' => 'Delete',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
+        'cancel' => 'Cancel',
+        'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
         'gallery' => 'Image Gallery',
         'file' => 'File Manager',
-        'tamam' => 'OK',
+        'ok' => 'OK',
         'upload' => 'Upload',
     ],
 
@@ -97,8 +105,8 @@ $lang['mod_page'] = [
         'cancel' => 'Cancel',
         'edit' => 'Edit',
         'delete' => 'Delete',
-        'unlock_reorder' => 'Unlock Drag & Drop',
-        'lock_reorder' => 'Lock Drag & Drop',
+        'unlock_reorder' => 'Reorder',
+        'lock_reorder' => 'Lock',
     ],
 
     // === Validation Messages ===
@@ -108,11 +116,12 @@ $lang['mod_page'] = [
         'email' => 'Please enter a valid email address in the %s field',
         'unique' => 'The %s you entered is already registered, please choose another %s',
         'inarray' => 'The %s field only accepts values: \' %s \'',
+        'deck_length' => 'Please enter an introductory text between 90 and 120 characters.',
     ],
 
     // === Role Permissions ===
-    'roll' => [
-        'ad' => 'Page Management Roles',
+    'role' => [
+        'name' => 'Page Management Roles',
         'add' => 'Can Add Page',
         'edit' => 'Can Edit Page',
         'delete' => 'Can Remove Page',
@@ -198,6 +207,18 @@ $lang['mod_page'] = [
         'page_summary' => 'Page Summary',
         'previous' => 'Previous',
         'next' => 'Next',
+        'image' => [
+            'drop_title' => 'Upload, paste, or move',
+            'drop_description' => 'Upload, paste, or move',
+            'upload_link' => 'Upload Image',
+            'link_separator' => 'OR',
+            'link_placeholder' => 'Paste image link',
+            'link_action' => 'Import',
+            'hint_loading' => 'Importing image...',
+            'hint_invalid_type' => 'Only image files are supported here.',
+            'hint_no_drop_data' => 'No usable image was found in the dropped content.',
+            'hint_remote_failed' => 'The image could not be imported from that source.',
+        ],
     ],
     'quick_unpublish_confirm' => 'Are you sure you want to unpublish this page?',
     'quick_publish_confirm' => 'Are you sure you want to publish this page?',
@@ -206,5 +227,14 @@ $lang['mod_page'] = [
     'status_badge' => [
         'active' => 'Published',
         'draft' => 'Draft',
+    ],
+    'picker' => [
+        'file' => 'Select Existing File',
+    ],
+    'ajax' => [
+        'database_error' => 'Database Error',
+        'record_not_found' => 'Page not found!',
+        'unknown_type' => 'Unknown relation type',
+        'relation_updated' => 'Relation successfully updated',
     ],
 ];

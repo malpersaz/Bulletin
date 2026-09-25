@@ -2,7 +2,7 @@
 
 /* AKM Software
  * @2010
- * Üyelik Özel Mesaj Modülü
+ * Membership Private Message Module
  * mod/mod_user_pm/index.php
  */
 
@@ -13,45 +13,45 @@ class mod_user_pm_mod extends indexMain
     function __construct()
     {
         parent::__construct();
-        // Tema Kütüphanesini Çağıralım
-        $this->tema = Load::lib('AdminTemplate');
-        // Database Kütüphanesini Yükleyelim
+        // Call the Theme Library
+        $this->theme = Load::lib('AdminTemplate');
+        // Load the Database Library
         $this->db = Load::lib('Database');
-        // Site ayarlarını çekelim
-        //$this->site = Kayit::getir('site_config');
-        // Dil Dosyasını Çağıralım
+        // Get site settings
+        //$this->site = Registry::get('site_config');
+        // Call the Language File
         $this->lang = Load::lang('mod_user_pm');
-        // Dil Dosyasını Temaya Gönderelim
-        $this->tema->lang($this->lang);
+        // Send the Language File to Theme
+        $this->theme->lang($this->lang);
         // User Model
         $this->user = Load::model('mod_user.user');
-        // Session Kütüphanesi
+        // Session Library
         $this->session = Load::lib('Session');
     }
 
     private function setTemplateErrors($errors)
     {
-        $this->tema->veri('errors', $errors);
+        $this->theme->set('errors', $errors);
     }
 
     private function setTemplateFormData(array $data)
     {
         foreach ($data as $key => $value) {
-            $this->tema->veri($key, $value);
+            $this->theme->set($key, $value);
         }
     }
 
     private function setSuccessMessage($message)
     {
-        $this->tema->veri('oke', True);
-        $this->tema->veri('success', True);
-        $this->tema->veri('message', $message);
+        $this->theme->set('Success', True);
+        $this->theme->set('success', True);
+        $this->theme->set('message', $message);
     }
 
     private function setErrorMessage($message)
     {
-        $this->tema->veri('error', True);
-        $this->tema->veri('message', $message);
+        $this->theme->set('error', True);
+        $this->theme->set('message', $message);
     }
 
     private function redirectTo($path)
@@ -61,7 +61,7 @@ class mod_user_pm_mod extends indexMain
         exit;
     }
 
-    // Özel Mesaj Oku
+    // Read Private Message
     public function inbox_read($id = NULL)
     {
         if ($id == NULL) {
@@ -72,7 +72,7 @@ class mod_user_pm_mod extends indexMain
         if (intval($id) === 0) {
             $this->redirectTo('mod_user_pm/inbox');
         }
-        // Üyemi?
+        // Is user a member?
         Run::import('mod_user', 'check');
 
         $inbox = Load::model('mod_user_pm.inbox');
@@ -135,18 +135,18 @@ class mod_user_pm_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['inbox_title'];
-        $this->tema->veri('veri', $inbox->toArray());
-        $this->tema->tpl('mod_user_pm/inbox_read');
-        $this->tema->veri('site', $this->site);
+        $this->theme->set('messages', $inbox->toArray());
+        $this->theme->tpl('mod_user_pm/inbox_read');
+        $this->theme->set('site', $this->site);
     }
 
-    // Özel Mesaj Oku
+    // Read Private Message
     public function sent_read($id = NULL)
     {
         if ($id == NULL) {
             $this->redirectTo('mod_user_pm/sent');
         }
-        // Üyemi?
+        // Is user a member?
         Run::import('mod_user', 'check');
 
         $sent = Load::model('mod_user_pm.sent');
@@ -199,9 +199,9 @@ class mod_user_pm_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['sent_title'];
-        $this->tema->veri('veri', $sent->toArray());
-        $this->tema->tpl('mod_user_pm/sent_read');
-        $this->tema->veri('site', $this->site);
+        $this->theme->set('veri', $sent->toArray());
+        $this->theme->tpl('mod_user_pm/sent_read');
+        $this->theme->set('site', $this->site);
     }
 
     public function check_pm()
@@ -262,7 +262,7 @@ class mod_user_pm_mod extends indexMain
         //print_r($inbox);
     }
 
-    // Özel Mesajlar
+    // Private Messages
     public function inbox()
     {
 
@@ -308,13 +308,13 @@ class mod_user_pm_mod extends indexMain
         $this->site['title'] = $this->lang['mod_user_pm']['inbox_title'];
 
         if ($inbox->getSize() !== 0) {
-            $this->tema->veri('messages', $inbox->toArray());
+            $this->theme->set('messages', $inbox->toArray());
         }
-        $this->tema->tpl('mod_user_pm/inbox');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/inbox');
+        $this->theme->set('site', $this->site);
     }
 
-    // Özel Mesajlar
+    // Private Messages
     public function sent()
     {
 
@@ -358,19 +358,19 @@ class mod_user_pm_mod extends indexMain
         $this->site['title'] = $this->lang['mod_user_pm']['sent_title'];
 
         if ($sent->getSize() !== 0) {
-            $this->tema->veri('messages', $sent->toArray());
+            $this->theme->set('messages', $sent->toArray());
         }
-        $this->tema->tpl('mod_user_pm/sent');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/sent');
+        $this->theme->set('site', $this->site);
     }
 
-    // Öm Gönderme Fonksiyonu
+    // PM Sending Function
     public function send($nick = NULL, $subject = NULL)
     {
-        // Üyemi?
+        // Is user a member?
         Run::import('mod_user', 'check');
 
-        // Gönderme Permissionsi varmı?
+        // Check Send Permission
         if ($this->user->hasPermission('mod_user_pm', 'send', $this->lang['mod_user_pm']['role_errors']['send'], 1) === False) {
             return False;
         }
@@ -392,8 +392,8 @@ class mod_user_pm_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['send_private_message_title'];
-        $this->tema->tpl('mod_user_pm/send');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/send');
+        $this->theme->set('site', $this->site);
     }
 
     private function _send()
@@ -426,13 +426,13 @@ class mod_user_pm_mod extends indexMain
         }
     }
 
-    // Toplu ÖM gönderme Fonksiyonu
+    // Bulk PM Sending Function
     public function bulk()
     {
-        // Üyemi?
+        // Is user a member?
         Run::import('mod_user', 'check');
 
-        // Gönderme Permissionsi varmı?
+        // Check Send Permission
         if ($this->user->hasPermission('mod_user_pm', 'bulk', $this->lang['mod_user_pm']['role_errors']['bulk'], 1) === False) {
             return False;
         }
@@ -442,8 +442,8 @@ class mod_user_pm_mod extends indexMain
         }
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['bulk_pm_area_desc'];
-        $this->tema->tpl('mod_user_pm/bulk');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/bulk');
+        $this->theme->set('site', $this->site);
     }
 
     private function _bulk()
@@ -473,13 +473,13 @@ class mod_user_pm_mod extends indexMain
 
 
 
-    // Guruba Toplu ÖM gönderme Fonksiyonu
+    // Group Bulk PM Sending Function
     public function group_bulk()
     {
-        // Üyemi?
+        // Is user a member?
         Run::import('mod_user', 'check');
 
-        // Gönderme Permissionsi varmı?
+        // Check Send Permission
         if ($this->user->hasPermission('mod_user_pm', 'group_bulk', $this->lang['mod_user_pm']['role_errors']['group_bulk'], 1) === False) {
             return False;
         }
@@ -491,13 +491,13 @@ class mod_user_pm_mod extends indexMain
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['bulk_group_message_title'];
 
-        $grup = Load::model('mod_user_group');
-        $grup->order('order', 'ASC')->all();
-        $gr = Helper::nested($grup->toArray(), 'parent_id', 'group_id');
-        $this->tema->veri('user_groupm', $gr);
+        $group = Load::model('mod_user_group');
+        $group->order('order', 'ASC')->all();
+        $gr = Helper::nested($group->toArray(), 'parent_id', 'group_id');
+        $this->theme->set('user_groupm', $gr);
 
-        $this->tema->tpl('mod_user_pm/group_bulk');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/group_bulk');
+        $this->theme->set('site', $this->site);
     }
 
     private function _group_bulk()
@@ -532,7 +532,7 @@ class mod_user_pm_mod extends indexMain
             exit();
         }
         $this->model->delete();
-        echo "Oke";
+        echo "Success";
     }
 
     public function datatable_json()
@@ -562,10 +562,10 @@ class mod_user_pm_mod extends indexMain
         $where = "mod_user_pm_inbox.reader_id = '$reader_id'";
 
         // Search
-        if (Req::is_Post('arama')) {
-            $arama = Req::Post_Safe('arama');
-            if (isset($arama['subject']) && $arama['subject'] != '') {
-                $search = Req::Clear($arama['subject']);
+        if (Req::is_Post('filter')) {
+            $filter = Req::Post_Safe('filter');
+            if (isset($filter['subject']) && $filter['subject'] != '') {
+                $search = Req::Clear($filter['subject']);
                 $where .= " AND (mod_user_pm_inbox.subject LIKE '%$search%' OR mod_user.username LIKE '%$search%')";
             }
         }
@@ -619,36 +619,37 @@ class mod_user_pm_mod extends indexMain
             exit();
         }
         $this->model->delete();
-        echo "Oke";
+        echo "Success";
     }
 
-    // Bütün Üyeler
+    // All Members
     public function alluser()
     {
         if (
-            Roll::hasPermission('mod_user_pm', 'send') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'bulk') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'group_bulk') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'all') === FALSE
+            Role::hasPermission('mod_user_pm', 'send') === FALSE
+            && Role::hasPermission('mod_user_pm', 'bulk') === FALSE
+            && Role::hasPermission('mod_user_pm', 'group_bulk') === FALSE
+            && Role::hasPermission('mod_user_pm', 'all') === FALSE
         ) {
             exit();
         }
         $this->u = Load::model('mod_user');
         $this->u->select('username')->all();
+        $usernames = [];
         foreach ($this->u->toArray() as $u) {
-            $dizi[] = $u['username'];
+            $usernames[] = $u['username'];
         }
-        $ext = implode('","', $dizi);
+        $ext = implode('","', $usernames);
         echo '["' . $ext . '"]';
     }
 
     public function allin()
     {
         if (
-            Roll::hasPermission('mod_user_pm', 'send') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'bulk') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'group_bulk') === FALSE
-            && Roll::hasPermission('mod_user_pm', 'all') === FALSE
+            Role::hasPermission('mod_user_pm', 'send') === FALSE
+            && Role::hasPermission('mod_user_pm', 'bulk') === FALSE
+            && Role::hasPermission('mod_user_pm', 'group_bulk') === FALSE
+            && Role::hasPermission('mod_user_pm', 'all') === FALSE
         ) {
             exit();
         }
@@ -671,10 +672,10 @@ class mod_user_pm_mod extends indexMain
         }
     }
 
-    // Bütün Üyelere TOplu MEsaj Gönderme
+    // Sending Bulk Message to All Members
     public function all()
     {
-        // Gönderme Permissionsi varmı?
+        // Check Send Permission
         if ($this->user->hasPermission('mod_user_pm', 'all', $this->lang['mod_user_pm']['role_errors']['all'], 1) === False) {
             return False;
         }
@@ -685,8 +686,8 @@ class mod_user_pm_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user_pm']['bulk_all_message_title'];
-        $this->tema->tpl('mod_user_pm/all');
-        $this->tema->veri('site', $this->site);
+        $this->theme->tpl('mod_user_pm/all');
+        $this->theme->set('site', $this->site);
     }
 
     private function _all()

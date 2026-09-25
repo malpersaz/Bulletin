@@ -1,101 +1,95 @@
 <?php
-$lang['mod_acl'] = array (
-  'ziyaretci' => 'Mêvan',
-  'add' => 'ACL lêzêde bike',
-  'edit' => 'ACL serast bike',
-  'list' => 'ACL lîste',
-  'information' => 'Agahî!',
-  'oke' => 'Operasyon Serkeft!',
-  'hata' => 'Çewtî Çêbû!',
-  'error' => 'Çewtiya Giran Çêbû!',
-  'remove_image' => 'Ji derxistina vê wêneyê bawer î?',
-  'remove_image_oke' => 'Wêne hate rakirin',
-  'choose_wish' => 'Heke bixwazî hilbijêre',
-  'remove_record' => 'Ma tu rakirana vê naverokê bawer î?',
-  'message' => 
-  array (
-    'oke' => 
-    array (
-      'add' => 'ACL nehat lêzêdekirin!',
-      'edit' => 'ACL nehat serastkirin!',
-    ),
-    'error' => 
-    array (
-      'add' => 'ACL nehat lêzêdekirin!',
-      'edit' => 'ACL nehat serastkirin!',
-    ),
-    'information' => 
-    array (
-      'moderate' => 'Naveroka tu dixwazî serast bikî du caran li pey hev bitikîne',
-      'move' => 'Naveroka tu dixwazî cihê wê biguharî bigire û kaş bike cihê nû',
-    ),
-  ),
-  'errors' => 
-  array (
-    'record' => 'Daneya tu dixwazî nehat dîtin!',
-  ),
-  'button' => 
-  array (
-    'add' => 'Zêde Bike',
-    'edit' => 'Serast Bike',
-    'search' => 'Lêgerîn',
-    'reset' => 'Sifir Bike',
-    'yenile' => 'Nû Bike',
-    'delete' => 'Jêbibe',
-    'gallery' => 'Wênedank',
-    'vazgec' => 'Betal',
-    'kaldir' => 'Rake',
-    'evet' => 'Erê',
-    'hayir' => 'Na',
-  ),
-  'grid' => 
-  array (
-    0 => 'Ji nav {total} encaman ji {from} heta {to} tê xwiyakirin.',
-    1 => 'Rûpel',
-    2 => 'Hejmara Rûpelan',
-    3 => 'Dane tên lêbarkirin, li hêviyê bimîne ...',
-    4 => 'Tu dane nehatin dîtin',
-    5 => 'Şaşiya pêwendiyê',
-    6 => 'Lêgerîn',
-    7 => 'Herî kêm rêzikekê hilbijerê',
-    8 => 'Tenê rêzikekê hilbijêre',
-  ),
-  'validator' => 
-  array (
-    'required' => 'Ji kerema xwe re %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
-    'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Navresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Ji kerema xwe re Başka Bir %s Belirleyin!',
-    'inarray' => '%s Qadaı Sadece \' %s \' değerleri alabilir',
-  ),
-  'roll' => 
-  array (
-    'ad' => 'ACL Rêveberî Rolleri',
-    'add' => 'ACL Zêde Bikeyebilir',
-    'edit' => 'ACL Biguhereyebilir',
-    'delete' => 'ACL Jê Bibeebilir',
-    'list' => 'ACL Rêveberîni Görüntüleyebilir',
-    'moderate_edit' => 'Kendisine Ait Olmayan ACL Kaydını Biguhereyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan ACL Kaydını Biguhereyebilir',
-  ),
-  'role_errors' => 
-  array (
-    'moderate_edit' => 'Size Ait Olmayan ACL Kaydını Biguhereyemezsiniz',
-    'moderate_delete' => 'Size Ait Olmayan ACL Kaydını Jê Bibeemezsiniz',
-    'add' => 'ACL Zêde Bikemeye Permissionniz Yok',
-    'edit' => 'ACL Biguheremeye Permissionniz Yok',
-    'list' => 'ACL Rêveberîni Görüntülemeye Permissionniz Yok',
-    'delete' => 'ACL Jê Bibemeye Permissionniz Yok',
-  ),
-  'admin' => 
-  array (
-    'list' => 'Lîsteya ACL',
-    'columns' => 
-    array (
-      'id' => 'ID',
-      'ad' => 'ACL Nav',
-      'acl' => 'Endam Grupları',
-    ),
-  ),
-);
-?>
+$lang['mod_acl'] = [
+    'guest' => 'Mêvan',
+    'add' => 'Rola Nû Lêke',
+    'edit' => 'Rola ACL Biguherîne',
+    'list' => 'Lîsteya Rolan',
+    'information' => 'Agahî!',
+    'success' => 'Operasyon Serkeftî Bû!',
+    'error' => 'Çewtî Çêbû!',
+    'error_title' => 'Çewtî',
+    'confirm_title' => 'Piştrastkirin',
+    'success_title' => 'Serkeftî',
+    'remove_image' => 'Ji rakirina vê wêneyê piştrast î?',
+    'remove_image_success' => 'Wêne hate rakirin',
+    'choose_wish' => 'Heke bixwazî hilbijêre',
+    'remove_record' => 'Ma tu ji rakirina vê qeydê piştrast î?',
+    'records' => 'qeyd',
+    'message' => [
+        'success' => [
+            'add' => 'ACL hate lêkirin!',
+            'edit' => 'ACL hate nûjenkirin!',
+        ],
+        'error' => [
+            'add' => 'ACL nehate lêkirin!',
+            'edit' => 'ACL nehate nûjenkirin!',
+        ],
+        'information' => [
+            'moderate' => 'Ji bo guherandinê du caran li ser naverokê bitikîne',
+            'move' => 'Naveroka ku dixwazî rêza wê biguherînî bikişîne û berde cihê nû',
+            'select_roles' => 'Ji kerema xwe destûrên ku dixwazî bidî vê rolê, hilbijêre.',
+        ],
+    ],
+    'errors' => [
+        'record' => 'Qeyda ku te xwest nehate dîtin!',
+    ],
+    'button' => [
+        'add' => 'Lêke',
+        'edit' => 'Biguherîne',
+        'search' => 'Bigere',
+        'reset' => 'Sifir Bike',
+        'refresh' => 'Nûjen Bike',
+        'delete' => 'Jêbibe',
+        'gallery' => 'Pêşangeha Wêneyan',
+        'cancel' => 'Betal Bike',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
+        'ok' => 'Temam',
+        'new_role' => 'Rola Nû',
+    ],
+    'grid' => [
+        'showing_results' => 'Ji nav {total} encaman ji {from} heta {to} tê nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Dane tên barkirin, li bendê bimîne...',
+        'no_data' => 'Tu dane nehate dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêre',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêre',
+    ],
+    'validator' => [
+        'required' => 'Qada %s nikare vala bimîne',
+        'length' => 'Qada %s dikare herî kêm %s û herî zêde %s karakter be',
+        'email' => 'Ji kerema xwe di qada %s de navnîşaneke derbasdar a e-posteyê binivîse',
+        'unique' => '%s ê ku te nivîsandiye jixwe di pergalê de tomarkirî ye. Ji kerema xwe %s ekî din diyar bike!',
+        'inarray' => 'Qada %s tenê dikare nirxên \'%s\' bigire',
+    ],
+    'role' => [
+        'name' => 'Rolên Rêveberiya ACL',
+        'add' => 'Dikare ACL lêke',
+        'edit' => 'Dikare ACL biguherîne',
+        'delete' => 'Dikare ACL jê bibe',
+        'list' => 'Dikare Rêveberiya ACL bibîne',
+        'moderate_edit' => 'Dikare qeyda ACL a ne ya wî/wê ye biguherîne',
+        'moderate_delete' => 'Dikare qeyda ACL a ne ya wî/wê ye jê bibe',
+    ],
+    'role_errors' => [
+        'moderate_edit' => 'Destûra te tune ye ku qeyda ACL a ne ya te ye biguherînî',
+        'moderate_delete' => 'Destûra te tune ye ku qeyda ACL a ne ya te ye jê bibî',
+        'add' => 'Destûra te ya lêkirina ACL tune ye',
+        'edit' => 'Destûra te ya guherandina ACL tune ye',
+        'list' => 'Destûra te ya dîtina Rêveberiya ACL tune ye',
+        'delete' => 'Destûra te ya jêbirina ACL tune ye',
+    ],
+    'admin' => [
+        'list' => 'Lîsteya ACL',
+        'search_placeholder' => 'Rolan bigere...',
+        'columns' => [
+            'id' => 'ID',
+            'name' => 'Navê Rolê',
+            'acl' => 'Destûrên Vê Rolê (ACL)',
+        ],
+    ],
+];

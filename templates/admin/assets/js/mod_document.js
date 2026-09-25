@@ -78,6 +78,15 @@ class DocumentListManager {
                 this.renderCards(items);
             }
 
+            if (typeof result.totalDocument !== 'undefined') {
+                const totalEl = document.getElementById('statTotalDocument');
+                if (totalEl) totalEl.textContent = result.totalDocument;
+            }
+            if (typeof result.liveDocument !== 'undefined') {
+                const liveEl = document.getElementById('statLiveDocument');
+                if (liveEl) liveEl.textContent = result.liveDocument;
+            }
+
             this.start += items.length;
             this.draw += 1;
             this.hasMore = this.start < Number(result.recordsFiltered || 0);
@@ -163,11 +172,25 @@ function editSelected() {
 }
 
 function gallerySelected() {
-    if (manager.selectedId) location.href = `${SITE_URL}mod_gallery/list/mod_document/${manager.selectedId}`;
+    if (manager.selectedId) {
+        const url = `${SITE_URL}mod_gallery/list/mod_document/${manager.selectedId}`;
+        if (window.AFModalEngine) {
+            AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            location.href = url;
+        }
+    }
 }
 
 function filesSelected() {
-    if (manager.selectedId) location.href = `${SITE_URL}mod_attachment/list/mod_document/${manager.selectedId}`;
+    if (manager.selectedId) {
+        const url = `${SITE_URL}mod_attachment/list/mod_document/${manager.selectedId}`;
+        if (window.AFModalEngine) {
+            AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            location.href = url;
+        }
+    }
 }
 
 async function deleteSelected() {
@@ -176,11 +199,16 @@ async function deleteSelected() {
 
     const formData = new FormData();
     formData.append('query[]', manager.selectedId);
+    formData.append('ajax_request', '1');
 
     try {
-        const res = await fetch(`${MODULE_URL}delete`, { method: 'POST', body: formData });
+        const res = await fetch(`${MODULE_URL}delete`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        });
         const text = await res.text();
-        if (text.trim() === 'Oke') {
+        if (text.trim() === 'Success') {
             manager.loadData(true);
         } else {
             if (typeof showSnackbar === 'function') {

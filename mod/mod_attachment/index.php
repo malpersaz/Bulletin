@@ -17,7 +17,7 @@ class mod_attachment_mod extends BaseModuleController
         parent::__construct('mod_attachment');
 
         if (Req::is_Post('sid')) {
-            Kayit::ekle('session_sid', Req::Post_Safe('sid'));
+            Registry::add('session_sid', Req::Post_Safe('sid'));
         }
     }
 
@@ -28,7 +28,7 @@ class mod_attachment_mod extends BaseModuleController
 
     private function _resolve_record_title($record, $configured_value = null)
     {
-        if (!is_array($record) || empty($record) || $configured_value === null || $configured_value === '') {
+        if (!is_array($record) || $record === [] || $configured_value === null || $configured_value === '') {
             return false;
         }
 
@@ -60,6 +60,19 @@ class mod_attachment_mod extends BaseModuleController
 
         $this->mod = Load::model('mod_attachment_mod');
         if ($this->mod->exists_mod_name($mod) === false) {
+            try {
+                $rawName = str_replace('mod_', '', $mod);
+                $displayName = ucfirst($rawName) . ' Files';
+                $safeName = addslashes($displayName);
+                $safeMod = addslashes($mod);
+                $this->db->query("INSERT INTO `mod_attachment_mod` (`name`, `mod_name`, `mod_key`, `mod_value`, `user_id`) VALUES ('{$safeName}', '{$safeMod}', 'id', 'name', 1)");
+                $this->mod->flush();
+            } catch (Exception $e) {
+                // Table might not exist yet
+            }
+        }
+
+        if ($this->mod->exists_mod_name($mod) === false) {
             exit($this->lang['mod_attachment']['errors']['invalid_module']);
         }
 
@@ -67,17 +80,23 @@ class mod_attachment_mod extends BaseModuleController
         $this->mod->sync();
 
         $this->mlang = Load::lang($mod);
-        if (empty($this->mlang[$mod]['role_errors']['file'])) {
-            exit($this->lang['mod_attachment']['errors']['module_file_permission_missing']);
-        }
+        $roleError = $this->mlang[$mod]['role_errors']['file'] ?? ($this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied');
 
-        if ($this->user->hasPermission($mod, 'file', $this->mlang[$mod]['role_errors']['file']) === false) {
-            exit($this->mlang[$mod]['role_errors']['file']);
+        $hasPermission = (
+            Role::hasPermission($mod, 'file') ||
+            Role::hasPermission($mod, 'edit') ||
+            Role::hasPermission('mod_attachment', 'list') ||
+            Role::hasPermission('mod_attachment', 'edit') ||
+            $this->user->hasPermission($mod, 'file', $roleError, 1)
+        );
+
+        if (!$hasPermission) {
+            exit($roleError);
         }
 
         $this->model = Load::model($mod);
-        if ($this->model->exists_id($vid) === false) {
-            Helper::yonlendir($this->site['address'] . $mod . '/list', 1);
+        if (!$this->model || $this->model->exists_id($vid) === false) {
+            Helper::redirect($this->site['address'] . $mod . '/list', 1);
             print($this->lang['mod_attachment']['errors']['invalid_record']);
             return false;
         }
@@ -85,9 +104,9 @@ class mod_attachment_mod extends BaseModuleController
         $this->model->getResultOne();
         $this->model->sync();
 
-        $this->tema->veri('key', $this->mod->mod_key);
-        $this->tema->veri('value', $this->mod->mod_value);
-        $this->tema->veri('mod_name', $mod);
+        $this->theme->set('key', $this->mod->mod_key);
+        $this->theme->set('value', $this->mod->mod_value);
+        $this->theme->set('mod_name', $mod);
 
         $this->mod_attachment_model = Load::model('mod_attachment');
         $this->mod_attachment_model->where_vid_and_mod_name($vid, $mod)->gR();
@@ -98,9 +117,9 @@ class mod_attachment_mod extends BaseModuleController
             exit($this->lang['mod_attachment']['errors']['invalid_record_title_field']);
         }
 
-        $this->tema->veri('d', $record);
-        $this->tema->veri('record_title', $record_title);
-        $this->tema->veri('vid', $vid);
+        $this->theme->set('d', $record);
+        $this->theme->set('record_title', $record_title);
+        $this->theme->set('vid', $vid);
 
         return true;
     }
@@ -123,18 +142,18 @@ class mod_attachment_mod extends BaseModuleController
             }
 
             Run::import('management', '_index');
-            $this->site['title'] = $this->lang['mod_attachment']['admin'][14];
-            $this->tema->veri('site', $this->site);
-            $this->tema->veri('is_global_list', true);
+            $this->site['title'] = $this->lang['mod_attachment']['admin']['file_management'];
+            $this->theme->set('site', $this->site);
+            $this->theme->set('is_global_list', true);
 
             $this->mod_attachment_model = Load::model('mod_attachment');
             $this->mod_attachment_model->select('id,filename,url,ext,original_name,type,created_at,mod_name,vid,user_id')->gR();
 
             if ($this->mod_attachment_model->getSize() !== 0) {
-                $this->tema->veri('dosyalar', $this->mod_attachment_model->toArray());
+                $this->theme->set('dosyalar', $this->mod_attachment_model->toArray());
             }
 
-            $this->tema->tpl('mod_attachment/list');
+            $this->theme->tpl('mod_attachment/list');
             return true;
         }
 
@@ -143,15 +162,24 @@ class mod_attachment_mod extends BaseModuleController
         }
 
         Run::import('management', '_index');
-        $this->site['title'] = $this->lang['mod_attachment']['admin'][14];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('is_global_list', false);
+        $this->site['title'] = $this->lang['mod_attachment']['admin']['file_management'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('is_global_list', false);
+
+        $referer = isset($_SERVER['HTTP_REFERER']) ? (string) $_SERVER['HTTP_REFERER'] : '';
+        $current_url = 'mod_attachment/list/' . $mod . '/' . $vid;
+        if ($referer !== '' && strpos($referer, $this->site['saddress']) === 0 && strpos($referer, $current_url) === false) {
+            $back_url = $referer;
+        } else {
+            $back_url = $this->site['saddress'] . $mod . '/list';
+        }
+        $this->theme->set('back_url', $back_url);
 
         if ($this->mod_attachment_model->getSize() !== 0) {
-            $this->tema->veri('dosyalar', $this->mod_attachment_model->toArray());
+            $this->theme->set('dosyalar', $this->mod_attachment_model->toArray());
         }
 
-        $this->tema->tpl('mod_attachment/list');
+        $this->theme->tpl('mod_attachment/list');
         return true;
     }
 
@@ -164,9 +192,7 @@ class mod_attachment_mod extends BaseModuleController
         }
 
         $this->r = Load::model('mod_attachment');
-        if ($id === null) {
-            $id = Req::Post_Safe('id');
-        }
+        $id = Req::Post_Safe('id');
         $this->r->where_id($id)->gRo();
 
         if ($this->r->getSize() === 0) {
@@ -219,10 +245,10 @@ class mod_attachment_mod extends BaseModuleController
 
         Run::import('management', '_index');
 
-        $this->site['title'] = $this->lang['mod_attachment']['admin'][1];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('vid', $vid);
-        $this->tema->tpl('mod_attachment/add');
+        $this->site['title'] = $this->lang['mod_attachment']['admin']['upload_area'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('vid', $vid);
+        $this->theme->tpl('mod_attachment/add');
 
         return true;
     }
@@ -266,41 +292,25 @@ class mod_attachment_mod extends BaseModuleController
         $file_model->vid = $vid;
         $file_model->user_id = $this->session->get('id');
 
-        if ($file_model->save(true)) {
-            if (Req::Post_Safe('response_format') === 'json') {
-                $this->jsonResponse([
-                    'status' => 'success',
-                    'id' => $file_model->id,
-                    'original_name' => $result['original_name'],
-                    'url' => $result['url']
-                ]);
-            } else {
-                echo $result['original_name'];
-                return true;
-            }
+        if ($file_model->save()) {
+            echo $result['original_name'];
+            return true;
         }
 
-        if (Req::Post_Safe('response_format') === 'json') {
-            $this->jsonResponse([
-                'status' => 'error',
-                'message' => 'ERROR'
-            ]);
-        } else {
-            echo 'ERROR';
-            return false;
-        }
+        echo 'ERROR';
+        return false;
     }
 
-    protected function _mesaj($mesaj)
+    protected function _message($message)
     {
-        $this->tema->veri('oke', true);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('Success', true);
+        $this->theme->set('message', $message);
     }
 
-    protected function _emesaj($mesaj)
+    protected function _error_message($message)
     {
-        $this->tema->veri('error', true);
-        $this->tema->veri('mesaj', $mesaj);
+        $this->theme->set('error', true);
+        $this->theme->set('message', $message);
     }
 
     public function _remove($mod, $vid = null)

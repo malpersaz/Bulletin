@@ -18,6 +18,8 @@ if (!defined('AKM_LOADED')) {
  * Poll/Survey Module Language Translations
  */
 $lang['mod_survey'] = [
+    'add' => 'Add Poll',
+    'choose_wish' => 'Please choose if you want',
 
     // === Navigation & Actions ===
     'actions' => [
@@ -117,9 +119,8 @@ $lang['mod_survey'] = [
     ],
 
     // === Access Control (ACL) ===
-    // === Access Control (ACL) ===
-    'roll' => [
-        'ad' => 'Poll Management Permissions',
+    'role' => [
+        'name' => 'Poll Management Permissions',
         'list' => 'Can View Polls',
         'add' => 'Can Add Poll',
         'edit' => 'Can Edit Own Poll',
@@ -203,6 +204,7 @@ $lang['mod_survey'] = [
     'results' => [
         'total_votes' => 'Total Votes',
         'vote_count' => ':count votes',
+        'vote_saved' => 'Your vote has been saved!',
         'percentage' => ':percentage%',
         'no_votes_yet' => 'No votes yet',
         'view_detailed_results' => 'View Detailed Results',

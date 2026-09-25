@@ -19,15 +19,21 @@ if (!defined('AKM_LOADED')) {
  */
 $lang['mod_menu'] = [
 
-    // === Page Titles ===
+    // === Page Titles & Statistics ===
     'list' => 'Menü Yönetimi',
     'add' => 'Menü Ekle',
     'edit' => 'Menü Düzenle',
     'information' => 'Bilgilendirme',
+    'total_menus' => 'Toplam Menü',
+    'published_menus' => 'Yayında',
+    'draft_menus' => 'Taslak',
+    'expand_all' => 'Tümünü Genişlet',
+    'collapse_all' => 'Tümünü Daralt',
+    'search_placeholder' => 'Menülerde ara...',
 
     // === Legacy Message Keys (used by index.php) ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Menü başarıyla eklendi!',
             'edit' => 'Menü başarıyla güncellendi!',
         ],
@@ -136,14 +142,14 @@ $lang['mod_menu'] = [
         'language' => 'Dil',
         'name' => 'Menü Adı',
         'url' => 'Bağlantı',
-        'parent_menu' => 'Alt Menü',
+        'parent_menu' => 'Üst Menü',
         'order' => 'Sıra',
         'target' => 'Hedef',
         'status' => 'Durum',
         'icon' => 'İkon',
         'access_level' => 'Erişim Seviyesi',
         'actions' => 'İşlemler',
-        'parent_id' => 'Alt Menü',
+        'parent_id' => 'Üst Menü',
         'html' => 'HTML',
         'acl_id' => 'Erişim İzni',
         'file' => 'Dosya',
@@ -155,7 +161,7 @@ $lang['mod_menu'] = [
             'name' => 'Menü Adı',
             'url' => 'Bağlantı',
             'file' => 'Dosya',
-            'parent_id' => 'Alt Menü',
+            'parent_id' => 'Üst Menü',
             'target' => 'Açılma Şekli',
             'status' => 'Yayın Durumu',
             'html' => 'HTML',
@@ -248,8 +254,13 @@ $lang['mod_menu'] = [
         'processing' => 'İşleniyor...',
     ],
 
+    'success' => 'Başarılı!',
+    'error' => 'Hata!',
+    'success_title' => 'Başarılı!',
+    'error_title' => 'Hata!',
+
     // === Success Messages ===
-    'success' => [
+    'success_messages' => [
         'operation_completed' => 'İşlem başarıyla tamamlandı!',
         'changes_saved' => 'Değişiklikler kaydedildi!',
     ],
@@ -265,8 +276,8 @@ $lang['mod_menu'] = [
     ],
 
     // === ACL Roles ===
-    'roll' => [
-        'ad' => 'Menü Yönetim Rolleri',
+    'role' => [
+        'name' => 'Menü Yönetim Rolleri',
         'add' => 'Menü Ekleyebilir',
         'edit' => 'Menü Düzenleyebilir',
         'delete' => 'Menü Silebilir',
@@ -285,10 +296,82 @@ $lang['mod_menu'] = [
         'moderate_delete' => 'Başkasına Ait Menüleri Silme Permissionniz Yok',
     ],
 
+    // === Mobile Wizard ===
+    'wizard' => [
+        'title' => 'Menü Ekle',
+        'steps' => [
+            'step_1' => 'Dil',
+            'step_2' => 'Menü Adı',
+            'step_3' => 'Üst Menü',
+            'step_4' => 'Bağlantı (URL)',
+            'step_5' => 'Simge (İkon)',
+            'step_6' => 'Menü Dosyası',
+            'step_7' => 'Özel HTML',
+            'step_8' => 'Hedef Pencere',
+            'step_9' => 'Erişim Düzeyi',
+            'step_10' => 'Yayın Durumu ve Özet',
+        ],
+        'subtitles' => [
+            'step_1' => 'Bu menü öğesinin yayınlanacağı dili seçin.',
+            'step_2' => 'Menü adını girin.',
+            'step_3' => 'Hiyerarşik üst menüsünü belirleyin.',
+            'step_4' => 'Menünün yönlendirileceği bağlantı adresini (URL) girin.',
+            'step_5' => 'Menü için bir simge (ikon) sınıfı belirleyin veya listeden seçin.',
+            'step_6' => 'Varsa özel denetleyici dosya yolunu girin (isteğe bağlı).',
+            'step_7' => 'Menü için özel HTML içeriği ekleyin (isteğe bağlı).',
+            'step_8' => 'Bağlantının aynı pencerede mi yoksa yeni sekmede mi açılacağını seçin.',
+            'step_9' => 'Bu menüyü görebilecek kullanıcı erişim düzeyini seçin.',
+            'step_10' => 'Yayın durumunu belirleyin, özeti inceleyin ve menüyü ekleyin.',
+        ],
+        'buttons' => [
+            'next' => 'İleri',
+            'prev' => 'Geri',
+            'finish' => 'Menü Ekle',
+            'cancel' => 'İptal',
+        ],
+        'summary' => [
+            'title' => 'Menü Özeti',
+            'language' => 'Dil',
+            'name' => 'Menü Adı',
+            'parent' => 'Üst Menü',
+            'url' => 'Bağlantı (URL)',
+            'target' => 'Hedef Pencere',
+            'status' => 'Yayın Durumu',
+            'acl' => 'Erişim Düzeyi',
+            'none' => 'Yok',
+            'root' => 'Üst Seviye (Menü Kökü)',
+            'same_window' => 'Aynı Pencere (_self)',
+            'new_window' => 'Yeni Pencere (_blank)',
+            'published' => 'Yayında',
+            'draft' => 'Taslak',
+        ],
+        'labels' => [
+            'popular_icons' => 'Popüler İkonlar',
+            'advanced_settings' => 'Gelişmiş Ayarlar (Dosya ve HTML)',
+            'placement_preview' => 'Konum Önizlemesi',
+            'will_be_added_here' => 'Buraya eklenecek',
+            'live_preview' => 'Canlı Önizleme',
+            'quick_links' => 'Hızlı Bağlantılar',
+            'preset_home' => 'Ana Sayfa (/)',
+            'preset_external' => 'Harici (https://)',
+            'preset_header_only' => 'Yalnızca Başlık (#)',
+            'target_same_desc' => 'Bağlantı geçerli sekmede açılır (_self)',
+            'target_blank_desc' => 'Bağlantı yeni bir sekmede açılır (_blank)',
+            'status_published_desc' => 'Menü sitede hemen görünür',
+            'status_draft_desc' => 'Yalnızca yönetici panelinde saklanır',
+            'step_prefix' => 'Adım',
+        ],
+        'validation' => [
+            'name_required' => 'Menü adı zorunludur.',
+            'name_min' => 'Menü adı en az 2 karakter olmalıdır.',
+            'parent_required' => 'Üst menü seçimi zorunludur.',
+        ],
+    ],
 ];
 $lang['mod_menu']['slots'] = [
     'header' => 'Üst Menü',
     'footer' => 'Alt Menü',
+    'action' => 'Eylem Menüsü',
 ];
 $lang['mod_menu']['parent_labels'] = [
     'select_parent' => 'Üst menüyü seçin',

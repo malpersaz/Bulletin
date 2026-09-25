@@ -1,16 +1,14 @@
 <?php
 
 /**
- * Koberz Bilişim İçerik Yönetim Sistemi
- * Web: www.koberz.com
- * E-Mail: info@koberz.com
- * Kullanıcı: Kobim
- * Zaman: 13.04.2011 - 20:33
+ * Amed Framework Content Management System
+ * File: Obuilder.php
+ * Description: ORM Query Builder Class
  */
 
 class Obuilder
 {
-    // Eşitlikler -- Equations
+    // Equations mapping
     public static $equations = [
         'eq' => '=',
         'not' => '<>',
@@ -24,7 +22,6 @@ class Obuilder
         'and' => 'AND',
         'or' => 'OR'
     ];
-
 
     public static $disable_keys = [
         'and',
@@ -40,23 +37,6 @@ class Obuilder
 
     public static $og_key = 'og';
     public static $cg_key = 'cg';
-
-
-    /*
-    // Disable Where Key -- Where içindeki geçersiz keyler
-    public static $disable_where_key = array(
-        'and',
-        'or'
-    );
-    public static $group_key = array(
-        'og' => '(',
-        'cg' => ')'
-    );
-    // Validate After Key -- Bir colomdan sonra gelebilecek keyler
-    public static $valid_after_key = array(
-        'and',
-        'or'
-    );*/
 
     public static function where($keys, $values, $_orm_coloms, $_orm_table)
     {
@@ -78,7 +58,6 @@ class Obuilder
             $e->show();
         }
 
-
         $check_and_or = false;
         $check_equations = false;
         $check_colom = false;
@@ -86,68 +65,50 @@ class Obuilder
 
         $lates_key = null;
 
-
-        $koberz_sql = "";
+        $generated_sql = "";
         $vi = 0;
-        $operator = null; // content $operator '1' $operator < <> = vs.. gibi değerler alabilir.
+        $operator = null;
+
         foreach ($colomuns as $colom) {
-            // and or dan sonra tekrar and or gelemez
+            // Cannot write logical operator immediately after another logical operator
             if ($check_and_or === true && in_array($colom, self::$valid_after_key)) {
                 throw new OrmException(
-                    "ORM Builder Exception!
-                After '" . $lates_key . "' to '" . implode("','", self::$valid_after_key) . "' can not write.
-                you <font color='red'>'$lates_key'</font> after <font color='red'>'$colom'</font> Written\n." .
-                        "\n
-                    ORM Builder Hatası!
-                '" . $lates_key . "'' kelimesinden sonra  '" . implode("','", self::$valid_after_key) . "' yazamazsınız.
-                <font color='red'>'$lates_key'</font> dan sonra <font color='red'>'$colom'</font> yazmışsınız!" .
-                        "\nSQL: <font color='red'>" . $koberz_sql . "</font>\n" .
-                        "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function)
+                    "ORM Builder Exception!\n" .
+                    "Cannot write '" . implode("', '", self::$valid_after_key) . "' after '" . $lates_key . "'. " .
+                    "Found <font color='red'>'$colom'</font> immediately after <font color='red'>'$lates_key'</font>.\n" .
+                    "SQL: <font color='red'>" . $generated_sql . "</font>\n" .
+                    "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function) . "'"
                 );
             }
 
-
-            // not eq og cg den sonra benzer keywordlar gelemez.
+            // Cannot write comparison keyword immediately after another comparison keyword
             if ($check_equations === true && in_array($colom, array_keys(self::$equations))) {
                 throw new OrmException(
-                    "ORM Builder Exception!
-                After '" . $lates_key . "' to '" . implode("','", array_keys(self::$equations)) . "' can not write.
-                you <font color='red'>'$lates_key'</font> after <font color='red'>'$colom'</font> Written\n" .
-                        "\nORM Builder Hatası!
-                '" . $lates_key . "'' kelimesinden sonra  '" . implode("','", array_keys(self::$equations)) . "' yazamazsınız.
-                <font color='red'>'$lates_key'</font> dan sonra <font color='red'>'$colom'</font> yazmışsınız!\n" .
-                        "\nSQL: <font color='red'>" . $koberz_sql . "</font>\n" .
-                        "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function)
+                    "ORM Builder Exception!\n" .
+                    "Cannot write comparison operators after '" . $lates_key . "'. " .
+                    "Found <font color='red'>'$colom'</font> immediately after <font color='red'>'$lates_key'</font>.\n" .
+                    "SQL: <font color='red'>" . $generated_sql . "</font>\n" .
+                    "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function) . "'"
                 );
             }
 
-            // colomlardan sonra colom gelmemesini check edelim
+            // Ensure a column is not immediately followed by another column
             if ($check_colom === true && in_array($colom, $key_array)) {
                 throw new OrmException(
-                    "ORM Builder Exception!\n
-                After '" . $lates_key . "' to '" . implode("','", $key_array) . "' can not write.
-                you <font color='red'>'$lates_key'</font> after <font color='red'>'$colom'</font> Written\n" .
-                        "\nORM Builder Hatası!
-                '" . $lates_key . "'' kelimesinden sonra  '" . implode("','", $key_array) . "' yazamazsınız.
-                Yazabileceğiniz değerler '" . implode("','", array_keys(self::$equations)) . "'
-
-                <font color='red'>'$lates_key'</font> dan sonra <font color='red'>'$colom'</font> yazmışsınız!" .
-
-
-                        "\nSQL: <font color='red'>" . $koberz_sql . "</font>\n" .
-                        "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function)
+                    "ORM Builder Exception!\n" .
+                    "Cannot place column name '" . $colom . "' immediately after column '" . $lates_key . "'. " .
+                    "Expected an operator from: '" . implode("', '", array_keys(self::$equations)) . "'.\n" .
+                    "SQL: <font color='red'>" . $generated_sql . "</font>\n" .
+                    "Query: 'where_" . str_replace($lates_key . "_" . $colom, "<font color='red'>" . $lates_key . "_" . $colom . "</font>", $function) . "'"
                 );
             }
 
-            // en son çağrılan key
+            // Track latest processed key
             $lates_key = $colom;
 
             $check_and_or = false;
-
             $check_equations = false;
-
             $check_colom = false;
-
 
             if ($colom === self::$og_key) {
                 $check_g = true;
@@ -156,118 +117,106 @@ class Obuilder
             if ($colom === self::$cg_key) {
                 if ($check_g !== true) {
                     throw new OrmException(
-                        "ORM Builder Exception!" .
-                            "<font color='red'>" . self::$og_key . "</font> yazmadan <font color='red'>" . self::$cg_key . "</font> Yazamazsınız\n" .
-                            "ORM Builder Hatası!" .
-                            "<font color='red'>" . self::$og_key . "</font> yazmadan <font color='red'>" . self::$cg_key . "</font> Yazamazsınız\n" .
-
-                            "SQL: <font color='red'>" . $koberz_sql . "</font>\n" .
-                            "function 'where_" . str_replace(self::$cg_key, "<font color='red'>" . self::$cg_key . "</font>", $function) . "\n"
+                        "ORM Builder Exception!\n" .
+                        "Cannot use closing parenthesis <font color='red'>" . self::$cg_key . "</font> without opening parenthesis <font color='red'>" . self::$og_key . "</font>.\n" .
+                        "SQL: <font color='red'>" . $generated_sql . "</font>\n" .
+                        "Query: 'where_" . str_replace(self::$cg_key, "<font color='red'>" . self::$cg_key . "</font>", $function) . "'"
                     );
                 }
                 $check_g = false;
             }
 
-            // Eğer $equations dizisinde colom varsa
+            // Check if column exists in equations mapping
             if (isset(self::$equations[$colom])) {
-                // Disable keylerden birimi peki? 'and' 'or' '(' ')'
+                // Check if column is a reserved SQL key ('and', 'or', '(', ')')
                 if (in_array($colom, self::$disable_keys)) {
-                    // Eğer onlardan biriyse sql ekleme yap
-                    $koberz_sql .= self::$equations[$colom] . " ";
+                    // Append SQL logical operator
+                    $generated_sql .= self::$equations[$colom] . " ";
                     $check_and_or = true;
                 } else {
-                    // Eğer onlardan biri değilse '<>' '=' '>' vb.. ise $operator değişkenine ata
+                    // Assign comparison operator ('<>', '=', '>', etc.)
                     $operator = self::$equations[$colom];
                     $check_equations = true;
                 }
 
-
-                // diğer coloma geç
+                // Proceed to next column
                 continue;
             }
 
-            // colomlardan sonra colom gelmemesini check et
+            // Verify column sequence validity
             $check_colom = true;
-            // colomu koberz_sql'e ekle ' content'
-            $koberz_sql .= " " . $colom;
-            // Eğer karşılık gelen değer array ise IN ifadesini kullan
+            // Append column to generated SQL string
+            $generated_sql .= " " . $colom;
+            // Handle array values with SQL IN / NOT IN clause
             if (is_array($values[$vi])) {
-                // Eğer operator <> not ise NOT IN Kullan değilse IN kullan
+                // Use NOT IN for <> operator, otherwise use IN
                 if ($operator === '<>') {
-                    $koberz_sql .= " NOT IN('" . implode("','", array_map('Obuilder::cc', $values[$vi])) . "')";
+                    $generated_sql .= " NOT IN('" . implode("','", array_map('Obuilder::cc', $values[$vi])) . "')";
                 } else {
-                    $koberz_sql .= " IN('" . implode("','", array_map('Obuilder::cc', $values[$vi])) . "')";
+                    $generated_sql .= " IN('" . implode("','", array_map('Obuilder::cc', $values[$vi])) . "')";
                 }
             } else {
-                // eğer operator null ise '=' yap
+                // Default operator to '=' if null
                 $e = $operator === null ? " = " : " $operator ";
-                // <>'1' gibi
-                $koberz_sql .= $e . "'" . self::cc($values[$vi]) . "'";
-                // Operatoru NULL yap
+                // Append sanitized value string
+                $generated_sql .= $e . "'" . self::cc($values[$vi]) . "'";
+                // Reset operator to null
                 $operator = null;
             }
-            // value indexini bir arttır.
+            // Increment value index pointer
             $vi++;
 
-
-            $koberz_sql .= " ";
+            $generated_sql .= " ";
         }
 
         if ($check_g === true) {
             throw new OrmException(
-                "ORM Builder Exception!" .
-                    "Açılan <font color='red'>(</font> Kapatılmamış\n" .
-                    "<font color='red'>" . self::$cg_key . "</font> yazmanız gerekiyor" .
-                    "ORM Builder Hatası!" .
-                    "Açılan <font color='red'>(</font> Kapatılmamış\n" .
-                    "<font color='red'>" . self::$cg_key . "</font> yazmanız gerekiyor" .
-                    "SQL: <font color='red'>" . $koberz_sql . "</font>\n" .
-                    "function 'where_" . str_replace(self::$og_key, "<font color='red'>" . self::$og_key . "</font>", $function) . "\n"
+                "ORM Builder Exception!\n" .
+                "Unclosed opening parenthesis <font color='red'>(</font>. A closing parenthesis <font color='red'>" . self::$cg_key . "</font> is required.\n" .
+                "SQL: <font color='red'>" . $generated_sql . "</font>\n" .
+                "Query: 'where_" . str_replace(self::$og_key, "<font color='red'>" . self::$og_key . "</font>", $function) . "'"
             );
         }
 
-        return $koberz_sql;
+        return $generated_sql;
     }
 
-
-    // Check key is exists
-    // Key model dosyasında tanımlanmışmı?
+    // Check if key exists in model schema definition (with case-insensitive resolution)
     public static function check_key_exists($key, $_orm_coloms)
     {
+        if (!is_array($_orm_coloms)) {
+            $_orm_coloms = [];
+        }
+        $lower_cols = array_map('strtolower', $_orm_coloms);
+
         if (is_array($key) === false) {
-            if (!in_array($key, $_orm_coloms)) {
+            if (!in_array($key, $_orm_coloms) && !in_array(strtolower($key), $lower_cols)) {
                 throw new OrmException(
-                    "'<b>" . $key . "</b>' colom is not defined!\n" .
-                        "Valid Keys:" . print_r($_orm_coloms, true) . "\n" .
-                        "<b>'.$key.'</b> colom'u geçerli değil\n" .
-                        "Çünkü model dosyasında tanımlanmamış!\n" .
-                        "Geçerli keyler:" . print_r($_orm_coloms, true)
+                    "ORM Builder Exception!\n" .
+                    "Column '<b>" . $key . "</b>' is invalid or not defined in model schema.\n" .
+                    "Valid columns: " . (is_array($_orm_coloms) ? implode(', ', $_orm_coloms) : print_r($_orm_coloms, true))
                 );
             }
         } else {
             foreach ($key as $k) {
-                //var_dump(in_array($k,$_orm_coloms));
-                if (!in_array($k, $_orm_coloms)) {
+                if (!in_array($k, $_orm_coloms) && !in_array(strtolower($k), $lower_cols)) {
                     throw new OrmException(
-                        "'<b>" . $k . "</b>' colom is not defined!\n" .
-                            "Valid Keys:" . print_r($_orm_coloms, true) . "\n" .
-                            "<b>'.$k.'</b> colom'u geçerli değil\n" .
-                            "Çünkü model dosyasında tanımlanmamış!\n" .
-                            "Geçerli keyler:" . print_r($_orm_coloms, true)
+                        "ORM Builder Exception!\n" .
+                        "Column '<b>" . $k . "</b>' is invalid or not defined in model schema.\n" .
+                        "Valid columns: " . (is_array($_orm_coloms) ? implode(', ', $_orm_coloms) : print_r($_orm_coloms, true))
                     );
                 }
             }
         }
     }
 
-    // Check key and value size
-    // Gönderilen Key sayısı ile value sayısı aynımı kontrol eder.
+    // Check if the number of provided keys matches the number of values.
     public static function check_where_colom_size($key_array, $value, $keys)
     {
-        $value_size = count($value); // Value sayısı
-        $key_size = count($key_array); // Key Sayısı
+        $value_size = count($value);
+        $key_size = count($key_array);
 
-        // Eğer key ve value sayısı eşit değilse
+        // If key and value counts are not equal
         if ($key_size !== $value_size) {
             $keys = str_replace('\_', '_', $keys);
             $values = "(";
@@ -285,19 +234,11 @@ class Obuilder
             unset($i);
 
             throw new OrmException(
-                "ORM Builder Exception!
-                    \nwhere function key and value size not equal
-                    \nfunction 'where_" . $keys . $values . "
-            \nKey size: " . $key_size . " - Value size: " . $value_size . "
-            \nKeys:" . print_r($key_array, true) . "
-            \nValues: " . print_r($value, true) . "\n" .
-
-                    "ORM Builder Hatası!
-                    \nwhere fonksiyonunda kullanılan key ve value sayısı eşit değil!
-                    \nKullanılan Fonksiyon 'where_" . $keys . $values . "
-            \nKey Sayısı: " . $key_size . " - Value Sayısı: " . $value_size . "
-            \nKeyler:" . print_r($key_array, true) . "
-            \nValue'ler: " . print_r($value, true)
+                "ORM Builder Exception!\n" .
+                "WHERE clause key count (" . $key_size . ") does not match value count (" . $value_size . ").\n" .
+                "Function: 'where_" . $keys . $values . "'\n" .
+                "Keys: " . print_r($key_array, true) . "\n" .
+                "Values: " . print_r($value, true)
             );
         }
         return true;

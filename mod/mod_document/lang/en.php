@@ -40,7 +40,7 @@ $lang['mod_document'] = [
         'length' => '%s must be between %s and %s characters.',
         'unique' => 'The %s value already exists. Please choose another %s.',
     ],
-    'roll' => [
+    'role' => [
         'name' => 'Document Management Roles',
         'add' => 'Can add documents',
         'edit' => 'Can edit documents',

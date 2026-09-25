@@ -22,6 +22,7 @@ class Swift_Plugins_DecoratorPlugin
   implements Swift_Events_SendListener, Swift_Plugins_Decorator_Replacements
 {
 
+  public $_originalBody;
   /** The replacement map */
   private $_replacements;
   
@@ -29,10 +30,10 @@ class Swift_Plugins_DecoratorPlugin
   private $_orginalBody;
 
   /** The original headers of the message, before replacements */
-  private $_originalHeaders = array();
+  private $_originalHeaders = [];
 
   /** Bodies of children before they are replaced */
-  private $_originalChildBodies = array();
+  private $_originalChildBodies = [];
 
   /** The Message that was last replaced */
   private $_lastMessage;
@@ -100,7 +101,7 @@ class Swift_Plugins_DecoratorPlugin
         $count = 0;
         if (is_array($body))
         {
-          $bodyReplaced = array();
+          $bodyReplaced = [];
           foreach ($body as $key => $value)
           {
             $count1 = 0;
@@ -120,7 +121,7 @@ class Swift_Plugins_DecoratorPlugin
           $bodyReplaced = str_replace($search, $replace, $body, $count);
         }
 
-        if ($count)
+        if ($count !== 0)
         {
           $this->_originalHeaders[$header->getFieldName()] = $body;
           $header->setFieldBodyModel($bodyReplaced);
@@ -168,13 +169,10 @@ class Swift_Plugins_DecoratorPlugin
     {
       return $this->_replacements->getReplacementsFor($address);
     }
-    else
-    {
-      return isset($this->_replacements[$address])
-        ? $this->_replacements[$address]
-        : null
-        ;
-    }
+    return isset($this->_replacements[$address])
+      ? $this->_replacements[$address]
+      : null
+      ;
   }
 
   /**
@@ -209,7 +207,7 @@ class Swift_Plugins_DecoratorPlugin
             $header->setFieldBodyModel($this->_originalHeaders[$header->getFieldName()]);
           }
         }
-        $this->_originalHeaders = array();
+        $this->_originalHeaders = [];
       }
       if (!empty($this->_originalChildBodies))
       {
@@ -222,7 +220,7 @@ class Swift_Plugins_DecoratorPlugin
             $child->setBody($this->_originalChildBodies[$id]);
           }
         }
-        $this->_originalChildBodies = array();
+        $this->_originalChildBodies = [];
       }
       $this->_lastMessage = null;
     }

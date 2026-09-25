@@ -3,7 +3,7 @@ ob_start();
 
 // Initialize framework for language support
 require_once('vendor/autoload.php');
-require_once('koberz.init.php');
+require_once('init.php');
 
 $langData = Load::lang('index');
 $tLang = isset($langData['index']['template']) ? $langData['index']['template'] : array();

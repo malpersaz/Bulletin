@@ -1,467 +1,87 @@
-
 {% set wizard_lang = attribute(lang, active_module_lang_key) %}
 
-<style>
-/* FORCE SCROLL BEHAVIOR FOR LANG SHEET - FIXED */
-#lang-sheet.bottom-sheet.active {
-    flex-direction: column !important;
-    overflow: hidden !important;
-    height: 80vh !important;
-    max-height: 80vh !important;
-    pointer-events: auto !important; /* Ensure clicks work */
-}
-
-/* Ensure the scrollable container takes space and scrolls */
-#lang-sheet .sheet-content-scrollable {
-    flex: 1 1 auto !important;
-    overflow-y: auto !important;
-    min-height: 0 !important;
-    height: auto !important;
-    -webkit-overflow-scrolling: touch !important;
-    touch-action: pan-y !important;
-    padding-bottom: 40px !important;
-}
-
-/* Ensure inner container allows flow */
-#langListContainer {
-    height: auto !important;
-    overflow: visible !important;
-    display: block !important;
-}
-
-/* Ensure list wrapper allows flow */
-.lang-list-modern {
-    display: flex !important;
-    flex-direction: column !important;
-    height: auto !important;
-    padding-bottom: 40px !important; 
-}
-
-#wizard-cat-sheet {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-#wizard-cat-sheet .category-sheet-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-#wizard-cat-sheet .category-sheet-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#wizard-cat-sheet .category-sheet-search {
-    width: 100%;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 16px;
-    background: var(--md-sys-color-surface-container);
-    padding: 12px 14px;
-    color: var(--md-sys-color-on-surface);
-    font-size: 14px;
-    outline: none;
-}
-
-#wizard-cat-sheet .category-sheet-search:focus {
-    border-color: var(--md-sys-color-primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
-}
-
-#wizard-cat-sheet .category-list {
-    max-height: 400px;
-    overflow-y: auto;
-    margin: 0 -8px;
-    padding: 0 8px 8px;
-}
-
-#wizard-cat-sheet .category-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    border-radius: 18px;
-    padding: 14px 16px;
-    margin-bottom: 8px;
-    background: var(--md-sys-color-surface);
-    border: 1px solid transparent;
-    transition: background-color .18s ease, border-color .18s ease, transform .18s ease;
-}
-
-#wizard-cat-sheet .category-item:hover {
-    background: var(--md-sys-color-surface-container);
-}
-
-#wizard-cat-sheet .category-item.is-selected {
-    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface));
-    border-color: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
-}
-
-#wizard-cat-sheet .category-item-meta {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    background: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-primary);
-}
-
-#wizard-cat-sheet .category-item-body {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1 1 auto;
-}
-
-#wizard-cat-sheet .category-item-title {
-    color: var(--md-sys-color-on-surface);
-    font-weight: 600;
-    line-height: 1.35;
-}
-
-#wizard-cat-sheet .category-item-subtitle {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 12px;
-}
-
-#wizard-cat-sheet .category-item-check {
-    color: var(--md-sys-color-primary);
-    font-size: 18px;
-    opacity: 0;
-    transform: scale(.8);
-    transition: opacity .18s ease, transform .18s ease;
-}
-
-#wizard-cat-sheet .category-item.is-selected .category-item-check {
-    opacity: 1;
-    transform: scale(1);
-}
-
-#select-picker-sheet {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 24px !important;
-}
-
-#select-picker-sheet .select-picker-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-#select-picker-sheet .select-picker-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-#select-picker-sheet .select-picker-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: var(--md-sys-color-surface-container-high);
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 13px;
-    font-weight: 600;
-}
-
-#select-picker-sheet .select-picker-search {
-    width: 100%;
-    border: 1px solid var(--md-sys-color-outline-variant);
-    border-radius: 16px;
-    background: var(--md-sys-color-surface-container);
-    padding: 12px 14px;
-    color: var(--md-sys-color-on-surface);
-    font-size: 14px;
-    outline: none;
-}
-
-#select-picker-sheet .select-picker-search:focus {
-    border-color: var(--md-sys-color-primary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 16%, transparent);
-}
-
-#select-picker-sheet .select-picker-list {
-    max-height: 400px;
-    overflow-y: auto;
-    margin: 0 -8px;
-    padding: 0 8px 80px;
-}
-
-#select-picker-sheet .select-picker-item {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: left;
-    gap: 16px;
-    border-radius: 20px;
-    padding: 16px;
-    margin-bottom: 12px;
-    background: var(--md-sys-color-surface);
-    border: 1px solid color-mix(in srgb, var(--md-sys-color-outline-variant) 40%, transparent);
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-}
-
-/* Custom Add Button FAB Styling */
-.m3-btn-select-add-fab {
-    position: absolute;
-    right: 24px;
-    bottom: 24px;
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    z-index: 1060;
-    transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
-}
-.m3-btn-select-add-fab:hover {
-    transform: scale(1.05);
-    background: color-mix(in srgb, var(--md-sys-color-primary) 90%, black);
-    box-shadow: 0 6px 14px rgba(0,0,0,0.35);
-}
-.m3-btn-select-add-fab:active {
-    transform: scale(0.95);
-}
-
-/* Custom Close Button */
-.m3-btn-icon-close {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    border: none;
-    background: color-mix(in srgb, var(--md-sys-color-outline-variant) 30%, transparent);
-    color: var(--md-sys-color-on-surface);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 16px;
-    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
-}
-.m3-btn-icon-close:hover {
-    background: color-mix(in srgb, var(--md-sys-color-error) 15%, transparent);
-    color: var(--md-sys-color-error);
-    transform: rotate(90deg);
-}
-
-#select-picker-sheet .select-picker-item::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-#select-picker-sheet .select-picker-item:hover {
-    background: var(--md-sys-color-surface-container);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.08);
-    border-color: color-mix(in srgb, var(--md-sys-color-primary) 30%, transparent);
-}
-
-#select-picker-sheet .select-picker-item:hover::before {
-    opacity: 1;
-}
-
-#select-picker-sheet .select-picker-item.is-selected {
-    background: color-mix(in srgb, var(--md-sys-color-primary) 8%, var(--md-sys-color-surface));
-    border-color: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
-}
-
-#select-picker-sheet .select-picker-item-meta {
-    width: 44px;
-    height: 44px;
-    border-radius: 22px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 auto;
-    background: color-mix(in srgb, var(--md-sys-color-primary) 12%, transparent);
-    color: var(--md-sys-color-primary);
-    font-size: 20px;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-#select-picker-sheet .select-picker-item.is-selected .select-picker-item-meta {
-    background: var(--md-sys-color-primary);
-    color: var(--md-sys-color-on-primary);
-}
-
-#select-picker-sheet .select-picker-item:hover .select-picker-item-meta {
-    transform: scale(1.08) translateY(-2px);
-}
-
-#select-picker-sheet .select-picker-item-body {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    flex: 1 1 auto;
-    z-index: 1;
-}
-
-#select-picker-sheet .select-picker-item-title {
-    color: var(--md-sys-color-on-surface);
-    font-weight: 600;
-    font-size: 15px;
-    line-height: 1.35;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-#select-picker-sheet .select-picker-item-subtitle {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 13px;
-    opacity: 0.8;
-}
-
-#select-picker-sheet .select-picker-item-check {
-    color: #94a3b8;
-    font-size: 22px;
-    opacity: 0.5;
-    transform: scale(0.9);
-    transition: all 0.2s ease-in-out;
-}
-
-#select-picker-sheet .select-picker-item.is-selected .select-picker-item-check {
-    color: #34a853;
-    opacity: 1;
-    transform: scale(1.1);
-}
-
-
-
-
-
-#select-picker-sheet .select-picker-empty {
-    display: none;
-    padding: 32px 16px;
-    text-align: center;
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.select-picker-native {
-    display: none !important;
-}
-
-.select-picker-trigger {
-    width: 100%;
-}
-
-.select-picker-trigger .select-picker-label {
-    color: var(--md-sys-color-on-surface-variant);
-}
-
-.select-picker-trigger.has-value .select-picker-label {
-    color: var(--md-sys-color-on-surface);
-}
-</style>
-
-<!-- NEW: Full Language Selection Sheet -->
-<div class="overlay" id="lang-sheet-overlay" onclick="closeLangSheet()"></div>
-<div class="bottom-sheet" id="lang-sheet" style="height: 80vh;">
+<!-- Language Selection Sheet -->
+<div class="overlay" id="lang-sheet-overlay" data-action="close-lang-sheet"></div>
+<div class="bottom-sheet" id="lang-sheet">
     <div class="sheet-handle-bar"></div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-        <h3 style="margin: 0; font-size: 20px;">{{ wizard_lang.sheet.lang_title }}</h3>
-        <button onclick="confirmLangSelection()" class="m3-btn-text" style="font-weight: 700;">{{ wizard_lang.sheet.ok }}</button>
+    <div class="lang-sheet-header-row">
+        <h3 class="lang-sheet-title">{{ wizard_lang.sheet.lang_title }}</h3>
+        <button data-action="confirm-lang-selection" class="m3-btn-text lang-sheet-ok-btn">{{ wizard_lang.sheet.ok }}</button>
     </div>
 
-    <div class="sheet-content-scrollable" style="flex: 1; overflow-y: auto; padding-bottom: 32px;">
+    <div class="sheet-content-scrollable lang-sheet-body-scroll">
         <div class="lang-list-container" id="langListContainer">
             <!-- Dynamic List Generated by JS -->
         </div>
     </div>
 </div>
 
-<!-- NEW: Context Menu Sheet for Card Actions -->
-<div class="overlay" id="context-menu-overlay" onclick="closeContextMenu()"></div>
+<!-- Context Menu Sheet for Card Actions -->
+<div class="overlay" id="context-menu-overlay" data-action="close-context-menu"></div>
 <div class="bottom-sheet" id="context-menu-sheet">
     <div class="context-menu-header">
         <h3 id="contextMenuTitle">{{ wizard_lang.context_menu.title }}</h3>
     </div>
 
-    <div style="padding: 4px 0;">
-        <div class="context-action-item" id="contextActionEdit" onclick="handleContextAction('edit')">
+    <div class="context-menu-body">
+        <div class="context-action-item" id="contextActionEdit" data-action="context-action" data-context-type="edit">
             <div class="context-icon icon-edit">
                 <i class="bi bi-pencil"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.edit }}</span>
         </div>
 
+        <div class="context-action-item is-hidden" id="contextActionSubmissions" data-action="context-action" data-context-type="submissions">
+            <div class="context-icon icon-submissions">
+                <i class="bi bi-people"></i>
+            </div>
+            <span class="context-action-label">{{ wizard_lang.context_menu.submissions|default('Submissions') }}</span>
+        </div>
+
         <div class="context-divider"></div>
 
-        <div class="context-action-item" id="contextActionVideo" onclick="handleContextAction('video')">
-            <div class="context-icon icon-video" style="color: #0288D1; background: rgba(2, 136, 209, 0.12);">
+        <div class="context-action-item" id="contextActionVideo" data-action="context-action" data-context-type="video">
+            <div class="context-icon icon-video context-icon-video-custom">
                 <i class="bi bi-camera-video"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.video }}</span>
         </div>
 
-        <div class="context-action-item" id="contextActionGallery" onclick="handleContextAction('gallery')">
+        <div class="context-action-item" id="contextActionGallery" data-action="context-action" data-context-type="gallery">
             <div class="context-icon icon-gallery">
                 <i class="bi bi-images"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.gallery }}</span>
-            <span class="context-badge" id="contextGalleryBadge" style="display:none;">0</span>
+            <span class="context-badge is-hidden" id="contextGalleryBadge">0</span>
         </div>
 
-        <div class="context-action-item" id="contextActionFiles" onclick="handleContextAction('files')">
+        <div class="context-action-item" id="contextActionFiles" data-action="context-action" data-context-type="files">
             <div class="context-icon icon-files">
                 <i class="bi bi-paperclip"></i>
             </div>
             <span class="context-action-label">{{ wizard_lang.context_menu.files }}</span>
-            <span class="context-badge" id="contextFilesBadge" style="display:none;">0</span>
+            <span class="context-badge is-hidden" id="contextFilesBadge">0</span>
+        </div>
+
+        <div class="context-action-item" id="contextActionFaq" data-action="context-action" data-context-type="faq">
+            <div class="context-icon icon-faq">
+                <i class="bi bi-patch-question-fill"></i>
+            </div>
+            <span class="context-action-label">{{ wizard_lang.context_menu.faq|default('FAQ') }}</span>
         </div>
 
         <div class="context-divider"></div>
 
         <!-- Dynamic Status Action (filled by JS) -->
-        <div class="context-action-item" id="contextActionStatus" onclick="handleContextAction('status')">
+        <div class="context-action-item" id="contextActionStatus" data-action="context-action" data-context-type="status">
             <div class="context-icon icon-status">
                 <i class="bi bi-arrow-repeat nav-item-icon"></i>
             </div>
             <span class="context-action-label nav-item-label">{{ wizard_lang.context_menu.status }}</span>
         </div>
 
-        <div class="context-action-item action-danger" id="contextActionDelete" onclick="handleContextAction('delete')">
+        <div class="context-action-item action-danger" id="contextActionDelete" data-action="context-action" data-context-type="delete">
             <div class="context-icon icon-delete">
                 <i class="bi bi-trash3"></i>
             </div>
@@ -471,10 +91,10 @@
 </div>
 
 <!-- Category Sheet for Wizard (Shared) -->
-<div class="overlay" id="wizard-cat-overlay" onclick="toggleWizardCategorySheet()"></div>
+<div class="overlay" id="wizard-cat-overlay" data-action="toggle-wizard-cat"></div>
 <div class="bottom-sheet" id="wizard-cat-sheet">
     <div class="sheet-handle-bar"></div>
-    <h3 style="margin: 0 0 16px 0;">{{ wizard_lang.sheet.category_title }}</h3>
+    <h3 class="wizard-cat-sheet-title">{{ wizard_lang.sheet.category_title }}</h3>
     <div class="category-sheet-meta">
         <div class="category-sheet-pill">
             <i class="bi bi-translate"></i>
@@ -491,7 +111,6 @@
         class="category-sheet-search"
         placeholder="{{ wizard_lang.ui.search }}"
         autocomplete="off"
-        oninput="filterWizardCategorySheet()"
     >
     <div class="nav-drawer-content category-list">
         {% if categories is defined %}
@@ -501,7 +120,8 @@
                 data-lang="{{ cat.lang }}"
                 data-name="{{ cat.name|lower|e('html_attr') }}"
                 data-category-id="{{ cat.id }}"
-                onclick="selectWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})"
+                data-action="select-wizard-cat"
+                data-id="{{ cat.id }}"
             >
                 <div class="category-item-meta">
                     <i class="bi bi-bookmark-star"></i>
@@ -518,12 +138,12 @@
         {% if video_embed_categories is defined %}
             {% for cat in video_embed_categories %}
             <div
-                class="nav-item category-item video-cat"
+                class="nav-item category-item video-cat is-hidden"
                 data-lang="{{ cat.lang }}"
                 data-name="{{ cat.name|lower|e('html_attr') }}"
                 data-category-id="{{ cat.id }}"
-                onclick="selectVideoEmbedWizardCategory('{{ cat.name|escape('js') }}', {{ cat.id }})"
-                style="display:none;"
+                data-action="select-video-cat"
+                data-id="{{ cat.id }}"
             >
                 <div class="category-item-meta">
                     <i class="bi bi-collection"></i>
@@ -537,31 +157,30 @@
             {% endfor %}
         {% endif %}
 
-        <div id="no-category-msg" style="display:none; padding: 32px 16px; text-align: center; color: var(--md-sys-color-on-surface-variant);">
-            <i class="bi bi-folder-x" style="font-size: 48px; display: block; margin-bottom: 12px; opacity: 0.5;"></i>
-            <p style="margin: 0; font-size: 14px;">{{ wizard_lang.wizard.messages.no_category_for_lang }}</p>
+        <div id="no-category-msg" class="no-category-msg-box">
+            <i class="bi bi-folder-x no-category-msg-icon"></i>
+            <p class="no-category-msg-text">{{ wizard_lang.wizard.messages.no_category_for_lang }}</p>
         </div>
     </div>
 </div>
 
-<div class="overlay" id="select-picker-overlay" onclick="closeSelectPickerSheet()"></div>
+<div class="overlay" id="select-picker-overlay" data-action="close-select-picker"></div>
 <div class="bottom-sheet" id="select-picker-sheet">
     <div class="sheet-handle-bar"></div>
-    <input
-        type="search"
-        id="selectPickerSearchInput"
-        class="select-picker-search"
-        placeholder="{{ wizard_lang.ui.search }}"
-        autocomplete="off"
-        oninput="filterSelectPickerSheet()"
-    >
-    <div class="select-picker-title-row" style="flex-wrap: nowrap; align-items: center;">
-        <h3 id="selectPickerTitle" style="margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; font-size: 18px; font-weight: 700;">{{ wizard_lang.sheet.category_title }}</h3>
-        <div style="display:flex; gap: 8px; flex-shrink: 0; align-items: center;">
-            <button type="button" class="m3-btn-icon-close" aria-label="Close" onclick="closeSelectPickerSheet()"><i class="bi bi-x-lg"></i></button>
+    <div class="select-picker-title-row">
+        <div class="select-picker-title-col">
+            <h3 id="selectPickerTitle" class="select-picker-title-text">{{ wizard_lang.sheet.category_title }}</h3>
+            <div id="selectPickerSubtitle" class="select-picker-subtitle-text"></div>
+        </div>
+        <div class="select-picker-actions-wrapper">
+            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add is-hidden" data-action="select-picker-add">
+                <div class="add-btn-bg"></div>
+                <span class="add-btn-content"><i class="bi bi-plus-lg"></i> {{ wizard_lang.button.add }}</span>
+            </button>
+            <button type="button" class="m3-btn-icon-close" aria-label="Close" data-action="close-select-picker"><i class="bi bi-x-lg"></i></button>
         </div>
     </div>
-    <div class="select-picker-meta" style="display:none !important;">
+    <div class="select-picker-meta is-hidden">
         <div class="select-picker-pill">
             <i class="bi bi-translate"></i>
             <span id="selectPickerActiveLang">{{ site.lang|upper }}</span>
@@ -571,14 +190,16 @@
             <span id="selectPickerVisibleCount">0</span>
         </div>
     </div>
+    <input
+        type="search"
+        id="selectPickerSearchInput"
+        class="select-picker-search"
+        placeholder="{{ wizard_lang.ui.search }}"
+        autocomplete="off"
+    >
     <div class="select-picker-list" id="selectPickerList"></div>
     <div id="selectPickerEmpty" class="select-picker-empty">
-        <i class="bi bi-search" style="font-size: 42px; display:block; margin-bottom:10px; opacity:.5;"></i>
-        <p style="margin: 0;">{{ wizard_lang.wizard.summary.selected_none }}</p>
+        <i class="bi bi-search select-picker-empty-icon"></i>
+        <p class="select-picker-empty-text">{{ wizard_lang.wizard.summary.selected_none }}</p>
     </div>
-    <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add-fab" style="display:none;" onclick="handleSelectPickerAdd()"
-            data-error-upload="{{ lang.mod_attachment.admin[41]|default('Barkirina pelê neserket.')|e('html') }}"
-            data-loading-text="{{ lang.mod_attachment.admin[4]|default('Tê lêbarkirin...')|e('html') }}">
-        <i class="bi bi-plus-lg"></i>
-    </button>
 </div>

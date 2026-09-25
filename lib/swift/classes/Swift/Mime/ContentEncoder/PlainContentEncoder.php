@@ -87,7 +87,7 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder
       
       $is->write($wrapped);
     }
-    if (strlen($leftOver))
+    if (strlen($leftOver) !== 0)
     {
       $is->write($leftOver);
     }
@@ -128,7 +128,7 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder
     
     $originalLines = explode($le, $string);
     
-    $lines = array();
+    $lines = [];
     $lineCount = 0;
     
     foreach ($originalLines as $originalLine)
@@ -141,7 +141,7 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder
       
       foreach ($chunks as $chunk)
       {
-        if (0 != strlen($currentLine)
+        if (0 !== strlen($currentLine)
           && strlen($currentLine . $chunk) > $length)
         {
           $lines[] = '';
@@ -163,8 +163,8 @@ class Swift_Mime_ContentEncoder_PlainContentEncoder
   private function _canonicalize($string)
   {
     return str_replace(
-      array("\r\n", "\r", "\n"),
-      array("\n", "\n", "\r\n"),
+      ["\r\n", "\r", "\n"],
+      ["\n", "\n", "\r\n"],
       $string
       );
   }

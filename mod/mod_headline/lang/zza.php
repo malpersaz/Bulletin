@@ -4,16 +4,15 @@ $lang['mod_headline'] = [
   'edit' => 'Sernivîsa Tev Biguhere',
   'list' => 'Lîsteya Sernivîsa Tev',
   'information' => 'Agahdarî!',
-  'oke' => 'Operasyon Serkeft!',
-  'hata' => 'Çewtî Çêbû!',
-  'error' => 'Çewtiya Giran Çêbû!',
+  'success' => 'Operasyon Serkeft!',
+  'error' => 'Çewtî Çêbû!',
   'remove_image' => 'Ji derxistina vê wêneyê bawer î?',
-  'remove_image_oke' => 'Wêne hate rakirin',
+  'remove_image_success' => 'Wêne hate rakirin',
   'choose_wish' => 'Heke bixwazî hilbijêre',
   'remove_record' => 'Ji rakirana vê tomarê bawer î?',
   'message' =>
   [
-    'oke' =>
+    'success' =>
     [
       'add' => 'Sernivîsa Tev hate zêdekirin!',
       'edit' => 'Sernivîsa Tev hate sererastkirin!',
@@ -37,25 +36,25 @@ $lang['mod_headline'] = [
   [
     'add' => 'Zêde Bike',
     'edit' => 'Biguhere',
-    'yenile' => 'Nû Bike',
+    'refresh' => 'Nû Bike',
     'delete' => 'Jêbibe',
     'gallery' => 'Galeriya Wêneyan',
-    'vazgec' => 'Betal',
-    'kaldir' => 'Rake',
-    'evet' => 'Erê',
-    'hayir' => 'Na',
+    'cancel' => 'Betal',
+    'remove' => 'Rake',
+    'yes' => 'Erê',
+    'no' => 'Na',
   ],
   'grid' =>
   [
-    0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-    1 => 'Rûpel',
-    2 => 'Hejmara Rûpelan',
-    3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-    4 => 'Tu dane nehat dîtin',
-    5 => 'Çewtiya Girêdanê',
-    6 => 'Lêgerîn',
-    7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-    8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+    'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+    'page' => 'Rûpel',
+    'page_count' => 'Hejmara Rûpelan',
+    'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+    'no_data' => 'Tu dane nehat dîtin',
+    'connection_error' => 'Çewtiya Girêdanê',
+    'search' => 'Lêgerîn',
+    'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+    'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
     'publish' =>
     [
       'key' => 'Weşîne',
@@ -75,9 +74,9 @@ $lang['mod_headline'] = [
     'unique' => '%s ku te nivîsî di pergalê de qeydkirî ye. Ji kerema xwe %s-ekê din destnîşan bikin!',
     'inarray' => 'Qada %s dikare tenê nirxên \' %s \' bigire',
   ],
-  'roll' =>
+  'role' =>
   [
-    'ad' => 'Rolenên Rêveberiya Sernivîsa Tev',
+    'name' => 'Rolenên Rêveberiya Sernivîsa Tev',
     'add' => 'Dikare sernivîsa tev zêde bike',
     'edit' => 'Dikare sernivîsa tev Biguhere',
     'delete' => 'Dikare sernivîsa tev rake',
@@ -100,9 +99,10 @@ $lang['mod_headline'] = [
     [
       'id' => 'ID',
       'language' => 'Ziman',
-      'ad' => 'Navê Sernivîsa Tev',
+      'name' => 'Navê Sernivîsa Tev',
       'status' => 'Were weşandin?',
-      'tarih' => 'Dîrok',
+      'date' => 'Dîrok',
+      'created_at' => 'Dîrok',
       'image' => 'Wêne divê bi formatê 2000x750 be',
     ],
     'radio' =>

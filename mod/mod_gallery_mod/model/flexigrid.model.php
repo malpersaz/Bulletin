@@ -2,6 +2,9 @@
 class flexigrid_model
 {
 
+    private $lang;
+    public $session;
+    public $json;
     public $mod_gallery_mod_model;
     public function __construct()
     {
@@ -35,9 +38,9 @@ class flexigrid_model
         $unique = 'id';
         $page = Req::is_Post('page') ? Req::Post_Safe('page') : 1;
         if (
-            (Roll::hasPermission('mod_gallery_mod', 'moderate_edit') === TRUE)
+            (Role::hasPermission('mod_gallery_mod', 'moderate_edit') === TRUE)
             ||
-            (Roll::hasPermission('mod_gallery_mod', 'moderate_delete') === TRUE)
+            (Role::hasPermission('mod_gallery_mod', 'moderate_delete') === TRUE)
         ) {
             $moderate = TRUE;
         } else {
@@ -62,12 +65,12 @@ class flexigrid_model
         }
 
         $this->mod_gallery_mod_model->select("id,name,mod_name,mod_key,mod_value")->gR();
-        $toplam = $this->mod_gallery_mod_model->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->mod_gallery_mod_model->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
         // Stop early when there are no matching rows.
-        if ($toplam < 1) {
+        if ($total < 1) {
             echo json_encode($this->json);
             exit();
         }

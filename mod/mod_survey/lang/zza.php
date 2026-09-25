@@ -18,6 +18,7 @@ if (!defined('AKM_LOADED')) {
  * Poll/Survey Module Language Translations
  */
 $lang['mod_survey'] = [
+    'add' => 'Rave Zêde Bike',
 
     // === Navigation & Actions ===
     'actions' => [

@@ -1,0 +1,95 @@
+File content:
+
+- HTML5 document structure and meta tags
+- Dynamic title, description, and keywords
+- CSS and JavaScript optimizations (cssoptimize and jsoptimize functions)
+- Execution of the _menu method for navigation
+- Top navigation and layout partials inclusion
+- Customizable CSS and JavaScript blocks
+
+The file is located at `templates/amida/layouts/base.twig` and serves as the master layout template.
+
+Role and purpose within the framework:
+
+Master layout:
+`base.twig` is the master layout template of this PHP framework. It provides the base HTML structure across all pages.
+
+Framework Architecture:
+
+1. Twig Template Engine Integration
+- Powered by Twig template engine
+- Utilizes custom Twig functions defined in `TwigLibs.class.php`:
+  - `cssoptimize()` - Concatenates and optimizes CSS files
+  - `jsoptimize()` - Concatenates and optimizes JavaScript files
+  - `run()` - Executes module controller methods
+
+2. Modular Architecture
+- `{{ run({"mod": "index", "method": "_menu"}) }}` - Executes the navigation menu runner
+- Module-based system (modules located under `mod/` directory)
+
+3. Optimization Features
+- Automated CSS and JavaScript concatenation
+- Built-in caching
+- Cache-busting versioning query strings
+
+4. Core Structure
+- Responsive mobile-first design support
+- SEO metadata tags (title, description, keywords, Open Graph, Twitter Cards)
+- Multiple theme support via `app_template` setting and cookie negotiation
+- Dynamic Twig block overrides (`{% block %}`)
+
+5. User and ACL Systems
+- Permission verification via `hasPermission()`
+- Role-based access control
+- Session management
+
+Template Development Guide:
+
+1. Template Structure:
+- Master Template: `base.twig` - Skeleton for all public views
+- Child Templates: Custom page views extending `layouts/base.twig`
+- Partials: Reusable UI components (located in `partials/`)
+- Module Templates: Modular frontend views
+
+2. Proper Usage:
+Block System:
+{% extends "layouts/base.twig" %}
+
+{% block title %}
+    <title>Page Title - {{ site.title }}</title>
+{% endblock %}
+
+{% block content %}
+    <!-- Page content goes here -->
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css">
+{% endblock %}
+
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/custom.js"></script>
+{% endblock %}
+
+3. CSS/JS Asset Linking:
+CSS:
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css">
+{% endblock %}
+
+JavaScript:
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/custom.js"></script>
+{% endblock %}
+
+4. Best Practices:
+- Extend `layouts/base.twig` for every public view
+- Use blocks to prevent code duplication
+- Follow strict code separation (zero inline CSS or JS)
+- Adhere to mobile-first responsive principles
+
+5. Creating a New Theme:
+1. Copy Theme:
+`cp -r templates/amida templates/new_theme`
+2. Update Theme Configuration in settings or `config/site.config.php`
+3. Customize CSS, layouts, and assets in `templates/new_theme/`

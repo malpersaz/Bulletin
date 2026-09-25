@@ -1,6 +1,6 @@
 <?php
 
-include('koberz.init.php');
+include('init.php');
 header("Access-Control-Allow-Origin: *");
 $mods = Load::model('mods'); // Mod Modeli
 $mods->all();

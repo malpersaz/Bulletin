@@ -10,13 +10,11 @@
     <div class="image-upload-area wizard-image-dropzone" id="{{ dropzone_id }}" tabindex="0" role="button" onclick="{{ trigger_picker_js }}">
         <div class="wizard-image-empty" id="{{ empty_state_id }}"{% if empty_hidden is defined and empty_hidden %} hidden{% endif %}>
             <div class="wizard-image-empty-icon">
-                <i class="bi bi-images"></i>
+                <i class="bi bi-cloud-arrow-up-fill"></i>
             </div>
             <div class="wizard-image-empty-copy">
-                <p class="wizard-image-empty-line">
-                    <span class="wizard-image-empty-text">{{ drop_title }}</span>
-                    <button type="button" class="wizard-image-inline-link" onclick="event.preventDefault(); event.stopPropagation(); {{ trigger_picker_js }}">{{ upload_link }}</button>
-                </p>
+                <span class="wizard-image-empty-title">{{ upload_link is defined and upload_link ? upload_link : (lang.mod_gallery.admin.add_images is defined ? lang.mod_gallery.admin.add_images : (lang.mod_content.wizard.image.upload_link is defined ? lang.mod_content.wizard.image.upload_link : 'Upload Image')) }}</span>
+                <span class="wizard-image-empty-hint">{{ drop_description is defined and drop_description ? drop_description : (drop_title is defined and drop_title ? drop_title : 'Upload, paste, or move') }}</span>
             </div>
         </div>
 
@@ -28,7 +26,7 @@
                     {% if remove_btn_id is defined and remove_btn_id %} id="{{ remove_btn_id }}"{% endif %}
                     aria-label="{{ remove_button_label is defined ? remove_button_label : '' }}"
                     title="{{ remove_button_label is defined ? remove_button_label : '' }}"
-                    onclick="event.preventDefault(); event.stopPropagation(); {{ remove_action_js }}"
+                    onclick="event.stopPropagation(); {{ remove_action_js }}"
                 >
                     <i class="bi bi-trash-fill"></i>
                 </button>
@@ -55,7 +53,7 @@
             autocomplete="off"
             spellcheck="false"
         >
-        <button type="button" class="m3-btn-filled" id="{{ import_btn_id }}">
+        <button type="button" class="m3-btn-filled wizard-image-url-btn" id="{{ import_btn_id }}">
             <span>{{ link_action }}</span>
         </button>
     </div>
@@ -64,7 +62,7 @@
         type="file"
         name="{{ input_name is defined ? input_name : 'image' }}"
         id="{{ file_input_id }}"
-        class="wizard-image-file-input"
+        hidden
         accept="image/*"
         {% if file_input_onchange is defined and file_input_onchange %}
             onchange="{{ file_input_onchange }}"

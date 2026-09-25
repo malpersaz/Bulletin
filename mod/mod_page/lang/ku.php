@@ -8,39 +8,50 @@
  */
 
 $lang['mod_page'] = [
-    // === Bingehîn Operasyon ===
-    'add' => 'Rûpel Zêde Bike',
-    'edit' => 'Rûpel Biguhere',
+    // === Core Operations ===
+    'add' => 'Rûpelekê Lêke',
+    'edit' => 'Rûpelê Biguherîne',
     'list' => 'Lîsteya Rûpelan',
+    'total_pages' => 'Hemû Rûpel',
+    'published_pages' => 'Weşandî',
+    'draft_pages' => 'Pêşnivîs',
+    'expand_all' => 'Hemûyan Veke',
+    'collapse_all' => 'Hemûyan Bigire',
+    'search_placeholder' => 'Di rûpelan de lê bigere...',
 
-    // === Peyamên Pergalê ===
+    // === System Messages ===
     'information' => 'Agahdarî',
-    'oke' => 'Çalakî Bi Serkeftin',
-    'hata' => 'Çewtî Çêbû',
+    'success' => 'Çalakî Bi Serkeftin',
     'error' => 'Çewtiya Giran',
 
-    // === Peyamên Piştrastkirinê ===
-    'remove_image' => 'Bi rastî jî dixwazî vê wêneyê rakî?',
-    'remove_image_oke' => 'Wêne Bi Serkeftin Hate Rakirin',
+    // === Confirmation Messages ===
+    'remove_image' => 'Wêne Rake',
+    'remove_image_question' => 'Hûn bawer in ku hûn dixwazin vê wêneyê rakin?',
+    'remove_image_success' => 'Wêne Bi Serkeftin Hate Rakirin',
     'choose_wish' => 'Ji kerema xwe re, ger bixwazî hilbijêre',
+    'empty' => [
+        'no_pages' => 'Tu rûpel nehat dîtin',
+        'description' => 'Hîna tu rûpel nîne. Bi lêkirina rûpelek nû tu dikarî dara naveroka xwe ava bikî.',
+    ],
     'menu_options' => [
-        'none' => 'Di menuyê de nene',
-        'top_level' => 'Wekî hêmana sereke ya menuyê zêde bike',
-        'slot_root' => 'Li binê rûyê menuyê yê hatî hilbijartin zêde bike',
+        'none' => 'Di pêşekê de nîne',
+        'top_level' => 'Wekî hêmana sereke ya pêşekê lêke',
+        'slot_root' => 'Li binê rûyê pêşekê yê hatî hilbijartin lêke',
     ],
     'menu_slot_options' => [
-        'none' => 'Rûyê menuyê tune',
-        'header' => 'Menuya Jor',
-        'footer' => 'Menuya Jêr',
+        'none' => 'Rûyê pêşekê tune',
+        'header' => 'Pêşeka Jor',
+        'footer' => 'Pêşeka Jêr',
     ],
     'remove_record' => 'Bi rastî jî dixwazî vê tomarê rakî?',
     'seo_meta' => 'Daneyên SEO',
 
     // === System Messages ===
     'messages' => [
-        'oke' => [
+        'success' => [
             'add' => 'Rûpel Bi Serkeftin Hate Zêdekirin',
             'edit' => 'Rûpel Bi Serkeftin Hate guhertin',
+            'delete' => 'Rûpel bi serkeftî hate jêbirin',
         ],
         'error' => [
             'add' => 'Zêdekirina Rûpelê Serneket',
@@ -53,9 +64,6 @@ $lang['mod_page'] = [
         'warning' => [
             'reorder' => 'Cihê rûpelê were guhertin?',
             'delete' => 'Ma tu bawer î ku dixwazî vê rûpelê jê bibî?',
-        ],
-        'success' => [
-            'delete' => 'Rûpel bi serkeftî hate jêbirin',
         ],
     ],
 
@@ -71,24 +79,24 @@ $lang['mod_page'] = [
         'no' => 'Na',
     ],
 
-    // === Peyamên Çewtiyê ===
+    // === Error Messages ===
     'errors' => [
         'record' => 'Tomara ku hate nîşankirin nehate dîtin',
-        'slot_branch_missing' => 'Rûyê menuyê yê hatî hilbijartin ji bo vî zimanî nehate çareserkirin',
+        'slot_branch_missing' => 'Rûyê pêşekê yê hatî hilbijartin ji bo vî zimanî nehate çareserkirin',
     ],
 
-    // === Etîketên Bişkojan ===
+    // === Button Labels ===
     'button' => [
-        'add' => 'Zêde Bike',
+        'add' => 'Lêke',
         'edit' => 'Biguhere',
         'delete' => 'Rake',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberiya Pelan',
-        'tamam' => 'Temam',
+        'ok' => 'Temam',
         'upload' => 'Bar Bike',
     ],
 
@@ -97,22 +105,23 @@ $lang['mod_page'] = [
         'cancel' => 'Betal',
         'edit' => 'Biguhere',
         'delete' => 'Jêbibe',
-        'unlock_reorder' => 'Moda Kaşkirinê Veke',
-        'lock_reorder' => 'Moda Kaşkirinê Bigire',
+        'unlock_reorder' => 'Rêz Bike',
+        'lock_reorder' => 'Qifil Bike',
     ],
 
-    // === Peyamên Piştrastkirinê ===
+    // === Confirmation Messages ===
     'validator' => [
         'required' => 'Ji kerema xwe re qada %s vala nekin',
         'length' => '%s dikare herî kêm %s û herî zêde %s tîpan be',
         'email' => 'Ji kerema xwe re navnîşana e-postayê ya derbasdar li qada %s binivîsin',
         'unique' => '%s ku nivîsandî di pergala de hate tomar ji kerema xwe re %s-ekê din hilbijêre',
         'inarray' => 'Qada %s tenê nirxên \' %s \' digire',
+        'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
     ],
 
-    // === Destûrên Rêzê ===
-    'roll' => [
-        'ad' => 'Rêzên Rêveberiya Rûpelan',
+    // === Column Permissions ===
+    'role' => [
+        'name' => 'Rêzên Rêveberiya Rûpelan',
         'add' => 'Dikare Rûpel Zêde Bike',
         'edit' => 'Dikare Rûpel Biguhere',
         'delete' => 'Dikare Rûpel Rake',
@@ -124,7 +133,7 @@ $lang['mod_page'] = [
         'approval' => 'Dikare Rûpelan Biweşîne/Neweşîne?',
     ],
 
-    // === Çewtiyên Destûran ===
+    // === Permission Errors ===
     'role_errors' => [
         'moderate_edit' => 'Tu Nikarî Tomara Rûpelên Ku Ne TeNe Biguhere',
         'moderate_delete' => 'Tu Nikarî Tomara Rûpelên Ku Ne TeNe Rake',
@@ -137,7 +146,7 @@ $lang['mod_page'] = [
         'approval' => 'Destûra Te Ji Bo Weşandin An Ji Weşanê Rakirina Rûpelan Tune',
     ],
 
-    // === Panela Rêveber ===
+    // === Admin Panel ===
     'admin' => [
         'columns' => [
             'id' => 'ID',
@@ -160,8 +169,8 @@ $lang['mod_page'] = [
             'image' => 'Wêne',
             'acl_id' => 'Kî Dikare Vê Rûpelê Bibîne?',
             'category_id' => 'Kategoriya Naveroka Têkildar',
-            'menu' => 'Rûpelê Bişîne Menûyê',
-            'menu_slot' => 'Rûyê Menûyê',
+            'menu' => 'Rûpelê Bişîne Pêşekê',
+            'menu_slot' => 'Rûyê Pêşekê',
         ],
         'select_value' => [
             'root_e' => 'Erê',
@@ -187,7 +196,7 @@ $lang['mod_page'] = [
         ],
         'descriptions' => [
             'language' => 'Berî avakirina dara rûpelê û vebijarkên têkildar, zimanê hilbijêre.',
-            'structure' => 'Hilbijêre ka ev rûpel li ku derê ye û gelo divê bi darên kategori û menûyê re were girêdan.',
+            'structure' => 'Hilbijêre ka ev rûpel li ku derê ye û gelo divê bi darên kategorî û pêşekê re were girêdan.',
             'title' => 'Navê rûpelê diyar bike ku dê nasnameya sereke ya rûpelê ava bike.',
             'summary' => 'Nivîsa kurt a destpêkê ku berî naverokê tê nîşandan binivîse.',
             'content' => 'Naveroka sereke ya rûpelê amade bike.',
@@ -198,6 +207,18 @@ $lang['mod_page'] = [
         'page_summary' => 'Kurteya Rûpelê',
         'previous' => 'Paşve',
         'next' => 'Pêşve',
+        'image' => [
+            'drop_title' => 'Bar bike, pêve bike an jî bibe/berde',
+            'drop_description' => 'Bar bike, pêve bike an jî bibe/berde',
+            'upload_link' => 'Wêne Lêke',
+            'link_separator' => 'AN JÎ',
+            'link_placeholder' => 'Lînka wêne binivîse',
+            'link_action' => 'Bîne',
+            'hint_loading' => 'Wêne tê anîn...',
+            'hint_invalid_type' => 'Tenê pelên wêneyan li vir têne piştgirî kirin.',
+            'hint_no_drop_data' => 'Di naveroka hatî berdan de tu wêneyekî bikêr nehat dîtin.',
+            'hint_remote_failed' => 'Wêne ji wî çavkanî nehat anîn.',
+        ],
     ],
     'quick_unpublish_confirm' => 'Ma tu bawer î ku dixwazî vê rûpelê ji weşanê rakî?',
     'quick_publish_confirm' => 'Ma tu bawer î ku dixwazî vê rûpelê biweşînî?',
@@ -206,5 +227,14 @@ $lang['mod_page'] = [
     'status_badge' => [
         'active' => 'Weşandî',
         'draft' => 'Pêşnûma',
+    ],
+    'picker' => [
+        'file' => 'Pelê Heyî Hilbijêre',
+    ],
+    'ajax' => [
+        'database_error' => 'Çewtiya Database',
+        'record_not_found' => 'Rûpel nehat dîtin!',
+        'unknown_type' => 'Cureyê peywendiya nenas',
+        'relation_updated' => 'Peywendî bi serkeftî hate nûjenkirin',
     ],
 ];

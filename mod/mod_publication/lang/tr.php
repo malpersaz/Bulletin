@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -26,7 +26,9 @@ $lang['mod_publication'] = [
     'information' => 'Bilgi!',
     'success' => 'İşlem Başarılı!',
     'error' => 'Hata Oluştu!',
+    'error_occurred' => 'Hata Oluştu!',
     'fatal_error' => 'Ölümcül Hata Oluştu!',
+    'wizard_loading' => 'Sihirbaz yükleniyor...',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize emin misiniz?',
     'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
@@ -102,15 +104,15 @@ $lang['mod_publication'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
+        'showing_results' => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Arama',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
         'approve' => [
             'key' => 'Yayınla',
             'value' => 'Bu yayını yayınlamak istediğinize emin misiniz?',
@@ -132,11 +134,11 @@ $lang['mod_publication'] = [
         'title_length' => 'En az 1, en fazla 70 karakterden oluşan bir başlık girmelisiniz.',
         'title_exists' => 'Bu başlık zaten mevcut, lütfen değiştirin',
         'title_unique' => 'Başlığınız benzersiz',
-        'deck_length' => 'Lütfen en az 110, en fazla 280 karakterden oluşan bir giriş metni giriniz.',
+        'deck_length' => 'Lütfen 90 ile 120 karakter arasında bir giriş metni giriniz.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Yayın Yönetim Rolleri',
         'add' => 'Yayın Ekleyebilir',
         'edit' => 'Yayın Düzenleyebilir',
@@ -227,7 +229,6 @@ $lang['mod_publication'] = [
         'default_sort' => 'En Yeni',
         'default_lang' => 'TR',
         'date_locale' => 'tr-TR',
-        'all' => 'Tümü',
         'filter_cleared' => 'Filtreler temizlendi ve varsayılana döndürüldü.',
         'filter_applied' => 'Filtreler Uygulandı',
         'sort_label' => 'Sıralama',
@@ -314,7 +315,7 @@ $lang['mod_publication'] = [
             'category' => 'İçeriğin ekleneceği kategoriyi belirleyin.',
             'title' => 'İlgi çekici bir başlık girin. (Min: 1, Max: 70)',
             'date' => 'İçeriğin yayınlanacağı tarih ve saat.',
-            'intro' => 'Kısa ve öz bir özet yazın. (110 - 280 Karakter)',
+            'intro' => 'Kısa ve öz bir özet yazın. (90 - 120 Karakter)',
             'publication' => 'Zengin metin editörü.',
             'image' => 'Kapak görseli yükleyin.',
             'finish' => 'Son kontroller ve yayınlama.',
@@ -329,7 +330,7 @@ $lang['mod_publication'] = [
             'category_select' => 'Kategori Seçiniz...',
             'change_image' => 'Görsel Değiştir',
         ],
-'image' => [
+        'image' => [
             'drop_title' => 'Bir görseli buraya sürükleyin',
             'drop_description' => 'Yükleyin, yapıştırın veya bir görsel bırakın.',
             'upload_link' => 'dosya yükleyin',
@@ -383,7 +384,6 @@ $lang['mod_publication'] = [
         'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nYayın için resim galerisi açılıyor.",
         'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nYayın için dosya yükleme ekranı açılıyor.",
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
-        'delete_confirm' => 'Evet, Sil!',
         'delete_success' => 'Yayın silindi!',
         'video_unavailable' => 'Yayınlar için video yönetimi henüz kullanıma açık değil.',
     ],
@@ -399,7 +399,7 @@ $lang['mod_publication'] = [
             "Haftalık Teknoloji Özeti: Neler Oldu?",
             "Yazarlar Birliği Yeni Yönetimini Seçti",
             "Fotoğrafçılık Atölyesi Kayıtları Başladı",
-            "Rojname Mobil Uygulaması Güncellendi"
+            "AKM ARTIST CMS Mobil Uygulaması Güncellendi"
         ],
         'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
         'authors' => [],

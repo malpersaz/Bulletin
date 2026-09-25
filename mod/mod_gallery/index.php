@@ -6,7 +6,7 @@
  */
 class mod_gallery_mod extends indexMain
 {
-    public $mlang;
+    public $moduleLang;
     public $mod_gallery_model;
     public $mod_info;
     public $r;
@@ -15,16 +15,16 @@ class mod_gallery_mod extends indexMain
     {
         parent::__construct();
         // Load Template Library
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         // Load Database Library
         $this->db = Load::lib('Database');
         // Load Language File
         $this->lang = Load::lang('mod_gallery');
         // Send Language File to Template
-        $this->tema->lang($this->lang);
+        $this->theme->lang($this->lang);
 
         if (Req::is_Post('sid')) {
-            Kayit::ekle('session_sid', Req::Post_Safe('sid'));
+            Registry::add('session_sid', Req::Post_Safe('sid'));
         }
         $this->session = Load::lib('Session');
         // User Model
@@ -38,7 +38,7 @@ class mod_gallery_mod extends indexMain
 
     private function _resolve_record_label($record, $configured_value = null)
     {
-        if (!is_array($record) || empty($record)) {
+        if (!is_array($record) || $record === []) {
             return false;
         }
 
@@ -83,23 +83,45 @@ class mod_gallery_mod extends indexMain
             return FALSE;
         }
 
-        // Check if module exists
+        // Check if module exists in bridge table, auto-register if it's a valid module
         $this->mod_info = Load::model('mod_gallery_mod');
+        if ($this->mod_info->exists_mod_name($mod) === FALSE) {
+            try {
+                $rawName = str_replace('mod_', '', $mod);
+                $displayName = ucfirst($rawName) . ' Galleries';
+                $safeName = addslashes($displayName);
+                $safeMod = addslashes($mod);
+                $this->db->query("INSERT INTO `mod_gallery_mod` (`name`, `mod_name`, `mod_key`, `mod_value`, `user_id`) VALUES ('{$safeName}', '{$safeMod}', 'id', 'name', 1)");
+                $this->mod_info->flush();
+            } catch (Exception $e) {
+                // Table might not exist yet
+            }
+        }
+
         if ($this->mod_info->exists_mod_name($mod) === FALSE) {
             return FALSE;
         }
 
         $this->mod_info->getResultOne()->sync();
 
-        $this->mlang = Load::lang($mod);
+        $this->moduleLang = Load::lang($mod);
 
         // Check for permission in the target module
-        if ($this->user->hasPermission($mod, 'gallery', $this->mlang[$mod]['role_errors']['gallery'], 1) === False) {
-            return False;
+        $roleError = $this->moduleLang[$mod]['role_errors']['gallery'] ?? ($this->lang['mod_gallery']['errors']['access_denied'] ?? 'Permission denied');
+        $hasPermission = (
+            Role::hasPermission($mod, 'gallery') ||
+            Role::hasPermission($mod, 'edit') ||
+            Role::hasPermission('mod_gallery', 'list') ||
+            Role::hasPermission('mod_gallery', 'edit') ||
+            $this->user->hasPermission($mod, 'gallery', $roleError, 1)
+        );
+
+        if (!$hasPermission) {
+            return FALSE;
         }
 
         $target_model = Load::model($mod);
-        if ($target_model->exists_id($vid) === FALSE) {
+        if (!$target_model || $target_model->exists_id($vid) === FALSE) {
             return FALSE;
         }
 
@@ -116,12 +138,23 @@ class mod_gallery_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_gallery']['admin']['title'];
-        $this->tema->veri('site', $this->site);
+        $this->theme->set('site', $this->site);
 
         if ($mod && $vid) {
             // Specific Gallery view (Images of a record)
             if ($this->_check_mod($mod, $vid) === FALSE) {
-                Helper::yonlendir($this->site['saddress'] . 'mod_gallery/list');
+                if (Req::is_Ajax() || (isset($_GET['ajax']) && $_GET['ajax'] == 1) || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')) {
+                    if (ob_get_level() > 0) {
+                        ob_clean();
+                    }
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => $this->lang['mod_gallery']['errors']['record'] ?? 'Record not found or access denied.'
+                    ]);
+                    exit;
+                }
+                Helper::redirect($this->site['saddress'] . 'mod_gallery/list');
                 return;
             }
 
@@ -141,19 +174,114 @@ class mod_gallery_mod extends indexMain
                 }
             }
 
-            $this->tema->veri('pictures', $this->mod_gallery_model->toArray());
-            $this->tema->veri('mod_name', $mod);
-            $this->tema->veri('vid', $vid);
-            $this->tema->veri('record_label', $record_label);
-            $this->tema->veri('back_url', $this->site['saddress'] . 'mod_gallery/list');
-            $this->tema->tpl('mod_gallery/list_images');
+            $referer = isset($_SERVER['HTTP_REFERER']) ? (string) $_SERVER['HTTP_REFERER'] : '';
+            $current_url = 'mod_gallery/list/' . $mod . '/' . $vid;
+            if ($referer !== '' && strpos($referer, $this->site['saddress']) === 0 && strpos($referer, $current_url) === false) {
+                $back_url = $referer;
+            } else {
+                $back_url = $this->site['saddress'] . $mod . '/list';
+            }
+
+            $this->theme->set('pictures', $this->mod_gallery_model->toArray());
+            $this->theme->set('mod_name', $mod);
+            $this->theme->set('vid', $vid);
+            $this->theme->set('record_label', $record_label);
+            $this->theme->set('back_url', $back_url);
+            $this->theme->set('is_ajax', Req::is_Ajax() || (isset($_GET['ajax']) && $_GET['ajax'] == 1));
+            $this->theme->tpl('mod_gallery/list_images');
         } else {
             // General Gallery List view (Galleries from mod_gallery_mod)
             if ($this->user->hasPermission('mod_gallery', 'list', $this->lang['mod_gallery']['role_errors']['list'], 1) === False) {
                 return;
             }
-            $this->tema->tpl('mod_gallery/list');
+            $overview = $this->getGalleriesOverview();
+            $this->theme->set('galleries', $overview['items']);
+            $this->theme->set('total_galleries', $overview['total_galleries']);
+            $this->theme->set('total_images', $overview['total_images']);
+            $this->theme->set('gallery_modules', $overview['modules']);
+            $this->theme->tpl('mod_gallery/list');
         }
+    }
+
+    /**
+     * Retrieves aggregated galleries overview for both server-side and AJAX responses
+     */
+    private function getGalleriesOverview(): array
+    {
+        $db = new Database();
+
+        $galleries = $db->query("SELECT mod_name, vid, COUNT(*) FROM mod_gallery GROUP BY mod_name, vid ORDER BY id DESC")->fetchAll(PDO::FETCH_NUM);
+
+        $mod_infos = [];
+        $mod_info_model = Load::model('mod_gallery_mod');
+        $mod_info_model->where("mod_name != ''")->gR();
+        foreach ($mod_info_model->toArray() as $m_info) {
+            $mod_infos[$m_info['mod_name']] = $m_info;
+        }
+
+        $items = [];
+        $totalImages = 0;
+        $moduleStats = [];
+
+        foreach ($galleries as $gal) {
+            $mod = $gal[0];
+            $vid = $gal[1];
+            $imgCount = (int) $gal[2];
+            $totalImages += $imgCount;
+
+            $moduleLabel = isset($mod_infos[$mod]['name']) ? $mod_infos[$mod]['name'] : $mod;
+            if (!isset($moduleStats[$mod])) {
+                $moduleStats[$mod] = [
+                    'mod_name' => $mod,
+                    'label' => $moduleLabel,
+                    'count' => 0
+                ];
+            }
+            $moduleStats[$mod]['count']++;
+
+            $record_label = $mod . ' / ' . $vid;
+            $target_model = Load::model($mod);
+            if ($target_model && $target_model->exists_id($vid)) {
+                $target_model->where_id($vid)->limit(1)->gRo();
+                if ($target_model->getSize() > 0) {
+                    $target_model->sync();
+                    $record = $target_model->toArray();
+                    $configuredField = isset($mod_infos[$mod]['mod_value']) ? $mod_infos[$mod]['mod_value'] : null;
+                    $resolved_label = $this->_resolve_record_label($record, $configuredField);
+                    if ($resolved_label !== false) {
+                        $record_label = $resolved_label;
+                    }
+                }
+            }
+
+            // Retrieve last 3 images for the preview stack
+            $stmt = $db->query("SELECT url FROM mod_gallery WHERE mod_name = '{$mod}' AND vid = '{$vid}' ORDER BY id DESC LIMIT 3");
+            $previews = $stmt ? $stmt->fetchAll(PDO::FETCH_COLUMN) : [];
+
+            $previewUrls = [];
+            foreach ($previews as $pUrl) {
+                $previewUrls[] = $this->site['iaddress'] . 'mod_gallery/' . $mod . '/thumb/' . $pUrl;
+            }
+
+            $items[] = [
+                'id' => $vid,
+                'name' => $record_label,
+                'mod_name' => $mod,
+                'mod_label' => $moduleLabel,
+                'mod_key' => $vid,
+                'image_count' => $imgCount,
+                'preview_images' => $previews,
+                'preview_urls' => $previewUrls,
+                'url' => $this->site['saddress'] . 'mod_gallery/list/' . $mod . '/' . $vid,
+            ];
+        }
+
+        return [
+            'items' => $items,
+            'total_galleries' => count($items),
+            'total_images' => $totalImages,
+            'modules' => array_values($moduleStats),
+        ];
     }
 
     /**
@@ -168,58 +296,8 @@ class mod_gallery_mod extends indexMain
             exit;
         }
 
-        $db = new Database();
-
-        // Fetch active galleries containing images from mod_gallery table
-        $galleries = $db->query("SELECT mod_name, vid, COUNT(*) as image_count FROM mod_gallery GROUP BY mod_name, vid ORDER BY id DESC")->fetchAll(PDO::FETCH_ASSOC);
-
-        // Fetch active media-capable module configurations from mod_gallery_mod table
-        $mod_infos = [];
-        $mod_info_model = Load::model('mod_gallery_mod');
-        $mod_info_model->where("mod_name != ''")->gR();
-        foreach ($mod_info_model->toArray() as $m_info) {
-            $mod_infos[$m_info['mod_name']] = $m_info;
-        }
-
-        $items = [];
-        foreach ($galleries as $gal) {
-            $mod = $gal['mod_name'];
-            $vid = $gal['vid'];
-
-            // Bypass if module configuration does not exist
-            if (!isset($mod_infos[$mod])) {
-                continue;
-            }
-            $m_info = $mod_infos[$mod];
-
-            $record_label = $mod . ' / ' . $vid;
-            $target_model = Load::model($mod);
-            if ($target_model && $target_model->exists_id($vid)) {
-                $target_model->where_id($vid)->limit(1)->gRo();
-                if ($target_model->getSize() > 0) {
-                    $target_model->sync();
-                    $record = $target_model->toArray();
-                    $resolved_label = $this->_resolve_record_label($record, $m_info['mod_value']);
-                    if ($resolved_label !== false) {
-                        $record_label = $resolved_label;
-                    }
-                }
-            }
-
-            // Retrieve last 3 images for the preview stack
-            $stmt = $db->query("SELECT url FROM mod_gallery WHERE mod_name = '{$mod}' AND vid = '{$vid}' ORDER BY id DESC LIMIT 3");
-            $previews = $stmt ? $stmt->fetchAll(PDO::FETCH_COLUMN) : [];
-
-            $items[] = [
-                'id' => $vid,
-                'name' => $record_label,
-                'mod_name' => $mod,
-                'mod_key' => $vid, // Used for link generation
-                'image_count' => $gal['image_count'],
-                'preview_images' => $previews
-            ];
-        }
-
+        $overview = $this->getGalleriesOverview();
+        $items = $overview['items'];
         $total = count($items);
         $search = trim((string) Req::Post_Safe('query'));
         if ($search !== '') {
@@ -227,6 +305,7 @@ class mod_gallery_mod extends indexMain
                 $haystacks = [
                     $item['name'] ?? '',
                     $item['mod_name'] ?? '',
+                    $item['mod_label'] ?? '',
                     $item['mod_key'] ?? '',
                 ];
 
@@ -252,7 +331,7 @@ class mod_gallery_mod extends indexMain
     /**
      * Rename an image
      */
-    public function addegis()
+    public function rename()
     {
         header('Content-Type: application/json; charset=utf-8');
         $id = intval(Req::Post_Safe('id'));
@@ -287,7 +366,7 @@ class mod_gallery_mod extends indexMain
     /**
      * Delete an image
      */
-    public function sil()
+    public function delete()
     {
         header('Content-Type: application/json; charset=utf-8');
         $id = intval(Req::Post_Safe('id'));
@@ -328,7 +407,7 @@ class mod_gallery_mod extends indexMain
     /**
      * Delete all images in a gallery (bulk remove)
      */
-    public function sil_all()
+    public function delete_all()
     {
         header('Content-Type: application/json; charset=utf-8');
         $vid = Req::Post_Safe('vid');
@@ -350,13 +429,13 @@ class mod_gallery_mod extends indexMain
     /**
      * Upload an image
      */
-    public function up()
+    public function upload()
     {
         header('Content-Type: application/json; charset=utf-8');
-        $isim = Req::Post_Safe('isim') ?: 'image';
+        $fieldName = Req::Post_Safe('isim') ?: (Req::Post_Safe('field_name') ?: 'image');
 
-        if (Req::is_Files($isim) == False) {
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['hata']['get_source_failed']]);
+        if (Req::is_Files($fieldName) == False) {
+            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['errors']['upload_failed'] ?? 'Upload failed']);
             exit;
         }
 
@@ -370,18 +449,40 @@ class mod_gallery_mod extends indexMain
 
         $image = Load::mod('image');
         $image->mod = 'mod_gallery';
-        $image->name = $isim;
+        $image->name = $fieldName;
         $option = [
             '/' . $mod . '/original/' => ['width' => 1920, 'height' => NULL, 'option' => 'width'],
             '/' . $mod . '/thumb' => ['width' => 500, 'height' => NULL, 'option' => 'width']
         ];
 
         if ($image->_resize($option)) {
-            $resim_link = $image->url;
+            $imageUrl = $image->url;
+
+            $default_name = '#';
+            $target_model = Load::model($mod);
+            if ($target_model && $target_model->exists_id($vid)) {
+                $target_model->where_id($vid)->limit(1)->gRo();
+                if ($target_model->getSize() > 0) {
+                    $target_model->sync();
+                    $record = $target_model->toArray();
+                    $configured_val = isset($this->mod_info->mod_value) ? $this->mod_info->mod_value : null;
+                    $resolved = $this->_resolve_record_label($record, $configured_val);
+                    if ($resolved !== false && trim((string) $resolved) !== '') {
+                        $default_name = trim((string) $resolved);
+                    }
+                }
+            }
+
+            if ($default_name === '#' && isset($_FILES[$fieldName]['name'])) {
+                $original_filename = pathinfo($_FILES[$fieldName]['name'], PATHINFO_FILENAME);
+                if (trim($original_filename) !== '') {
+                    $default_name = trim($original_filename);
+                }
+            }
 
             $this->r = Load::model('mod_gallery');
-            $this->r->name = "#"; // Initial name can be changed later
-            $this->r->url = $resim_link;
+            $this->r->name = $default_name;
+            $this->r->url = $imageUrl;
             $this->r->mod_name = $mod;
             $this->r->vid = $vid;
             $this->r->user_id = $this->session->get('id');

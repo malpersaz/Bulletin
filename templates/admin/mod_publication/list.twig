@@ -20,10 +20,7 @@
     }
     .news-image-modal {
         position: fixed;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inset: 0;
         z-index: 12000;
         display: flex;
         align-items: center;
@@ -41,14 +38,10 @@
     }
     .news-image-modal__scrim {
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        inset: 0;
         z-index: 0;
         background: rgba(28, 27, 31, 0.54);
         backdrop-filter: blur(3px);
-        -webkit-backdrop-filter: blur(3px);
     }
     .news-image-modal__sheet {
         position: relative;
@@ -167,11 +160,11 @@
 <div style="padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;">
     <div style="display: flex; gap: 12px;">
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_publication }}</div>
+            <div id="statTotalPublication" style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_publication }}</div>
             <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.total_publication }}</div>
         </div>
         <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_publication }}</div>
+            <div id="statDraftPublication" style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_publication }}</div>
             <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.draft_publication }}</div>
         </div>
     </div>
@@ -188,24 +181,24 @@
 
 <div id="empty-state" class="empty-state" style="display: none;">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_publication.grid[105] }}</h3>
-    <p>{{ lang.mod_publication.grid[4] }}</p>
+    <h3>{{ lang.mod_publication.grid.no_data }}</h3>
+    <p>{{ lang.mod_publication.grid.no_data }}</p>
 </div>
 
 <div id="infinite-loader" class="infinite-loader" style="display: none;">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_publication.grid[104] }}</span>
+    <span>{{ lang.mod_publication.grid.loading }}</span>
 </div>
 
 <form id="filterForm" style="display: none;">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
-    <input type="hidden" name="arama[name]" id="filterSearch" value="">
-    <input type="hidden" name="arama[lang]" id="filterLang" value="">
-    <input type="hidden" name="arama[category_id]" id="filterCategory" value="">
+    <input type="hidden" name="filter[name]" id="filterSearch" value="">
+    <input type="hidden" name="filter[lang]" id="filterLang" value="">
+    <input type="hidden" name="filter[category_id]" id="filterCategory" value="">
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
@@ -296,9 +289,6 @@
             <i class="bi bi-camera-video"></i>
         </button>
 
-        <div class="toolbar-fab" onclick="location.href='{{ site.saddress }}mod_publication/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
 
         <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_publication.context_menu.gallery }}">
             <i class="bi bi-image"></i>
@@ -308,10 +298,23 @@
             <i class="bi bi-paperclip"></i>
         </button>
 
+        {% if session.permissions.mod_publication.faq is defined or session.permissions.mod_publication.edit is defined %}
+        <button id="toolbarFaq" class="toolbar-item" onclick="faqSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_faq.module_title }}">
+            <i class="bi bi-patch-question-fill"></i>
+        </button>
+        {% endif %}
+
         <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
             <i class="bi bi-pencil"></i>
         </button>
     </div>
+
+    {% if session.permissions.mod_publication.add is defined %}
+    <!-- Main FAB Link -->
+    <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_publication/add" aria-label="{{ lang.mod_publication.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+    {% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -342,7 +345,7 @@
         image_drop_description: "{{ lang.mod_publication.wizard.image.drop_description|e('js') }}",
         image_updated: "{{ lang.mod_publication.success|e('js') }}",
         image_remove_title: "{{ lang.mod_publication.remove_image|e('js') }}",
-        image_remove_confirm: "{{ lang.mod_publication.context_menu.delete_confirm|e('js') }}",
+        image_remove_confirm: "{{ lang.mod_publication.remove_image|e('js') }}",
         image_remove_confirm_text: "{{ lang.mod_publication.button.yes|e('js') }}",
         image_remove_cancel_text: "{{ lang.mod_publication.button.no|e('js') }}",
         image_remove_success: "{{ lang.mod_publication.remove_image_success|e('js') }}",
@@ -352,7 +355,7 @@
         hero_slider_removed: "{{ lang.mod_publication.hero_slider_removed|e('js') }}",
         hero_slider_error: "{{ lang.mod_publication.hero_slider_error|e('js') }}",
         hero_slider_badge: "{{ lang.mod_publication.hero_slider_badge|e('js') }}",
-        loading: "{{ lang.mod_publication.grid[104]|e('js') }}",
+        loading: "{{ lang.mod_publication.grid.loading|e('js') }}",
         grid: {
             load_more: "{{ lang.mod_publication.grid.load_more|e('js') }}"
         },
@@ -364,5 +367,5 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_publication.js?v=3.5"></script>
+<script src="/templates/admin/assets/js/mod_publication.js?v=3.6"></script>
 {% endblock %}

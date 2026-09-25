@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `lang` VARCHAR(10) NOT NULL,
   `title` VARCHAR(255) DEFAULT NULL,
+  `site_name` VARCHAR(255) DEFAULT NULL,
   `description` TEXT DEFAULT NULL,
   `owner_name` VARCHAR(255) DEFAULT NULL,
   `phone` VARCHAR(50) DEFAULT NULL,
@@ -26,5 +27,11 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `site_icon` VARCHAR(500) DEFAULT NULL,
   `logo_type` VARCHAR(50) NOT NULL DEFAULT 'rectangle',
   `logo_symbol` VARCHAR(500) DEFAULT NULL,
+  `stat_completed_projects` INT DEFAULT 250,
+  `stat_ongoing_projects` INT DEFAULT 45,
+  `stat_workforce` INT DEFAULT 1200,
+  `stat_offices` INT DEFAULT 18,
+  `app_template` VARCHAR(64) DEFAULT 'amida',
+  `cookie_policy_content` TEXT DEFAULT NULL,
   UNIQUE KEY `unique_lang` (`lang`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

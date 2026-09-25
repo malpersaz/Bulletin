@@ -1,0 +1,245 @@
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+
+{% block title %}{{ lang.mod_settings.cookie_policy_title }}{% endblock %}
+{% block headline %}{{ lang.mod_settings.cookie_policy_title }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/cookie_policy.css?v=2.0">
+{% endblock %}
+
+{% block content %}
+<div class="cookie-page" 
+     data-modal-title="{{ lang.mod_settings.cookie_policy_title }}" 
+     data-modal-icon="bi-cookie"
+     data-add-title="{{ lang.mod_settings.add_cookie }}"
+     data-edit-title="{{ lang.mod_settings.edit_cookie }}"
+     data-delete-title="{{ lang.mod_settings.delete_cookie }}"
+     data-delete-confirm="{{ lang.mod_settings.cookie_delete_confirm }}"
+     data-delete-btn="{{ lang.mod_settings.button.delete }}"
+     data-cancel-btn="{{ lang.mod_settings.button.cancel }}"
+     data-save-btn="{{ lang.mod_settings.save }}"
+     data-loading-text="{{ lang.mod_settings.loading_message }}">
+
+    {% if message is defined and message %}
+        <div class="cookie-banner {{ Success is defined and Success ? 'success' : 'error' }}">
+            <i class="bi {{ Success is defined and Success ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill' }} cookie-banner-icon"></i>
+            <div class="cookie-banner-text">{{ message }}</div>
+        </div>
+    {% endif %}
+
+    <div class="cookie-shell">
+
+        <!-- Section 1: Cookie Policy & Consent General Notice -->
+        <section class="cookie-section-card">
+            <div class="cookie-section-header">
+                <div class="cookie-section-icon">
+                    <i class="bi bi-shield-lock-fill"></i>
+                </div>
+                <div class="cookie-section-title-wrap">
+                    <h3 class="cookie-section-title">{{ lang.mod_settings.section_cookie_policy }}</h3>
+                    <p class="cookie-section-desc">{{ lang.mod_settings.cookie_policy_desc_hint }}</p>
+                </div>
+            </div>
+            <div class="cookie-section-body">
+                <form id="cookiePolicyTextForm" action="{{ site.saddress }}mod_settings/cookie_policy" method="post">
+                    <input type="hidden" name="cookie_policy_text_submit" value="1">
+                    <div class="cookie-field-group">
+                        <label for="cookie_policy_content" class="cookie-field-label">{{ lang.mod_settings.cookie_policy_content }}</label>
+                        <textarea id="cookie_policy_content" name="cookie_policy_content" class="cookie-field-textarea" rows="4" placeholder="{{ lang.mod_settings.cookie_policy_content_placeholder }}">{{ setting.cookie_policy_content|default('') }}</textarea>
+                    </div>
+                    <div class="cookie-save-btn-wrap">
+                        <button type="submit" class="cookie-save-btn" id="saveCookieNoticeBtn">
+                            <i class="bi bi-floppy-fill"></i>
+                            <span>{{ lang.mod_settings.save }}</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Section 2: Cookie Inventory & Dynamic Records -->
+        <section class="cookie-section-card">
+            <div class="cookie-section-header">
+                <div class="cookie-section-icon inventory">
+                    <i class="bi bi-cookie"></i>
+                </div>
+                <div class="cookie-section-title-wrap">
+                    <h3 class="cookie-section-title">{{ lang.mod_settings.cookie_inventory_title }}</h3>
+                    <p class="cookie-section-desc">{{ lang.mod_settings.cookie_inventory_desc }}</p>
+                </div>
+            </div>
+            <div class="cookie-section-body">
+                <div class="cookie-inventory-topbar">
+                    <div class="cookie-inventory-badge">
+                        <i class="bi bi-layers-half text-primary"></i>
+                        <span>{{ lang.mod_settings.cookie_inventory_title }}</span>
+                    </div>
+                    <button type="button" class="cookie-add-btn" id="addCookieBtn">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>{{ lang.mod_settings.add_cookie }}</span>
+                    </button>
+                </div>
+
+                <!-- Category Filters -->
+                <div class="cookie-filter-chips">
+                    <button type="button" class="cookie-chip active" data-category="all">
+                        <span>{{ lang.mod_settings.filter_all }}</span>
+                        <span class="chip-count">({{ cookies|length }})</span>
+                    </button>
+                    <button type="button" class="cookie-chip" data-category="necessary">
+                        <span>{{ lang.mod_settings.category_necessary }}</span>
+                        <span class="chip-count">(0)</span>
+                    </button>
+                    <button type="button" class="cookie-chip" data-category="functional">
+                        <span>{{ lang.mod_settings.category_functional }}</span>
+                        <span class="chip-count">(0)</span>
+                    </button>
+                    <button type="button" class="cookie-chip" data-category="analytics">
+                        <span>{{ lang.mod_settings.category_analytics }}</span>
+                        <span class="chip-count">(0)</span>
+                    </button>
+                    <button type="button" class="cookie-chip" data-category="marketing">
+                        <span>{{ lang.mod_settings.category_marketing }}</span>
+                        <span class="chip-count">(0)</span>
+                    </button>
+                </div>
+
+                <!-- Cookie List -->
+                <div class="cookie-list" id="cookieList">
+                    {% if cookies is defined and cookies is not empty %}
+                        {% for item in cookies %}
+                            <div class="cookie-item-card {{ item.is_active == 'n' ? 'inactive' : '' }}" 
+                                 data-id="{{ item.id }}" 
+                                 data-category="{{ item.category }}"
+                                 data-json="{{ item|json_encode|e('html_attr') }}">
+                                <div class="cookie-item-top">
+                                    <div class="cookie-item-name-wrap">
+                                        <span class="cookie-item-name">{{ item.cookie_name }}</span>
+                                        <span class="cookie-item-provider">{{ item.provider|default(site.title|default('Self-Hosted')) }}</span>
+                                    </div>
+                                    <span class="cookie-item-badge {{ item.category }}">{{ item.category }}</span>
+                                </div>
+                                <div class="cookie-item-purpose">{{ item.purpose }}</div>
+                                <div class="cookie-item-meta">
+                                    <div class="cookie-item-duration">
+                                        <i class="bi bi-clock-history"></i>
+                                        <span>{{ item.duration|default('Session') }}</span>
+                                    </div>
+                                    <div class="cookie-item-actions">
+                                        <label class="cookie-switch" title="{{ lang.mod_settings.cookie_status }}">
+                                            <input type="checkbox" class="cookie-toggle-input" data-id="{{ item.id }}" {{ item.is_active == 'y' ? 'checked' : '' }}>
+                                            <span class="cookie-slider"></span>
+                                        </label>
+                                        <button type="button" class="cookie-action-btn" data-action="edit-cookie" title="{{ lang.mod_settings.edit_cookie }}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button type="button" class="cookie-action-btn delete" data-action="delete-cookie" data-id="{{ item.id }}" data-confirm="{{ lang.mod_settings.cookie_delete_confirm }}" title="{{ lang.mod_settings.delete_cookie }}">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <!-- Empty State -->
+                <div class="cookie-empty-state{% if cookies is defined and cookies is not empty %} is-hidden{% endif %}" id="cookieEmptyState">
+                    <i class="bi bi-cookie cookie-empty-icon"></i>
+                    <div class="cookie-empty-text">{{ lang.mod_settings.no_records_found }}</div>
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<!-- Modal Sheet for Add / Edit Cookie Item -->
+<div class="cookie-modal-backdrop" id="cookieItemModal" role="dialog" aria-modal="true" aria-labelledby="cookieModalTitle">
+    <div class="cookie-modal-sheet">
+        <div class="cookie-modal-notch"></div>
+        <div class="cookie-modal-header">
+            <h4 class="cookie-modal-title" id="cookieModalTitle" data-add-title="{{ lang.mod_settings.add_cookie }}" data-edit-title="{{ lang.mod_settings.edit_cookie }}">
+                {{ lang.mod_settings.add_cookie }}
+            </h4>
+            <button type="button" class="cookie-modal-close" data-action="close-cookie-modal" aria-label="{{ lang.mod_settings.button.cancel }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <form id="cookieItemForm" class="d-flex flex-column flex-grow-1 overflow-hidden">
+            <input type="hidden" id="cookie_item_id" name="id" value="0">
+            <input type="hidden" id="cookie_lang" name="lang" value="{{ current_lang|default(site.lang|default('en')) }}">
+
+            <div class="cookie-modal-body">
+                <div class="cookie-field-group">
+                    <label for="cookie_name" class="cookie-field-label">{{ lang.mod_settings.cookie_name }} *</label>
+                    <input type="text" id="cookie_name" name="cookie_name" class="cookie-field-input" required placeholder="{{ lang.mod_settings.cookie_name_placeholder }}">
+                </div>
+
+                <div class="cookie-field-group">
+                    <label for="cookie_category" class="cookie-field-label">{{ lang.mod_settings.cookie_category }} *</label>
+                    <div class="cookie-select-wrap">
+                        <select id="cookie_category" name="category" class="cookie-field-select" required>
+                            <option value="necessary">{{ lang.mod_settings.category_necessary }}</option>
+                            <option value="functional">{{ lang.mod_settings.category_functional }}</option>
+                            <option value="analytics">{{ lang.mod_settings.category_analytics }}</option>
+                            <option value="marketing">{{ lang.mod_settings.category_marketing }}</option>
+                        </select>
+                        <i class="bi bi-chevron-down cookie-select-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="cookie-field-group">
+                    <label for="cookie_provider" class="cookie-field-label">{{ lang.mod_settings.cookie_provider }}</label>
+                    <input type="text" id="cookie_provider" name="provider" class="cookie-field-input" placeholder="{{ lang.mod_settings.cookie_provider_placeholder }}">
+                </div>
+
+                <div class="cookie-field-group">
+                    <label for="cookie_duration" class="cookie-field-label">{{ lang.mod_settings.cookie_duration }}</label>
+                    <input type="text" id="cookie_duration" name="duration" class="cookie-field-input" placeholder="{{ lang.mod_settings.cookie_duration_placeholder }}">
+                </div>
+
+                <div class="cookie-field-group">
+                    <label for="cookie_order" class="cookie-field-label">{{ lang.mod_settings.cookie_order }}</label>
+                    <input type="number" id="cookie_order" name="display_order" class="cookie-field-input" value="0" min="0">
+                </div>
+
+                <div class="cookie-field-group">
+                    <label for="cookie_purpose" class="cookie-field-label">{{ lang.mod_settings.cookie_purpose }}</label>
+                    <textarea id="cookie_purpose" name="purpose" class="cookie-field-textarea" rows="3" placeholder="{{ lang.mod_settings.cookie_purpose_placeholder }}"></textarea>
+                </div>
+
+                <div class="cookie-field-group d-flex justify-content-between align-items-center pt-2">
+                    <label for="cookie_is_active" class="cookie-field-label mb-0">{{ lang.mod_settings.cookie_status_active }}</label>
+                    <label class="cookie-switch">
+                        <input type="checkbox" id="cookie_is_active" name="is_active" value="y" checked>
+                        <span class="cookie-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="cookie-modal-footer">
+                <button type="button" class="cookie-btn cookie-btn-cancel" data-action="close-cookie-modal">
+                    {{ lang.mod_settings.button.cancel }}
+                </button>
+                <button type="submit" class="cookie-btn cookie-btn-primary">
+                    <i class="bi bi-check-lg"></i>
+                    <span>{{ lang.mod_settings.save }}</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/cookie_policy.js?v=2.0"></script>
+{% endblock %}
+

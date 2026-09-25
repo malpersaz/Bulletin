@@ -1,48 +1,49 @@
 <?php
-if (defined ( 'root_dir' ) === False) {
-    exit ( ':)' );
+if (defined('root_dir') === false) {
+    exit(':)');
 }
-require_once (lib_dir . 'swift/swift_required.php');
+require_once(lib_dir . 'swift/swift_required.php');
 
-class Email {
-	public $email;
+class Email
+{
+    public $email;
     public $m;
     public $swift;
-	public $mesaj;
-	public $kime;
-	public $kimden;
-	public $konu;
-	public $html = False;
-	function __construct() {
-		Load::config ( 'email' );
-		$this->email = Kayit::getir ( 'email_config' );
-		$this->kimden = [$this->email ['smtp'] ['mail']=> $this->email ['smtp'] ['ad'] ];
-		if ($this->email ['smtp'] ['host'] != '' && $this->email ['smtp'] ['user'] != '' && $this->email ['smtp'] ['pass'] != '') {
-			$transport = Swift_SmtpTransport::newInstance ( $this->email ['smtp'] ['host'], $this->email ['smtp'] ['port'] )->setUsername ( $this->email ['smtp'] ['user'] )->setPassword ( $this->email ['smtp'] ['pass'] );
-			$this->swift = Swift_Mailer::newInstance ( $transport );
-		} else {
-			$transport = Swift_MailTransport::newInstance();
-			$this->swift = Swift_Mailer::newInstance ( $transport );
-		}
-	}
+    public $message;
+    public $to;
+    public $from;
+    public $subject;
+    public $html = false;
 
-	public function gonder() {
-		$this->m = Swift_Message::newInstance ();
-		$this->m->setSubject ( $this->konu );
-		$this->m->setFrom ($this->kimden );
-		$this->m->setTo ( $this->kime );
-		$this->m->setBody ( $this->mesaj );
-		if ($this->html == True) {
-			$this->m->setContentType ( "text/html" );
-		} else {
-			$this->m->setContentType ( "text/plain" );
-		}
-		if ($this->swift->send ( $this->m)) {
-			return True;
-		}
-        return False;
+    public function __construct()
+    {
+        Load::config('email');
+        $this->email = Registry::get('email_config');
+        $this->from = [$this->email['smtp']['mail'] => $this->email['smtp']['name'] ?? ''];
+        if ($this->email['smtp']['host'] != '' && $this->email['smtp']['user'] != '' && $this->email['smtp']['pass'] != '') {
+            $transport = Swift_SmtpTransport::newInstance($this->email['smtp']['host'], $this->email['smtp']['port'])->setUsername($this->email['smtp']['user'])->setPassword($this->email['smtp']['pass']);
+            $this->swift = Swift_Mailer::newInstance($transport);
+        } else {
+            $transport = Swift_MailTransport::newInstance();
+            $this->swift = Swift_Mailer::newInstance($transport);
+        }
+    }
 
-	}
-
+    public function send()
+    {
+        $this->m = Swift_Message::newInstance();
+        $this->m->setSubject($this->subject);
+        $this->m->setFrom($this->from);
+        $this->m->setTo($this->to);
+        $this->m->setBody($this->message);
+        if ($this->html == true) {
+            $this->m->setContentType("text/html");
+        } else {
+            $this->m->setContentType("text/plain");
+        }
+        if ($this->swift->send($this->m)) {
+            return true;
+        }
+        return false;
+    }
 }
-

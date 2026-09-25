@@ -1,0 +1,52 @@
+{% set module_lang_key = 'mod_newsletter' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = true %}
+{% extends 'admin/layout.twig' %}
+
+{% block title %}{{ lang.mod_newsletter.module_title }}{% endblock %}
+{% block headline %}{{ lang.mod_newsletter.module_title }}{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/templates/admin/assets/css/mod_newsletter.css">
+{% endblock %}
+
+{% block content %}
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+</div>
+
+<div id="newsletter-list-container" class="content-list newsletter-list-shell"></div>
+
+<div id="empty-state" class="newsletter-empty-state" hidden>
+    <i class="bi bi-envelope-check"></i>
+    <strong>{{ lang.mod_newsletter.no_subscribers }}</strong>
+</div>
+
+<div id="infinite-loader" class="infinite-loader" hidden>
+    <div class="spinner-track"><div class="spinner-fill"></div></div>
+    <span>Loading...</span>
+</div>
+
+<form id="filterForm" hidden>
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="search[email]" id="filterSearch" value="">
+</form>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar newsletter-toolbar">
+    {% if session.permissions.mod_newsletter.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item disabled" type="button" aria-label="Delete">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="/templates/admin/assets/js/mod_newsletter.js"></script>
+{% endblock %}

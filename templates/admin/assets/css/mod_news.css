@@ -1,0 +1,921 @@
+/**
+ * mod_news.css
+ * Material 3 Phone-First Stylesheet for mod_news (List & Edit views)
+ * Enforces mobile-first touch contract (44px+ targets, clean vertical rhythm, zero inline styles)
+ */
+
+:root {
+    --md-sys-color-primary: #6750a4;
+    --md-sys-color-on-primary: #ffffff;
+    --md-sys-color-primary-container: #eaddff;
+    --md-sys-color-on-primary-container: #21005d;
+    --md-sys-color-surface: #ffffff;
+    --md-sys-color-surface-container: #f3edf7;
+    --md-sys-color-surface-container-low: #f8f2fa;
+    --md-sys-color-surface-container-high: #ece6f0;
+    --md-sys-color-surface-container-highest: #e6e0e9;
+    --md-sys-color-on-surface: #1d1b20;
+    --md-sys-color-on-surface-variant: #49454f;
+    --md-sys-color-outline: #79747e;
+    --md-sys-color-outline-variant: #cac4d0;
+    --md-sys-color-error: #b3261e;
+    --md-sys-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.12);
+    --md-sys-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================================
+   1. EDIT FORM CONTAINER & CARDS
+   ========================================================================== */
+
+.edit-container {
+    padding: 16px 16px 120px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-card {
+    background: var(--md-sys-color-surface, #ffffff);
+    border-radius: 18px;
+    padding: 18px 16px;
+    border: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.card-header-edit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    color: var(--md-sys-color-primary);
+}
+
+.card-header-edit i {
+    font-size: 20px;
+    line-height: 1;
+}
+
+.card-header-edit h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--md-sys-color-primary);
+}
+
+/* ==========================================================================
+   2. FORM INPUTS & FLOATING LABELS
+   ========================================================================== */
+
+.form-row {
+    margin-bottom: 16px;
+    position: relative;
+    width: 100%;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.field-section-label,
+.filter-group-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    margin-bottom: 8px;
+    letter-spacing: 0.2px;
+}
+
+.m3-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.m3-input-lg,
+.m3-fake-select {
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1.5px solid var(--md-sys-color-outline-variant, #cac4d0);
+    background: var(--md-sys-color-surface, #ffffff);
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.m3-input-lg:focus {
+    border-color: var(--md-sys-color-primary, #6750a4);
+    box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.12);
+}
+
+.m3-floating-label {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    font-size: 15px;
+    font-weight: 500;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--md-sys-color-surface, #ffffff);
+    padding: 0 5px;
+    border-radius: 4px;
+    line-height: 1;
+    z-index: 2;
+}
+
+.m3-input-lg:focus + .m3-floating-label,
+.m3-input-lg:not(:placeholder-shown) + .m3-floating-label,
+input[type="datetime-local"].m3-input-lg + .m3-floating-label,
+.m3-floating-label.always-float {
+    top: -8px;
+    left: 12px;
+    font-size: 12px;
+    color: var(--md-sys-color-primary, #6750a4);
+    font-weight: 600;
+}
+
+textarea.m3-input-lg {
+    min-height: 96px;
+    resize: vertical;
+    padding-top: 14px;
+}
+
+.char-counter {
+    text-align: right;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    margin-top: 4px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+.char-counter.is-warning {
+    color: #e65100;
+}
+
+.char-counter.is-valid {
+    color: #2e7d32;
+}
+
+.char-counter.is-error {
+    color: var(--md-sys-color-error, #b3261e);
+}
+
+/* ==========================================================================
+   3. FAKE SELECT & SHEET TRIGGERS
+   ========================================================================== */
+
+.m3-fake-select {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.m3-fake-select:active {
+    background: var(--md-sys-color-surface-container-high, #ece6f0);
+}
+
+.m3-fake-select i {
+    font-size: 16px;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    transition: transform 0.2s ease;
+}
+
+/* ==========================================================================
+   4. SELECTION CARDS & GRIDS (Deck & Status)
+   ========================================================================== */
+
+.selection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 4px;
+}
+
+.selection-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    min-height: 52px;
+    border-radius: 12px;
+    border: 1.5px solid var(--md-sys-color-outline-variant, #cac4d0);
+    background: var(--md-sys-color-surface-container-low, #f8f2fa);
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.selection-card:hover {
+    border-color: var(--md-sys-color-outline, #79747e);
+}
+
+.selection-card.active {
+    border-color: var(--md-sys-color-primary, #6750a4);
+    background: var(--md-sys-color-primary-container, #eaddff);
+    color: var(--md-sys-color-on-primary-container, #21005d);
+}
+
+.selection-card .selection-icon {
+    font-size: 20px;
+    color: var(--md-sys-color-primary, #6750a4);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.selection-card .selection-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    flex-grow: 1;
+    line-height: 1.3;
+}
+
+.selection-card.active .selection-label {
+    color: var(--md-sys-color-on-primary-container, #21005d);
+}
+
+.selection-card .check-icon {
+    font-size: 18px;
+    color: var(--md-sys-color-primary, #6750a4);
+    opacity: 0;
+    transform: scale(0.6);
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    flex-shrink: 0;
+}
+
+.selection-card.active .check-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* ==========================================================================
+   5. TOMSELECT M3 MODERNIZATION
+   ========================================================================== */
+
+.ts-wrapper.m3-input-lg-ts {
+    width: 100%;
+}
+
+.ts-wrapper.m3-input-lg-ts .ts-control {
+    min-height: 52px;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+    border: 1.5px solid var(--md-sys-color-outline-variant, #cac4d0) !important;
+    background: var(--md-sys-color-surface, #ffffff) !important;
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+    font-size: 15px !important;
+    box-shadow: none !important;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    transition: border-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ts-wrapper.m3-input-lg-ts.focus .ts-control {
+    border-color: var(--md-sys-color-primary, #6750a4) !important;
+    box-shadow: 0 0 0 3px rgba(103, 80, 164, 0.12) !important;
+}
+
+.ts-wrapper.m3-input-lg-ts .ts-control input {
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+}
+
+.ts-wrapper.m3-input-lg-ts .m3-ts-selected-value,
+.ts-wrapper.m3-input-lg-ts .ts-control .item {
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+    font-size: 15px;
+}
+
+.m3-select-dropdown {
+    background: var(--md-sys-color-surface-container, #f3edf7) !important;
+    border: 1px solid var(--md-sys-color-outline-variant, #cac4d0) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--md-sys-elevation-2) !important;
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+    z-index: 2000 !important;
+    overflow: hidden;
+    margin-top: 4px;
+}
+
+.m3-ts-option-value {
+    padding: 12px 16px !important;
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.15s ease;
+}
+
+.m3-ts-option-value:hover,
+.ts-dropdown .active {
+    background-color: var(--md-sys-color-surface-container-highest, #e6e0e9) !important;
+    color: var(--md-sys-color-primary, #6750a4) !important;
+}
+
+/* ==========================================================================
+   6. ADVANCED ACCORDION (SEO / META)
+   ========================================================================== */
+
+.advanced-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--md-sys-color-surface-container-low, #f8f2fa);
+    border: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    cursor: pointer;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 16px;
+    user-select: none;
+    transition: all 0.2s ease;
+}
+
+.advanced-toggle:hover {
+    background: var(--md-sys-color-surface-container, #f3edf7);
+}
+
+.advanced-toggle.active {
+    background: var(--md-sys-color-surface-container, #f3edf7);
+    border-color: var(--md-sys-color-primary, #6750a4);
+}
+
+.advanced-toggle .advanced-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--md-sys-color-primary, #6750a4);
+}
+
+.advanced-toggle i#advancedIcon {
+    font-size: 18px;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.advanced-toggle.active i#advancedIcon {
+    transform: rotate(180deg);
+    color: var(--md-sys-color-primary, #6750a4);
+}
+
+.advanced-content {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, padding 0.25s ease;
+}
+
+.advanced-content.active {
+    max-height: 800px;
+    opacity: 1;
+    padding-top: 16px;
+}
+
+/* ==========================================================================
+   7. RICH EDITOR CONTAINER
+   ========================================================================== */
+
+.mod-news-editor-wrap,
+.mod-content-editor-wrap {
+    margin-top: 4px;
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.tox-tinymce {
+    border-radius: 12px !important;
+    border-color: var(--md-sys-color-outline-variant, #cac4d0) !important;
+}
+
+.tox-notifications-container,
+.tox-statusbar {
+    display: none !important;
+}
+
+/* ==========================================================================
+   8. IMAGE UPLOADER SHELL
+   ========================================================================== */
+
+.image-upload-area {
+    position: relative;
+}
+
+.edit-image-shell {
+    margin-top: 4px;
+    max-width: 100%;
+    min-height: 0;
+    height: auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-image-shell .wizard-image-dropzone {
+    min-height: 180px;
+    height: auto;
+    border-radius: 16px;
+}
+
+.edit-image-shell .wizard-image-preview-card {
+    height: auto;
+    border-radius: 16px;
+}
+
+.edit-image-shell .wizard-image-preview-frame {
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 16 / 10;
+}
+
+.edit-image-shell .wizard-image-url-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.edit-image-shell .wizard-image-url-input,
+.edit-image-shell .wizard-image-url-row .m3-btn-filled {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-image-shell .wizard-image-url-row .m3-btn-filled {
+    justify-content: center;
+    white-space: normal;
+    min-height: 48px;
+    border-radius: 24px;
+}
+
+.edit-image-shell .wizard-image-empty {
+    min-height: 160px;
+    padding: 12px;
+}
+
+.edit-image-shell .wizard-image-meta {
+    display: none !important;
+}
+
+/* ==========================================================================
+   9. STATUS BANNERS
+   ========================================================================== */
+
+.banner-m3 {
+    padding: 14px 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.banner-success-soft {
+    background: #e6f4ea;
+    color: #1e4620;
+    border: 1px solid #c6ebd0;
+}
+
+.banner-error-soft {
+    background: #fce8e6;
+    color: #b3261e;
+    border: 1px solid #fad2cf;
+}
+
+/* ==========================================================================
+   10. FIXED BOTTOM BAR (Action Buttons)
+   ========================================================================== */
+
+.m3-final-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    min-height: 72px;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--md-sys-color-outline-variant, #e7e0ec);
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom)) 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1000;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    box-sizing: border-box;
+}
+
+.m3-btn-half {
+    flex: 1;
+    min-height: 48px;
+    height: 48px;
+    border-radius: 24px;
+    font-size: 15px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.m3-btn-half-neutral {
+    background: var(--md-sys-color-surface-container-high, #ece6f0);
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.m3-btn-half-neutral:hover,
+.m3-btn-half-neutral:active {
+    background: var(--md-sys-color-surface-container-highest, #e6e0e9);
+}
+
+.m3-btn-half-primary {
+    background: var(--md-sys-color-primary, #6750a4);
+    color: var(--md-sys-color-on-primary, #ffffff);
+    box-shadow: 0 2px 8px rgba(103, 80, 164, 0.35);
+}
+
+.m3-btn-half-primary:hover,
+.m3-btn-half-primary:active {
+    filter: brightness(0.95);
+    box-shadow: 0 1px 4px rgba(103, 80, 164, 0.25);
+}
+
+.m3-btn-half.is-loading {
+    opacity: 0.75;
+    pointer-events: none;
+    cursor: wait;
+}
+
+/* ==========================================================================
+   11. LIST TOOLBAR & MODAL STYLES (Consolidated from list.twig)
+   ========================================================================== */
+
+.news-toolbar .toolbar-item {
+    gap: 0;
+    min-width: 44px;
+    padding: 8px 4px;
+}
+
+.news-toolbar .toolbar-item span {
+    display: none;
+}
+
+.news-toolbar #toolbarDelete.active {
+    color: #b3261e !important;
+    background: rgba(179, 38, 30, 0.12);
+}
+
+.news-toolbar #toolbarDelete.active i {
+    filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
+}
+
+.news-toolbar #toolbarSlider.active {
+    color: #0b57d0 !important;
+    background: rgba(11, 87, 208, 0.12);
+}
+
+.news-toolbar #toolbarSlider.is-selected {
+    color: #2e7d32 !important;
+    background: rgba(46, 125, 50, 0.12);
+}
+
+.news-image-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 16px;
+    box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
+    overflow-x: hidden;
+    transition: opacity 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.news-image-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.news-image-modal__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(28, 27, 31, 0.48);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+.news-image-modal__sheet {
+    position: relative;
+    z-index: 1;
+    width: min(calc(100vw - 32px), 560px);
+    max-height: min(88vh, 760px);
+    overflow: auto;
+    overflow-x: hidden;
+    border-radius: 28px;
+    background: var(--md-sys-color-surface, #fff);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.18), 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(28px);
+    transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.news-image-modal.active .news-image-modal__sheet {
+    transform: translateY(0);
+}
+
+.news-image-modal__body {
+    padding-bottom: 20px;
+}
+
+.news-image-modal .wizard-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+}
+
+.news-image-modal .wizard-header .icon-btn {
+    min-width: 48px;
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.18s ease;
+}
+
+.news-image-modal .wizard-title {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex: 1;
+    min-width: 0;
+}
+
+.wizard-title #newsImageModalTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+}
+
+.wizard-title #newsImageModalSubtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
+}
+
+.news-image-shell {
+    background: var(--md-sys-color-surface-container-low, #f8f2fa) !important;
+    border-radius: 24px;
+    padding: 20px;
+    overflow-x: hidden;
+    transition: background-color 0.24s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.news-image-shell .wizard-image-dropzone {
+    min-height: 220px;
+    background: var(--md-sys-color-surface-container, #f3edf7) !important;
+    border: 2px dashed var(--md-sys-color-outline-variant, rgba(121, 116, 126, 0.4)) !important;
+    border-radius: 20px;
+    transition: all 0.24s cubic-bezier(0.2, 0, 0, 1);
+    cursor: pointer;
+}
+
+.news-image-shell .wizard-image-dropzone:hover,
+.news-image-shell .wizard-image-dropzone.drag-over {
+    border-style: solid !important;
+    border-color: var(--md-sys-color-primary, #6750a4) !important;
+    background: color-mix(in srgb, var(--md-sys-color-primary, #6750a4) 10%, #f3edf7) !important;
+    transform: scale(1.01);
+}
+
+.news-image-shell .wizard-image-empty-copy p,
+.news-image-shell .wizard-image-empty-copy span,
+.news-image-shell .wizard-image-empty-text {
+    color: var(--md-sys-color-on-surface-variant, #49454f) !important;
+}
+
+.news-image-shell .wizard-image-url-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+}
+
+.news-image-shell .wizard-image-url-input {
+    background: var(--md-sys-color-surface-container-high, #ece6f0) !important;
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+    border: 1px solid var(--md-sys-color-outline-variant, rgba(121, 116, 126, 0.3)) !important;
+    border-radius: 24px !important;
+    padding: 12px 18px !important;
+    min-height: 48px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.news-image-shell .wizard-image-url-input::placeholder {
+    color: var(--md-sys-color-on-surface-variant, #49454f) !important;
+    opacity: 0.7;
+}
+
+.news-image-shell .wizard-image-url-row .m3-btn-filled {
+    background: var(--md-sys-color-primary, #6750a4) !important;
+    color: #ffffff !important;
+    justify-content: center !important;
+    white-space: normal !important;
+    min-height: 48px !important;
+    border-radius: 24px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 6px rgba(103, 80, 164, 0.25) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.news-image-shell .wizard-image-meta {
+    padding-top: 12px;
+}
+
+.news-image-shell .wizard-image-meta[hidden] {
+    display: none !important;
+}
+
+.news-image-shell .wizard-image-meta strong {
+    word-break: break-word;
+    color: var(--md-sys-color-on-surface, #1d1b20) !important;
+}
+
+.news-image-save[disabled] {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+.news-image-save[hidden] {
+    display: none !important;
+}
+
+.news-image-modal__footer {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.news-image-modal__footer.is-single-action {
+    justify-content: flex-start;
+}
+
+.news-image-modal__footer.is-single-action #newsImageCancelBtn {
+    width: 100%;
+}
+
+.news-image-modal__footer:not(.is-single-action) #newsImageCancelBtn,
+.news-image-modal__footer:not(.is-single-action) #newsImageSaveBtn {
+    flex: 1;
+    width: 50%;
+    min-height: 48px;
+    border-radius: 24px;
+    font-weight: 600;
+}
+
+.news-image-modal__footer.is-single-action > * {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 24px;
+    font-weight: 600;
+}
+
+.news-image-modal__footer.wizard-footer {
+    padding-top: 16px;
+    padding-bottom: 24px;
+}
+
+body.news-image-modal-open {
+    overflow: hidden;
+    overflow-x: hidden;
+}
+
+body.news-image-modal-open .app-scroll-frame {
+    overflow-x: hidden;
+}
+
+body.news-image-modal-open .top-app-bar,
+body.news-image-modal-open .search-row,
+body.news-image-modal-open .standard-toolbar {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+@media (max-width: 640px) {
+    .edit-image-shell .wizard-image-dropzone {
+        min-height: 180px;
+    }
+    .edit-image-shell .wizard-image-preview-frame,
+    .edit-image-shell .wizard-image-empty {
+        min-height: 150px;
+    }
+    .news-image-modal {
+        align-items: flex-end;
+        padding: 0;
+    }
+    .news-image-modal__sheet {
+        width: 100%;
+        max-height: 88vh;
+        border-radius: 28px 28px 0 0;
+        transform: translateY(100%);
+    }
+}
+
+/* News List Stats & Layout Utilities */
+.content-stats-container {
+    padding: 0 16px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.content-stats-row {
+    display: flex;
+    gap: 12px;
+}
+
+.content-stat-card {
+    flex: 1;
+    background: var(--md-sys-color-surface-container, #F3EDF7);
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.content-stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--md-sys-color-primary, #6750A4);
+}
+
+.content-stat-label {
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant, #49454F);
+    font-weight: 500;
+}
+
+.toolbar-item.is-disabled {
+    opacity: 0.38;
+    pointer-events: none;
+}
+
+.toolbar-item.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.progress-full-width {
+    width: 100%;
+}
+
+.is-hidden {
+    display: none !important;
+}

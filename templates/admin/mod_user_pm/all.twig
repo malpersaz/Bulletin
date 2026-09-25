@@ -1,6 +1,5 @@
 {% set show_fab = false %}
 {% set show_navbar = false %}
-{% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -27,7 +26,7 @@
             <div><strong>{{ lang.mod_user_pm.all_warning_title }}</strong> {{ lang.mod_user_pm.all_warning_text }}</div>
         </div>
 
-        {% if oke is defined %}
+        {% if success is defined %}
             <div class="pm-compose-alert pm-compose-alert-success">
                 <i class="bi bi-check-circle-fill"></i>
                 <div><strong>{{ lang.mod_user_pm.success_prefix }}</strong> {{ message }}</div>

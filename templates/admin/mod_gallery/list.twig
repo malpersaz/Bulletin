@@ -8,275 +8,153 @@
 {% block headline %}{{ lang.mod_gallery.admin.list_title }}{% endblock %}
 
 {% block styles %}
-<style>
-    :root {
-        --md-sys-color-surface-container-low: #F7F2FA;
-        --md-sys-color-surface-container-high: #ECE6F0;
-    }
-    .gallery-cards {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 12px;
-    }
-    .gallery-card {
-        background: var(--md-sys-color-surface-container-low) !important;
-        border: 1px solid var(--md-sys-color-outline-variant) !important;
-        border-radius: 16px;
-        padding: 12px;
-        display: flex;
-        gap: 12px;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
-        position: relative;
-        box-shadow: none !important;
-    }
-    .gallery-card:hover {
-        background: var(--md-sys-color-surface-container-high) !important;
-        transform: translateY(-2px);
-        box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.3) !important;
-        border-color: var(--md-sys-color-outline-variant) !important;
-    }
-
-    /* Stacked Image Preview Effect */
-    .image-stack-container {
-        width: 80px;
-        height: 80px;
-        position: relative;
-        flex-shrink: 0;
-    }
-    .image-stack-layer {
-        position: absolute;
-        width: 72px;
-        height: 72px;
-        border-radius: 8px;
-        border: 1px solid var(--md-sys-color-outline-variant);
-        background: var(--md-sys-color-surface-container-high);
-        background-size: cover;
-        background-position: center;
-    }
-    .image-stack-layer:nth-child(1) {
-        top: 6px;
-        left: 6px;
-        z-index: 1;
-        opacity: 0.4;
-        transform: scale(0.9);
-    }
-    .image-stack-layer:nth-child(2) {
-        top: 3px;
-        left: 3px;
-        z-index: 2;
-        opacity: 0.7;
-        transform: scale(0.95);
-    }
-    .image-stack-layer:nth-child(3) {
-        top: 0;
-        left: 0;
-        z-index: 3;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    /* Card Details Layout */
-    .card-details {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-width: 0;
-    }
-    .card-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-    }
-    .card-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--md-sys-color-on-surface);
-        margin: 0;
-        line-height: 1.3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .card-meta {
-        font-size: 11px;
-        color: var(--md-sys-color-outline);
-        margin-top: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    /* Badges */
-    .badge-row {
-        display: flex;
-        gap: 6px;
-        margin-top: 8px;
-        flex-wrap: wrap;
-    }
-    .status-badge {
-        font-size: 10px;
-        font-weight: 700;
-        padding: 2px 8px;
-        border-radius: 4px;
-        text-transform: uppercase;
-        height: 18px;
-        box-sizing: border-box;
-        display: inline-flex;
-        align-items: center;
-    }
-    .status-badge.active {
-        background: rgba(46, 125, 50, 0.12);
-        color: #2E7D32;
-        border: 1px solid #2E7D32;
-    }
-    .status-badge.draft {
-        background: rgba(11, 87, 208, 0.12);
-        color: #0B57D0;
-        border: 1px solid #0B57D0;
-    }
-    .count-badge {
-        background: var(--md-sys-color-secondary-container);
-        color: var(--md-sys-color-on-secondary-container);
-        font-size: 10px;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 4px;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        border: 1px solid var(--md-sys-color-outline-variant);
-        height: 18px;
-        box-sizing: border-box;
-    }
-
-    /* Search Bar */
-    .search-container {
-        display: flex;
-        align-items: center;
-        background: var(--md-sys-color-surface-container-high);
-        border-radius: 28px;
-        padding: 0 16px;
-        height: 48px;
-        margin: 12px 12px 0 12px;
-    }
-    .search-container i {
-        color: var(--md-sys-color-outline);
-        margin-right: 12px;
-    }
-    .search-container input {
-        border: none;
-        background: transparent;
-        outline: none;
-        width: 100%;
-        font-size: 14px;
-        color: var(--md-sys-color-on-surface);
-    }
-
-
-
-    /* Floating bottom toolbar matching mockup plan 100% */
-    .gallery-bottom-bar {
-        position: fixed !important;
-        bottom: 12px !important;
-        left: 12px !important;
-        right: 12px !important;
-        height: 64px !important;
-        border-radius: 24px !important;
-        background: rgba(255, 255, 255, 0.78) !important;
-        backdrop-filter: blur(28px) saturate(1.6) !important;
-        -webkit-backdrop-filter: blur(28px) saturate(1.6) !important;
-        z-index: 1000 !important;
-        box-shadow: 0 4px 24px rgba(103, 80, 164, 0.08), 0 1px 4px rgba(0, 0, 0, 0.06) !important;
-        border: 1px solid rgba(103, 80, 164, 0.1) !important;
-        box-sizing: border-box !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-around !important;
-        padding: 0 6px !important;
-    }
-
-    /* Selected card outline to match mockup selection */
-    .gallery-card.selected {
-        outline: 2px solid var(--md-sys-color-primary) !important;
-        outline-offset: 2px !important;
-        background: var(--md-sys-color-surface-container-high) !important;
-        box-shadow: 0px 4px 16px rgba(103, 80, 164, 0.12) !important;
-        border-color: var(--md-sys-color-outline-variant) !important;
-    }
-</style>
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_gallery.css?v=2.0">
 {% endblock %}
 
 {% block content %}
-<!-- Search Bar -->
-<div class="search-container">
-    <i class="bi bi-search"></i>
-    <input type="text" id="gallerySearch" placeholder="{{ lang.mod_gallery.admin.search_placeholder }}" onkeyup="GalleryManager.search(this.value)">
-</div>
+<div class="gallery-list-container">
+    <!-- Interactive Top Stats Row -->
+    <div class="gallery-stats-row" role="tablist" aria-label="Filter Galleries">
+        <button type="button" class="gallery-stat-card active" data-module="all" role="tab" aria-selected="true">
+            <span class="gallery-stat-value">{{ total_galleries }}</span>
+            <span class="gallery-stat-label">{{ lang.mod_gallery.admin.list_title }}</span>
+        </button>
+        {% for m in gallery_modules %}
+            <button type="button" class="gallery-stat-card" data-module="{{ m.mod_name }}" role="tab" aria-selected="false">
+                <span class="gallery-stat-value">{{ m.count }}</span>
+                <span class="gallery-stat-label">{{ m.label }}</span>
+            </button>
+        {% endfor %}
+        <div class="gallery-stat-card" data-module="images_count_stat">
+            <span class="gallery-stat-value">{{ total_images }}</span>
+            <span class="gallery-stat-label">{{ lang.mod_gallery.grid.image_count }}</span>
+        </div>
+    </div>
 
-<!-- Gallery Grid -->
-<div id="galleryGrid" class="gallery-cards">
-    <!-- Loaded via AJAX -->
-    <div class="loading-state" style="grid-column: 1/-1; padding: 100px; text-align: center;">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p style="margin-top: 16px; color: var(--md-sys-color-on-surface-variant);">{{ lang.mod_gallery.admin.loading_galleries }}</p>
+    <!-- Search Bar Component -->
+    <div class="gallery-search-wrap">
+        <i class="bi bi-search gallery-search-icon" aria-hidden="true"></i>
+        <input type="text" id="gallerySearchInput" class="gallery-search-input" placeholder="{{ lang.mod_gallery.admin.search_placeholder }}" autocomplete="off" spellcheck="false" aria-label="{{ lang.mod_gallery.admin.search_placeholder }}">
+        <button type="button" id="gallerySearchClear" class="gallery-search-clear" aria-label="{{ lang.mod_gallery.admin.clear_search }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+    </div>
+
+    <!-- Results Count Bar -->
+    <div class="gallery-results-meta">
+        <span>
+            <strong id="galleryResultsCount">{{ total_galleries }}</strong> {{ lang.mod_gallery.admin.list_title }}
+        </span>
+        <span>{{ total_images }} {{ lang.mod_gallery.grid.image_count }}</span>
+    </div>
+
+    <!-- Gallery Cards List (SSR) -->
+    <div id="galleryCardsList" class="gallery-cards-list">
+        {% for item in galleries %}
+            <a href="{{ item.url }}" class="gallery-album-card" data-title="{{ item.name }}" data-module="{{ item.mod_name }}" data-key="{{ item.id }}" title="{{ item.name }}">
+                <div class="gallery-stack-wrap">
+                    {% if item.preview_urls|length >= 3 %}
+                        <div class="gallery-stack-layer">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[2] }}" alt="" loading="lazy">
+                        </div>
+                        <div class="gallery-stack-layer">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[1] }}" alt="" loading="lazy">
+                        </div>
+                        <div class="gallery-stack-layer is-front">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[0] }}" alt="{{ item.name }}" loading="lazy">
+                        </div>
+                    {% elseif item.preview_urls|length == 2 %}
+                        <div class="gallery-stack-layer">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[1] }}" alt="" loading="lazy">
+                        </div>
+                        <div class="gallery-stack-layer is-front">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[0] }}" alt="{{ item.name }}" loading="lazy">
+                        </div>
+                    {% elseif item.preview_urls|length == 1 %}
+                        <div class="gallery-stack-layer is-front">
+                            <img class="gallery-stack-img" src="{{ item.preview_urls[0] }}" alt="{{ item.name }}" loading="lazy">
+                        </div>
+                    {% else %}
+                        <div class="gallery-stack-layer is-front">
+                            <div class="gallery-stack-empty">
+                                <i class="bi bi-images"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="gallery-card-body">
+                    <h3 class="gallery-card-title">{{ item.name }}</h3>
+                    <div class="gallery-card-badges">
+                        <span class="gallery-badge-count">
+                            <i class="bi bi-images"></i>
+                            <span>{{ item.image_count }}</span>
+                        </span>
+                        <span class="gallery-badge-module">{{ item.mod_label }}</span>
+                    </div>
+                </div>
+                <div class="gallery-card-chevron" aria-hidden="true">
+                    <i class="bi bi-chevron-right"></i>
+                </div>
+            </a>
+        {% else %}
+            <div class="gallery-empty-state">
+                <div class="gallery-empty-icon">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+                <h3 class="gallery-empty-title">{{ lang.mod_gallery.admin.no_galleries }}</h3>
+                <p class="gallery-empty-desc">{{ lang.mod_gallery.admin.no_results }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Empty Search State Component -->
+    <div id="galleryEmptyState" class="gallery-empty-state is-hidden">
+        <div class="gallery-empty-icon">
+            <i class="bi bi-folder2-open"></i>
+        </div>
+        <h3 class="gallery-empty-title">{{ lang.mod_gallery.admin.no_results }}</h3>
+        <p class="gallery-empty-desc">{{ lang.mod_gallery.admin.no_filtered_images }}</p>
+        <button type="button" id="galleryEmptyReset" class="gallery-empty-reset">
+            {{ lang.mod_gallery.admin.clear_search }}
+        </button>
     </div>
 </div>
-
-
 {% endblock %}
+
 {% block fixed_bottom %}
-<div class="standard-toolbar gallery-bottom-bar">
-    <!-- Toolbar Item: Back -->
-    <button type="button" class="toolbar-item" onclick="history.back()" title="{{ lang.mod_gallery.admin.back }}" aria-label="{{ lang.mod_gallery.admin.back }}">
+<nav class="gallery-bottom-bar" aria-label="Gallery Toolbar">
+    <!-- Slot 1: Back -->
+    <button type="button" class="gallery-toolbar-btn" data-gallery-action="back" title="{{ lang.mod_gallery.admin.back }}" aria-label="{{ lang.mod_gallery.admin.back }}">
         <i class="bi bi-chevron-left"></i>
     </button>
 
-    <!-- Toolbar Item: Toggle Status (Publish/Draft) -->
-    <button type="button" id="toolbarStatus" class="toolbar-item" onclick="GalleryManager.toolbarStatus()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_status }}">
-        <i class="bi bi-eye"></i>
+    <!-- Slot 2: Search Focus -->
+    <button type="button" class="gallery-toolbar-btn" data-gallery-action="focus-search" title="{{ lang.mod_gallery.admin.search_placeholder }}" aria-label="{{ lang.mod_gallery.admin.search_placeholder }}">
+        <i class="bi bi-search"></i>
     </button>
 
-    <!-- Symmetrical Center Start Button -->
-    <button type="button" class="toolbar-start-btn" onclick="if(typeof toggleDrawer==='function')toggleDrawer();" title="{{ lang.mod_gallery.admin.toolbar_start }}">
-        <i class="bi bi-list"></i>
+    <!-- Slot 3: Refresh -->
+    <button type="button" class="gallery-toolbar-btn" data-gallery-action="refresh" title="{{ lang.mod_gallery.admin.browse_description }}" aria-label="{{ lang.mod_gallery.admin.browse_description }}">
+        <i class="bi bi-arrow-clockwise"></i>
     </button>
 
-    <!-- Toolbar Item: Manage Images -->
-    <button type="button" id="toolbarManage" class="toolbar-item" onclick="GalleryManager.toolbarManage()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_manage }}">
-        <i class="bi bi-images"></i>
+    <!-- Slot 5: Categories / Modules -->
+    <a href="{{ site.saddress }}mod_imagecategories/list" class="gallery-toolbar-btn" title="{{ lang.management.image_gallery }}" aria-label="{{ lang.management.image_gallery }}">
+        <i class="bi bi-folder2-open"></i>
+    </a>
+
+    <!-- Slot 6: Scroll to top -->
+    <button type="button" class="gallery-toolbar-btn" data-gallery-action="scroll-top" title="{{ lang.mod_gallery.admin.toolbar_start }}" aria-label="{{ lang.mod_gallery.admin.toolbar_start }}">
+        <i class="bi bi-arrow-up"></i>
     </button>
 
-    <!-- Toolbar Item: Delete -->
-    <button type="button" id="toolbarDelete" class="toolbar-item" onclick="GalleryManager.toolbarDelete()" style="opacity: 0.3; pointer-events: none;" title="{{ lang.mod_gallery.admin.toolbar_delete }}">
-        <i class="bi bi-trash-fill"></i>
-    </button>
-</div>
+    <!-- Slot 7: Dashboard / Home -->
+    <a href="{{ site.saddress }}management/dashboard" class="gallery-toolbar-btn" title="{{ lang.management.dashboard }}" aria-label="{{ lang.management.dashboard }}">
+        <i class="bi bi-house-door"></i>
+    </a>
+</nav>
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/mod_gallery.js"></script>
-<script>
-    GalleryManager.init({
-        baseUrl: '{{ site.saddress }}mod_gallery/',
-        listUrl: '{{ site.saddress }}mod_gallery/ajax_list',
-        siteAdres: '{{ site.address }}',
-        lang: {
-            images: '{{ lang.mod_gallery.grid.image_count }}',
-            no_galleries: '{{ lang.mod_gallery.admin.no_galleries }}',
-            no_results: '{{ lang.mod_gallery.admin.no_results }}',
-            load_failed: '{{ lang.mod_gallery.errors.load_failed }}',
-            view_images: '{{ lang.mod_gallery.admin.add_images }}',
-            delete: '{{ lang.mod_gallery.admin.remove_image }}',
-            status_active: '{{ lang.mod_gallery.admin.status_active }}',
-            status_draft: '{{ lang.mod_gallery.admin.status_draft }}',
-            meta_mod: '{{ lang.mod_gallery.admin.meta_mod }}',
-            meta_id: '{{ lang.mod_gallery.admin.meta_id }}'
-        }
-    });
-
-    // Initial load
-    GalleryManager.loadGalleries();
-</script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_gallery_list.js?v=2.0"></script>
 {% endblock %}

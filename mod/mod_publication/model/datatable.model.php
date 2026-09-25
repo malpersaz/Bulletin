@@ -37,9 +37,9 @@ class datatable_model
         $unique = 'id';
         $page = Req::is_Post('page') ? Req::Post_Safe('page') : 1;
         if (
-            (Roll::hasPermission('mod_publication', 'moderate_edit') === TRUE)
+            (Role::hasPermission('mod_publication', 'moderate_edit') === TRUE)
             ||
-            (Roll::hasPermission('mod_publication', 'moderate_delete') === TRUE)
+            (Role::hasPermission('mod_publication', 'moderate_delete') === TRUE)
         ) {
             $moderate = TRUE;
         } else {
@@ -63,11 +63,12 @@ class datatable_model
         }
 
         $this->mod_publication_model->select("id,name,image,lang,status,created_at")->gR();
-        $toplam = $this->mod_publication_model->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->mod_publication_model->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
-        if ($toplam < 1) {
+        // If no results found
+        if ($total < 1) {
             echo json_encode($this->json);
             exit();
         }

@@ -2,42 +2,45 @@
 
 /**
  * Amed Framework
- * Kullanıcı: a.k.mutlu
- * Tarih: 4/26/11 - 1:58 PM
- * Telif Hakkı:AKM Software
+ * User: a.k.mutlu
+ * Date: 4/26/11 - 1:58 PM
+ * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * Dosya:autoload.config.php
- * Açıklama:Otomatik Yüklenecek Kütüphane ve Dosyalar
+ * File: autoload.config.php
+ * Description: Automatically loaded libraries and files
  */
 if (defined('root_dir') === False) exit(':)');
 
-// Static Sınıfları Yükleyebiliriz
+// We can load Static Classes
 $autoload['libfile'] = array(
     // 'Error',
     'Req',
     'Helper',
     'Text',
     'Run',
-    'Roll',
+    'Role',
+    'RedisCache',
     'Cache',
     'Database',
     'Orm',
     'BaseModuleController',
     'BaseModuleValidator',
     'DataTableService',
-    'ImageService'
+    'ImageService',
+    'GoogleIndexingService'
 );
-// Otomatik Çalıştırılacak Kütüphaneler
+// Libraries to run automatically
 $autoload['lib'] = array();
 
-// Otomatik Yüklenecek Config Dosyaları
+// Config files to be loaded automatically
 $autoload['config'] = array(
     'db',
     'site',
     'i18n',
     'url',
-    'session'
+    'session',
+    'google'
 );
-Kayit::ekle('autoload_config', $autoload);
+Registry::add('autoload_config', $autoload);
 unset($autoload);

@@ -10,8 +10,7 @@ class mod_news_mod extends BaseModuleController
 
     protected $has_gallery = true;
     protected $has_files = true;
-
-    protected $menu_url_pattern = '{lang}/news/{seo}';
+    protected $has_faq = true;
 
     protected $need_simple_data = [
         'lang' => 'lang_lang',
@@ -23,17 +22,22 @@ class mod_news_mod extends BaseModuleController
         'mod_menu' => 'select_nested_menu_result'
     ];
 
+    protected $need_content_refs = [
+        'mod_gallery_mod' => ['mod_news_gallery_id'],
+        'mod_attachment' => ['mod_news_file_id']
+    ];
+
     protected $image_fields = [
         [
             'name' => 'image',
             'sizes' => [
                 '/' => [
-                    'width' => 1200,
+                    'width' => 1600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
                 '/thumb' => [
-                    'width' => 250,
+                    'width' => 600,
                     'height' => NULL,
                     'option' => 'width',
                 ],
@@ -50,6 +54,44 @@ class mod_news_mod extends BaseModuleController
     {
         parent::__construct('mod_news');
         $this->ensure_gallery_module_mapping();
+
+        $table = 'mod_news';
+        $column = 'slider';
+        $safeTable = addslashes($table);
+        $safeColumn = addslashes($column);
+        $adapter = (string) $this->db->getAdapterType();
+        $exists = false;
+
+        if (strpos($adapter, 'PDO_SQLITE') !== false) {
+            $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+            $rows = $this->db->toArray();
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    if (isset($row['name']) && $row['name'] === $column) {
+                        $exists = true;
+                        break;
+                    }
+                }
+            }
+        } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+            $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+            $this->db->fetch_array($sql);
+            $exists = ($this->db->getSize() !== 0);
+        } else {
+            $this->db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+            $exists = ($this->db->getSize() !== 0);
+        }
+
+        if (!$exists) {
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider TEXT CHECK(slider IN ('y', 'n')) NOT NULL DEFAULT 'n'";
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN slider VARCHAR(1) NOT NULL DEFAULT 'n'";
+            } else {
+                $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `slider` ENUM('y', 'n') NOT NULL DEFAULT 'n'";
+            }
+            $this->db->query($sql);
+        }
     }
 
     private function ensure_gallery_module_mapping()
@@ -74,7 +116,7 @@ class mod_news_mod extends BaseModuleController
         // Get All Categories for Wizard (Flat List with Lang)
         $mod_news_category = Load::model('mod_news_category');
         $mod_news_category->select('id, name, lang');
-        $mod_news_category->addWhere("parent_id != '0'");
+        $mod_news_category->addWhere("root != 'y'");
         $mod_news_category->order('order', 'ASC')->all();
         $data['categories'] = $mod_news_category->toArray();
 
@@ -83,23 +125,11 @@ class mod_news_mod extends BaseModuleController
 
     protected function beforeSave($model)
     {
-        $model->created_at = Req::Post_Safe('created_at') ? Req::Post_Safe('created_at') : date('Y-m-d H:i:s');
+        $model->created_at = $this->normalizeDateTime(Req::Post_Safe('created_at'));
         $model->updated_at = date('Y-m-d H:i:s');
 
         // Handle serialization of video references
-        $videos = explode(',', Req::Post_Safe('video'));
-        $data = [];
-        foreach ($videos as $video_key) {
-            if ($video_key !== '') {
-                $data[] = $video_key;
-            }
-        }
-        if (!empty($data)) {
-            $data = array_unique($data);
-            $model->video = serialize($data);
-        } else {
-            $model->video = '';
-        }
+        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
         $model->user_id = $this->session->get('id');
 
@@ -109,21 +139,12 @@ class mod_news_mod extends BaseModuleController
     protected function beforeUpdate($model, $id)
     {
         $model->updated_at = date('Y-m-d H:i:s');
+        if (isset($model->created_at)) {
+            $model->created_at = $this->normalizeDateTime($model->created_at);
+        }
 
         // Handle serialization of video references
-        $videos = explode(',', Req::Post_Safe('video'));
-        $data = [];
-        foreach ($videos as $video_key) {
-            if ($video_key !== '') {
-                $data[] = $video_key;
-            }
-        }
-        if (!empty($data)) {
-            $data = array_unique($data);
-            $model->video = serialize($data);
-        } else {
-            $model->video = '';
-        }
+        $model->video = $this->serializeVideos(Req::Post_Safe('video'));
 
         return $model;
     }
@@ -201,7 +222,7 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        if (Roll::hasPermission('mod_news', 'moderate_edit') !== TRUE && Roll::hasPermission('mod_news', 'moderate_delete') !== TRUE) {
+        if (Role::hasPermission('mod_news', 'moderate_edit') !== TRUE && Role::hasPermission('mod_news', 'moderate_delete') !== TRUE) {
             $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
@@ -231,12 +252,8 @@ class mod_news_mod extends BaseModuleController
 
         // Fetch user mapping
         $user_ids = [];
-        $record_ids = [];
         if (is_array($records)) {
             foreach ($records as $item) {
-                if (isset($item['id']) && $item['id'] > 0) {
-                    $record_ids[] = $item['id'];
-                }
                 if (isset($item['user_id']) && $item['user_id'] > 0) {
                     $user_ids[] = $item['user_id'];
                 }
@@ -244,7 +261,7 @@ class mod_news_mod extends BaseModuleController
         }
 
         $user_map = [];
-        if (!empty($user_ids)) {
+        if ($user_ids !== []) {
             $user_ids = array_unique($user_ids);
             $user_model = Load::model('mod_user.user');
             $user_model->select('id, name, last_name');
@@ -257,37 +274,22 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        $has_slider_column = $this->_hasSliderColumn('mod_news');
-        $hero_slider_map = [];
-        if ($has_slider_column && !empty($record_ids)) {
-            $slider_lookup = Load::model('mod_news');
-            $slider_lookup->select('id, slider');
-            $slider_lookup->addWhere("id IN (" . implode(',', array_map('intval', array_unique($record_ids))) . ")");
-            $slider_lookup->gR();
-            $slider_rows = $slider_lookup->toArray();
-            if (is_array($slider_rows)) {
-                foreach ($slider_rows as $slider_row) {
-                    $hero_slider_map[(int) $slider_row['id']] = isset($slider_row['slider']) && $slider_row['slider'] === 'y';
-                }
-            }
-        }
-
         if ($getCount > 0 && is_array($records)) {
             foreach ($records as $content) {
                 $last = "";
-                if (Roll::hasPermission('mod_news', 'edit')) {
+                if (Role::hasPermission('mod_news', 'edit')) {
                     $last .= '<button onclick="mod_news_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple hidden-xs">
     <i class="fa fa-edit"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['edit'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_news', 'delete')) {
+                if (Role::hasPermission('mod_news', 'delete')) {
                     $last .= '<button onclick="mod_news_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red hidden-xs">
     <i class="fa fa-trash-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['delete'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_news', 'gallery')) {
+                if (Role::hasPermission('mod_news', 'gallery')) {
                     $last .= '<button onclick="mod_news_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue hidden-xs">
     <i class="fa fa-file-image-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['gallery'] . '</span> </button>';
                 }
-                if (Roll::hasPermission('mod_news', 'file')) {
+                if (Role::hasPermission('mod_news', 'file')) {
                     $last .= '<button onclick="mod_news_table_ajax.akm.processFile(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green hidden-xs">
     <i class="fa fa-file-zip-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['file'] . '</span> </button>';
                 }
@@ -312,95 +314,49 @@ class mod_news_mod extends BaseModuleController
                     $content['category_id'],
                     $content['status'],
                     $author_name,
-                    isset($hero_slider_map[(int) $content['id']]) && $hero_slider_map[(int) $content['id']] === true ? 1 : 0
+                    isset($content['slider']) && $content['slider'] === 'y' ? 1 : 0
                 ];
             }
         }
 
-        if (ob_get_level() > 0) ob_clean();
-        $totalModel = Load::model('mod_news');
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        $modelClass = Load::modelfile('mod_news');
+        $totalModel = new $modelClass();
+        if (
+            (Role::hasPermission('mod_news', 'moderate_edit') !== TRUE)
+            and
+            (Role::hasPermission('mod_news', 'moderate_delete') !== TRUE)
+        ) {
+            $totalModel->where(['user_id' => $this->session->get('id')]);
+        }
+        $totalCount = $totalModel->getCount();
+
+        $draftModel = new $modelClass();
+        $draftWheres = ['status' => 'n'];
+        if (
+            (Role::hasPermission('mod_news', 'moderate_edit') !== TRUE)
+            and
+            (Role::hasPermission('mod_news', 'moderate_delete') !== TRUE)
+        ) {
+            $draftWheres['user_id'] = $this->session->get('id');
+        }
+        $draftModel->where($draftWheres);
+        $draftCount = $draftModel->getCount();
+
         echo json_encode([
             'data' => $data,
             'recordsFiltered' => $getCount,
-            'recordsTotal' => $totalModel->getCount(),
+            'recordsTotal' => $totalCount,
+            'totalNews' => $totalCount,
+            'draftNews' => $draftCount,
         ]);
-    }
-
-    public function _valid_date($data = '')
-    {
-        return true;
-    }
-
-    private function _hasSliderColumn($table)
-    {
-        if ($this->db->getAdapterType() && strpos($this->db->getAdapterType(), 'PDO_SQLITE') !== false) {
-            $this->db->fetch_array("PRAGMA table_info('" . addslashes($table) . "')");
-            $result = $this->db->toArray();
-            if (is_array($result)) {
-                foreach ($result as $row) {
-                    if (isset($row['name']) && $row['name'] === 'slider') {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        $this->db->fetch_array("SHOW COLUMNS FROM `" . $table . "` LIKE 'slider'");
-        $result = $this->db->getResult()->toArray();
-        return is_array($result) && !empty($result);
-    }
-
-    public function image_remove_image()
-    {
-        if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
-            return FALSE;
-        }
-
-        $id = intval(Req::Post_Safe('id'));
-
-        $this->mod_news_model = Load::model('mod_news');
-        $this->mod_news_model->where_id($id)->gRo();
-        if ($this->mod_news_model->getSize() === 0) {
-            echo $this->lang['mod_news']['errors']['record'];
-            return FALSE;
-        }
-
-        $this->mod_news_model->sync();
-        if ($this->user->checkPermission('mod_news', 'moderate_edit', $this->mod_news_model->user_id, $this->lang['mod_news']['role_errors']['moderate_edit']) === False) {
-            echo $this->lang['mod_news']['role_errors']['moderate_edit'];
-            return False;
-        }
-
-        if ($this->mod_news_model->image != '') {
-            $image = Load::mod('image');
-            $image->mod = 'mod_news';
-            $image->url = $this->mod_news_model->image;
-            $option = [
-                '/' => ['width' => 1200, 'height' => NULL, 'option' => 'width'],
-                '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width'],
-            ];
-            try {
-                if ($image->_delete_files($option)) {
-                    $this->mod_news_model->image = '';
-                    $this->mod_news_model->update('id');
-                    echo 'Success';
-                } else {
-                    echo $image->error;
-                    return FALSE;
-                }
-            } catch (Throwable $e) {
-                echo $e->getMessage();
-                return FALSE;
-            }
-        } else {
-            echo 'Success';
-        }
     }
 
     public function all_video()
     {
-        if (Roll::hasPermission('mod_news', 'add') === FALSE && Roll::hasPermission('mod_news', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_news', 'add') === FALSE && Role::hasPermission('mod_news', 'edit') === FALSE) {
             exit();
         }
 
@@ -439,14 +395,16 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
 
     public function all_video_get($str = NULL)
     {
-        if (Roll::hasPermission('mod_news', 'add') === FALSE && Roll::hasPermission('mod_news', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_news', 'add') === FALSE && Role::hasPermission('mod_news', 'edit') === FALSE) {
             exit();
         }
         if ($str === NULL) {
@@ -465,7 +423,7 @@ class mod_news_mod extends BaseModuleController
 
         foreach($data as $prefixed_id) {
             $parts = explode(':', $prefixed_id, 2);
-            if (count($parts) == 2) {
+            if (count($parts) === 2) {
                 if ($parts[0] == 'video') {
                     $video_ids[] = $parts[1];
                 } elseif ($parts[0] == 'vid') {
@@ -476,7 +434,7 @@ class mod_news_mod extends BaseModuleController
 
         $results = [];
 
-        if (!empty($video_ids)) {
+        if ($video_ids !== []) {
             $video_model = Load::model('mod_video');
             $video_model->select('id, name')->where_id($video_ids)->gR();
             if ($video_model->getSize() > 0) {
@@ -489,7 +447,7 @@ class mod_news_mod extends BaseModuleController
             }
         }
 
-        if (!empty($vid_ids)) {
+        if ($vid_ids !== []) {
             $vid_model = Load::model('mod_video_embed');
             $vid_model->select('id, name')->where_id($vid_ids)->gR();
             if ($vid_model->getSize() > 0) {
@@ -508,7 +466,7 @@ class mod_news_mod extends BaseModuleController
 
     public function ajax_get_galleries()
     {
-        if (Roll::hasPermission('mod_news', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_news', 'edit') === FALSE) {
             exit();
         }
 
@@ -532,14 +490,16 @@ class mod_news_mod extends BaseModuleController
                 ];
             }
         }
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
 
     public function ajax_get_files()
     {
-        if (Roll::hasPermission('mod_news', 'edit') === FALSE) {
+        if (Role::hasPermission('mod_news', 'edit') === FALSE) {
             exit();
         }
         $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : null;
@@ -559,7 +519,9 @@ class mod_news_mod extends BaseModuleController
                 ];
             }
         }
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($results);
     }
@@ -567,8 +529,10 @@ class mod_news_mod extends BaseModuleController
     public function ajax_get_current_media()
     {
         $id = intval(Req::Post_Safe('id'));
-        if (!$id) {
-            if (ob_get_level() > 0) ob_clean();
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
@@ -577,7 +541,9 @@ class mod_news_mod extends BaseModuleController
         $news_model = Load::model('mod_news');
         $news_model->select('id, file_id, gallery_id, video')->where_id($id)->gRo();
         if ($news_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
@@ -590,7 +556,9 @@ class mod_news_mod extends BaseModuleController
             $video = is_array($unserialized) ? $unserialized : [];
         }
 
-        if (ob_get_level() > 0) ob_clean();
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'file_id'    => intval($news_model->file_id ?? 0),
@@ -602,7 +570,9 @@ class mod_news_mod extends BaseModuleController
     public function ajax_update_relation()
     {
         if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit']]);
             return;
@@ -612,8 +582,10 @@ class mod_news_mod extends BaseModuleController
         $type = Req::Post_Safe('type');
         $value = Req::Post('value');
 
-        if (!$id) {
-            if (ob_get_level() > 0) ob_clean();
+        if ($id === 0) {
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
@@ -622,7 +594,9 @@ class mod_news_mod extends BaseModuleController
         $news_model = Load::model('mod_news');
         $news_model->where_id($id)->gRo();
         if ($news_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['record_not_found']]);
             return;
@@ -646,7 +620,7 @@ class mod_news_mod extends BaseModuleController
                     $existed[] = $value;
                 }
             }
-            $news_model->video = !empty($existed) ? serialize(array_values(array_unique($existed))) : '';
+            $news_model->video = $existed !== [] ? serialize(array_values(array_unique($existed))) : '';
         } elseif ($type === 'gallery' || $type === 'files') {
             $val_int = intval($value);
             if ($type === 'gallery') {
@@ -655,7 +629,9 @@ class mod_news_mod extends BaseModuleController
                 $news_model->file_id = $val_int;
             }
         } else {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['unknown_type']]);
             return;
@@ -663,11 +639,15 @@ class mod_news_mod extends BaseModuleController
 
         $news_model->id = $id;
         if ($news_model->update('id')) {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'success', 'message' => $this->lang['mod_news']['ajax']['relation_updated']]);
         } else {
-            if (ob_get_level() > 0) ob_clean();
+            if (ob_get_level() > 0) {
+                ob_clean();
+            }
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['ajax']['database_error']]);
         }
@@ -675,13 +655,13 @@ class mod_news_mod extends BaseModuleController
 
     public function ajax_check_title()
     {
-        if (Roll::hasPermission('mod_news', 'add') === False) {
+        if (Role::hasPermission('mod_news', 'add') === False) {
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['add']]);
             return;
         }
 
         $title = trim(Req::Post('title'));
-        if (!$title) {
+        if ($title === '' || $title === '0') {
             echo json_encode(['status' => 'error', 'message' => sprintf($this->lang['mod_news']['validator']['required'], $this->lang['mod_news']['admin']['columns']['name'])]);
             return;
         }
@@ -696,130 +676,46 @@ class mod_news_mod extends BaseModuleController
         }
     }
 
-    public function ajax_image_upload()
+    public function toggle_hero_slider()
     {
-        if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
-            if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit']]);
+        if (Role::hasPermission('mod_news', 'edit') === FALSE) {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit'] ?? 'Access denied']);
             return;
         }
 
         $id = intval(Req::Post_Safe('id'));
-        if (!$id) {
-            if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
+        if ($id === 0) {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record'] ?? 'Record not found']);
             return;
         }
 
         $this->mod_news_model = Load::model('mod_news');
         $this->mod_news_model->where_id($id)->gRo();
         if ($this->mod_news_model->getSize() === 0) {
-            if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record'] ?? 'Record not found']);
             return;
         }
         $this->mod_news_model->sync();
 
-        if ($this->user->checkPermission('mod_news', 'moderate_edit', $this->mod_news_model->user_id, $this->lang['mod_news']['role_errors']['moderate_edit']) === False) {
-            if (ob_get_level() > 0) ob_clean();
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['moderate_edit']]);
-            return;
-        }
+        $new_slider = (($this->mod_news_model->slider ?? 'n') === 'y') ? 'n' : 'y';
+        
+        $update_model = Load::model('mod_news');
+        $update_model->id = $id;
+        $update_model->slider = $new_slider;
+        $update_model->updated_at = date('Y-m-d H:i:s');
 
-        if (isset($_FILES['image']['name']) && ($_FILES['image']['name'] != '')) {
-            $image = Load::mod('image');
-            $image->mod = 'mod_news';
-            $image->name = 'image';
-            $option = [
-                '/' => ['width' => 1200, 'height' => NULL, 'option' => 'width'],
-                '/thumb' => ['width' => 250, 'height' => NULL, 'option' => 'width'],
-            ];
-
-            try {
-                if ($image->_resize($option)) {
-                    $new_image_url = $image->url;
-                    if ($this->mod_news_model->image != '') {
-                        $image->mod = 'mod_news';
-                        $image->url = $this->mod_news_model->image;
-                        $image->_delete_files($option);
-                    }
-
-                    $update_model = Load::model('mod_news');
-                    $update_model->id = $id;
-                    $update_model->updated_at = date('Y-m-d H:i:s');
-                    $update_model->image = $new_image_url;
-
-                    if ($update_model->update('id')) {
-                        if (ob_get_level() > 0) ob_clean();
-                        echo json_encode([
-                            'status' => 'success',
-                            'url' => $this->site['iaddress'] . 'mod_news/thumb/' . $new_image_url . '?v=' . time()
-                        ]);
-                    } else {
-                        if (ob_get_level() > 0) ob_clean();
-                        echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['message']['error']['edit']]);
-                    }
-                } else {
-                    if (ob_get_level() > 0) ob_clean();
-                    echo json_encode(['status' => 'error', 'message' => $image->error]);
-                }
-            } catch (Throwable $e) {
-                if (ob_get_level() > 0) ob_clean();
-                echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
-            }
-        }
-    }
-
-    public function toggle_hero_slider()
-    {
-        header('Content-Type: application/json; charset=utf-8');
-
-        if (!$this->_hasSliderColumn('mod_news')) {
-            echo json_encode(['status' => 'error', 'message' => 'Slider column is not installed yet.']);
-            return;
-        }
-
-        if ($this->user->hasPermission('mod_news', 'edit', $this->lang['mod_news']['role_errors']['edit'], 1) === False) {
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['edit']]);
-            return;
-        }
-
-        $id = intval(Req::Post_Safe('id'));
-        if ($id <= 0) {
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
-            return;
-        }
-
-        $news_model = Load::model('mod_news');
-        $news_model->where_id($id)->gRo();
-        if ($news_model->getSize() === 0) {
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['errors']['record']]);
-            return;
-        }
-
-        $record = $news_model->toArray();
-        if ($this->user->checkPermission('mod_news', 'moderate_edit', $record['user_id'], $this->lang['mod_news']['role_errors']['moderate_edit'], 1) === False) {
-            echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['role_errors']['moderate_edit']]);
-            return;
-        }
-
-        $new_slider_state = (isset($record['slider']) && $record['slider'] === 'y') ? 'n' : 'y';
-        $news_model->id = $id;
-        $news_model->slider = $new_slider_state;
-
-        if ($news_model->update('id')) {
-            echo json_encode([
+        if ($update_model->update('id')) {
+            $this->jsonResponse([
                 'status' => 'success',
-                'slider' => $new_slider_state,
-                'message' => $new_slider_state === 'y' ? ($this->lang['mod_news']['hero_slider_added'] ?? 'Sent to slider.') : ($this->lang['mod_news']['hero_slider_removed'] ?? 'Removed from slider.')
+                'slider' => $new_slider,
+                'in_hero_slider' => $new_slider === 'y',
+                'message' => $new_slider === 'y'
+                    ? ($this->lang['mod_news']['hero_slider_added'] ?? 'Added to slider')
+                    : ($this->lang['mod_news']['hero_slider_removed'] ?? 'Removed from slider')
             ]);
-            return;
+        } else {
+            $this->jsonResponse(['status' => 'error', 'message' => $this->lang['mod_news']['hero_slider_error'] ?? 'Slider update failed']);
         }
-
-        echo json_encode([
-            'status' => 'error',
-            'message' => $this->lang['mod_news']['hero_slider_error'] ?? 'Slider update failed.'
-        ]);
     }
 
     public function approve()

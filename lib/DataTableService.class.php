@@ -28,7 +28,7 @@ class DataTableService
     {
         $this->module_name = $module_name;
         $this->lang = Load::lang($module_name);
-        $this->site = Kayit::getir('site_config');
+        $this->site = Registry::get('site_config');
         $this->session = Load::lib('Session');
 
         // Load the model
@@ -103,16 +103,46 @@ class DataTableService
             }
         }
 
-        // Get total count
+        // Get total count and status stats
         $model_class = $model_name . '_model';
         $total_model = new $model_class();
+        if ((!isset($options['skip_user_filter']) || !$options['skip_user_filter']) && (Role::hasPermission($this->module_name, 'moderate_edit') !== true && Role::hasPermission($this->module_name, 'moderate_delete') !== true)) {
+            $total_model->addWhere("user_id='" . $this->session->get('id') . "'");
+        }
         $total_count = $total_model->getCount();
+
+        $draft_model = new $model_class();
+        $draft_count = 0;
+        if ($this->tableHasColumn($model_name, 'status')) {
+            try {
+                $draft_model->addWhere("status='n'");
+                if ((!isset($options['skip_user_filter']) || !$options['skip_user_filter']) && (Role::hasPermission($this->module_name, 'moderate_edit') !== true && Role::hasPermission($this->module_name, 'moderate_delete') !== true)) {
+                    $draft_model->addWhere("user_id='" . $this->session->get('id') . "'");
+                }
+                $draft_count = $draft_model->getCount();
+            } catch (Exception $e) {
+                $draft_count = 0;
+            }
+        }
+        $published_count = max(0, $total_count - $draft_count);
+
+        $suffix = ucfirst(str_replace('mod_', '', $this->module_name));
+        $suffix_lower = str_replace('mod_', '', $this->module_name);
 
         // Return JSON response
         return json_encode([
             'data' => $data,
             'recordsFiltered' => $getCount,
             'recordsTotal' => $total_count,
+            'total' => $total_count,
+            'published' => $published_count,
+            'draft' => $draft_count,
+            'total' . $suffix => $total_count,
+            'published' . $suffix => $published_count,
+            'draft' . $suffix => $draft_count,
+            'total_' . $suffix_lower => $total_count,
+            'published_' . $suffix_lower => $published_count,
+            'draft_' . $suffix_lower => $draft_count,
         ]);
     }
 
@@ -128,8 +158,8 @@ class DataTableService
         $wheres = [];
 
         // Handle text search
-        if (Req::is_Post('arama') && count(Req::Post_Safe('arama')) > 0) {
-            foreach (Req::Post_Safe('arama') as $k => $v) {
+        if (Req::is_Post('search') && count(Req::Post_Safe('search')) > 0) {
+            foreach (Req::Post_Safe('search') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     $wheres[] = $k . " LIKE '%" . Req::Clear($v) . "%'";
                 }
@@ -137,8 +167,8 @@ class DataTableService
         }
 
         // Handle radio/select search
-        if (Req::is_Post('arama_radio') && count(Req::Post_Safe('arama_radio')) > 0) {
-            foreach (Req::Post_Safe('arama_radio') as $k => $v) {
+        if (Req::is_Post('search_radio') && count(Req::Post_Safe('search_radio')) > 0) {
+            foreach (Req::Post_Safe('search_radio') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     $wheres[] = $k . "='" . Req::Clear($v) . "'";
                 }
@@ -146,8 +176,8 @@ class DataTableService
         }
 
         // Handle date range search
-        if (Req::is_Post('arama_created_at') && count(Req::Post_Safe('arama_created_at')) > 0) {
-            foreach (Req::Post_Safe('arama_created_at') as $k => $v) {
+        if (Req::is_Post('search_created_at') && count(Req::Post_Safe('search_created_at')) > 0) {
+            foreach (Req::Post_Safe('search_created_at') as $k => $v) {
                 if (in_array($k, $columns) && $v != '') {
                     if (isset($v['from']) && isset($v['to']) && $this->_valid_date($v['from']) && $this->_valid_date($v['to'])) {
                         $wheres[] = $k . " BETWEEN '" . $v['from'] . "' AND '" . $v['to'] . "'";
@@ -161,15 +191,39 @@ class DataTableService
         }
 
         // Apply user permission filter
-        if (!isset($options['skip_user_filter']) || !$options['skip_user_filter']) {
-            if ((Roll::hasPermission($this->module_name, 'moderate_edit') !== true) &&
-                (Roll::hasPermission($this->module_name, 'moderate_delete') !== true)
-            ) {
-                $wheres[] = "user_id='" . $this->session->get('id') . "'";
-            }
+        if ((!isset($options['skip_user_filter']) || !$options['skip_user_filter']) && (Role::hasPermission($this->module_name, 'moderate_edit') !== true && Role::hasPermission($this->module_name, 'moderate_delete') !== true)) {
+            $wheres[] = "user_id='" . $this->session->get('id') . "'";
         }
 
         return $wheres;
+    }
+
+    /**
+     * Check whether a table has a specific column (adapter-aware).
+     *
+     * @param string $table Table name
+     * @param string $column Column name
+     * @return bool
+     */
+    private function tableHasColumn($table, $column)
+    {
+        $db = Load::lib('Database');
+        try {
+            if (strpos(strtoupper((string) $db->getAdapterType()), 'SQLITE') !== false) {
+                $cols = $db->fetch_array("PRAGMA table_info(`{$table}`)")->toArray();
+            } else {
+                $cols = $db->fetch_array("SHOW COLUMNS FROM `{$table}`")->toArray();
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+        foreach ((array) $cols as $col) {
+            $name = isset($col['name']) ? $col['name'] : (isset($col['Field']) ? $col['Field'] : null);
+            if ($name === $column) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -241,127 +295,12 @@ class DataTableService
      */
     private function getLocalizedStatusText($status_key)
     {
-        $status_texts = [
-            'tr' => [
-                'Active' => 'Aktif',
-                'Inactive' => 'Pasif',
-                'Yes' => 'Evet',
-                'No' => 'Hayır',
-                'Published' => 'Yayında',
-                'Unpublished' => 'Yayında Değil',
-                'Featured' => 'Öne Çıkarılmış',
-                'Normal' => 'Normal',
-                'Approved' => 'Onaylandı',
-                'Pending' => 'Bekliyor',
-                'Rejected' => 'Reddedildi',
-                'Deleted' => 'Silindi',
-                'Error' => 'Hata',
-                'Failed' => 'Başarısız',
-                'Success' => 'Başarılı',
-                'Enabled' => 'Etkin',
-                'Disabled' => 'Devre Dışı',
-                'Online' => 'Çevrimiçi',
-                'Offline' => 'Çevrimdışı',
-                'Completed' => 'Tamamlandı',
-                'Draft' => 'Taslak',
-                'Waiting' => 'Bekliyor',
-                'Processing' => 'İşleniyor',
-                'Cancelled' => 'İptal Edildi',
-                'Expired' => 'Süresi Doldu',
-                'Blocked' => 'Engellendi',
-                'Suspended' => 'Askıya Alındı',
-                'Info' => 'Bilgi',
-                'New' => 'Yeni',
-                'Updated' => 'Güncellendi',
-                'Paid' => 'Ödendi',
-                'Delivered' => 'Teslim Edildi',
-                'Shipped' => 'Kargoya Verildi',
-                'Turkish' => 'Türkçe',
-                'English' => 'İngilizce',
-                'Kurdish' => 'Kürtçe'
-            ],
-            'en' => [
-                'Active' => 'Active',
-                'Inactive' => 'Inactive',
-                'Yes' => 'Yes',
-                'No' => 'No',
-                'Published' => 'Published',
-                'Unpublished' => 'Unpublished',
-                'Featured' => 'Featured',
-                'Normal' => 'Normal',
-                'Approved' => 'Approved',
-                'Pending' => 'Pending',
-                'Rejected' => 'Rejected',
-                'Deleted' => 'Deleted',
-                'Error' => 'Error',
-                'Failed' => 'Failed',
-                'Success' => 'Success',
-                'Enabled' => 'Enabled',
-                'Disabled' => 'Disabled',
-                'Online' => 'Online',
-                'Offline' => 'Offline',
-                'Completed' => 'Completed',
-                'Draft' => 'Draft',
-                'Waiting' => 'Waiting',
-                'Processing' => 'Processing',
-                'Cancelled' => 'Cancelled',
-                'Expired' => 'Expired',
-                'Blocked' => 'Blocked',
-                'Suspended' => 'Suspended',
-                'Info' => 'Info',
-                'New' => 'New',
-                'Updated' => 'Updated',
-                'Paid' => 'Paid',
-                'Delivered' => 'Delivered',
-                'Shipped' => 'Shipped',
-                'Turkish' => 'Turkish',
-                'English' => 'English',
-                'Kurdish' => 'Kurdish'
-            ],
-            'ku' => [
-                'Active' => 'Çalak',
-                'Inactive' => 'Neçalak',
-                'Yes' => 'Erê',
-                'No' => 'Na',
-                'Published' => 'Weşandî',
-                'Unpublished' => 'Neweşandî',
-                'Featured' => 'Taybetî',
-                'Normal' => 'Asayî',
-                'Approved' => 'Pejirandî',
-                'Pending' => 'Li bendê',
-                'Rejected' => 'Redkirî',
-                'Deleted' => 'Jêbirî',
-                'Error' => 'Çewtî',
-                'Failed' => 'Biserneket',
-                'Success' => 'Serkeft',
-                'Enabled' => 'Çalak',
-                'Disabled' => 'Neçalak',
-                'Online' => 'Serhêl',
-                'Offline' => 'Bêserhêl',
-                'Completed' => 'Temam',
-                'Draft' => 'Resen',
-                'Waiting' => 'Li bendê',
-                'Processing' => 'Tê kirin',
-                'Cancelled' => 'Betalkir',
-                'Expired' => 'Demjimêr',
-                'Blocked' => 'Astengkir',
-                'Suspended' => 'Rawestî',
-                'Info' => 'Agahî',
-                'New' => 'Nû',
-                'Updated' => 'Nûkir',
-                'Paid' => 'Daye',
-                'Delivered' => 'Gihande',
-                'Shipped' => 'Şand',
-                'Turkish' => 'Tirkî',
-                'English' => 'Înglîzî',
-                'Kurdish' => 'Kurdî'
-            ]
-        ];
-
-        $site_lang = $this->site['lang'] ?? 'tr';
-
-        if (isset($status_texts[$site_lang][$status_key])) {
-            return $status_texts[$site_lang][$status_key];
+        $normalizedKey = strtolower(str_replace([' ', '-'], '_', (string) $status_key));
+        if (isset($this->lang['datatable']['status'][$normalizedKey])) {
+            return $this->lang['datatable']['status'][$normalizedKey];
+        }
+        if (isset($this->lang['common']['status'][$normalizedKey])) {
+            return $this->lang['common']['status'][$normalizedKey];
         }
 
         return $status_key;
@@ -370,7 +309,7 @@ class DataTableService
     /**
      * Get comprehensive status configuration for any status field
      * 
-     * @param string $type Status type (status, deck, durum, etc.)
+     * @param string $type Status type (status, deck, etc.)
      * @param string $value Status value
      * @return array|null [css_class, label] or null if no fallback
      */
@@ -514,7 +453,8 @@ class DataTableService
                 return number_format($value);
 
             case 'currency':
-                return number_format($value, 2) . ' ₺';
+                $currencySymbol = Registry::has('currency_symbol') ? ' ' . Registry::get('currency_symbol') : '';
+                return number_format((float)$value, 2) . $currencySymbol;
 
             case 'truncate':
                 return $this->truncateText($value, 50);
@@ -588,25 +528,25 @@ class DataTableService
         $table_name = $this->module_name . '_table_ajax';
 
         // Edit button
-        if (Roll::hasPermission($this->module_name, 'edit')) {
+        if (Role::hasPermission($this->module_name, 'edit')) {
             $buttons .= '<button onclick="' . $table_name . '.akm.processEdit(' . $record['id'] . ');return false;" class="btn default btn-xs purple">';
             $buttons .= '<i class="fa fa-edit"></i> ' . $this->lang[$this->module_name]['button']['edit'] . '</button>';
         }
 
         // Delete button
-        if (Roll::hasPermission($this->module_name, 'delete')) {
+        if (Role::hasPermission($this->module_name, 'delete')) {
             $buttons .= '<button onclick="' . $table_name . '.akm.processDelete(\'' . $record['id'] . '\'); return false;" class="btn default btn-xs red">';
             $buttons .= '<i class="fa fa-trash-o"></i> ' . $this->lang[$this->module_name]['button']['delete'] . '</button>';
         }
 
         // Gallery button
-        if (Roll::hasPermission($this->module_name, 'gallery')) {
+        if (Role::hasPermission($this->module_name, 'gallery')) {
             $buttons .= '<button onclick="' . $table_name . '.akm.processGallery(\'' . $record['id'] . '\'); return false;" class="btn default btn-xs blue">';
             $buttons .= '<i class="fa fa-file-image-o"></i> ' . $this->lang[$this->module_name]['button']['gallery'] . '</button>';
         }
 
         // Files button
-        if (Roll::hasPermission($this->module_name, 'file')) {
+        if (Role::hasPermission($this->module_name, 'file')) {
             $buttons .= '<button onclick="' . $table_name . '.akm.processFile(\'' . $record['id'] . '\'); return false;" class="btn default btn-xs green">';
             $buttons .= '<i class="fa fa-file-zip-o"></i> ' . $this->lang[$this->module_name]['button']['file'] . '</button>';
         }

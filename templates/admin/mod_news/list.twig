@@ -9,239 +9,64 @@
 {% block headline %}{{ lang.mod_news.list }}{% endblock %}
 
 {% block styles %}
-<style>
-    .news-toolbar .toolbar-item {
-        gap: 0;
-        min-width: 44px;
-        padding: 8px 4px;
-    }
-    .news-toolbar .toolbar-item span {
-        display: none;
-    }
-    .news-toolbar #toolbarDelete.active {
-        color: #b3261e !important;
-        background: rgba(179, 38, 30, 0.12);
-    }
-    .news-toolbar #toolbarDelete.active i {
-        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
-    }
-    .news-toolbar #toolbarSlider.active {
-        color: #8a5a00 !important;
-        background: rgba(255, 193, 7, 0.16);
-    }
-    .news-toolbar #toolbarSlider.is-selected {
-        color: #8a5a00 !important;
-        background: rgba(255, 193, 7, 0.22);
-    }
-    .news-image-modal {
-        position: fixed;
-        inset: 0;
-        z-index: 12000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 20px 16px;
-        box-sizing: border-box;
-        opacity: 0;
-        pointer-events: none;
-        overflow-x: hidden;
-        transition: opacity 0.24s ease;
-    }
-    .news-image-modal.active {
-        opacity: 1;
-        pointer-events: auto;
-    }
-    .news-image-modal__scrim {
-        position: absolute;
-        inset: 0;
-        z-index: 0;
-        background: rgba(28, 27, 31, 0.54);
-        backdrop-filter: blur(3px);
-    }
-    .news-image-modal__sheet {
-        position: relative;
-        z-index: 1;
-        width: min(calc(100vw - 32px), 560px);
-        max-height: min(88vh, 760px);
-        overflow: auto;
-        overflow-x: hidden;
-        border-radius: 28px;
-        background: var(--md-sys-color-surface, #fff);
-        box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
-        transform: translateY(28px);
-        transition: transform 0.24s ease;
-    }
-    .news-image-modal.active .news-image-modal__sheet {
-        transform: translateY(0);
-    }
-    .news-image-modal__body {
-        padding-bottom: 20px;
-    }
-    .wizard-title #newsImageModalTitle {
-        font-size: 16px;
-        font-weight: 500;
-    }
-    .wizard-title #newsImageModalSubtitle {
-        font-size: 12px;
-        color: var(--md-sys-color-on-surface-variant);
-    }
-    .news-image-shell {
-        background: var(--md-sys-color-surface-container-low, #f8f2fa);
-        border-radius: 24px;
-        padding: 16px;
-        overflow-x: hidden;
-    }
-    .news-image-shell .wizard-image-url-row {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        align-items: stretch !important;
-        gap: 12px !important;
-    }
-    .news-image-shell .wizard-image-url-input,
-    .news-image-shell .wizard-image-url-row .m3-btn-filled {
-        width: 100% !important;
-        min-width: 0 !important;
-        max-width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    .news-image-shell .wizard-image-url-row .m3-btn-filled {
-        justify-content: center !important;
-        white-space: normal !important;
-    }
-    .news-image-shell .wizard-image-dropzone {
-        min-height: 220px;
-    }
-    .news-image-shell .wizard-image-meta {
-        padding-top: 12px;
-    }
-    .news-image-shell .wizard-image-meta[hidden] {
-        display: none !important;
-    }
-    .news-image-shell .wizard-image-meta strong {
-        word-break: break-word;
-    }
-    .news-image-save[disabled] {
-        opacity: 0.45;
-        pointer-events: none;
-    }
-    .news-image-save[hidden] {
-        display: none !important;
-    }
-    .news-image-modal__footer.is-single-action {
-        justify-content: flex-start;
-    }
-    .news-image-modal__footer.is-single-action > * {
-        width: 100%;
-    }
-    .news-image-modal__footer.wizard-footer {
-        padding-top: 16px;
-        padding-bottom: 24px;
-    }
-    body.news-image-modal-open {
-        overflow: hidden;
-        overflow-x: hidden;
-    }
-    body.news-image-modal-open .app-scroll-frame {
-        overflow-x: hidden;
-    }
-    body.news-image-modal-open .top-app-bar,
-    body.news-image-modal-open .search-row,
-    body.news-image-modal-open .standard-toolbar {
-        opacity: 0;
-        pointer-events: none;
-        transform: translateY(-8px);
-        transition: opacity 0.18s ease, transform 0.18s ease;
-    }
-    @media (max-width: 767px) {
-        .news-image-modal {
-            align-items: flex-end;
-            padding: 0;
-        }
-        .news-image-modal__sheet {
-            width: 100%;
-            max-height: 88vh;
-            border-radius: 28px 28px 0 0;
-        }
-        .news-image-modal__body,
-        .news-image-modal__footer {
-            padding-left: 12px;
-            padding-right: 12px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v=3">
 {% endblock %}
 
 {% block content %}
-<!-- Quick Stats & Actions -->
-
-
-<!-- Quick Stats & Actions -->
-<div style="padding: 0 16px 16px 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 8px;">
-    <!-- Stats Row -->
-    <div style="display: flex; gap: 12px;">
-        <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ total_news }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.total_news }}</div>
+<div class="content-stats-container">
+    <div class="content-stats-row">
+        <div class="content-stat-card">
+            <div id="statTotalNews" class="content-stat-value">{{ total_news }}</div>
+            <div class="content-stat-label">{{ lang.management.total_news|default(lang.mod_news.total_news|default('Total News')) }}</div>
         </div>
-        <div class="stat-card" style="flex: 1; background: #F3EDF7; padding: 16px; border-radius: 12px; text-align: center;">
-            <div style="font-size: 24px; font-weight: 700; color: #6750A4;">{{ draft_news }}</div>
-            <div style="font-size: 12px; color: #49454F; font-weight: 500;">{{ lang.management.draft_news }}</div>
+        <div class="content-stat-card">
+            <div id="statDraftNews" class="content-stat-value">{{ draft_news }}</div>
+            <div class="content-stat-label">{{ lang.management.draft_news|default(lang.mod_news.draft_news|default('Draft News')) }}</div>
         </div>
     </div>
-
-
 </div>
 
-<!-- PULL TO REFRESH SPINNER -->
 <div id="ptr-spinner" class="ptr-spinner">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
 </div>
 
-<!-- DYNAMIC CONTENT (Cards) -->
-<div id="content-list-container" class="content-list">
-    <!-- Cards will be injected here via JS -->
+<div id="content-list-container" class="content-list"
+    data-module-url="{{ site.saddress }}mod_news/"
+    data-data-url="{{ site.saddress }}mod_news/datatable_json"
+    data-categories="{{ categories|json_encode|escape('html_attr') }}">
 </div>
 
-<!-- EMPTY STATE -->
-<div id="empty-state" class="empty-state" style="display: none;">
+<div id="empty-state" class="empty-state is-hidden">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_news.grid[105] }}</h3>
-    <p>{{ lang.mod_news.grid[4] }}</p>
+    <h3>{{ lang.mod_news.datatable.zeroRecords|default(lang.mod_news.grid.no_data) }}</h3>
+    <p>{{ lang.mod_news.datatable.emptyTable|default(lang.mod_news.grid.no_data) }}</p>
 </div>
 
-<!-- INFINITE SCROLL LOADER -->
-<div id="infinite-loader" class="infinite-loader" style="display: none;">
+<div id="infinite-loader" class="infinite-loader is-hidden">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_news.grid[104] }}</span>
+    <span>{{ lang.mod_news.datatable.loadingRecords|default(lang.mod_news.grid.loading) }}</span>
 </div>
 
-<!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
-<form id="filterForm" style="display: none;">
+<form id="filterForm" class="is-hidden">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
-    
-    <!-- Search -->
     <input type="hidden" name="search[name]" id="filterSearch" value="">
-    
-    <!-- Custom Filters -->
     <input type="hidden" name="search[lang]" id="filterLang" value="">
     <input type="hidden" name="search[category_id]" id="filterCategory" value="">
-    
-    <!-- Standard DT order (default id desc) -->
-    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1"> 
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
 
 <div id="newsImageModal" class="news-image-modal" aria-hidden="true">
-    <div class="news-image-modal__scrim" onclick="window.contentManager?.closeImageUploader()"></div>
+    <div class="news-image-modal__scrim" data-action="close-image-uploader"></div>
     <div class="news-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="newsImageModalTitle">
         <header class="wizard-header">
-            <button type="button" class="icon-btn" onclick="window.contentManager?.closeImageUploader()">
+            <button type="button" class="icon-btn" data-action="close-image-uploader">
                 <i class="bi bi-x-lg"></i>
             </button>
             <div class="wizard-title">
@@ -251,7 +76,7 @@
         </header>
 
         <div class="wizard-progress-bar">
-            <div class="wizard-progress-fill" style="width: 100%;"></div>
+            <div class="wizard-progress-fill progress-full-width"></div>
         </div>
 
         <div class="wizard-content news-image-modal__body">
@@ -280,7 +105,7 @@
                 upload_link: lang.mod_news.wizard.image.upload_link,
                 preview_card_id: 'listImagePreviewCard',
                 remove_button_label: lang.mod_news.button.delete,
-                remove_action_js: 'window.contentManager?.handleListImageRemoveAction()',
+                remove_action_js: 'window.newsManager?.handleListImageRemoveAction()',
                 preview_img_id: 'listImgPreview',
                 preview_alt: '',
                 preview_hidden: true,
@@ -300,97 +125,49 @@
                 file_input_id: 'listImgInput'
             } %}
         </div>
-
-        <div id="newsImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
-            <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" onclick="window.contentManager?.closeImageUploader()">{{ lang.mod_news.button.cancel }}</button>
-        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar news-toolbar">
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-        </button>
-
-        <button id="toolbarSlider" class="toolbar-item" onclick="sliderSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.hero_slider_add|default('Send to Slider') }}">
+    <div class="standard-toolbar news-toolbar" id="contentToolbar">
+        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_news.hero_slider_add }}">
             <i class="bi bi-stars"></i>
         </button>
 
-        <button id="toolbarVideo" class="toolbar-item" onclick="videoSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.video }}">
+        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_news.context_menu.video }}">
             <i class="bi bi-camera-video"></i>
         </button>
-        
-        <div class="toolbar-fab" onclick="location.href='{{ site.saddress }}mod_news/add'">
-            <i class="bi bi-plus-lg"></i>
-        </div>
 
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.gallery }}">
+        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_news.context_menu.gallery }}">
             <i class="bi bi-image"></i>
         </button>
 
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;" title="{{ lang.mod_news.context_menu.files }}">
+        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_news.context_menu.files }}">
             <i class="bi bi-paperclip"></i>
         </button>
 
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+        {% if session.permissions.mod_news.faq is defined or session.permissions.mod_news.edit is defined %}
+        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_faq.module_title }}">
+            <i class="bi bi-patch-question-fill"></i>
+        </button>
+        {% endif %}
+
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_news.context_menu.edit }}">
             <i class="bi bi-pencil-fill"></i>
         </button>
+
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_news.context_menu.delete }}">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
     </div>
+
+    <!-- Main FAB Link -->
+    <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_news/add" aria-label="{{ lang.mod_news.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
 {% endblock %}
 
 {% block scripts %}
-<script>
-    // Module specific variables (SITE_URL is already defined in layout.twig)
-    const MODULE_URL = SITE_URL + "mod_news/";
-    const DATA_URL = SITE_URL + "mod_news/datatable_json";
-    
-    // Category mapping for JS
-    const CATEGORY_MAP = {
-        {% for cat in categories %}
-        "{{ cat.id }}": "{{ cat.name|escape('js') }}",
-        {% endfor %}
-    };
-    const CONTENT_LANG = {
-        active: "{{ lang.mod_news.status_badge.active|e('js') }}",
-        draft: "{{ lang.mod_news.status_badge.draft|e('js') }}",
-        general: "{{ lang.mod_news.status_badge.general|e('js') }}",
-        sheet_all: "{{ lang.mod_news.sheet.all|e('js') }}",
-        confirm_delete: "{{ lang.mod_news.delete_confirm|e('js') }}",
-        confirm_publish: "{{ lang.mod_news.quick_publish_confirm|e('js') }}",
-        confirm_unpublish: "{{ lang.mod_news.quick_unpublish_confirm|e('js') }}",
-        error_general: "{{ lang.mod_news.error_occurred|e('js') }}",
-        error_upload: "{{ lang.mod_news.message.error.add|e('js') }}",
-        save_image: "{{ lang.mod_news.wizard.button.save|e('js') }}",
-        cancel: "{{ lang.mod_news.button.cancel|e('js') }}",
-        image_title: "{{ lang.mod_news.wizard.step.image|e('js') }}",
-        image_empty: "{{ lang.mod_news.wizard.summary.selected_none|e('js') }}",
-        image_remote_failed: "{{ lang.mod_news.wizard.image.hint_remote_failed|e('js') }}",
-        image_drop_description: "{{ lang.mod_news.wizard.image.drop_description|e('js') }}",
-        image_updated: "{{ lang.mod_news.oke|e('js') }}",
-        image_remove_title: "{{ lang.mod_news.remove_image|e('js') }}",
-        image_remove_confirm: "{{ lang.mod_news.context_menu.delete_confirm|e('js') }}",
-        image_remove_confirm_text: "{{ lang.mod_news.button.yes|e('js') }}",
-        image_remove_cancel_text: "{{ lang.mod_news.button.cancel|e('js') }}",
-        image_remove_success: "{{ lang.mod_news.remove_image_oke|e('js') }}",
-        hero_slider_add: "{{ lang.mod_news.hero_slider_add|e('js') }}",
-        hero_slider_remove: "{{ lang.mod_news.hero_slider_remove|e('js') }}",
-        hero_slider_added: "{{ lang.mod_news.hero_slider_added|e('js') }}",
-        hero_slider_removed: "{{ lang.mod_news.hero_slider_removed|e('js') }}",
-        hero_slider_error: "{{ lang.mod_news.hero_slider_error|e('js') }}",
-        hero_slider_badge: "{{ lang.mod_news.hero_slider_badge|e('js') }}",
-        picker: {
-            gallery: "{{ lang.mod_news.picker.gallery|e('js') }}",
-            gallery: "{{ lang.mod_news.context_menu.gallery|e('js') }}",
-            file: "{{ lang.mod_news.context_menu.files|e('js') }}",
-            video: "{{ lang.mod_news.context_menu.video|e('js') }}"
-        },
-        loading: "{{ lang.mod_news.grid[104]|e('js') }}",
-        grid: {
-            load_more: "{{ lang.mod_news.grid.load_more|e('js') }}"
-        }
-    };
-</script>
-<script src="/templates/admin/assets/js/mod_news.js?v=4.0"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=4.3"></script>
 {% endblock %}

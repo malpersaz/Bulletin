@@ -8,10 +8,10 @@
  */
 if (!defined('basepath') or !constant('basepath')) die('Direct access not allowed!');
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "../../../../../../../koberz.init.php");
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "../../../../../../../init.php");
 
 
-//require_once('../../../koberz.init.php');
+//require_once('../../../init.php');
 
 
 class Moxiecode_KoberzAuthenticator extends Moxiecode_ManagerPlugin
@@ -25,19 +25,19 @@ class Moxiecode_KoberzAuthenticator extends Moxiecode_ManagerPlugin
     {
         Load::lib('Session');
         if (
-            Roll::hasPermission('mod_page', 'ekle') === True OR
-            Roll::hasPermission('mod_page', 'duzenle') === True OR
+            Role::hasPermission('mod_page', 'ekle') === True OR
+            Role::hasPermission('mod_page', 'duzenle') === True OR
 
-            Roll::hasPermission('mod_komisyon', 'ekle') === True OR
-            Roll::hasPermission('mod_komisyon', 'duzenle') === True OR
+            Role::hasPermission('mod_komisyon', 'ekle') === True OR
+            Role::hasPermission('mod_komisyon', 'duzenle') === True OR
 
-            Roll::hasPermission('mod_announcements', 'ekle') === True OR
-            Roll::hasPermission('mod_announcements', 'duzenle') === True OR
+            Role::hasPermission('mod_announcements', 'ekle') === True OR
+            Role::hasPermission('mod_announcements', 'duzenle') === True OR
 
 
 
-            Roll::hasPermission('mod_content', 'ekle') === True OR
-            Roll::hasPermission('mod_content', 'duzenle') === True
+            Role::hasPermission('mod_content', 'ekle') === True OR
+            Role::hasPermission('mod_content', 'duzenle') === True
         ) {
             return True;
 

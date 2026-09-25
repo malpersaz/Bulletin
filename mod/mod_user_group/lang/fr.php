@@ -1,42 +1,43 @@
 <?php
 $lang['mod_user_group']=[
-	'1'=>'Gestion des Groupes d\'Utilisateurs',
-	'2'=>'Groupes d\'Utilisateurs',
-	'5'=>'---Veuillez sélectionner--- ',
-	'8'=>'Êtes-vous sûr de vouloir supprimer ce Groupe d\'Utilisateurs?<br/> Si vous supprimez ce groupe, tous ses sous-groupes seront également supprimés!',
-	'9'=>'Groupe d\'Utilisateurs Supprimé!',
-	'10'=>'Ordre des Groupes d\'Utilisateurs Modifié!',
-	'11'=>'Supprimer le Groupe d\'Utilisateurs',
-	'12'=>'Modifier le Groupe d\'Utilisateurs',
-	'13'=>'Modifier',
-	'15'=>'Oui',
-	'16'=>'Annuler',
-	'17'=>'Liste des Groupes d\'Utilisateurs',
-	'18'=>'Double-cliquez sur le nom du groupe que vous voulez supprimer ou modifier',
-	'19'=>'Glissez-déposez les groupes que vous voulez réorganiser',
-	'20'=>'Ajouter un Nouveau Groupe d\'Utilisateurs'
+	'add'=>'Ajouter un groupe d\'utilisateurs',
+	'management_title'=>'Gestion des Groupes d\'Utilisateurs',
+	'user_groups'=>'Groupes d\'Utilisateurs',
+	'select_optional'=>'---Veuillez sélectionner--- ',
+	'confirm_delete'=>'Êtes-vous sûr de vouloir supprimer ce Groupe d\'Utilisateurs?<br/> Si vous supprimez ce groupe, tous ses sous-groupes seront également supprimés!',
+	'group_deleted'=>'Groupe d\'Utilisateurs Supprimé!',
+	'order_changed'=>'Ordre des Groupes d\'Utilisateurs Modifié!',
+	'delete_group'=>'Supprimer le Groupe d\'Utilisateurs',
+	'edit_group'=>'Modifier le Groupe d\'Utilisateurs',
+	'edit'=>'Modifier',
+	'yes'=>'Oui',
+	'cancel'=>'Annuler',
+	'group_list'=>'Liste des Groupes d\'Utilisateurs',
+	'double_click_instruction'=>'Double-cliquez sur le nom du groupe que vous voulez supprimer ou modifier',
+	'drag_drop_instruction'=>'Glissez-déposez les groupes que vous voulez réorganiser',
+	'add_new_group'=>'Ajouter un Nouveau Groupe d\'Utilisateurs'
 ];
 
 $lang['mod_user_group']['admin']=[
-	'1'=>'Zone d\'Ajout de Groupe d\'Utilisateurs',
-	'2'=>'Zone de Modification de Groupe d\'Utilisateurs',
-	'3'=>'Gestion des Groupes d\'Utilisateurs',
-	'4'=>'Formulaire d\'Ajout de Groupe d\'Utilisateurs',
-	'5'=>'Formulaire de Modification de Groupe d\'Utilisateurs',
-	'7'=>'Nom du Groupe d\'Utilisateurs',
-	'8'=>'Ajouter',
-	'9'=>'Modifier',
-	'10'=>'Liste des Groupes d\'Utilisateurs',
+	'add_area'=>'Zone d\'Ajout de Groupe d\'Utilisateurs',
+	'edit_area'=>'Zone de Modification de Groupe d\'Utilisateurs',
+	'management'=>'Gestion des Groupes d\'Utilisateurs',
+	'add_form'=>'Formulaire d\'Ajout de Groupe d\'Utilisateurs',
+	'edit_form'=>'Formulaire de Modification de Groupe d\'Utilisateurs',
+	'group_name'=>'Nom du Groupe d\'Utilisateurs',
+	'add'=>'Ajouter',
+	'edit'=>'Modifier',
+	'group_list'=>'Liste des Groupes d\'Utilisateurs',
 	'list'=>'Liste des Groupes d\'Utilisateurs',
-	'12'=>'Groupe d\'Utilisateurs Ajouté!',
-	'13'=>'Groupe d\'Utilisateurs Mis à Jour',
-	'22'=>'Sous-groupe d\'Utilisateurs'
+	'group_added'=>'Groupe d\'Utilisateurs Ajouté!',
+	'group_edited'=>'Groupe d\'Utilisateurs Mis à Jour',
+	'sub_group'=>'Sous-groupe d\'Utilisateurs'
 ];
 
 $lang['mod_user_group']['hata']=[
-	'1'=>'Veuillez spécifier un nom de groupe d\'utilisateurs',
-	'2'=>'Veuillez spécifier un lien de groupe d\'utilisateurs.',
-	'3'=>'Veuillez spécifier un autre lien de groupe d\'utilisateurs <br/>Car le lien de groupe d\'utilisateurs spécifié est déjà enregistré'
+	'name_required'=>'Veuillez spécifier un nom de groupe d\'utilisateurs',
+	'link_required'=>'Veuillez spécifier un lien de groupe d\'utilisateurs.',
+	'link_unique'=>'Veuillez spécifier un autre lien de groupe d\'utilisateurs <br/>Car le lien de groupe d\'utilisateurs spécifié est déjà enregistré'
 ];
 
 // Modern language keys (not numbered)
@@ -48,7 +49,7 @@ $lang['mod_user_group']['buttons'] = [
     'save' => 'Enregistrer'
 ];
 
-$lang['mod_user_group']['roll']=[
+$lang['mod_user_group']['role']=[
 	'name'=>'Rôles des Groupes d\'Utilisateurs',
 	'add' =>'Peut Ajouter un Groupe d\'Utilisateurs',
 	'edit' =>'Peut Modifier le Groupe d\'Utilisateurs Ajouté.',
@@ -65,8 +66,8 @@ $lang['mod_user_group']['ajax'] = [
 ];
 
 $lang['mod_user_group']['role_errors']=[
-	'1'=>'Vous n\'avez pas la permission de modifier les groupes d\'utilisateurs appartenant aux autres.',
-	'2'=>'Vous n\'avez pas la permission de supprimer les groupes d\'utilisateurs appartenant aux autres.',
+	'management_title'=>'Vous n\'avez pas la permission de modifier les groupes d\'utilisateurs appartenant aux autres.',
+	'user_groups'=>'Vous n\'avez pas la permission de supprimer les groupes d\'utilisateurs appartenant aux autres.',
 	'move'=>'Vous n\'avez pas la permission de changer l\'ordre des groupes d\'utilisateurs.',
 	'add' =>'Vous n\'avez pas la permission d\'ajouter des groupes d\'utilisateurs.',
 	'delete'=>'Vous n\'avez pas la permission de supprimer des groupes d\'utilisateurs.',

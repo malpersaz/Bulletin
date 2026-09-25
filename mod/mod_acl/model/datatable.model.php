@@ -38,9 +38,9 @@ class datatable_model
         $unique = 'id';
         $page = Req::is_Post('page') ? Req::Post_Safe('page') : 1;
         if (
-            (Roll::hasPermission('mod_acl', 'moderate_edit') === TRUE)
+            (Role::hasPermission('mod_acl', 'moderate_edit') === TRUE)
             ||
-            (Roll::hasPermission('mod_acl', 'moderate_delete') === TRUE)
+            (Role::hasPermission('mod_acl', 'moderate_delete') === TRUE)
         ) {
             $moderate = TRUE;
         } else {
@@ -65,24 +65,24 @@ class datatable_model
         }
 
         $this->mod_acl_model->select("id,name")->gR();
-        $toplam = $this->mod_acl_model->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->mod_acl_model->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
-        // Eğer Sonuç Yoksa Malesef
-        if ($toplam < 1) {
+        // If no results found
+        if ($total < 1) {
             echo json_encode($this->json);
             exit();
         }
 
-        // Ofset Değeri
+        // Offset Value
         $offset = $page != 1 ? (($page - 1) * $rp) : NULL;
 
         $this->mod_acl_model->limit($rp, $offset);
         $this->mod_acl_model->order($sortname, $sortorder);
         $this->mod_acl_model->getResult(TRUE, TRUE);
 
-        // Eğer Sonuç Yoksa
+        // If no results
         if ($this->mod_acl_model->getSize() < 1) {
             echo json_encode($this->json);
             exit();
@@ -106,14 +106,5 @@ class datatable_model
             }
         }
         return $new;
-
-        /*if ($value['durum'] === 'y') {
-            $value['durum'] = $this->lang['mod_user']['grid']['active'];
-        } elseif ($value['durum'] === 'n') {
-            $value['durum'] = $this->lang['mod_user']['grid']['waiting_email_activation'];
-        } elseif ($value['durum'] === 'a') {
-            $value['durum'] = $this->lang['mod_user']['grid']['waiting_admin_activation'];
-        }*/
-        //return array_values($value);
     }
 }

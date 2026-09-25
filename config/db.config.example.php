@@ -7,7 +7,7 @@
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * File: db.config.example.php
+ * File: db.config.local.php
  * Description: Database Connection Information
  */
 if (defined('root_dir') === False) exit(':)');
@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/sqlite/data.sqlite',
+            'database_path' => root_dir . 'data/sqlite/NetcomBi.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),
@@ -54,9 +54,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'rojname_user',
-            'pass' => 'rojname_password',
-            'database' => 'rojname_db',
+            'user' => 'AKMlearnly_user',
+            'pass' => 'AKMlearnly_password',
+            'database' => 'AKMlearnly_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional
@@ -108,11 +108,11 @@ if (
 
     || strpos($_SERVER['HTTP_HOST'], 'pinggy.link') !== false
 ) {
-    Kayit::ekle('database', 'localhost');
+    Registry::add('database', 'localhost');
 } else {
-    Kayit::ekle('database', 'remote');
+    Registry::add('database', 'remote');
 }
-//Kayit::ekle('database', 'remote');
+//Registry::add('database', 'remote');
 
-Kayit::ekle('db_config', $db);
+Registry::add('db_config', $db);
 unset($db);

@@ -119,12 +119,14 @@ $lang['mod_gallery'] = [
     ],
 
     // === Role Management ===
-    'roll' => [
-        'ad' => 'Galeri Yönetim Rolleri',
+    'role' => [
+        'name' => 'Galeri Yönetim Rolleri',
         'add' => 'Galeri ve resim ekleyebilir',
         'edit' => 'Galeri öğelerini düzenleyebilir',
         'delete' => 'Galeri öğelerini silebilir',
         'list' => 'Galeri yönetimini görüntüleyebilir',
+        'moderate_edit' => 'Başkalarına ait galeri öğelerini düzenleyebilir',
+        'moderate_delete' => 'Başkalarına ait galeri öğelerini silebilir',
     ],
 
     // === Role Errors ===
@@ -133,11 +135,13 @@ $lang['mod_gallery'] = [
         'edit' => 'Galeri öğelerini düzenleme izniniz bulunmuyor.',
         'delete' => 'Öğeleri silme izniniz bulunmuyor.',
         'list' => 'Galeri yönetimini görüntüleme izniniz bulunmuyor.',
+        'moderate_edit' => 'Başkalarına ait galeri öğelerini düzenleme izniniz bulunmuyor.',
+        'moderate_delete' => 'Başkalarına ait galeri öğelerini silme izniniz bulunmuyor.',
         'gallery' => 'Bu galeriyi yönetme izniniz bulunmuyor.',
         'file' => 'Bu galeriye dosya yükleme izniniz bulunmuyor.',
     ],
 
-    'hata' => [
+    'error' => [
         'get_source_failed' => 'Resim kaynağı okunamadı.',
     ],
 

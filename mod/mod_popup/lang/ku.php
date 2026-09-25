@@ -25,20 +25,19 @@ $lang['mod_popup'] = [
     'list' => 'Lîsteya Popup',
 
     // === System Messages ===
-    'oke' => 'Operasyon Serkeft!',
-    'hata' => 'Çewtî Çêbû!',
+    'success' => 'Operasyon Serkeft!',
     'error' => 'Çewtiya Giran Çêbû!',
     'information' => 'Agahdarî!',
 
     // === Image Management ===
     'remove_image' => 'Ji derxistina vê wêneyê bawer î?',
-    'remove_image_oke' => 'Wêne hate rakirin',
+    'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Heke bixwazî hilbijêre',
     'remove_record' => 'Ji rakirana vê tomarê bawer î?',
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Popup hate zêdekirin!',
             'edit' => 'Popup hate sererastkirin!',
         ],
@@ -61,27 +60,27 @@ $lang['mod_popup'] = [
     'button' => [
         'add' => 'Zêde Bike',
         'edit' => 'Biguhere',
-        'yenile' => 'Nû Bike',
+        'refresh' => 'Nû Bike',
         'delete' => 'Rake',
         'gallery' => 'Galeriya Wêneyan',
         'file' => 'Rêveberê Pelan',
-        'vazgec' => 'Betal',
-        'kaldir' => 'Rake',
-        'evet' => 'Erê',
-        'hayir' => 'Na',
+        'cancel' => 'Betal',
+        'remove' => 'Rake',
+        'yes' => 'Erê',
+        'no' => 'Na',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
-        1 => 'Rûpel',
-        2 => 'Hejmara Rûpelan',
-        3 => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        4 => 'Tu dane nehat dîtin',
-        5 => 'Çewtiya Girêdanê',
-        6 => 'Lêgerîn',
-        7 => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
-        8 => 'Ji kerema xwe tenê rêzekê hilbijêrin',
+        'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
+        'page' => 'Rûpel',
+        'page_count' => 'Hejmara Rûpelan',
+        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
+        'no_data' => 'Tu dane nehat dîtin',
+        'connection_error' => 'Çewtiya Girêdanê',
+        'search' => 'Lêgerîn',
+        'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
+        'select_only_one' => 'Ji kerema xwe tenê rêzekê hilbijêrin',
         'publish' => [
             'key' => 'Weşîne',
             'value' => 'Ma hûn bawer in ku hûn dixwazin vê popup biweşînin?',
@@ -102,8 +101,8 @@ $lang['mod_popup'] = [
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Rolenên Rêveberiya Popup',
+    'role' => [
+        'name' => 'Rolên Rêveberiya Popup',
         'add' => 'Dikare popup zêde bike',
         'edit' => 'Dikare popup Biguhere',
         'delete' => 'Dikare popup rake',
@@ -127,12 +126,15 @@ $lang['mod_popup'] = [
         'columns' => [
             'id' => 'ID',
             'language' => 'Ziman',
-            'ad' => 'Navê Popup',
-            'tarih' => 'Destpêka Weşanê',
-            'etarih' => 'Dawîya Weşanê',
+            'name' => 'Navê Popup',
+            'title' => 'Navê Popup',
+            'start_date' => 'Destpêka Weşanê',
+            'date' => 'Destpêka Weşanê',
+            'created_at' => 'Destpêka Weşanê',
+            'end_date' => 'Dawîya Weşanê',
             'status' => 'Aktîv î?',
             'content' => 'Ravekirin',
-            'sure' => 'Girtina Otomatîk (Bi Saniyeyan).',
+            'duration' => 'Girtina Otomatîk (Bi Saniyeyan).',
             'video' => 'Cureyê Vîdeoyê',
             'link' => 'Girêdana Wêneyê an Girêdana Vîdeoyê',
             'image' => 'Wêne',

@@ -16,13 +16,14 @@ CREATE  VIEW contents AS SELECT
     mod_content.file_id AS file_id,
     mod_content.lang,
     mod_content.video,
-    mod_category.name AS category_name,
-    mod_category.seo AS category_seo,
-    mod_category.id AS category_id,
+    mod_content_category.name AS category_name,
+    mod_content_category.seo AS category_seo,
+    mod_content_category.id AS category_id,
     mod_user.username,
     mod_user.id AS user_id,
     mod_user.name AS u_name,
     mod_user.last_name AS u_last_name,
+    mod_user.image AS user_image,
     mod_user_group.name AS group_name,
     ( SELECT count(mod_gallery.id) AS count
            FROM mod_gallery
@@ -31,4 +32,4 @@ CREATE  VIEW contents AS SELECT
    FROM mod_content
    LEFT JOIN mod_user ON mod_content.user_id = mod_user.id
    LEFT JOIN mod_user_group ON mod_user.group_id = mod_user_group.group_id
-   LEFT JOIN mod_category ON mod_content.category_id = mod_category.id;
+   LEFT JOIN mod_content_category ON mod_content.category_id = mod_content_category.id;

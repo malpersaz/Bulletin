@@ -1,0 +1,114 @@
+{% set hero_slider = hero_slider_items|default(ctx_get('hero_slider')) %}
+
+{% if hero_slider and hero_slider|length > 0 %}
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
+
+<section id="heroNewsSlider" class="hero-news-slider hero-slider-shell" aria-label="{{ lang.index.hero_slider.title }}">
+    <div class="swiper hero-news-swiper">
+        <div class="swiper-wrapper">
+            {% for item in hero_slider %}
+            <div class="swiper-slide hero-slide" data-slide-index="{{ loop.index0 }}">
+                <a class="hero-slide__hitbox" href="{{ item.detail_url }}" aria-label="{{ item.name }}"></a>
+
+                <div class="hero-slide__image">
+                    {% if item.video_url is defined and item.video_url is not empty %}
+                        <video autoplay loop muted playsinline poster="{{ item.image_url ? item.image_url : (site.iaddress ~ 'mod_settings/logo.png') }}" class="hero-bg-video" aria-hidden="true">
+                            <source src="{{ item.video_url }}" type="video/mp4">
+                        </video>
+                    {% elseif item.embed_slider_url is defined and item.embed_slider_url is not empty %}
+                        <iframe src="{{ item.embed_slider_url }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
+                    {% elseif item.embed_url is defined and item.embed_url is not empty %}
+                        <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
+                    {% elseif item.image_url is not empty %}
+                        <img src="{{ item.image_url }}"
+                             alt="{{ item.name }}"
+                             loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                             fetchpriority="{{ loop.first ? 'high' : 'auto' }}">
+                    {% else %}
+                        <img src="{{ site.iaddress }}mod_settings/logo.png"
+                             alt="{{ item.name }}"
+                             loading="lazy">
+                    {% endif %}
+                </div>
+
+                <div class="hero-slide__overlay"></div>
+
+                <div class="hero-slide__floating-top">
+                    {% if item.category_name is not empty and item.category_url is not empty %}
+                        <a href="{{ item.category_url }}" class="hero-slide__category">
+                            {{ item.category_name }}
+                        </a>
+                    {% endif %}
+
+                    {% if item.published_ago is not empty %}
+                        <span class="hero-slide__timestamp">
+                            <i class="bi bi-clock"></i>
+                            {{ item.published_ago }}
+                        </span>
+                    {% endif %}
+
+                    <div class="hero-slider__controls">
+                        <button type="button" class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button type="button" class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="hero-slide__content">
+                    <div class="hero-slide__body hero-slide__body--{{ item.source_mod == 'mod_publication' ? 'publication' : 'news' }}">
+                        {% if item.source_mod == 'mod_publication' %}
+                        <div class="hero-slide__publication-head">
+                            <div class="hero-slide__meta">
+                                <div class="hero-slide__author hero-slide__author--publication">
+                                    <span class="hero-slide__avatar">
+                                        {% if item.author_image_url is not empty %}
+                                            <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
+                                        {% else %}
+                                            <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                        {% endif %}
+                                    </span>
+                                    <span class="hero-slide__author-copy">
+                                        <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <h3 class="hero-slide__title">
+                                <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                            </h3>
+                        </div>
+                        {% endif %}
+
+                        {% if item.source_mod != 'mod_publication' %}
+                        <h3 class="hero-slide__title">
+                            <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                        </h3>
+                        <div class="hero-slide__meta">
+                            <div class="hero-slide__author hero-slide__author--news">
+                                <span class="hero-slide__avatar">
+                                    {% if item.author_image_url is not empty %}
+                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
+                                    {% else %}
+                                        <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                    {% endif %}
+                                </span>
+                                <span class="hero-slide__author-copy">
+                                    <span class="hero-slide__author-name">{{ item.author_name }}</span>
+                                </span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="hero-news-swiper-pagination"></div>
+    </div>
+</section>
+
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ "now"|date("U") }}"></script>
+{% endif %}

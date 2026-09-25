@@ -1,0 +1,142 @@
+{% extends 'admin/layout.twig' %}
+
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_survey.actions.add }}{% endblock %}
+{% block headline %}{{ lang.mod_survey.actions.add }}{% endblock %}
+
+{% block content %}
+<div class="survey-form-shell">
+    {% if success is defined %}
+        <div class="form-status success">{{ message }}</div>
+    {% endif %}
+    {% if error is defined %}
+        <div class="form-status error">{{ message }}</div>
+    {% endif %}
+    {% if errors is defined %}
+        <div class="form-status error">
+            {% for msg in errors %}
+                <div>{{ msg }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" action="" enctype="multipart/form-data" id="surveyAddForm" class="survey-form-shell form-inner">
+        <div class="survey-form-card">
+            <h3 class="survey-form-title">{{ lang.mod_survey.form.basic_info }}</h3>
+
+            <!-- Language -->
+            <div class="m3-input-wrapper">
+                <select class="m3-input-lg" name="lang">
+                    {% set selected_lang = form_lang|default(form_defaults.lang)|default(site.lang) %}
+                    {% for item in lang_lang %}
+                        {% if item.status == 'y' or item.seo == selected_lang %}
+                            <option value="{{ item.seo }}" {% if item.seo == selected_lang %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_survey.form.language }}</label>
+            </div>
+
+            <!-- Question -->
+            <div class="m3-input-wrapper mb-12">
+                <input class="m3-input-lg" type="text" name="question" id="survey-question" value="{{ question|default(form_defaults.question) }}" placeholder=" " maxlength="255" required>
+                <label class="m3-floating-label">{{ lang.mod_survey.form.question }}</label>
+                <div class="input-char-counter" id="question-counter">0 / 255</div>
+            </div>
+        </div>
+
+        <!-- Poll Options Management -->
+        <div class="survey-form-card">
+            <h3 class="survey-form-title">{{ lang.mod_survey.form.options }}</h3>
+            <ul id="options-list" class="option-list" data-min-options-msg="{{ lang.mod_survey.validation.min_options|e('html_attr') }}">
+                <!-- Initial Option 1 -->
+                <li class="option-item" id="option_row_1">
+                    <div class="m3-input-wrapper">
+                        <input class="m3-input-lg" type="text" name="options[]" placeholder=" " required>
+                        <label class="m3-floating-label">{{ lang.mod_survey.options_management.option_text }} 1</label>
+                    </div>
+                    <button type="button" class="option-remove-btn" data-action="remove-option" data-target="option_row_1" aria-label="{{ lang.mod_survey.options_management.remove_option }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </li>
+                <!-- Initial Option 2 -->
+                <li class="option-item" id="option_row_2">
+                    <div class="m3-input-wrapper">
+                        <input class="m3-input-lg" type="text" name="options[]" placeholder=" " required>
+                        <label class="m3-floating-label">{{ lang.mod_survey.options_management.option_text }} 2</label>
+                    </div>
+                    <button type="button" class="option-remove-btn" data-action="remove-option" data-target="option_row_2" aria-label="{{ lang.mod_survey.options_management.remove_option }}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </li>
+            </ul>
+            <div class="add-option-btn-container">
+                <button type="button" class="add-option-btn" id="addOptionBtn" data-option-label="{{ lang.mod_survey.options_management.option_text|e('html_attr') }}" data-remove-label="{{ lang.mod_survey.options_management.remove_option|e('html_attr') }}">
+                    <i class="bi bi-plus-lg"></i>
+                    <span>{{ lang.mod_survey.options_management.add_option }}</span>
+                </button>
+            </div>
+            <input type="hidden" id="option-counter-id" value="2">
+        </div>
+
+        <!-- Publish Status -->
+        <div class="survey-form-card">
+            <h3 class="survey-form-title">{{ lang.mod_survey.columns.status }}</h3>
+            <div class="selection-grid" data-selection-group>
+                <label class="selection-card{% if status|default('y') == 'y' %} active{% endif %}">
+                    <input type="radio" name="status" value="y" {% if status|default('y') == 'y' %}checked{% endif %}>
+                    <div class="selection-header">
+                        <div class="selection-title">{{ lang.mod_survey.status.published }}</div>
+                        <i class="bi bi-check-circle-fill selection-check-icon"></i>
+                    </div>
+                    <div class="selection-copy">{{ lang.mod_survey.options.yes }}</div>
+                </label>
+                <label class="selection-card{% if status|default('y') == 'n' %} active{% endif %}">
+                    <input type="radio" name="status" value="n" {% if status|default('y') == 'n' %}checked{% endif %}>
+                    <div class="selection-header">
+                        <div class="selection-title">{{ lang.mod_survey.status.draft }}</div>
+                        <i class="bi bi-check-circle-fill selection-check-icon"></i>
+                    </div>
+                    <div class="selection-copy">{{ lang.mod_survey.options.no }}</div>
+                </label>
+            </div>
+        </div>
+
+        <!-- Access Control (ACL) -->
+        <div class="survey-form-card">
+            <h3 class="survey-form-title">{{ lang.mod_survey.form.access_control }}</h3>
+            <div class="m3-input-wrapper mb-0">
+                <select class="m3-input-lg" name="acl_id">
+                    <option value="0" {% if acl_id|default(0) == 0 %}selected{% endif %}>{{ lang.mod_survey.choose_wish }}</option>
+                    {% for item in mod_acl_acl_id %}
+                        <option value="{{ item.id }}" {% if acl_id|default(0) == item.id %}selected{% endif %}>{{ item.name|default(item.ad) }}</option>
+                    {% endfor %}
+                </select>
+                <label class="m3-floating-label">{{ lang.mod_survey.form.access_control }}</label>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+{% if success is not defined %}
+    <div class="survey-bottom-bar">
+        <a href="{{ site.saddress }}mod_survey/list" class="cancel-btn">
+            <i class="bi bi-arrow-left"></i>
+            <span>{{ lang.mod_survey.actions.cancel }}</span>
+        </a>
+        <button type="submit" form="surveyAddForm" name="add" value="1" class="save-btn">
+            <i class="bi bi-check2-circle"></i>
+            <span>{{ lang.mod_survey.actions.save }}</span>
+        </button>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/mod_survey_form.js?v=1.0"></script>
+{% endblock %}

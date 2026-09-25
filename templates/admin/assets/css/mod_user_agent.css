@@ -1,0 +1,376 @@
+/**
+ * Amed Framework - Agentic Dialogue Admin Stylesheet
+ * Mobile-First Phone-Centric Architecture (Taste Skill)
+ */
+
+:root {
+    --agent-bg: #f8fafc;
+    --agent-surface: #ffffff;
+    --agent-border: rgba(0, 0, 0, 0.08);
+    --agent-text-main: #0f172a;
+    --agent-text-muted: #64748b;
+    --agent-primary: #0284c7;
+    --agent-primary-hover: #0369a1;
+    --agent-primary-text: #ffffff;
+    --agent-bubble-model-bg: #ffffff;
+    --agent-bubble-model-border: rgba(0, 0, 0, 0.08);
+    --agent-bubble-user-bg: #0284c7;
+    --agent-bubble-user-text: #ffffff;
+    --agent-pill-bg: #f1f5f9;
+}
+
+/* Base Container */
+.agent-dialogue-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 540px;
+    margin: 0 auto;
+    min-height: calc(100dvh - 120px);
+    padding: 12px 14px 100px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+/* Status Header Bar */
+.agent-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    margin-bottom: 14px;
+    background: var(--agent-surface);
+    border: 1px solid var(--agent-border);
+    border-radius: 999px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.agent-status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.agent-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    animation: agentPulseDot 2s infinite ease-in-out;
+}
+
+.agent-status-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--agent-text-muted);
+    font-family: monospace, monospace;
+}
+
+.agent-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: transparent;
+    border: none;
+    color: var(--agent-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.agent-action-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.agent-action-btn:active {
+    transform: scale(0.96);
+}
+
+/* Dialogue Message Stream */
+.agent-dialogue-stream {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    flex: 1;
+}
+
+/* Message Rows */
+.agent-message-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    animation: agentFadeIn 0.25s ease-out;
+}
+
+.agent-row-model {
+    justify-content: flex-start;
+}
+
+.agent-row-user {
+    justify-content: flex-end;
+}
+
+/* Avatar */
+.agent-avatar {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    border-radius: 50%;
+    background: var(--agent-pill-bg);
+    border: 1px solid var(--agent-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    font-size: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+/* Message Bubbles */
+.agent-bubble {
+    display: flex;
+    flex-direction: column;
+    max-width: 85%;
+    padding: 12px 15px;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+.agent-bubble-model {
+    background: var(--agent-bubble-model-bg);
+    border: 1px solid var(--agent-bubble-model-border);
+    border-radius: 4px 18px 18px 18px;
+    color: var(--agent-text-main);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.agent-bubble-user {
+    background: var(--agent-bubble-user-bg);
+    border: 1px solid transparent;
+    border-radius: 18px 4px 18px 18px;
+    color: var(--agent-bubble-user-text);
+    box-shadow: 0 2px 5px rgba(2, 132, 199, 0.2);
+}
+
+/* Typography inside bubbles */
+.agent-message-content {
+    font-size: 14.5px;
+    line-height: 1.55;
+}
+
+.agent-message-content p {
+    margin: 0 0 8px;
+}
+
+.agent-message-content p:last-child {
+    margin-bottom: 0;
+}
+
+.agent-message-content ul,
+.agent-message-content ol {
+    margin: 6px 0 8px 18px;
+    padding: 0;
+}
+
+.agent-message-content li {
+    margin-bottom: 4px;
+}
+
+.agent-message-content code {
+    background: rgba(0, 0, 0, 0.06);
+    padding: 2px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.agent-bubble-user .agent-message-content code {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.agent-message-time {
+    font-size: 10.5px;
+    color: var(--agent-text-muted);
+    margin-top: 5px;
+    align-self: flex-end;
+}
+
+.agent-bubble-user .agent-message-time {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* Error message inside bubble */
+.agent-bubble-error {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+/* Thinking Indicator */
+.agent-thinking-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 2px;
+}
+
+.agent-thinking-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #64748b;
+    display: inline-block;
+    animation: agentBounce 1.4s infinite ease-in-out both;
+}
+
+.agent-thinking-dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.agent-thinking-dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+/* Fixed Bottom Input Bar */
+.agent-input-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    pointer-events: none;
+}
+
+.agent-chat-form {
+    pointer-events: auto;
+    max-width: 540px;
+    margin: 0 auto;
+    padding: 8px 14px calc(14px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--agent-border);
+    box-sizing: border-box;
+}
+
+.agent-input-pill {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: var(--agent-pill-bg);
+    border: 1px solid var(--agent-border);
+    border-radius: 24px;
+    padding: 5px 6px 5px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.agent-input-pill:focus-within {
+    border-color: var(--agent-primary);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+.agent-input-textarea {
+    flex: 1;
+    border: none;
+    background: transparent;
+    resize: none;
+    font-size: 14.5px;
+    line-height: 1.4;
+    max-height: 110px;
+    min-height: 24px;
+    outline: none;
+    padding: 6px 0;
+    color: var(--agent-text-main);
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.agent-input-textarea::placeholder {
+    color: var(--agent-text-muted);
+}
+
+.agent-send-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: var(--agent-primary);
+    color: var(--agent-primary-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.15s, background 0.15s, opacity 0.15s;
+    touch-action: manipulation;
+}
+
+.agent-send-btn:hover {
+    background: var(--agent-primary-hover);
+}
+
+.agent-send-btn:active {
+    transform: scale(0.92);
+}
+
+.agent-send-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Animations */
+@keyframes agentPulseDot {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.85);
+    }
+}
+
+@keyframes agentFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes agentBounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .agent-status-dot,
+    .agent-message-row,
+    .agent-thinking-dots span {
+        animation: none !important;
+        transition: none !important;
+    }
+}

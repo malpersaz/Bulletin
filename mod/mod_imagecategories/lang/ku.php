@@ -31,8 +31,8 @@ $lang['mod_imagecategories'] = [
         'language_root_parent_locked' => 'Kategoriyên koka zimanê divê li koka pergalê bimînin.',
         'parent_language_mismatch' => 'Zimanê kategoriya jorîn divê bi zimanê kategoriyê re yek be.',
         'parent_cycle' => 'Kategorî nikare di bin xwe an jî di bin yek ji bin-kategoriyên xwe de were veguhestin.',
-        'menu_parent_not_found' => 'Menuya jorîn a hilbijartî nehate dîtin.',
-        'menu_language_mismatch' => 'Zimanê menuya jorîn divê bi zimanê kategoriyê re yek be.',
+        'menu_parent_not_found' => 'Pêşeka jorîn a hilbijartî nehate dîtin.',
+        'menu_language_mismatch' => 'Zimanê pêşeka jorîn divê bi zimanê kategoriyê re yek be.',
         'order_update_failed' => 'Rêza kategoriyê nehate nûkirin.',
         'image_remove_failed' => 'Wêneyê kategoriyê nehate rakirin.',
     ],
@@ -54,14 +54,15 @@ $lang['mod_imagecategories'] = [
         'unique' => 'Nirxa %s jixwe heye. Ji kerema xwe re %s-ek din hilbijêre.',
         'inarray' => 'Qada %s tenê dikare van nirxan qebûl bike: %s.',
     ],
-    'roll' => [
-        'ad' => 'Rolên Rêvebirina Kategoriya Wêneyê',
+    'role' => [
+        'name' => 'Rolên Rêvebirina Kategoriya Wêneyê',
         'add' => 'Dikare kategoriyên wêneyê lê zêde bike',
         'edit' => 'Dikare kategoriyên wêneyê sererast bike',
         'delete' => 'Dikare kategoriyên wêneyê jê bibe',
         'list' => 'Dikare rêvebirina kategoriya wêneyê bibîne',
         'moderate_edit' => 'Dikare kategoriyên wêneyê yên kesên din sererast bike',
         'moderate_delete' => 'Dikare kategoriyên wêneyê yên kesên din jê bibe',
+        'gallery' => 'Dikare wênedankê lê zêde bike',
     ],
     'role_errors' => [
         'add' => 'Destûra te ya zêdekirina kategoriyên wêneyê tune ye.',
@@ -70,6 +71,7 @@ $lang['mod_imagecategories'] = [
         'list' => 'Destûra te ya dîtina rêvebirina kategoriya wêneyê tune ye.',
         'moderate_edit' => 'Tu nikarî kategoriyên wêneyê yên kesên din sererast bikî.',
         'moderate_delete' => 'Tu nikarî kategoriyên wêneyê yên kesên din jê bibî.',
+        'gallery' => 'Destûra te ya zêdekirina wênedankê tune ye.',
     ],
     'status' => [
         'root' => 'Kok',
@@ -89,7 +91,7 @@ $lang['mod_imagecategories'] = [
             'keywords' => 'Peyvên Sereke yên Meta',
             'description' => 'Danasîna Meta',
             'image' => 'Wêne',
-            'menu' => 'Jorê Menüyê',
+            'menu' => 'Pêşeka Dayîk',
             'acl_id' => 'Kontrola Gihiştinê',
         ],
         'radio' => [
@@ -102,9 +104,9 @@ $lang['mod_imagecategories'] = [
         'structure' => 'Avahî û Dîtin',
         'seo' => 'Detayên SEO',
         'publishing' => 'Têkiliyên Weşanê',
-        'image_help' => 'Ji bo lîsteyên wêneyê û menuyan wêneyekî kategoriyê bar bike.',
+        'image_help' => 'Ji bo lîsteyên wêneyê û pêşekan wêneyekî kategoriyê bar bike.',
         'parent_none' => 'Kategoriya asta jor',
-        'menu_none' => 'Tiştekî menuyê çêneke',
+        'menu_none' => 'Tiştekî pêşekê çêneke',
         'acl_none' => 'Gihiştina gelemperî',
     ],
     'list_ui' => [

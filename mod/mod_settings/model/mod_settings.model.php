@@ -7,6 +7,7 @@ class mod_settings_model extends ORM
     public $id;
     public $lang;
     public $title;
+    public $site_name;
     public $description;
     public $owner_name;
     public $phone;
@@ -31,4 +32,40 @@ class mod_settings_model extends ORM
     public $site_icon;
     public $logo_type;
     public $logo_symbol;
+    public $app_template;
+    public $use_animated_logo;
+    public $animated_logo_path;
+    public $animated_logo_type;
+    public $animated_logo_height;
+    public $animated_logo_aspect;
+    public $animated_logo_mode;
+    public $animated_logo_blend;
+    public $site_status;
+    public $maintenance_message;
+    public $maintenance_retry_after;
+    public $legal_company_name;
+    public $company_type;
+    public $trade_registry_number;
+    public $central_registration_number;
+    public $chamber_of_commerce;
+    public $tax_office;
+    public $tax_number;
+    public $vat_number;
+    public $authorized_person;
+    public $registered_email;
+    public $legal_contact_phone;
+    public $default_warranty_duration;
+    public $warranty_type;
+    public $return_policy_days;
+    public $warranty_description;
+    public $cookie_policy_content;
+    public $country;
+    public $stat_completed_projects;
+    public $stat_ongoing_projects;
+    public $stat_workforce;
+    public $stat_offices;
+    public $is_online_retail;
+    public $is_local_store;
+    public $is_service_business;
 }
+

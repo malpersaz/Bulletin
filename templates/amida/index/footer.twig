@@ -1,0 +1,169 @@
+<!-- Footer CSS -->
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ "now"|date("U") }}">
+
+<footer class="site-footer mt-auto py-5">
+	<div class="container">
+		<div class="row gy-4">
+			<!-- Site Information -->
+			<div class="col-md-5 col-lg-4">
+				<h5 class="fw-bold mb-3 d-flex align-items-center">
+                    {% if site.logo_path is defined and site.logo_path is not empty %}
+                        <img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" alt="Logo" height="30" class="me-2 d-inline-block">
+                    {% endif %}
+                    <span class="brand-text-gothic">{{ site.title }}</span>
+                </h5>
+				<p class="mb-0 opacity-75">{{ site.description }}</p>
+                <div class="mt-4 d-flex gap-3 feeds-area">
+                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="RSS Feed">
+                        <i class="bi bi-rss-fill text-warning"></i> RSS
+                    </a>
+                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" title="Sitemap">
+                        <i class="bi bi-diagram-3-fill text-info"></i> Sitemap
+                    </a>
+                </div>
+			</div>
+            
+            <div class="col-md-1 col-lg-2 d-none d-md-block">
+                <!-- Spacer -->
+            </div>
+
+			<!-- Contact & Social Information -->
+			<div class="col-md-6 col-lg-6">
+                <div class="card contact-card border-0 shadow-sm overflow-hidden rounded-3 h-100">
+                    <div class="card-body p-4">
+                        <!-- Section: Contact Us -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3 d-flex align-items-center">
+                                <i class="bi bi-headset me-2 text-primary"></i>
+                                {{ lang.index.contact_us }}
+                            </h5>
+                            <ul class="list-unstyled mb-0 ps-1">
+                                <!-- Phone Number -->
+                                {% if site.phone is defined and site.phone is not empty and site.phone != '' %}
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <div class="footer-icon-box me-3 shadow-sm rounded-circle">
+                                            <i class="bi bi-phone text-primary"></i>
+                                        </div>
+                                        <a href="tel:{{ site.phone }}" class="fs-6 fw-medium text-decoration-none transition-link">
+                                            {{ site.phone }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- WhatsApp Contact -->
+                                {% if site.whatsapp is not empty %}
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <div class="footer-icon-box me-3 shadow-sm rounded-circle">
+                                            <i class="bi bi-whatsapp text-success"></i>
+                                        </div>
+                                        <a href="https://wa.me/{{ site.whatsapp }}" target="_blank" class="text-decoration-none transition-link">
+                                            WhatsApp: {{ site.whatsapp }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Email Contact -->
+                                {% if site.mail is not empty %}
+                                    <li class="mb-3 d-flex align-items-center">
+                                        <div class="footer-icon-box me-3 shadow-sm rounded-circle">
+                                            <i class="bi bi-envelope text-info"></i>
+                                        </div>
+                                        <a href="mailto:{{ site.mail }}" class="text-decoration-none transition-link">
+                                            {{ site.mail }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Office Address -->
+                                {% if site.office_address is not empty %}
+                                    <li class="mb-3 d-flex align-items-start">
+                                        <div class="footer-icon-box me-3 shadow-sm rounded-circle mt-1">
+                                            <i class="bi bi-building text-warning"></i>
+                                        </div>
+                                        <span class="opacity-75">{{ site.office_address|raw }}</span>
+                                    </li>
+                                {% endif %}
+
+                                <!-- Business Address -->
+                                {% if site.work_address is not empty %}
+                                    <li class="mb-0 d-flex align-items-start">
+                                        <div class="footer-icon-box me-3 shadow-sm rounded-circle mt-1">
+                                            <i class="bi bi-geo-alt-fill text-danger"></i>
+                                        </div>
+                                        <span class="opacity-75">{{ site.work_address|raw }}</span>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                        <!-- Section: Follow Us -->
+                        {% if site.social_links is not empty %}
+                            <div class="pt-4 border-top">
+                                <h5 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="bi bi-share me-2 text-primary"></i>
+                                    {{ lang.index.follow_us }}
+                                </h5>
+                                <div class="d-flex gap-2 ps-1">
+                                    {% for link in site.social_links %}
+                                        {% if link.url|trim is not empty %}
+                                            <a href="{{ link.url }}" class="btn btn-light btn-sm rounded-circle social-icon-btn shadow-sm" target="_blank" title="{{ link.platform|capitalize }}">
+                                                <i class="{{ link.icon_class }}"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+			</div>
+		</div>
+
+		<!-- Google Maps Section -->
+		{% if site.map_embed_code is not empty %}
+			<div class="row mt-4">
+				<div class="col-12">
+                    <div class="card map-card border-0 shadow-sm overflow-hidden rounded-3">
+                        <div class="card-body p-4">
+                            <h5 class="fw-bold mb-3 d-flex align-items-center">
+                                <i class="bi bi-map-fill me-2 text-primary"></i>
+                                {{ lang.index.find_us }}
+                            </h5>
+                            <div class="map-container map-embed-wrapper rounded border shadow-sm">
+                                {{ site.map_embed_code|raw }}
+                            </div>
+                        </div>
+                    </div>
+				</div>
+			</div>
+		{% endif %}
+
+		<!-- Copyright -->
+		<div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4 mt-5 border-top copyright-section small">
+			<p class="mb-2 mb-md-0">
+                &copy; {{ site.established_year }} - {{ "now"|date("Y") }} 
+                <strong>{{ site.owner_name }}</strong>. 
+                {{ lang.index.copyright }}
+                <span class="mx-2 opacity-50">&bull;</span>
+                <a href="{{ site.saddress }}page/{{ lang.index.legal_info_slug is defined and lang.index.legal_info_slug is not empty ? lang.index.legal_info_slug : 'Legal_Information' }}" class="text-decoration-none text-reset opacity-75">
+                    {{ lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' }}
+                </a>
+                <span class="mx-2 opacity-50">&bull;</span>
+                <a href="{{ site.saddress }}page/{{ lang.index.cookie_policy_slug is defined and lang.index.cookie_policy_slug is not empty ? lang.index.cookie_policy_slug : 'Cookie_Policy' }}" class="text-decoration-none text-reset opacity-75">
+                    {{ lang.index.cookie_policy is defined and lang.index.cookie_policy is not empty ? lang.index.cookie_policy : 'Cookie Policy' }}
+                </a>
+            </p>
+			<div class="text-md-end opacity-75">
+                {% if site.build is defined and site.build %}
+                    <span class="me-2">{{ site.build }}</span>
+                {% endif %}
+                {% if site.version is defined and site.version %}
+                    <span class="ms-1">v{{ site.version }}</span>
+                {% endif %}
+			</div>
+		</div>
+	</div>
+</footer>
+
+{% include 'partials/_cookie_consent.twig' %}
+

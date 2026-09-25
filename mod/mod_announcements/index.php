@@ -17,20 +17,25 @@ class mod_announcements_mod extends BaseModuleController
     protected $has_gallery = true;
     protected $has_files = true;
 
-    // Image fields configuration  
+    // Image fields configuration (3:4 portrait ratio matching latest_announcements.twig sidebar card)
     protected $image_fields = [
         [
             'name' => 'image',
             'sizes' => [
                 '/' => [
-                    'width' => 200,
-                    'height' => NULL,
+                    'width' => 600,
+                    'height' => 780,
                     'option' => 'width',
                 ],
                 '/thumb' => [
-                    'width' => 100,
-                    'height' => NULL,
+                    'width' => 300,
+                    'height' => 390,
                     'option' => 'width',
+                ],
+                '/original' => [
+                    'width' => NULL,
+                    'height' => NULL,
+                    'option' => 'original',
                 ],
             ]
         ]
@@ -57,6 +62,23 @@ class mod_announcements_mod extends BaseModuleController
             'created_at|datetime',       // Date with formatting
             'status|badge'       // Status with badge formatter
         ];
+    }
+
+    protected function beforeSave($model)
+    {
+        $model->created_at = $this->normalizeDateTime(Req::Post_Safe('created_at'));
+        $model->user_id = $this->session->get('id');
+
+        return $model;
+    }
+
+    protected function beforeUpdate($model, $id)
+    {
+        if (isset($model->created_at)) {
+            $model->created_at = $this->normalizeDateTime($model->created_at);
+        }
+
+        return $model;
     }
 
     // All CRUD operations (add, edit, list, delete, image_remove_image) are now handled by BaseModuleController

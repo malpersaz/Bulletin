@@ -38,9 +38,9 @@ class datatable_model
         $unique = 'id';
         $page = Req::is_Post('page') ? Req::Post_Safe('page') : 1;
         if (
-            (Roll::hasPermission('mod_content', 'moderate_edit') === TRUE)
+            (Role::hasPermission('mod_content', 'moderate_edit') === TRUE)
             ||
-            (Roll::hasPermission('mod_content', 'moderate_delete') === TRUE)
+            (Role::hasPermission('mod_content', 'moderate_delete') === TRUE)
         ) {
             $moderate = TRUE;
         } else {
@@ -65,24 +65,24 @@ class datatable_model
         }
 
         $this->mod_content_model->select("id,name,image,lang,status,created_at")->gR();
-        $toplam = $this->mod_content_model->getSize();
-        $this->json['total'] = $toplam;
+        $total = $this->mod_content_model->getSize();
+        $this->json['total'] = $total;
         $this->json['page'] = $page;
 
-        // Eğer Sonuç Yoksa Malesef
-        if ($toplam < 1) {
+        // If no results found
+        if ($total < 1) {
             echo json_encode($this->json);
             exit();
         }
 
-        // Ofset Değeri
+        // Offset Value
         $offset = $page != 1 ? (($page - 1) * $rp) : NULL;
 
         $this->mod_content_model->limit($rp, $offset);
         $this->mod_content_model->order($sortname, $sortorder);
         $this->mod_content_model->getResult(TRUE, TRUE);
 
-        // Eğer Sonuç Yoksa
+        // If no results
         if ($this->mod_content_model->getSize() < 1) {
             echo json_encode($this->json);
             exit();

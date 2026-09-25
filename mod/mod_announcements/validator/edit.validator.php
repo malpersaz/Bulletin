@@ -3,7 +3,7 @@ class edit_validator
 {
     public $valid;
     public $lang;
-    public $hatalar = [];
+    public $errors = [];
     function __construct()
     {
         // Load Validator Library
@@ -15,48 +15,48 @@ class edit_validator
     {
         #Check Required
         // lang Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'lang',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['language'])
+                'message' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['language'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // name Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['name'])
+                'message' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['name'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // created_at Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'created_at',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['created_at'])
+                'message' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['created_at'])
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // content Required
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'content',
-                'fonk' => 'required',
+                'func' => 'required',
                 'arg' => '',
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['content'])
+                'message' => sprintf($this->lang['mod_announcements']['validator']['required'], $this->lang['mod_announcements']['admin']['columns']['content'])
             ]
         );
         if ($this->_check() === True) {
@@ -65,15 +65,15 @@ class edit_validator
 
         #Check length
         // name Length
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'name',
-                'fonk' => 'length',
+                'func' => 'length',
                 'arg' => [
                     'min' => '2',
                     'max' => '255'
                 ],
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['length'], $this->lang['mod_announcements']['admin']['columns']['name'], '2', '255')
+                'message' => sprintf($this->lang['mod_announcements']['validator']['length'], $this->lang['mod_announcements']['admin']['columns']['name'], '2', '255')
             ]
         );
         if ($this->_check() === True) {
@@ -82,24 +82,24 @@ class edit_validator
 
         #Check inarray
         // status in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'status',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['inarray'], $this->lang['mod_announcements']['admin']['columns']['status'], 'y,n')
+                'message' => sprintf($this->lang['mod_announcements']['validator']['inarray'], $this->lang['mod_announcements']['admin']['columns']['status'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
             return True;
         }
         // deck in Array
-        $this->valid->ekle(
+        $this->valid->add(
             [
                 'name' => 'deck',
-                'fonk' => 'array',
+                'func' => 'array',
                 'arg' => ['y', 'n'],
-                'mesaj' => sprintf($this->lang['mod_announcements']['validator']['inarray'], $this->lang['mod_announcements']['admin']['columns']['deck'], 'y,n')
+                'message' => sprintf($this->lang['mod_announcements']['validator']['inarray'], $this->lang['mod_announcements']['admin']['columns']['deck'], 'y,n')
             ]
         );
         if ($this->_check() === True) {
@@ -112,7 +112,7 @@ class edit_validator
 
         #Check Unique
 
-        #Check Unique with column düzenle
+        #Check Unique with edit column
 
         return False;
     }
@@ -121,10 +121,10 @@ class edit_validator
     {
 
         if ($this->valid->check()) {
-            $this->hatalar = $this->valid->list_errors();
+            $this->errors = $this->valid->list_errors();
         }
 
-        if (count($this->hatalar) > 0) {
+        if (count($this->errors) > 0) {
             return True;
         }
         return False;

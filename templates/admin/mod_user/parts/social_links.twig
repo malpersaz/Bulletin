@@ -1,9 +1,34 @@
+{# mod_user social_links part - MD3 Phone-First Pure Twig Template #}
+<div class="settings-social-list">
 {% for platform in social_platforms %}
     {% set social_value = social_links is defined and attribute(social_links, platform.key) is defined ? attribute(social_links, platform.key) : '' %}
-    <div class="form-row">
-        <div class="m3-input-wrapper">
-            <input class="m3-input-lg" name="social_links[{{ platform.key }}]" value="{{ social_value }}" type="text" id="social_{{ platform.key }}" placeholder=" " inputmode="url" autocapitalize="off" autocomplete="off" spellcheck="false">
-            <label class="m3-floating-label">{{ platform.label }}</label>
+    
+    <div class="settings-social-item platform-{{ platform.key }}">
+        <div class="social-item-main">
+            <div class="social-icon-wrapper">
+                <i class="{{ platform.icon_class|default('bi bi-link') }}"></i>
+            </div>
+            <div class="social-info-wrapper">
+                <strong class="social-platform-label">{{ platform.label }}</strong>
+                <span id="social_preview_{{ platform.key }}" class="social-preview-text" data-action="edit-social-link" data-key="{{ platform.key }}" data-label="{{ platform.label }}">
+                    {% if social_value != '' %}
+                        {{ social_value }}
+                    {% else %}
+                        <span class="social-placeholder">https://...</span>
+                    {% endif %}
+                </span>
+                <input type="hidden" name="social_links[{{ platform.key }}]" id="social_input_{{ platform.key }}" value="{{ social_value }}">
+            </div>
+        </div>
+        <div class="social-item-actions">
+            <label class="m3-modern-switch" title="Active / Inactive">
+                <input type="checkbox" name="social_active[{{ platform.key }}]" value="y" {% if social_value != '' %}checked{% endif %}>
+                <span class="m3-modern-slider"></span>
+            </label>
+            <button type="button" class="social-edit-btn" data-action="edit-social-link" data-key="{{ platform.key }}" data-label="{{ platform.label }}" title="{{ lang.mod_user.change }}">
+                <i class="bi bi-pencil-square"></i>
+            </button>
         </div>
     </div>
 {% endfor %}
+</div>

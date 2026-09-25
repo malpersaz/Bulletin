@@ -43,7 +43,7 @@ $lang['mod_user_pm']=[
 						'recipient_col'=>'Wergir',
 						'message_info_sent'=>'Ev peyam ji bo <strong>%s</strong> di <strong>%s</strong> de hate şandin.',
 						'sent_followup_note'=>'Şandinên dawî bibînin û bi çend gavên hêsan dîsa hereket bikin.',
-						'reply_action_alt'=>'Bibersivîne',
+						'reply_action_tooltip' =>'Bibersivîne',
 						'unread'=>'Nexwende',
 						'total'=>'Hemû',
 						'loading'=>'Tê barkirin...',
@@ -89,16 +89,17 @@ $lang['mod_user_pm']['error']=[
 						'group_not_selected'=>'Ji kerema xwe koma endaman hilbijêrin.',
 						'group_not_found'=>'Koma endaman a ku we diyar kirî nehate dîtin!'
 					];
-$lang['mod_user_pm']['roll']=[
-						'ad'=>'Rolên Peyamên Taybet',
+$lang['mod_user_pm']['role']=[
+						'name'=>'Rolên Peyamên Taybet',
+						'roles'=>'Peyamên Taybet',
 						'send'=>'Dikare peyamên taybet bişîne',
-						'bulk'=>'Dikare ji zêdetirî endamekî re peyama taybet a komî bişîne.',
-						'group_bulk'=>'Dikare ji koma ku dixwaze re peyama komî bişîne.',
-						'all'=>'Dikare di heman demê de ji hemû endaman re peyama taybet bişîne'
+						'bulk'=>'Dikare ji zêdetirî endamekî re peyama taybet a komî bişîne',
+						'group_bulk'=>'Dikare ji komên endaman re peyama komî bişîne',
+						'all'=>'Dikare di heman demê de ji hemû endaman re peyama taybet bişîne',
 ];
 $lang['mod_user_pm']['role_errors']=[
-						'send'=>'Ji bo şandina peyamên taybet, divê hûn pêşî <a href="register" style="color:#000">Bibe endam</a>.',
+						'send'=>'Ji bo şandina peyamên taybet, divê hûn pêşî <a href="register">Bibe endam</a>.',
 						'bulk'=>'Destûra te ya şandina peyamên taybet ên komî tune ye.',
 						'group_bulk'=>'Destûra te ya şandina peyamên taybet ên komî ji koman re tune ye.',
-						'all'=>'Destûra te ya şandina peyamên taybet ji hemû endaman re di heman demê de tune ye.'
+						'all'=>'Destûra te ya şandina peyamên taybet ji hemû endaman re di heman demê de tune ye.',
 ];

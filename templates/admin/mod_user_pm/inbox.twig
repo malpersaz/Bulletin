@@ -2,7 +2,6 @@
 {% set show_navbar = false %}
 {% set show_search = true %}
 {% set show_search_filter_button = false %}
-{% set show_sidebar = false %}
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
@@ -47,7 +46,7 @@
         <input type="hidden" name="start" id="filterStart" value="0">
         <input type="hidden" name="length" id="filterLength" value="10">
         <input type="hidden" name="draw" id="filterDraw" value="1">
-        <input type="hidden" name="arama[subject]" id="filterSearch" value="">
+        <input type="hidden" name="search[subject]" id="filterSearch" value="">
         <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
         <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
     </form>
@@ -334,7 +333,7 @@
 
 {% block scripts %}
 <script>
-    const RADRES_URL = '{{ site.iaddress }}';
+    const IADDRESS_URL = '{{ site.iaddress }}';
     const PM_LANG = {
         read: "{{ lang.mod_user_pm.view_action|e('js') }}",
         reply: "{{ lang.mod_user_pm.reply_action|e('js') }}",

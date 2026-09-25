@@ -122,6 +122,15 @@ class ContentManager {
 
             this.renderCards(data.data);
 
+            if (typeof data.totalPublication !== 'undefined') {
+                const totalEl = document.getElementById('statTotalPublication');
+                if (totalEl) totalEl.textContent = data.totalPublication;
+            }
+            if (typeof data.draftPublication !== 'undefined') {
+                const draftEl = document.getElementById('statDraftPublication');
+                if (draftEl) draftEl.textContent = data.draftPublication;
+            }
+
             // Update pagination tracking
             this.start += this.length;
             this.draw++;
@@ -206,10 +215,10 @@ class ContentManager {
 
             // Status Logic
             let statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.draft : "Draft";
-            let statusColor = "#0B57D0"; // Blue
+            let statusColor = "#FFAB00"; // Orange
             if (statusRaw === 'y') {
                 statusText = (typeof CONTENT_LANG !== 'undefined') ? CONTENT_LANG.active : "Active";
-                statusColor = "#2E7D32"; // Green
+                statusColor = "var(--md-sys-color-primary)"; // Purple/Primary
             }
 
             // Category Logic
@@ -228,39 +237,47 @@ class ContentManager {
 
             // HTML Structure (Updated to match Prototype)
             card.innerHTML = `
-                <div class="card-content-layout" style="display:flex; gap:12px;">
-                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f8f2fa;'}; flex-shrink: 0; width: 80px; height: 80px; border-radius: 8px;">
+                <div class="card-content-layout">
+                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
                         ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
                     </div>
                     
-                    <div class="card-body-col" style="flex:1; display:flex; flex-direction:column; justify-content:space-between; min-width:0;">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start; width:100%;">
-                             <div style="flex:1; min-width:0;">
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
-                                    <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
+                    <div class="card-body-col">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                             <div>
+                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
+                                    <span class="hero-slider-badge" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'} align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:rgba(255,193,7,0.18); color:#8a5a00; font-weight:700;">
                                         <i class="bi bi-stars"></i> ${safeSliderBadge}
                                     </span>
-                                    <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${safeStatusText}</span>
+                                    <span class="hero-slider-dot" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'}">•</span>
+                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
+                                    <span>•</span>
+                                    <span>${safeCategoryName}</span>
                                 </div>
-                                <h3 style="margin:4px 0; font-size:16px; font-weight:700; color: var(--md-sys-color-on-surface); word-break:break-word; line-height:1.2; text-align: left;">${safeTitleText}</h3>
+                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
                              </div>
-                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;" aria-label="More actions">
+                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
                                 <i class="bi bi-three-dots-vertical"></i>
                              </button>
                         </div>
-                    </div>
-                </div>
 
-                <div class="meta-row" style="margin-top:12px; display:flex; align-items:center; width:100%; font-size:12px; color: var(--md-sys-color-on-surface-variant); border-top: 1px solid var(--md-sys-color-outline-variant, #EADDFF); padding-top: 8px;">
-                     <span style="display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
-                     <span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
-                     ${safeAuthorName ? `<span style="margin-left: 12px; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-person" style="font-size:11px;"></i> ${safeAuthorName}</span>` : ''}
-                     <span style="margin-left: auto; display:flex; align-items:center; gap:4px; white-space:nowrap;"><i class="bi bi-diagram-2" style="font-size:11px;"></i> ${safeCategoryName}</span>
+                        <div class="meta-row" style="margin-top:8px;">
+                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
+                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
+                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
+                        </div>
+                    </div>
                 </div>
             `;
 
             const thumbnail = card.querySelector('.card-thumbnail');
             if (thumbnail) {
+                if (imgSrc) {
+                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
+                    thumbnail.style.backgroundSize = 'cover';
+                    thumbnail.style.backgroundPosition = 'center';
+                }
+
                 thumbnail.addEventListener('click', (event) => {
                     event.stopPropagation();
                     this.processImageUpload(id);
@@ -432,8 +449,8 @@ class ContentManager {
             this.imageModalTitle.textContent = CONTENT_LANG.image_title;
         }
         if (this.imageModalSubtitle) {
-            this.imageModalSubtitle.textContent = '';
-            this.imageModalSubtitle.hidden = true;
+            this.imageModalSubtitle.textContent = title || '';
+            this.imageModalSubtitle.hidden = !title;
         }
 
         this.resetListImageUploader();
@@ -564,7 +581,7 @@ class ContentManager {
 
             this.closeImageUploader();
             await this.loadData(true);
-            showSnackbar(CONTENT_LANG.image_remove_success || CONTENT_LANG.image_updated, 'success');
+            showSnackbar(CONTENT_LANG.image_remove_success || CONTENT_LANG.image_updated, 'success', 2000);
         } catch (error) {
             console.error('Remove image error:', error);
             showSnackbar(CONTENT_LANG.error_general, 'error');
@@ -600,9 +617,15 @@ class ContentManager {
             const result = await response.json();
 
             if (result.status === 'success') {
+                const newImgUrl = result.url || result.image_url || '';
+                this.imageModalState.hasExistingImage = true;
+                if (newImgUrl) {
+                    this.imageModalState.existingImageSrc = newImgUrl;
+                }
+                this.resetListImageUploader({ preserveExisting: true });
                 this.closeImageUploader();
                 await this.loadData(true);
-                showSnackbar(result.message || CONTENT_LANG.image_updated, 'success');
+                showSnackbar(result.message || CONTENT_LANG.image_updated, 'success', 2000);
             } else {
                 this.imageUploader?.showFeedback(result.message || CONTENT_LANG.error_upload, 'error');
                 showSnackbar(result.message || CONTENT_LANG.error_upload, 'error');
@@ -630,7 +653,7 @@ class ContentManager {
 
         const isPublished = (status === 'y');
         if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, isPublished, ['video']);
+            openContextMenu(id, title, isPublished);
         }
     }
 
@@ -657,7 +680,7 @@ class ContentManager {
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarGallery', 'toolbarVideo'];
+        const ids = ['toolbarEdit', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarGallery', 'toolbarVideo', 'toolbarFaq'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
@@ -770,13 +793,36 @@ function openPublicationGalleryManager(publicationId) {
         return;
     }
 
-    window.location.href = `${SITE_URL}mod_gallery/list/mod_publication/${publicationId}`;
+    const url = `${SITE_URL}mod_gallery/list/mod_publication/${publicationId}`;
+    if (window.AFModalEngine) {
+        AFModalEngine.push(url, { skipHistory: true });
+    } else {
+        window.location.href = url;
+    }
 }
 
 window.gallerySelected = function () {
     const mgr = window.contentManager;
     if (mgr && mgr.selectedContentId) {
         openPublicationGalleryManager(mgr.selectedContentId);
+    }
+};
+
+function openPublicationFaqManager(publicationId) {
+    if (!publicationId) return;
+
+    const url = `${SITE_URL}mod_faq/list/mod_publication/${publicationId}`;
+    if (window.AFModalEngine) {
+        AFModalEngine.push(url, { skipHistory: true });
+    } else {
+        window.location.href = url;
+    }
+}
+
+window.faqSelected = function () {
+    const mgr = window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        openPublicationFaqManager(mgr.selectedContentId);
     }
 };
 
@@ -799,7 +845,7 @@ window.deleteSelected = function () {
         showDenyButton: false,
         confirmButtonColor: '#B71C1C',
         cancelButtonColor: '#6750A4',
-        confirmButtonText: '<i class="bi bi-trash3"></i> ' + adminLang.context_menu.delete_confirm,
+        confirmButtonText: '<i class="bi bi-trash3"></i> ' + (adminLang.context_menu?.confirm || 'Yes'),
         cancelButtonText: '<i class="bi bi-x-lg"></i> ' + adminLang.context_menu.cancel,
         background: 'var(--md-sys-color-surface-container-high, #fff)',
         color: 'var(--md-sys-color-on-surface, #1C1B1F)',
@@ -810,20 +856,25 @@ window.deleteSelected = function () {
         if (result.isConfirmed) {
             const formData = new FormData();
             formData.append('delete[]', id);
+            formData.append('ajax_request', '1');
 
             fetch(`${MODULE_URL}delete`, {
                 method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: formData
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if ((msg || '').trim() === 'Success') {
+                    const trimmedMsg = (msg || '').trim();
+                    if (trimmedMsg === 'Success') {
                         mgr.selectedContentId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
                         showSnackbar(adminLang.context_menu.delete_success, 'success');
                     } else {
-                        showSnackbar(msg, 'error');
+                        showSnackbar(trimmedMsg || CONTENT_LANG.error_general, 'error');
                     }
                 })
                 .catch(err => {
@@ -856,6 +907,10 @@ window.handleContextAction = function (action) {
         case 'gallery':
             closeContextMenu();
             openPublicationGalleryManager(id);
+            return;
+        case 'faq':
+            closeContextMenu();
+            openPublicationFaqManager(id);
             return;
         case 'files':
             closeContextMenu();
@@ -905,18 +960,23 @@ window.toggleStatus = function (id, currentStatus) {
         if (result.isConfirmed) {
             const formData = new FormData();
             formData.append('query[]', id);
+            formData.append('ajax_request', '1');
 
             fetch(`${MODULE_URL}${endpoint}`, {
                 method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
                 body: formData
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if ((msg || '').trim() === 'Success') {
+                    const trimmedMsg = (msg || '').trim();
+                    if (trimmedMsg === 'Success') {
                         window.contentManager.loadData(true);
                         showSnackbar(successMsg, 'success');
                     } else {
-                        showSnackbar(msg, 'error');
+                        showSnackbar(trimmedMsg || CONTENT_LANG.error_general, 'error');
                     }
                 })
                 .catch(err => {
@@ -929,16 +989,13 @@ window.toggleStatus = function (id, currentStatus) {
 
 // Media relation picker
 window.openMediaRelationPicker = function(pubId, type) {
-    window.currentMediaPickerPubId = pubId;
-    window.currentMediaPickerType = type;
-
     let endpoint = '';
     let title = '';
     let addUrl = '';
     
     if (type === 'gallery') {
         endpoint = `${MODULE_URL}ajax_get_galleries`;
-        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.gallery : 'Galeriya Heyî Hilbijêre';
+        title = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.picker) ? CONTENT_LANG.picker.gallery : 'Select Existing Gallery';
         addUrl = `${SITE_URL}mod_gallery/list/mod_publication/${pubId}`;
     } else if (type === 'files') {
         endpoint = `${MODULE_URL}ajax_get_files`;
@@ -947,8 +1004,6 @@ window.openMediaRelationPicker = function(pubId, type) {
     }
 
     window.currentMediaPickerAddUrl = addUrl;
-    window.currentMediaPickerRelationUrl = MODULE_URL + 'ajax_update_relation';
-    window.currentMediaPickerModuleName = 'mod_publication';
     const addBtn = document.getElementById('selectPickerAddBtn');
     if (addBtn) addBtn.style.display = 'block';
 
@@ -1004,12 +1059,22 @@ window.openMediaRelationPicker = function(pubId, type) {
             });
         }
         
-        // Already initialized at the start of openMediaRelationPicker
+        window.currentMediaPickerPubId = pubId;
+        window.currentMediaPickerType = type;
+        
+        const card = document.querySelector(`.content-card[data-id="${pubId}"]`);
+        const itemTitle = card?.querySelector('h3')?.textContent?.trim() || '';
         
         const pickerTitleEl = document.getElementById('selectPickerTitle');
-        const pickerSubtitleEl = document.getElementById('selectPickerActiveLang');
+        const pickerLangEl = document.getElementById('selectPickerActiveLang');
+        const pickerSubtitleEl = document.getElementById('selectPickerSubtitle');
+        
         if (pickerTitleEl) pickerTitleEl.textContent = title;
-        if (pickerSubtitleEl) pickerSubtitleEl.textContent = ''; 
+        if (pickerLangEl) pickerLangEl.textContent = ''; 
+        if (pickerSubtitleEl) {
+            pickerSubtitleEl.textContent = itemTitle;
+            pickerSubtitleEl.style.display = itemTitle ? 'block' : 'none';
+        }
 
         select.innerHTML = '';
         data.forEach(item => {
@@ -1038,6 +1103,11 @@ window.openMediaRelationPicker = function(pubId, type) {
     });
 };
 
+window.handleSelectPickerAdd = function() {
+    if (window.currentMediaPickerAddUrl) {
+        window.location.href = window.currentMediaPickerAddUrl;
+    }
+};
 
 // Listen to select picker close
 document.addEventListener('click', function(e) {

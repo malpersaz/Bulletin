@@ -55,7 +55,7 @@ class videos_model extends ORM
     mod_video_embed.acl_id AS acl_id,
     mod_video_embed.image,
     mod_video_embed.lang,
-    mod_video_embed_category.name AS category_name,
+    mod_video_embed_category.name AS categoryname,
     mod_video_embed_category.seo AS category_seo,
     mod_video_embed_category.id AS category_id,
     mod_user.username,

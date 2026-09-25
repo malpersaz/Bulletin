@@ -6,18 +6,7 @@
 
 {% block headline %}{{ lang.mod_video_embed.list }}{% endblock %}
 
-{% block styles %}
-<style>
-    .standard-toolbar #toolbarPublish.active {
-        color: #0b57d0 !important;
-        background: rgba(11, 87, 208, 0.12);
-    }
-    .standard-toolbar #toolbarPublish.active.is-published {
-        color: #2e7d32 !important;
-        background: rgba(46, 125, 50, 0.12);
-    }
-</style>
-{% endblock %}
+
 
 {% block content %}
 
@@ -34,16 +23,16 @@
 </div>
 
 <!-- EMPTY STATE -->
-<div id="empty-state" class="empty-state-container" style="display: none;">
+<div id="empty-state" class="empty-state-container d-none">
     <div class="empty-icon-box">
         <i class="bi bi-camera-video"></i>
     </div>
-    <h2 style="font-weight: 800;">{{ lang.mod_video_embed.datatable.zero_records }}</h2>
-    <p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px; margin-top: 4px;">{{ lang.mod_video_embed.datatable.empty_table }}</p>
+    <h2 class="fw-800">{{ lang.mod_video_embed.datatable.zero_records }}</h2>
+    <p class="color-variant fs-14 mt-4">{{ lang.mod_video_embed.datatable.empty_table }}</p>
 </div>
 
 <!-- INFINITE SCROLL LOADER -->
-<div id="infinite-loader" class="infinite-loader" style="display: none;">
+<div id="infinite-loader" class="infinite-loader d-none">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
@@ -51,12 +40,12 @@
 </div>
 
 <!-- HIDDEN FILTERS -->
-<form id="filterForm" style="display: none;">
+<form id="filterForm" class="d-none">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
-    <input type="hidden" name="arama[name]" id="filterSearch" value="">
-    <input type="hidden" name="arama[lang]" id="filterLang" value="">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
@@ -64,29 +53,34 @@
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="slider" title="{{ lang.mod_video_embed.hero_slider_add }}">
+            <i class="bi bi-stars"></i>
+            <span>{{ lang.mod_video_embed.hero_slider_badge }}</span>
+        </button>
+
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit">
             <i class="bi bi-pencil-fill"></i>
             <span>{{ lang.mod_video_embed.button.edit }}</span>
         </button>
         
-        <button id="toolbarImage" class="toolbar-item" onclick="imageSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarImage" class="toolbar-item is-disabled" data-action="image">
             <i class="bi bi-image"></i>
             <span>{{ lang.mod_video_embed.admin.columns.image }}</span>
         </button>
 
-        <button id="toolbarPublish" class="toolbar-item" onclick="publishToggleSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarPublish" class="toolbar-item is-disabled" data-action="publish">
             <i id="toolbarPublishIcon" class="bi bi-eye-fill"></i>
             <span id="toolbarPublishText">{{ lang.mod_video_embed.admin.publish.key }}</span>
         </button>
 
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete">
             <i class="bi bi-trash3-fill"></i>
             <span>{{ lang.mod_video_embed.button.delete }}</span>
         </button>
     </div>
 
     <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_video_embed/add'" aria-label="{{ lang.mod_video_embed.add|default('Vîdyoya Gulkirî Lêzêde Bike') }}">
+    <button class="main-fab" id="mainFab" data-href="{{ site.saddress }}mod_video_embed/add" aria-label="{{ lang.mod_video_embed.add }}">
         <i class="bi bi-plus-lg"></i>
     </button>
 {% endblock %}
@@ -99,14 +93,20 @@
     const VIDEO_LANG = {
         active: "{{ lang.mod_video_embed.status_badge.active|e('js') }}",
         draft: "{{ lang.mod_video_embed.status_badge.draft|e('js') }}",
+        hero_slider_badge: "{{ lang.mod_video_embed.hero_slider_badge|e('js') }}",
+        hero_slider_add: "{{ lang.mod_video_embed.hero_slider_add|e('js') }}",
+        hero_slider_remove: "{{ lang.mod_video_embed.hero_slider_remove|e('js') }}",
+        hero_slider_added: "{{ lang.mod_video_embed.hero_slider_added|e('js') }}",
+        hero_slider_removed: "{{ lang.mod_video_embed.hero_slider_removed|e('js') }}",
+        hero_slider_error: "{{ lang.mod_video_embed.hero_slider_error|e('js') }}",
         publish: "{{ lang.mod_video_embed.admin.publish.key|e('js') }}",
         unpublish: "{{ lang.mod_video_embed.admin.unpublish.key|e('js') }}",
         confirm_delete: "{{ lang.mod_video_embed.delete_confirm|e('js') }}",
         confirm_publish: "{{ lang.mod_video_embed.quick_publish_confirm|e('js') }}",
         confirm_unpublish: "{{ lang.mod_video_embed.quick_unpublish_confirm|e('js') }}",
-        error_general: "{{ lang.mod_video_embed.hata|e('js') }}",
-        confirm_yes: "{{ lang.mod_video_embed.button.evet|e('js') }}",
-        confirm_no: "{{ lang.mod_video_embed.button.hayir|e('js') }}",
+        error_general: "{{ lang.mod_video_embed.error|e('js') }}",
+        confirm_yes: "{{ lang.mod_video_embed.button.yes|e('js') }}",
+        confirm_no: "{{ lang.mod_video_embed.button.no|e('js') }}",
         loading: "{{ lang.mod_video_embed.datatable.loading_records|e('js') }}",
         information: "{{ lang.mod_video_embed.information|e('js') }}",
         image_update_confirm: "{{ lang.mod_video_embed.image_update_confirm|e('js') }}",
@@ -121,6 +121,6 @@
         }
     };
 </script>
-<script src="/templates/admin/assets/js/mod_video_embed.js?v=1.0"></script>
+<script src="/templates/admin/assets/js/mod_video_embed.js?v=1.1"></script>
 <!-- toolbarVideo toolbarSlider toolbarHomepage -->
 {% endblock %}

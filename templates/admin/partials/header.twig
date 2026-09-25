@@ -1,160 +1,647 @@
 <!-- TOP APP BAR -->
 <header class="top-app-bar top-app-bar-default">
-    <div class="headline{% if page_headline is not defined or page_headline is empty %} site-title-font{% endif %}">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
-    <div class="user-menu-wrapper" style="position: relative; display: inline-flex; justify-content: center; align-items: center; padding-right: 4px;">
-        <div class="avatar-small" style="cursor:pointer;" onclick="openUserMenuSheet()" title="{{ lang.management.user_menu_title }}">
+    {% if back_url is defined and back_url %}
+        <a href="{{ back_url }}" class="header-back-btn" aria-label="{{ lang.management.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+    {% endif %}
+    {% set breadcrumb_current = (page_headline is defined and page_headline is not empty ? page_headline : '')|striptags|trim %}
+    <div class="headline-wrap">
+        <div class="headline{% if page_headline is not defined or page_headline is empty %} site-title-font{% endif %}">{{ (page_headline is defined and page_headline is not empty ? page_headline : site.title)|raw }}</div>
+        <nav class="breadcrumb-nav" aria-label="{{ lang.management.site_home }} / {{ lang.mod_user.panel.panel_title }}">
+            <a href="{{ site.saddress }}" target="_blank" rel="noopener" class="breadcrumb-link">{{ lang.management.site_home }}</a>
+            <i class="bi bi-chevron-right breadcrumb-sep" aria-hidden="true"></i>
+            <a href="{{ site.saddress }}mod_user/panel" class="breadcrumb-link">{{ lang.mod_user.panel.panel_title }}</a>
+            {% if breadcrumb_current is not empty and breadcrumb_current != lang.mod_user.panel.panel_title %}
+                <i class="bi bi-chevron-right breadcrumb-sep" aria-hidden="true"></i>
+                <span class="breadcrumb-current" aria-current="page">{{ breadcrumb_current|raw }}</span>
+            {% endif %}
+        </nav>
+    </div>
+    <div class="user-menu-wrapper">
+        <div class="avatar-small" data-action="open-user-menu" title="{{ lang.management.user_menu_title }}">
             {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
-                <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="" class="avatar-img">
             {% else %}
-                <span style="font-size: 16px; font-weight: 600; color: var(--md-sys-color-on-blue-container, #001D3A);">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
+                <span class="avatar-initials">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
             {% endif %}
         </div>
     </div>
 </header>
 
 <!-- USER MENU SHEET -->
-<div class="overlay" id="user-menu-overlay" onclick="closeUserMenuSheet()"></div>
-<div class="bottom-sheet" id="user-menu-sheet">
+<div class="overlay" id="user-menu-overlay" data-action="close-user-menu"></div>
+<dialog class="bottom-sheet" id="user-menu-sheet" aria-modal="true" aria-labelledby="user-menu-header-name">
     <div class="context-menu-header">
-        <div class="user-menu-avatar-large">
-            {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
-                <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-            {% else %}
-                <span style="font-size: 36px; font-weight: 600; color: var(--md-sys-color-on-blue-container, #001D3A); display: flex; align-items: center; justify-content: center; height: 100%;">{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
-            {% endif %}
+        <!-- TOP LEFT: CLOSE BUTTON (X) -->
+        <button type="button" class="icon-btn modal-close-btn user-menu-close-btn" data-action="close-user-menu" title="{{ lang.mod_settings.button.close }}" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+
+        <!-- CENTER: USER AVATAR & INFO -->
+        <div class="modal-title-wrapper user-menu-header-center" id="user-menu-header-center">
+            <div class="user-menu-avatar-large">
+                {% if session.image is defined and session.image != '' and session.image != 'avatar.png' %}
+                    <img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="Avatar">
+                {% else %}
+                    <span>{{ (session.full_name is defined and session.full_name is not empty ? session.full_name : session.username)|slice(0, 1)|upper }}</span>
+                {% endif %}
+            </div>
+            <div class="user-menu-header-info">
+                <span class="user-menu-header-name" id="user-menu-header-name">{{ session.full_name }}</span>
+                <span class="user-menu-header-group">{% if session.group_name is defined %}{{ session.group_name }}{% else %}{{ lang.management.administrator_group }}{% endif %}</span>
+            </div>
         </div>
-        <div class="user-menu-header-info">
-            <span class="user-menu-header-name">{{ session.full_name }}</span>
-            <span class="user-menu-header-group">{% if session.group_name is defined %}{{ session.group_name }}{% else %}{{ lang.management.administrator_group }}{% endif %}</span>
+
+        <!-- CENTER: SUBMENU TITLE -->
+        <div class="modal-title-wrapper user-menu-header-sub is-hidden" id="user-menu-header-sub">
+            <i class="bi bi-shield-lock" id="user-menu-sub-icon"></i>
+            <h3 id="user-menu-sub-title" data-title-admin="{{ lang.management.administration_menu }}" data-title-pm="{{ lang.management.pm_management_menu }}">{{ lang.management.administration_menu }}</h3>
         </div>
+
+        <!-- TOP RIGHT: BACK BUTTON (<) (Visible in submenus) -->
+        <button type="button" class="icon-btn modal-back-btn user-menu-back-btn is-hidden" id="user-menu-back-btn" data-action="user-menu-main" title="{{ lang.mod_settings.button.back }}" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
     </div>
     
-    <div id="user-menu-main" style="padding: 4px 0;">
-        <a href="{{ site.saddress }}mod_user/info" class="context-action-item" style="text-decoration:none;">
+    <div id="user-menu-main" class="user-menu-list">
+        <a href="{{ site.saddress }}mod_user/info" data-action="modal-push" data-url="{{ site.saddress }}mod_user/info" class="context-action-item">
             <div class="context-icon"><i class="bi bi-person"></i></div>
             <span class="context-action-label">{{ lang.management.edit_profile_menu }}</span>
         </a>
-        <a href="{{ site.saddress }}mod_user/change_password" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/change_password" data-action="modal-push" data-url="{{ site.saddress }}mod_user/change_password" class="context-action-item">
             <div class="context-icon"><i class="bi bi-key"></i></div>
             <span class="context-action-label">{{ lang.management.change_password_menu }}</span>
         </a>
         
-        <div class="context-divider" style="margin: 4px 0;"></div>
+        <div class="context-divider user-menu-divider"></div>
         
-        <div class="context-action-item" onclick="showUserSubmenu('user-menu-pm')" style="cursor:pointer;">
+        <div class="context-action-item" data-action="user-submenu" data-target="user-menu-pm">
             <div class="context-icon"><i class="bi bi-chat-dots"></i></div>
             <span class="context-action-label">{{ lang.management.pm_management_menu }}</span>
             {% if session.okunmamis is defined and session.okunmamis > 0 %}
-                <span class="badge" style="background: var(--md-sys-color-error); color: white; border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; margin-left: 8px;">{{ session.okunmamis }}</span>
+                <span class="badge user-menu-pm-badge">{{ session.okunmamis }}</span>
             {% endif %}
-            <i class="bi bi-chevron-right" style="margin-left: auto; font-size: 14px; color: var(--md-sys-color-outline);"></i>
+            <i class="bi bi-chevron-right user-menu-chevron"></i>
         </div>
         
-        {% if session.permissions.mod_user.setting is defined or session.permissions.mod_settings.edit is defined or session.permissions.mod_user.acl is defined or session.permissions.mod_user.list is defined or session.permissions.mod_user_group.list is defined or session.permissions.mod_acl.list is defined %}
-        <div class="context-divider" style="margin: 4px 0;"></div>
-        <div class="context-action-item" onclick="showUserSubmenu('user-menu-admin')" style="cursor:pointer;">
-            <div class="context-icon"><i class="bi bi-shield-lock"></i></div>
-            <span class="context-action-label">{{ lang.management.administration_menu }}</span>
-            <i class="bi bi-chevron-right" style="margin-left: auto; font-size: 14px; color: var(--md-sys-color-outline);"></i>
+        {% if session.permissions.mod_settings.edit is defined %}
+        <div class="context-divider user-menu-divider"></div>
+        <div class="context-action-item" data-action="open-site-status" id="user-menu-site-status-item">
+            <div class="context-icon user-menu-site-status-icon-wrapper {{ site.site_status == 'closed' ? 'status-closed' : 'status-open' }}" id="user-menu-site-status-icon-wrapper">
+                <i class="bi {{ site.site_status == 'closed' ? 'bi-shield-lock-fill' : 'bi-globe2' }}" id="user-menu-site-status-icon"></i>
+            </div>
+            <span class="context-action-label user-menu-site-status-label" id="user-menu-site-status-label">{{ site.site_status == 'closed' ? lang.mod_settings.site_closed_label : lang.mod_settings.site_open_label }}</span>
+            <span id="user-menu-site-status-dot" class="user-menu-site-status-dot {{ site.site_status == 'closed' ? 'status-closed' : 'status-open' }}"></span>
         </div>
         {% endif %}
+
+        {% if session.permissions.mod_user.setting is defined or session.permissions.mod_settings.edit is defined or session.permissions.mod_user.acl is defined or session.permissions.mod_user.list is defined or session.permissions.mod_user_group.list is defined or session.permissions.mod_acl.list is defined %}
+        <div class="context-divider user-menu-divider"></div>
+        <div class="context-action-item" data-action="user-submenu" data-target="user-menu-admin">
+            <div class="context-icon"><i class="bi bi-shield-lock"></i></div>
+            <span class="context-action-label">{{ lang.management.administration_menu }}</span>
+            <i class="bi bi-chevron-right user-menu-chevron"></i>
+        </div>
+        {% endif %}
+
+        <div class="context-divider user-menu-divider"></div>
         
-        <div class="context-divider" style="margin: 4px 0;"></div>
-        
-        <a href="{{ site.saddress }}mod_user/logout" class="context-action-item action-danger" style="text-decoration:none; margin-bottom:16px;">
+        <a href="{{ site.saddress }}logout" class="context-action-item action-danger user-menu-logout-item">
             <div class="context-icon icon-delete"><i class="bi bi-box-arrow-right"></i></div>
             <span class="context-action-label">{{ lang.management.logout_menu }}</span>
         </a>
     </div>
 
-    <div id="user-menu-pm" style="display: none; padding: 4px 0;">
-        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-blue);">
-            <div class="context-icon" style="background: transparent; justify-content: flex-start; margin-left: -8px;"><i class="bi bi-chevron-left" style="font-size: 20px;"></i></div>
-        </div>
-        <div class="context-divider" style="margin: 4px 0;"></div>
-        <a href="{{ site.saddress }}mod_user_pm/inbox" class="context-action-item" style="text-decoration:none;">
+    <div id="user-menu-pm" class="user-menu-list is-hidden">
+        <a href="{{ site.saddress }}mod_user_pm/inbox" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-envelope-open"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.inbox_link_label }}</span>
             {% if session.okunmamis is defined and session.okunmamis > 0 %}
-                <span class="badge" style="background: var(--md-sys-color-error); color: white; border-radius: 12px; padding: 2px 6px; font-size: 0.75rem; margin-left: auto;">{{ session.okunmamis }}</span>
+                <span class="badge user-menu-pm-badge-end">{{ session.okunmamis }}</span>
             {% endif %}
         </a>
-        <a href="{{ site.saddress }}mod_user_pm/sent" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_pm/sent" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-send"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.sent_title }}</span>
         </a>
         
         {% if session.permissions.mod_user_pm.send is defined %}
-        <a href="{{ site.saddress }}mod_user_pm/send" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_pm/send" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-pencil-square"></i></div>
             <span class="context-action-label">{{ lang.mod_user_pm.new_message_action }}</span>
         </a>
         {% endif %}
     </div>
 
-    <div id="user-menu-admin" style="display: none; padding: 4px 0;">
-        <div class="context-action-item" onclick="showUserMenuMain()" style="cursor:pointer; color: var(--md-sys-color-blue);">
-           <div class="context-icon" style="background: transparent; justify-content: flex-start; margin-left: -8px;"><i class="bi bi-chevron-left" style="font-size: 20px;"></i></div>
-        </div>
-        <div class="context-divider" style="margin: 4px 0;"></div>
-        
+    <div id="user-menu-admin" class="user-menu-list is-hidden">
         {% if session.permissions.mod_user.list is defined %}
-        <a href="{{ site.saddress }}mod_user/list" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/list" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-people"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.list }}</span>
         </a>
         {% endif %}
         
         {% if session.permissions.mod_user_group.list is defined %}
-        <a href="{{ site.saddress }}mod_user_group/list" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user_group/list" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-collection"></i></div>
             <span class="context-action-label">{{ lang.mod_user_group.admin.list }}</span>
         </a>
         {% endif %}
-
-        {% if session.permissions.mod_user.acl is defined %}
-        <a href="{{ site.saddress }}mod_user/acl" class="context-action-item" style="text-decoration:none;">
-            <div class="context-icon"><i class="bi bi-shield-lock"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.acl }}</span>
-        </a>
-        {% endif %}
-        
-        {% if session.permissions.mod_acl.list is defined %}
-        <a href="{{ site.saddress }}mod_acl/list" class="context-action-item" style="text-decoration:none;">
-            <div class="context-icon"><i class="bi bi-shield-check"></i></div>
-            <span class="context-action-label">{{ lang.mod_acl.admin.list }}</span>
-        </a>
-        {% endif %}
         
         {% if session.permissions.mod_user.setting is defined %}
-        <a href="{{ site.saddress }}mod_user/settings" class="context-action-item" style="text-decoration:none;">
+        <a href="{{ site.saddress }}mod_user/settings" data-action="close-user-menu" class="context-action-item">
             <div class="context-icon"><i class="bi bi-person-gear"></i></div>
             <span class="context-action-label">{{ lang.mod_user.admin.membership_settings }}</span>
         </a>
         {% endif %}
         
+        <div class="context-action-item" data-action="open-newsletter">
+            <div class="context-icon"><i class="bi bi-envelope-at"></i></div>
+            <span class="context-action-label">{{ lang.management.newsletter_management }}</span>
+            <i class="bi bi-chevron-right user-menu-chevron"></i>
+        </div>
+        
         {% if session.permissions.mod_settings.edit is defined %}
-        <a href="{{ site.saddress }}lang/panel" class="context-action-item" style="text-decoration:none;">
-            <div class="context-icon"><i class="bi bi-translate"></i></div>
-            <span class="context-action-label">{{ lang.management.language_management_menu }}</span>
-        </a>
-        <a href="{{ site.saddress }}mod_settings/social_media" class="context-action-item" style="text-decoration:none;">
-            <div class="context-icon"><i class="bi bi-share"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.social_media }}</span>
-        </a>
-        <a href="{{ site.saddress }}mod_settings/edit" class="context-action-item" style="text-decoration:none;">
+        <div class="context-action-item" data-action="open-stats">
+            <div class="context-icon"><i class="bi bi-bar-chart-line"></i></div>
+            <span class="context-action-label">{{ lang.mod_settings.stats_title }}</span>
+            <i class="bi bi-chevron-right user-menu-chevron"></i>
+        </div>
+        <div class="context-action-item" data-action="open-site-settings-menu">
             <div class="context-icon"><i class="bi bi-sliders"></i></div>
-            <span class="context-action-label">{{ lang.mod_user.admin.site_settings }}</span>
+            <span class="context-action-label">{{ lang.mod_settings.site_settings_menu_title }}</span>
+            <i class="bi bi-chevron-right user-menu-chevron"></i>
+        </div>
+        {% endif %}
+    </div>
+</dialog>
+
+<!-- SITE SETTINGS OPTIONS MENU MODAL -->
+<dialog class="af-modal-dialog" id="site-settings-menu-modal" aria-labelledby="siteSettingsMenuModalTitle">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="siteSettingsMenuModalTitle">
+            <i class="bi bi-sliders"></i>
+            <h3>{{ lang.mod_settings.site_settings_menu_title }}</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-back-settings" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="modal-body-content site-settings-list">
+        {% if session.permissions.mod_settings.edit is defined %}
+        <a href="{{ site.saddress }}mod_settings/edit" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-primary">
+                <i class="bi bi-card-heading"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.site_profile_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.site_profile_description }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_settings/legal_info" data-action="modal-push" data-url="{{ site.saddress }}mod_settings/legal_info" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-tertiary">
+                <i class="bi bi-building-lock"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.legal_info_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.legal_info_description }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_settings/cookie_policy" data-action="modal-push" data-url="{{ site.saddress }}mod_settings/cookie_policy" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-secondary">
+                <i class="bi bi-cookie"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.cookie_policy_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.cookie_policy_menu_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_settings/working_hours" data-action="modal-push" data-url="{{ site.saddress }}mod_settings/working_hours" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-primary">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.working_hours_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.working_hours_menu_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_settings/affiliations" data-action="modal-push" data-url="{{ site.saddress }}mod_settings/affiliations" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-tertiary">
+                <i class="bi bi-building-check"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.affiliations_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.affiliations_menu_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <div class="site-settings-option-card" data-action="open-theme-management">
+            <div class="site-settings-option-icon icon-secondary">
+                <i class="bi bi-palette"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.theme_management_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.theme_select_label }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </div>
+
+        <div class="site-settings-option-card" data-action="open-logo-icon-management">
+            <div class="site-settings-option-icon icon-tertiary">
+                <i class="bi bi-images"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.logo_icon_management_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.logo_icon_management_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </div>
+        {% endif %}
+
+        {% if session.permissions.mod_user.acl is defined %}
+        <a href="{{ site.saddress }}mod_user/acl" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-primary">
+                <i class="bi bi-shield-lock"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_user.admin.acl }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.user_group_acl_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+        {% endif %}
+
+        {% if session.permissions.mod_acl.list is defined %}
+        <a href="{{ site.saddress }}mod_acl/list" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-secondary">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_acl.admin.list }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.acl_list_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+        {% endif %}
+
+        {% if session.permissions.mod_settings.edit is defined %}
+        <a href="{{ site.saddress }}lang/panel" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-tertiary">
+                <i class="bi bi-translate"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.management.language_management_menu }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.language_management_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_settings/social_media" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-primary">
+                <i class="bi bi-share"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_user.admin.social_media }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.social_media_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <a href="{{ site.saddress }}mod_seo/google_settings" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-secondary">
+                <i class="bi bi-google"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.management.google_services_hub }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.google_services_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </a>
+
+        <div data-action="open-redirect" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-tertiary">
+                <i class="bi bi-arrow-return-right"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.management.redirect_management }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.redirect_management_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
+        </div>
+
+        <a href="{{ site.saddress }}mod_seo/index" data-action="close-site-settings-menu" class="site-settings-option-card">
+            <div class="site-settings-option-icon icon-primary">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="site-settings-option-info">
+                <h4 class="site-settings-option-title">{{ lang.mod_settings.google_rankings_seo_title }}</h4>
+                <p class="site-settings-option-desc">{{ lang.mod_settings.google_rankings_seo_desc }}</p>
+            </div>
+            <i class="bi bi-chevron-right site-settings-option-chevron"></i>
         </a>
         {% endif %}
     </div>
-</div>
+</dialog>
+
+<!-- THEME MANAGEMENT MODAL -->
+<dialog class="af-modal-dialog" id="theme-management-modal" aria-labelledby="themeManagementModalTitle">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="themeManagementModalTitle">
+            <i class="bi bi-palette"></i>
+            <h3>{{ lang.mod_settings.theme_management_title }}</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-back-theme" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="modal-body-content" id="themeModalBody">
+        <div class="modal-loading-box">
+            <i class="bi bi-arrow-repeat modal-loading-spinner"></i>
+            <p class="theme-loading-text modal-loading-text">{{ lang.mod_settings.loading_themes }}</p>
+        </div>
+    </div>
+</dialog>
+
+<!-- LOGO & ICON MANAGEMENT MODAL -->
+<dialog class="af-modal-dialog" id="logo-icon-management-modal" aria-labelledby="logoIconModalTitle">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="logoIconModalTitle">
+            <i class="bi bi-images"></i>
+            <h3 class="logo-icon-modal-title">{{ lang.mod_settings.logo_icon_management_title }}</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-back-logo" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="modal-body-content" id="logoIconModalBody">
+        <div class="modal-loading-box">
+            <i class="bi bi-arrow-repeat modal-loading-spinner"></i>
+            <p class="modal-loading-text">{{ lang.mod_settings.loading_message }}</p>
+        </div>
+    </div>
+</dialog>
+
+<!-- SITE STATUS MODAL DIALOG -->
+<dialog class="af-modal-dialog" id="site-status-modal" aria-labelledby="siteStatusModalTitle">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="siteStatusModalTitle">
+            <i class="bi {{ site.site_status == 'closed' ? 'bi-shield-lock-fill' : 'bi-power' }}" id="site-status-modal-header-icon"></i>
+            <h3>{{ lang.mod_settings.site_status_menu_title }}</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-back-status" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <div class="modal-body-content site-status-body">
+        <!-- Compact Instant AJAX Segmented Switch -->
+        <div class="site-status-segmented-control">
+            <button type="button" data-action="site-status-open" id="segmented-btn-open" class="segmented-status-btn {{ site.site_status == 'closed' ? 'inactive-open' : 'active-open' }}">
+                <i class="bi bi-globe2"></i>
+                <span>{{ lang.mod_settings.site_open_label }}</span>
+            </button>
+
+            <button type="button" data-action="site-status-closed" id="segmented-btn-closed" class="segmented-status-btn {{ site.site_status == 'closed' ? 'active-closed' : 'inactive-closed' }}">
+                <i class="bi bi-shield-lock-fill"></i>
+                <span>{{ lang.mod_settings.site_closed_label }}</span>
+            </button>
+        </div>
+
+        <!-- Maintenance Message Field (Auto-Saves on Change/Blur) -->
+        <div>
+            <label for="maintenance_message_input" class="maintenance-label">
+                {{ lang.mod_settings.maintenance_message_label }}
+            </label>
+            <textarea id="maintenance_message_input" rows="3" class="maintenance-textarea" placeholder="{{ lang.mod_settings.default_maintenance_message }}">{{ site.maintenance_message|default(lang.mod_settings.default_maintenance_message) }}</textarea>
+        </div>
+    </div>
+</dialog>
+
+<!-- STATS EDIT MODAL -->
+<dialog class="af-modal-dialog" id="stats-modal" aria-labelledby="statsModalTitle">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="statsModalTitle">
+            <i class="bi bi-bar-chart-line"></i>
+            <h3>{{ lang.mod_settings.stats_title }}</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-back-stats" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+
+    <form id="statsModalForm">
+        <div class="modal-body-content">
+            <div class="m3-input-wrapper mb-3">
+                <input type="number" class="m3-input-lg stats-input" name="stat_completed_projects" id="modal_stat_completed_projects" value="{{ site.stat_completed_projects|default(250) }}" required>
+                <label class="m3-floating-label">{{ lang.mod_settings.stat_completed_projects }}</label>
+            </div>
+            
+            <div class="m3-input-wrapper mb-3">
+                <input type="number" class="m3-input-lg stats-input" name="stat_ongoing_projects" id="modal_stat_ongoing_projects" value="{{ site.stat_ongoing_projects|default(45) }}" required>
+                <label class="m3-floating-label">{{ lang.mod_settings.stat_ongoing_projects }}</label>
+            </div>
+
+            <div class="m3-input-wrapper mb-3">
+                <input type="number" class="m3-input-lg stats-input" name="stat_workforce" id="modal_stat_workforce" value="{{ site.stat_workforce|default(1200) }}" required>
+                <label class="m3-floating-label">{{ lang.mod_settings.stat_workforce }}</label>
+            </div>
+
+            <div class="m3-input-wrapper mb-3">
+                <input type="number" class="m3-input-lg stats-input" name="stat_offices" id="modal_stat_offices" value="{{ site.stat_offices|default(18) }}" required>
+                <label class="m3-floating-label">{{ lang.mod_settings.stat_offices }}</label>
+            </div>
+        </div>
+
+        <div class="stats-modal-footer">
+            <button type="button" class="m3-btn-half m3-btn-half-neutral" data-action="close-stats">
+                {{ lang.mod_settings.button.cancel }}
+            </button>
+            <button type="submit" class="m3-btn-half m3-btn-half-primary" id="saveStatsModalBtn">
+                {{ lang.mod_settings.save }}
+            </button>
+        </div>
+    </form>
+</dialog>
+
+<dialog class="bottom-sheet sheet-dialog-large" id="newsletter-sheet">
+    <div class="drag-handle-bar" data-action="close-newsletter"></div>
+    
+    <div class="sheet-header-bar">
+        <button class="icon-btn modal-close-btn sheet-header-btn" data-action="close-newsletter" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg btn-icon-muted"></i>
+        </button>
+
+        <div class="modal-title-wrapper sheet-title-wrapper">
+            <div class="sheet-title-icon-box">
+                <i class="bi bi-envelope-at-fill"></i>
+            </div>
+            <div>
+                <h3 class="sheet-title-text">{{ lang.mod_newsletter.module_title }}</h3>
+                <span id="newsletter-stats-pill" class="badge sheet-stats-badge">0 {{ lang.mod_newsletter.subscribers_count_unit }}</span>
+            </div>
+        </div>
+
+        <div class="sheet-header-actions">
+            <button class="icon-btn sheet-header-btn" data-action="export-newsletter-csv" title="{{ lang.mod_newsletter.export_csv }}" aria-label="{{ lang.mod_newsletter.export_csv }}">
+                <i class="bi bi-file-earmark-spreadsheet-fill btn-icon-primary"></i>
+            </button>
+            <button class="icon-btn sheet-header-btn" data-action="toggle-newsletter-add" title="{{ lang.mod_newsletter.add_subscriber_title }}" aria-label="{{ lang.mod_newsletter.add_subscriber_title }}">
+                <i class="bi bi-person-plus-fill btn-icon-primary"></i>
+            </button>
+            <button class="icon-btn modal-back-btn sheet-header-btn" data-action="modal-back-newsletter" title="{{ lang.mod_settings.button.back }}" aria-label="{{ lang.mod_settings.button.back }}">
+                <i class="bi bi-chevron-left btn-icon-large"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="newsletter-add-form" class="sheet-inline-form-container">
+        <form id="newsletter-add-admin-form" class="sheet-inline-form">
+            <input type="email" id="new-subscriber-email" class="form-control sheet-form-input-email" placeholder="{{ lang.mod_newsletter.enter_email_placeholder }}" required>
+            <button type="submit" class="btn btn-primary sheet-form-submit-btn">
+                <i class="bi bi-plus-lg"></i> {{ lang.mod_newsletter.add }}
+            </button>
+        </form>
+    </div>
+
+    <div class="sheet-filter-bar">
+        <div class="sheet-search-box">
+            <i class="bi bi-search sheet-search-icon"></i>
+            <input type="text" id="newsletter-search-input" class="sheet-search-input" placeholder="{{ lang.mod_newsletter.search_subscribers_placeholder }}">
+        </div>
+        <div class="sheet-pills-row">
+            <button class="filter-pill active" data-status="all" data-action="filter-newsletter">
+                {{ lang.mod_newsletter.all_subscribers }}
+            </button>
+            <button class="filter-pill" data-status="active" data-action="filter-newsletter">
+                {{ lang.mod_newsletter.active_subscribers }}
+            </button>
+            <button class="filter-pill" data-status="unsubscribed" data-action="filter-newsletter">
+                {{ lang.mod_newsletter.unsubscribed_subscribers }}
+            </button>
+        </div>
+    </div>
+
+    <div id="newsletter-subscribers-body" class="sheet-scroll-body">
+        <div class="sheet-loading-placeholder">
+            <div class="spinner-border spinner-border-sm" role="status"></div>
+        </div>
+    </div>
+</dialog>
+
+<dialog class="bottom-sheet sheet-dialog-large" id="redirect-sheet" aria-labelledby="redirect-sheet-title">
+    <div class="drag-handle-bar" data-action="close-redirect" role="button" tabindex="0" aria-label="{{ lang.mod_settings.button.close }}"></div>
+    
+    <div class="sheet-header-bar">
+        <button type="button" class="icon-btn modal-close-btn sheet-header-btn" data-action="close-redirect" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg btn-icon-muted"></i>
+        </button>
+
+        <div class="modal-title-wrapper sheet-title-wrapper">
+            <div class="sheet-title-icon-box">
+                <i class="bi bi-arrow-return-right"></i>
+            </div>
+            <div>
+                <h3 id="redirect-sheet-title" class="sheet-title-text">{{ lang.management.redirect_management }}</h3>
+                <span id="redirect-stats-pill" class="badge sheet-stats-badge">0 {{ lang.mod_redirect.admin.dashboard.active_redirects }}</span>
+            </div>
+        </div>
+
+        <div class="sheet-header-actions">
+            <button type="button" class="icon-btn sheet-header-btn" data-action="toggle-redirect-add" title="{{ lang.mod_redirect.button.add }}" aria-label="{{ lang.mod_redirect.button.add }}">
+                <i class="bi bi-plus-lg btn-icon-large"></i>
+            </button>
+            <button type="button" class="icon-btn modal-back-btn sheet-header-btn" data-action="modal-back-redirect" title="{{ lang.mod_settings.button.back }}" aria-label="{{ lang.mod_settings.button.back }}">
+                <i class="bi bi-chevron-left btn-icon-large"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="redirect-form-container" class="sheet-inline-form-container">
+        <div class="redirect-form-header">
+            <strong id="redirect-form-title" class="redirect-form-title">{{ lang.mod_redirect.add }}</strong>
+            <button type="button" class="redirect-cancel-btn" data-action="hide-redirect-form" aria-label="{{ lang.mod_redirect.button.cancel }}">{{ lang.mod_redirect.button.cancel }}</button>
+        </div>
+        <form id="redirect-admin-form" class="redirect-form">
+            <input type="hidden" id="redirect-form-id" value="">
+            <input type="text" id="redirect-old-url" class="form-control redirect-input" placeholder="{{ lang.mod_redirect.admin.columns.old_url }}" aria-label="{{ lang.mod_redirect.admin.columns.old_url }}" required>
+            <input type="text" id="redirect-new-url" class="form-control redirect-input" placeholder="{{ lang.mod_redirect.admin.columns.new_url }}" aria-label="{{ lang.mod_redirect.admin.columns.new_url }}" required>
+            <div class="redirect-actions-row">
+                <select id="redirect-status-code" class="form-control redirect-select" aria-label="{{ lang.mod_redirect.admin.columns.status_code }}">
+                    <option value="301">{{ lang.mod_redirect.admin.columns.status_code_301 }}</option>
+                    <option value="302">{{ lang.mod_redirect.admin.columns.status_code_302 }}</option>
+                </select>
+                <button type="submit" id="redirect-submit-btn" class="btn btn-primary redirect-submit-btn">
+                    {{ lang.mod_redirect.button.add }}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="sheet-filter-bar">
+        <div class="sheet-search-box">
+            <i class="bi bi-search sheet-search-icon" aria-hidden="true"></i>
+            <input type="text" id="redirect-search-input" class="sheet-search-input" placeholder="{{ lang.mod_redirect.admin.search_placeholder }}" aria-label="{{ lang.mod_redirect.admin.search_placeholder }}">
+        </div>
+    </div>
+
+    <div id="redirect-items-body" class="sheet-scroll-body" role="region" aria-label="{{ lang.management.redirect_management }}">
+        <div class="sheet-loading-placeholder">
+            <div class="spinner-border spinner-border-sm" role="status" aria-label="Loading"></div>
+        </div>
+    </div>
+</dialog>
+
+<!-- DYNAMIC ROUTE MODAL CONTAINER -->
+<dialog class="af-modal-dialog" id="modal-dynamic-dialog">
+    <div class="modal-header-bar">
+        <button type="button" class="icon-btn modal-close-btn" data-action="modal-close-all" aria-label="{{ lang.mod_settings.button.close }}">
+            <i class="bi bi-x-lg"></i>
+        </button>
+        <div class="modal-title-wrapper" id="modal-dynamic-title">
+            <i class="bi bi-gear"></i>
+            <h3>Admin Panel</h3>
+        </div>
+        <button type="button" class="icon-btn modal-back-btn" data-action="modal-dynamic-back" aria-label="{{ lang.mod_settings.button.back }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+    </div>
+    <div id="modal-dynamic-body"></div>
+</dialog>
 
 <!-- TOP APP BAR (CONTEXTUAL) -->
 {% if hide_contextual_bar is not defined or not hide_contextual_bar %}
 {% set selection_lang = attribute(lang, active_module_lang_key) %}
 <header class="top-app-bar top-app-bar-contextual">
-    <button class="icon-btn" onclick="exitSelectionMode()"><i class="bi bi-x-lg"></i></button>
+    <button class="icon-btn" data-action="exit-selection"><i class="bi bi-x-lg"></i></button>
     <div class="headline" id="selectionCount">0 {{ selection_lang.ui.record_selected }}</div>
     <button class="icon-btn"><i class="bi bi-trash3"></i></button>
     <button class="icon-btn"><i class="bi bi-three-dots-vertical"></i></button>
@@ -163,18 +650,17 @@
 
 <!-- SEARCH AREA -->
 {% if show_search %}
-<!-- SEARCH AREA -->
-<div class="search-row" style="display: flex !important;">
+<div class="search-row">
     <div class="search-bar-container">
         <i class="bi bi-search search-icon"></i>
         <input type="text" class="search-input" id="searchInput" placeholder="{{ search_placeholder is defined ? search_placeholder : lang.mod_user.panel.search_placeholder }}" autocomplete="off">
-        <button id="clearSearchBtn" onclick="clearSearch()">
+        <button id="clearSearchBtn" data-action="clear-search">
             <i class="bi bi-x-circle-fill"></i>
         </button>
     </div>
 
     {% if show_search_filter_button is not defined or show_search_filter_button %}
-    <button class="filter-btn" onclick="openSheet()">
+    <button class="filter-btn" data-action="open-filter-sheet">
         <i class="bi bi-sliders2"></i>
     </button>
     {% endif %}

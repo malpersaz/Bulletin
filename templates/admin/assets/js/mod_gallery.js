@@ -98,9 +98,12 @@ const GalleryManager = {
     },
 
     updateVisibleImageCount: function(count) {
+        const totalCount = typeof count === 'number' ? count : this.getImageElements().length;
         const heroCount = document.getElementById('galleryVisibleCount');
         const toolbarCount = document.getElementById('galleryToolbarCount');
-        const label = this.formatCountLabel(count);
+        const contextBar = document.querySelector('.gallery-context-bar');
+        const board = document.getElementById('galleryBoard');
+        const label = this.formatCountLabel(totalCount);
 
         if (heroCount) {
             heroCount.textContent = label;
@@ -108,6 +111,14 @@ const GalleryManager = {
 
         if (toolbarCount) {
             toolbarCount.textContent = label;
+        }
+
+        if (contextBar) {
+            contextBar.style.display = totalCount > 0 ? 'flex' : 'none';
+        }
+
+        if (board) {
+            board.style.display = totalCount > 0 ? 'block' : 'none';
         }
     },
 
@@ -552,147 +563,26 @@ const GalleryManager = {
     },
 
     renderCard: function(item) {
-        const previews = Array.isArray(item.preview_images) ? item.preview_images : [];
-        let layersHtml = '';
-
-        for (let i = 0; i < 3; i++) {
-            const previewIndex = 2 - i;
-            const imgUrl = previews[previewIndex];
-            if (imgUrl) {
-                const fullImgUrl = `${this.config.siteAdres}static/mod_gallery/${this.escapeHtml(item.mod_name)}/thumb/${this.escapeHtml(imgUrl)}`;
-                layersHtml += `<div class="image-stack-layer" style="background-image: url('${fullImgUrl}');"></div>`;
-            } else {
-                if (i === 2) {
-                    layersHtml += `<div class="image-stack-layer" style="display: flex; align-items: center; justify-content: center; color: var(--md-sys-color-outline); font-size: 24px;">
-                        <i class="bi bi-image"></i>
-                    </div>`;
-                } else {
-                    layersHtml += `<div class="image-stack-layer"></div>`;
-                }
-            }
-        }
-
-        const isPublished = Number(item.image_count) > 0;
-        const statusClass = isPublished ? 'active' : 'draft';
-        const statusLabel = isPublished ? this.config.lang.status_active : this.config.lang.status_draft;
-
         return `
-            <div class="gallery-card" id="gallery-card-${this.escapeHtml(item.mod_name)}-${this.escapeHtml(item.mod_key)}" onclick="GalleryManager.selectCard(this, '${this.escapeJsString(item.mod_name)}', '${this.escapeJsString(item.mod_key)}')" ondblclick="location.href='${this.config.baseUrl}list/${this.escapeHtml(item.mod_name)}/${this.escapeHtml(item.mod_key)}'">
-                <div class="image-stack-container">
-                    ${layersHtml}
+            <div class="gallery-card" onclick="location.href='${this.config.baseUrl}list/${this.escapeHtml(item.mod_name)}/${this.escapeHtml(item.mod_key)}'">
+                <div class="gallery-card__header">
+                    <div class="gallery-card__info">
+                        <h4 class="gallery-card__title">${this.escapeHtml(item.name)}</h4>
+                        <div class="gallery-card__subtitle">${this.escapeHtml(item.mod_name)} / ${this.escapeHtml(item.mod_key)}</div>
+                    </div>
+                    <div class="stat-badge">
+                        <i class="bi bi-image"></i>
+                        <span>${this.escapeHtml(item.image_count)} ${this.escapeHtml(this.config.lang.images)}</span>
+                    </div>
                 </div>
-                <div class="card-details">
-                    <div class="card-header-row">
-                        <h4 class="card-title">${this.escapeHtml(item.name)}</h4>
-                    </div>
-                    <div class="card-meta">${this.escapeHtml(item.mod_name)} / ${this.escapeHtml(item.mod_key)}</div>
-                    <div class="badge-row">
-                        <span class="status-badge ${statusClass}">${this.escapeHtml(statusLabel)}</span>
-                        <span class="count-badge">
-                            <i class="bi bi-image"></i> ${this.escapeHtml(item.image_count)} ${this.escapeHtml(this.config.lang.images)}
-                        </span>
-                    </div>
+                <div class="gallery-card__actions">
+                    <button type="button" class="m3-btn-tonal action-btn">
+                        <i class="bi bi-eye"></i>
+                        <span>${this.escapeHtml(this.config.lang.view_images)}</span>
+                    </button>
                 </div>
             </div>
         `;
-    },
-
-    selectedCard: null,
-
-    selectCard: function(element, mod, vid) {
-        const isSelected = element.classList.contains('selected');
-
-        // Clear previous selections
-        document.querySelectorAll('.gallery-card').forEach((c) => c.classList.remove('selected'));
-
-        if (!isSelected) {
-            element.classList.add('selected');
-            this.selectedCard = { mod: mod, vid: vid };
-            this.updateToolbarState(true);
-
-            // Micro-vibration support
-            if (window.navigator.vibrate) {
-                window.navigator.vibrate(10);
-            }
-
-            // Sync status badge to status button if needed
-            const isPublished = element.querySelector('.status-badge').classList.contains('active');
-            const statusBtn = document.getElementById('toolbarStatus');
-            if (statusBtn) {
-                statusBtn.classList.toggle('is-published', isPublished);
-            }
-        } else {
-            this.selectedCard = null;
-            this.updateToolbarState(false);
-        }
-    },
-
-    updateToolbarState: function(active) {
-        const ids = ['toolbarManage', 'toolbarStatus', 'toolbarDelete'];
-        ids.forEach((btnId) => {
-            const btn = document.getElementById(btnId);
-            if (!btn) {
-                return;
-            }
-
-            if (active) {
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-            } else {
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.3';
-                btn.classList.remove('is-published');
-            }
-        });
-    },
-
-    toolbarManage: function() {
-        if (!this.selectedCard) {
-            return;
-        }
-        location.href = `${this.config.baseUrl}list/${encodeURIComponent(this.selectedCard.mod)}/${encodeURIComponent(this.selectedCard.vid)}`;
-    },
-
-    toolbarStatus: function() {
-        if (!this.selectedCard) {
-            return;
-        }
-        this.notify('Statûya wênedankê li gorî hejmara wêneyan (Active/Draft) bixweber tê kontrolkirin.', 'info');
-    },
-
-    toolbarDelete: function() {
-        if (!this.selectedCard) {
-            return;
-        }
-
-        if (!confirm('Gelo tu dixwazî hemû wêneyên di vê wênedankê de jê bibî? Ev kiryar nayê vegerandin.')) {
-            return;
-        }
-
-        const self = this;
-        fetch(`${this.config.baseUrl}sil_all`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
-            body: new URLSearchParams({
-                mod_name: this.selectedCard.mod,
-                vid: this.selectedCard.vid
-            }).toString()
-        })
-        .then((response) => response.json())
-        .then((result) => {
-            if (result.status === 'success') {
-                self.notify(result.message, 'success');
-                self.selectedCard = null;
-                self.updateToolbarState(false);
-                self.loadGalleries();
-            } else {
-                self.notify(result.message, 'error');
-            }
-        })
-        .catch((err) => {
-            console.error('Delete all failed', err);
-            self.notify('Jêbirin nehat kirin!', 'error');
-        });
     },
 
     search: function(query) {
@@ -790,6 +680,7 @@ const GalleryManager = {
 
         if (this.selectedFiles.length === 0) {
             preview.classList.remove('is-visible');
+            preview.style.display = 'none';
             uploadBtn.disabled = true;
             if (uploadOverall) {
                 uploadOverall.hidden = true;
@@ -802,6 +693,7 @@ const GalleryManager = {
         }
 
         preview.classList.add('is-visible');
+        preview.style.display = 'grid';
         const metrics = this.getUploadMetrics();
         const waitingCount = metrics.waitingCount;
         const uploadingCount = metrics.uploadingCount;
@@ -1001,6 +893,7 @@ const GalleryManager = {
         const queueList = document.getElementById('uploadQueueList');
         if (preview) {
             preview.classList.remove('is-visible');
+            preview.style.display = 'none';
         }
 
         if (queueList) {
@@ -1126,14 +1019,53 @@ const GalleryManager = {
 
         this.notify(this.config.lang.upload_complete, 'success');
         setTimeout(() => {
-            location.reload();
-        }, 900);
+            this.refreshModalContent();
+        }, 500);
+    },
+
+    refreshModalContent: async function() {
+        this.resetUpload();
+
+        const dynamicBody = document.getElementById('modal-dynamic-body');
+        const loadedUrl = dynamicBody ? dynamicBody.dataset.loadedUrl : window.location.href;
+        const fetchUrl = loadedUrl || window.location.href;
+
+        try {
+            const res = await fetch(fetchUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const html = await res.text();
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+
+            const newBoard = tempDiv.querySelector('#galleryBoard');
+            const currentBoard = document.getElementById('galleryBoard');
+            if (newBoard && currentBoard) {
+                currentBoard.replaceWith(newBoard);
+            }
+
+            const newContext = tempDiv.querySelector('.gallery-context-bar');
+            const currentContext = document.querySelector('.gallery-context-bar');
+            if (newContext && currentContext) {
+                currentContext.replaceWith(newContext);
+            }
+
+            const newCount = tempDiv.querySelector('#galleryVisibleCount');
+            const currentCount = document.getElementById('galleryVisibleCount');
+            if (newCount && currentCount) {
+                currentCount.innerHTML = newCount.innerHTML;
+            }
+
+            this.sortImages(document.getElementById('gallerySortSelect')?.value || 'newest');
+        } catch (e) {
+            console.error('In-place DOM refresh failed', e);
+        }
     },
 
     uploadFileEntry: function(entry, formData) {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', this.config.baseUrl + 'up', true);
+            xhr.open('POST', this.config.baseUrl + 'upload', true);
             xhr.responseType = 'json';
 
             xhr.upload.addEventListener('progress', (event) => {
@@ -1169,7 +1101,7 @@ const GalleryManager = {
         formData.append('vid', this.config.vid);
         formData.append('mod_name', this.config.mod_name);
 
-        const response = await fetch(this.config.baseUrl + 'sil', {
+        const response = await fetch(this.config.baseUrl + 'delete', {
             method: 'POST',
             body: formData
         });
@@ -1199,8 +1131,22 @@ const GalleryManager = {
         }
     },
 
+    getSwalTarget: function() {
+        const detailSheet = document.getElementById('galleryDetailSheet');
+        if (detailSheet && detailSheet.classList.contains('active')) {
+            return detailSheet;
+        }
+        const activeDialog = document.querySelector('dialog[open]');
+        if (activeDialog) {
+            return activeDialog;
+        }
+        return document.body;
+    },
+
     deleteImage: async function(id) {
+        const activeTarget = this.getSwalTarget();
         const result = await Swal.fire({
+            target: activeTarget,
             title: this.config.lang.delete_title,
             text: this.config.lang.delete_confirm,
             icon: 'warning',
@@ -1222,18 +1168,20 @@ const GalleryManager = {
             const res = await this.deleteImageRequest(id);
             if (res.status === 'success') {
                 this.removeImageFromDom(id);
-                Amed.notify(res.message ? res.message : this.config.lang.image_deleted, 'success');
+                this.notify(res.message ? res.message : this.config.lang.image_deleted, 'success');
             } else {
-                Amed.notify(res.message, 'error');
+                this.notify(res.message, 'error');
             }
         } catch (error) {
             console.error('Delete failed', error);
-            Amed.notify(this.config.lang.delete_failed, 'error');
+            this.notify(this.config.lang.delete_failed, 'error');
         }
     },
 
     editName: async function(id, currentName) {
+        const activeTarget = this.getSwalTarget();
         const { value: newName } = await Swal.fire({
+            target: activeTarget,
             title: this.config.lang.edit_title,
             input: 'text',
             inputLabel: this.config.lang.image_name,
@@ -1257,7 +1205,7 @@ const GalleryManager = {
         formData.append('name', newName);
 
         try {
-            const response = await fetch(this.config.baseUrl + 'addegis', {
+            const response = await fetch(this.config.baseUrl + 'rename', {
                 method: 'POST',
                 body: formData
             });
@@ -1279,13 +1227,13 @@ const GalleryManager = {
                     this.updateDetailPanel();
                 }
 
-                Amed.notify(res.message ? res.message : this.config.lang.image_edited, 'success');
+                this.notify(res.message ? res.message : this.config.lang.image_edited, 'success');
             } else {
-                Amed.notify(res.message ? res.message : this.config.lang.rename_failed, 'error');
+                this.notify(res.message ? res.message : this.config.lang.rename_failed, 'error');
             }
         } catch (error) {
             console.error('Update failed', error);
-            Amed.notify(this.config.lang.rename_failed, 'error');
+            this.notify(this.config.lang.rename_failed, 'error');
         }
     },
 
@@ -1300,25 +1248,52 @@ const GalleryManager = {
         }
     },
 
-    viewOriginal: function(url) {
-        Swal.fire({
-            imageUrl: url,
-            imageAlt: this.config.lang.preview_alt,
-            width: 'auto',
-            padding: '0',
-            showConfirmButton: false,
-            showCloseButton: true,
-            background: 'transparent',
-            customClass: {
-                image: 'img-fluid rounded-4 shadow-lg'
-            }
-        });
+    viewOriginal: function(url, fallbackUrl) {
+        const lightbox = document.getElementById('galleryOriginalLightbox');
+        const lightboxImg = document.getElementById('lightboxImage');
+        const openTabBtn = document.getElementById('lightboxOpenTabBtn');
+        const filenameEl = document.getElementById('lightboxFilename');
+
+        if (!url && !fallbackUrl) return;
+
+        const targetUrl = url || fallbackUrl;
+
+        if (lightboxImg) {
+            lightboxImg.onerror = function() {
+                if (fallbackUrl && lightboxImg.src !== fallbackUrl) {
+                    lightboxImg.src = fallbackUrl;
+                }
+            };
+            lightboxImg.src = targetUrl;
+        }
+
+        if (openTabBtn) {
+            openTabBtn.href = targetUrl;
+        }
+
+        if (filenameEl) {
+            const data = this.activeImageId ? this.getImageData(this.activeImageId) : null;
+            filenameEl.textContent = data ? data.name : (targetUrl.split('/').pop() || '');
+        }
+
+        if (lightbox) {
+            lightbox.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    },
+
+    closeOriginalLightbox: function() {
+        const lightbox = document.getElementById('galleryOriginalLightbox');
+        if (lightbox) {
+            lightbox.style.display = 'none';
+        }
+        document.body.style.overflow = '';
     },
 
     viewActiveImageOriginal: function() {
         const data = this.activeImageId ? this.getImageData(this.activeImageId) : null;
         if (data) {
-            this.viewOriginal(data.originalUrl);
+            this.viewOriginal(data.originalUrl, data.thumbUrl);
         }
     },
 
@@ -1333,7 +1308,9 @@ const GalleryManager = {
             return;
         }
 
+        const activeTarget = this.getSwalTarget();
         const result = await Swal.fire({
+            target: activeTarget,
             title: this.config.lang.bulk_delete_title,
             text: this.config.lang.bulk_delete_confirm.replace('%s', this.selectedImageIds.length),
             icon: 'warning',
@@ -1358,12 +1335,12 @@ const GalleryManager = {
                 if (res.status === 'success') {
                     this.removeImageFromDom(id);
                 } else {
-                    Amed.notify(res.message, 'error');
+                    this.notify(res.message, 'error');
                     break;
                 }
             } catch (error) {
                 console.error('Bulk delete failed', error);
-                Amed.notify(this.config.lang.delete_failed, 'error');
+                this.notify(this.config.lang.delete_failed, 'error');
                 break;
             }
         }

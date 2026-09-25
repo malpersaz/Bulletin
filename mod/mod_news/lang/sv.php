@@ -2,7 +2,7 @@
 /**
  * News Management Module - Swedish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -24,11 +24,11 @@ $lang['mod_news'] = [
     'edit' => 'Redigera Nyheter',
     'list' => 'Nyhetslista',
     'information' => 'Information!',
-    'oke' => 'Operationen Lyckades!',
+    'success' => 'Operationen Lyckades!',
     'error_occurred' => 'Ett Fel Uppstod!',
     'error' => 'Allvarligt Fel Uppstod!',
     'remove_image' => 'Är du säker på att du vill ta bort den här bilden?',
-    'remove_image_oke' => 'Bilden har tagits bort',
+    'remove_image_success' => 'Bilden har tagits bort',
     'choose_wish' => 'Vänligen välj om du vill',
     'remove_record' => 'Är du säker på att du vill radera denna post?',
     'delete_confirm' => 'Är du säker på att du vill radera denna nyhetsartikel?',
@@ -65,7 +65,7 @@ $lang['mod_news'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Nyheter Tillagda!',
             'edit' => 'Nyheter Uppdaterade!',
         ],
@@ -101,17 +101,17 @@ $lang['mod_news'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Visar {from} till {to} av {total} resultat.',
-        1 => 'Sida',
-        2 => 'Sidantal',
-        3 => 'Laddar data, vänligen vänta...',
-        4 => 'Ingen data hittades',
-        5 => 'Anslutningsfel',
-        6 => 'Sök',
-        7 => 'Vänligen välj minst en rad',
-        8 => 'Vänligen välj endast en rad',
-        104 => 'Laddar...',
-        105 => 'Inga Nyheter Hittades',
+        'showing_results' => 'Visar {from} till {to} av {total} resultat.',
+        'page' => 'Sida',
+        'page_count' => 'Sidantal',
+        'loading' => 'Laddar data, vänligen vänta...',
+        'no_data' => 'Ingen data hittades',
+        'connection_error' => 'Anslutningsfel',
+        'search' => 'Sök',
+        'select_at_least_one' => 'Vänligen välj minst en rad',
+        'select_only_one' => 'Vänligen välj endast en rad',
+        'loading' => 'Laddar...',
+        'no_data' => 'Inga Nyheter Hittades',
         'approve' => [
             'key' => 'Publicera',
             'value' => 'Är du säker på att du vill publicera denna nyhetsartikel?',
@@ -133,11 +133,11 @@ $lang['mod_news'] = [
         'title_length' => 'Du måste ange en titel på minst 1 och högst 70 tecken.',
         'title_exists' => 'Denna titel finns redan, vänligen ändra den',
         'title_unique' => 'Din titel är unik',
-        'deck_length' => 'Vänligen ange en introduktionstext på minst 110 tecken och högst 280 tecken.',
+        'deck_length' => 'Vänligen ange en introduktionstext på mellan 90 och 120 tecken.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Roller för Nyhetshantering',
         'add' => 'Kan Lägga till Nyheter',
         'edit' => 'Kan Redigera Nyheter',
@@ -228,7 +228,6 @@ $lang['mod_news'] = [
         'default_sort' => 'Nyaste',
         'default_lang' => 'SV',
         'date_locale' => 'sv-SE',
-        'all' => 'Alla',
         'filter_cleared' => 'Filter har rensats och återställts.',
         'filter_applied' => 'Filter Tillämpade',
         'sort_label' => 'Sortering',
@@ -313,7 +312,7 @@ $lang['mod_news'] = [
             'category' => 'Välj vilken kategori nyhetsartikeln ska tillhöra.',
             'title' => 'Ange en engagerande titel. (Min: 1, Max: 70)',
             'date' => 'Datum och tid för publicering.',
-            'intro' => 'Skriv en kort och koncis sammanfattning. (110 - 280 Tecken)',
+            'intro' => 'Skriv en kort och koncis sammanfattning. (90 - 120 Tecken)',
             'news' => 'Rich text-redigerare.',
             'image' => 'Ladda upp en omslagsbild.',
             'finish' => 'Slutkontroll och publicering.',
@@ -365,6 +364,7 @@ $lang['mod_news'] = [
         'edit' => 'Redigera',
         'gallery' => 'Galleriåtgärder',
         'files' => 'Lägg till Fil',
+        'video' => 'Lägg till video i nyheten',
         'status' => 'Ändra Status',
         'delete' => 'Radera',
         'delete_error' => 'Radering misslyckades!',
@@ -381,31 +381,31 @@ $lang['mod_news'] = [
         'gallery_alert' => "GALLERIHANTERING:\nID: %s\nTitel: %s\nÖppnar bildgalleri för nyheter.",
         'files_alert' => "FILHANTERING:\nID: %s\nTitel: %s\nÖppnar filuppladdningsskärm för nyheter.",
         'status_alert' => "STATUS UPPDATERAD:\n%s",
-        'delete_confirm' => 'Ja, Radera!',
         'delete_success' => 'Nyhet raderad!',
     ],
 
+    // === Hero Slider ===
+    'hero_slider_add' => 'Lägg till i bildspel',
+    'hero_slider_remove' => 'Ta bort från bildspel',
+    'hero_slider_added' => 'Nyheten har lagts till i bildspelet.',
+    'hero_slider_removed' => 'Nyheten har tagits bort från bildspelet.',
+    'hero_slider_error' => 'Kunde inte uppdatera bildspel.',
+    'hero_slider_badge' => 'Bildspel',
+
     // === Latest News ===
     'latest_news' => [
-        1 => 'Senaste Nytt',
-        2 => 'Visa Alla Nyheter',
-        3 => 'Inga nyheter publicerade ännu.',
+        'title' => 'Senaste Nytt',
+        'subtitle' => 'Visa Alla Nyheter',
+        'description' => 'Inga nyheter publicerade ännu.',
     ],
 
-    'mock' => [
-        'titles' => [
-            "Ny era börjar i kurdisk press",
-            "Diyarbakir kultur- och konstfestival schema tillkännagivet",
-            "Lokal journalistikworkshop avslutad",
-            "Anteckningar om AI och medierelationer",
-            "Övergång från traditionell journalistik till digitala medier",
-            "Statistik över användning av sociala medier 2024",
-            "Veckans tekniska sammanfattning: Vad hände?",
-            "Författarförbundet väljer ny styrelse",
-            "Fotoworkshop registreringar startade",
-            "Rojname mobilapp uppdaterad"
-        ],
-        'categories' => ["Agenda", "Kultur & Konst", "Teknik", "Media", "Livsstil"],
-        'authors' => [],
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Lyckades',
+        'error' => 'Ett fel uppstod',
+        'database_error' => 'Databasfel',
+        'record_not_found' => 'Nyheten hittades inte!',
+        'unknown_type' => 'Okänd relationstyp',
+        'relation_updated' => 'Relationen har uppdaterats',
     ],
 ];

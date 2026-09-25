@@ -1,38 +1,62 @@
 <?php
-$lang['mod_seo'] = array(
+$lang['mod_seo'] = [
   'title' => 'Kontrola SEO',
   'list' => 'Rêzên Google (SEO)',
   'settings' => 'Mîhengên SEO',
-  'button' => array(
+  'button' => [
     'save' => 'Tomar Bike',
     'back' => 'Veger',
     'upload' => 'Pelê JSON Hilbijêre',
-  ),
-  'admin' => array(
-    'columns' => array(
+    'setup_api' => 'Mîhengên API Lêke',
+    'refresh' => 'Nûjen Bike',
+  ],
+  'admin' => [
+    'columns' => [
       'url' => 'Navnîşan (URL)',
       'name' => 'Sernavê Rûpelê',
       'type' => 'Cure',
-      'clicks' => 'Klîk',
+      'clicks' => 'Tikandin',
       'impressions' => 'Nîşandan',
       'ctr' => 'CTR (%)',
       'position' => 'Rêza Navîn',
-    ),
-    'labels' => array(
-      'property_url' => 'URL ya Google Search Console Property (mînak: sc-domain:naturalworld.tech)',
+    ],
+    'labels' => [
+      'property_url' => 'Navnîşana Malperê ya Google Search Console',
+      'property_url_placeholder' => 'malpera-we.com',
       'json_file' => 'Pelê Mifteya API ya Google (JSON)',
       'credentials_status' => 'Rewşa API',
       'credentials_ok' => 'Mifteya API ya JSON barkirî ye',
       'credentials_missing' => 'Mifteya API ya JSON kêm e! Ji kerema xwe ji rûpela mîhengan bar bikin.',
-    )
-  ),
-  'messages' => array(
+      'settings_credentials_missing' => 'Mifteya API ya JSON nehatiye barkirin. Ji kerema xwe ji jêr ve pelê mifteyê hilbijêrin û tomar bikin.',
+      'onboarding_title' => 'Mîhengên API Kêm in',
+      'onboarding_desc' => 'Ji bo bidestxistina daneyên zindî yên lêgerîna Google (Tikandin, Nîşandan û Rêzbendî), divê mifteya APIyê ya JSON were lêkirin.',
+    ]
+  ],
+  'messages' => [
     'success' => 'Mîheng bi serkeftî hatin nûjenkirin.',
     'error' => 'Çewtiyek çêbû.',
     'json_invalid' => 'Pelê JSON nederbasdar e!',
-  ),
-  'role_errors' => array(
+  ],
+  'role' => [
+    'name' => 'Rolên Rêveberiya SEO',
+    'roles' => 'Kontrola SEO',
+    'list' => 'Dikare kontrola SEO û rêzbendiyê bibîne',
+    'settings' => 'Dikare mîhengên SEO bi rê ve bibe',
+    'google_settings' => 'Dikare mîhengên Google Cloud û Gemini API bi rê ve bibe',
+  ],
+  'role_errors' => [
     'list' => 'Destûra te ya dîtina kontrola SEO tune ye',
     'settings' => 'Destûra te ya mîhengên SEO tune ye',
-  )
-);
+    'google_settings' => 'Destûra te ya rêveberiya servîsên Google tune ye',
+  ],
+  'google_settings' => 'Google Services Hub',
+  'google' => [
+    'bucket_name' => 'Navê Bucket a GCS (Google Cloud Storage)',
+    'gemini_api_key' => 'Mifteya Gemini API (API Key)',
+    'credentials_file' => 'Pelê Servîs Account a Google (credentials.json)',
+    'credentials_status' => 'Rewşa Credentials',
+    'credentials_ok' => 'Pelê credentials.json barkirî ye',
+    'credentials_missing' => 'Pelê credentials.json kêm e! Ji kerema xwe bar bikin.',
+    'settings_ok' => 'Mîhengên Google bi serkeftî hatin tomarkirin.',
+  ]
+];

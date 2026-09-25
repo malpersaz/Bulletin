@@ -31,16 +31,16 @@ class mod_attachment_mod_mod extends BaseModuleController
         return $model;
     }
 
-    protected function _oke_message($message)
+    protected function _success_message($message)
     {
-        $this->tema->veri('oke', true);
-        $this->tema->veri('mesaj', $message);
+        $this->theme->set('success', true);
+        $this->theme->set('message', $message);
     }
 
     protected function _error_message($message)
     {
-        $this->tema->veri('error', true);
-        $this->tema->veri('errors', [$message]);
+        $this->theme->set('error', true);
+        $this->theme->set('errors', [$message]);
     }
 
     protected function _add()
@@ -52,14 +52,14 @@ class mod_attachment_mod_mod extends BaseModuleController
             if ($isAjax) {
                 $this->jsonResponse([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
             }
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('errors', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $model = Load::model('mod_attachment_mod');
             $this->processFieldData($model);
@@ -68,11 +68,11 @@ class mod_attachment_mod_mod extends BaseModuleController
                 if ($isAjax) {
                     $this->jsonResponse([
                         'status' => 'success',
-                        'message' => $this->lang['mod_attachment_mod']['message']['oke']['add'],
+                        'message' => $this->lang['mod_attachment_mod']['message']['success']['add'],
                         'redirect' => $this->site['saddress'] . 'mod_attachment_mod/list'
                     ]);
                 }
-                $this->_oke_message($this->lang['mod_attachment_mod']['message']['oke']['add']);
+                $this->_success_message($this->lang['mod_attachment_mod']['message']['success']['add']);
             } else {
                 if ($isAjax) {
                     $this->jsonResponse([
@@ -94,14 +94,14 @@ class mod_attachment_mod_mod extends BaseModuleController
             if ($isAjax) {
                 $this->jsonResponse([
                     'status' => 'error',
-                    'message' => implode(', ', $this->val->hatalar),
-                    'errors' => $this->val->hatalar
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
                 ]);
             }
             foreach ($_POST as $key => $val) {
-                $this->tema->veri($key, Req::Post_Safe($key));
+                $this->theme->set($key, Req::Post_Safe($key));
             }
-            $this->tema->veri('errors', $this->val->hatalar);
+            $this->theme->set('errors', $this->val->errors);
         } else {
             $model = Load::model('mod_attachment_mod');
             $model->id = $id;
@@ -115,11 +115,11 @@ class mod_attachment_mod_mod extends BaseModuleController
                 if ($isAjax) {
                     $this->jsonResponse([
                         'status' => 'success',
-                        'message' => $this->lang['mod_attachment_mod']['message']['oke']['edit'],
+                        'message' => $this->lang['mod_attachment_mod']['message']['success']['edit'],
                         'redirect' => $this->site['saddress'] . 'mod_attachment_mod/list'
                     ]);
                 }
-                $this->_oke_message($this->lang['mod_attachment_mod']['message']['oke']['edit']);
+                $this->_success_message($this->lang['mod_attachment_mod']['message']['success']['edit']);
             } else {
                 if ($isAjax) {
                     $this->jsonResponse([

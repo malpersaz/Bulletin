@@ -12,26 +12,30 @@ class Url {
 		$this->url = $this->host .sub_dir.$this->link;
 		
 	}
-	public function adres() {
+	public function address() {
 		return $this->path;
 	}
 	public function root() {
 		return $this->link == '';
 	}
-	public function parca_varmi($gel) {
-		return isset ( $this->path [$gel] );
+	public function hasSegment($index) {
+		return isset ( $this->path [$index] );
 	}
-	public function parca($gel) {
-		return $this->parca_varmi ( $gel ) ? $this->path [$gel] : False;
+	public function segment($index) {
+		return $this->hasSegment ( $index ) ? $this->path [$index] : False;
 	}
 	
-	public function parse($a) {
-		$desenler =  ['%(.*)\?(.*)%', '%&amp;%' ];
-		$degis =  ['$2', '&' ];
-		// Fix for PHP 8+ compatibility: ensure $a is not null
-		$a = $a ?? '';
-		parse_str ( preg_replace ( $desenler, $degis, $a ), $sonuc );
-		$this->segments = $sonuc;
+	public function parse($a = null) {
+		$patterns =  ['%(.*)\?(.*)%', '%&amp;%' ];
+		$replacements =  ['$2', '&' ];
+		if ($a === null || $a === '') {
+			$a = $_SERVER['QUERY_STRING'] ?? '';
+		}
+		parse_str ( preg_replace ( $patterns, $replacements, $a ), $result );
+		if (empty($result) && !empty($_GET)) {
+			$result = $_GET;
+		}
+		$this->segments = $result;
 		return;
 	}
 	

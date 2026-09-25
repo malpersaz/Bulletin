@@ -5,7 +5,6 @@ class BrandAssetGenerator
     private $output_dir;
 
     private $generated_files = [
-        'site_icon' => 'logo_square.png',
         'favicon_path' => 'favicon.ico',
         'favicon_96' => 'favicon-96x96.png',
         'apple_touch_icon' => 'apple-touch-icon.png',
@@ -72,7 +71,6 @@ class BrandAssetGenerator
         $this->ensureOutputDirectory();
         $this->deleteManagedFiles($existing_files);
 
-        $this->writeSquarePng($source, 512, $this->generated_files['site_icon']);
         $this->writeSquarePng($source, 96, $this->generated_files['favicon_96']);
         $this->writeSquarePng($source, 180, $this->generated_files['apple_touch_icon']);
         $this->writeSquarePng($source, 192, $this->generated_files['manifest_192']);
@@ -163,13 +161,26 @@ class BrandAssetGenerator
         $icon->destroy();
     }
 
-    private function writeManifest(array $site_meta = [])
+    public function ensureManifestExists(array $site_meta = [])
+    {
+        $manifestFile = $this->output_dir . $this->generated_files['site_webmanifest'];
+        if (!file_exists($manifestFile) || filesize($manifestFile) < 5) {
+            $this->ensureOutputDirectory();
+            $this->writeManifest($site_meta);
+        }
+    }
+
+    public function writeManifest(array $site_meta = [])
     {
         $name = isset($site_meta['title']) && trim($site_meta['title']) !== ''
             ? trim($site_meta['title'])
-            : 'Website';
+            : (isset($site_meta['name']) && trim($site_meta['name']) !== ''
+                ? trim($site_meta['name'])
+                : (isset($site_meta['site_name']) && trim($site_meta['site_name']) !== ''
+                    ? trim($site_meta['site_name'])
+                    : 'Website'));
 
-        $short_name = strlen($name) > 24 ? substr($name, 0, 24) : $name;
+        $short_name = mb_strlen($name) > 24 ? mb_substr($name, 0, 24) : $name;
 
         $manifest = [
             'name' => $name,
@@ -191,6 +202,7 @@ class BrandAssetGenerator
             'display' => 'standalone',
         ];
 
+        $this->ensureOutputDirectory();
         file_put_contents(
             $this->output_dir . $this->generated_files['site_webmanifest'],
             json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)

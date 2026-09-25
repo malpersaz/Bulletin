@@ -16,6 +16,7 @@ class mod_news_category_mod extends indexMain
         'header' => ['##HEADER MENU', 'HEADER MENU', '##HEADER', 'HEADER', 'TOP MENU', 'MAIN MENU'],
         'footer' => ['##FOOTER MENU', 'FOOTER MENU', '##FOOTER', 'FOOTER', 'BOTTOM MENU'],
         'sidebar' => ['##SIDEBAR', 'SIDEBAR', 'SIDE MENU'],
+        'action' => ['##ACTION MENU', 'ACTION MENU', '##ACTION', 'ACTION', 'CTA MENU', '##CTA MENU', 'ACTIONMENU', 'ACTION_MENU', 'PESEKA CALAKIYE', 'ÇALAKÎ', 'AKTIONSMENU', 'AKTIONSMENÜ', 'EYLEM MENUSU'],
     ];
 
     public function __construct()
@@ -46,7 +47,7 @@ class mod_news_category_mod extends indexMain
     {
         $name = is_array($row) ? ($row['name'] ?? '') : (string) $row;
         if (strpos($name, '##') === 0) {
-            if (is_array($row) && (int) ($row['parent_id'] ?? -1) === 0 && !empty($visibleLanguages)) {
+            if (is_array($row) && (int) ($row['parent_id'] ?? -1) === 0 && $visibleLanguages !== []) {
                 $langCode = isset($row['lang']) ? $row['lang'] : '';
                 foreach ($visibleLanguages as $language) {
                     if (($language['seo'] ?? '') === $langCode) {
@@ -56,8 +57,7 @@ class mod_news_category_mod extends indexMain
             }
 
             $langKey = substr($name, 2);
-            $langTitle = isset($this->lang['mod_news_category'][$langKey]) ? $this->lang['mod_news_category'][$langKey] : str_replace('_', ' ', $langKey);
-            return $langTitle;
+            return isset($this->lang['mod_news_category'][$langKey]) ? $this->lang['mod_news_category'][$langKey] : str_replace('_', ' ', $langKey);
         }
         return $name;
     }
@@ -89,7 +89,7 @@ class mod_news_category_mod extends indexMain
 
     private function buildNestedRows(array $rows)
     {
-        if (empty($rows)) {
+        if ($rows === []) {
             return [];
         }
 
@@ -194,7 +194,7 @@ class mod_news_category_mod extends indexMain
             return $this->site['lang'];
         }
 
-        $defaultLang = Kayit::getir('default_lang');
+        $defaultLang = Registry::get('default_lang');
         if (is_string($defaultLang) && $defaultLang !== '') {
             return $defaultLang;
         }
@@ -346,8 +346,8 @@ class mod_news_category_mod extends indexMain
     private function setFormError($message)
     {
         $this->lastErrorMessage = $message;
-        $this->view->veri('error', true);
-        $this->view->veri('mesaj', $message);
+        $this->view->set('error', true);
+        $this->view->set('message', $message);
     }
 
     private function validateCategoryParent($lang, $parentId, $currentId = null, array $candidateRow = [])
@@ -448,7 +448,9 @@ class mod_news_category_mod extends indexMain
 
     public function list()
     {
-        if ($this->user->hasPermission('mod_news_category', 'list', $this->lang['mod_news_category']['role_errors']['list'], 1) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'list', $this->lang['mod_news_category']['role_errors']['list'], 1) === False) {
+            return False;
+        }
 
         $visibleLanguages = $this->getVisibleLanguages();
         $visibleLangs = $this->getVisibleLanguageCodes();
@@ -461,7 +463,7 @@ class mod_news_category_mod extends indexMain
         }
 
         Run::import('management', '_index');
-        $this->view->veri('category_tree', $this->buildNestedRows($visibleRows));
+        $this->view->set('category_tree', $this->buildNestedRows($visibleRows));
         $this->view->tpl('admin/mod_news_category/list');
     }
 
@@ -487,8 +489,8 @@ class mod_news_category_mod extends indexMain
             return $image->url;
         }
 
-        $this->view->veri('error', true);
-        $this->view->veri('mesaj', $image->error);
+        $this->view->set('error', true);
+        $this->view->set('message', $image->error);
 
         return false;
     }
@@ -529,8 +531,8 @@ class mod_news_category_mod extends indexMain
         }
 
         $visibleLanguages = $this->getVisibleLanguages($currentRecordLang);
-        $this->view->veri('selected_lang', $selectedLang);
-        $this->view->veri('lang_lang', $visibleLanguages);
+        $this->view->set('selected_lang', $selectedLang);
+        $this->view->set('lang_lang', $visibleLanguages);
 
         $categoryRows = $this->getAllCategoryRows();
         $languageRootRow = $this->findLanguageRootRow($categoryRows, $selectedLang);
@@ -579,12 +581,12 @@ class mod_news_category_mod extends indexMain
             $selectedParentId = $languageRootId;
         }
 
-        $this->view->veri('select_nested_parent_id_result', $this->buildNestedRows($filteredCategories));
-        $this->view->veri('category_parent_root_id', $languageRootId);
-        $this->view->veri('category_parent_default_id', $defaultParentId);
-        $this->view->veri('category_selected_parent_id', $selectedParentId !== null ? $selectedParentId : $defaultParentId);
-        $this->view->veri('category_language_root_label', $languageRootLabel);
-        $this->view->veri('category_allow_system_parent', $allowSystemParent);
+        $this->view->set('select_nested_parent_id_result', $this->buildNestedRows($filteredCategories));
+        $this->view->set('category_parent_root_id', $languageRootId);
+        $this->view->set('category_parent_default_id', $defaultParentId);
+        $this->view->set('category_selected_parent_id', $selectedParentId !== null ? $selectedParentId : $defaultParentId);
+        $this->view->set('category_language_root_label', $languageRootLabel);
+        $this->view->set('category_allow_system_parent', $allowSystemParent);
 
         $menuLang = Load::lang('mod_menu');
         $menuRows = $this->getAllMenuRows();
@@ -606,11 +608,11 @@ class mod_news_category_mod extends indexMain
             $row['display_name'] = $this->resolveMenuDisplayName($row, $visibleLanguages, $menuLang);
             $filteredMenus[] = $row;
         }
-        $this->view->veri('select_nested_menu_result', $this->buildNestedRows($filteredMenus));
-        $this->view->veri('category_menu_root_id', $menuLanguageRootId);
+        $this->view->set('select_nested_menu_result', $this->buildNestedRows($filteredMenus));
+        $this->view->set('category_menu_root_id', $menuLanguageRootId);
 
         $this->db->fetch_array("SELECT id, name FROM mod_acl ORDER BY name ASC");
-        $this->view->veri('mod_acl_acl_id', $this->db->getResult()->toArray());
+        $this->view->set('mod_acl_acl_id', $this->db->getResult()->toArray());
     }
 
     private function syncMenuOnCreate($category_model)
@@ -715,17 +717,19 @@ class mod_news_category_mod extends indexMain
 
     public function add()
     {
-        if ($this->user->hasPermission('mod_news_category', 'add', $this->lang['mod_news_category']['role_errors']['add'], 1) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'add', $this->lang['mod_news_category']['role_errors']['add'], 1) === False) {
+            return False;
+        }
 
         if (Req::is_Post('add')) {
             $this->val = Load::validator('mod_news_category.add');
             if ($this->val->check()) {
                 foreach ($_POST as $key => $val) {
-                    $this->view->veri($key, Req::Post_Safe($key));
+                    $this->view->set($key, Req::Post_Safe($key));
                 }
-                $this->view->veri('hatalar', $this->val->hatalar);
-                $this->view->veri('error', true);
-                $this->view->veri('mesaj', $this->lang['mod_news_category']['messages']['error']['validation']);
+                $this->view->set('errors', $this->val->errors);
+                $this->view->set('error', true);
+                $this->view->set('message', $this->lang['mod_news_category']['messages']['error']['validation']);
             } else {
                 Load::model('mod_news_category');
                 $mod_news_category_model = new mod_news_category_model();
@@ -746,7 +750,7 @@ class mod_news_category_mod extends indexMain
 
                 if (!$this->validateCategoryParent($mod_news_category_model->lang, $mod_news_category_model->parent_id) || !$this->validateMenuParent($mod_news_category_model->lang, $mod_news_category_model->menu)) {
                     foreach ($formData as $key => $value) {
-                        $this->view->veri($key, $value);
+                        $this->view->set($key, $value);
                     }
                 } else {
                     $mod_news_category_model->order = $this->nextCategorySiblingOrder($mod_news_category_model->parent_id);
@@ -754,7 +758,7 @@ class mod_news_category_mod extends indexMain
                     $uploadedImage = $this->uploadImageOrFail('image');
                     if ($uploadedImage === false) {
                         foreach ($formData as $key => $value) {
-                            $this->view->veri($key, $value);
+                            $this->view->set($key, $value);
                         }
                     } else {
                         if ($uploadedImage !== null) {
@@ -763,12 +767,12 @@ class mod_news_category_mod extends indexMain
 
                         if ($mod_news_category_model->save()) {
                             $this->syncMenuOnCreate($mod_news_category_model);
-                            $this->view->veri('oke', true);
-                            $this->view->veri('mesaj', $this->lang['mod_news_category']['messages']['success']['added']);
+                            $this->view->set('Success', true);
+                            $this->view->set('message', $this->lang['mod_news_category']['messages']['success']['added']);
                         } else {
                             $this->rollbackUploadedImage($uploadedImage);
                             foreach ($formData as $key => $value) {
-                                $this->view->veri($key, $value);
+                                $this->view->set($key, $value);
                             }
                             $this->setFormError($this->lang['mod_news_category']['messages']['error']['not_added']);
                         }
@@ -785,14 +789,16 @@ class mod_news_category_mod extends indexMain
 
     public function edit($id)
     {
-        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) {
+            return False;
+        }
 
         Load::model('mod_news_category');
         $mod_news_category_model = new mod_news_category_model();
         $id = Req::Url_Clear($id);
         if ($mod_news_category_model->exists_id($id) === FALSE) {
-            $this->view->veri('error', true);
-            $this->view->veri('mesaj', $this->lang['mod_news_category']['errors']['record']);
+            $this->view->set('error', true);
+            $this->view->set('message', $this->lang['mod_news_category']['errors']['record']);
             $this->loadFormMetadata();
             Run::import('management', '_index');
             $this->view->tpl('admin/mod_news_category/edit');
@@ -809,9 +815,9 @@ class mod_news_category_mod extends indexMain
         if (Req::is_Post('edit')) {
             $this->val = Load::validator('mod_news_category.edit');
             if ($this->val->check($id)) {
-                $this->view->veri('hatalar', $this->val->hatalar);
-                $this->view->veri('error', true);
-                $this->view->veri('mesaj', $this->lang['mod_news_category']['messages']['error']['validation']);
+                $this->view->set('errors', $this->val->errors);
+                $this->view->set('error', true);
+                $this->view->set('message', $this->lang['mod_news_category']['messages']['error']['validation']);
                 $viewData = $this->categoryDataFromPost($existing);
                 $reloadFromDb = false;
             } else {
@@ -850,8 +856,8 @@ class mod_news_category_mod extends indexMain
 
                         if ($mod_news_category_model->update('id')) {
                             $this->syncMenuOnUpdate($existing['lang'] . '/newses/' . $existing['seo'], $mod_news_category_model);
-                            $this->view->veri('oke', true);
-                            $this->view->veri('mesaj', $this->lang['mod_news_category']['messages']['success']['updated']);
+                            $this->view->set('Success', true);
+                            $this->view->set('message', $this->lang['mod_news_category']['messages']['success']['updated']);
                         } else {
                             $this->rollbackUploadedImage($uploadedImage);
                             $this->setFormError($this->lang['mod_news_category']['messages']['error']['not_updated']);
@@ -867,13 +873,15 @@ class mod_news_category_mod extends indexMain
         $this->loadFormMetadata($selectedLang, $id, $selectedParentId, $existing['lang']);
 
         Run::import('management', '_index');
-        $this->view->veri('d', $res);
+        $this->view->set('d', $res);
         $this->view->tpl('admin/mod_news_category/edit');
     }
 
     public function image_remove_image()
     {
-        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) return FALSE;
+        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) {
+            return FALSE;
+        }
 
         $id = intval(Req::Post_Safe('id'));
         Load::model('mod_news_category');
@@ -897,19 +905,21 @@ class mod_news_category_mod extends indexMain
             if ($image->_delete_files($this->imageOptions())) {
                 $mod_news_category_model->image = '';
                 $mod_news_category_model->update('id');
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo $image->error;
                 return FALSE;
             }
         } else {
-            echo 'Oke';
+            echo 'Success';
         }
     }
 
     public function toggle_homepage()
     {
-        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit'], 1) === False) {
+            return False;
+        }
 
         $id = intval(Req::Post_Safe('id'));
         if ($id > 0) {
@@ -922,7 +932,7 @@ class mod_news_category_mod extends indexMain
                 $new_status = ($category->show_on_homepage === 'y') ? 'n' : 'y';
                 
                 $this->db->query("UPDATE `mod_news_category` SET `show_on_homepage` = '$new_status' WHERE `id` = '$id'");
-                echo 'Oke';
+                echo 'Success';
             } else {
                 echo $this->lang['mod_news_category']['errors']['record'];
             }
@@ -931,41 +941,40 @@ class mod_news_category_mod extends indexMain
         }
     }
 
-    public function sil()
+    public function delete()
     {
-        if ($this->user->hasPermission('mod_news_category',  'delete', $this->lang['mod_news_category']['role_errors'][ 'delete']) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'delete', $this->lang['mod_news_category']['role_errors']['delete']) === False) {
+            return False;
+        }
 
         $id_param = Req::Post_Safe('id');
         if ($id_param === NULL || $id_param === '') {
             $id_param = Req::Post_Safe('delete');
-        }
-        if ($id_param === NULL || $id_param === '') {
-            $id_param = Req::Post_Safe('sil');
         }
         
         $ids = is_array($id_param) ? $id_param : [$id_param];
         
         foreach ($ids as $id) {
             $id = intval($id);
-            if ($id > 0) {
-                if ($this->deleteCategoryTree($id) !== TRUE) {
-                    echo 'ERROR';
-                    return FALSE;
-                }
+            if ($id > 0 && $this->deleteCategoryTree($id) !== TRUE) {
+                echo 'ERROR';
+                return FALSE;
             }
         }
-        echo 'Oke';
+        echo 'Success';
     }
 
     public function dragdrop_delete()
     {
-        $this->sil();
+        $this->delete();
     }
 
     public function _order_change()
     {
         $order_array = Req::Post('order');
-        if (empty($order_array) || !is_array($order_array)) return TRUE;
+        if (empty($order_array) || !is_array($order_array)) {
+            return TRUE;
+        }
 
         $x = 1;
         foreach ($order_array as $category_id) {
@@ -978,9 +987,11 @@ class mod_news_category_mod extends indexMain
         return TRUE;
     }
 
-    public function tasi()
+    public function reorder()
     {
-        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit']) === False) return False;
+        if ($this->user->hasPermission('mod_news_category', 'edit', $this->lang['mod_news_category']['role_errors']['edit']) === False) {
+            return False;
+        }
 
         $id = intval(Req::Post_Safe('id'));
         $parent_id = intval(Req::Post_Safe('parent_id'));
@@ -1001,7 +1012,7 @@ class mod_news_category_mod extends indexMain
 
             if ($this->db->query("UPDATE `mod_news_category` SET `parent_id` = '$parent_id' WHERE `id` = '$id'")) {
                 if ($this->_order_change()) {
-                    echo 'Oke';
+                    echo 'Success';
                 } else {
                     echo $this->lang['mod_news_category']['errors']['order_update_failed'];
                 }

@@ -2,7 +2,10 @@
 
 abstract class indexBase
 {
+    public $url;
     public $tema;
+    public $theme;
+    public $view;
     public $site;
     public $lang;
     public $session;
@@ -13,11 +16,30 @@ abstract class indexBase
     public $model;
     public $secenek;
     public $sec;
+    public $options;
+    public $option;
+
+    public function __get($name)
+    {
+        if ($name === 'theme' || $name === 'view') {
+            return $this->tema;
+        }
+        if ($name === 'tema') {
+            return $this->theme ?? $this->view;
+        }
+        if ($name === 'options' || $name === 'option') {
+            return $this->secenek ?? $this->sec;
+        }
+        if ($name === 'secenek' || $name === 'sec') {
+            return $this->options ?? $this->option;
+        }
+        return null;
+    }
 
     private function hasConfiguredDatabase()
     {
-        $database = Kayit::getir('database');
-        $dbConfig = Kayit::getir('db_config');
+        $database = Registry::get('database');
+        $dbConfig = Registry::get('db_config');
 
         if (!is_string($database) || $database === '') {
             return false;
@@ -32,8 +54,11 @@ abstract class indexBase
 
     public function __construct()
     {
+        $this->url = Load::lib('Url');
         $this->tema = Load::lib('TwigTemplate');
-        $this->site = Kayit::getir('site_config');
+        $this->theme = $this->tema;
+        $this->view = $this->tema;
+        $this->site = Registry::get('site_config');
         $this->_get_site_settings();
         $this->tema->setGlobal('site', $this->site);
         $this->lang = Load::lang('index');
@@ -49,9 +74,9 @@ abstract class indexBase
 
     public function _getAcl($acl_id)
     {
-        Cache::$sure = 60 * 60 * 24;
-        if (Cache::exists_cache("permission - acl - " . $acl_id)) {
-            return Cache::get_cache();
+        Cache::$ttl = 86400;
+        if (Cache::exists("permission-acl-" . $acl_id)) {
+            return Cache::get("permission-acl-" . $acl_id);
         }
         $acl = Load::model('mod_acl');
         $acl->where_id($acl_id)->gRo();
@@ -59,12 +84,12 @@ abstract class indexBase
             return FALSE;
         }
         $acl->sync();
-        Cache::set(unserialize($acl->acl), "permission - acl - " . $acl_id);
+        Cache::set(unserialize($acl->acl), "permission-acl-" . $acl_id);
         return unserialize($acl->acl);
     }
 
 
-    public function _gallery_resimgetir($mod, $vid)
+    public function _gallery_get_images($mod, $vid)
     {
         $gallery = Load::model('mod_gallery');
         $gallery->where_mod_name_and_vid($mod, $vid);
@@ -73,8 +98,14 @@ abstract class indexBase
 
         if ($gallery->getSize() !== 0) {
             $this->tema->ctx_set('res', $gallery->toArray());
+            $this->tema->ctx_set('images', $gallery->toArray());
         }
         unset($gallery);
+    }
+
+    public function _gallery_resimgetir($mod, $vid)
+    {
+        return $this->_gallery_get_images($mod, $vid);
     }
 
     public function _mod_attachment($mod, $vid)
@@ -246,6 +277,14 @@ abstract class indexBase
                 $final_key = ($key === 'email') ? 'mail' : $key;
                 $this->site[$final_key] = $value;
             }
+
+            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amida';
+            $fullTplPath = template_dir . $activeTemplate;
+            if (!file_exists($fullTplPath) || !is_dir($fullTplPath)) {
+                $activeTemplate = 'amida';
+            }
+            $this->site['app_template'] = $activeTemplate;
+            Registry::set('app_template', $activeTemplate);
         }
 
         Load::modelfile('mod_settings.mod_settings_social');
@@ -348,7 +387,7 @@ abstract class indexBase
     }
 
 
-    public function _permission_kontrol($acl_id)
+    public function _permission_check($acl_id)
     {
         if ($acl_id === 0) {
             return false;
@@ -360,8 +399,8 @@ abstract class indexBase
         }
 
         $this->session = Load::lib('Session');
-        $grup = $this->session->get('group_id') !== false ? $this->session->get('group_id') : 0;
-        if (!in_array($grup, $acl)) {
+        $group = $this->session->get('group_id') !== false ? $this->session->get('group_id') : 0;
+        if (!in_array($group, $acl)) {
             $this->tema->tpl('index/register');
             $this->_index();
 
@@ -371,15 +410,19 @@ abstract class indexBase
         return false;
     }
 
+    public function _permission_kontrol($acl_id)
+    {
+        return $this->_permission_check($acl_id);
+    }
+
 
 
 
     public function _404()
     {
-        header("HTTP/1.0 404 Not Found");
-        header("Status: 404 Not Found");
-        Helper::yonlendir($this->site['address']);
-        exit();
+        require_once(lib_dir . 'AmedError.class.php');
+        $link = (is_object($this->url) && isset($this->url->link)) ? $this->url->link : ($_SERVER['REQUEST_URI'] ?? '');
+        AmedError::error('not', Req::Clear($link));
     }
 
     protected function resolveClientIp()

@@ -2,7 +2,7 @@
 /**
  * Publication Category Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM ARTIST CMS
  * @module  mod_publication_category
  * @version 1.0.0
  * @author  AKM Software
@@ -24,15 +24,14 @@ $lang['mod_publication_category'] = [
     'add' => 'Kategori Ekle',
     'edit' => 'Kategoriyi Düzenle',
     'information' => 'Bilgilendirme',
-    'oke' => 'İşlem Başarılı',
-    'hata' => 'Hata Oluştu',
-    'error' => 'Kritik Hata Oluştu',
+    'success' => 'İşlem Başarılı',
+    'error' => 'Hata Oluştu',
     'remove_record' => 'Bu kaydı silmek istediğinizden emin misiniz?',
     'choose_wish' => 'Seçiniz',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Kategori başarıyla eklendi!',
             'edit' => 'Kategori başarıyla güncellendi!',
         ],
@@ -48,42 +47,30 @@ $lang['mod_publication_category'] = [
 
     'errors' => [
         'record' => 'Belirtilen kayıt bulunamadı!',
-        'parent_selection_required' => 'Lütfen bir üst kategori seçin.',
-        'parent_language_mismatch' => 'Üst kategori dili, kategori diliyle aynı olmalıdır.',
-        'parent_cycle' => 'Bir kategori kendisinin veya alt kategorilerinden birinin altına taşınamaz.',
-        'menu_parent_not_found' => 'Seçilen menü üst kaydı bulunamadı.',
-        'menu_language_mismatch' => 'Menü üst kaydının dili, kategori diliyle aynı olmalıdır.',
-        'order_update_failed' => 'Kategori sırası güncellenemedi.',
-    ],
-
-    'parent_labels' => [
-        'system_root' => 'Sistem kökü',
-        'language_root' => ':language kökü',
     ],
 
     'button' => [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
-        'save' => 'Kaydet',
+        'cancel' => 'Vazgeç',
         'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
+        'save' => 'Kaydet',
     ],
 
     'grid' => [
-        0 => '{total} sonuçtan {from} - {to} arası gösteriliyor',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Ara',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
+        'showing_results' => '{total} sonuçtan {from} - {to} arası gösteriliyor',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Ara',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
     ],
 
     'validator' => [
@@ -94,8 +81,8 @@ $lang['mod_publication_category'] = [
         'inarray' => '%s alanı sadece \' %s \' değerlerini kabul edebilir',
     ],
 
-    'roll' => [
-        'ad' => 'Kategori Yönetimi Rolleri',
+    'role' => [
+        'name' => 'Kategori Yönetimi Rolleri',
         'add' => 'Kategori Ekleyebilir',
         'edit' => 'Kategori Düzenleyebilir',
         'delete' => 'Kategori Silebilir',
@@ -147,7 +134,6 @@ $lang['mod_publication_category'] = [
         'info' => [
             'edit_double_click' => 'Düzenlemek istediğiniz kategoriye çift tıklayın',
             'drag_reorder' => 'Sıralamayı değiştirmek için kategoriyi sürükleyip bırakın',
-            'mode_unlocked' => 'Mod: Sıralama (Açık)',
         ],
         'warning' => [
             'reorder' => 'Kategori sırası değiştirilsin mi?',
@@ -207,9 +193,6 @@ $lang['mod_publication_category'] = [
         'edit' => 'Seçileni Düzenle',
         'delete' => 'Seçilenleri Sil',
         'refresh' => 'Yenile',
-        'add' => 'Ekle',
-        'edit' => 'Düzenle',
-        'delete' => 'Sil',
         'cancel' => 'İptal',
         'remove' => 'Kaldır',
         'yes' => 'Evet',
@@ -263,15 +246,11 @@ $lang['mod_publication_category'] = [
             'description' => 'SEO ayarları için açıklama (Description)',
             'menu' => 'Kategoriyi Menüye Gönder',
             'image' => 'Görsel',
-            'image_select' => 'Görsel seç',
             'acl_id' => 'Erişim Permissionsi',
         ],
         'select_values' => [
             'root_yes' => 'Evet',
             'root_no' => 'Hayır',
-        ],
-        'tooltips' => [
-            'acl_settings' => 'ACL ayarları',
         ],
     ],
 
@@ -378,7 +357,7 @@ $lang['mod_publication_category'] = [
 
     // === Response Codes (for AJAX/PHP responses) ===
     'responses' => [
-        'success' => 'Oke',  // Keep 'Oke' as it's used in JavaScript comparisons
+        'success' => 'Success',  // Keep 'Success' as it's used in JavaScript comparisons
         'error' => 'Error',  // Keep 'Error' as it's used in JavaScript comparisons
         'fatal_error' => 'ERROR',  // Keep 'ERROR' as it's used in JavaScript comparisons
     ],

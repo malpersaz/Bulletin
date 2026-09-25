@@ -149,10 +149,7 @@ class Swift_Plugins_ThrottlerPlugin
     {
       return $this->_timer->getTimestamp();
     }
-    else
-    {
-      return time();
-    }
+    return time();
   }
   
   // -- Private methods

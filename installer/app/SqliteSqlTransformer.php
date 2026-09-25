@@ -3,7 +3,7 @@
 /**
  * SqliteSqlTransformer - MySQL to SQLite SQL Converter
  * 
- * This class provides utility methods to transform MySQL-flavored DDL
+ * This class provides utility methods to transform MySQL-flavored schema definitions
  * into SQLite-compatible SQL statements.
  */
 class SqliteSqlTransformer
@@ -25,14 +25,17 @@ class SqliteSqlTransformer
 
         $sql = preg_replace('/\)\s*ENGINE=[^;]+;/i', ');', $sql);
         $sql = preg_replace('/\)\s*DEFAULT CHARSET=[^;]+;/i', ');', $sql);
-        $sql = preg_replace('/COLLATE [^ ]+/i', '', $sql);
-        $sql = preg_replace('/DEFAULT CHARSET=[^;\s]+/i', '', $sql);
+        $sql = preg_replace('/COLLATE [^ ;)]+/i', '', $sql);
+        $sql = preg_replace('/DEFAULT CHARSET=[^;\s)]+/i', '', $sql);
+        $sql = preg_replace('/\bunsigned\b/i', '', $sql);
+        $sql = preg_replace("/\bCOMMENT\s+'(?:[^'\\\\]|\\\\.)*'/i", '', $sql);
 
-        $sql = preg_replace('/`(\w+)`\s+int(?:\(\d+\))?\s+NOT NULL\s+AUTO_INCREMENT\s+PRIMARY KEY/i', '`$1` INTEGER PRIMARY KEY AUTOINCREMENT', $sql);
-        $sql = preg_replace('/`(\w+)`\s+int(?:\(\d+\))?\s+NOT NULL\s+AUTO_INCREMENT/i', '`$1` INTEGER PRIMARY KEY AUTOINCREMENT', $sql);
-        $sql = preg_replace('/\bint\(\d+\)\b/i', 'INTEGER', $sql);
-        $sql = preg_replace('/\bint\b/i', 'INTEGER', $sql);
-        $sql = preg_replace('/\byear\b/i', 'INTEGER', $sql);
+        $sql = preg_replace('/`(\w+)`\s+(?:tiny|small|medium|big)?(?:int|integer)(?:\(\d+\))?\s+NOT NULL\s+AUTO_INCREMENT\s+PRIMARY KEY/i', '`$1` INTEGER PRIMARY KEY AUTOINCREMENT', $sql);
+        $sql = preg_replace('/`(\w+)`\s+(?:tiny|small|medium|big)?(?:int|integer)(?:\(\d+\))?\s+NOT NULL\s+AUTO_INCREMENT/i', '`$1` INTEGER PRIMARY KEY AUTOINCREMENT', $sql);
+        $sql = preg_replace('/\b(?:tiny|small|medium|big)?(?:int|integer)(?:\(\d+\))?(?!\w)/i', 'INTEGER', $sql);
+        $sql = preg_replace('/\byear(?:\(\d+\))?(?!\w)/i', 'INTEGER', $sql);
+        $sql = preg_replace('/\b(?:tiny|medium|long)text\b/i', 'TEXT', $sql);
+        $sql = preg_replace('/\b(?:double|float|decimal(?:\(\d+(?:,\s*\d+)?\))?)\b/i', 'REAL', $sql);
 
         if (preg_match('/PRIMARY KEY \(`([^`]+)`\)/i', $sql, $matches)) {
             $pkField = $matches[1];

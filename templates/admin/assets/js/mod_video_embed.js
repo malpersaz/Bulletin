@@ -13,6 +13,7 @@ class VideoManager {
         this.isLoading = false;
         this.hasMore = true;
         this.selectedVideoId = null;
+        this.selectedInHeroSlider = false;
 
         this.start = 0;
         this.length = 10;
@@ -26,6 +27,31 @@ class VideoManager {
         this.loadData();
         this.initSearchListener();
         this.initPullToRefresh();
+        this.initToolbarListeners();
+    }
+
+    initToolbarListeners() {
+        const toolbar = document.querySelector('.standard-toolbar');
+        if (toolbar) {
+            toolbar.addEventListener('click', (e) => {
+                const btn = e.target.closest('.toolbar-item');
+                if (!btn || btn.classList.contains('is-disabled')) return;
+                const action = btn.getAttribute('data-action');
+                if (action === 'slider' && typeof window.sliderSelected === 'function') window.sliderSelected();
+                else if (action === 'edit' && typeof window.editSelected === 'function') window.editSelected();
+                else if (action === 'image' && typeof window.imageSelected === 'function') window.imageSelected();
+                else if (action === 'publish' && typeof window.publishToggleSelected === 'function') window.publishToggleSelected();
+                else if (action === 'delete' && typeof window.deleteSelected === 'function') window.deleteSelected();
+            });
+        }
+
+        const mainFab = document.getElementById('mainFab');
+        if (mainFab) {
+            mainFab.addEventListener('click', () => {
+                const targetUrl = mainFab.getAttribute('data-href');
+                if (targetUrl) window.location.href = targetUrl;
+            });
+        }
     }
 
     createLoadMoreButton() {
@@ -62,6 +88,7 @@ class VideoManager {
             this.container.innerHTML = '';
             this.hasMore = true;
             this.draw = 1;
+            this.selectedInHeroSlider = false;
             this.emptyState.style.display = 'none';
             this.loader.style.display = 'flex';
             if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
@@ -124,11 +151,12 @@ class VideoManager {
             // 1: ID
             // 2: Name
             // 3: Image HTML (img tag)
-            // 4: Sure (duration)
+            // 4: Duration
             // 5: Lang
             // 6: created_at (date)
             // 7: Status HTML (status badge)
             // 8: Actions HTML
+            // 9: Slider ('y' or 'n')
 
             const id = this.stripHtml(item[1]);
             const titleText = this.stripHtml(item[2]);
@@ -144,16 +172,19 @@ class VideoManager {
             const imgTag = tempDiv.querySelector('img');
             const imgSrc = imgTag ? imgTag.src : '';
 
+            const inHeroSlider = String(item[9] || 'n') === 'y' || String(item[9] || '') === '1';
+            const safeSliderBadge = (typeof VIDEO_LANG !== 'undefined') ? (VIDEO_LANG.hero_slider_badge || 'Slider') : 'Slider';
+
             // Extract status from badge HTML
             const isPublished = statusHtml.includes('success');
             const statusVal = isPublished ? 'y' : 'n';
 
             // Status Logic
             let statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.draft : "Draft";
-            let statusColor = "#0B57D0";
+            let statusColor = "#FFAB00";
             if (isPublished) {
                 statusText = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.active : "Active";
-                statusColor = "#2E7D32";
+                statusColor = "var(--md-sys-color-primary)";
             }
 
             // Card Element
@@ -161,6 +192,7 @@ class VideoManager {
             card.className = 'm3-card content-card';
             card.dataset.id = id;
             card.dataset.status = statusVal;
+            card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
             card.onclick = () => window.videoManager.selectVideo(id, card);
 
             card.innerHTML = `
@@ -177,6 +209,9 @@ class VideoManager {
                         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                              <div>
                                 <div class="meta-row" style="margin-top:0; margin-bottom:4px; display:flex; align-items:center; flex-wrap:wrap; gap:4px; font-size:12px; color: var(--md-sys-color-on-surface-variant);">
+                                    <span class="chip hero-slider-badge" style="display:${inHeroSlider ? 'inline-flex' : 'none'}; align-items:center; gap:2px; background:#2E7D32; color:#FFF; border-radius:4px; padding:0 6px; font-size:10px; font-weight:bold; height:18px;">
+                                        <i class="bi bi-stars"></i> ${safeSliderBadge}
+                                    </span>
                                     <span class="chip" style="background:${statusColor}; color:#FFF; font-weight:bold; height:18px; border-radius:4px; padding:0 6px; font-size:10px; display:inline-flex; align-items:center;">${statusText}</span>
                                 </div>
                                 <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
@@ -316,28 +351,28 @@ class VideoManager {
             cardElement.classList.add('selected');
             this.selectedVideoId = id;
             this.selectedStatus = cardElement.dataset.status || 'n';
+            this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
             this.updateToolbar(true);
             if (window.navigator.vibrate) window.navigator.vibrate(10);
         } else {
             this.selectedVideoId = null;
             this.selectedStatus = null;
+            this.selectedInHeroSlider = false;
             this.updateToolbar(false);
         }
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarImage', 'toolbarPublish', 'toolbarDelete'];
+        const ids = ['toolbarEdit', 'toolbarImage', 'toolbarPublish', 'toolbarDelete', 'toolbarSlider'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
             if (active) {
                 btn.classList.add('active');
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
+                btn.classList.remove('is-disabled');
             } else {
                 btn.classList.remove('active');
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.3';
+                btn.classList.add('is-disabled');
             }
         });
 
@@ -352,11 +387,83 @@ class VideoManager {
             if (this.selectedStatus === 'y') {
                 // Currently published -> show "Unpublish"
                 publishIcon.className = 'bi bi-eye-slash-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.unpublish : 'Neweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.unpublish) ? VIDEO_LANG.unpublish : 'Unpublish';
             } else {
                 // Currently draft -> show "Publish"
                 publishIcon.className = 'bi bi-eye-fill';
-                publishText.textContent = (typeof VIDEO_LANG !== 'undefined') ? VIDEO_LANG.publish : 'Biweşîne';
+                publishText.textContent = (typeof VIDEO_LANG !== 'undefined' && VIDEO_LANG.publish) ? VIDEO_LANG.publish : 'Publish';
+            }
+        }
+
+        this.syncSliderToolbarState(active);
+    }
+
+    getSelectedCard() {
+        if (!this.selectedVideoId) return null;
+        return document.querySelector(`.content-card[data-id="${this.selectedVideoId}"]`);
+    }
+
+    applyHeroSliderState(card, inHeroSlider) {
+        if (!card) return;
+
+        card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
+        const badge = card.querySelector('.hero-slider-badge');
+
+        if (badge) {
+            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+        }
+    }
+
+    syncSliderToolbarState(active) {
+        const sliderBtn = document.getElementById('toolbarSlider');
+        if (!sliderBtn) return;
+
+        const label = active && this.selectedInHeroSlider
+            ? (VIDEO_LANG.hero_slider_remove || 'Remove from Slider')
+            : (VIDEO_LANG.hero_slider_add || 'Send to Slider');
+
+        sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
+        sliderBtn.title = label;
+        sliderBtn.setAttribute('aria-label', label);
+    }
+
+    async toggleHeroSlider() {
+        if (!this.selectedVideoId) return;
+
+        const currentId = this.selectedVideoId;
+        const formData = new URLSearchParams();
+        formData.append('id', currentId);
+
+        try {
+            const response = await fetch(`${MODULE_URL}toggle_hero_slider`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(result.message || VIDEO_LANG.hero_slider_error, 'error');
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({ icon: 'error', text: result.message || VIDEO_LANG.hero_slider_error });
+                }
+                return;
+            }
+
+            this.selectedInHeroSlider = Boolean(result.in_hero_slider);
+            this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
+            this.syncSliderToolbarState(true);
+            const msg = result.message || (this.selectedInHeroSlider ? VIDEO_LANG.hero_slider_added : VIDEO_LANG.hero_slider_removed);
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(msg, 'success');
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'success', text: msg, timer: 1500, showConfirmButton: false });
+            }
+        } catch (error) {
+            console.error('Hero slider toggle error:', error);
+            if (typeof showSnackbar === 'function') {
+                showSnackbar(VIDEO_LANG.hero_slider_error, 'error');
             }
         }
     }
@@ -379,6 +486,13 @@ window.imageSelected = function () {
     const mgr = window.videoManager;
     if (mgr && mgr.selectedVideoId) {
         mgr.processImageUpload(mgr.selectedVideoId);
+    }
+};
+
+window.sliderSelected = function () {
+    const mgr = window.videoManager;
+    if (mgr && mgr.selectedVideoId) {
+        mgr.toggleHeroSlider();
     }
 };
 
@@ -414,7 +528,7 @@ window.deleteSelected = function () {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         mgr.selectedVideoId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -459,7 +573,7 @@ window.handleContextAction = function (action) {
                     })
                         .then(response => response.text())
                         .then(msg => {
-                            if (msg === 'Oke') {
+                            if (msg === 'Success') {
                                 window.videoManager.loadData(true);
                                 closeContextMenu();
                             } else {
@@ -474,10 +588,20 @@ window.handleContextAction = function (action) {
             });
             break;
         case 'gallery':
-            window.location.href = `${SITE_URL}mod_gallery/list/mod_video_embed/${id}`;
+            const galleryUrl = `${SITE_URL}mod_gallery/list/mod_video_embed/${id}`;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(galleryUrl, { skipHistory: true });
+            } else {
+                window.location.href = galleryUrl;
+            }
             break;
         case 'files':
-            window.location.href = `${SITE_URL}mod_attachment/list/mod_video_embed/${id}`;
+            const filesUrl = `${SITE_URL}mod_attachment/list/mod_video_embed/${id}`;
+            if (window.AFModalEngine) {
+                AFModalEngine.push(filesUrl, { skipHistory: true });
+            } else {
+                window.location.href = filesUrl;
+            }
             break;
         case 'status':
             const currentStatus = activeContextItem.status ? 'y' : 'n';
@@ -511,7 +635,7 @@ window.toggleVideoStatus = function (id, currentStatus) {
             })
                 .then(response => response.text())
                 .then(msg => {
-                    if (msg === 'Oke') {
+                    if (msg === 'Success') {
                         window.videoManager.loadData(true);
                     } else {
                         Swal.fire({ icon: 'error', text: msg });

@@ -195,20 +195,22 @@ function syncImageCategoryMeta() {
     const titleInput = document.getElementById('image-category-title');
     const keywordsInput = document.getElementById('image-category-keywords');
     const descriptionInput = document.getElementById('image-category-description');
+    const langSelect = document.getElementById('image-category-lang');
+    const locale = (langSelect && langSelect.value) ? String(langSelect.value).toLowerCase().trim() : (typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en');
     if (!nameInput || !seoInput || !titleInput || !keywordsInput || !descriptionInput) {
         return;
     }
     if (!seoInput.dataset.touched) {
-        seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(nameInput.value) : nameInput.value;
+        seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(nameInput.value, locale) : nameInput.value;
     }
     if (!titleInput.dataset.touched) {
-        titleInput.value = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+        titleInput.value = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
     }
     if (!keywordsInput.dataset.touched) {
-        keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(nameInput.value) : nameInput.value;
+        keywordsInput.value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(nameInput.value, locale) : nameInput.value;
     }
     if (!descriptionInput.dataset.touched) {
-        const cleanedValue = typeof temizle === 'function' ? temizle(nameInput.value) : nameInput.value;
+        const cleanedValue = typeof sanitizeText === 'function' ? sanitizeText(nameInput.value) : nameInput.value;
         descriptionInput.value = cleanedValue.substring(0, 255);
     }
 }
@@ -238,7 +240,7 @@ async function removeImageCategoryImage(id) {
             body: body.toString()
         });
         const text = await response.text();
-        if (text.trim() === 'Oke') {
+        if (text.trim() === 'Success') {
             const currentImage = document.getElementById('image-category-current-image');
             if (currentImage) {
                 currentImage.remove();

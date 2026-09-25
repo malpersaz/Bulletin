@@ -15,8 +15,8 @@ class InstallerStateStore
     {
         $state = null;
 
-        if (Kayit::varmi(self::SESSION_KEY) === TRUE) {
-            $state = Kayit::getir(self::SESSION_KEY);
+        if (Registry::has(self::SESSION_KEY) === TRUE) {
+            $state = Registry::get(self::SESSION_KEY);
         }
 
         if (!is_array($state)) {
@@ -34,7 +34,7 @@ class InstallerStateStore
     public function replace(array $state)
     {
         $this->session->set(self::SESSION_KEY, $state);
-        Kayit::yenile(self::SESSION_KEY, $state);
+        Registry::set(self::SESSION_KEY, $state);
     }
 
     public function merge(array $changes)

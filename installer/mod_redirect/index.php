@@ -2,16 +2,16 @@
 
 class mod_redirect extends installerbase implements installerbaseinterface
 {
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mod_redirect';
-        $this->tablolar = array(
+        $this->tables = array(
             'mod_redirect'
         );
-        $this->rolls = array(
+        $this->roles = array(
             'add', 'edit', 'delete', 'list'
         );
     }
@@ -27,7 +27,7 @@ class mod_redirect extends installerbase implements installerbaseinterface
             return FALSE;
         }
         // Register roles and permissions
-        if ($this->insert_roll() === FALSE) {
+        if ($this->insert_roles() === FALSE) {
             return FALSE;
         }
         return TRUE;
@@ -37,7 +37,7 @@ class mod_redirect extends installerbase implements installerbaseinterface
     {
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

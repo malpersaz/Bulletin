@@ -1,0 +1,180 @@
+{% extends "layouts/base.twig" %}
+
+{% block content %}
+{% set search_keyword = keyword|default(query|default(''))|trim %}
+
+<div class="container py-5">
+    <!-- Search Heading -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="display-6 border-bottom pb-3">
+                <i class="bi bi-search me-2 text-primary"></i>
+                {{ (lang.index.search.search_results|default(''))|format(search_keyword)|raw }}
+            </h2>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            
+            {# Search Notice / Not Found Alert #}
+            {% if search_notice is defined and search_notice is not empty %}
+                <div class="alert alert-info d-flex align-items-center shadow-sm" role="alert">
+                    <i class="bi bi-info-circle-fill flex-shrink-0 me-2 fs-4"></i>
+                    <div>
+                        {{ search_notice }}
+                    </div>
+                </div>
+            {% elseif (news is empty) and (publications is empty) and (announcements is empty) and (sayfalar is empty) and (videos is empty) %}
+                <div class="alert alert-warning d-flex align-items-center shadow-sm" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2 fs-4"></i>
+                    <div>
+                        {{ lang.index.search.not_found }}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# News Results #}
+            {% if news is not empty %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="card-title mb-0 text-primary">
+                            <i class="bi bi-newspaper me-2"></i>
+                            {{ lang.index.search.mod_news|format(search_keyword)|raw }}
+                        </h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for item in news %}
+                            <a href="{{ site.saddress }}news/{{ item.seo }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                               target="_blank"
+                               title="{{ item.name }}">
+                                <div>
+                                    <span class="fw-medium">{{ item.name }}</span>
+                                    {% if item.summary is defined and item.summary is not empty %}
+                                        <small class="d-block text-muted mt-1 text-truncate" style="max-width: 600px;">
+                                            {{ item.summary|striptags }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Publication Results #}
+            {% if publications is not empty %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="card-title mb-0 text-secondary">
+                            <i class="bi bi-journal-text me-2"></i>
+                            {{ lang.index.search.mod_publication|format(search_keyword)|raw }}
+                        </h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for item in publications %}
+                            <a href="{{ site.saddress }}publication/{{ item.seo }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                               target="_blank"
+                               title="{{ item.name }}">
+                                <div>
+                                    <span class="fw-medium">{{ item.name }}</span>
+                                    {% if item.summary is defined and item.summary is not empty %}
+                                        <small class="d-block text-muted mt-1 text-truncate" style="max-width: 600px;">
+                                            {{ item.summary|striptags }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Announcement Results #}
+            {% if announcements is not empty %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="card-title mb-0 text-success">
+                            <i class="bi bi-megaphone me-2"></i>
+                            {{ lang.index.search.mod_announcements|format(search_keyword)|raw }}
+                        </h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for announcement in announcements %}
+                            <a href="{{ site.saddress }}announcement/{{ announcement.id }}-{{ announcement.name|sefurl }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                               target="_blank"
+                               title="{{ announcement.name }}">
+                                <span class="fw-medium">{{ announcement.name }}</span>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Page Results #}
+            {% if sayfalar is not empty %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="card-title mb-0 text-info">
+                            <i class="bi bi-layout-text-window-reverse me-2"></i>
+                            {{ lang.index.search.mod_page|format(search_keyword)|raw }}
+                        </h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for sayfa in sayfalar %}
+                            <a href="{{ site.saddress }}page/{{ sayfa.seo }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                               target="_blank"
+                               title="{{ sayfa.name }}">
+                                <span class="fw-medium">{{ sayfa.name }}</span>
+                                <i class="bi bi-chevron-right text-muted small"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            {# Video Results #}
+            {% if videos is not empty %}
+                <div class="card mb-4 shadow-sm border-0">
+                    <div class="card-header bg-light border-bottom-0">
+                        <h5 class="card-title mb-0 text-danger">
+                            <i class="bi bi-camera-video me-2"></i>
+                            {{ lang.index.search.mod_video_embed|format(search_keyword)|raw }}
+                        </h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        {% for video in videos %}
+                            <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}" 
+                               class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3"
+                               target="_blank"
+                               title="{{ video.name }}">
+                                <span class="fw-medium">{{ video.name }}</span>
+                                <i class="bi bi-play-circle text-danger fs-5"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{# Tooltipleri aktif etmek için küçük bir script (Eğer ana dosyada yoksa) #}
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+    });
+</script>
+
+{% endblock %}

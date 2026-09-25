@@ -34,9 +34,14 @@
                 wizardOverlay.style.visibility = 'visible'; // Force show
             }
 
-            if (typeof wizardData !== 'undefined' && typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
-                if (!wizardData.lang || !adminLang.languages.some(function (item) { return item.code === wizardData.lang; })) {
-                    wizardData.lang = adminLang.languages.length ? adminLang.languages[0].code : wizardData.lang;
+            if (typeof wizardData !== 'undefined') {
+                var activeRouteLang = '{{ site.lang|lower }}';
+                wizardData.lang = activeRouteLang;
+                if (typeof restoreWizardUI === 'function') {
+                    restoreWizardUI();
+                } else {
+                    if (typeof ensureWizardCategoryMatchesLanguage === 'function') ensureWizardCategoryMatchesLanguage();
+                    if (typeof syncWizardCategorySheet === 'function') syncWizardCategorySheet();
                 }
             }
         });

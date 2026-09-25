@@ -64,7 +64,7 @@ Before using this file:
 
 - No visible hardcoded UI copy.
 - No visible localization fallback copy.
-- No hardcoded dependency on `templates/default` unless explicitly documented as intentional.
+- No hardcoded dependency on `templates/amida` unless explicitly documented as intentional.
 - No references to missing theme folders or sibling-repository assumptions.
 - No public theme guidance may weaken admin phone-only rules.
 - No style-only reskin that drops runtime behavior or module coverage.

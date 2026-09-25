@@ -386,10 +386,10 @@
 
 				<div class="form-row">
 					<div class="m3-input-wrapper">
-						<textarea class="m3-input-lg" name="summary" id="editIntroInput" rows="3" placeholder=" " maxlength="280" oninput="updateCharCounter(this, 'editIntroCounter', 280)">{{ d.summary|striptags }}</textarea>
+						<textarea class="m3-input-lg" name="summary" id="editIntroInput" rows="3" placeholder=" " minlength="90" maxlength="120" data-counter-target="editIntroCounter" data-counter-min="90" data-counter-max="120" required>{{ d.summary|striptags }}</textarea>
 						<label class="m3-floating-label">{{ lang.mod_publication.wizard.label.intro_text }}</label>
 					</div>
-					<div class="char-counter" id="editIntroCounter" style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;">{{ d.summary|length }} / 280</div>
+					<div class="char-counter" id="editIntroCounter">{{ d.summary|length }} / 120</div>
 				</div>
 
 				{# Deck toggle #}
@@ -450,9 +450,9 @@
                             'data-remove-url': site.saddress ~ 'mod_publication/image_remove_image',
                             'data-remove-id': d.id,
                             'data-remove-title': lang.mod_publication.remove_image,
-                            'data-remove-confirm': lang.mod_publication.context_menu.delete_confirm,
+                            'data-remove-confirm': lang.mod_publication.remove_image,
                             'data-remove-confirm-text': lang.mod_publication.button.yes,
-                            'data-remove-cancel-text': lang.mod_publication.button.no|default('No'),
+                            'data-remove-cancel-text': lang.mod_publication.button.no,
                             'data-success-title': lang.mod_publication.success,
                             'data-success-message': lang.mod_publication.remove_image_success,
                             'data-error-title': lang.mod_publication.error_occurred
@@ -601,63 +601,12 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-	<style>
-		.m3-final-bar {
-			position: fixed !important;
-			bottom: 0 !important;
-			left: 0 !important;
-			right: 0 !important;
-			height: 80px !important;
-			background: var(--md-sys-color-surface-container) !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 12px !important;
-			padding: 0 16px !important;
-			z-index: 1000 !important;
-			border-top: 1px solid var(--md-sys-color-outline-variant) !important;
-			box-shadow: 0 -4px 12px rgba(0,0,0,0.1) !important;
-		}
-		.m3-btn-half {
-			flex: 1 !important;
-			height: 52px !important;
-			border-radius: 26px !important;
-			display: flex !important;
-			align-items: center !important;
-			justify-content: center !important;
-			gap: 8px !important;
-			font-size: 14px !important;
-			font-weight: 600 !important;
-			text-decoration: none !important;
-			border: none !important;
-			cursor: pointer !important;
-			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-		}
-		.m3-btn-half:active {
-			transform: scale(0.98) !important;
-			opacity: 0.9 !important;
-		}
-		@media(min-width: 600px) {
-			.m3-final-bar {
-				max-width: 480px !important;
-				left: 50% !important;
-				transform: translateX(-50%) !important;
-				border-left: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-right: 1px solid var(--md-sys-color-outline-variant) !important;
-				border-bottom-left-radius: 32px !important;
-				border-bottom-right-radius: 32px !important;
-				bottom: 8px !important;
-				height: 88px !important;
-				width: calc(100% - 16px) !important;
-			}
-		}
-	</style>
 	<div class="m3-final-bar">
-		<button type="button" class="m3-btn-half" onclick="window.location.href='{{ site.saddress }}mod_publication/list'" style="background: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; border: 1px solid var(--md-sys-color-outline) !important;">
+		<button type="button" class="m3-btn-half m3-btn-half-neutral" onclick="window.location.href='{{ site.saddress }}mod_publication/list'">
 			<i class="bi bi-x-lg"></i>
 			{{ lang.mod_publication.button.cancel }}
 		</button>
-		<button type="button" class="m3-btn-half" onclick="submitEditForm('editForm')" style="background: var(--md-sys-color-primary) !important; color: var(--md-sys-color-on-primary) !important;">
+		<button type="button" class="m3-btn-half m3-btn-half-primary" onclick="submitEditForm('editForm')">
 			<i class="bi bi-check-lg"></i>
 			{{ lang.mod_publication.button.edit }}
 		</button>
@@ -669,15 +618,28 @@
 	<script>
         // Initialize Rich Editor
         document.addEventListener('DOMContentLoaded', () => {
-            const currentLang = '{{ d.lang|lower }}';
-            if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
-                adminLang.languages = adminLang.languages.filter((item) => item.status === 'y' || item.code === currentLang);
-            }
-            if (typeof wizardData !== 'undefined') {
-                wizardData.lang = currentLang;
-            }
             initRichEditor('#editContentTextarea', 400);
             initializeEditImageInteractions();
+
+            const seoInput = document.getElementById('seo');
+            if (seoInput) {
+                seoInput.addEventListener('input', function() {
+                    this.dataset.touched = 'true';
+                });
+            }
+
+            const descInput = document.getElementById('description');
+            if (descInput) {
+                descInput.addEventListener('input', function() {
+                    this.dataset.touched = 'true';
+                });
+            }
+
+            const introInput = document.getElementById('editIntroInput');
+            if (introInput) {
+                introInput.addEventListener('input', updateIntroDeckSync);
+                updateIntroDeckSync();
+            }
         });
 
         // Store current edit mode to override sheet behavior
@@ -721,17 +683,35 @@
 			toggleWizardCategorySheet();
 		};
 
-        // Character Counter
-        window.updateCharCounter = function(input, counterId, max) {
-            const currentLength = input.value.length;
-            const counter = document.getElementById(counterId);
-            if(counter) {
-                counter.innerText = `${currentLength} / ${max}`;
+        // Intro Deck and SEO Description Sync
+        function updateIntroDeckSync() {
+            const introInput = document.getElementById('editIntroInput');
+            const descInput = document.getElementById('description');
+            const counter = document.getElementById('editIntroCounter');
+            if (introInput && counter) {
+                const len = introInput.value.length;
+                counter.textContent = `${len} / 120`;
+                if (len > 0 && len < 90) {
+                    counter.classList.add('is-warning');
+                    counter.classList.remove('is-valid', 'is-error');
+                } else if (len >= 90 && len <= 120) {
+                    counter.classList.remove('is-warning', 'is-error');
+                    counter.classList.add('is-valid');
+                } else if (len > 120) {
+                    counter.classList.add('is-error');
+                    counter.classList.remove('is-warning', 'is-valid');
+                } else {
+                    counter.classList.remove('is-warning', 'is-valid', 'is-error');
+                }
             }
-        };
+            if (introInput && descInput && (!descInput.value || descInput.dataset.touched !== 'true')) {
+                const clean = typeof sanitizeText === 'function' ? sanitizeText(introInput.value) : introInput.value;
+                descInput.value = clean.substring(0, 120);
+            }
+        }
 
 		// Advanced Accordion
-		        function selectPublishStatus(el, val) {
+		function selectPublishStatus(el, val) {
             document.querySelectorAll('#publishHidden ~ .selection-grid .selection-card').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             document.getElementById('publishHidden').value = val;
@@ -751,21 +731,37 @@
 			icon.classList.toggle('bi-chevron-down');
 		}
 
-		// Meta Fields Sync
+		// Meta Fields Sync (Decoupled from SEO Description)
 		function updateMetaFields() {
-			const name = document.getElementById('editTitleInput').value;
-			document.getElementById('seo').value = makeSeoValue(name);
-			document.getElementById('title').value = temizle(name);
-			document.getElementById('keywords').value = makeKeywordsValue(name);
-			document.getElementById('description').value = temizle(name);
-            
-			document.getElementById('keywords').value = makeKeywordsValue(name);
-			document.getElementById('description').value = temizle(name);
+			let name = document.getElementById('editTitleInput').value;
+			const editLangEl = document.getElementById('editLang');
+			const locale = (editLangEl && editLangEl.value) ? String(editLangEl.value).toLowerCase().trim() : (typeof getCurrentLocale === 'function' ? getCurrentLocale() : 'en');
+			if (typeof normalizeKurdishTypos === 'function') {
+				name = normalizeKurdishTypos(name, locale);
+			}
+			document.getElementById('editTitleInput').value = name;
+			
+			const seoInput = document.getElementById('seo');
+			if (!seoInput.value || seoInput.dataset.touched !== 'true') {
+				seoInput.value = typeof makeSeoValue === 'function' ? makeSeoValue(name, locale) : name;
+			}
+			document.getElementById('title').value = typeof sanitizeText === 'function' ? sanitizeText(name) : name;
+			document.getElementById('keywords').value = typeof makeKeywordsValue === 'function' ? makeKeywordsValue(name, locale) : name;
 		}
 
         function submitEditForm(formId) {
             if (typeof tinymce !== 'undefined') {
                 tinymce.triggerSave();
+            }
+
+            const introInput = document.getElementById('editIntroInput');
+            if (introInput) {
+                const introVal = (introInput.value || '').trim();
+                if (introVal.length < 90 || introVal.length > 120) {
+                    introInput.focus();
+                    introInput.reportValidity();
+                    return;
+                }
             }
 
             const form = document.getElementById(formId);

@@ -201,12 +201,9 @@ class Swift_Plugins_PopBeforeSmtpPlugin
    */
   public function beforeTransportStarted(Swift_Events_TransportChangeEvent $evt)
   {
-    if (isset($this->_transport))
+    if (isset($this->_transport) && $this->_transport !== $evt->getTransport())
     {
-      if ($this->_transport !== $evt->getTransport())
-      {
-        return;
-      }
+      return;
     }
     
     $this->connect();
@@ -259,7 +256,7 @@ class Swift_Plugins_PopBeforeSmtpPlugin
   
   private function _assertOk($response)
   {
-    if (substr($response, 0, 3) != '+OK')
+    if (substr($response, 0, 3) !== '+OK')
     {
       throw new Swift_Plugins_Pop_Pop3Exception(
         sprintf('POP3 command failed [%s]', trim($response))

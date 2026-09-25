@@ -48,10 +48,7 @@ class Swift_Transport_SimpleMailInvoker implements Swift_Transport_MailInvoker
     {
       return mail($to, $subject, $body, $headers, $extraParams);
     }
-    else
-    {
-      return mail($to, $subject, $body, $headers);      
-    }
+    return mail($to, $subject, $body, $headers);
   }
   
 }

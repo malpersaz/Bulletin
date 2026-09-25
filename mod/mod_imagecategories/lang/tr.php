@@ -54,14 +54,15 @@ $lang['mod_imagecategories'] = [
         'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
         'inarray' => '%s alanı yalnızca şu değerleri kabul edebilir: %s.',
     ],
-    'roll' => [
-        'ad' => 'Görsel Kategorisi Yönetim Rolleri',
+    'role' => [
+        'name' => 'Görsel Kategorisi Yönetim Rolleri',
         'add' => 'Görsel kategorisi ekleyebilir',
         'edit' => 'Görsel kategorisi düzenleyebilir',
         'delete' => 'Görsel kategorisi silebilir',
         'list' => 'Görsel kategorisi yönetimini görüntüleyebilir',
         'moderate_edit' => 'Başkalarına ait görsel kategorilerini düzenleyebilir',
         'moderate_delete' => 'Başkalarına ait görsel kategorilerini silebilir',
+        'gallery' => 'Görsel kategorisine galeri ekleyebilir',
     ],
     'role_errors' => [
         'add' => 'Görsel kategorisi ekleme yetkiniz yok.',
@@ -70,6 +71,7 @@ $lang['mod_imagecategories'] = [
         'list' => 'Görsel kategorisi yönetimini görüntüleme yetkiniz yok.',
         'moderate_edit' => 'Başkalarına ait görsel kategorilerini düzenleyemezsiniz.',
         'moderate_delete' => 'Başkalarına ait görsel kategorilerini silemezsiniz.',
+        'gallery' => 'Görsel kategorisine galeri ekleme yetkiniz yok.',
     ],
     'status' => [
         'root' => 'Kök',

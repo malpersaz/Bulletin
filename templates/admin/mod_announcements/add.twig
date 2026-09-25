@@ -3,349 +3,336 @@
 {% set hide_search = true %}
 {% set hide_fab = true %}
 {% set hide_navbar = true %}
+{% set show_filter_sheet = false %}
+{% set show_wizards = false %}
+{% set module_lang_key = 'mod_announcements' %}
 
 {% block title %}{{ lang.mod_announcements.add }}{% endblock %}
-{% block headline %}{{ lang.mod_announcements.add }}{% endblock %}
 
 {% block styles %}
-<style>
-    .announcements-form-shell { padding: 16px; padding-bottom: 120px; display: grid; gap: 16px; }
-    .announcements-form-card { background: var(--md-sys-color-surface); border-radius: 20px; padding: 20px; box-shadow: var(--md-sys-elevation-1); display: grid; gap: 16px; position: relative; }
-    .announcements-form-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); margin: 0; }
-    .form-status { border-radius: 16px; padding: 14px 16px; font-size: 14px; line-height: 1.5; }
-    .form-status.error { background: #fce8e6; color: #b3261e; }
-    .form-status.success { background: #e6f4ea; color: #1e4620; }
-    
-    .m3-input-wrapper { position: relative; width: 100%; margin-bottom: 8px; }
-    .m3-input-lg { width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline); background: var(--md-sys-color-surface, #fff); color: var(--md-sys-color-on-surface); box-sizing: border-box; outline: none; min-height: 56px; display: block; font-family: inherit; font-size: 16px; }
-    .m3-input-lg:focus { border-width: 2px; border-color: var(--md-sys-color-primary); padding: 15px; }
-    textarea.m3-input-lg { min-height: 120px; resize: vertical; padding-top: 20px; }
-    
-    .m3-floating-label { position: absolute; top: 16px; left: 16px; background: var(--md-sys-color-surface, #fff); padding: 0 6px; color: var(--md-sys-color-on-surface-variant); pointer-events: none; transition: all 0.2s ease; z-index: 2; line-height: 1; }
-    .m3-input-lg:focus + .m3-floating-label, 
-    .m3-input-lg:not(:placeholder-shown) + .m3-floating-label, 
-    select.m3-input-lg + .m3-floating-label, 
-    textarea.m3-input-lg:focus + .m3-floating-label, 
-    textarea.m3-input-lg:not(:placeholder-shown) + .m3-floating-label, 
-    input[type="datetime-local"].m3-input-lg + .m3-floating-label { 
-        top: -8px; 
-        left: 12px; 
-        font-size: 12px; 
-        color: var(--md-sys-color-primary); 
-        font-weight: 700;
-        z-index: 5;
-    }
-    
-    .selection-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .selection-card { border: 1px solid var(--md-sys-color-outline); border-radius: 16px; padding: 16px; display: grid; gap: 6px; cursor: pointer; transition: all 0.2s cubic-bezier(0.2, 0, 0, 1); background: var(--md-sys-color-surface-container-low, #faf8fc); position: relative; }
-    .selection-card input { display: none; }
-    .selection-card.active { border: 2px solid var(--md-sys-color-primary); padding: 15px; background: color-mix(in srgb, var(--md-sys-color-primary) 8%, var(--md-sys-color-surface, #fff)); box-shadow: var(--md-sys-elevation-1); }
-    .selection-title { font-weight: 700; color: var(--md-sys-color-on-surface); }
-    .selection-copy { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
-    .selection-card.active .selection-title { color: var(--md-sys-color-primary); }
-    
-    .input-char-counter { position: absolute; right: 16px; bottom: -20px; font-size: 11px; font-weight: 700; color: var(--md-sys-color-on-surface-variant); }
-    
-    .announcements-bottom-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; display: flex; gap: 12px; padding: 14px 16px 18px; background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--md-sys-color-outline-variant, rgba(0, 0, 0, 0.08)); }
-    .announcements-bottom-bar a, .announcements-bottom-bar button { flex: 1; min-height: 52px; border-radius: 999px; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; font-weight: 700; cursor: pointer; }
-    .announcements-bottom-bar .cancel-btn { background: var(--md-sys-color-surface); color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline) !important; }
-    .announcements-bottom-bar .save-btn { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-</style>
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_announcements_wizard.css?v=6.0">
 {% endblock %}
 
 {% block content %}
-<div class="announcements-form-shell">
-    {% if success is defined %}
-        <div class="form-status success">{{ message }}</div>
-    {% endif %}
-    {% if error is defined %}
-        <div class="form-status error">{{ message }}</div>
-    {% endif %}
-    {% if errors is defined %}
-        <div class="form-status error">
-            {% for msg in errors %}
-                <div>{{ msg }}</div>
-            {% endfor %}
+<form id="announcementWizardForm" method="POST" action="{{ site.saddress }}mod_announcements/add" enctype="multipart/form-data">
+    <div id="announcementWizardShell" class="announcements-wizard-shell" data-wizard-lang="{{ lang.mod_announcements.wizard|default({})|json_encode|e('html_attr') }}">
+        
+        <!-- Wizard Header -->
+        <header class="announcements-wizard-header">
+            <button type="button" class="wizard-icon-btn" id="btnWizardClose" aria-label="{{ lang.mod_announcements.button.cancel }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="announcements-wizard-title-group">
+                <span class="wizard-step-name" id="wizardStepName">{{ lang.mod_announcements.wizard.step.language }}</span>
+                <span class="wizard-step-badge" id="wizardStepBadge">1/9</span>
+            </div>
+            <button type="button" class="wizard-text-btn" id="btnWizardQuickSave">
+                {{ lang.mod_announcements.wizard.button.save }}
+            </button>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="announcements-wizard-progress-bar">
+            <div class="announcements-wizard-progress-fill" id="wizardProgressFill"></div>
         </div>
-    {% endif %}
 
-    {% if site.lang|lower == 'ku' %}
-        {% set upload_lang = {
-            drop_title: 'Wêneya kapaxê bikişînin vir',
-            drop_description: 'Pel bar bikin, pêve bikin an wêneyekî berdin.',
-            upload_link: 'pelê hilbijêre',
-            link_separator: 'AN DIKARÎ',
-            link_placeholder: 'Navnîşana wêneyî (URL) pêve bike',
-            link_action: 'Bişîne',
-            hint_loading: 'Wêne tê barkirin...',
-            hint_invalid_type: 'Tenê pelên wêneyan (JPG, PNG, GIF) têne piştgirîkirin.',
-            hint_no_drop_data: 'Wêneyekî derbasdar nehate dîtin.',
-            hint_remote_failed: 'Barkirina wêneyê nehişt.',
-            selected_none: 'Wêne nehat hilbijartin'
-        } %}
-        {% set acl_label = 'Koma Gihîştinê (ACL)' %}
-    {% else %}
-        {% set upload_lang = {
-            drop_title: 'Kapak görselini buraya sürükleyin',
-            drop_description: 'Dosya yükleyin, yapıştırın veya sürükleyin.',
-            upload_link: 'dosya seçin',
-            link_separator: 'VEYA',
-            link_placeholder: 'Görsel bağlantısını (URL) yapıştırın',
-            link_action: 'İçe Aktar',
-            hint_loading: 'Görsel yükleniyor...',
-            hint_invalid_type: 'Sadece görsel dosyaları (JPG, PNG, GIF) desteklenir.',
-            hint_no_drop_data: 'Geçerli bir görsel bulunamadı.',
-            hint_remote_failed: 'Görsel kaynaktan çekilemedi.',
-            selected_none: 'Görsel seçilmedi'
-        } %}
-        {% set acl_label = 'Erişim Grubu (ACL)' %}
-    {% endif %}
+        <!-- Wizard Scrollable Content -->
+        <div class="announcements-wizard-content">
 
-    <form method="POST" action="" enctype="multipart/form-data" id="announcementAddForm" class="announcements-form-shell" style="padding:0; gap:16px;">
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.information }}</h3>
+            <!-- Hidden Defaults and Tracking -->
+            <input type="hidden" name="add" value="1">
+            <input type="hidden" name="lang" id="wizardHiddenLang" value="{{ (selected_lang|default(site.lang))|lower }}">
+            <input type="hidden" name="seo" id="wizardHiddenSeo" value="">
+            <input type="hidden" name="deck" id="wizardHiddenDeck" value="n">
+            <input type="hidden" name="acl_id" id="wizardHiddenAcl" value="0">
+            <input type="hidden" name="status" id="wizardHiddenStatus" value="y">
 
-            <!-- Language -->
-            <div class="m3-input-wrapper">
-                <select class="m3-input-lg" name="lang">
-                    {% set selected_lang = form_lang|default(form_defaults.lang)|default(site.lang) %}
+            <!-- Step 1: Language -->
+            <div class="wizard-step active" id="wizardStep1">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.language }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.language }}</p>
+
+                <div class="wizard-selection-grid grid-2col">
                     {% for item in lang_lang %}
-                        {% if item.status == 'y' or item.seo == selected_lang %}
-                            <option value="{{ item.seo }}" {% if item.seo == selected_lang %}selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                        {% if item.status == 'y' or item.seo|lower == (selected_lang|default(site.lang))|lower %}
+                            <div class="wizard-selection-card{% if item.seo|lower == (selected_lang|default(site.lang))|lower %} active{% endif %}" data-wizard-select="lang" data-value="{{ item.seo|lower }}">
+                                <div class="wizard-card-main">
+                                    <div class="wizard-card-icon">{{ item.seo|upper }}</div>
+                                    <div class="wizard-card-text">
+                                        <div class="wizard-card-title">{{ item.name }}</div>
+                                    </div>
+                                </div>
+                                <i class="bi bi-check2 wizard-card-check"></i>
+                            </div>
                         {% endif %}
                     {% endfor %}
-                </select>
-                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.language }}</label>
+                </div>
             </div>
 
-            <!-- Title -->
-            <div class="m3-input-wrapper" style="margin-bottom: 12px;">
-                <input class="m3-input-lg" type="text" name="name" id="announcement-name" value="{{ name|default(form_defaults.name) }}" placeholder=" " oninput="syncAnnouncementMeta(); updateCharCounter('announcement-name', 'name-counter', 255)" maxlength="255" required>
-                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.ad }}</label>
-                <div class="input-char-counter" id="name-counter">0 / 255</div>
+            <!-- Step 2: Title -->
+            <div class="wizard-step" id="wizardStep2">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.title }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.title }}</p>
+
+                <div class="wizard-input-wrapper">
+                    <input type="text" class="wizard-input-lg" name="name" id="wizardTitleInput" placeholder=" " maxlength="70" autocomplete="off">
+                    <label class="wizard-floating-label" for="wizardTitleInput">{{ lang.mod_announcements.wizard.label.announcement_title }}</label>
+                </div>
+                <div class="wizard-char-counter" id="wizardTitleCounter">0 / 70</div>
+                <div class="wizard-validation-msg" id="wizardTitleMsg">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>{{ lang.mod_announcements.validator.title_length }}</span>
+                </div>
             </div>
 
-            <!-- SEO URL -->
-            <div class="m3-input-wrapper">
-                <input class="m3-input-lg" type="text" name="seo" id="announcement-seo" value="{{ seo|default(form_defaults.seo) }}" placeholder=" ">
-                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.seo }}</label>
+            <!-- Step 3: Date -->
+            <div class="wizard-step" id="wizardStep3">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.date }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.date }}</p>
+
+                <div class="wizard-input-wrapper">
+                    <input type="datetime-local" class="wizard-input-lg" name="created_at" id="wizardDateInput">
+                </div>
             </div>
 
-            <!-- Created At -->
-            <div class="m3-input-wrapper">
-                <input class="m3-input-lg" type="datetime-local" name="created_at" id="announcement-created-at" value="{{ created_at|default(form_defaults.created_at)|default('now'|date('Y-m-d') ~ 'T' ~ 'now'|date('H:i')) }}" placeholder=" " required>
-                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.tarih }}</label>
-            </div>
-        </div>
+            <!-- Step 4: Introduction (Deck) -->
+            <div class="wizard-step" id="wizardStep4">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.intro }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.intro }}</p>
 
-        <!-- Publish Status -->
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.status }}</h3>
-            <div class="selection-grid" data-selection-group>
-                <label class="selection-card{% if status|default('y') == 'y' %} active{% endif %}">
-                    <input type="radio" name="status" value="y" {% if status|default('y') == 'y' %}checked{% endif %}>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div class="selection-title">{{ lang.mod_announcements.admin.radio.publish_yes }}</div>
-                        <i class="bi bi-check-circle-fill selection-check-icon" style="color: var(--md-sys-color-primary); font-size: 20px; display: {% if status|default('y') == 'y' %}block{% else %}none{% endif %};"></i>
+                <div class="wizard-input-wrapper">
+                    <textarea class="wizard-input-lg wizard-textarea-lg" name="summary" id="wizardIntroInput" placeholder=" " rows="4" maxlength="120"></textarea>
+                    <label class="wizard-floating-label" for="wizardIntroInput">{{ lang.mod_announcements.wizard.label.intro_text }}</label>
+                </div>
+                <div class="wizard-char-counter" id="wizardIntroCounter">0 / 120</div>
+                <div class="wizard-validation-msg" id="wizardIntroMsg">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <span>{{ lang.mod_announcements.validator.deck_length }}</span>
+                </div>
+            </div>
+
+            <!-- Step 5: Content -->
+            <div class="wizard-step" id="wizardStep5">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.content }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.content }}</p>
+
+                <div class="wizard-editor-frame">
+                    <textarea name="content" id="wizardContentTextarea"></textarea>
+                </div>
+            </div>
+
+            <!-- Step 6: Image -->
+            <div class="wizard-step" id="wizardStep6">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.image }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.image }}</p>
+
+                {% include 'admin/partials/image_uploader.twig' with {
+                    shell_id: 'wizardImageShell',
+                    shell_class: '',
+                    has_image: false,
+                    shell_attrs: {
+                        'data-drop-title': lang.mod_announcements.wizard.image.drop_title,
+                        'data-drop-description': lang.mod_announcements.wizard.image.drop_description,
+                        'data-upload-link': lang.mod_announcements.wizard.image.upload_link,
+                        'data-link-separator': lang.mod_announcements.wizard.image.link_separator,
+                        'data-link-placeholder': lang.mod_announcements.wizard.image.link_placeholder,
+                        'data-link-action': lang.mod_announcements.wizard.image.link_action,
+                        'data-hint-loading': lang.mod_announcements.wizard.image.hint_loading,
+                        'data-hint-invalid-type': lang.mod_announcements.wizard.image.hint_invalid_type,
+                        'data-hint-no-drop-data': lang.mod_announcements.wizard.image.hint_no_drop_data,
+                        'data-hint-remote-failed': lang.mod_announcements.wizard.image.hint_remote_failed,
+                        'data-empty-name': lang.mod_announcements.wizard.summary.selected_none,
+                        'data-empty-meta': lang.mod_announcements.wizard.image.drop_description
+                    },
+                    dropzone_id: 'wizardImageDropzone',
+                    trigger_picker_js: '',
+                    empty_state_id: 'wizardImageEmptyState',
+                    empty_hidden: false,
+                    drop_title: lang.mod_announcements.wizard.image.drop_title,
+                    upload_link: lang.mod_announcements.wizard.image.upload_link,
+                    preview_card_id: 'wizardImagePreviewCard',
+                    remove_btn_id: 'wizardImageRemoveBtn',
+                    remove_action_js: '',
+                    preview_img_id: 'wizardImgPreview',
+                    preview_alt: lang.mod_announcements.admin.columns.image,
+                    preview_hidden: true,
+                    meta_id: 'wizardImageMeta',
+                    meta_hidden: true,
+                    file_name_id: 'wizardImageFileName',
+                    file_name_text: lang.mod_announcements.wizard.summary.selected_none,
+                    file_details_id: 'wizardImageFileDetails',
+                    file_details_text: lang.mod_announcements.wizard.image.drop_description,
+                    divider_hidden: false,
+                    link_separator: lang.mod_announcements.wizard.image.link_separator,
+                    url_row_hidden: false,
+                    url_input_id: 'wizardImageUrlInput',
+                    link_placeholder: lang.mod_announcements.wizard.image.link_placeholder,
+                    import_btn_id: 'wizardImageUrlImportBtn',
+                    link_action: lang.mod_announcements.wizard.image.link_action,
+                    file_input_id: 'wizardImgInput'
+                } %}
+            </div>
+
+            <!-- Step 7: Display in Featured -->
+            <div class="wizard-step" id="wizardStep7">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.featured }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.featured }}</p>
+
+                <div class="wizard-selection-grid">
+                    <div class="wizard-selection-card" data-wizard-select="deck" data-value="y">
+                        <div class="wizard-card-main">
+                            <div class="wizard-card-icon">
+                                <i class="bi bi-stars"></i>
+                            </div>
+                            <div class="wizard-card-text">
+                                <div class="wizard-card-title">{{ lang.mod_announcements.wizard.label.featured_yes }}</div>
+                                <div class="wizard-card-desc">{{ lang.mod_announcements.wizard.label.featured_yes_desc }}</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2 wizard-card-check"></i>
                     </div>
-                    <div class="selection-copy">{{ lang.mod_announcements.grid.publish.key }}</div>
-                </label>
-                <label class="selection-card{% if status|default('y') == 'n' %} active{% endif %}">
-                    <input type="radio" name="status" value="n" {% if status|default('y') == 'n' %}checked{% endif %}>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div class="selection-title">{{ lang.mod_announcements.admin.radio.publish_no }}</div>
-                        <i class="bi bi-check-circle-fill selection-check-icon" style="color: var(--md-sys-color-primary); font-size: 20px; display: {% if status|default('y') == 'n' %}block{% else %}none{% endif %};"></i>
+
+                    <div class="wizard-selection-card active" data-wizard-select="deck" data-value="n">
+                        <div class="wizard-card-main">
+                            <div class="wizard-card-icon">
+                                <i class="bi bi-card-text"></i>
+                            </div>
+                            <div class="wizard-card-text">
+                                <div class="wizard-card-title">{{ lang.mod_announcements.wizard.label.featured_no }}</div>
+                                <div class="wizard-card-desc">{{ lang.mod_announcements.wizard.label.featured_no_desc }}</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2 wizard-card-check"></i>
                     </div>
-                    <div class="selection-copy">{{ lang.mod_announcements.grid.unpublish.key }}</div>
-                </label>
+                </div>
             </div>
-        </div>
 
-        <!-- Display in Featured -->
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.deck }}</h3>
-            <div class="selection-grid" data-selection-group>
-                <label class="selection-card{% if deck|default('n') == 'y' %} active{% endif %}">
-                    <input type="radio" name="deck" value="y" {% if deck|default('n') == 'y' %}checked{% endif %}>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div class="selection-title">{{ lang.mod_announcements.admin.radio.deck_yes }}</div>
-                        <i class="bi bi-check-circle-fill selection-check-icon" style="color: var(--md-sys-color-primary); font-size: 20px; display: {% if deck|default('n') == 'y' %}block{% else %}none{% endif %};"></i>
+            <!-- Step 8: ACL -->
+            <div class="wizard-step" id="wizardStep8">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.acl }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.acl }}</p>
+
+                <div class="wizard-selection-grid">
+                    <div class="wizard-selection-card active" data-wizard-select="acl" data-value="0">
+                        <div class="wizard-card-main">
+                            <div class="wizard-card-icon">
+                                <i class="bi bi-globe2"></i>
+                            </div>
+                            <div class="wizard-card-text">
+                                <div class="wizard-card-title">{{ lang.mod_announcements.wizard.label.acl_public }}</div>
+                                <div class="wizard-card-desc">{{ lang.mod_announcements.wizard.label.acl_public_desc }}</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2 wizard-card-check"></i>
                     </div>
-                </label>
-                <label class="selection-card{% if deck|default('n') == 'n' %} active{% endif %}">
-                    <input type="radio" name="deck" value="n" {% if deck|default('n') == 'n' %}checked{% endif %}>
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div class="selection-title">{{ lang.mod_announcements.admin.radio.deck_no }}</div>
-                        <i class="bi bi-check-circle-fill selection-check-icon" style="color: var(--md-sys-color-primary); font-size: 20px; display: {% if deck|default('n') == 'n' %}block{% else %}none{% endif %};"></i>
-                    </div>
-                </label>
-            </div>
-        </div>
 
-        <!-- Summary (Intro) -->
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.summary }}</h3>
-            <div class="m3-input-wrapper" style="margin-bottom: 12px;">
-                <textarea class="m3-input-lg" name="summary" id="announcement-summary" placeholder=" " oninput="updateCharCounter('announcement-summary', 'summary-counter', 250)" maxlength="250">{{ summary|default(form_defaults.summary) }}</textarea>
-                <label class="m3-floating-label">{{ lang.mod_announcements.admin.columns.summary }}</label>
-                <div class="input-char-counter" id="summary-counter">0 / 250</div>
-            </div>
-        </div>
-
-        <!-- Rich Editor Content -->
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.content }}</h3>
-            <div class="m3-input-wrapper" style="min-height: 400px; margin-bottom: 0;">
-                <textarea id="announcement-content" name="content" placeholder=" ">{{ content|default(form_defaults.content) }}</textarea>
-            </div>
-        </div>
-
-        <!-- Premium Image Uploader -->
-        <div class="announcements-form-card" style="gap:12px;">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.image }}</h3>
-            {% include 'admin/partials/image_uploader.twig' with {
-                shell_id: 'editImageShell',
-                shell_class: '',
-                has_image: false,
-                shell_attrs: {
-                    'data-drop-title': upload_lang.drop_title,
-                    'data-drop-description': upload_lang.drop_description,
-                    'data-upload-link': upload_lang.upload_link,
-                    'data-link-separator': upload_lang.link_separator,
-                    'data-link-placeholder': upload_lang.link_placeholder,
-                    'data-link-action': upload_lang.link_action,
-                    'data-hint-loading': upload_lang.hint_loading,
-                    'data-hint-invalid-type': upload_lang.hint_invalid_type,
-                    'data-hint-no-drop-data': upload_lang.hint_no_drop_data,
-                    'data-hint-remote-failed': upload_lang.hint_remote_failed,
-                    'data-empty-name': upload_lang.selected_none,
-                    'data-empty-meta': upload_lang.drop_description
-                },
-                dropzone_id: 'editImageDropzone',
-                trigger_picker_js: 'triggerEditImagePicker()',
-                empty_state_id: 'editImageEmptyState',
-                drop_title: upload_lang.drop_title,
-                upload_link: upload_lang.upload_link,
-                preview_card_id: 'editImagePreviewCard',
-                remove_btn_id: 'editImageRemoveBtn',
-                remove_action_js: 'removeEditImage()',
-                preview_img_id: 'editImgPreview',
-                preview_alt: lang.mod_announcements.admin.columns.image,
-                preview_hidden: true,
-                meta_hidden: false,
-                file_name_id: 'editImageFileName',
-                file_name_text: upload_lang.selected_none,
-                file_details_id: 'editImageFileDetails',
-                file_details_text: upload_lang.drop_description,
-                divider_hidden: false,
-                link_separator: upload_lang.link_separator,
-                url_row_hidden: false,
-                url_input_id: 'editImageUrlInput',
-                link_placeholder: upload_lang.link_placeholder,
-                import_btn_id: 'editImageUrlImportBtn',
-                link_action: upload_lang.link_action,
-                file_input_id: 'editImgInput',
-                file_input_onchange: 'previewEditImage(this)'
-            } %}
-        </div>
-
-        <!-- Access Control (ACL) -->
-        <div class="announcements-form-card">
-            <h3 class="announcements-form-title">{{ lang.mod_announcements.admin.columns.acl_id|raw }}</h3>
-            <div class="m3-input-wrapper" style="margin-bottom: 0;">
-                <select class="m3-input-lg" name="acl_id">
-                    <option value="0" {% if acl_id|default(0) == 0 %}selected{% endif %}>{{ lang.mod_announcements.choose_wish }}</option>
                     {% for item in mod_acl_acl_id %}
-                        <option value="{{ item.id }}" {% if acl_id|default(0) == item.id %}selected{% endif %}>{{ item.ad }}</option>
+                        <div class="wizard-selection-card" data-wizard-select="acl" data-value="{{ item.id }}">
+                            <div class="wizard-card-main">
+                                <div class="wizard-card-icon">
+                                    <i class="bi bi-shield-lock"></i>
+                                </div>
+                                <div class="wizard-card-text">
+                                    <div class="wizard-card-title">{{ item.name|default(item.ad) }}</div>
+                                    <div class="wizard-card-desc">ACL #{{ item.id }}</div>
+                                </div>
+                            </div>
+                            <i class="bi bi-check2 wizard-card-check"></i>
+                        </div>
                     {% endfor %}
-                </select>
-                <label class="m3-floating-label">{{ acl_label }}</label>
+                </div>
             </div>
-        </div>
-    </form>
-</div>
-{% endblock %}
 
-{% block fixed_bottom %}
-{% if success is not defined %}
-    <div class="announcements-bottom-bar">
-        <a href="{{ site.saddress }}mod_announcements/list" class="cancel-btn">
-            <i class="bi bi-arrow-left"></i>
-            <span>{{ lang.mod_announcements.button.vazgec }}</span>
-        </a>
-        <button type="submit" form="announcementAddForm" name="add" value="1" class="save-btn">
-            <i class="bi bi-check2-circle"></i>
-            <span>{{ lang.mod_announcements.button.add }}</span>
-        </button>
+            <!-- Step 9: Publish Status -->
+            <div class="wizard-step" id="wizardStep9">
+                <h2 class="wizard-step-headline">{{ lang.mod_announcements.wizard.step.finish }}</h2>
+                <p class="wizard-step-subhead">{{ lang.mod_announcements.wizard.subtitle.finish }}</p>
+
+                <div class="wizard-selection-grid">
+                    <div class="wizard-selection-card active" data-wizard-select="status" data-value="y">
+                        <div class="wizard-card-main">
+                            <div class="wizard-card-icon">
+                                <i class="bi bi-cloud-check"></i>
+                            </div>
+                            <div class="wizard-card-text">
+                                <div class="wizard-card-title">{{ lang.mod_announcements.wizard.label.publish_yes }}</div>
+                                <div class="wizard-card-desc">{{ lang.mod_announcements.wizard.label.publish_yes_desc }}</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2 wizard-card-check"></i>
+                    </div>
+
+                    <div class="wizard-selection-card" data-wizard-select="status" data-value="n">
+                        <div class="wizard-card-main">
+                            <div class="wizard-card-icon">
+                                <i class="bi bi-pencil-square"></i>
+                            </div>
+                            <div class="wizard-card-text">
+                                <div class="wizard-card-title">{{ lang.mod_announcements.wizard.label.publish_no }}</div>
+                                <div class="wizard-card-desc">{{ lang.mod_announcements.wizard.label.publish_no_desc }}</div>
+                            </div>
+                        </div>
+                        <i class="bi bi-check2 wizard-card-check"></i>
+                    </div>
+                </div>
+
+                <!-- Wizard Summary Card -->
+                <div class="wizard-summary-card">
+                    <h4 class="wizard-summary-title">
+                        <i class="bi bi-card-checklist"></i>
+                        <span>{{ lang.mod_announcements.wizard.summary.title }}</span>
+                    </h4>
+                    <div class="wizard-summary-list">
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-translate"></i> {{ lang.mod_announcements.wizard.summary.lang }}</span>
+                            <span class="wizard-summary-value" id="sumWizardLang">{{ (selected_lang|default(site.lang))|upper }}</span>
+                        </div>
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-type-h1"></i> {{ lang.mod_announcements.wizard.summary.name }}</span>
+                            <span class="wizard-summary-value" id="sumWizardTitle">-</span>
+                        </div>
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-calendar3"></i> {{ lang.mod_announcements.wizard.summary.date }}</span>
+                            <span class="wizard-summary-value" id="sumWizardDate">-</span>
+                        </div>
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-stars"></i> {{ lang.mod_announcements.wizard.summary.featured }}</span>
+                            <span class="wizard-summary-badge badge-draft" id="sumWizardFeatured">{{ lang.mod_announcements.wizard.label.featured_no }}</span>
+                        </div>
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-shield-check"></i> {{ lang.mod_announcements.wizard.summary.acl }}</span>
+                            <span class="wizard-summary-value" id="sumWizardAcl">{{ lang.mod_announcements.wizard.label.acl_public }}</span>
+                        </div>
+                        <div class="wizard-summary-item">
+                            <span class="wizard-summary-label"><i class="bi bi-broadcast"></i> {{ lang.mod_announcements.wizard.summary.status }}</span>
+                            <span class="wizard-summary-badge badge-success" id="sumWizardStatus">{{ lang.mod_announcements.wizard.label.publish_yes }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Wizard Fixed Footer -->
+        <footer class="announcements-wizard-footer">
+            <button type="button" class="wizard-btn-prev" id="btnWizardPrev" disabled>
+                <i class="bi bi-arrow-left"></i>
+                <span>{{ lang.mod_announcements.wizard.button.prev }}</span>
+            </button>
+            <button type="button" class="wizard-btn-next" id="btnWizardNext">
+                <span>{{ lang.mod_announcements.wizard.button.next }}</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+            <button type="button" class="wizard-btn-finish" id="btnWizardFinish">
+                <i class="bi bi-check2-circle"></i>
+                <span>{{ lang.mod_announcements.wizard.button.finish }}</span>
+            </button>
+        </footer>
+
     </div>
-{% endif %}
+</form>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-function syncAnnouncementMeta() {
-    const nameInput = document.getElementById('announcement-name');
-    const seoInput = document.getElementById('announcement-seo');
-    if (!nameInput || !seoInput) {
-        return;
-    }
-    if (!seoInput.dataset.touched) {
-        seoInput.value = nameInput.value
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-');
-    }
-}
-
-function updateCharCounter(inputId, counterId, maxLen) {
-    const input = document.getElementById(inputId);
-    const counter = document.getElementById(counterId);
-    if (input && counter) {
-        const len = input.value.length;
-        counter.textContent = `${len} / ${maxLen}`;
-        if (len > maxLen) {
-            counter.style.color = 'var(--md-sys-color-error, #b3261e)';
-        } else {
-            counter.style.color = 'var(--md-sys-color-on-surface-variant)';
-        }
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    const seoInput = document.getElementById('announcement-seo');
-    if (seoInput) {
-        seoInput.addEventListener('input', function () {
-            seoInput.dataset.touched = '1';
-        });
-    }
-
-    document.querySelectorAll('[data-selection-group]').forEach(function (group) {
-        group.addEventListener('change', function (event) {
-            if (event.target.type !== 'radio') return;
-            group.querySelectorAll('.selection-card').forEach(function (card) {
-                const isActive = card.contains(event.target);
-                card.classList.toggle('active', isActive);
-                const icon = card.querySelector('.selection-check-icon');
-                if (icon) icon.style.display = isActive ? 'block' : 'none';
-            });
-        });
-    });
-
-    if (typeof window.initializeEditImageInteractions === 'function') {
-        window.initializeEditImageInteractions();
-    }
-
-    if (typeof window.initRichEditor === 'function') {
-        window.initRichEditor('#announcement-content', 400);
-    }
-    
-    // Initial counter setup
-    updateCharCounter('announcement-name', 'name-counter', 255);
-    updateCharCounter('announcement-summary', 'summary-counter', 250);
-});
-</script>
-<!-- wizard_content -->
+<script src="/templates/admin/assets/js/mod_announcements_wizard.js?v=6.0"></script>
 {% endblock %}

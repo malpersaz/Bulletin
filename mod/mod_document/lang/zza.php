@@ -40,7 +40,7 @@ $lang['mod_document'] = [
         'length' => '%s gereke ma bêne %s û %s herfan de bibo.',
         'unique' => 'Erzişê %s xora esto. Kerem kerê %sê din weçine.',
     ],
-    'roll' => [
+    'role' => [
         'name' => 'Rolê İdarekerdişê Dosya',
         'add' => 'Şeno dosya ci ke',
         'edit' => 'Şeno dosya vurne',

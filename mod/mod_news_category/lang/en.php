@@ -24,16 +24,15 @@ $lang['mod_news_category'] = [
     'add' => 'Add Category',
     'edit' => 'Edit Category',
     'information' => 'Information',
-    'oke' => 'Success',
-    'hata' => 'Error Occurred',
-    'error' => 'Fatal Error Occurred',
+    'success' => 'Success',
+    'error' => 'Error Occurred',
     'remove_record' => 'Are you sure you want to delete this record?',
     'choose_wish' => 'Choose as you wish',
     'remove_image' => 'Are you sure you want to remove this image?',
 
     // === Message Structure ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Category successfully added!',
             'edit' => 'Category successfully updated!',
         ],
@@ -65,28 +64,27 @@ $lang['mod_news_category'] = [
     'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
-        'save' => 'Save',
+        'cancel' => 'Cancel',
         'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
+        'save' => 'Save',
         'gallery' => 'Gallery',
         'file' => 'File',
     ],
 
     'grid' => [
-        0 => 'Showing {from} to {to} of {total} results',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Showing {from} to {to} of {total} results',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
     ],
 
     'validator' => [
@@ -97,8 +95,8 @@ $lang['mod_news_category'] = [
         'inarray' => '%s field can only accept \' %s \' values',
     ],
 
-    'roll' => [
-        'ad' => 'Category Management Roles',
+    'role' => [
+        'name' => 'Category Management Roles',
         'add' => 'Can Add Category',
         'edit' => 'Can Edit Category',
         'delete' => 'Can Delete Category',
@@ -210,9 +208,6 @@ $lang['mod_news_category'] = [
         'edit' => 'Edit Selected',
         'delete' => 'Delete Selected',
         'refresh' => 'Refresh',
-        'add' => 'Add',
-        'edit' => 'Edit',
-        'delete' => 'Delete',
         'cancel' => 'Cancel',
         'remove' => 'Remove',
         'yes' => 'Yes',
@@ -387,7 +382,7 @@ $lang['mod_news_category'] = [
 
     // === Response Codes (for AJAX/PHP responses) ===
     'responses' => [
-        'success' => 'Oke',  // Keep 'Oke' as it's used in JavaScript comparisons
+        'success' => 'Success',  // Keep 'Success' as it's used in JavaScript comparisons
         'error' => 'Error',  // Keep 'Error' as it's used in JavaScript comparisons
         'fatal_error' => 'ERROR',  // Keep 'ERROR' as it's used in JavaScript comparisons
     ],

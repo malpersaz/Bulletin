@@ -40,7 +40,7 @@ $lang['mod_document'] = [
         'length' => '%s alanı %s ile %s karakter arasında olmalıdır.',
         'unique' => '%s değeri zaten mevcut. Lütfen başka bir %s seçin.',
     ],
-    'roll' => [
+    'role' => [
         'name' => 'Dosya Yönetimi Rolleri',
         'add' => 'Dosya ekleyebilir',
         'edit' => 'Dosya düzenleyebilir',

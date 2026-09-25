@@ -33,7 +33,7 @@ if (isset($_GET['js'])) {
     $js_cache_file = md5($js) . '-v-' . $version . '.js';
     $cachefile = $root_cache_dir . $js_cache_file;
     if (file_exists($cachefile) === FALSE) {
-        require_once(DIRNAME(__FILE__) . 'koberz.init.php');
+        require_once(DIRNAME(__FILE__) . 'init.php');
         $jsoptimizer = Load::lib('JsOptimizer');
         $jsoptimizer->cachefile = $cachefile;
         $jsoptimizer->js_cache_file = $js_cache_file;

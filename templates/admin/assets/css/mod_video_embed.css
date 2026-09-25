@@ -185,3 +185,185 @@ select.form-select {
 .acl-settings-btn:hover {
     background: var(--m3-tonal);
 }
+
+/* Edit View Mobile-First Helpers & Code Separation Classes */
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px 16px 120px 16px;
+}
+
+.embed-code-input {
+    resize: vertical;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.embed-placeholder-icon {
+    font-size: 56px;
+    opacity: 0.6;
+}
+
+.embed-placeholder-text {
+    font-size: 13px;
+    opacity: 0.5;
+    margin-top: 8px;
+}
+
+.autofill-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: -8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+
+.autofill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: var(--m3-primary);
+    color: var(--m3-on-primary);
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 44px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    -webkit-tap-highlight-color: transparent;
+}
+
+.autofill-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+}
+
+.autofill-btn:active {
+    transform: scale(0.96);
+}
+
+.autofill-btn.is-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.autofill-status {
+    font-size: 13px;
+    opacity: 0.72;
+    color: var(--md-sys-color-on-surface-variant, inherit);
+}
+
+.form-row-2col {
+    display: flex;
+    gap: 16px;
+}
+
+.form-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.acl-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.acl-select-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.acl-icon {
+    font-size: 20px;
+}
+
+.content-textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.seo-preview-help {
+    display: block;
+    margin-top: 8px;
+    opacity: 0.68;
+    font-size: 12px;
+    color: var(--md-sys-color-on-surface-variant, inherit);
+}
+
+.current-image-wrapper {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.banner-m3 {
+    padding: 14px 16px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.banner-success-soft {
+    background: #e6f4ea;
+    color: #1e4620;
+    border: 1px solid #c6ebd0;
+}
+
+.banner-error-soft {
+    background: #fce8e6;
+    color: #b3261e;
+    border: 1px solid #fad2cf;
+}
+
+[data-theme="dark"] .banner-success-soft {
+    background: rgba(46, 125, 50, 0.2);
+    color: #81c784;
+    border-color: rgba(46, 125, 50, 0.4);
+}
+
+[data-theme="dark"] .banner-error-soft {
+    background: rgba(179, 38, 30, 0.2);
+    color: #f28b82;
+    border-color: rgba(179, 38, 30, 0.4);
+}
+
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.d-none {
+    display: none !important;
+}
+
+/* Phone-only layout enhancements */
+@media (max-width: 480px) {
+    .form-container {
+        padding: 12px 12px 120px 12px;
+    }
+
+    .m3-card {
+        padding: 16px;
+        border-radius: 20px;
+        margin-bottom: 16px;
+    }
+
+    .form-row-2col {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+}

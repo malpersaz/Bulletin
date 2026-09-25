@@ -3,13 +3,13 @@
 class mods extends installerbase implements installerbaseinterface
 {
     public $model;
-    public $tablolar;
+    public $tables;
 
     public function __construct()
     {
         parent::__construct();
         $this->mod = 'mods';
-        $this->tablolar = array(
+        $this->tables = array(
             'mods',
             'sys_view_logs'
         );
@@ -17,7 +17,7 @@ class mods extends installerbase implements installerbaseinterface
 
     public function install()
     {
-        foreach ($this->tablolar as $table) {
+        foreach ($this->tables as $table) {
             if ($this->check_table_exists($table) === TRUE) {
                 $this->warning(" '" . $table . "' table is already installed in the database");
                 continue;
@@ -27,7 +27,7 @@ class mods extends installerbase implements installerbaseinterface
                 return FALSE;
             }
 
-            $this->oke(" '" . $table . ".sql' file added to the database");
+            $this->success(" '" . $table . ".sql' file added to the database");
         }
 
         if ($this->sync_module_registry_schema() === FALSE) {

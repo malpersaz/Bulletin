@@ -15,9 +15,10 @@ CREATE OR REPLACE VIEW contents AS SELECT
     mod_content.image,
     mod_content.hit,
     mod_content.lang,
-    mod_category.name AS categoryname,
-    mod_category.seo AS category_seo,
-    mod_category.id AS category_id,
+    mod_content_category.name AS category_name,
+    mod_content_category.name AS categoryname,
+    mod_content_category.seo AS category_seo,
+    mod_content_category.id AS category_id,
     mod_user.username,
     mod_user.id AS user_id,
     mod_user.name AS u_name,
@@ -30,4 +31,4 @@ CREATE OR REPLACE VIEW contents AS SELECT
    FROM mod_content
    LEFT JOIN mod_user ON mod_content.user_id = mod_user.id
    LEFT JOIN mod_user_group ON mod_user.group_id = mod_user_group.group_id
-   LEFT JOIN mod_category ON mod_content.category_id = mod_category.id;
+   LEFT JOIN mod_content_category ON mod_content.category_id = mod_content_category.id;

@@ -101,7 +101,7 @@ $lang['mod_gallery'] = [
     ],
 
     // Error Messages
-    'hata' => [
+    'error' => [
         'get_source_failed' => 'Çavkaniya Wêne Nehate Standin',
         'not_an_image' => 'Pela Te Nîşan Kir Ne Wêne ye',
         'specify_destination' => 'Tika ye Pela dê Wêne Lê Were Nivîsandin Belî Bike',
@@ -130,8 +130,8 @@ $lang['mod_gallery'] = [
     ],
 
     // Role Management
-    'roll' => [
-        'ad' => 'Erkên Wênedankê',
+    'role' => [
+        'name' => 'Erkên Wênedankê',
         'add' => 'Dikare Wêne Lê Bar Bike',
         'edit' => 'Dikare Wêne Biguhere',
         'delete' => 'Dikare Wêneyê Lêbarkirî Jê Bibe',
@@ -149,6 +149,8 @@ $lang['mod_gallery'] = [
         'delete' => 'Erka te ya jêbirina wêneyan tune!',
         'edit' => 'Erka te ya guhertina wêne tune!',
         'list' => 'Erka te ya dîtina rêveberiya wêneyan tune!',
+        'moderate_edit' => 'Erka te ya guhertina wêneyên kesên din tune ye!',
+        'moderate_delete' => 'Erka te ya jêbirina wêneyên kesên din tune ye!',
         'gallery' => 'Erka te tune ku tu wêneyan li galeriyê zêde bikî',
         'file' => 'Erka te tune ku tu pelan li galeriyê zêde bikî',
     ],

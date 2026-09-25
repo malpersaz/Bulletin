@@ -2,7 +2,7 @@
 /**
  * News Management Module - Turkish Language File
  *
- * @package Rojname
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -24,13 +24,13 @@ $lang['mod_news'] = [
     'edit' => 'Haberi Düzenle',
     'list' => 'Haber Listesi',
     'information' => 'Bilgi!',
-    'oke' => 'İşlem Başarılı!',
+    'success' => 'İşlem Başarılı!',
     'error_occurred' => 'Hata Oluştu!',
     'error' => 'Ölümcül Hata Oluştu!',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize emin misiniz?',
-    'remove_image_oke' => 'Resim Kaldırıldı',
+    'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
-    'remove_record' => 'Bu Kaydı Silmek İstediğinize emin misiniz?',
+    'remove_record' => 'Bu İçeriği Silmek İstediğinize emin misiniz?',
     'delete_confirm' => 'Bu haberi silmek istediğinize emin misiniz?',
     'quick_unpublish_confirm' => 'Bu haberi yayından kaldırmak istediğinizden emin misiniz?',
     'quick_publish_confirm' => 'Bu haberi yayınlamak istediğinizden emin misiniz?',
@@ -65,7 +65,7 @@ $lang['mod_news'] = [
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Haber Eklendi!',
             'edit' => 'Haber Düzenlendi!',
         ],
@@ -77,7 +77,7 @@ $lang['mod_news'] = [
 
     // === Error Messages ===
     'errors' => [
-        'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
+        'record' => 'Belirttiğiniz Öğe Bulunamadı!',
     ],
 
     // === Buttons ===
@@ -101,17 +101,17 @@ $lang['mod_news'] = [
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Arama',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
-        104 => 'Yükleniyor...',
-        105 => 'Haber bulunamadı',
+        'showing_results' => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Arama',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
+        'loading' => 'Yükleniyor...',
+        'no_data' => 'Haber bulunamadı',
         'approve' => [
             'key' => 'Yayınla',
             'value' => 'Bu haberi yayınlamak istediğinize emin misiniz?',
@@ -133,11 +133,11 @@ $lang['mod_news'] = [
         'title_length' => 'En az 1, en fazla 70 karakterden oluşan bir başlık girmelisiniz.',
         'title_exists' => 'Bu başlık zaten mevcut, lütfen değiştirin',
         'title_unique' => 'Başlığınız benzersiz',
-        'deck_length' => 'Lütfen en az 110, en fazla 280 karakterden oluşan bir giriş metni giriniz.',
+        'deck_length' => 'Lütfen 90 ile 120 karakter arasında bir giriş metni giriniz.',
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Haber Yönetim Rolleri',
         'add' => 'Haber Ekleyebilir',
         'edit' => 'Haber Düzenleyebilir',
@@ -228,7 +228,6 @@ $lang['mod_news'] = [
         'default_sort' => 'En Yeni',
         'default_lang' => 'TR',
         'date_locale' => 'tr-TR',
-        'all' => 'Tümü',
         'filter_cleared' => 'Filtreler temizlendi ve varsayılana döndürüldü.',
         'filter_applied' => 'Filtreler Uygulandı',
         'sort_label' => 'Sıralama',
@@ -313,7 +312,7 @@ $lang['mod_news'] = [
             'category' => 'Haberin ekleneceği kategoriyi belirleyin.',
             'title' => 'İlgi çekici bir başlık girin. (Min: 1, Max: 70)',
             'date' => 'Haberin yayınlanacağı tarih ve saat.',
-            'intro' => 'Kısa ve öz bir özet yazın. (110 - 280 Karakter)',
+            'intro' => 'Kısa ve öz bir özet yazın. (90 - 120 Karakter)',
             'news' => 'Zengin metin editörü.',
             'image' => 'Kapak görseli yükleyin.',
             'finish' => 'Son kontroller ve yayınlama.',
@@ -365,6 +364,7 @@ $lang['mod_news'] = [
         'edit' => 'Düzenle',
         'gallery' => 'Galeri İşlemleri',
         'files' => 'Dosya Ekle',
+        'video' => 'Habere Video Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
         'delete_error' => 'Silme işlemi başarısız!',
@@ -381,31 +381,31 @@ $lang['mod_news'] = [
         'gallery_alert' => "GALERİ YÖNETİMİ:\nID: %s\nBaşlık: %s\nHaber için resim galerisi açılıyor.",
         'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nHaber için dosya yükleme ekranı açılıyor.",
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
-        'delete_confirm' => 'Evet, Sil!',
         'delete_success' => 'Haber silindi!',
     ],
 
+    // === Hero Slider ===
+    'hero_slider_add' => 'Slider\'a Gönder',
+    'hero_slider_remove' => 'Slider\'dan Kaldır',
+    'hero_slider_added' => 'Haber slider\'a eklendi.',
+    'hero_slider_removed' => 'Haber slider\'dan kaldırıldı.',
+    'hero_slider_error' => 'Slider güncellenemedi.',
+    'hero_slider_badge' => 'Slider',
+
     // === Latest News ===
     'latest_news' => [
-        1 => 'Son Haberler',
-        2 => 'Tüm Haberleri Gör',
-        3 => 'Henüz haber yayınlanmadı.',
+        'title' => 'Son Haberler',
+        'subtitle' => 'Tüm Haberleri Gör',
+        'description' => 'Henüz haber yayınlanmadı.',
     ],
 
-    'mock' => [
-        'titles' => [
-            "Kürt Basınında Yeni Dönem Başlıyor",
-            "Diyarbakır Kültür Sanat Festivali Takvimi Açıklandı",
-            "Yerel Gazetecilik Çalıştayı Sona Erdi",
-            "Yapay Zeka ve Medya İlişkisi Üzerine Notlar",
-            "Geleneksel Gazetecilikten Dijital Medyaya Geçiş",
-            "Sosyal Medya Kullanım İstatistikleri 2024",
-            "Haftalık Teknoloji Özeti: Neler Oldu?",
-            "Yazarlar Birliği Yeni Yönetimini Seçti",
-            "Fotoğrafçılık Atölyesi Kayıtları Başladı",
-            "Rojname Mobil Uygulaması Güncellendi"
-        ],
-        'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
-        'authors' => [],
+    // === AJAX & Relation Messages ===
+    'ajax' => [
+        'success' => 'Başarılı',
+        'error' => 'Hata oluştu',
+        'database_error' => 'Veritabanı Hatası',
+        'record_not_found' => 'Haber bulunamadı!',
+        'unknown_type' => 'Bilinmeyen ilişki türü',
+        'relation_updated' => 'İlişki başarıyla güncellendi',
     ],
 ];

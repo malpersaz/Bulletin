@@ -4,7 +4,7 @@ class user_model extends ORM
 {
     public $session;
     public $lang;
-    public $tema;
+    public $theme;
     public $site;
     /**
      * @var mixed[]
@@ -30,7 +30,7 @@ class user_model extends ORM
     public $image;
     public $city;
     public $blog_name;
-    public $grup;
+    public $group;
 
 
     public function __construct()
@@ -41,9 +41,9 @@ class user_model extends ORM
         // Load language file
         $this->lang = Load::lang('mod_user');
         // Theme
-        $this->tema = Load::lib('AdminTemplate');
+        $this->theme = Load::lib('AdminTemplate');
         // Site
-        $this->site = Kayit::getir('site_config');
+        $this->site = Registry::get('site_config');
     }
 
     // Login
@@ -52,12 +52,17 @@ class user_model extends ORM
         $usermodel = Load::model('mod_user');
         $usermodel->select(['id', 'username', 'password', 'group_id', 'status', 'email', 'name', 'last_name', 'image', 'sid'])->where_username($username)->limit(1);
         $usermodel->getResultOne(TRUE, TRUE);
+        if ($usermodel->getSize() === 0) {
+            $usermodel = Load::model('mod_user');
+            $usermodel->select(['id', 'username', 'password', 'group_id', 'status', 'email', 'name', 'last_name', 'image', 'sid'])->where_email($username)->limit(1);
+            $usermodel->getResultOne(TRUE, TRUE);
+        }
         // If user exists
         if ($usermodel->getSize() !== 0) {
             // Sync data
             $usermodel->sync();
             if (!$this->_password_matches($password, $usermodel->password)) {
-                $this->_hata_log($username);
+                $this->_log_failed_login($username);
                 return False;
             }
 
@@ -90,6 +95,7 @@ class user_model extends ORM
                 $this->session->set('group_id', $usermodel->group_id);
                 $this->session->set('image', $usermodel->image);
                 $this->session->set('id', $usermodel->id);
+                $this->session->set('email', $usermodel->email);
                 $this->session->set('full_name', Text::title($usermodel->name . " " . $usermodel->last_name));
 
                 // Load user roles
@@ -107,7 +113,7 @@ class user_model extends ORM
             $this->errors[] = $this->lang['mod_user']['error']['account_not_active'];
             return False;
         }
-        $this->_hata_log($username);
+        $this->_log_failed_login($username);
         return False;
     }
 
@@ -173,7 +179,7 @@ class user_model extends ORM
     }
 
     // Log failed login
-    private function _hata_log($username = NULL)
+    private function _log_failed_login($username = NULL)
     {
         $log = Load::model('mod_user.log');
         $log->username = $username;
@@ -203,12 +209,11 @@ class user_model extends ORM
     {
         $db = Load::lib('Database');
         $sql = "
-			SELECT r.roll_name,m.mod_name
-			FROM `mod_user_perm` AS p
-			JOIN `mod_user_roll` AS r
-			JOIN `mods` AS m ON r.roll_id = p.roll_id
-			AND m.mod_id = p.mod_id
-			AND p.group_id = '" . $group_id . "'";
+			SELECT `mod_user_role`.role_name, `mods`.mod_name
+			FROM `mod_user_perm`
+			JOIN `mod_user_role` ON `mod_user_role`.role_id = `mod_user_perm`.role_id AND `mod_user_role`.mod_id = `mod_user_perm`.mod_id
+			JOIN `mods` ON `mods`.mod_id = `mod_user_perm`.mod_id
+			WHERE `mod_user_perm`.group_id = '" . (int)$group_id . "'";
 
         // Fetch array without building
         $db->fetch_array($sql);
@@ -217,12 +222,14 @@ class user_model extends ORM
         unset($db);
     }
 
-    private function _setPermissions($roll)
+    private function _setPermissions($roles)
     {
         $val = [];
-        if (is_array($roll)) {
-            foreach ($roll as $rol) {
-                $val[$rol['mod_name']][$rol['roll_name']] = True;
+        if (is_array($roles)) {
+            foreach ($roles as $role) {
+                if (!empty($role['role_name']) && !empty($role['mod_name'])) {
+                    $val[$role['mod_name']][$role['role_name']] = True;
+                }
             }
         }
         if ($this->session->has('permissions')) {
@@ -239,6 +246,28 @@ class user_model extends ORM
         if ($this->session->has('id') === False) {
             return False;
         }
+
+        $userId = (int) $this->session->get('id');
+        $sessionSid = (string) $this->session->get('sid');
+
+        if ($userId <= 0) {
+            $this->session->clear();
+            return False;
+        }
+
+        $db = Load::lib('Database');
+        $db->fetch_array("SELECT id, sid, status FROM `mod_user` WHERE `id` = " . $userId . " AND `status` = 'y' LIMIT 1");
+        if ($db->getSize() === 0) {
+            $this->session->clear();
+            return False;
+        }
+
+        $user = $db->getResult()->toArray()[0];
+        if (!empty($sessionSid) && !empty($user['sid']) && $user['sid'] !== $sessionSid) {
+            $this->session->clear();
+            return False;
+        }
+
         return TRUE;
     }
 
@@ -262,12 +291,12 @@ class user_model extends ORM
     }
 
     // Check for moderator permission
-    public function isAuthorized($mod, $id, $mesaj, $nasil = NULl)
+    public function isAuthorized($mod, $id, $message, $mode = null)
     {
         if ($id != $this->session->get('id')) {
-            if (Roll::hasPermission($mod, 'moderate') === False) {
-                $this->error = $mesaj;
-                $this->hatamesaj($nasil);
+            if (Role::hasPermission($mod, 'moderate') === False) {
+                $this->error = $message;
+                $this->_handleErrorMessage($mode);
                 return False;
             }
             return True;
@@ -279,15 +308,15 @@ class user_model extends ORM
      * @param string $mod
      * @param string $roll
      * @param int $id
-     * @param string $mesaj
-     * @param mixed $nasil
+     * @param string $message
+     * @param mixed $mode
      */
-    public function checkPermission($mod, $roll, $id, $mesaj, $nasil = NULl)
+    public function checkPermission($mod, $roll, $id, $message, $mode = null)
     {
         if ($id != $this->session->get('id')) {
-            if (Roll::hasPermission($mod, $roll) === False) {
-                $this->error = $mesaj;
-                $this->hatamesaj($nasil);
+            if (Role::hasPermission($mod, $roll) === False) {
+                $this->error = $message;
+                $this->_handleErrorMessage($mode);
                 return False;
             }
             return True;
@@ -296,48 +325,78 @@ class user_model extends ORM
     }
 
     // Check for permission
-    public function hasPermission($mod, $permission, $mesaj, $nasil = NULL)
+    public function hasPermission($mod, $permission, $message, $mode = null)
     {
-        if (Roll::hasPermission($mod, $permission) === False) {
+        if (Role::hasPermission($mod, $permission) === False) {
             if ($this->session->has('group_id')) {
                 $this->_loadPermissions($this->session->get('group_id'));
-                if (Roll::hasPermission($mod, $permission) === True) {
+                if (Role::hasPermission($mod, $permission) === True) {
                     return True;
                 }
             }
-            $this->error = $mesaj;
-            $this->hatamesaj($nasil);
+            $this->error = $message;
+            $this->_handleErrorMessage($mode);
             return False;
         }
         return True;
     }
 
     // Return error message
-    private function hatamesaj($nasil = NUll)
+    private function _handleErrorMessage($mode = null)
     {
-        if ($this->checklogin() === False) {
-            Helper::yonlendir($this->site['address'], 0);
+        if ($mode === 0 || $mode === '0' || $mode === false || $mode === 'silent') {
             return;
         }
 
-        if ($nasil == '1') {
-            $this->_hata();
-        } elseif ($nasil == '2') {
-            $this->_emesaj();
-        } elseif ($nasil == '3') {
-            echo json_encode(['error' => true, 'mesaj' => $this->error]);
+        if ($this->checklogin() === False) {
+            $isAjax = Req::is_Ajax()
+                || (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+                || (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false);
+
+            $targetUrl = (!empty($this->site['saddress']) ? $this->site['saddress'] : $this->site['address']) . '?login=modal&session_expired=1';
+
+            if ($isAjax) {
+                header('HTTP/1.1 401 Unauthorized');
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'error',
+                    'code' => 'session_expired',
+                    'message' => 'Session expired or unauthorized',
+                    'redirect' => $targetUrl
+                ]);
+                exit();
+            }
+
+            Helper::redirect($targetUrl, 0);
+            return;
+        }
+
+        if ($mode == '1') {
+            $this->_renderUnauthorized();
+        } elseif ($mode == '2') {
+            $this->_renderFlashError();
+        } elseif ($mode == '3') {
+            echo json_encode(['error' => true, 'message' => $this->error]);
         } else {
             echo "<h4>" . $this->lang['mod_user']['error']['permission_error'] . "</h4><br/>" . $this->error;
         }
     }
 
     // Render management/unauthorized.twig and show error
-    private function _hata()
+    private function _renderUnauthorized()
     {
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_user']['error']['permission_error'];
-        $this->tema->veri('site', $this->site);
-        $this->tema->veri('hatamesaj', $this->error);
-        $this->tema->tpl('management/unauthorized');
+        $this->theme->set('site', $this->site);
+        $this->theme->set('error_message', $this->error);
+        $this->theme->tpl('management/unauthorized');
+    }
+
+    private function _renderFlashError()
+    {
+        // Flash error handler
+        if (isset($this->theme)) {
+            $this->theme->set('error_message', $this->error);
+        }
     }
 }

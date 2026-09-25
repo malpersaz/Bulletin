@@ -92,10 +92,7 @@ class Swift_ByteStream_FileByteStream
       $this->_offset = ftell($fp);
       return $bytes;
     }
-    else
-    {
-      return false;
-    }
+    return false;
   }
   
   /**
@@ -149,14 +146,11 @@ class Swift_ByteStream_FileByteStream
   /** Get the resource for writing */
   private function _getWriteHandle()
   {
-    if (!isset($this->_writer))
+    if (!isset($this->_writer) && !$this->_writer = fopen($this->_path, $this->_mode))
     {
-      if (!$this->_writer = fopen($this->_path, $this->_mode))
-      {
-        throw new Swift_IoException(
-          'Unable to open file for writing [' . $this->_path . ']'
-        );
-      }
+      throw new Swift_IoException(
+        'Unable to open file for writing [' . $this->_path . ']'
+      );
     }
     return $this->_writer;
   }

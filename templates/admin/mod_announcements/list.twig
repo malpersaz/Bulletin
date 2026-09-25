@@ -2,105 +2,236 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
 {% set show_search = true %}
-{% set show_search_filter_button = true %}
 {% extends 'admin/layout.twig' %}
 
 {% block title %}{{ lang.mod_announcements.list }}{% endblock %}
 {% block headline %}{{ lang.mod_announcements.list }}{% endblock %}
 
 {% block styles %}
-<style>
-    .announcements-toolbar .toolbar-item {
-        min-width: 44px;
-    }
-    .empty-state {
-        background: var(--md-sys-color-surface);
-        border-radius: var(--af-radius-lg);
-        padding: 40px 20px;
-        margin: 0 16px 120px;
-        text-align: center;
-        box-shadow: var(--md-sys-elevation-1);
-        display: grid;
-        gap: 16px;
-        place-items: center;
-    }
-    .empty-state i {
-        font-size: 48px;
-        color: var(--md-sys-color-primary);
-    }
-</style>
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_announcements.css?v=6.1">
 {% endblock %}
 
 {% block content %}
+<div class="content-stats-container">
+    <div class="content-stats-row">
+        <button type="button" class="content-stat-card active" data-status-filter="all" aria-label="{{ lang.mod_announcements.total_announcements }}">
+            <div id="statTotalAnnouncements" class="content-stat-value">{{ total_announcements|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_announcements.total_announcements }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-published" data-status-filter="y" aria-label="{{ lang.mod_announcements.status_badge.active }}">
+            <div id="statPublishedAnnouncements" class="content-stat-value">{{ published_announcements|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_announcements.status_badge.active }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-draft" data-status-filter="n" aria-label="{{ lang.mod_announcements.draft_announcements }}">
+            <div id="statDraftAnnouncements" class="content-stat-value">{{ draft_announcements|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_announcements.draft_announcements }}</div>
+        </button>
+    </div>
+</div>
+
 <div id="ptr-spinner" class="ptr-spinner">
-    <div class="spinner-track"><div class="spinner-fill"></div></div>
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
 </div>
 
-<div id="announcements-list-container" class="content-list" style="padding: 16px 16px 120px;"></div>
-
-<div id="empty-state" class="empty-state" style="display:none;">
-    <i class="bi bi-megaphone"></i>
-    <strong>{{ lang.mod_announcements.grid[4] }}</strong>
+<div id="announcements-list-container" class="content-list"
+    data-module-url="{{ site.saddress }}mod_announcements/"
+    data-data-url="{{ site.saddress }}mod_announcements/datatable_json">
 </div>
 
-<div id="infinite-loader" class="infinite-loader" style="display:none;">
-    <div class="spinner-track"><div class="spinner-fill"></div></div>
-    <span>{{ lang.mod_announcements.grid[3] }}</span>
+<div id="empty-state" class="empty-state is-hidden"
+    data-initial-title="{{ lang.mod_announcements.empty_state.title }}"
+    data-initial-desc="{{ lang.mod_announcements.empty_state.description }}"
+    data-search-title="{{ lang.mod_announcements.empty_state.search_title }}"
+    data-search-desc="{{ lang.mod_announcements.empty_state.search_description }}"
+    data-search-action="{{ lang.mod_announcements.empty_state.clear_search }}">
+    <div class="empty-icon" id="emptyStateIcon"><i class="bi bi-megaphone"></i></div>
+    <h3 id="emptyStateTitle">{{ lang.mod_announcements.empty_state.title }}</h3>
+    <p id="emptyStateDesc">{{ lang.mod_announcements.empty_state.description }}</p>
+    <div class="empty-state-actions" id="emptyStateActions">
+        {% if session.permissions.mod_announcements.add is defined %}
+        <a href="{{ site.saddress }}mod_announcements/add" class="m3-btn-filled empty-action-btn" id="emptyStateAddBtn">
+            <i class="bi bi-plus-lg"></i> {{ lang.mod_announcements.add }}
+        </a>
+        {% endif %}
+        <button type="button" class="m3-btn-tonal empty-action-btn is-hidden" id="emptyStateClearBtn">
+            <i class="bi bi-x-circle"></i> <span>{{ lang.mod_announcements.empty_state.clear_search }}</span>
+        </button>
+    </div>
 </div>
 
-<form id="filterForm" style="display:none;">
+<div id="infinite-loader" class="infinite-loader is-hidden">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>{{ lang.mod_announcements.grid.loading }}</span>
+</div>
+
+<form id="filterForm" class="is-hidden">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
     <input type="hidden" name="search[name]" id="filterSearch" value="">
     <input type="hidden" name="search[lang]" id="filterLang" value="">
+    <input type="hidden" name="search_radio[status]" id="filterStatus" value="">
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
+    <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
+
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="standard-toolbar announcements-toolbar">
-    {% if session.permissions.mod_announcements.delete is defined %}
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-        </button>
-    {% endif %}
-
+<div class="standard-toolbar announcements-toolbar" id="announcementsToolbar">
     {% if session.permissions.mod_announcements.gallery is defined %}
-        <button id="toolbarGallery" class="toolbar-item" onclick="gallerySelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-images"></i>
-        </button>
+    <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_announcements.button.gallery }}" aria-label="{{ lang.mod_announcements.button.gallery }}">
+        <i class="bi bi-images"></i>
+    </button>
     {% endif %}
 
     {% if session.permissions.mod_announcements.file is defined %}
-        <button id="toolbarFiles" class="toolbar-item" onclick="filesSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-paperclip"></i>
-        </button>
+    <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_announcements.button.file }}" aria-label="{{ lang.mod_announcements.button.file }}">
+        <i class="bi bi-paperclip"></i>
+    </button>
     {% endif %}
 
     {% if session.permissions.mod_announcements.edit is defined %}
-        <button id="toolbarEdit" class="toolbar-item" onclick="editSelected()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-pencil-fill"></i>
-        </button>
+    <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-announcement" title="{{ lang.mod_announcements.button.edit }}" aria-label="{{ lang.mod_announcements.button.edit }}">
+        <i class="bi bi-pencil-fill"></i>
+    </button>
+    {% endif %}
+
+    {% if session.permissions.mod_announcements.delete is defined %}
+    <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-announcement" title="{{ lang.mod_announcements.button.delete }}" aria-label="{{ lang.mod_announcements.button.delete }}">
+        <i class="bi bi-trash3-fill"></i>
+    </button>
     {% endif %}
 </div>
 
 {% if session.permissions.mod_announcements.add is defined %}
-    <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="location.href='{{ site.saddress }}mod_announcements/add'" aria-label="{{ lang.mod_announcements.add|default('Daxuyaniyê Lêzêde Bike') }}">
-        <i class="bi bi-plus-lg"></i>
-    </button>
+<!-- Main FAB Link -->
+<a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_announcements/add" aria-label="{{ lang.mod_announcements.add }}">
+    <i class="bi bi-plus-lg"></i>
+</a>
 {% endif %}
+
+<div id="announcementImageModal" class="news-image-modal" aria-hidden="true">
+    <div class="news-image-modal__scrim" data-action="close-image-uploader"></div>
+    <div class="news-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="announcementImageModalTitle">
+        <header class="wizard-header">
+            <button type="button" class="icon-btn" data-action="close-image-uploader" aria-label="{{ lang.mod_announcements.button.cancel }}">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="wizard-title">
+                <span id="announcementImageModalTitle">{{ lang.mod_announcements.wizard.step.image }}</span>
+                <span id="announcementImageModalSubtitle" hidden></span>
+            </div>
+            <button type="button" id="announcementImageSaveBtn" class="m3-btn-text news-image-save" data-action="save-image-upload" disabled hidden>{{ lang.mod_announcements.button.save }}</button>
+        </header>
+
+        <div class="wizard-progress-bar">
+            <div class="wizard-progress-fill progress-full-width"></div>
+        </div>
+
+        <div class="wizard-content news-image-modal__body">
+            {% include 'admin/partials/image_uploader.twig' with {
+                shell_id: 'listImageShell',
+                shell_class: 'news-image-shell',
+                has_image: false,
+                shell_attrs: {
+                    'data-drop-title': lang.mod_announcements.wizard.image.drop_title,
+                    'data-drop-description': lang.mod_announcements.wizard.image.drop_description,
+                    'data-upload-link': lang.mod_announcements.wizard.image.upload_link,
+                    'data-link-separator': lang.mod_announcements.wizard.image.link_separator,
+                    'data-link-placeholder': lang.mod_announcements.wizard.image.link_placeholder,
+                    'data-link-action': lang.mod_announcements.wizard.image.link_action,
+                    'data-hint-loading': lang.mod_announcements.wizard.image.hint_loading,
+                    'data-hint-invalid-type': lang.mod_announcements.wizard.image.hint_invalid_type,
+                    'data-hint-no-drop-data': lang.mod_announcements.wizard.image.hint_no_drop_data,
+                    'data-hint-remote-failed': lang.mod_announcements.wizard.image.hint_remote_failed,
+                    'data-empty-name': lang.mod_announcements.wizard.summary.selected_none,
+                    'data-empty-meta': lang.mod_announcements.wizard.image.drop_description
+                },
+                dropzone_id: 'listImageDropzone',
+                trigger_picker_js: "document.getElementById('listImgInput')?.click()",
+                empty_state_id: 'listImageEmptyState',
+                drop_title: lang.mod_announcements.wizard.image.drop_title,
+                upload_link: lang.mod_announcements.wizard.image.upload_link,
+                preview_card_id: 'listImagePreviewCard',
+                remove_button_label: lang.mod_announcements.button.delete,
+                remove_action_js: 'window.announcementsManager?.handleListImageRemoveAction()',
+                preview_img_id: 'listImgPreview',
+                preview_alt: '',
+                preview_hidden: true,
+                meta_id: 'listImageMeta',
+                meta_hidden: true,
+                file_name_id: 'listImageFileName',
+                file_name_text: lang.mod_announcements.wizard.summary.selected_none,
+                file_details_id: 'listImageFileDetails',
+                file_details_text: lang.mod_announcements.wizard.image.drop_description,
+                divider_hidden: false,
+                link_separator: lang.mod_announcements.wizard.image.link_separator,
+                url_row_hidden: false,
+                url_input_id: 'listImageUrlInput',
+                link_placeholder: lang.mod_announcements.wizard.image.link_placeholder,
+                import_btn_id: 'listImageUrlImportBtn',
+                link_action: lang.mod_announcements.wizard.image.link_action,
+                file_input_id: 'listImgInput'
+            } %}
+
+            <div id="announcementCropperContainer" class="announcement-cropper-shell" hidden>
+                <div class="announcement-cropper-header">
+                    <div class="announcement-cropper-icon">
+                        <i class="bi bi-aspect-ratio-fill"></i>
+                    </div>
+                    <div class="announcement-cropper-title-box">
+                        <h4 class="announcement-cropper-title">{{ lang.mod_announcements.wizard.cropper.title }}</h4>
+                        <p class="announcement-cropper-desc">{{ lang.mod_announcements.wizard.cropper.instruction }}</p>
+                    </div>
+                </div>
+
+                <div class="cropper-checkerboard-wrapper">
+                    <img id="announcementCropperImage" src="" alt="Cropper Target">
+                </div>
+
+                <div class="cropper-toolbar-controls">
+                    <button type="button" class="cropper-tool-btn" data-crop-action="zoom-out" title="{{ lang.mod_announcements.wizard.cropper.zoom_out }}" aria-label="{{ lang.mod_announcements.wizard.cropper.zoom_out }}">
+                        <i class="bi bi-zoom-out"></i>
+                    </button>
+                    <button type="button" class="cropper-tool-btn" data-crop-action="zoom-in" title="{{ lang.mod_announcements.wizard.cropper.zoom_in }}" aria-label="{{ lang.mod_announcements.wizard.cropper.zoom_in }}">
+                        <i class="bi bi-zoom-in"></i>
+                    </button>
+                    <button type="button" class="cropper-tool-btn" data-crop-action="rotate-left" title="{{ lang.mod_announcements.wizard.cropper.rotate_left }}" aria-label="{{ lang.mod_announcements.wizard.cropper.rotate_left }}">
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                    <button type="button" class="cropper-tool-btn" data-crop-action="rotate-right" title="{{ lang.mod_announcements.wizard.cropper.rotate_right }}" aria-label="{{ lang.mod_announcements.wizard.cropper.rotate_right }}">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
+                    <button type="button" class="cropper-tool-btn cropper-tool-btn-reset" data-crop-action="reset" title="{{ lang.mod_announcements.wizard.cropper.reset }}" aria-label="{{ lang.mod_announcements.wizard.cropper.reset }}">
+                        <i class="bi bi-aspect-ratio"></i>
+                        <span>{{ lang.mod_announcements.wizard.cropper.reset }}</span>
+                    </button>
+                </div>
+
+                <div class="cropper-actions-row">
+                    <button type="button" class="cropper-cancel-btn" data-crop-action="cancel-crop">
+                        {{ lang.mod_announcements.wizard.cropper.cancel }}
+                    </button>
+                    <button type="button" id="announcementCropApplyBtn" class="cropper-save-btn" data-crop-action="apply-crop">
+                        <i class="bi bi-check-lg"></i>
+                        <span>{{ lang.mod_announcements.wizard.cropper.apply }}</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="announcementImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
+            <button type="button" id="announcementImageCancelBtn" class="m3-btn-outlined" data-action="close-image-uploader">{{ lang.mod_announcements.button.cancel }}</button>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-    const MODULE_URL = SITE_URL + "mod_announcements/";
-    const DATA_URL = SITE_URL + "mod_announcements/datatable_json";
-    const ANNOUNCEMENT_LANG = {
-        active: "{{ lang.mod_announcements.grid.publish.key|e('js') }}",
-        draft: "{{ lang.mod_announcements.grid.unpublish.key|e('js') }}",
-        delete_confirm: "{{ lang.mod_announcements.remove_record|e('js') }}"
-    };
-</script>
-<script src="/templates/admin/assets/js/mod_announcements.js?v=1.0"></script>
+<script src="/templates/admin/assets/js/mod_announcements.js?v=6.1"></script>
 {% endblock %}

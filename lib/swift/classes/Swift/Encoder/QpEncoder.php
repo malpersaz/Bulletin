@@ -38,7 +38,7 @@ class Swift_Encoder_QpEncoder implements Swift_Encoder
    * @var string[]
    * @access protected
    */
-  protected $_qpMap = array(
+  protected $_qpMap = [
     0   => '=00', 1   => '=01', 2   => '=02', 3   => '=03', 4   => '=04',
     5   => '=05', 6   => '=06', 7   => '=07', 8   => '=08', 9   => '=09',
     10  => '=0A', 11  => '=0B', 12  => '=0C', 13  => '=0D', 14  => '=0E',
@@ -91,14 +91,14 @@ class Swift_Encoder_QpEncoder implements Swift_Encoder
     245 => '=F5', 246 => '=F6', 247 => '=F7', 248 => '=F8', 249 => '=F9',
     250 => '=FA', 251 => '=FB', 252 => '=FC', 253 => '=FD', 254 => '=FE',
     255 => '=FF'
-    );
+    ];
 
   /**
    * A map of non-encoded ascii characters.
    * @var string[]
    * @access protected
    */
-  protected $_safeMap = array();
+  protected $_safeMap = [];
 
   /**
    * Creates a new QpEncoder for the given CharacterStream.
@@ -110,7 +110,7 @@ class Swift_Encoder_QpEncoder implements Swift_Encoder
   {
     $this->_charStream = $charStream;
     foreach (array_merge(
-      array(0x09, 0x20), range(0x21, 0x3C), range(0x3E, 0x7E)) as $byte)
+      [0x09, 0x20], range(0x21, 0x3C), range(0x3E, 0x7E)) as $byte)
     {
       $this->_safeMap[$byte] = chr($byte);
     }
@@ -137,7 +137,7 @@ class Swift_Encoder_QpEncoder implements Swift_Encoder
 
     $thisLineLength = $maxLineLength - $firstLineOffset;
 
-    $lines = array();
+    $lines = [];
     $lNo = 0;
     $lines[$lNo] = '';
     $currentLine =& $lines[$lNo++];
@@ -243,8 +243,8 @@ class Swift_Encoder_QpEncoder implements Swift_Encoder
    */
   protected function _standardize($string)
   {
-    $string = str_replace(array("\t=0D=0A", " =0D=0A", "=0D=0A"),
-      array("=09\r\n", "=20\r\n", "\r\n"), $string
+    $string = str_replace(["\t=0D=0A", " =0D=0A", "=0D=0A"],
+      ["=09\r\n", "=20\r\n", "\r\n"], $string
       );
     switch ($end = ord(substr($string, -1)))
     {

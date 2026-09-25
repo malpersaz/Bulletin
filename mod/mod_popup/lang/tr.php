@@ -25,20 +25,19 @@ $lang['mod_popup'] = [
     'list' => 'Popup Listesi',
 
     // === System Messages ===
-    'oke' => 'Operasyon Başarılı!',
-    'hata' => 'Hata Oluştu!',
-    'error' => 'Ciddi Hata Oluştu!',
+    'success' => 'Operasyon Başarılı!',
+    'error' => 'Hata Oluştu!',
     'information' => 'Bilgi!',
 
     // === Image Management ===
     'remove_image' => 'Bu resmi kaldırmak istediğinizden emin misiniz?',
-    'remove_image_oke' => 'Resim kaldırıldı',
+    'remove_image_success' => 'Resim kaldırıldı',
     'choose_wish' => 'İsterseniz seçin',
     'remove_record' => 'Bu kaydı silmek istediğinizden emin misiniz?',
 
     // === Messages ===
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Popup başarıyla eklendi!',
             'edit' => 'Popup başarıyla güncellendi!',
         ],
@@ -61,27 +60,27 @@ $lang['mod_popup'] = [
     'button' => [
         'add' => 'Ekle',
         'edit' => 'Düzenle',
-        'yenile' => 'Yenile',
+        'refresh' => 'Yenile',
         'delete' => 'Sil',
         'gallery' => 'Resim Galerisi',
         'file' => 'Dosya Yöneticisi',
-        'vazgec' => 'Vazgeç',
-        'kaldir' => 'Kaldır',
-        'evet' => 'Evet',
-        'hayir' => 'Hayır',
+        'cancel' => 'Vazgeç',
+        'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
     ],
 
     // === Data Grid Messages ===
     'grid' => [
-        0 => 'Toplam {total} sonuçtan {from}\'dan {to}\'a kadar olanlar görüntüleniyor.',
-        1 => 'Sayfa',
-        2 => 'Sayfa Sayısı',
-        3 => 'Veriler yükleniyor, lütfen bekleyin...',
-        4 => 'Veri bulunamadı',
-        5 => 'Bağlantı Hatası',
-        6 => 'Ara',
-        7 => 'Lütfen en az bir satır seçin',
-        8 => 'Lütfen sadece bir satır seçin',
+        'showing_results' => 'Toplam {total} sonuçtan {from}\'dan {to}\'a kadar olanlar görüntüleniyor.',
+        'page' => 'Sayfa',
+        'page_count' => 'Sayfa Sayısı',
+        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
+        'no_data' => 'Veri bulunamadı',
+        'connection_error' => 'Bağlantı Hatası',
+        'search' => 'Ara',
+        'select_at_least_one' => 'Lütfen en az bir satır seçin',
+        'select_only_one' => 'Lütfen sadece bir satır seçin',
     'publish' => [
             'key' => 'Yayınla',
             'value' => 'Bu popupu yayınlamak istediğinizden emin misiniz?',
@@ -102,8 +101,8 @@ $lang['mod_popup'] = [
     ],
 
     // === Permission Roles ===
-    'roll' => [
-        'ad' => 'Popup Yönetim İzinleri',
+    'role' => [
+        'name' => 'Popup Yönetim İzinleri',
         'add' => 'Popup Ekleyebilir',
         'edit' => 'Popup Düzenleyebilir',
         'delete' => 'Popup Silebilir',
@@ -116,10 +115,10 @@ $lang['mod_popup'] = [
     'role_errors' => [
         'moderate_edit' => 'Başkalarına ait popup kayıtlarını düzenleyemezsiniz',
         'moderate_delete' => 'Başkalarına ait popup kayıtlarını silemezsiniz',
-        'add' => 'Popup eklemeye permissionniz yok',
-        'edit' => 'Popup düzenlemeye permissionniz yok',
-        'list' => 'Popup yönetimini görüntülemeye permissionniz yok',
-        'delete' => 'Popup silmeye permissionniz yok',
+        'add' => 'Popup eklemeye yetkiniz yok',
+        'edit' => 'Popup düzenlemeye yetkiniz yok',
+        'list' => 'Popup yönetimini görüntülemeye yetkiniz yok',
+        'delete' => 'Popup silmeye yetkiniz yok',
     ],
 
     // === Admin Panel Configuration ===
@@ -127,9 +126,9 @@ $lang['mod_popup'] = [
         'columns' => [
             'id' => 'ID',
             'language' => 'Dil',
-            'ad' => 'Popup Adı',
-            'tarih' => 'Yayın Başlangıç',
-            'etarih' => 'Yayın Bitiş',
+            'name' => 'Popup Adı',
+            'start_date' => 'Yayın Başlangıç',
+            'end_date' => 'Yayın Bitiş',
             'status' => 'Aktif mi?',
             'content' => 'Açıklama',
             'sure' => 'Otomatik Kapanma (saniye)',

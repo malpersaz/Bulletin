@@ -16,13 +16,12 @@ $lang['mod_video'] = [
 
     // System Messages
     'information' => 'Information',
-    'oke' => 'Operation Successful',
-    'hata' => 'Error Occurred',
-    'error' => 'Fatal Error Occurred',
+    'success' => 'Operation Successful',
+    'error' => 'Error Occurred',
 
     // Image Management
     'remove_image' => 'Are you sure you want to remove this image?',
-    'remove_image_oke' => 'Image Removed',
+    'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Select if you wish',
 
     // Record Management
@@ -31,16 +30,16 @@ $lang['mod_video'] = [
     // Video Processing
     'converting' => 'Video is being converted, please wait...',
     'converted' => 'Video upload complete! You can now convert the video.',
-    'add_uzak' => 'Add this video to the system as a remote video',
+    'add_remote' => 'Add this video to the system as a remote video',
     'unremove_original' => 'Save the original version of this video',
 
     // Video Conversion Messages
-    19 => 'Errors occurred during video conversion: %s',
-    20 => 'Video conversion completed.<br>This operation took %s seconds.',
+    'video_gallery' => 'Errors occurred during video conversion: %s',
+    'video_list' => 'Video conversion completed.<br>This operation took %s seconds.',
 
     // Success Messages
     'message' => [
-        'oke' => [
+        'success' => [
             'add' => 'Video Added Successfully!',
             'edit' => 'Video Updated Successfully!',
         ],
@@ -56,9 +55,9 @@ $lang['mod_video'] = [
 
     // Error Messages
     'errors' => [
-        1 => 'Error occurred while moving FLV file from TMP directory',
-        2 => 'Error occurred while moving image file from TMP directory',
-        3 => 'Error occurred while moving original video file from TMP directory',
+        'title' => 'Error occurred while moving FLV file from TMP directory',
+        'subtitle' => 'Error occurred while moving image file from TMP directory',
+        'description' => 'Error occurred while moving original video file from TMP directory',
         'record' => 'The specified record was not found!',
         'in_valid_ext' => 'You attempted to upload an invalid video file.
 		Only <font color="black">%s</font> extension videos can be uploaded.',
@@ -70,28 +69,28 @@ $lang['mod_video'] = [
     'button' => [
         'add' => 'Add',
         'edit' => 'Edit',
-        'yenile' => 'Refresh',
+        'refresh' => 'Refresh',
         'delete' => 'Delete',
         'gallery' => 'Image Gallery',
-        'vazgec' => 'Cancel',
-        'kaldir' => 'Remove',
-        'evet' => 'Yes',
-        'hayir' => 'No',
-        'yukle' => 'Upload',
-        'donustur' => 'Convert',
+        'cancel' => 'Cancel',
+        'remove' => 'Remove',
+        'yes' => 'Yes',
+        'no' => 'No',
+        'upload' => 'Upload',
+        'convert' => 'Convert',
     ],
 
     // Data Grid Messages
     'grid' => [
-        0 => 'Displaying {from} to {to} of {total} results',
-        1 => 'Page',
-        2 => 'Page Count',
-        3 => 'Loading data, please wait...',
-        4 => 'No data found',
-        5 => 'Connection Error',
-        6 => 'Search',
-        7 => 'Please select at least one row',
-        8 => 'Please select only one row',
+        'showing_results' => 'Displaying {from} to {to} of {total} results',
+        'page' => 'Page',
+        'page_count' => 'Page Count',
+        'loading' => 'Loading data, please wait...',
+        'no_data' => 'No data found',
+        'connection_error' => 'Connection Error',
+        'search' => 'Search',
+        'select_at_least_one' => 'Please select at least one row',
+        'select_only_one' => 'Please select only one row',
         'publish' => [
             'key' => 'Publish',
             'value' => 'Are you sure you want to publish this video?',
@@ -100,7 +99,12 @@ $lang['mod_video'] = [
             'key' => 'Unpublish',
             'value' => 'Are you sure you want to unpublish this video?',
         ],
+        'publishing' => 'Publishing...',
+        'unpublishing' => 'Unpublishing...',
+        'delete_confirm_title' => 'Are you sure?',
+        'delete_confirm_text' => 'The selected video will be deleted.',
     ],
+    'js_enable' => 'JavaScript is required to view this video.',
 
     // Form Validation Messages
     'validator' => [
@@ -112,7 +116,7 @@ $lang['mod_video'] = [
     ],
 
     // Role Management
-    'roll' => [
+    'role' => [
         'name' => 'Video Management Roles',
         'add' => 'Can add videos',
         'edit' => 'Can edit videos',
@@ -357,7 +361,7 @@ $lang['mod_video'] = [
     ],
 
     // === Permission Roles ===
-    'roll' => [
+    'role' => [
         'name' => 'Video Management Roles',
         'add' => 'Can Add Videos',
         'edit' => 'Can Edit Videos',
@@ -376,5 +380,46 @@ $lang['mod_video'] = [
         'step3_title' => 'Save Video',
         'step3_instruction' => 'Fill in details and save.',
     ],
+    'context_menu' => [
+        'title' => 'Video Actions',
+        'edit' => 'Edit',
+        'gallery' => 'Gallery Operations',
+        'files' => 'File Operations',
+        'video' => 'Add Video to Video',
+        'status' => 'Change Status',
+        'delete' => 'Delete',
+        'delete_error' => 'Deletion failed!',
+        'video_success_sim' => 'Video Successfully Added (Simulation)',
+        'video_embed_error' => 'Invalid Embed Code',
+        'video_title_error' => 'Invalid Title',
+        'publish' => 'Publish',
+        'unpublish' => 'Unpublish',
+        'published_msg' => 'Published',
+        'unpublished_msg' => 'Unpublished',
+        'confirm' => 'Yes',
+        'cancel' => 'Cancel',
+        'edit_alert' => "EDIT MODE:\nID: %s\nTitle: %s",
+        'gallery_alert' => "GALLERY MANAGEMENT:\nID: %s\nTitle: %s\nOpening image gallery for video.",
+        'files_alert' => "FILE MANAGEMENT:\nID: %s\nTitle: %s\nOpening file upload screen for video.",
+        'status_alert' => "STATUS UPDATED:\n%s",
+        'delete_success' => 'Video deleted!',
+    ],
+    'status_badge' => [
+        'active' => 'Active',
+        'draft' => 'Draft',
+    ],
+    'sheet' => [
+        'all' => 'All',
+        'lang_title' => 'Filter Language',
+        'ok' => 'OK',
+        'category_title' => 'Select Category',
+    ],
+    // === Hero Slider ===
+    'hero_slider_add' => 'Send to Slider',
+    'hero_slider_remove' => 'Remove from Slider',
+    'hero_slider_added' => 'Video sent to slider.',
+    'hero_slider_removed' => 'Video removed from slider.',
+    'hero_slider_error' => 'Slider update failed.',
+    'hero_slider_badge' => 'Slider',
 ];
 ?>

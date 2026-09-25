@@ -6,275 +6,181 @@
 {% block title %}{{ lang.mod_user.admin.acl }}{% endblock %}
 {% block headline %}{{ lang.mod_user.admin.acl }}{% endblock %}
 
+{% block styles %}
+    <link rel="stylesheet" href="/templates/admin/assets/css/mod_user_acl.css?v=2.0">
+{% endblock %}
+
 {% block content %}
-<style>
-    .acl-container {
-        padding: 16px 16px 100px 16px;
-        background: var(--md-sys-color-surface, #fdfbff);
-    }
-    .acl-module-card {
-        background: var(--md-sys-color-surface-container, #f3edf7);
-        border-radius: 28px;
-        padding: 0;
-        margin-bottom: 24px;
-        border: none;
-        overflow: hidden;
-    }
-    .acl-module-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 20px 24px;
-        cursor: pointer;
-        transition: background 0.2s;
-        user-select: none;
-    }
-    .acl-module-header:active {
-        background: rgba(0,0,0,0.03);
-    }
-    .acl-module-header i.header-icon {
-        font-size: 22px;
-        color: var(--md-sys-color-primary);
-    }
-    .acl-module-header .header-title {
-        font-size: 16px;
-        font-weight: 700;
-        color: var(--md-sys-color-primary);
-        flex: 1;
-    }
-    .acl-module-header .chevron {
-        font-size: 18px;
-        color: var(--md-sys-color-on-surface-variant);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .acl-module-header .chevron.open {
-        transform: rotate(180deg);
-    }
-    .acl-table-wrapper {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        border-radius: 0 0 28px 28px;
-    }
-    .acl-table {
-        width: max-content;
-        min-width: 100%;
-        border-collapse: separate;
-        border-spacing: 0;
-    }
-    .acl-table th {
-        background: var(--md-sys-color-surface-variant, #e7e0eb);
-        color: var(--md-sys-color-on-surface-variant);
-        text-align: center;
-        padding: 12px 16px;
-        font-weight: 500;
-        font-size: 13px;
-        border-bottom: 1px solid var(--md-sys-color-outline-variant);
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-    .acl-table th:first-child {
-        text-align: left;
-        padding-left: 20px;
-        width: 140px;
-        min-width: 140px;
-        position: sticky;
-        left: 0;
-        z-index: 30;
-        background: #e7e0eb !important;
-        box-shadow: 4px 0 8px rgba(0,0,0,0.1);
-        white-space: normal;
-    }
-    .acl-table td {
-        padding: 12px 16px;
-        border-bottom: 1px solid var(--md-sys-color-outline-variant);
-        vertical-align: middle;
-        color: var(--md-sys-color-on-surface);
-        font-size: 14px;
-        text-align: center;
-        background: #f3edf7;
-    }
-    .acl-table td:first-child {
-        text-align: left;
-        padding-left: 20px;
-        width: 140px;
-        min-width: 140px;
-        position: sticky;
-        left: 0;
-        z-index: 20;
-        background: #f3edf7 !important;
-        font-weight: 600;
-        box-shadow: 4px 0 8px rgba(0,0,0,0.1);
-        white-space: normal;
-        border-right: 1px solid rgba(0,0,0,0.05);
-    }
-    .acl-table tr:hover td {
-        background: #eeeef2;
-    }
-    .acl-checkbox {
-        width: 22px;
-        height: 22px;
-        accent-color: var(--md-sys-color-primary);
-        cursor: pointer;
-        border-radius: 6px;
-    }
-    .acl-group-toggle {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
-    }
-    .acl-group-name {
-        font-size: 12px;
-        font-weight: 600;
-    }
-</style>
+<div class="acl-container" id="aclContainer">
 
-{% if error %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: 'warning',
-                html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ error }}</b>',
-                confirmButtonText: '{{ lang.mod_user.button.yes }}',
-                confirmButtonColor: '#ba1a1a'
-            });
-        });
-    </script>
-{% endif %}
+    <!-- Top Asynchronous Progress Bar -->
+    <div id="aclProgressBar" class="acl-progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-hidden="true">
+        <div class="acl-progress-bar-fill"></div>
+    </div>
 
-{% if oke is defined %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                icon: 'success',
-                html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
-                confirmButtonText: '{{ lang.mod_user.button.yes }}',
-                confirmButtonColor: '#2e7d32'
-            });
-        });
-    </script>
-{% endif %}
+    <!-- Sticky User Group Carousel Navigation -->
+    <nav class="acl-group-carousel-container" aria-label="{{ lang.mod_user.admin.user_group }}">
+        <div class="acl-group-carousel" role="tablist" aria-label="{{ lang.mod_user.admin.user_group }}">
+            {% for group in groups %}
+                {% set g_name = lang.mod_user.groups[group.name] is defined ? lang.mod_user.groups[group.name] : group.name %}
+                <button type="button"
+                        role="tab"
+                        class="acl-group-tab {% if loop.first %}is-active{% endif %}"
+                        id="tab-group-{{ group.group_id }}"
+                        data-group-id="{{ group.group_id }}"
+                        data-group-name="{{ g_name }}"
+                        aria-selected="{% if loop.first %}true{% else %}false{% endif %}"
+                        tabindex="{% if loop.first %}0{% else %}-1{% endif %}">
+                    <span class="tab-label">{{ g_name }}</span>
+                </button>
+            {% endfor %}
+        </div>
+    </nav>
 
-<form action="" method="POST" id="aclForm">
-    <div class="acl-container">
-        {% for m in modlar %}
+    <!-- Search & Summary Metrics Toolbar -->
+    <section class="acl-toolbar" aria-label="ACL Toolbar">
+        <div class="acl-metrics-card">
+            <div class="acl-metrics-pill">
+                <span class="metrics-label">{{ lang.mod_user.admin.user_group }}:</span>
+                <strong id="activeGroupLabel" class="metrics-active-name"></strong>
+                <span class="metrics-separator">•</span>
+                <span class="metrics-count-wrap">
+                    <span id="totalEnabledCount" class="metrics-number">0</span>
+                    <span class="metrics-slash">/</span>
+                    <span id="totalAvailableCount" class="metrics-total">0</span>
+                    <span class="metrics-unit">{{ lang.mod_user.admin.enabled }}</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="acl-search-container">
+            <div class="acl-search-wrapper">
+                <i class="bi bi-search acl-search-icon"></i>
+                <input type="search"
+                       id="aclSearchInput"
+                       class="acl-search-input"
+                       placeholder="{{ lang.management.module_search_placeholder }}"
+                       autocomplete="off"
+                       spellcheck="false">
+                <button type="button" class="acl-clear-search-btn is-hidden" data-action="clear-search" aria-label="{{ lang.mod_user.admin.clear_search|e('html_attr') }}">
+                    <i class="bi bi-x-circle-fill"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Empty Search State -->
+    <div id="aclEmptyState" class="acl-empty-state is-hidden" role="region" aria-live="polite">
+        <i class="bi bi-search acl-empty-icon"></i>
+        <h3 class="acl-empty-title">{{ lang.mod_user.admin.search_no_results }}</h3>
+        <p class="acl-empty-desc">{{ lang.mod_user.admin.search_try_again }}</p>
+        <button type="button" class="acl-btn-reset-search" data-action="clear-search">{{ lang.mod_user.admin.clear_search }}</button>
+    </div>
+
+    <!-- Modules List Accordions -->
+    <div class="acl-modules-list" id="aclModulesList">
+        {% for m in modules %}
             {% set mod_name = m.mod_name %}
             {% set mod_id = m.mod_id %}
-            {% set mod_roll_lang = attribute(attribute(lang, m.mod_name), 'roll') %}
+            {% set mod_role_lang = attribute(attribute(lang, m.mod_name), 'role') %}
             {% set mod_title = m.mod_name %}
-            {% if mod_roll_lang is defined and mod_roll_lang.roles is defined %}
-                {% set mod_title = mod_roll_lang.roles %}
-            {% elseif mod_roll_lang is defined and mod_roll_lang.name is defined %}
-                {% set mod_title = mod_roll_lang.name %}
+            {% if mod_role_lang is defined and mod_role_lang.roles is defined %}
+                {% set mod_title = mod_role_lang.roles %}
+            {% elseif mod_role_lang is defined and mod_role_lang.name is defined %}
+                {% set mod_title = mod_role_lang.name %}
             {% endif %}
-            <div class="acl-module-card">
-                <div class="acl-module-header" onclick="toggleAclModule(this)">
-                    <i class="bi bi-shield-lock-fill header-icon"></i>
-                    <span class="header-title">{{ mod_title }}</span>
-                    <i class="bi bi-chevron-down chevron"></i>
-                </div>
-                <div class="acl-table-wrapper" style="display: none;">
-                    <table class="acl-table">
-                        <thead>
-                            <tr>
-                                <th>{{ lang.mod_user.admin.user_group }}</th>
-                                {% for grup in gruplar %}
-                                    <th style="min-width: 120px; border-left: 1px solid rgba(0,0,0,0.05);">
-                                        <div class="acl-group-toggle">
-                                            <input type="checkbox" class="acl-checkbox" onchange="toggleGroup(this, '{{ m.mod_id }}', '{{ grup.group_id }}')">
-                                            <span class="acl-group-name">{{ lang.mod_user.groups[grup.name] is defined ? lang.mod_user.groups[grup.name] : grup.name }}</span>
-                                        </div>
-                                    </th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for roll in attribute(roller, mod_id) %}
-                                <tr>
-                                    {% set roll_name = roll.roll_name %}
-                                    {% set role_label = roll.roll_name %}
-                                    {% if mod_roll_lang is defined and attribute(mod_roll_lang, roll.roll_name) is defined %}
-                                        {% set role_label = attribute(mod_roll_lang, roll.roll_name) %}
-                                    {% endif %}
-                                    <td class="sticky-col">{{ role_label }}</td>
-                                    {% for grup in gruplar %}
-                                        <td style="border-left: 1px solid rgba(0,0,0,0.05);">
-                                            <input type="checkbox"
-                                                   class="acl-checkbox g-{{ m.mod_id }}-{{ grup.group_id }}"
-                                                   name="list[{{ grup.group_id }}][{{ m.mod_id }}][{{ roll.roll_id }}]"
-                                                   {% for p in permler %}
-                                                       {% if grup.group_id == p.group_id and m.mod_id == p.mod_id and roll.roll_id == p.roll_id %}
-                                                           checked="checked"
-                                                       {% endif %}
-                                                   {% endfor %}>
-                                        </td>
-                                    {% endfor %}
-                                </tr>
+            
+            {% set mod_roles = attribute(roles, mod_id)|default([]) %}
+            {% if mod_roles|length > 0 %}
+                <article class="acl-module-card is-expanded" data-module-id="{{ mod_id }}">
+                    <button type="button" class="acl-module-header" id="heading-mod-{{ mod_id }}" aria-expanded="true" aria-controls="body-mod-{{ mod_id }}">
+                        <div class="module-header-left">
+                            <div class="module-icon-badge">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <div class="module-text-wrap">
+                                <h3 class="module-title">{{ mod_title }}</h3>
+                                <span class="module-code">{{ mod_name }}</span>
+                            </div>
+                        </div>
+                        <div class="module-header-right">
+                            <span class="acl-module-counter" data-module-counter="{{ mod_id }}">{{ lang.mod_user.admin.permission_counter|format(0, mod_roles|length) }}</span>
+                            <i class="bi bi-chevron-down acl-chevron"></i>
+                        </div>
+                    </button>
+
+                    <div class="acl-module-body" id="body-mod-{{ mod_id }}" role="region" aria-labelledby="heading-mod-{{ mod_id }}">
+                        <!-- Action Bar (Grant All / Revoke All) -->
+                        <div class="acl-module-actions-bar">
+                            <button type="button" class="acl-btn-action acl-btn-grant" data-action="grant-all" data-module-id="{{ mod_id }}">
+                                <i class="bi bi-check2"></i>
+                                <span>{{ lang.mod_user.admin.grant_all }}</span>
+                            </button>
+                            <button type="button" class="acl-btn-action acl-btn-revoke" data-action="revoke-all" data-module-id="{{ mod_id }}">
+                                <i class="bi bi-x-lg"></i>
+                                <span>{{ lang.mod_user.admin.revoke_all }}</span>
+                            </button>
+                        </div>
+
+                        <!-- Permission Rows -->
+                        <div class="acl-permission-rows">
+                            {% for role in mod_roles %}
+                                {% set role_label = role.role_name %}
+                                {% if mod_role_lang is defined and attribute(mod_role_lang, role.role_name) is defined %}
+                                    {% set role_label = attribute(mod_role_lang, role.role_name) %}
+                                {% endif %}
+                                <div class="acl-permission-row" data-role-id="{{ role.role_id }}">
+                                    <div class="permission-info">
+                                        <span class="permission-name">{{ role_label }}</span>
+                                        <span class="permission-code">{{ role.role_name }}</span>
+                                    </div>
+                                    <div class="permission-control">
+                                        <button type="button"
+                                                role="switch"
+                                                class="acl-permission-switch"
+                                                data-mod-id="{{ mod_id }}"
+                                                data-role-id="{{ role.role_id }}"
+                                                aria-checked="false"
+                                                aria-label="{{ role_label }}">
+                                            <span class="switch-track"><span class="switch-thumb"></span></span>
+                                        </button>
+                                    </div>
+                                </div>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+                        </div>
+                    </div>
+                </article>
+            {% endif %}
         {% endfor %}
     </div>
-</form>
 
+    <!-- Hidden Initial Permissions Dataset for Fast JS Hydration -->
+    <div id="aclInitialData" hidden
+         data-permissions="{{ permissions|json_encode|e('html_attr') }}"
+         data-groups="{{ groups|json_encode|e('html_attr') }}"
+         data-counter-template="{{ lang.mod_user.admin.permission_counter|e('html_attr') }}">
+    </div>
+
+    <!-- Safe Bottom Spacer -->
+    <div class="acl-bottom-spacer" aria-hidden="true"></div>
+
+    <!-- MD3 Floating Toast -->
+    <div id="aclToast" class="acl-toast" role="status" aria-live="polite" aria-hidden="true">
+        <i class="bi bi-check-circle-fill acl-toast-icon"></i>
+        <span id="aclToastMsg" class="acl-toast-message"></span>
+    </div>
+</div>
 {% endblock %}
 
 {% block fixed_bottom %}
     <div class="standard-toolbar">
-        <button class="toolbar-item active" onclick="window.history.back()">
+        <button type="button" class="toolbar-item active" id="btnAclBack" title="{{ lang.mod_user.button.cancel }}">
             <i class="bi bi-x-lg"></i>
             <span>{{ lang.mod_user.button.cancel }}</span>
-        </button>
-
-        <div class="toolbar-fab" onclick="document.getElementById('aclForm').submit()">
-            <i class="bi bi-check-lg"></i>
-        </div>
-
-        <button class="toolbar-item active" onclick="document.getElementById('aclForm').submit()">
-            <i class="bi bi-floppy-fill"></i>
-            <span>{{ lang.mod_user.admin.refresh_permissions }}</span>
         </button>
     </div>
 {% endblock %}
 
 {% block scripts %}
-<script>
-    // Toggle module accordion
-    function toggleAclModule(header) {
-        var wrapper = header.nextElementSibling;
-        var chevron = header.querySelector('.chevron');
-        if (wrapper.style.display === 'none') {
-            wrapper.style.display = 'block';
-            chevron.classList.add('open');
-        } else {
-            wrapper.style.display = 'none';
-            chevron.classList.remove('open');
-        }
-    }
-
-    // Toggle all checkboxes in a group column
-    function toggleGroup(el, modId, groupId) {
-        var checked = el.checked;
-        var cells = document.querySelectorAll('.g-' + modId + '-' + groupId);
-        
-        cells.forEach(function(cb) {
-            cb.checked = checked;
-        });
-    }
-
-    (function() {
-        var form = document.getElementById('aclForm');
-        if (form) {
-            var hidden = document.createElement('input');
-            hidden.type = 'hidden';
-            hidden.name = 'gonder';
-            hidden.value = '{{ lang.mod_user.admin.refresh_permissions }}';
-            form.appendChild(hidden);
-        }
-    })();
-</script>
+    <script src="/templates/admin/assets/js/mod_user_acl.js?v=1.1"></script>
 {% endblock %}

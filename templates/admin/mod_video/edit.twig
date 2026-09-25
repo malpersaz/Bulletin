@@ -27,19 +27,19 @@
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'warning',
-                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ mesaj }}</b>',
-                    confirmButtonText: '{{ lang.mod_video.button.evet }}',
+                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
+                    confirmButtonText: '{{ lang.mod_video.button.yes }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
         </script>
     {% endif %}
-    {% if oke is defined %}
+    {% if success is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'success',
-                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ mesaj }}</b>',
+                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ message }}</b>',
                     showCancelButton: true,
                     confirmButtonText: '{{ lang.mod_video.list }}',
                     cancelButtonText: '{{ lang.mod_video.button.edit }}',
@@ -55,18 +55,18 @@
             });
         </script>
     {% endif %}
-    {% if hatalar is defined %}
+    {% if errors is defined %}
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 let errorHtml = '<div style="text-align: left;">';
-                {% for hata in hatalar %}
-                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ hata }}</b></div>';
+                {% for error in errors %}
+                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
                 {% endfor %}
                 errorHtml += '</div>';
                 Swal.fire({
                     icon: 'warning',
                     html: errorHtml,
-                    confirmButtonText: '{{ lang.mod_video.button.evet }}',
+                    confirmButtonText: '{{ lang.mod_video.button.yes }}',
                     confirmButtonColor: '#ba1a1a'
                 });
             });
@@ -187,7 +187,7 @@
     <div class="standard-toolbar">
         <button type="button" class="toolbar-item active" onclick="window.location.href='{{ site.saddress }}mod_video/list'">
             <i class="bi bi-x-lg"></i>
-            <span>{{ lang.mod_video.button.vazgec }}</span>
+            <span>{{ lang.mod_video.button.cancel }}</span>
         </button>
 
         <div class="toolbar-fab" onclick="submitVideoForm()">
@@ -219,8 +219,8 @@ function removeImage(id) {
         showCancelButton: true,
         confirmButtonColor: '#ba1a1a',
         cancelButtonColor: '#6e7881',
-        confirmButtonText: '{{ lang.mod_video.button.evet|e('js') }}',
-        cancelButtonText: '{{ lang.mod_video.button.hayir|e('js') }}'
+        confirmButtonText: '{{ lang.mod_video.button.yes|e('js') }}',
+        cancelButtonText: '{{ lang.mod_video.button.no|e('js') }}'
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
@@ -228,10 +228,10 @@ function removeImage(id) {
                 url: "{{ site.saddress }}mod_video/image_remove_image",
                 data: { id: id },
                 success: function (msg) {
-                    if (msg == 'Oke') {
+                    if (msg == 'Success') {
                         Swal.fire({
                             icon: 'success',
-                            text: '{{ lang.mod_video.remove_image_oke|e('js') }}',
+                            text: '{{ lang.mod_video.remove_image_success|e('js') }}',
                             timer: 2000,
                             showConfirmButton: false
                         });

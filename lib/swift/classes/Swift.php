@@ -63,7 +63,7 @@ abstract class Swift
   public static function registerAutoload($initPath = null)
   {
     self::$initPath = $initPath;
-    spl_autoload_register(array('Swift', 'autoload'));
+    spl_autoload_register(['Swift', 'autoload']);
   }
   
 }

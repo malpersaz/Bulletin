@@ -1,0 +1,18 @@
+<section class="comment-block">
+    <h1 class="caption">
+        <span>{{ lang.index.comments }}</span> {{ lang.index.add_comment }}
+    </h1>
+    <div class="comment_add clearfix">
+        <form method="post" class="comment-form" data-action="add-comment" data-comment-type="1" data-content-id="{{ d.id|default(0) }}">
+            <textarea name="comment_content" class="comment_content" rows="6" placeholder="{{ lang.index.comment_placeholder }}" maxlength="500"></textarea>
+            <input type="hidden" name="reply" value="0" />
+            <span class="reply_to"></span>
+            <input type="text" name="member_name" class="member_name" placeholder="{{ lang.index.full_name }}" />
+            <input type="submit" name="comment_submit" class="comment_submit" value="{{ lang.index.submit_comment }}" />
+        </form>
+        <div class="info">
+            <b>{{ lang.index.warning }}:</b>
+            {{ lang.index.comment_rules }}
+        </div>
+    </div>
+</section>
