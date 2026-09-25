@@ -1,3 +1,11 @@
+## v1.1.6 (2026-09-26)
+- **Production MCP Deployment & Admin Search Keywords Parity (`amidakurd.net`)**:
+  - Expanded search index keywords for `mod_mcp` in `mod/mod_user/index.php` (`mcp`, `api`, `key`, `keys`, `mifte`, `anahtar`, `token`, `ai`, `gemini`, `claude`, `antigravity`) to ensure instant discovery in the mobile administration control panel (`/mod_user/panel`).
+  - Executed automated database bootstrap and schema synchronization on production (`tasks/mcp_bootstrap.php`), registering `mod_mcp` tables, ACL roles, and super-admin group permissions.
+  - Successfully connected Antigravity MCP bridge to production endpoint `https://amidakurd.net/mcp.php`, verifying real-time JSON-RPC 2.0 communication across 140 tools and live article querying (`list_news` returning 8,080 articles).
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.6`.
+
 ## v1.1.5 (2026-09-26)
 - **Model Context Protocol (MCP) Streamable HTTP Server & Domain Tooling**:
   - Implemented root machine-facing MCP endpoint `mcp.php` over Streamable HTTP transport, strictly conforming to JSON-RPC 2.0 and MCP specifications with error suppression and output buffering recovery.
