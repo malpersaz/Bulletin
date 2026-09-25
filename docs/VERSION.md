@@ -1,3 +1,13 @@
+## v1.0.97 (2026-09-25)
+- **Fix Database Column Mismatch on Publication Insert (`mod/mod_publication/model/mod_publication.model.php`, `installer/mod_publication/mod_publication.sql`)**:
+  - Removed undeclared `menu` property from `mod_publication_model` to resolve the fatal `Database Error: SQL Query Problem: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'menu' in 'INSERT INTO'` encountered on `mod_publication/add`.
+  - Cleaned up installer schema definition in `installer/mod_publication/mod_publication.sql` to match production table columns without the phantom `menu` column.
+- **Robust Field Mapping Defensive Guard in Base Controller (`lib/BaseModuleController.class.php`)**:
+  - Restored `property_exists($model, $field)` checks in `BaseModuleController::processFieldData` to prevent form fields submitted from UI overlays or wizards (such as `menu` input) from being dynamically assigned to models when not defined as valid model columns.
+  - Eliminated PHP 8.2+ dynamic property deprecation notices.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Maintained framework version constant and fallback baseline at `1.0.97`.
+
 ## v1.0.96 (2026-09-25)
 - **Admin Publication Category Binding & Wizard State Fix (`mod/mod_publication/index.php`, `templates/admin/`)**:
   - Resolved missing category options in the mobile admin publication wizard overlay (`mod_publication/add`, `wizard_step_2`).

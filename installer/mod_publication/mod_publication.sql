@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS `mod_publication` (
   `file_id` int(11) DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
   `acl_id` int(11) DEFAULT 0,
-  `menu` enum('y','n') NOT NULL DEFAULT 'y',
   `video` varchar(255) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
