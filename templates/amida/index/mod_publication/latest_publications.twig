@@ -1,46 +1,91 @@
-{{ run({"mod": "index", "method": "_latest_publications", "extra": ["5", "image,name,seo,keywords,summary"]}) }}
+{{ run({"mod": "index", "method": "_latest_publications", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,deck"]}) }}
 {% set latest_publications = ctx_get('latest_publications') %}
+
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ "now"|date("U") }}">
+
 {% if latest_publications is not empty %}
-    <section class="container my-4" aria-labelledby="latest-publications-heading">
-        <header>
-            <h2 id="latest-publications-heading" class="mb-4">{{ lang.index.mod_publication.latest_publications.title }}</h2>
+    <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
+        <header class="latest-publications-header">
+            <div class="latest-publications-heading-wrap">
+                <h2 id="latest-publications-heading" class="latest-publications-title">
+                    <a href="{{ site.saddress }}publications" class="latest-publications-title-link">
+                        {{ lang.index.mod_publication.latest_publications.title }}
+                    </a>
+                </h2>
+            </div>
+            <a href="{{ site.saddress }}publications" class="latest-publications-view-all">
+                <span>{{ lang.index.mod_publication.latest_publications.all_items }}</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
         </header>
+
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for publication in latest_publications %}
                 <article class="col">
-                    <div class="card h-100 shadow-sm">
-                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" title="{{ publication.name }}">
+                    <div class="latest-pub-card">
+                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="latest-pub-media" title="{{ publication.name }}">
                             {% if publication.image is not empty %}
-                                <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}" class="card-img-top" alt="{{ publication.name }}" loading="lazy">
+                                <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}"
+                                     class="latest-pub-img"
+                                     alt="{{ publication.name }}"
+                                     loading="lazy">
                             {% else %}
-                                <img src="{{ site.iaddress }}mod_settings/logo.png" class="card-img-top p-4 bg-light object-fit-contain" alt="{{ publication.name }}" loading="lazy">
+                                <div class="latest-pub-placeholder">
+                                    <i class="bi bi-journal-text latest-pub-placeholder-icon" aria-hidden="true"></i>
+                                </div>
                             {% endif %}
                         </a>
-                        <div class="card-body">
-                            <h3 class="card-title h5">
-                                <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="text-decoration-none text-dark">{{ publication.name }}</a>
+
+                        <div class="latest-pub-body">
+                            {% if publication.created_at is defined and publication.created_at is not empty %}
+                                <div class="latest-pub-meta">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ publication.created_at }}">{{ publication.created_at|date('d.m.Y') }}</time>
+                                </div>
+                            {% endif %}
+
+                            <h3 class="latest-pub-title">
+                                <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication.name }}</a>
                             </h3>
-                            <p class="card-text">
-                                {% if publication.summary != '' %}
-                                    {{ publication.summary|raw|striptags|length > 150 ? publication.summary|raw|striptags|slice(0, 150) ~ '...' : publication.summary|raw|striptags }}
-                                {% else %}
-                                    {{ publication.name }}
-                                {% endif %}
+
+                            {% set publication_excerpt = publication.summary != '' ? publication.summary : (publication.deck is defined and publication.deck != '' ? publication.deck : publication.name) %}
+                            {% set clean_excerpt = publication_excerpt|striptags %}
+                            <p class="latest-pub-summary">
+                                {{ clean_excerpt|length > 200 ? clean_excerpt|slice(0, 197) ~ '...' : clean_excerpt }}
                             </p>
+
+                            <div class="latest-pub-footer">
+                                <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="latest-pub-read-link" aria-label="{{ publication.name }}">
+                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </article>
             {% endfor %}
         </div>
-        <footer class="text-center mt-4">
-            <a href="{{ site.saddress }}publications" class="btn btn-primary">{{ lang.index.mod_publication.latest_publications.all_items }}</a>
+
+        <footer class="latest-publications-mobile-footer text-center d-md-none">
+            <a href="{{ site.saddress }}publications" class="btn latest-publications-mobile-btn w-100">
+                <span>{{ lang.index.mod_publication.latest_publications.all_items }}</span>
+                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
         </footer>
     </section>
 {% else %}
-    <section class="container my-4" aria-labelledby="latest-publications-heading">
-        <header>
-            <h2 id="latest-publications-heading" class="mb-4">{{ lang.index.mod_publication.latest_publications.title }}</h2>
+    <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
+        <header class="latest-publications-header">
+            <div class="latest-publications-heading-wrap">
+                <h2 id="latest-publications-heading" class="latest-publications-title">
+                    <span>{{ lang.index.mod_publication.latest_publications.title }}</span>
+                </h2>
+            </div>
         </header>
-        <div class="alert alert-info mb-0">{{ lang.index.mod_publication.latest_publications.no_items_found }}</div>
+        <div class="latest-pub-empty">
+            <i class="bi bi-journal-x latest-pub-empty-icon" aria-hidden="true"></i>
+            <p class="latest-pub-empty-text">
+                {{ lang.index.mod_publication.latest_publications.no_items_found }}
+            </p>
+        </div>
     </section>
 {% endif %}

@@ -98,6 +98,12 @@ class Valid_Core
         return true;
     }
 
+    // Unicode / multilingual alphabet validation (backward-compatibility alias for legacy trchar rule)
+    public function valid_trchar($arg)
+    {
+        return $this->valid_alpha_unicode($arg);
+    }
+
     public function valid_date($arg)
     {
         if (Req::is_Request($arg['name']) === false) {

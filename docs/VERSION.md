@@ -1,3 +1,16 @@
+## v1.0.95
+- **Unicode Multilingual Name Validation & Member Registration Fix (`lib/Valid_Core.php`, `mod/mod_user/validator/`)**:
+  - Resolved `valid_trchar Validator Function Not Found` fatal error encountered during new user registration (`mod_user/add` and `mod_user/register`).
+  - Standardized `mod/mod_user/validator/mod_user.validator.php` and `mod/mod_user/validator/register.validator.php` to use the canonical multilingual `alpha_unicode` rule for `name` and `last_name` validation.
+  - Implemented backward-compatibility bridge `valid_trchar($arg)` in `lib/Valid_Core.php` delegating directly to `valid_alpha_unicode($arg)` to guard against legacy validator invocations across the ecosystem.
+  - Standardized comments and removed obsolete Turkish markers in `register.validator.php`.
+- **Editorial Public Theme Latest Publications Grid Modernization (`templates/amida/index/mod_publication/latest_publications.twig`)**:
+  - Overhauled latest publications section with decoupled stylesheet (`templates/amida/static/css/latest-publications.css`, `static/css/latest-publications.css`).
+  - Enhanced layout with clean responsive cards, article metadata (creation date, summary/deck fallback excerpts, placeholder states for missing images, and mobile footer action).
+  - Enforced strict separation of concerns with zero inline styles and semantic accessible markup.
+- **Framework Version Bump (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.0.95`.
+
 ## v1.0.94
 - **Proxy-Aware HTTPS Detection & Infinite Redirect Loop Resolution (`config/site.config.php`, `config/site.config.example.php`)**:
   - Implemented comprehensive proxy-aware HTTPS detection inspecting `HTTP_X_FORWARDED_PROTO`, `HTTP_X_FORWARDED_SSL`, `HTTP_CF_VISITOR`, `SERVER_PORT == 443`, and `HTTPS !== 'off'`.

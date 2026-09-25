@@ -37,7 +37,7 @@ class mod_user_validator
         $this->valid->add(
             [
                 'name' => 'name',
-                'func' => 'trchar',
+                'func' => 'alpha_unicode',
                 'arg' => '',
                 'message' => $this->lang['mod_user']['register']['error']['name_invalid_chars']
             ]
@@ -46,7 +46,7 @@ class mod_user_validator
         $this->valid->add(
             [
                 'name' => 'last_name',
-                'func' => 'trchar',
+                'func' => 'alpha_unicode',
                 'arg' => '',
                 'message' => $this->lang['mod_user']['register']['error']['surname_invalid_chars']
             ]

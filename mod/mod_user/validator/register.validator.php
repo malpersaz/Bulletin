@@ -23,7 +23,7 @@ class register_validator
 			return True;
 		}
 
-		// AD.
+		// Name.
 		$this->valid->add(
 			[
 				'name' => 'name',
@@ -69,7 +69,7 @@ class register_validator
 		$this->valid->add(
 			[
 				'name' => 'name',
-				'func' => 'trchar',
+				'func' => 'alpha_unicode',
 				'arg' => '',
 				'message' => $this->lang['mod_user']['register']['error']['name_invalid_chars']
 			]
@@ -78,7 +78,7 @@ class register_validator
 		$this->valid->add(
 			[
 				'name' => 'last_name',
-				'func' => 'trchar',
+				'func' => 'alpha_unicode',
 				'arg' => '',
 				'message' => $this->lang['mod_user']['register']['error']['surname_invalid_chars']
 			]
