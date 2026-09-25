@@ -1471,7 +1471,7 @@ Rêgezên te yên sereke:
                     ]),
                     $mod('mod_mcp', 'list', $management['mcp_api_keys'], 'bi bi-plug-fill', [
                         $list('mod_mcp', 'list', $base . 'mod_mcp/list'),
-                    ]),
+                    ], ['mcp', 'api', 'key', 'keys', 'mifte', 'anahtar', 'token', 'ai', 'gemini', 'claude', 'antigravity']),
                 ]),
             ],
         ];
