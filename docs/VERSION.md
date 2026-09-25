@@ -1,3 +1,12 @@
+## v1.0.98 (2026-09-25)
+- **Editorial Public Theme Latest Videos Grid Super Polish (`templates/amida/index/mod_video_embed/latest_videos.twig`, `templates/amida/static/css/latest-videos.css`, `static/css/latest-videos.css`)**:
+  - Overhauled the latest videos widget with modern semantic HTML5 markup, full accessibility semantics (`aria-labelledby`, `<article>`, `<header>`, `<time>`), and dark mode theme compatibility.
+  - Implemented decoupled, responsive modern CSS card styling featuring 16:9 media viewports, smooth hover micro-interactions, centered glassmorphic play button overlays, duration badges, and clean metadata.
+  - Removed legacy non-English class markers (`koberz_3_2_2_1`, `index_videolar_*`) and obsolete element attributes.
+  - Added dedicated empty state representation with localized fallback strings.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.0.98`.
+
 ## v1.0.97 (2026-09-25)
 - **Fix Database Column Mismatch on Publication Insert (`mod/mod_publication/model/mod_publication.model.php`, `installer/mod_publication/mod_publication.sql`)**:
   - Removed undeclared `menu` property from `mod_publication_model` to resolve the fatal `Database Error: SQL Query Problem: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'menu' in 'INSERT INTO'` encountered on `mod_publication/add`.

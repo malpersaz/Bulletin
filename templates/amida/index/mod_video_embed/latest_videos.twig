@@ -1,28 +1,115 @@
-{{ run({"mod": "index", "method": "_latest_videos", "extra": ["5", "id,image,name,content,keywords"]}) }}
+{{ run({"mod": "index", "method": "_latest_videos", "extra": ["6", "id,image,name,content,keywords,duration,created_at"]}) }}
 {% set latest_videos = ctx_get('latest_videos') %}
+
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ "now"|date("U") }}">
+
 {% if latest_videos is not empty %}
-    <div class="koberz_3_2_2_1">
-        <h3 class="index_videolar_ust">{{ lang.index.mod_video_embed.latest_videos.1 }}</h3>
-        <h3 class="index_tum_videolar_ust">
-            <a href="{{ site.saddress }}videos"
-               title="{{ lang.index.mod_video_embed.latest_videos.2 }}">{{ lang.index.mod_video_embed.latest_videos.2 }}</a>
-        </h3>
-        <div class="index_videolar_kutu">
-            {% for video in latest_videos %}
-                <div class="index_video_kutu">
-                    <a class="index_video_play tooltip"
-                       href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
-                       title="{{ video.content }}"></a>
-                    <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
-                       title="{{ video.content }}">
-                        <img src="{{ site.iaddress }}mod_video_embed/thumb/{{ video.image }}"
-                             parent_id="{{ video.name }},{{ video.keywords }}">
+    <section class="latest-videos-section" aria-labelledby="latest-videos-heading">
+        <header class="latest-videos-header">
+            <div class="latest-videos-heading-wrap">
+                <h2 id="latest-videos-heading" class="latest-videos-title">
+                    <a href="{{ site.saddress }}videos" class="latest-videos-title-link">
+                        <i class="bi bi-play-btn-fill latest-videos-title-icon" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_video_embed.latest_videos.title ?? lang.index.mod_video_embed.latest_videos.1 }}</span>
                     </a>
-                    <a class="index_video_baslik tooltip"
-                       href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
-                       title="{{ video.content }}">{{ video.name }}</a>
-                </div>
+                </h2>
+            </div>
+            <a href="{{ site.saddress }}videos" class="latest-videos-view-all">
+                <span>{{ lang.index.mod_video_embed.latest_videos.all_items ?? lang.index.mod_video_embed.latest_videos.2 }}</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </header>
+
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+            {% for video in latest_videos %}
+                <article class="col">
+                    <div class="latest-video-card">
+                        <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
+                           class="latest-video-media"
+                           title="{{ video.name }}">
+                            {% if video.image is not empty %}
+                                <img src="{{ site.iaddress }}mod_video_embed/thumb/{{ video.image }}"
+                                     class="latest-video-img"
+                                     alt="{{ video.name }}"
+                                     loading="lazy">
+                            {% else %}
+                                <div class="latest-video-placeholder">
+                                    <i class="bi bi-camera-video latest-video-placeholder-icon" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+
+                            <span class="latest-video-play-overlay" aria-hidden="true">
+                                <i class="bi bi-play-fill"></i>
+                            </span>
+
+                            {% if video.duration is defined and video.duration is not empty %}
+                                <span class="latest-video-duration">
+                                    <i class="bi bi-clock" aria-hidden="true"></i>
+                                    <span>{{ video.duration }}</span>
+                                </span>
+                            {% endif %}
+                        </a>
+
+                        <div class="latest-video-body">
+                            {% if video.created_at is defined and video.created_at is not empty %}
+                                <div class="latest-video-meta">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ video.created_at }}">{{ video.created_at|date('d.m.Y') }}</time>
+                                </div>
+                            {% endif %}
+
+                            <h3 class="latest-video-title">
+                                <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}">
+                                    {{ video.name }}
+                                </a>
+                            </h3>
+
+                            {% set video_summary = video.content|striptags %}
+                            {% if video_summary is not empty %}
+                                <p class="latest-video-summary">
+                                    {{ video_summary|length > 140 ? video_summary|slice(0, 137) ~ '...' : video_summary }}
+                                </p>
+                            {% endif %}
+
+                            <div class="latest-video-footer">
+                                <a href="{{ site.saddress }}video/{{ video.id }}-{{ video.name|legacy_seo }}"
+                                   class="latest-video-watch-link"
+                                   aria-label="{{ video.name }}">
+                                    <i class="bi bi-play-circle me-1" aria-hidden="true"></i>
+                                    <span>{{ lang.index.mod_video_embed.latest_videos.watch ?? 'Temaşe bike' }}</span>
+                                    <i class="bi bi-arrow-right ms-1" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             {% endfor %}
         </div>
-    </div>
+
+        <footer class="latest-videos-mobile-footer text-center d-md-none">
+            <a href="{{ site.saddress }}videos" class="btn latest-videos-mobile-btn w-100">
+                <span>{{ lang.index.mod_video_embed.latest_videos.all_items ?? lang.index.mod_video_embed.latest_videos.2 }}</span>
+                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
+        </footer>
+    </section>
+{% else %}
+    <section class="latest-videos-section" aria-labelledby="latest-videos-heading">
+        <header class="latest-videos-header">
+            <div class="latest-videos-heading-wrap">
+                <h2 id="latest-videos-heading" class="latest-videos-title">
+                    <span class="latest-videos-title-link">
+                        <i class="bi bi-play-btn-fill latest-videos-title-icon" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_video_embed.latest_videos.title ?? lang.index.mod_video_embed.latest_videos.1 }}</span>
+                    </span>
+                </h2>
+            </div>
+        </header>
+        <div class="latest-video-empty">
+            <i class="bi bi-camera-video-off latest-video-empty-icon" aria-hidden="true"></i>
+            <p class="latest-video-empty-text">
+                {{ lang.index.mod_video_embed.latest_videos.no_items_found ?? (lang.index.mod_video_embed.4 ?? 'Vîdyo nehat dîtin') }}
+            </p>
+        </div>
+    </section>
 {% endif %}
