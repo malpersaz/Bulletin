@@ -1,3 +1,11 @@
+## v1.1.1 (2026-09-26)
+- **Publication Open Graph & Social Share Preview Author Thumbnail Optimization (`templates/amida/index/mod_publication/publication.twig`)**:
+  - Added dedicated fallback Open Graph dimensions (`og:image:width: 300`, `og:image:height: 300`) for author profile pictures and site fallback assets, enabling instant thumbnail display on WhatsApp and Meta link scrapers without requiring asynchronous dimensions fetching.
+  - Added `og:image:alt` tag mapped to the article title for improved accessibility and crawler compliance.
+  - Dynamically switched `twitter:card` between `summary_large_image` (for wide publication images) and `summary` (for square author avatars and logos) to prevent distorted cropping on social platforms.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.1`.
+
 ## v1.1.0 (2026-09-26)
 - **Publication Open Graph & Social Share Preview Author Image Fallback (`templates/amida/index/mod_publication/publication.twig`)**:
   - Enhanced social share metadata resolution for publication articles: when a publication has no dedicated cover image (`d.image`), the template now automatically resolves and prioritizes the author's profile photo (`d.user_image`) before falling back to the site logo.

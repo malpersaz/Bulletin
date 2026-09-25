@@ -53,7 +53,11 @@
         {% if d.image is defined and d.image is not empty %}
             <meta property="og:image:width" content="1200">
             <meta property="og:image:height" content="630">
+        {% else %}
+            <meta property="og:image:width" content="300">
+            <meta property="og:image:height" content="300">
         {% endif %}
+        <meta property="og:image:alt" content="{{ d.title|default(d.name) }}">
         <link rel="image_src" href="{{ publication_share_image }}">
     {% endif %}
     <meta property="og:site_name" content="{{ site.title }}">
@@ -72,7 +76,7 @@
         <meta property="article:section" content="{{ d.category_name }}">
     {% endif %}
 
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="{{ d.image is defined and d.image is not empty ? 'summary_large_image' : 'summary' }}">
     <meta name="twitter:url" content="{{ site.saddress }}publication/{{ d.seo }}">
     <meta name="twitter:title" content="{{ d.title|default(d.name) }}">
     <meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
