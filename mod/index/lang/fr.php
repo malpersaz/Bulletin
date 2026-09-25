@@ -367,6 +367,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Envoyer un message',
     ],
+    'time_ago' => [
+        'just_now' => 'À l\'instant',
+        'minute_ago' => 'il y a %d minute',
+        'minutes_ago' => 'il y a %d minutes',
+        'hour_ago' => 'il y a %d heure',
+        'hours_ago' => 'il y a %d heures',
+        'day_ago' => 'il y a %d jour',
+        'days_ago' => 'il y a %d jours',
+        'month_ago' => 'il y a %d mois',
+        'months_ago' => 'il y a %d mois',
+        'year_ago' => 'il y a %d an',
+        'years_ago' => 'il y a %d ans',
+    ],
     'error' => [
         '1' => 'Erreur',
         'method' => ['ad' => 'Méthode invalide', 'mesaj' => 'Méthode %s non trouvée'],

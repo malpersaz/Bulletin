@@ -367,6 +367,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Peyam Bişîne',
     ],
+    'time_ago' => [
+        'just_now' => 'Vê gavê',
+        'minute_ago' => '%d deqeyê verê cû',
+        'minutes_ago' => '%d deqeyan verê cû',
+        'hour_ago' => '%d saete verê cû',
+        'hours_ago' => '%d saetan verê cû',
+        'day_ago' => '%d roje verê cû',
+        'days_ago' => '%d rojan verê cû',
+        'month_ago' => '%d aşme verê cû',
+        'months_ago' => '%d aşman verê cû',
+        'year_ago' => '%d serre verê cû',
+        'years_ago' => '%d serran verê cû',
+    ],
     'error' => [
         '1' => 'Xeta',
         'method' => ['ad' => 'Metodo Çewt', 'mesaj' => 'Metodê %s nêdiya'],

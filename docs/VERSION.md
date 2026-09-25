@@ -1,3 +1,13 @@
+## v1.1.3 (2026-09-26)
+- **Internationalization & Relative Time Localization (`time_ago` / "Hour Ago")**:
+  - Added standardized multi-language relative time dictionary (`time_ago`) across all 9 supported languages (`ku`, `en`, `tr`, `ar`, `ckb`, `de`, `fr`, `sv`, `zza`) in `mod/index/lang/`, providing localized formats for minutes, hours, days, months, years, and just now.
+  - Implemented `Helper::format_relative_time($datetime, $trans = null)` in `lib/Helper.class.php`, supporting `DateTime` objects, timestamp strings, and integer epochs with automated dictionary resolution and English fallback.
+  - Registered `time_ago` Twig filter in `lib/TwigLibs.class.php` for seamless template-level relative time formatting (`{{ date|time_ago }}`).
+  - Centralized `formatRelativeTime()` in `mod/index/indexBase.php` and refactored `mod_publication.helper.php` and `mod_hero_slider.helper.php` to eliminate duplicated hardcoded English time strings.
+  - Updated `@templates/amida/index/mod_publication/latest_authors.twig` to display fully localized relative timestamps with graceful fallback to `author.created_at|time_ago`.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.3`.
+
 ## v1.1.2 (2026-09-26)
 - **Editorial Public Theme Homepage & Latest Videos Super Polish & Strict Code Separation (`templates/amida/index/`)**:
   - Overhauled `latest_videos.twig` into a high-taste broadsheet editorial video showcase featuring responsive 16:9 media viewports, centered glassmorphic play button overlays with crimson hover expansion (`#dc2626`), duration badges, and clamped editorial typography (`Literata`, serif).

@@ -67,6 +67,15 @@ abstract class indexBase
         $this->session = Load::lib('Session');
     }
 
+    /**
+     * Formats relative time utilizing current site language dictionary.
+     */
+    public function formatRelativeTime($datetime): string
+    {
+        $trans = $this->lang['index']['time_ago'] ?? null;
+        return Helper::format_relative_time($datetime, $trans);
+    }
+
     public function _index()
     {
         $this->_site();
@@ -279,8 +288,8 @@ abstract class indexBase
             }
 
             $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amida';
-            $fullTplPath = template_dir . $activeTemplate;
-            if (!file_exists($fullTplPath) || !is_dir($fullTplPath)) {
+            $fullTemplatePath = template_dir . $activeTemplate;
+            if (!file_exists($fullTemplatePath) || !is_dir($fullTemplatePath)) {
                 $activeTemplate = 'amida';
             }
             $this->site['app_template'] = $activeTemplate;

@@ -420,6 +420,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Peyam Bişîne',
     ],
+    'time_ago' => [
+        'just_now' => 'Vê gavê',
+        'minute_ago' => '%d deqe berê',
+        'minutes_ago' => '%d deqe berê',
+        'hour_ago' => '%d saet berê',
+        'hours_ago' => '%d saet berê',
+        'day_ago' => '%d roj berê',
+        'days_ago' => '%d roj berê',
+        'month_ago' => '%d meh berê',
+        'months_ago' => '%d meh berê',
+        'year_ago' => '%d sal berê',
+        'years_ago' => '%d sal berê',
+    ],
     'error' => [
         'title' => 'Çewtî',
         '1' => 'Çewtî',

@@ -367,6 +367,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'إرسال رسالة',
     ],
+    'time_ago' => [
+        'just_now' => 'الآن',
+        'minute_ago' => 'منذ %d دقيقة',
+        'minutes_ago' => 'منذ %d دقائق',
+        'hour_ago' => 'منذ %d ساعة',
+        'hours_ago' => 'منذ %d ساعات',
+        'day_ago' => 'منذ %d يوم',
+        'days_ago' => 'منذ %d أيام',
+        'month_ago' => 'منذ %d شهر',
+        'months_ago' => 'منذ %d أشهر',
+        'year_ago' => 'منذ %d سنة',
+        'years_ago' => 'منذ %d سنوات',
+    ],
     'error' => [
         '1' => 'خطأ',
         'method' => ['ad' => 'طريقة غير صالحة', 'mesaj' => 'الطريقة %s غير موجودة'],

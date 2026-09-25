@@ -68,14 +68,14 @@ class Helper
         return !preg_match($pattern, $ref) ? die(self::red('CSRF ATTACK')) : '';
     }
 
-    static function convertArrayToObject($arr)
+    static function convertArrayToObject($array)
     {
-        foreach ($arr as &$v) {
+        foreach ($array as &$v) {
             if (is_array($v)) {
                 $v = self::convertArrayToObject($v);
             }
         }
-        return (object)$arr;
+        return (object)$array;
     }
 
     /*static function convertObjectToArray($object) {
@@ -110,12 +110,12 @@ class Helper
     {
         $perms = self::getFilePerms($file);
         $owner = fileowner($file);
-        $uid = posix_getuid();
+        $userId = posix_getuid();
 
         $req = is_file($file) ? 6 : 7; //Directory needs to be 7, file 6
 
 
-        if ($uid == $owner) {
+        if ($userId == $owner) {
             if (substr($perms, 0, 1) >= $req) {
                 return TRUE;
             }
@@ -218,6 +218,68 @@ class Helper
         $days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
         $months = [NULL, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         return date("d", $timestamp) . " " . $months[date("n", $timestamp)] . " " . date("Y", $timestamp) . " " . $days[date("w", $timestamp)] . " " . date("H:i", $timestamp);
+    }
+
+    /**
+     * Formats a relative time string according to localized dictionary definitions.
+     */
+    public static function format_relative_time($datetime, $trans = null): string
+    {
+        if (empty($datetime)) {
+            return '';
+        }
+
+        try {
+            if ($datetime instanceof DateTime) {
+                $published_at = $datetime;
+            } elseif (is_numeric($datetime)) {
+                $published_at = new DateTime('@' . $datetime);
+            } else {
+                $published_at = new DateTime($datetime);
+            }
+            $now = new DateTime('now');
+            $diff = $published_at->diff($now);
+        } catch (Exception $e) {
+            return '';
+        }
+
+        if (!is_array($trans) || empty($trans)) {
+            $langData = Load::lang('index');
+            $trans = $langData['index']['time_ago'] ?? [];
+        }
+
+        if ($diff->y > 0) {
+            $format = ($diff->y === 1)
+                ? ($trans['year_ago'] ?? '%d year ago')
+                : ($trans['years_ago'] ?? '%d years ago');
+            return sprintf($format, $diff->y);
+        }
+        if ($diff->m > 0) {
+            $format = ($diff->m === 1)
+                ? ($trans['month_ago'] ?? '%d month ago')
+                : ($trans['months_ago'] ?? '%d months ago');
+            return sprintf($format, $diff->m);
+        }
+        if ($diff->d > 0) {
+            $format = ($diff->d === 1)
+                ? ($trans['day_ago'] ?? '%d day ago')
+                : ($trans['days_ago'] ?? '%d days ago');
+            return sprintf($format, $diff->d);
+        }
+        if ($diff->h > 0) {
+            $format = ($diff->h === 1)
+                ? ($trans['hour_ago'] ?? '%d hour ago')
+                : ($trans['hours_ago'] ?? '%d hours ago');
+            return sprintf($format, $diff->h);
+        }
+        if ($diff->i > 0) {
+            $format = ($diff->i === 1)
+                ? ($trans['minute_ago'] ?? '%d minute ago')
+                : ($trans['minutes_ago'] ?? '%d minutes ago');
+            return sprintf($format, $diff->i);
+        }
+
+        return $trans['just_now'] ?? 'Just now';
     }
 
     // Build a nested array based on given parameters

@@ -445,6 +445,20 @@ $lang['index']['mod_user_pm'] = [
     'send_message' => 'Send Message',
 ];
 
+$lang['index']['time_ago'] = [
+    'just_now' => 'Just now',
+    'minute_ago' => '%d minute ago',
+    'minutes_ago' => '%d minutes ago',
+    'hour_ago' => '%d hour ago',
+    'hours_ago' => '%d hours ago',
+    'day_ago' => '%d day ago',
+    'days_ago' => '%d days ago',
+    'month_ago' => '%d month ago',
+    'months_ago' => '%d months ago',
+    'year_ago' => '%d year ago',
+    'years_ago' => '%d years ago',
+];
+
 $lang['index']['error'] = [
     'title' => 'Error',
     '1' => 'Error',

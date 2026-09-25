@@ -367,6 +367,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Mesaj Gönder',
     ],
+    'time_ago' => [
+        'just_now' => 'Az önce',
+        'minute_ago' => '%d dakika önce',
+        'minutes_ago' => '%d dakika önce',
+        'hour_ago' => '%d saat önce',
+        'hours_ago' => '%d saat önce',
+        'day_ago' => '%d gün önce',
+        'days_ago' => '%d gün önce',
+        'month_ago' => '%d ay önce',
+        'months_ago' => '%d ay önce',
+        'year_ago' => '%d yıl önce',
+        'years_ago' => '%d yıl önce',
+    ],
     'error' => [
         '1' => 'Hata',
         'method' => ['ad' => 'Geçersiz Metot', 'mesaj' => '%s metodu bulunamadı'],

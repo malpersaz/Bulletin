@@ -288,37 +288,9 @@ class mod_hero_slider_helper extends indexBase
         ];
     }
 
-    private function formatRelativeTime($datetime)
+    public function formatRelativeTime($datetime): string
     {
-        if (empty($datetime)) {
-            return '';
-        }
-
-        try {
-            $published_at = new DateTime($datetime);
-            $now = new DateTime('now');
-            $diff = $published_at->diff($now);
-        } catch (Exception $e) {
-            return '';
-        }
-
-        if ($diff->y > 0) {
-            return $diff->y . ' ' . ($diff->y === 1 ? 'year ago' : 'years ago');
-        }
-        if ($diff->m > 0) {
-            return $diff->m . ' ' . ($diff->m === 1 ? 'month ago' : 'months ago');
-        }
-        if ($diff->d > 0) {
-            return $diff->d . ' ' . ($diff->d === 1 ? 'day ago' : 'days ago');
-        }
-        if ($diff->h > 0) {
-            return $diff->h . ' ' . ($diff->h === 1 ? 'hour ago' : 'hours ago');
-        }
-        if ($diff->i > 0) {
-            return $diff->i . ' ' . ($diff->i === 1 ? 'minute ago' : 'minutes ago');
-        }
-
-        return 'Just now';
+        return parent::formatRelativeTime($datetime);
     }
 
     private function buildAuthorInitials($author_name)

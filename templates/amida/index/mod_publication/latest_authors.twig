@@ -23,10 +23,11 @@
                 <article class="latest-authors-item">
                     <span class="latest-authors-copy">
                         <a class="latest-authors-name" href="{{ site.saddress }}author/{{ author.username }}">{{ latest_author_name }}</a>
-                        {% if author.published_ago is not empty %}
+                        {% set author_published_ago = author.published_ago is not empty ? author.published_ago : (author.created_at is defined and author.created_at is not empty ? author.created_at|time_ago : '') %}
+                        {% if author_published_ago is not empty %}
                             <span class="latest-authors-timeago">
                                 <i class="bi bi-clock-history"></i>
-                                {{ author.published_ago }}
+                                {{ author_published_ago }}
                             </span>
                         {% endif %}
                         <a class="latest-authors-publication" href="{{ site.saddress }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>

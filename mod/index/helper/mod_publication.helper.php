@@ -244,37 +244,9 @@ class mod_publication_helper extends indexBase
         return [];
     }
 
-    private function formatRelativeTime($datetime)
+    public function formatRelativeTime($datetime): string
     {
-        if (empty($datetime)) {
-            return '';
-        }
-
-        try {
-            $published_at = new DateTime($datetime);
-            $now = new DateTime('now');
-            $diff = $published_at->diff($now);
-        } catch (Exception $e) {
-            return '';
-        }
-
-        if ($diff->y > 0) {
-            return $diff->y . ' ' . ($diff->y === 1 ? 'year ago' : 'years ago');
-        }
-        if ($diff->m > 0) {
-            return $diff->m . ' ' . ($diff->m === 1 ? 'month ago' : 'months ago');
-        }
-        if ($diff->d > 0) {
-            return $diff->d . ' ' . ($diff->d === 1 ? 'day ago' : 'days ago');
-        }
-        if ($diff->h > 0) {
-            return $diff->h . ' ' . ($diff->h === 1 ? 'hour ago' : 'hours ago');
-        }
-        if ($diff->i > 0) {
-            return $diff->i . ' ' . ($diff->i === 1 ? 'minute ago' : 'minutes ago');
-        }
-
-        return 'Just now';
+        return parent::formatRelativeTime($datetime);
     }
 
     public function authors($page = 1, $page_limit = 12)
@@ -554,38 +526,38 @@ class mod_publication_helper extends indexBase
         $this->theme->ctx_set('detail', $d);
 
         if (Req::is_Post('category_id') and (Req::is_Post('yil') or Req::is_Post('year')) and (Req::is_Post('ay') or Req::is_Post('month'))) {
-            $yil = Req::is_Post('year') ? Req::Post_Safe('year') : Req::Post_Safe('yil');
-            $ay = Req::is_Post('month') ? Req::Post_Safe('month') : Req::Post_Safe('ay');
+            $selectedYear = Req::is_Post('year') ? Req::Post_Safe('year') : Req::Post_Safe('yil');
+            $selectedMonth = Req::is_Post('month') ? Req::Post_Safe('month') : Req::Post_Safe('ay');
             $category_id = Req::Post_Safe('category_id');
 
-            if ($yil === '*') {
-                $yil = NULL;
+            if ($selectedYear === '*') {
+                $selectedYear = NULL;
             }
 
-            if ($ay === '*') {
-                $ay = NULL;
+            if ($selectedMonth === '*') {
+                $selectedMonth = NULL;
             }
 
             $category_where = $category_id === '*' ? '' : " AND category_id='" . $category_id . "'";
             $this->theme->ctx_set('category_id', $category_id);
 
             $publication->select('seo,name,created_at,summary');
-            if ($yil !== NULL && $ay !== NULL) {
+            if ($selectedYear !== NULL && $selectedMonth !== NULL) {
                 $publication->where(
-                    "YEAR(created_at)='" . $yil . "' AND
-                    MONTH(created_at)='" . $ay . "' AND
+                    "YEAR(created_at)='" . $selectedYear . "' AND
+                    MONTH(created_at)='" . $selectedMonth . "' AND
                     lang='" . $this->site['lang'] . "' AND
                     status='y'" . $category_where
                 );
-            } elseif ($yil !== NULL) {
+            } elseif ($selectedYear !== NULL) {
                 $publication->where(
-                    "YEAR(created_at)='" . $yil . "' AND
+                    "YEAR(created_at)='" . $selectedYear . "' AND
                     lang='" . $this->site['lang'] . "' AND
                     status='y'" . $category_where
                 );
-            } elseif ($ay !== NULL) {
+            } elseif ($selectedMonth !== NULL) {
                 $publication->where(
-                    "MONTH(created_at)='" . $ay . "' AND
+                    "MONTH(created_at)='" . $selectedMonth . "' AND
                     lang='" . $this->site['lang'] . "' AND
                     status='y'" . $category_where
                 );
@@ -601,13 +573,13 @@ class mod_publication_helper extends indexBase
                 $this->theme->ctx_set('not_found', TRUE);
             }
 
-            if ($yil !== NULL) {
-                $this->theme->ctx_set('yil', $yil);
-                $this->theme->ctx_set('year', $yil);
+            if ($selectedYear !== NULL) {
+                $this->theme->ctx_set('yil', $selectedYear);
+                $this->theme->ctx_set('year', $selectedYear);
             }
-            if ($ay !== NULL) {
-                $this->theme->ctx_set('ay', $ay);
-                $this->theme->ctx_set('month', $ay);
+            if ($selectedMonth !== NULL) {
+                $this->theme->ctx_set('ay', $selectedMonth);
+                $this->theme->ctx_set('month', $selectedMonth);
             }
         }
 

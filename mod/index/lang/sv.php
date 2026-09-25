@@ -367,6 +367,19 @@ $lang['index'] = [
     'mod_user_pm' => [
         'send_message' => 'Skicka meddelande',
     ],
+    'time_ago' => [
+        'just_now' => 'Just nu',
+        'minute_ago' => 'för %d minut sedan',
+        'minutes_ago' => 'för %d minuter sedan',
+        'hour_ago' => 'för %d timme sedan',
+        'hours_ago' => 'för %d timmar sedan',
+        'day_ago' => 'för %d dag sedan',
+        'days_ago' => 'för %d dagar sedan',
+        'month_ago' => 'för %d månad sedan',
+        'months_ago' => 'för %d månader sedan',
+        'year_ago' => 'för %d år sedan',
+        'years_ago' => 'för %d år sedan',
+    ],
     'error' => [
         '1' => 'Fel',
         'method' => ['ad' => 'Ogiltig metod', 'mesaj' => 'Metod %s hittades inte'],

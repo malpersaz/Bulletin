@@ -123,7 +123,13 @@ class TwigLibs extends AbstractExtension
             new TwigFilter('sefurl', [$this, 'sefurlFilter']),
             new TwigFilter('legacy_seo', [$this, 'legacySeoFilter']),
             new TwigFilter('base64_encode', [$this, 'base64Encode']),
+            new TwigFilter('time_ago', [$this, 'timeAgoFilter']),
         ];
+    }
+
+    public function timeAgoFilter($datetime): string
+    {
+        return Helper::format_relative_time($datetime);
     }
 
     public function formatDateFilter(int $timestamp): string
