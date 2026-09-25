@@ -25,9 +25,9 @@
                              loading="{{ loop.first ? 'eager' : 'lazy' }}"
                              fetchpriority="{{ loop.first ? 'high' : 'auto' }}">
                     {% else %}
-                        <img src="{{ site.iaddress }}mod_settings/logo.png"
-                             alt="{{ item.name }}"
-                             loading="lazy">
+                        <div class="hero-slide__placeholder">
+                            <i class="bi bi-journal-text hero-slide__placeholder-icon" aria-hidden="true"></i>
+                        </div>
                     {% endif %}
                 </div>
 

@@ -1,41 +1,16 @@
 {% extends "layouts/base.twig" %}
 
 
-{% block js_custom %}
-<script type="text/javascript">
-$(document).ready(function() {
-    // Initialize manually via jQuery to avoid Bootstrap 5 conflicts.
-    var mainSlider = $('#mainSlider');
-    if (mainSlider.length) {
-        mainSlider.carousel({
-            interval: 5000,
-            wrap: true
-        });
-    }
-});
-</script>
-{% endblock %}
-
-
-
 {% block content %}
 <!-- START: index/index.twig -->
     {{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
 
-    <section class="row mt-3" id="orta" style="margin-top: 20px !important;">
+    <section class="row mt-3" id="orta">
         {% if homepage_hero_slider and homepage_hero_slider|length > 0 %}
         <article id="orta-sol" class="col-md-9">
-            <style>
-                @media (min-width: 992px) {
-                    #orta-sol #heroNewsSlider {
-                        margin-left: -14px;
-                        width: calc(100% + 14px);
-                    }
-                }
-            </style>
             {% include 'index/hero_slider.twig' with { hero_slider_items: homepage_hero_slider } %}
-            {% include 'index/mod_video_embed/hero_followup.twig' %}
+            {% include 'index/mod_video_embed/latest_videos.twig' with { limit: 3 } %}
         </article>
         <aside id="orta-sag" class="col-md-3">
             {% include 'index/mod_publication/latest_authors.twig' %}
@@ -54,14 +29,14 @@ $(document).ready(function() {
             {% set homepage_categories = ctx_get('homepage_news_categories') %}
             
             {% if homepage_categories and homepage_categories|length > 0 %}
-                <div class="row g-0"> {# Use g-0 for seamless background transitions. #}
+                <div class="row g-0 category-columns-row"> {# Use g-0 with category-columns-row for seamless broadsheet transitions. #}
                     {% for category in homepage_categories %}
                         {% if category.news|length > 0 %}
                             
                             <div class="col-md-4 category-column">
-                                <div class="category-homepage-section h-100 p-4">
+                                <div class="category-homepage-section h-100">
                                     <h2 class="nyt-news-heading">
-                                        <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none text-dark">{{ category.name }}</a>
+                                        <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none nyt-news-heading-link">{{ category.name }}</a>
                                     </h2>
                                     {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo, is_column: true } %}
                                 </div>

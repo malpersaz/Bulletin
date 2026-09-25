@@ -3,14 +3,25 @@
     --authors-muted: #64748b;
     --authors-line: #eeeeee;
     --authors-surface: transparent;
+    --authors-heading: #111827;
+    --authors-heading-border: #111827;
+    --authors-hover-bg: rgba(0, 0, 0, 0.025);
+    --authors-avatar-border: rgba(15, 23, 42, 0.08);
+    --authors-name-color: #0066cc;
     padding: 0;
-    margin-bottom: 30px;
+    margin-bottom: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     background: var(--authors-surface);
 }
 
 #latest-publication-authors .latest-authors-card {
     background: transparent;
     box-shadow: none;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 #latest-publication-authors .latest-authors-head {
@@ -21,32 +32,36 @@
 }
 
 #latest-publication-authors .latest-authors-title {
-    font-family: 'Roboto', sans-serif !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.12em !important;
-    color: #121212 !important;
-    border-top: 2px solid #000 !important;
-    padding-top: 0.65rem !important;
-    margin-bottom: 1.25rem !important;
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--authors-heading);
+    border-top: 2px solid var(--authors-heading-border);
+    padding-top: 0.65rem;
+    margin-bottom: 0.85rem;
     display: block;
     width: 100%;
 }
 
 #latest-publication-authors .latest-authors-title a {
-    color: inherit !important;
-    text-decoration: none !important;
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
 }
 
 #latest-publication-authors .latest-authors-title a:hover i {
-    transform: translateX(6px);
-    transition: all 0.2s ease;
+    transform: translateX(4px);
+    transition: transform 0.2s ease;
 }
 
 #latest-publication-authors .latest-authors-list {
     display: flex;
     flex-direction: column;
+    flex: 1;
+    justify-content: space-between;
     gap: 0;
 }
 
@@ -57,8 +72,9 @@
     justify-content: space-between;
     align-items: center;
     gap: 1.25rem;
-    padding: 1.25rem 0;
+    padding: 0.85rem 0.5rem;
     border-bottom: 1px solid var(--authors-line);
+    border-radius: 4px;
     transition: background-color 0.2s ease;
 }
 
@@ -67,7 +83,7 @@
 }
 
 #latest-publication-authors .latest-authors-item:hover {
-    background-color: #fafafa;
+    background-color: var(--authors-hover-bg);
 }
 
 #latest-publication-authors .latest-authors-copy {
@@ -79,17 +95,22 @@
 }
 
 #latest-publication-authors .latest-authors-name {
-    color: #0066cc;
+    color: var(--authors-name-color);
     font-family: var(--bs-font-sans-serif);
     font-size: 0.88rem;
     font-weight: 700;
     text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#latest-publication-authors .latest-authors-name:hover {
+    color: var(--authors-ink);
 }
 
 #latest-publication-authors .latest-authors-publication {
     color: var(--authors-ink);
     font-family: 'Literata', serif;
-    font-size: 1.05rem;
+    font-size: 0.98rem;
     font-weight: 700;
     line-height: 1.35;
     display: -webkit-box;
@@ -98,6 +119,11 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#latest-publication-authors .latest-authors-publication:hover {
+    color: var(--authors-name-color);
 }
 
 #latest-publication-authors .latest-authors-timeago {
@@ -106,16 +132,16 @@
     gap: 0.35rem;
     color: var(--authors-muted);
     font-family: var(--bs-font-sans-serif);
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     font-weight: 500;
     text-transform: uppercase;
-    margin-top: 4px;
+    margin-top: 2px;
     letter-spacing: 0.02em;
 }
 
 #latest-publication-authors .latest-authors-avatar {
-    width: 58px;
-    height: 58px;
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     overflow: hidden;
     display: flex;
@@ -123,7 +149,12 @@
     justify-content: center;
     background: #f8fafc;
     flex-shrink: 0;
-    border: 1px solid #eee;
+    border: 1px solid var(--authors-avatar-border);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+#latest-publication-authors .latest-authors-item:hover .latest-authors-avatar {
+    transform: scale(1.05);
 }
 
 #latest-publication-authors .latest-authors-avatar img {
@@ -135,13 +166,19 @@
 @media (min-width: 992px) {
     #latest-publication-authors {
         padding-left: 1.5rem;
-        border-left: 1px solid #eeeeee;
+        border-left: 1px solid var(--authors-line);
     }
 }
 
-html[data-bs-theme="dark"] #latest-publication-authors {
+html[data-bs-theme="dark"] #latest-publication-authors,
+body.dark #latest-publication-authors,
+body.dark-mode #latest-publication-authors {
     --authors-ink: #f8fafc;
     --authors-muted: #94a3b8;
     --authors-line: rgba(255, 255, 255, 0.1);
-    border-top-color: #f8fafc;
+    --authors-heading: #f8fafc;
+    --authors-heading-border: rgba(255, 255, 255, 0.25);
+    --authors-hover-bg: rgba(255, 255, 255, 0.04);
+    --authors-avatar-border: rgba(255, 255, 255, 0.15);
+    --authors-name-color: #38bdf8;
 }

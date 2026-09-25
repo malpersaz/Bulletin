@@ -1,3 +1,19 @@
+## v1.1.2 (2026-09-26)
+- **Editorial Public Theme Homepage & Latest Videos Super Polish & Strict Code Separation (`templates/amida/index/`)**:
+  - Overhauled `latest_videos.twig` into a high-taste broadsheet editorial video showcase featuring responsive 16:9 media viewports, centered glassmorphic play button overlays with crimson hover expansion (`#dc2626`), duration badges, and clamped editorial typography (`Literata`, serif).
+  - Linked `latest_videos.twig` directly into homepage hero column (`templates/amida/index/index.twig`) with `{ limit: 3 }`, and forwarded legacy `hero_followup.twig` for full backwards compatibility.
+  - Perfectly eliminated the blank vertical space underneath the authors column (`#orta-sag`) by expanding active latest authors from 4 to 6 items (`_latest_authors(6)`) in `latest_authors.twig` and configuring `height: 100%` with flex distribution on `#latest-publication-authors` in `latest-authors.css`.
+  - Removed the unprofessional ~112px gap between `#orta` (videos/authors) and the news category columns by removing redundant `p-4` padding from `.category-homepage-section` in `index.twig`, stripping duplicate `border-top` and margin from `.category-columns-row` in `latest-news.css`, and calibrating `#orta` `margin-bottom` to a clean `1.25rem`.
+  - Overhauled the public newspaper homepage (`http://localhost:8080/ku/`) into a modern broadsheet editorial layout with strict code separation (Rule 2), eliminating all inline `<style>` and `<script>` blocks from Twig templates.
+  - Removed 140 lines of embedded `<style>` in `hero_followup.twig` and migrated all styles into decoupled stylesheet `templates/amida/static/css/latest-videos.css` and `static/css/latest-videos.css`.
+  - Removed 56 lines of repeated `<style>` blocks in `category_news_row.twig` and consolidated all broadsheet category column styles, vertical desktop dividers, and responsive article layouts into `templates/amida/static/css/latest-news.css` and `static/css/latest-news.css`.
+  - Cleaned up `index.twig`: removed inline `style="margin-top: 20px !important;"` on `#orta`, removed inline `<style>` media query for `#heroNewsSlider`, and cleared obsolete jQuery `#mainSlider` initialization block.
+  - Replaced stretched fallback logo with an editorial gradient book emblem (`hero-slide__placeholder`) in `hero_slider.twig` and `hero-news-slider.css` for publication slides without featured images.
+  - Unified article metadata in `category_news_row.twig`: replaced duplicate timestamps with clean semantic tags (`.nyt-article-date`, `.nyt-article-reading-time`, `.nyt-article-timeago`).
+  - Refactored `latest-authors.css` and `latest_authors.twig` with theme-adaptive CSS custom properties, removing hardcoded black `#121212` / `#000` colors and `.text-dark` classes to ensure full dark mode parity.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.2`.
+
 ## v1.1.1 (2026-09-26)
 - **Publication Open Graph & Social Share Preview Author Thumbnail Optimization (`templates/amida/index/mod_publication/publication.twig`)**:
   - Added dedicated fallback Open Graph dimensions (`og:image:width: 300`, `og:image:height: 300`) for author profile pictures and site fallback assets, enabling instant thumbnail display on WhatsApp and Meta link scrapers without requiring asynchronous dimensions fetching.

@@ -1,4 +1,4 @@
-{{ run({"mod": "index", "method": "_latest_authors", "extra": [4]}) }}
+{{ run({"mod": "index", "method": "_latest_authors", "extra": [6]}) }}
 {% set latest_authors = ctx_get('latest_authors') %}
 
 {% if latest_authors %}
@@ -8,7 +8,7 @@
     <div class="latest-authors-card">
         <div class="latest-authors-head">
             <h2 class="latest-authors-title">
-                <a href="{{ site.saddress }}authors" class="text-decoration-none text-dark d-inline-flex align-items-center">
+                <a href="{{ site.saddress }}authors" class="text-decoration-none d-inline-flex align-items-center">
                     <span>{{ lang.index.mod_publication.authors }}</span>
                     <i class="bi bi-chevron-right ms-2 small"></i>
                 </a>
