@@ -25,6 +25,7 @@ $url['gallery/(:any)']='index/gallery/$1';
 
 //Announcement
 $url['announcement/(:num)-(:any)']='index/announcement/$1';
+$url['announcement/(:num)-']='index/announcement/$1';
 $url['announcements']='index/announcements';
 $url['announcements/']='index/announcements';
 $url['announcements/(:any)']='index/announcements/$1';
@@ -50,12 +51,13 @@ $url['contentSitemap.xml'] = 'index/contentSitemap';
 $url['nuce/(:any)'] = 'index/legacyRedirect/$1';
 $url['tekst/(:any)'] = 'index/legacyRedirectPublication/$1';
 
-
-
 // mod_video_embed
 $url['video/(:num)-(:any)']='index/video/$1';
+$url['video/(:num)-']='index/video/$1';
 $url['video']='index/videos';
-$url['video/(:num)']='index/videos/$1';
+$url['video/']='index/videos';
+$url['video/(:num)']='index/video/$1';
+$url['video/(:any)']='index/video/$1';
 
 $url['videos']='index/videos';
 $url['videos/']='index/videos';
@@ -64,16 +66,23 @@ $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
 // Content and Category
 $url['article/(:any)']='index/content/$1';
+$url['content/detail/(:any)']='index/content/$1';
+$url['content/(:any)']='index/content/$1';
+$url['content']='index/contents';
+$url['content/']='index/contents';
 $url['contents']='index/contents';
 $url['contents/']='index/contents';
+$url['contents/(:num)']='index/contents/$1';
 $url['contents/(:any)']='index/contents/$1';
 $url['contents/(:any)/(:num)']='index/contents/$1/$2';
 $url['category']='index/contents';
 $url['category/']='index/contents';
+$url['category/(:num)']='index/contents/$1';
 $url['category/(:any)']='index/contents/$1';
 $url['category/(:any)/(:num)']='index/contents/$1/$2';
 
 // News and News Category
+$url['news/detail/(:any)']='index/news/$1';
 $url['news/(:any)']='index/news/$1';
 $url['newses']='index/newses';
 $url['newses/']='index/newses';
@@ -82,6 +91,7 @@ $url['newses/(:any)/(:num)']='index/newses/$1/$2';
 $url['news-archive']='index/news_archive';
 
 // Publications and Publication Category
+$url['publication/detail/(:any)']='index/publication/$1';
 $url['publication/(:any)']='index/publication/$1';
 $url['publications']='index/publications';
 $url['publications/']='index/publications';
@@ -100,8 +110,12 @@ $url['download/(:num)']='mod_attachment/indir/$1';
 $url['avatar/upload']='mod_user/avatarUpload';
 $url['avatar/delete']='mod_user/avatarDelete';
 $url['avatar/(:any)']='mod_user/getAvatarUrl/$1';
+
 // mod_redirect routes
 $url['mod_redirect/list'] = 'mod_redirect/list';
+$url['mod_redirect/ajax_get_redirects'] = 'mod_redirect/ajax_get_redirects';
+$url['mod_redirect/ajax_add_redirect'] = 'mod_redirect/ajax_add_redirect';
+$url['mod_redirect/ajax_edit_redirect'] = 'mod_redirect/ajax_edit_redirect';
 $url['mod_redirect/add'] = 'mod_redirect/add';
 $url['mod_redirect/edit'] = 'mod_redirect/edit';
 $url['mod_redirect/edit/(:any)'] = 'mod_redirect/edit/$1';
@@ -109,4 +123,3 @@ $url['mod_redirect/delete'] = 'mod_redirect/delete';
 
 Registry::add('url_config', $url);
 unset($url);
-

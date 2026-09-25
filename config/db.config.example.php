@@ -2,12 +2,12 @@
 
 /**
  * Amed Framework
- * User: a.k.mutlu
+ * User: AKM
  * Date: 4/26/11 - 1:58 PM
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
- * File: db.config.local.php
+ * File: db.config.example.php
  * Description: Database Connection Information
  */
 if (defined('root_dir') === False) exit(':)');
@@ -45,7 +45,7 @@ $db = array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
             'database_path' => root_dir . 'data/sqlite/NetcomBi.sqlite',
-            // SQLite doesn't need host, user, pass
+            // SQLite does not require host, user, password
         )
     ),
     
@@ -54,9 +54,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'AKMlearnly_user',
-            'pass' => 'AKMlearnly_password',
-            'database' => 'AKMlearnly_db',
+            'user' => 'rojname_user',
+            'pass' => 'rojname_password',
+            'database' => 'rojname_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional
@@ -105,14 +105,12 @@ $db = array(
 if (
     $_SERVER['HTTP_HOST'] == 'localhost'
     || strpos($_SERVER['HTTP_HOST'], 'localhost') !== false
-
     || strpos($_SERVER['HTTP_HOST'], 'pinggy.link') !== false
 ) {
     Registry::add('database', 'localhost');
 } else {
     Registry::add('database', 'remote');
 }
-//Registry::add('database', 'remote');
 
 Registry::add('db_config', $db);
 unset($db);

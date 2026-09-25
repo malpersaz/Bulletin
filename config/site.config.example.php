@@ -2,7 +2,7 @@
 
 /**
  * Amed Framework
- * User: a.k.mutlu
+ * User: AKM
  * Date: 4/26/11 - 1:58 PM
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
@@ -11,36 +11,67 @@
  * Description: Site configuration values (Example template)
  */
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-if ($host == 'localhost' 
-|| strpos($host, 'localhost') !== false
-|| strpos($host, 'pinggy.link') !== false
-) {
-    // 1. Localhost environment settings
-    $site['address'] = 'http://'.$host.'/';
-    $site['saddress'] = 'http://'.$host.'/';
-    $site['iaddress'] = 'http://'.$host.'/static/';
-    $site['taddress'] = 'http://'.$host.'/templates/';
+$isLocal = ($host === 'localhost' 
+    || strpos($host, 'localhost') !== false 
+    || strpos($host, '127.0.0.1') !== false
+    || strpos($host, 'pinggy.link') !== false
+);
+
+// Enforce HTTPS in production environments while keeping HTTP for local development
+$scheme = $isLocal ? 'http' : 'https';
+
+// Perform HTTP to HTTPS 301 redirection for live non-CLI requests
+if (!$isLocal && (empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] === 'off') && (($_SERVER['SERVER_PORT'] ?? 80) != 443)) {
+    if (PHP_SAPI !== 'cli') {
+        header('Location: https://' . $host . ($_SERVER['REQUEST_URI'] ?? '/'), true, 301);
+        exit();
+    }
+}
+
+$site['address']  = $scheme . '://' . $host . '/';
+$site['saddress'] = $scheme . '://' . $host . '/';
+
+if ($isLocal) {
+    // Localhost environment settings
+    $site['iaddress'] = $scheme . '://' . $host . '/static/';
+    $site['taddress'] = $scheme . '://' . $host . '/templates/';
 } else {
-    // 2. Production environment settings with CDN subdomains
-    $site['address'] = 'https://sitename.com/';
-    $site['saddress'] = 'https://sitename.com/';
-    $site['iaddress'] = 'https://static.sitename.com/';
-    $site['taddress'] = 'https://assets.sitename.com/';
+    // Production environment settings with CDN subdomains
+    $baseDomain = str_replace('www.', '', $host);
+    $site['iaddress'] = 'https://static.' . $baseDomain . '/';
+    $site['taddress'] = 'https://assets.' . $baseDomain . '/';
 }
 $site['js'] = 'templates/base_static/js/';
-$site['lang'] = 'en';
+$site['lang'] = 'ku';
 $site['default_lang'] = $site['lang'];
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
-$site['version'] = '1.0.1.93';
-$site['build'] = 'AKM LearnLy';
-$site['app_template'] = 'furniture';
 
-if (isset($_COOKIE['tema'])) {
-    $full = template_dir . basename(Req::Clear($_COOKIE['tema']));
+// Automatically resolve active framework version from docs/VERSION.md with fallback
+$site['version'] = '1.0.93';
+$versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
+if (is_readable($versionFile)) {
+    $versionHandle = fopen($versionFile, 'r');
+    if ($versionHandle) {
+        while (($versionLine = fgets($versionHandle)) !== false) {
+            if (preg_match('/^##\s*v?([0-9]+(?:\.[0-9]+)+)/i', trim($versionLine), $versionMatches)) {
+                $site['version'] = $versionMatches[1];
+                break;
+            }
+        }
+        fclose($versionHandle);
+    }
+}
+
+$site['build'] = 'Rojname CMS';
+$site['app_template'] = $site['app_template'] ?? 'amida';
+
+$cookieTheme = $_COOKIE['theme'] ?? $_COOKIE['tema'] ?? null;
+if ($cookieTheme !== null) {
+    $full = template_dir . basename(Req::Clear($cookieTheme));
     if (file_exists($full) && is_dir($full)) {
-        $site['app_template'] = basename(Req::Clear($_COOKIE['tema']));
+        $site['app_template'] = basename(Req::Clear($cookieTheme));
     }
 }
 

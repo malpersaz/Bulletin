@@ -2,13 +2,13 @@
 
 /**
  * Amed Framework
- * User: a.k.mutlu
+ * User: AKM
  * Date: 4/26/11 - 1:58 PM
  * Copyright: AKM Software
  * E-Mail: info@akmsoftware.co.uk
  * Web: www.akmsoftware.co.uk
  * File: autoload.config.php
- * Description: Automatically loaded libraries and files
+ * Description: Autoload Libraries and Files
  */
 if (defined('root_dir') === False) exit(':)');
 

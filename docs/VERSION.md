@@ -1,3 +1,22 @@
+## v1.0.93
+- **Configuration Architecture Modernization & AF/Business System Parity**:
+  - **Dynamic Environment & HTTPS Enforcement (`config/site.config.php`, `config/site.config.example.php`)**:
+    - Introduced robust `$isLocal` detection supporting `localhost`, `127.0.0.1`, and `pinggy.link`.
+    - Added automated HTTP-to-HTTPS 301 redirection for live non-CLI requests in production environments.
+    - Implemented dynamic CDN subdomain generation (`static.` and `assets.`) derived from active host `$baseDomain`.
+    - Integrated automated active framework version resolution dynamically parsed from `docs/VERSION.md` with graceful fallback.
+    - Preserved project identity baselines (`$site['lang'] = 'ku'`, `$site['build'] = 'Rojname CMS'`, `$site['app_template'] = 'amida'`) and localized environment overrides via `site.config.local.php`.
+  - **Routing Enhancements for Existing Modules (`config/url.config.php`)**:
+    - Enhanced announcement slug routing with trailing dash edge-case support (`announcement/(:num)-`).
+    - Fixed single video routing contract from legacy plural `index/videos/$1` to canonical `index/video/$1`, adding `video/`, `video/(:num)-`, and `video/(:any)`.
+    - Expanded content routing with `content/detail/(:any)`, `content/(:any)`, `contents/(:num)`, and `category/(:num)`.
+    - Added canonical detail routes for news (`news/detail/(:any)`) and publications (`publication/detail/(:any)`).
+    - Registered asynchronous AJAX endpoints for `mod_redirect` (`ajax_get_redirects`, `ajax_add_redirect`, `ajax_edit_redirect`).
+    - Strictly excluded uninstalled foreign modules and routes (`mod_product`, `mod_service`, `mod_project`, `mod_client`, `mod_reference`, `mod_appointment`, `mod_reservation`, `mod_test`, legal, cookie policy, LLMs).
+  - **Localization & Autoload Standardization (`config/i18n.config.php`, `config/autoload.config.php`, `config/session.config.php`, `config/db.config.example.php`)**:
+    - Added `'ru'` (Russian) to `active_langs` in `config/i18n.config.php` matching existing repository translations.
+    - Standardized metadata headers (`User: AKM`) and clarified English comments across autoload, session, and database example configuration files.
+
 ## v1.0.92
 - **Super Polish Top Navigation Masthead & Public Theme Baseline**:
   - Fully modernized `templates/amida/index/mod_menu/top_menu.twig` with clean semantic markup, accessible ARIA attributes, and strict code separation (zero inline styles or inline scripts).

@@ -44,6 +44,7 @@ DEV_TERMS = {
     "asc", "auto", "msg", "cls", "ext", "ctrl", "ctrls", "i18n", "l10n", "a11y",
     "utf", "ascii", "twig", "php", "js", "css", "html", "stmt", "pdo", "orm",
     "crud", "dto", "dao", "cli", "sdk", "md", "txt", "tsv", "yml", "yaml",
+    "postgres", "postgresql", "postgre", "mysql", "mysqli", "sqlite",
     "ini", "tbl", "col", "calc", "diff", "dest", "stat", "lang", "i", "j",
     "k", "v", "x", "y", "z", "e", "th", "td", "tr", "ul", "ol", "li", "p",
     "h1", "h2", "h3", "h4", "h5", "h6", "div", "span", "hr", "br", "pre",
