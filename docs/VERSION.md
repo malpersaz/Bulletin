@@ -1,3 +1,13 @@
+## v1.0.99 (2026-09-25)
+- **Editorial Public Theme Latest News Grid Super Polish (`templates/amida/index/mod_news/latest_news.twig`, `templates/amida/static/css/latest-news.css`, `static/css/latest-news.css`)**:
+  - Overhauled the latest news widget with modern semantic HTML5 markup, strict separation of concerns, and full dark mode styling.
+  - Extracted all inline styles and inline JavaScript into dedicated modern CSS stylesheets (`templates/amida/static/css/latest-news.css` and `static/css/latest-news.css`), strictly adhering to repository code separation mandates.
+  - Replaced client-side script date calculations with native backend relative time support (`published_ago`), and calculated estimated reading time cleanly.
+  - Implemented responsive cards with 16:9 media viewports, image hover scaling, timeago overlay badges, metadata badges, and clean editorial typography.
+  - Added dedicated fallback empty state representation with localized strings.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.0.99`.
+
 ## v1.0.98 (2026-09-25)
 - **Editorial Public Theme Latest Videos Grid Super Polish (`templates/amida/index/mod_video_embed/latest_videos.twig`, `templates/amida/static/css/latest-videos.css`, `static/css/latest-videos.css`)**:
   - Overhauled the latest videos widget with modern semantic HTML5 markup, full accessibility semantics (`aria-labelledby`, `<article>`, `<header>`, `<time>`), and dark mode theme compatibility.

@@ -1,205 +1,117 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["1", "image,name,seo,keywords,summary,created_at"]}) }}
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["6", "id,image,name,seo,keywords,summary,created_at"]}) }}
 {% set latest_news = ctx_get('latest_news') %}
-{% if latest_news is not empty %}
-    <style>
-        .nyt-news-section {
-            border-top: 1px solid #000;
-            padding-top: 20px;
-            margin-bottom: 3rem;
-        }
-        .nyt-news-heading {
-            font-family: 'Pirata One', cursive; /* Keeping the brand touch */
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            padding-bottom: 0.35rem;
-            margin-bottom: 1rem;
-            margin-top: 0;
-        }
-        @media (max-width: 767px) {
-            .nyt-news-heading {
-                display: none;
-            }
-            .nyt-news-section {
-                border-top: none;
-                padding-top: 0;
-            }
-        }
-        .nyt-article {
-            border-bottom: 1px solid #eee;
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .nyt-article:last-child {
-            border-bottom: none;
-        }
-        .nyt-article-title {
-            font-family: 'Literata', 'Georgia', serif;
-            font-weight: 700;
-            font-size: 1.4rem;
-            line-height: 1.2;
-            margin-bottom: 0.75rem;
-        }
-        .nyt-article-title a {
-            color: #000;
-            text-decoration: none;
-        }
-        .nyt-article-title a:hover {
-            color: #333;
-        }
-        .nyt-article-summary {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            color: #444;
-            margin-bottom: 1rem;
-        }
-        .nyt-article-img-wrapper {
-            position: relative;
-            margin-bottom: 1rem;
-            overflow: hidden;
-            border-radius: 2px;
-        }
-        .nyt-article-timeago {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.35rem 0.55rem;
-            background: rgba(17, 24, 39, 0.78);
-            color: #fff;
-            font-family: var(--bs-font-sans-serif);
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            line-height: 1;
-            z-index: 2;
-            backdrop-filter: blur(6px);
-        }
-        .nyt-article-img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            aspect-ratio: 16 / 9;
-            transition: opacity 0.3s ease;
-        }
-        .nyt-article-img:hover {
-            opacity: 0.9;
-        }
-    </style>
 
-    <section class="nyt-news-section" aria-labelledby="latest-news-heading">
-        <div class="row g-4">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ "now"|date("U") }}">
+
+{% if latest_news is not empty %}
+    <section class="latest-news-section" aria-labelledby="latest-news-heading">
+        <header class="latest-news-header">
+            <div class="latest-news-heading-wrap">
+                <h2 id="latest-news-heading" class="latest-news-title">
+                    <a href="{{ site.saddress }}newses" class="latest-news-title-link">
+                        <i class="bi bi-newspaper" aria-hidden="true"></i>
+                        <span>{{ lang.index.latest_news.1 ?? 'Nûçe' }}</span>
+                    </a>
+                </h2>
+            </div>
+            <a href="{{ site.saddress }}newses" class="latest-news-view-all">
+                <span>{{ lang.index.latest_news.2 ?? 'Hemûyan Bibîne' }}</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </header>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for news in latest_news %}
-                <article class="col-md-6 nyt-article">
-                    {% if news.image is not empty %}
-                        <div class="nyt-article-img-wrapper">
-                            <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}">
-                                {% if news.published_ago is not empty %}
-                                    <span class="nyt-article-timeago"
-                                          data-published-at="{{ news.created_at|e('html_attr') }}">
-                                        <i class="bi bi-clock-history"></i>
-                                        <span class="nyt-article-timeago-text">{{ news.published_ago }}</span>
-                                    </span>
-                                {% endif %}
+                <article class="col">
+                    <div class="latest-news-card">
+                        <a href="{{ site.saddress }}news/{{ news.seo }}"
+                           class="latest-news-media"
+                           title="{{ news.name }}">
+                            {% if news.image is not empty %}
                                 <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
-                                     class="nyt-article-img"
+                                     class="latest-news-img"
                                      alt="{{ news.name }}"
                                      loading="lazy">
-                            </a>
+                            {% else %}
+                                <div class="latest-news-placeholder">
+                                    <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+
+                            {% if news.published_ago is defined and news.published_ago is not empty %}
+                                <span class="latest-news-timeago">
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                    <span>{{ news.published_ago }}</span>
+                                </span>
+                            {% endif %}
+                        </a>
+
+                        <div class="latest-news-body">
+                            <div class="latest-news-meta">
+                                {% if news.created_at is defined and news.created_at is not empty %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                        <time datetime="{{ news.created_at }}">{{ news.created_at|date('d.m.Y') }}</time>
+                                    </span>
+                                {% endif %}
+
+                                {% set words = news.summary|striptags|split(' ')|length %}
+                                {% set reading_minutes = (words / 200)|round(0, 'ceil') %}
+                                {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                                <span class="latest-news-meta-item">
+                                    <i class="bi bi-book" aria-hidden="true"></i>
+                                    <span>{{ reading_minutes }} deqe</span>
+                                </span>
+                            </div>
+
+                            <h3 class="latest-news-article-title">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}">
+                                    {{ news.name }}
+                                </a>
+                            </h3>
+
+                            {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
+                            <p class="latest-news-summary">
+                                {{ clean_summary|length > 180 ? clean_summary|slice(0, 177) ~ '...' : clean_summary }}
+                            </p>
+
+                            <div class="latest-news-footer">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                   class="latest-news-read-link"
+                                   aria-label="{{ news.name }}">
+                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                </a>
+                            </div>
                         </div>
-                    {% endif %}
-                    <h3 class="nyt-article-title">
-                        <a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
-                    </h3>
-                    
-                    {# Reading Time Calculation #}
-                    {% set words = news.summary|striptags|split(' ')|length %}
-                    {% set reading_minutes = (words / 200)|round(0, 'ceil') %}
-                    {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
-                    
-                    <div class="nyt-article-meta d-flex gap-3 mb-3" style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #64748b; letter-spacing: 0.04em;">
-                        <span><i class="bi bi-clock"></i> {{ news.created_at|date('d.m.Y') }}</span>
-                        <span class="reading-time"><i class="bi bi-book"></i> {{ reading_minutes }} deqe xwendin</span>
-                    </div>
-                    <div class="nyt-article-summary">
-                        {% if news.summary != '' %}
-                            {{ news.summary|raw|striptags|length > 180 ? news.summary|raw|striptags|slice(0, 180) ~ '...' : news.summary|raw|striptags }}
-                        {% else %}
-                            {{ news.name }}
-                        {% endif %}
                     </div>
                 </article>
             {% endfor %}
         </div>
+
+        <footer class="latest-news-mobile-footer text-center d-md-none">
+            <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100">
+                <span>{{ lang.index.latest_news.2 ?? 'Hemûyan Bibîne' }}</span>
+                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+            </a>
+        </footer>
     </section>
-
-    <script>
-        (function () {
-            var timeagoNodes = document.querySelectorAll('.nyt-article-timeago[data-published-at]');
-
-            function parsePublishedAt(value) {
-                if (!value) {
-                    return null;
-                }
-
-                var normalizedValue = value.replace(' ', 'T');
-                var parsedDate = new Date(normalizedValue);
-
-                if (isNaN(parsedDate.getTime())) {
-                    return null;
-                }
-
-                return parsedDate;
-            }
-
-            function formatRelativeTime(publishedAt) {
-                var now = new Date();
-                var diffMs = now.getTime() - publishedAt.getTime();
-
-                if (diffMs <= 0) {
-                    return 'Just now';
-                }
-
-                var diffMinutes = Math.floor(diffMs / 60000);
-                if (diffMinutes < 1) {
-                    return 'Just now';
-                }
-                if (diffMinutes < 60) {
-                    return diffMinutes + ' ' + (diffMinutes === 1 ? 'minute ago' : 'minutes ago');
-                }
-
-                var diffHours = Math.floor(diffMinutes / 60);
-                if (diffHours < 24) {
-                    return diffHours + ' ' + (diffHours === 1 ? 'hour ago' : 'hours ago');
-                }
-
-                var diffDays = Math.floor(diffHours / 24);
-                if (diffDays < 30) {
-                    return diffDays + ' ' + (diffDays === 1 ? 'day ago' : 'days ago');
-                }
-
-                var diffMonths = Math.floor(diffDays / 30);
-                if (diffMonths < 12) {
-                    return diffMonths + ' ' + (diffMonths === 1 ? 'month ago' : 'months ago');
-                }
-
-                var diffYears = Math.floor(diffDays / 365);
-                return diffYears + ' ' + (diffYears === 1 ? 'year ago' : 'years ago');
-            }
-
-            for (var i = 0; i < timeagoNodes.length; i++) {
-                var node = timeagoNodes[i];
-                var publishedAt = parsePublishedAt(node.getAttribute('data-published-at'));
-                var textNode = node.querySelector('.nyt-article-timeago-text');
-
-                if (!publishedAt || !textNode) {
-                    continue;
-                }
-
-                textNode.textContent = formatRelativeTime(publishedAt);
-            }
-        }());
-    </script>
+{% else %}
+    <section class="latest-news-section" aria-labelledby="latest-news-heading">
+        <header class="latest-news-header">
+            <div class="latest-news-heading-wrap">
+                <h2 id="latest-news-heading" class="latest-news-title">
+                    <span class="latest-news-title-link">
+                        <i class="bi bi-newspaper" aria-hidden="true"></i>
+                        <span>{{ lang.index.latest_news.1 ?? 'Nûçe' }}</span>
+                    </span>
+                </h2>
+            </div>
+        </header>
+        <div class="latest-news-empty">
+            <i class="bi bi-newspaper latest-news-empty-icon" aria-hidden="true"></i>
+            <p class="latest-news-empty-text">
+                {{ lang.index.latest_news.3 ?? 'Hêj tu nûçeya weşandî tune.' }}
+            </p>
+        </div>
+    </section>
 {% endif %}
