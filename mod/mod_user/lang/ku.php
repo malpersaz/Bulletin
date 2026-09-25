@@ -15,8 +15,16 @@ if (!defined('AKM_LOADED')) {
 }
 
 $lang['mod_user'] = [
-  'add' => 'Endam Lê Zêde Bike',
+  'add' => 'Endam Lêke',
   'edit' => 'Endam Biguhere',
+  'total_users' => 'Hemû Endam',
+  'active_users' => 'Çalak',
+  'pending_users' => 'Li benda Pejirandinê',
+  'empty_state' => [
+    'title' => 'Endam Nehat Dîtin',
+    'desc' => 'Tu endamekî tomarkirî an guncavî parzûnê nehat dîtin.',
+    'clear_search' => 'Parzûnê Paqij Bike',
+  ],
   'list' => [
     'management' => 'Rêveberî',
     'action' => 'Kiryar...',
@@ -27,7 +35,7 @@ $lang['mod_user'] = [
     'reset' => 'Sifir bike',
   ],
   'information' => 'Agahî!',
- 'Serkeftî!',
+  'success' => 'Serkeftî!',
   'last_step' => 'Gava Dawî',
   'error_title' => 'Çewtî Çêbû!',
   'error_label' => 'Çewtî!',

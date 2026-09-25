@@ -1,3 +1,31 @@
+## v1.0.96 (2026-09-25)
+- **Admin Publication Category Binding & Wizard State Fix (`mod/mod_publication/index.php`, `templates/admin/`)**:
+  - Resolved missing category options in the mobile admin publication wizard overlay (`mod_publication/add`, `wizard_step_2`).
+  - Updated `mod_publication_mod::getFormData()` to populate `$data['categories']` alongside `$data['categories_flat']`, ensuring template bindings in `sheets_extra.twig`, `edit.twig`, and `list.twig` receive the category dataset.
+  - Excluded language-level root container categories (`root != 'y'`) so that only actionable editorial categories are rendered.
+  - Preserved original category name casing in `templates/admin/partials/sheets_extra.twig` and `templates/admin/assets/js/modals/modal_user_menu.js` during selection and label synchronization.
+- **Bridge Integration Defensive Database Guard (`lib/BaseModuleController.class.php`)**:
+  - Implemented adapter-aware `tableExists()` check in `BaseModuleController::ensureBridgeModule()` prior to querying bridge tables.
+  - Eliminated fatal unhandled `DatabaseException: Base table or view not found: 1146 Table doesn't exist` when registering bridge integrations (`mod_faq_mod`, `mod_gallery_mod`, `mod_attachment_mod`) on fresh or unmigrated databases.
+  - Cached table existence results in-memory to prevent redundant schema introspection queries during lifecycle initialization.
+  - Ensured graceful fallback and silent skipping when optional bridge tables have not yet been provisioned in the database.
+- **Material 3 Admin User List Super Polish & Architecture Modernization (`templates/admin/mod_user/`, `templates/admin/assets/`)**:
+  - Overhauled user administration list view (`mod_user/list`) with a phone-first Material 3 card interface.
+  - Implemented real-time interactive status filter chips (All, Active, Pending) with live count indicators.
+  - Redesigned user cards featuring monogram fallback avatars, group role badges, contact metadata (username, email, phone, registration date), and tap-safe action menus (min 44x44px target area).
+  - Enforced strict code separation by extracting all styles into `templates/admin/assets/css/mod_user.css` and all interaction logic into `templates/admin/assets/js/mod_user.js`, completely eradicating inline `<style>`, `<script>`, `style="..."`, and `onclick="..."` attributes.
+  - Wired mobile action sheet context menu and bottom action toolbar with SweetAlert2 confirmation dialogs for activation, deactivation, and deletion.
+- **Backend User Statistics & Dataset Enrichment (`mod/mod_user/index.php`)**:
+  - Enhanced `list()` method to compute real-time user metrics (`total_users`, `active_users`, `pending_users`).
+  - Enriched `datatable_json()` payload to return user group names, registration timestamps, and phone numbers alongside core identity fields.
+  - Enhanced query handling for composite identity searches and flexible radio status filters (`pending`, `y`, `n`, `a`).
+- **Framework AJAX Request Detection & Exception Handling (`lib/Req.class.php`, `mod/mod_user/model/user.model.php`)**:
+  - Implemented canonical `Req::is_Ajax()` utility method detecting XMLHttpRequest headers, JSON Accept headers, and explicit AJAX query flags.
+  - Resolved fatal `Call to undefined method Req::is_Ajax()` error when handling unauthenticated or expired session redirects.
+  - Enforced clean JSON 401 unauthorized envelopes for asynchronous API requests.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Maintained framework version constant and fallback baseline at `1.0.96`.
+
 ## v1.0.95
 - **Unicode Multilingual Name Validation & Member Registration Fix (`lib/Valid_Core.php`, `mod/mod_user/validator/`)**:
   - Resolved `valid_trchar Validator Function Not Found` fatal error encountered during new user registration (`mod_user/add` and `mod_user/register`).

@@ -118,7 +118,7 @@
             <div
                 class="nav-item category-item content-cat"
                 data-lang="{{ cat.lang }}"
-                data-name="{{ cat.name|lower|e('html_attr') }}"
+                data-name="{{ cat.name|e('html_attr') }}"
                 data-category-id="{{ cat.id }}"
                 data-action="select-wizard-cat"
                 data-id="{{ cat.id }}"
@@ -140,7 +140,7 @@
             <div
                 class="nav-item category-item video-cat is-hidden"
                 data-lang="{{ cat.lang }}"
-                data-name="{{ cat.name|lower|e('html_attr') }}"
+                data-name="{{ cat.name|e('html_attr') }}"
                 data-category-id="{{ cat.id }}"
                 data-action="select-video-cat"
                 data-id="{{ cat.id }}"

@@ -713,6 +713,10 @@ abstract class BaseModuleController
     protected function ensureBridgeModule($bridgeTable, $suffix, $modKey = 'id', $modValue = 'name')
     {
         try {
+            if (!$this->tableExists($bridgeTable)) {
+                return;
+            }
+
             $safeMod = addslashes($this->module_name);
             $safeBridgeTable = addslashes($bridgeTable);
             $checkSql = "SELECT id FROM `{$safeBridgeTable}` WHERE `mod_name` = '{$safeMod}' LIMIT 1";
@@ -729,6 +733,39 @@ abstract class BaseModuleController
             }
         } catch (Exception $e) {
             // Silently ignore if bridge table is not created yet
+        }
+    }
+
+    /**
+     * Check if a table exists in the database
+     *
+     * @param string $table
+     * @return bool
+     */
+    protected function tableExists($table)
+    {
+        static $tableCache = [];
+        if (isset($tableCache[$table])) {
+            return $tableCache[$table];
+        }
+
+        try {
+            $safeTable = addslashes($table);
+            $adapter = (string) $this->db->getAdapterType();
+
+            if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                $sql = "SELECT name FROM sqlite_master WHERE type='table' AND name='" . $safeTable . "'";
+            } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                $sql = "SELECT tablename FROM pg_catalog.pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema') AND tablename = '" . $safeTable . "'";
+            } else {
+                $sql = "SHOW TABLES LIKE '" . $safeTable . "'";
+            }
+
+            $this->db->fetch_array($sql);
+            $tableCache[$table] = ($this->db->getSize() !== 0);
+            return $tableCache[$table];
+        } catch (Exception $e) {
+            return false;
         }
     }
 
@@ -1494,7 +1531,7 @@ abstract class BaseModuleController
      * - "status|label" (status label with automatic formatting)
      * - "name|bold" (bold text)
      * - "created_at|date" (formatted date)
-     * - "fiyat|currency" (formatted currency)
+     * - "price|currency" (formatted currency)
      * 
      * Available formatters:
      * - checkbox: Checkbox input

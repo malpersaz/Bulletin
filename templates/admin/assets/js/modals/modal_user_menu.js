@@ -254,13 +254,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typeof toggleWizardCategorySheet === 'function') toggleWizardCategorySheet();
                 break;
             case 'select-wizard-cat': {
-                const name = target.getAttribute('data-name');
+                const titleEl = target.querySelector('.category-item-title');
+                const name = titleEl ? titleEl.textContent.trim() : (target.getAttribute('data-name') || '');
                 const id = target.getAttribute('data-id');
                 if (typeof selectWizardCategory === 'function') selectWizardCategory(name, id);
                 break;
             }
             case 'select-video-cat': {
-                const name = target.getAttribute('data-name');
+                const titleEl = target.querySelector('.category-item-title');
+                const name = titleEl ? titleEl.textContent.trim() : (target.getAttribute('data-name') || '');
                 const id = target.getAttribute('data-id');
                 if (typeof selectVideoEmbedWizardCategory === 'function') selectVideoEmbedWizardCategory(name, id);
                 break;

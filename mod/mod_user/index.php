@@ -2210,13 +2210,33 @@ Rêgezên te yên sereke:
 
     public function list()
     {
-
         // Is there Listing Permission?
         if ($this->user->hasPermission('mod_user', 'list', $this->lang['mod_user']['role_errors']['list'], 1) === False) {
             return False;
         }
 
         Run::import('management', '_index');
+
+        $totalUsers = 0;
+        $activeUsers = 0;
+        $pendingUsers = 0;
+
+        try {
+            $userTotalModel = Load::model('mod_user.user');
+            $totalUsers = (int)$userTotalModel->getCount();
+
+            $userActiveModel = Load::model('mod_user.user');
+            $userActiveModel->where_status('y');
+            $activeUsers = (int)$userActiveModel->getCount();
+
+            $pendingUsers = max(0, $totalUsers - $activeUsers);
+        } catch (Exception $e) {
+            // Graceful fallback
+        }
+
+        $this->theme->set('total_users', $totalUsers);
+        $this->theme->set('active_users', $activeUsers);
+        $this->theme->set('pending_users', $pendingUsers);
 
         $this->site['title'] = $this->lang['mod_user']['admin']['list'];
         $this->theme->set('site', $this->site);
@@ -2250,17 +2270,18 @@ Rêgezên te yên sereke:
             $colomns[] = 'status';
             $colomns[] = 'group_id';
             $colomns[] = 'image';
+            $colomns[] = 'created_at';
+            $colomns[] = 'phone';
             $i->select($colomns);
             $limit = 50;
             $offset = 0;
-            $order = $colomns[0];;
+            $order = $colomns[0];
             $sort = 'desc';
 
             if (Req::is_Post('order')) {
                 $o = Req::Post_Safe('order');
                 if (
                     isset($o[0]['column']) && ($o[0]['column'] > 0) && isset($colomns[$o[0]['column'] - 1])
-
                 ) {
                     $order = $colomns[$o[0]['column'] - 1];
                 }
@@ -2270,9 +2291,9 @@ Rêgezên te yên sereke:
             }
             $i->order($order, $sort);
 
-
             $wheres = [];
 
+            // Standard filter parameters
             if (Req::is_Post('filter') && count(Req::Post_Safe('filter')) > 0) {
                 foreach (Req::Post_Safe('filter') as $k => $v) {
                     if ($v == '') {
@@ -2285,6 +2306,7 @@ Rêgezên te yên sereke:
                         $full_name = trim(preg_replace('/\s+/', ' ', $safe_value));
                         $wheres[] = "(
                             username LIKE '%" . $safe_value . "%'
+                            OR email LIKE '%" . $safe_value . "%'
                             OR name LIKE '%" . $safe_value . "%'
                             OR last_name LIKE '%" . $safe_value . "%'
                             OR CONCAT(TRIM(name), ' ', TRIM(last_name)) LIKE '%" . $full_name . "%'
@@ -2298,26 +2320,65 @@ Rêgezên te yên sereke:
                 }
             }
 
-            if (Req::is_Post('filter_radio') && count(Req::Post_Safe('filter_radio')) > 0) {
-                foreach (Req::Post_Safe('filter_radio') as $k => $v) {
-                    if (in_array($k, $colomns) && $v != '') {
-                        $wheres[] = $k . "='" . Req::Clear($v) . "'";
+            // Quick search parameter (search[name] or search[value])
+            if (Req::is_Post('search')) {
+                $searchData = Req::Post_Safe('search');
+                $searchVal = '';
+                if (is_array($searchData)) {
+                    if (!empty($searchData['name'])) {
+                        $searchVal = Req::Clear($searchData['name']);
+                    } elseif (!empty($searchData['value'])) {
+                        $searchVal = Req::Clear($searchData['value']);
                     }
+                } elseif (is_string($searchData) && $searchData !== '') {
+                    $searchVal = Req::Clear($searchData);
+                }
+
+                if ($searchVal !== '') {
+                    $full_name = trim(preg_replace('/\s+/', ' ', $searchVal));
+                    $wheres[] = "(
+                        username LIKE '%" . $searchVal . "%'
+                        OR email LIKE '%" . $searchVal . "%'
+                        OR name LIKE '%" . $searchVal . "%'
+                        OR last_name LIKE '%" . $searchVal . "%'
+                        OR CONCAT(TRIM(name), ' ', TRIM(last_name)) LIKE '%" . $full_name . "%'
+                    )";
                 }
             }
 
+            // Radio / status filter (status = all, y, pending, n, a)
+            $radioFilters = [];
+            if (Req::is_Post('filter_radio') && is_array(Req::Post_Safe('filter_radio'))) {
+                $radioFilters = array_merge($radioFilters, Req::Post_Safe('filter_radio'));
+            }
+            if (Req::is_Post('search_radio') && is_array(Req::Post_Safe('search_radio'))) {
+                $radioFilters = array_merge($radioFilters, Req::Post_Safe('search_radio'));
+            }
 
+            foreach ($radioFilters as $k => $v) {
+                if ($v === '' || $v === null || $v === 'all') {
+                    continue;
+                }
+                $safeVal = Req::Clear($v);
+                if ($k === 'status') {
+                    if ($safeVal === 'pending') {
+                        $wheres[] = "status IN ('n', 'a')";
+                    } elseif (in_array($safeVal, ['y', 'n', 'a'])) {
+                        $wheres[] = "status = '" . $safeVal . "'";
+                    }
+                } elseif (in_array($k, $colomns)) {
+                    $wheres[] = $k . " = '" . $safeVal . "'";
+                }
+            }
 
             if (count($wheres) > 0) {
                 $wheres = "(" . implode(") AND (", $wheres) . ")";
                 $i->addWhere($wheres);
             }
 
-
             if (Req::is_Post('length') && intval(Req::Post_Safe('length'))) {
                 $limit = intval(Req::Post_Safe('length'));
             }
-
 
             if (Req::is_Post('start') && intval(Req::Post_Safe('start'))) {
                 $offset = intval(Req::Post_Safe('start'));
@@ -2325,10 +2386,22 @@ Rêgezên te yên sereke:
             $getCount = $i->getCount();
             $i->limit($limit, $offset);
 
-
             $i->gR();
             $data = [];
 
+            // Load group names mapping
+            $groupMap = [];
+            try {
+                $groupModel = Load::model('mod_user_group');
+                $groupModel->select(['group_id', 'name']);
+                if ($groupModel->gR() && $groupModel->getSize() > 0) {
+                    foreach ($groupModel->toArray() as $userGroup) {
+                        $groupMap[$userGroup['group_id']] = $userGroup['name'];
+                    }
+                }
+            } catch (Exception $ge) {
+                // Ignore if group model unavailable
+            }
 
             $status_list = [
                 'y' => ['success', $this->lang['mod_user']['grid']['active']],
@@ -2336,10 +2409,8 @@ Rêgezên te yên sereke:
                 'a' => ['danger', $this->lang['mod_user']['grid']['waiting_admin_activation']],
             ];
 
-
             if ($getCount > 0) {
                 foreach ($i->toArray() as $content) {
-
                     $last = "";
                     if (Role::hasPermission('mod_user', 'edit')) {
                         $last .= '<button data-action="edit-user" data-id="' . $content['id'] . '" class="btn default btn-xs purple">
@@ -2358,6 +2429,10 @@ Rêgezên te yên sereke:
                         $status_html = '<span class="label label-default">' . (isset($content['status']) ? $content['status'] : '') . '</span>';
                     }
 
+                    $groupName = isset($groupMap[$content['group_id']]) ? $groupMap[$content['group_id']] : '';
+                    $createdAt = !empty($content['created_at']) ? date('d.m.Y', strtotime($content['created_at'])) : '';
+                    $phone = !empty($content['phone']) ? $content['phone'] : '';
+
                     $data[] = [
                         '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                         $content['id'],
@@ -2368,7 +2443,10 @@ Rêgezên te yên sereke:
                         $status_html,
                         $content['group_id'],
                         $content['image'],
-                        $last
+                        $last,
+                        $groupName,
+                        $createdAt,
+                        $phone
                     ];
                 }
             }

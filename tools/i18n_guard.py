@@ -67,7 +67,8 @@ DEV_TERMS = {
     "ttl", "proj", "vars", "reqs", "accs", "dbrefs", "rownum",
     "kb", "mb", "gb", "tb", "fps", "hd", "sd",
     "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini",
-    "modality", "modalities", "vimeo", "mailto", "telehealth", "og"
+    "modality", "modalities", "vimeo", "mailto", "telehealth", "og",
+    "unhtmlentities", "temizle", "hsc"
 }
 
 # Non-English detection relies purely on the English dictionary and morphological rules (no hardcoded word lists)

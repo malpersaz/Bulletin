@@ -65,8 +65,10 @@ class mod_publication_mod extends BaseModuleController
         // Load flat category list for card/wizard selectors
         $catModel = Load::model('mod_publication_category');
         $catModel->select('id, name, lang');
+        $catModel->addWhere("root != 'y'");
         $catModel->order('`order`', 'ASC')->all();
-        $data['categories_flat'] = $catModel->toArray();
+        $data['categories'] = $catModel->toArray();
+        $data['categories_flat'] = $data['categories'];
 
         return $data;
     }

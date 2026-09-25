@@ -1,599 +1,110 @@
+{% set module_lang_key = 'mod_user' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
 {% set show_search = true %}
 {% set show_search_filter_button = false %}
-{% set search_placeholder = lang.mod_user.panel.search_placeholder %}
-{% set hide_fab = true %}
+{% set search_placeholder = lang.mod_user.admin.columns.username ~ ', ' ~ lang.mod_user.admin.columns.email ~ '...' %}
 {% extends 'admin/layout.twig' %}
 
 {% block title %}{{ lang.mod_user.admin.list }}{% endblock %}
 {% block headline %}{{ lang.mod_user.admin.list }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_user.css?v=1.0">
+{% endblock %}
+
 {% block content %}
-<style>
-    .user-card {
-        background: var(--md-sys-color-surface-container, #f3edf7);
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 12px;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        cursor: pointer;
-        position: relative;
-        border: 2px solid transparent;
-    }
-    .user-card:active {
-        transform: scale(0.98);
-    }
-    .user-card.selected {
-        border-color: var(--md-sys-color-primary);
-        background: var(--md-sys-color-primary-container);
-    }
-    .user-avatar {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        background: var(--md-sys-color-primary);
-        color: var(--md-sys-color-on-primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: 600;
-        flex-shrink: 0;
-        text-transform: uppercase;
-        overflow: hidden;
-    }
-    .user-avatar img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    .user-info {
-        flex: 1;
-        min-width: 0;
-        text-align: left;
-    }
-    .user-name {
-        font-size: 15px;
-        font-weight: 600;
-        color: var(--md-sys-color-on-surface);
-        line-height: 1.3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-    .user-meta {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-top: 4px;
-        font-size: 12px;
-        color: var(--md-sys-color-on-surface-variant);
-        flex-wrap: wrap;
-    }
-    .user-meta span {
-        display: flex;
-        align-items: center;
-        gap: 3px;
-    }
-    .user-status {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        padding: 2px 10px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        flex-shrink: 0;
-    }
-    .user-status.active {
-        background: #e6f4ea;
-        color: #1e4620;
-    }
-    .user-status.inactive {
-        background: #fce8e6;
-        color: #c62828;
-    }
-    .user-status.pending {
-        background: #fff3e0;
-        color: #e65100;
-    }
-    .m3-icon-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        border: none;
-        background: transparent;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: var(--md-sys-color-on-surface-variant);
-        transition: all 0.2s;
-        flex-shrink: 0;
-    }
-    .m3-icon-btn:hover {
-        background: rgba(0,0,0,0.05);
-    }
-</style>
-
-<!-- Pull-to-refresh spinner -->
-<div id="pull-spinner" style="display: none; justify-content: center; padding: 16px;">
-    <div class="spinner-border" role="status" style="width: 28px; height: 28px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--md-sys-color-primary);"></div>
-</div>
-
-<div class="content-list" style="padding: 16px; padding-bottom: 120px;">
-    <!-- User Cards Container -->
-    <div id="user-list-container"></div>
-
-    <!-- Empty State -->
-    <div id="empty-state" style="display: none; flex-direction: column; align-items: center; justify-content: center; padding: 48px 24px; text-align: center;">
-        <i class="bi bi-people" style="font-size: 64px; color: var(--md-sys-color-outline); opacity: 0.5;"></i>
-        <h3 style="margin-top: 16px; color: var(--md-sys-color-on-surface-variant); font-weight: 500;">{{ lang.mod_user.datatable.emptyTable }}</h3>
-    </div>
-
-    <!-- Loading spinner -->
-    <div id="infinite-loader" style="display: flex; justify-content: center; padding: 24px;">
-        <div class="spinner-border" role="status" style="width: 32px; height: 32px; border: 3px solid var(--md-sys-color-outline-variant); border-top-color: var(--md-sys-color-primary);"></div>
+<div class="content-stats-container">
+    <div class="content-stats-row">
+        <button type="button" class="content-stat-card active" data-status-filter="all" aria-label="{{ lang.mod_user.total_users }}">
+            <div id="statTotalUsers" class="content-stat-value">{{ total_users|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_user.total_users }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-active" data-status-filter="y" aria-label="{{ lang.mod_user.active_users }}">
+            <div id="statActiveUsers" class="content-stat-value">{{ active_users|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_user.active_users }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-pending" data-status-filter="pending" aria-label="{{ lang.mod_user.pending_users }}">
+            <div id="statPendingUsers" class="content-stat-value">{{ pending_users|default(0) }}</div>
+            <div class="content-stat-label">{{ lang.mod_user.pending_users }}</div>
+        </button>
     </div>
 </div>
 
-<!-- Hidden filter form -->
-<form id="filterForm" style="display: none;">
-    <input type="text" name="filter[identity]" id="filterSearch" value="">
+<div id="ptrSpinner" class="ptr-spinner">
+    <div class="spinner-track"></div>
+</div>
+
+<div id="userListContainer" class="content-list"
+    data-module-url="{{ site.saddress }}mod_user/"
+    data-data-url="{{ site.saddress }}mod_user/datatable_json"
+    data-image-url="{{ site.iaddress }}mod_user/thumb/">
+</div>
+
+<div id="emptyState" class="empty-state is-hidden">
+    <div class="empty-icon"><i class="bi bi-people"></i></div>
+    <h3>{{ lang.mod_user.empty_state.title }}</h3>
+    <p>{{ lang.mod_user.empty_state.desc }}</p>
+    <div class="empty-state-actions">
+        <a href="{{ site.saddress }}mod_user/add" class="m3-btn-filled">
+            <i class="bi bi-plus-lg"></i> {{ lang.mod_user.add }}
+        </a>
+        <button type="button" class="m3-btn-tonal" data-action="clear-search">
+            <i class="bi bi-x-circle"></i> {{ lang.mod_user.empty_state.clear_search }}
+        </button>
+    </div>
+</div>
+
+<div class="load-more-container">
+    <button type="button" id="loadMoreBtn" class="load-more-btn is-hidden">
+        <i class="bi bi-arrow-down-circle"></i>
+        <span>{{ lang.mod_user.grid.page }}</span>
+    </button>
+</div>
+
+<div id="infiniteLoader" class="infinite-loader is-hidden">
+    <div class="spinner-track"></div>
+    <span>{{ lang.mod_user.grid.loading_data }}</span>
+</div>
+
+<form id="filterForm" class="is-hidden">
+    <input type="hidden" name="filter[identity]" id="filterSearch" value="">
+    <input type="hidden" name="filter_radio[status]" id="filterStatus" value="">
+    <input type="hidden" name="start" value="0">
+    <input type="hidden" name="length" value="15">
+    <input type="hidden" name="draw" value="1">
 </form>
 {% endblock %}
 
-
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button class="toolbar-item" id="toolbarEdit" style="pointer-events: none; opacity: 0.3;" onclick="editSelected()">
-            <i class="bi bi-pencil-fill"></i>
-            <span>{{ lang.mod_user.button.edit }}</span>
-        </button>
-
-        <button class="toolbar-item" id="toolbarActivate" style="pointer-events: none; opacity: 0.3;" onclick="activateSelected()">
-            <i class="bi bi-eye-slash-fill" id="toolbarActivateIcon"></i>
-            <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate_confirm.key }}</span>
-        </button>
-
-        <button class="toolbar-item" id="toolbarAcl" style="pointer-events: none; opacity: 0.3;" onclick="aclSelected()">
-            <i class="bi bi-shield-lock-fill"></i>
-            <span>{{ lang.management.acl }}</span>
-        </button>
-
-        <button class="toolbar-item" id="toolbarDelete" style="pointer-events: none; opacity: 0.3;" onclick="deleteSelected()">
-            <i class="bi bi-trash-fill"></i>
-            <span>{{ lang.mod_user.button.delete }}</span>
-        </button>
-    </div>
-
-    <!-- Main FAB Button -->
-    <button class="main-fab" id="mainFab" onclick="window.location.href='{{ site.saddress }}mod_user/add'" aria-label="{{ lang.mod_user.add }}">
-        <i class="bi bi-plus-lg"></i>
+<div class="standard-toolbar" id="userToolbar">
+    <button type="button" class="toolbar-item is-disabled" id="toolbarEdit">
+        <i class="bi bi-pencil-fill"></i>
+        <span>{{ lang.mod_user.button.edit }}</span>
     </button>
+
+    <button type="button" class="toolbar-item is-disabled" id="toolbarActivate">
+        <i class="bi bi-eye-slash-fill" id="toolbarActivateIcon"></i>
+        <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate_confirm.key }}</span>
+    </button>
+
+    <button type="button" class="toolbar-item is-disabled" id="toolbarAcl">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>{{ lang.mod_user.admin.roles }}</span>
+    </button>
+
+    <button type="button" class="toolbar-item is-disabled" id="toolbarDelete">
+        <i class="bi bi-trash3-fill"></i>
+        <span>{{ lang.mod_user.button.delete }}</span>
+    </button>
+</div>
+
+<!-- Main FAB Link -->
+<a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_user/add" aria-label="{{ lang.mod_user.add }}">
+    <i class="bi bi-plus-lg"></i>
+</a>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-const DATA_URL = '{{ site.saddress }}mod_user/datatable_json';
-const MODULE_URL = '{{ site.saddress }}mod_user/';
-const IADDRESS_URL = '{{ site.iaddress }}';
-const USER_LANG = {
-    confirm_delete: '{{ lang.mod_user.remove_record }}',
-    confirm_activate: '{{ lang.mod_user.grid.status.value }}',
-    confirm_deactivate: '{{ lang.mod_user.grid.deactivate_confirm.value }}',
-    confirm_yes: '{{ lang.mod_user.button.yes }}',
-    confirm_no: '{{ lang.mod_user.button.no }}',
-    success: '{{ lang.mod_user.success }}',
-    error: '{{ lang.mod_user.error_fatal }}',
-    activate: '{{ lang.mod_user.grid.status.key }}',
-    deactivate: '{{ lang.mod_user.grid.deactivate_confirm.key }}',
-    status_active: '{{ lang.mod_user.grid.active }}',
-    status_email_pending: '{{ lang.mod_user.grid.waiting_email_activation }}',
-    status_admin_pending: '{{ lang.mod_user.grid.waiting_admin_activation }}',
-    empty: '{{ lang.mod_user.datatable.emptyTable }}',
-    ctx_edit: '{{ lang.mod_user.button.edit }}',
-    ctx_delete: '{{ lang.mod_user.button.delete }}'
-};
-
-class UserManager {
-    constructor() {
-        this.container = document.getElementById('user-list-container');
-        this.loader = document.getElementById('infinite-loader');
-        this.emptyState = document.getElementById('empty-state');
-        this.isLoading = false;
-        this.hasMore = true;
-        this.selectedUserId = null;
-        this.selectedCard = null;
-        this.selectedStatus = null;
-        this.start = 0;
-        this.length = 15;
-        this.draw = 1;
-        this.init();
-    }
-
-    init() {
-        this.createLoadMoreButton();
-        this.loadData();
-        this.initSearchListener();
-        this.initPullToRefresh();
-    }
-
-    createLoadMoreButton() {
-        this.loadMoreBtn = document.createElement('button');
-        this.loadMoreBtn.className = 'm3-btn-outlined';
-        this.loadMoreBtn.style.cssText = 'display:none; margin: 20px auto; width: fit-content; cursor:pointer; padding: 10px 24px; border-radius: 20px; border: 1px solid var(--md-sys-color-outline); background: transparent; color: var(--md-sys-color-primary); font-weight: 500;';
-        this.loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>{{ lang.mod_user.datatable.next }}';
-        if (this.container && this.loader) {
-            this.container.parentNode.insertBefore(this.loadMoreBtn, this.loader);
-        }
-        this.loadMoreBtn.onclick = () => this.loadData();
-    }
-
-    async loadData(reset = false) {
-        if (this.isLoading || (!this.hasMore && !reset)) return;
-        this.isLoading = true;
-
-        if (this.loadMoreBtn) {
-            this.loadMoreBtn.disabled = true;
-        }
-
-        if (reset) {
-            this.start = 0;
-            this.container.innerHTML = '';
-            this.hasMore = true;
-            this.draw = 1;
-            this.emptyState.style.display = 'none';
-            this.selectedUserId = null;
-            this.selectedCard = null;
-            this.updateToolbar(false);
-        }
-        this.loader.style.display = 'flex';
-
-        const formData = new FormData(document.getElementById('filterForm'));
-        formData.set('start', this.start);
-        formData.set('length', this.length);
-        formData.set('draw', this.draw);
-
-        try {
-            const response = await fetch(DATA_URL, { method: 'POST', body: formData });
-            const data = await response.json();
-            this.renderCards(data.data);
-            this.start += this.length;
-            this.draw++;
-
-            if (this.start >= data.recordsFiltered) {
-                this.hasMore = false;
-            }
-            if (data.recordsFiltered === 0) {
-                this.emptyState.style.display = 'flex';
-            }
-        } catch (error) {
-            console.error('Data Load Error:', error);
-        } finally {
-            this.isLoading = false;
-            this.loader.style.display = 'none';
-            if (this.loadMoreBtn) {
-                this.loadMoreBtn.style.display = this.hasMore ? 'block' : 'none';
-                this.loadMoreBtn.disabled = false;
-            }
-        }
-    }
-
-    renderCards(items) {
-        if (!items || items.length === 0) return;
-        const fragment = document.createDocumentFragment();
-
-        items.forEach(item => {
-            // Data mapping from datatable_json:
-            // 0: Checkbox HTML, 1: ID, 2: Username, 3: Email
-            // 4: Name, 5: Last Name, 6: Status HTML (badge), 7: Group ID, 8: Image, 9: Actions HTML
-            const id = this.stripHtml(item[1]);
-            const username = this.stripHtml(item[2]);
-            const email = this.stripHtml(item[3]);
-            const name = this.stripHtml(item[4]);
-            const last_name = this.stripHtml(item[5]);
-            const statusHtml = item[6];
-            const groupId = this.stripHtml(item[7]);
-            const image = this.stripHtml(item[8]);
-
-            // Parse status
-            const isActive = statusHtml.includes('success');
-            const isPending = statusHtml.includes('danger');
-            let statusClass = 'inactive';
-            let statusText = USER_LANG.status_email_pending;
-            let statusCode = 'n';
-
-            if (isActive) {
-                statusClass = 'active';
-                statusText = USER_LANG.status_active;
-                statusCode = 'y';
-            } else if (statusHtml.includes(USER_LANG.status_admin_pending)) {
-                statusClass = 'pending';
-                statusText = USER_LANG.status_admin_pending;
-                statusCode = 'a';
-            }
-
-            // Avatar: Image or fallback to First letter
-            const initial = (name || username || '?').charAt(0).toUpperCase();
-            let avatarHtml = '';
-            if (image && image !== 'avatar.png') {
-                avatarHtml = `<img src="${IADDRESS_URL}mod_user/thumb/${image}" alt="${name}" onerror="this.replaceWith('${initial}')">`;
-            } else {
-                avatarHtml = initial;
-            }
-
-            const card = document.createElement('div');
-            card.className = 'user-card';
-            card.dataset.id = id;
-            card.dataset.status = statusCode;
-            card.onclick = () => this.selectUser(id, card, statusCode);
-
-            card.innerHTML = `
-                <div class="user-avatar">${avatarHtml}</div>
-                <div class="user-info">
-                    <div class="user-name">${name} ${last_name}</div>
-                    <div class="user-meta">
-                        <span><i class="bi bi-person"></i> ${username}</span>
-                        <span><i class="bi bi-envelope"></i> ${email}</span>
-                    </div>
-                </div>
-                <span class="user-status ${statusClass}">${statusText}</span>
-                <button class="m3-icon-btn" onclick="event.stopPropagation(); window.userManager.openActionSheet('${id}', '${this.escapeHtml(name + ' ' + last_name)}', '${statusCode}')">
-                    <i class="bi bi-three-dots-vertical"></i>
-                </button>
-            `;
-            fragment.appendChild(card);
-        });
-
-        this.container.appendChild(fragment);
-    }
-
-    stripHtml(html) {
-        if (!html) return '';
-        const tmp = document.createElement('DIV');
-        tmp.innerHTML = html;
-        return tmp.textContent || tmp.innerText || '';
-    }
-
-    escapeHtml(str) {
-        return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-    }
-
-    initSearchListener() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            let timeout = null;
-            searchInput.addEventListener('input', e => {
-                clearTimeout(timeout);
-                timeout = setTimeout(() => {
-                    const filterSearch = document.getElementById('filterSearch');
-                    if (filterSearch) {
-                        filterSearch.value = e.target.value;
-                        this.loadData(true);
-                    }
-                }, 500);
-            });
-        }
-    }
-
-    initPullToRefresh() {
-        window.refreshContent = () => this.loadData(true);
-    }
-
-    // Card Selection
-    selectUser(id, cardElement, status) {
-        const isCurrent = cardElement.classList.contains('selected');
-        document.querySelectorAll('.user-card.selected').forEach(el => el.classList.remove('selected'));
-
-        if (!isCurrent) {
-            cardElement.classList.add('selected');
-            this.selectedUserId = id;
-            this.selectedCard = cardElement;
-            this.selectedStatus = status;
-            this.updateToolbar(true);
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
-        } else {
-            this.selectedUserId = null;
-            this.selectedCard = null;
-            this.selectedStatus = null;
-            this.updateToolbar(false);
-        }
-    }
-
-    updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarActivate', 'toolbarAcl', 'toolbarDelete'];
-        ids.forEach(btnId => {
-            const btn = document.getElementById(btnId);
-            if (!btn) return;
-            if (active) {
-                btn.classList.add('active');
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
-            } else {
-                btn.classList.remove('active');
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.3';
-            }
-        });
-
-        // Update activate/deactivate button text
-        const activateIcon = document.getElementById('toolbarActivateIcon');
-        const activateText = document.getElementById('toolbarActivateText');
-        if (activateIcon && activateText && active) {
-            if (this.selectedStatus === 'y') {
-                activateIcon.className = 'bi bi-eye-slash-fill';
-                activateText.textContent = USER_LANG.deactivate;
-            } else {
-                activateIcon.className = 'bi bi-eye-fill';
-                activateText.textContent = USER_LANG.activate;
-            }
-        }
-    }
-
-    openActionSheet(id, title, status) {
-        if (typeof openContextMenu === 'function') {
-            openContextMenu(id, title, status === 'y', ['gallery', 'files', 'video']);
-
-            // Override shared context menu labels with mod_user terms
-            setTimeout(() => {
-                // Edit label
-                const editItem = document.querySelector('#context-menu-sheet .context-action-item:first-child .context-action-label');
-                if (editItem) editItem.textContent = USER_LANG.ctx_edit;
-
-                // Status label
-                const statusAction = document.getElementById('contextActionStatus');
-                if (statusAction) {
-                    const label = statusAction.querySelector('.nav-item-label');
-                    const icon = statusAction.querySelector('.nav-item-icon');
-                    if (label && icon) {
-                        if (status === 'y') {
-                            label.textContent = USER_LANG.deactivate;
-                            icon.className = 'bi bi-eye-slash nav-item-icon';
-                        } else {
-                            label.textContent = USER_LANG.activate;
-                            icon.className = 'bi bi-eye nav-item-icon';
-                        }
-                    }
-                }
-
-                // Delete label
-                const deleteItem = document.querySelector('#context-menu-sheet .action-danger .context-action-label');
-                if (deleteItem) deleteItem.textContent = USER_LANG.ctx_delete;
-            }, 10);
-        }
-    }
-}
-
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    window.userManager = new UserManager();
-});
-
-window.clearSearch = function() {
-    const searchInput = document.getElementById('searchInput');
-    const filterSearch = document.getElementById('filterSearch');
-
-    if (searchInput) {
-        searchInput.value = '';
-    }
-
-    if (filterSearch) {
-        filterSearch.value = '';
-    }
-
-    if (window.userManager) {
-        window.userManager.loadData(true);
-    }
-};
-
-// Toolbar Actions
-window.editSelected = function() {
-    const mgr = window.userManager;
-    if (mgr && mgr.selectedUserId) {
-        window.location.href = MODULE_URL + 'edit/' + mgr.selectedUserId;
-    }
-};
-
-window.aclSelected = function() {
-    if (window.userManager && window.userManager.selectedUserId) {
-        window.location.href = MODULE_URL + 'acl';
-    }
-};
-
-window.activateSelected = function() {
-    const mgr = window.userManager;
-    if (!mgr || !mgr.selectedUserId) return;
-
-    const isActive = mgr.selectedStatus === 'y';
-    const endpoint = isActive ? 'deactivate' : 'status';
-    const confirmMsg = isActive ? USER_LANG.confirm_deactivate : USER_LANG.confirm_activate;
-
-    Swal.fire({
-        icon: 'question',
-        text: confirmMsg,
-        showCancelButton: true,
-        confirmButtonColor: '#6750a4',
-        cancelButtonColor: '#6e7881',
-        confirmButtonText: USER_LANG.confirm_yes,
-        cancelButtonText: USER_LANG.confirm_no
-    }).then(result => {
-        if (result.isConfirmed) {
-            const formData = new FormData();
-            formData.append('query[]', mgr.selectedUserId);
-
-            fetch(MODULE_URL + endpoint, { method: 'POST', body: formData })
-                .then(r => r.text())
-                .then(msg => {
-                    if (msg === 'Success') {
-                        mgr.selectedUserId = null;
-                        mgr.updateToolbar(false);
-                        mgr.loadData(true);
-                    } else {
-                        Swal.fire({ icon: 'error', text: msg });
-                    }
-                });
-        }
-    });
-};
-
-window.deleteSelected = function() {
-    const mgr = window.userManager;
-    if (!mgr || !mgr.selectedUserId) return;
-
-    Swal.fire({
-        icon: 'warning',
-        text: USER_LANG.confirm_delete,
-        showCancelButton: true,
-        confirmButtonColor: '#ba1a1a',
-        cancelButtonColor: '#6e7881',
-        confirmButtonText: USER_LANG.confirm_yes,
-        cancelButtonText: USER_LANG.confirm_no
-    }).then(result => {
-        if (result.isConfirmed) {
-            const formData = new FormData();
-            formData.append('delete[]', mgr.selectedUserId);
-
-            fetch(MODULE_URL + 'delete', { method: 'POST', body: formData })
-                .then(r => r.text())
-                .then(msg => {
-                    if (msg === 'Success') {
-                        mgr.selectedUserId = null;
-                        mgr.updateToolbar(false);
-                        mgr.loadData(true);
-                    } else {
-                        Swal.fire({ icon: 'error', text: msg });
-                    }
-                });
-        }
-    });
-};
-
-// Context menu handler
-window.handleContextAction = function(action) {
-    const id = window.currentContentId;
-    if (!id) return;
-
-    switch(action) {
-        case 'edit':
-            window.location.href = MODULE_URL + 'edit/' + id;
-            break;
-        case 'delete':
-            window.userManager.selectedUserId = id;
-            window.deleteSelected();
-            break;
-        case 'status':
-            const card = document.querySelector(`.user-card[data-id="${id}"]`);
-            const currentStatus = card ? card.dataset.status : 'n';
-            window.userManager.selectedUserId = id;
-            window.userManager.selectedStatus = currentStatus;
-            window.activateSelected();
-            break;
-    }
-    if (typeof closeContextMenu === 'function') closeContextMenu();
-};
-</script>
+<script src="/templates/admin/assets/js/mod_user.js?v=1.0"></script>
 {% endblock %}

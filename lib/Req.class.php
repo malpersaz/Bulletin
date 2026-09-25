@@ -228,4 +228,12 @@ class Req
     {
         return ((float)$a) > ((float)$b);
     }
+
+    // Check if the current request is an AJAX or JSON request
+    public static function is_Ajax()
+    {
+        return (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest')
+            || (!empty($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false)
+            || (!empty($_GET['is_ajax']) && ($_GET['is_ajax'] === '1' || $_GET['is_ajax'] === 'true'));
+    }
 }

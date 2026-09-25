@@ -99,5 +99,5 @@ $lang['management'] = [
     'no' => 'Na',
     'start_menu' => 'Menuya Destpêkê',
     'no_records_found' => 'Tiştek nehat dîtin',
-    'module_search_empty' => 'Ti modûl li gorî lêgerîna te nehat dîtin.',
+    'module_search_empty' => 'Modila tu lê digerî nehat dîtin.',
 ];
