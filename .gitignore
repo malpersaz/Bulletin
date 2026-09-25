@@ -9,6 +9,7 @@
 /cache/*
 !/cache/.htaccess
 /log/*.txt
+/log/*.log
 /logs/*.log
 /templates_c/*
 

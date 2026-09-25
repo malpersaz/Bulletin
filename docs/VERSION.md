@@ -1,3 +1,16 @@
+## v1.1.5 (2026-09-26)
+- **Model Context Protocol (MCP) Streamable HTTP Server & Domain Tooling**:
+  - Implemented root machine-facing MCP endpoint `mcp.php` over Streamable HTTP transport, strictly conforming to JSON-RPC 2.0 and MCP specifications with error suppression and output buffering recovery.
+  - Implemented core MCP helper `lib/McpCrudToolsBase.class.php` providing ORM model lookups, permission checks, base64 image decoding/resizing pipeline, and bridge relations cleanup.
+  - Implemented editorial news domain tooling `lib/McpNewsTools.class.php` for `mod_news` and `mod_news_category`, featuring 10 full CRUD tools, 90-120 character deck summary enforcement, SEO slug generation, and `{lang}/newses/{seo}` menu integration.
+  - Added domain tool implementations `lib/McpAnnouncementTools.class.php` and `lib/McpImageCategoryTools.class.php`.
+  - Implemented comprehensive `lib/McpServer.class.php` configured as `amed-rojname-mcp`, registering 140 tools across all active Rojname CMS domains (`news`, `publication`, `content`, `announcements`, `page`, `slider`, `headline`, `gallery`, `video`, `faq`, `document`, `attachment`, `imagecategories`, `survey`, `popup`, `redirect`, `menu`, `settings`, `seo`, and `acl`).
+  - Added self-healing admin module `mod/mod_mcp` with database models, installer schemas (`installer/mod_mcp/`), mobile-first phone templates (`templates/admin/mod_mcp/list.twig`), and decoupled assets (`templates/admin/assets/css/mod_mcp.css`, `templates/admin/assets/js/mod_mcp.js`).
+  - Integrated admin sidebar navigation in `mod/mod_user/index.php` and complete multi-language label coverage across all 9 locales in `mod/management/lang/`.
+  - Added automated test harnesses `tasks/mcp_bootstrap.php` and `tasks/mcp_smoke.php` (verifying 30/30 test assertions passed with 0 failures).
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.5`.
+
 ## v1.1.4 (2026-09-26)
 - **Framework Parity & Fatal Visibility Error Resolution (`Helper::time_ago`, `mod_news_helper`)**:
   - Resolved fatal inheritance visibility error `Fatal error: Access level to mod_news_helper::formatRelativeTime() must be public (as in class indexBase)` in `mod/index/helper/mod_news.helper.php`.

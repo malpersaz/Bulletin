@@ -66,6 +66,7 @@ $lang['management'] = [
     'pm_management_menu' => 'Meddelandehantering',
     'administration_menu' => 'Administration',
     'language_management_menu' => 'Språkhantering',
+    'mcp_api_keys' => 'MCP API-nycklar',
     'logout_menu' => 'Logga ut',
     'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'Snabbmeny',

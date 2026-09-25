@@ -66,6 +66,7 @@ $lang['management'] = [
     'pm_management_menu' => 'Rêveberiya Peyaman',
     'administration_menu' => 'Rêveberî',
     'language_management_menu' => 'Rêveberiya Ziman',
+    'mcp_api_keys' => 'Mifteyên API yên MCP',
     'logout_menu' => 'Derketin',
     'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'Pêşeka Lez',

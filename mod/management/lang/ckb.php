@@ -66,6 +66,7 @@ $lang['management'] = [
     'pm_management_menu' => 'بەڕێوەبردنی پەیامەکان',
     'administration_menu' => 'بەڕێوەبردن',
     'language_management_menu' => 'بەڕێوەبردنی زمان',
+    'mcp_api_keys' => 'کلیلەکانی APIی MCP',
     'logout_menu' => 'چوونەدەرەوە',
     'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'مێنووی خێرا',

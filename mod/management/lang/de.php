@@ -66,6 +66,7 @@ $lang['management'] = [
     'pm_management_menu' => 'Nachrichtenverwaltung',
     'administration_menu' => 'Verwaltung',
     'language_management_menu' => 'Sprachverwaltung',
+    'mcp_api_keys' => 'MCP-API-Schlüssel',
     'logout_menu' => 'Abmelden',
     'google_services_hub' => 'Google Services Hub',
     'quick_menu' => 'Schnellmenü',

@@ -1469,6 +1469,9 @@ Rêgezên te yên sereke:
                     $mod('mod_settings', 'edit', $management['language_management_menu'], 'bi bi-translate', [
                         $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'lang/panel'),
                     ]),
+                    $mod('mod_mcp', 'list', $management['mcp_api_keys'], 'bi bi-plug-fill', [
+                        $list('mod_mcp', 'list', $base . 'mod_mcp/list'),
+                    ]),
                 ]),
             ],
         ];
@@ -1524,6 +1527,7 @@ Rêgezên te yên sereke:
             [$management_lang, ['management', 'acl']],
             [$management_lang, ['management', 'page_management']],
             [$management_lang, ['management', 'language_management_menu']],
+            [$management_lang, ['management', 'mcp_api_keys']],
             [$management_lang, ['management', 'settings']],
             [$management_lang, ['management', 'announcement_management']],
             [$video_embed_lang, ['mod_video_embed', 'list']],
