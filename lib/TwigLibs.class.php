@@ -129,7 +129,8 @@ class TwigLibs extends AbstractExtension
 
     public function timeAgoFilter($datetime): string
     {
-        return Helper::format_relative_time($datetime);
+        $lang = $this->ctx->get('lang') ?? ($GLOBALS['lang']['index'] ?? null);
+        return Helper::time_ago($datetime, $lang);
     }
 
     public function formatDateFilter(int $timestamp): string

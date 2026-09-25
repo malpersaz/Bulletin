@@ -244,9 +244,9 @@ class mod_publication_helper extends indexBase
         return [];
     }
 
-    public function formatRelativeTime($datetime): string
+    private function formatRelativeTime($datetime)
     {
-        return parent::formatRelativeTime($datetime);
+        return Helper::time_ago($datetime, $this->lang['index'] ?? null);
     }
 
     public function authors($page = 1, $page_limit = 12)

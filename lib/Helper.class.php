@@ -221,9 +221,9 @@ class Helper
     }
 
     /**
-     * Formats a relative time string according to localized dictionary definitions.
+     * Formats a relative time string according to localized dictionary definitions (Amed Framework standard).
      */
-    public static function format_relative_time($datetime, $trans = null): string
+    public static function time_ago($datetime, $lang = null): string
     {
         if (empty($datetime)) {
             return '';
@@ -243,43 +243,63 @@ class Helper
             return '';
         }
 
-        if (!is_array($trans) || empty($trans)) {
-            $langData = Load::lang('index');
-            $trans = $langData['index']['time_ago'] ?? [];
+        $timeLang = null;
+        if (is_array($lang)) {
+            $timeLang = isset($lang['time_ago']) && is_array($lang['time_ago']) ? $lang['time_ago'] : (isset($lang['index']['time_ago']) && is_array($lang['index']['time_ago']) ? $lang['index']['time_ago'] : $lang);
+        }
+
+        if (!is_array($timeLang) || empty($timeLang)) {
+            if (isset($GLOBALS['lang']['index']['time_ago']) && is_array($GLOBALS['lang']['index']['time_ago'])) {
+                $timeLang = $GLOBALS['lang']['index']['time_ago'];
+            } elseif (isset($GLOBALS['lang']['time_ago']) && is_array($GLOBALS['lang']['time_ago'])) {
+                $timeLang = $GLOBALS['lang']['time_ago'];
+            }
+        }
+
+        if (!is_array($timeLang) || empty($timeLang)) {
+            if (class_exists('Load') && method_exists('Load', 'lang')) {
+                $loaded = Load::lang('index');
+                $timeLang = isset($loaded['index']['time_ago']) && is_array($loaded['index']['time_ago']) ? $loaded['index']['time_ago'] : [];
+            }
         }
 
         if ($diff->y > 0) {
-            $format = ($diff->y === 1)
-                ? ($trans['year_ago'] ?? '%d year ago')
-                : ($trans['years_ago'] ?? '%d years ago');
-            return sprintf($format, $diff->y);
+            $key = $diff->y === 1 ? 'year' : 'years';
+            $fallbackKey = $diff->y === 1 ? 'year_ago' : 'years_ago';
+            $template = $timeLang[$key] ?? $timeLang[$fallbackKey] ?? ($diff->y === 1 ? '%d year ago' : '%d years ago');
+            return sprintf($template, $diff->y);
         }
         if ($diff->m > 0) {
-            $format = ($diff->m === 1)
-                ? ($trans['month_ago'] ?? '%d month ago')
-                : ($trans['months_ago'] ?? '%d months ago');
-            return sprintf($format, $diff->m);
+            $key = $diff->m === 1 ? 'month' : 'months';
+            $fallbackKey = $diff->m === 1 ? 'month_ago' : 'months_ago';
+            $template = $timeLang[$key] ?? $timeLang[$fallbackKey] ?? ($diff->m === 1 ? '%d month ago' : '%d months ago');
+            return sprintf($template, $diff->m);
         }
         if ($diff->d > 0) {
-            $format = ($diff->d === 1)
-                ? ($trans['day_ago'] ?? '%d day ago')
-                : ($trans['days_ago'] ?? '%d days ago');
-            return sprintf($format, $diff->d);
+            $key = $diff->d === 1 ? 'day' : 'days';
+            $fallbackKey = $diff->d === 1 ? 'day_ago' : 'days_ago';
+            $template = $timeLang[$key] ?? $timeLang[$fallbackKey] ?? ($diff->d === 1 ? '%d day ago' : '%d days ago');
+            return sprintf($template, $diff->d);
         }
         if ($diff->h > 0) {
-            $format = ($diff->h === 1)
-                ? ($trans['hour_ago'] ?? '%d hour ago')
-                : ($trans['hours_ago'] ?? '%d hours ago');
-            return sprintf($format, $diff->h);
+            $key = $diff->h === 1 ? 'hour' : 'hours';
+            $fallbackKey = $diff->h === 1 ? 'hour_ago' : 'hours_ago';
+            $template = $timeLang[$key] ?? $timeLang[$fallbackKey] ?? ($diff->h === 1 ? '%d hour ago' : '%d hours ago');
+            return sprintf($template, $diff->h);
         }
         if ($diff->i > 0) {
-            $format = ($diff->i === 1)
-                ? ($trans['minute_ago'] ?? '%d minute ago')
-                : ($trans['minutes_ago'] ?? '%d minutes ago');
-            return sprintf($format, $diff->i);
+            $key = $diff->i === 1 ? 'minute' : 'minutes';
+            $fallbackKey = $diff->i === 1 ? 'minute_ago' : 'minutes_ago';
+            $template = $timeLang[$key] ?? $timeLang[$fallbackKey] ?? ($diff->i === 1 ? '%d minute ago' : '%d minutes ago');
+            return sprintf($template, $diff->i);
         }
 
-        return $trans['just_now'] ?? 'Just now';
+        return isset($timeLang['just_now']) ? $timeLang['just_now'] : 'Just now';
+    }
+
+    public static function format_relative_time($datetime, $trans = null): string
+    {
+        return self::time_ago($datetime, $trans);
     }
 
     // Build a nested array based on given parameters

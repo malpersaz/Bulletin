@@ -288,9 +288,9 @@ class mod_hero_slider_helper extends indexBase
         ];
     }
 
-    public function formatRelativeTime($datetime): string
+    private function formatRelativeTime($datetime)
     {
-        return parent::formatRelativeTime($datetime);
+        return Helper::time_ago($datetime, $this->lang['index'] ?? null);
     }
 
     private function buildAuthorInitials($author_name)

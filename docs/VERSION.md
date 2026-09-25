@@ -1,3 +1,14 @@
+## v1.1.4 (2026-09-26)
+- **Framework Parity & Fatal Visibility Error Resolution (`Helper::time_ago`, `mod_news_helper`)**:
+  - Resolved fatal inheritance visibility error `Fatal error: Access level to mod_news_helper::formatRelativeTime() must be public (as in class indexBase)` in `mod/index/helper/mod_news.helper.php`.
+  - Harmonized with `AF/Business` framework core standard by removing `formatRelativeTime()` from `mod/index/indexBase.php` to prevent restrictive method signatures on subclasses.
+  - Implemented centralized `Helper::time_ago($datetime, $lang = null)` in `lib/Helper.class.php` in strict parity with `AF/Business`, supporting `DateTime` instances, unix timestamps, and string dates with automated fallback dictionary lookup.
+  - Refactored `mod_news_helper`, `mod_hero_slider_helper`, and `mod_publication_helper` to delegate cleanly to `Helper::time_ago($datetime, $this->lang['index'] ?? null)` with `private` visibility matching `AF/Business`.
+  - Aligned Twig filter `time_ago` in `lib/TwigLibs.class.php` to supply template context language directly to `Helper::time_ago($datetime, $lang)`.
+  - Standardized relative time localization dictionaries (`time_ago`) across all 9 supported languages (`ku`, `en`, `tr`, `de`, `fr`, `ar`, `ckb`, `sv`, `zza`) in `mod/index/lang/` using canonical `AF/Business` keys (`second`, `seconds`, `minute`, `minutes`, `hour`, `hours`, `day`, `days`, `month`, `months`, `year`, `years`, `just_now`).
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.4`.
+
 ## v1.1.3 (2026-09-26)
 - **Internationalization & Relative Time Localization (`time_ago` / "Hour Ago")**:
   - Added standardized multi-language relative time dictionary (`time_ago`) across all 9 supported languages (`ku`, `en`, `tr`, `ar`, `ckb`, `de`, `fr`, `sv`, `zza`) in `mod/index/lang/`, providing localized formats for minutes, hours, days, months, years, and just now.

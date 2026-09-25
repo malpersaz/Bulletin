@@ -67,15 +67,6 @@ abstract class indexBase
         $this->session = Load::lib('Session');
     }
 
-    /**
-     * Formats relative time utilizing current site language dictionary.
-     */
-    public function formatRelativeTime($datetime): string
-    {
-        $trans = $this->lang['index']['time_ago'] ?? null;
-        return Helper::format_relative_time($datetime, $trans);
-    }
-
     public function _index()
     {
         $this->_site();
