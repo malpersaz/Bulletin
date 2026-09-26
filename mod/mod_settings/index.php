@@ -1647,7 +1647,7 @@ class mod_settings_mod extends indexMain
             try {
                 $generator = Load::lib('BrandAssetGenerator');
                 $generator->generateMultiSizeThumbnails($symbol_path);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
         }
 
@@ -1669,7 +1669,7 @@ class mod_settings_mod extends indexMain
             try {
                 $generator = Load::lib('BrandAssetGenerator');
                 $generator->generateMultiSizeThumbnails($square_path);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
 
         }
@@ -1721,7 +1721,7 @@ class mod_settings_mod extends indexMain
             try {
                 $generator = Load::lib('BrandAssetGenerator');
                 $generator->generateRectThumbnail($rect_path);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
         }
 
@@ -2215,7 +2215,7 @@ class mod_settings_mod extends indexMain
         try {
             $generator = Load::lib('BrandAssetGenerator');
             $generator->ensureThumbnailsExist();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
         }
 
         $verify_asset_file = function ($filename) {
@@ -2554,7 +2554,7 @@ class mod_settings_mod extends indexMain
             try {
                 $generator = Load::lib('BrandAssetGenerator');
                 $generator->generateMultiSizeThumbnails($square_path);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
         } elseif ($step === 2) {
             // Rectangle Logo (logo_path)
@@ -2575,7 +2575,7 @@ class mod_settings_mod extends indexMain
                     'name' => isset($setting->site_name) ? $setting->site_name : '',
                     'description' => isset($setting->description) ? $setting->description : '',
                 ]);
-            } catch (Exception $e) {
+            } catch (Throwable $e) {
             }
         }
 

@@ -1,3 +1,17 @@
+## v1.1.8 (2026-09-26)
+- **Brand Asset Generation & Logo Management Modal Parity (`lib/BrandAssetGenerator`, `modal_theme_logo.js`, `mod_settings`)**:
+  - Resolved fatal uncaught `Error: Call to undefined method BrandAssetGenerator::ensureThumbnailsExist()` triggering `Çewtiyek çêbû.` failure in admin logo and icon management modal (`#logo-icon-management-modal`).
+  - Upgraded `lib/BrandAssetGenerator.class.php` to include complete multi-size thumbnail pipeline (`ensureThumbnailsExist`, `generateMultiSizeThumbnails`, `generateRectThumbnail`, `generateSquarePng`, `generateRectPng`, `ensureThumbDirectory`, `ensureManifestExists`) with robust GD library fallback when Imagick is unavailable.
+  - Aligned `mod/mod_settings/index.php` try-catch blocks to catch `Throwable` instead of `Exception`, ensuring unexpected image processing errors fail gracefully without crashing JSON AJAX responses.
+  - Updated `templates/admin/assets/js/modals/modal_theme_logo.js` with module registration (`loadedModules['modal_theme_logo']`), URL/locale-aware language resolution (`getLogoModalLang()`), POST request handling with `FormData`, Material 3 design token styling, and asset hierarchy alignment.
+- **Latest News Broadsheet Super Polish (`templates/amida/index/mod_news/latest_news.twig`, `templates/amida/static/css/latest-news.css`)**:
+  - Elevated editorial card grid with semantic Schema.org microdata (`NewsArticle`, `headline`, `image`, `datePublished`, `description`, `url`).
+  - Integrated dynamic media type indicator badges (`.latest-news-type-badges`) for video (`.latest-news-type-badge-video`) and gallery (`.latest-news-type-badge-gallery`) content.
+  - Enforced CLS layout stability with responsive dimension attributes (`width="640"`, `height="360"`), `loading="lazy"`, and `decoding="async"`.
+  - Refined editorial card action with accessible text link `.latest-news-read-more` (`Zêdetir Bixwîne`), high-contrast focus rings (`:focus-visible`), and reduced motion media queries (`prefers-reduced-motion`).
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.8`.
+
 ## v1.1.7 (2026-09-26)
 - **Open Graph & Social Share Preview Image Parity (`templates/amida/index/`)**:
   - Resolved missing social media preview image issue on WhatsApp, Facebook, X (Twitter), and Telegram by eliminating artificial `.webp` to `.jpg` string replacements across detail templates (`mod_news/news.twig`, `mod_content/content.twig`, `mod_page/page.twig`, and `mod_announcements/announcement.twig`).

@@ -2,6 +2,10 @@
  * Site Settings, Theme, Logo & Stats Modal Sub-Module
  */
 
+if (typeof window.AFModalEngine !== 'undefined' && window.AFModalEngine.loadedModules) {
+    window.AFModalEngine.loadedModules['modal_theme_logo'] = true;
+}
+
 function openSiteSettingsMenuModal() {
     if (typeof closeUserMenuSheet === 'function') closeUserMenuSheet(true);
     const modal = document.getElementById('site-settings-menu-modal');
@@ -312,38 +316,56 @@ function goBackFromLogoIconManagementModal() {
     openSiteSettingsMenuModal();
 }
 
+function getLogoModalLang() {
+    if (typeof SITE_LANG !== 'undefined' && SITE_LANG) return SITE_LANG;
+    if (typeof adminLang !== 'undefined' && adminLang.filter && adminLang.filter.default_lang) return adminLang.filter.default_lang;
+    if (typeof adminLang !== 'undefined' && adminLang.date_locale) return adminLang.date_locale;
+    const match = window.location.pathname.match(/\/([a-z]{2,3})\//i);
+    if (match && match[1]) return match[1].toLowerCase();
+    return 'en';
+}
+
 function loadLogoIconAjax() {
     const container = document.getElementById('logoIconModalBody');
     if (!container) return;
     const siteUrl = typeof SITE_URL !== 'undefined' ? SITE_URL : '';
+    const currentLang = getLogoModalLang();
     const lang = ((typeof adminLang !== "undefined" ? adminLang : {}) && (typeof adminLang !== "undefined" ? adminLang : {}).mod_settings) || {};
     const loadingMsg = lang.loading_message || 'Loading...';
 
-    container.innerHTML = '<div style="text-align: center; padding: 20px; color: var(--md-sys-color-on-surface-variant, #49454F);"><i class="bi bi-arrow-repeat" style="font-size: 24px; display: inline-block; animation: spin 1s infinite linear;"></i><p style="margin-top: 8px;">' + loadingMsg + '</p></div>';
+    container.innerHTML = '<div style="text-align: center; padding: 24px; color: var(--md-sys-color-on-surface-variant, #49454F);"><i class="bi bi-arrow-repeat" style="font-size: 26px; display: inline-block; animation: spin 1s infinite linear;"></i><p style="margin-top: 8px; font-weight: 600; font-size: 13px;">' + loadingMsg + '</p></div>';
 
-    fetch(siteUrl + 'mod_settings/ajax_get_logo_icon_data')
+    const formData = new FormData();
+    formData.append('lang', currentLang);
+
+    fetch(siteUrl + 'mod_settings/ajax_get_logo_icon_data', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        credentials: 'same-origin',
+        body: formData
+    })
         .then(res => res.json())
         .then(data => {
             if (data.status === 'success' && data.data) {
                 renderLogoIconModalBody(data.data);
             } else {
-                container.innerHTML = '<p style="color: red; text-align: center;">' + (data.message || (lang.generic_error || 'Failed to load logo & icon data.')) + '</p>';
+                container.innerHTML = '<p style="color: var(--md-sys-color-error, #ba1a1a); text-align: center; padding: 20px;">' + (data.message || (lang.generic_error || 'Failed to load logo & icon data.')) + '</p>';
             }
         })
         .catch(err => {
             console.error(err);
-            container.innerHTML = '<p style="color: red; text-align: center;">' + (lang.generic_error || 'An error occurred while loading logo & icon settings.') + '</p>';
+            container.innerHTML = '<p style="color: var(--md-sys-color-error, #ba1a1a); text-align: center; padding: 20px;">' + (lang.generic_error || 'An error occurred while loading logo & icon settings.') + '</p>';
         });
 }
 
 function getSiteAssetUrl() {
+    let url = '/';
     if (typeof SITE_ADDRESS !== 'undefined' && SITE_ADDRESS) {
-        return SITE_ADDRESS;
+        url = SITE_ADDRESS;
+    } else if (typeof SITE_URL !== 'undefined' && SITE_URL) {
+        url = SITE_URL.replace(/\/[a-z]{2,3}\/$/i, '/');
     }
-    if (typeof SITE_URL !== 'undefined' && SITE_URL) {
-        return SITE_URL.replace(/\/[a-z]{2,3}\/$/i, '/');
-    }
-    return '/';
+    return url.endsWith('/') ? url : url + '/';
 }
 
 function renderLogoIconModalBody(d) {
@@ -391,6 +413,104 @@ function renderLogoIconModalBody(d) {
 
     let html = `
         <div style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Assets Side-by-Side Upload Cards (Primary Section at Top) -->
+            <div style="background: #ffffff; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline-variant, #E7E0EC); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
+                    <h4 style="margin: 0; font-size: 14px; font-weight: 700; color: var(--md-sys-color-on-surface, #1C1B1F);">${assetsTitle}</h4>
+                </div>
+                <p style="margin: 0 0 14px 0; font-size: 11px; line-height: 1.45; color: var(--md-sys-color-on-surface-variant, #49454F);">${logoHelpText}</p>
+
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <!-- Rectangle Logo (3:1) Card -->
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="font-size: 12px; font-weight: 700; color: #0f172a;">${logoRectTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
+                                <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: #e0e7ff; color: #3730a3;">3:1</span>
+                            </div>
+                            ${d.logo_path ? `
+                                <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('logo_path')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;" title="${deleteText}">
+                                    <i class="bi bi-trash" style="font-size: 11px;"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <div style="position: relative; width: 100%; height: 80px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputRect').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
+                            ${d.logo_path ? `
+                                <img src="${siteAssetUrl}static/mod_settings/${d.logo_path}?t=${timestamp}" style="max-width: 90%; max-height: 90%; object-fit: contain; padding: 4px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.logo_path}';">
+                            ` : `
+                                <div style="text-align: center; color: #6366f1;">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size: 24px; display: block; margin-bottom: 2px;"></i>
+                                    <span style="display: block; font-size: 10px; font-weight: 600;">${logoRectTitle}</span>
+                                </div>
+                            `}
+                        </div>
+                        <input type="file" id="modalInputRect" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 2)">
+                    </div>
+
+                    <!-- Square Logo & Favicon Side-by-Side Row -->
+                    <div style="display: flex; gap: 12px; align-items: stretch;">
+                        <!-- Square Logo (1:1) -->
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <span style="font-size: 11.5px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${logoSquareTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
+                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 5px; background: #e0e7ff; color: #3730a3;">1:1</span>
+                                    </div>
+                                    ${d.site_icon ? `
+                                        <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('site_icon')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;" title="${deleteText}">
+                                            <i class="bi bi-trash" style="font-size: 11px;"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+
+                                <div style="position: relative; width: 100%; height: 75px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputSquare').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
+                                    ${d.site_icon ? `
+                                        <img src="${siteAssetUrl}static/mod_settings/${d.site_icon}?t=${timestamp}" style="max-width: 88%; max-height: 88%; object-fit: contain; padding: 2px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.site_icon}';">
+                                    ` : `
+                                        <div style="text-align: center; color: #6366f1;">
+                                            <i class="bi bi-cloud-arrow-up" style="font-size: 20px; display: block;"></i>
+                                            <span style="display: block; font-size: 9px; font-weight: 600;">${logoSquareTitle}</span>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                            <input type="file" id="modalInputSquare" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 1)">
+                        </div>
+
+                        <!-- Favicon (1:1) -->
+                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 4px;">
+                                        <span style="font-size: 11.5px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${logoSymbolTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
+                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 5px; background: #e0e7ff; color: #3730a3;">1:1</span>
+                                    </div>
+                                    ${d.logo_symbol ? `
+                                        <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('logo_symbol')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s;" title="${deleteText}">
+                                            <i class="bi bi-trash" style="font-size: 11px;"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
+
+                                <div style="position: relative; width: 100%; height: 75px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputSymbol').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
+                                    ${d.logo_symbol ? `
+                                        <img src="${siteAssetUrl}static/mod_settings/${d.logo_symbol}?t=${timestamp}" style="max-width: 88%; max-height: 88%; object-fit: contain; padding: 2px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.logo_symbol}';">
+                                    ` : `
+                                        <div style="text-align: center; color: #6366f1;">
+                                            <i class="bi bi-circle-square" style="font-size: 20px; display: block;"></i>
+                                            <span style="display: block; font-size: 9px; font-weight: 600;">${logoSymbolTitle}</span>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                            <input type="file" id="modalInputSymbol" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 3)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Header Display Style Section -->
             <div style="background: var(--md-sys-color-surface-variant, #F4EFF4); padding: 14px; border-radius: 14px;">
                 <h4 style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: var(--md-sys-color-on-surface, #1C1B1F);">${headerTitle}</h4>
@@ -435,104 +555,6 @@ function renderLogoIconModalBody(d) {
                             <span style="font-size: 12px; font-weight: 600;">${styleNameOnly}</span>
                         </div>
                         ${logoType === 'name_only' ? '<i class="bi bi-check-circle-fill" style="color: var(--md-sys-color-primary, #6750A4);"></i>' : ''}
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assets Side-by-Side Upload Cards -->
-            <div style="background: #ffffff; padding: 16px; border-radius: 16px; border: 1px solid var(--md-sys-color-outline-variant, #E7E0EC); box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px;">
-                    <h4 style="margin: 0; font-size: 13.5px; font-weight: 700; color: var(--md-sys-color-on-surface, #1C1B1F);">${assetsTitle}</h4>
-                </div>
-                <p style="margin: 0 0 14px 0; font-size: 11px; line-height: 1.45; color: var(--md-sys-color-on-surface-variant, #49454F);">${logoHelpText}</p>
-
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <!-- Rectangle Logo (3:1) Card -->
-                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px;">
-                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                            <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 12px; font-weight: 700; color: #0f172a;">${logoRectTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
-                                <span style="font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 6px; background: #e0e7ff; color: #3730a3;">3:1</span>
-                            </div>
-                            ${d.logo_path ? `
-                                <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('logo_path')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;" title="${deleteText}">
-                                    <i class="bi bi-trash" style="font-size: 11px;"></i>
-                                </button>
-                            ` : ''}
-                        </div>
-
-                        <div style="position: relative; width: 100%; height: 80px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputRect').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
-                            ${d.logo_path ? `
-                                <img src="${siteAssetUrl}static/mod_settings/${d.logo_path}?t=${timestamp}" style="max-width: 90%; max-height: 90%; object-fit: contain; padding: 4px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.logo_path}';">
-                            ` : `
-                                <div style="text-align: center; color: #6366f1;">
-                                    <i class="bi bi-cloud-arrow-up" style="font-size: 24px; display: block; margin-bottom: 2px;"></i>
-                                    <span style="display: block; font-size: 10px; font-weight: 600;">${logoRectTitle}</span>
-                                </div>
-                            `}
-                        </div>
-                        <input type="file" id="modalInputRect" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 2)">
-                    </div>
-
-                    <!-- Square Logo & Favicon Side-by-Side Row -->
-                    <div style="display: flex; gap: 12px; align-items: stretch;">
-                        <!-- Square Logo (1:1) -->
-                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                                    <div style="display: flex; align-items: center; gap: 4px;">
-                                        <span style="font-size: 11.5px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${logoSquareTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
-                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 5px; background: #e0e7ff; color: #3730a3;">1:1</span>
-                                    </div>
-                                    ${d.site_icon ? `
-                                        <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('site_icon')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;" title="${deleteText}">
-                                            <i class="bi bi-trash" style="font-size: 11px;"></i>
-                                        </button>
-                                    ` : ''}
-                                </div>
-
-                                <div style="position: relative; width: 100%; height: 75px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputSquare').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
-                                    ${d.site_icon ? `
-                                        <img src="${siteAssetUrl}static/mod_settings/${d.site_icon}?t=${timestamp}" style="max-width: 88%; max-height: 88%; object-fit: contain; padding: 2px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.site_icon}';">
-                                    ` : `
-                                        <div style="text-align: center; color: #6366f1;">
-                                            <i class="bi bi-cloud-arrow-up" style="font-size: 20px; display: block;"></i>
-                                            <span style="display: block; font-size: 9px; font-weight: 600;">${logoSquareTitle}</span>
-                                        </div>
-                                    `}
-                                </div>
-                            </div>
-                            <input type="file" id="modalInputSquare" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 1)">
-                        </div>
-
-                        <!-- Favicon (1:1) -->
-                        <div style="flex: 1; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between;">
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                                    <div style="display: flex; align-items: center; gap: 4px;">
-                                        <span style="font-size: 11.5px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${logoSymbolTitle.replace(/\s*\(\d+:\d+\)/, '')}</span>
-                                        <span style="font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 5px; background: #e0e7ff; color: #3730a3;">1:1</span>
-                                    </div>
-                                    ${d.logo_symbol ? `
-                                        <button type="button" onclick="event.stopPropagation(); removeLogoAssetModalAjax('logo_symbol')" style="width: 24px; height: 24px; border-radius: 6px; background: #fee2e2; color: #dc2626; border: none; display: inline-flex; align-items: center; justify-content: center; cursor: pointer;" title="${deleteText}">
-                                            <i class="bi bi-trash" style="font-size: 11px;"></i>
-                                        </button>
-                                    ` : ''}
-                                </div>
-
-                                <div style="position: relative; width: 100%; height: 75px; border: 2px dashed #cbd5e1; border-radius: 10px; display: flex; align-items: center; justify-content: center; overflow: hidden; background-color: #ffffff; background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f1f5f9 75%), linear-gradient(-45deg, transparent 75%, #f1f5f9 75%); background-size: 16px 16px; background-position: 0 0, 0 8px, 8px -8px, -8px 0px; cursor: pointer; transition: border-color 0.2s;" onclick="document.getElementById('modalInputSymbol').click()" onmouseover="this.style.borderColor='#6366f1';" onmouseout="this.style.borderColor='#cbd5e1';">
-                                    ${d.logo_symbol ? `
-                                        <img src="${siteAssetUrl}static/mod_settings/${d.logo_symbol}?t=${timestamp}" style="max-width: 88%; max-height: 88%; object-fit: contain; padding: 2px;" onerror="this.onerror=null; this.src='${siteAssetUrl}static/mod_settings/${d.logo_symbol}';">
-                                    ` : `
-                                        <div style="text-align: center; color: #6366f1;">
-                                            <i class="bi bi-circle-square" style="font-size: 20px; display: block;"></i>
-                                            <span style="display: block; font-size: 9px; font-weight: 600;">${logoSymbolTitle}</span>
-                                        </div>
-                                    `}
-                                </div>
-                            </div>
-                            <input type="file" id="modalInputSymbol" style="display:none;" accept="image/*" onchange="processSelectedLogoModalImage(this, 3)">
-                        </div>
                     </div>
                 </div>
             </div>
@@ -880,7 +902,7 @@ function processSelectedLogoModalImage(input, step) {
 
 function uploadLogoImageModalAjax(step, base64Data) {
     const siteUrl = typeof SITE_URL !== 'undefined' ? SITE_URL : '';
-    const currentLang = (typeof SITE_LANG !== 'undefined' && SITE_LANG) ? SITE_LANG : 'en';
+    const currentLang = getLogoModalLang();
 
     const formData = new FormData();
     formData.append('step', step);
@@ -917,7 +939,7 @@ function removeLogoAssetModalAjax(field) {
     const confirmText = lang.confirm_remove_asset || 'Are you sure you want to remove this asset?';
     if (!confirm(confirmText)) return;
     const siteUrl = typeof SITE_URL !== 'undefined' ? SITE_URL : '';
-    const currentLang = (typeof SITE_LANG !== 'undefined' && SITE_LANG) ? SITE_LANG : 'en';
+    const currentLang = getLogoModalLang();
 
     const formData = new FormData();
     formData.append('field', field);
