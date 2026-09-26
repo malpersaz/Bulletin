@@ -445,12 +445,12 @@
 							<article class="news-24h-item" itemscope itemtype="https://schema.org/NewsArticle">
 								<a href="{{ site.saddress }}news/{{ item.seo }}"
 								   class="news-24h-media"
-								   title="{{ item.name }}"
+								   title="{{ item.name|striptags }}"
 								   itemprop="url">
 									{% if item.image is not empty %}
 										<img src="{{ site.iaddress }}mod_news/{{ item.image }}"
 											 class="news-24h-img"
-											 alt="{{ item.name }}"
+											 alt="{{ item.name|striptags }}"
 											 width="180"
 											 height="120"
 											 loading="lazy"
@@ -465,8 +465,8 @@
 
 								<div class="news-24h-content">
 									<h4 class="news-24h-headline" itemprop="headline">
-										<a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url">
-											{{ item.name }}
+										<a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url" title="{{ item.name|striptags }}">
+											{{ item.name|striptags }}
 										</a>
 									</h4>
 

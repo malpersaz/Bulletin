@@ -62,7 +62,18 @@ class mod_news_helper extends indexBase
             } else {
                 $this->_mod_attachment('mod_news', $news->id);
             }
-            $this->tema->ctx_set('d', $news->toArray());
+            $cleanText = function ($str) {
+                return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            };
+
+            $news_data = $news->toArray();
+            if (isset($news_data['name'])) {
+                $news_data['name'] = $cleanText($news_data['name']);
+            }
+            if (isset($news_data['summary'])) {
+                $news_data['summary'] = $cleanText($news_data['summary']);
+            }
+            $this->tema->ctx_set('d', $news_data);
 
             $news_24h_model = Load::model('mod_news');
             $news_24h_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id')
@@ -79,6 +90,10 @@ class mod_news_helper extends indexBase
                 $items = $news_24h_model->toArray();
                 if (is_array($items)) {
                     foreach ($items as &$item) {
+                        $item['name'] = $cleanText($item['name']);
+                        if (isset($item['summary'])) {
+                            $item['summary'] = $cleanText($item['summary']);
+                        }
                         $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                         $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                         $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
@@ -128,6 +143,10 @@ class mod_news_helper extends indexBase
             if ($news->getSize() != 0) {
                 $news_items = $news->toArray();
                 foreach ($news_items as &$item) {
+                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    if (isset($item['summary'])) {
+                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
                     $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                     $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                     $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
@@ -147,6 +166,10 @@ class mod_news_helper extends indexBase
             if ($news->getSize() !== 0) {
                 $news_items = $news->toArray();
                 foreach ($news_items as &$item) {
+                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    if (isset($item['summary'])) {
+                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
                     $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                     $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                     $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
@@ -218,6 +241,10 @@ class mod_news_helper extends indexBase
             $items = $m->toArray();
             if (is_array($items)) {
                 foreach ($items as &$item) {
+                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    if (isset($item['summary'])) {
+                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
                     $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                     $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                     $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
