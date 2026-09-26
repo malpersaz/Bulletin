@@ -20,8 +20,7 @@
 
 {% set content_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set content_share_image = d.image is not empty ? site.iaddress ~ 'mod_content/' ~ d.image : content_logo_asset %}
-{% set content_share_jpg = content_share_image matches '/\\.webp$/i' ? content_share_image|replace({'.webp': '.jpg'}) : content_share_image %}
-{% set content_share_ext = content_share_jpg|split('?')|first|split('.')|last|lower %}
+{% set content_share_ext = content_share_image|split('?')|first|split('.')|last|lower %}
 {% set content_share_mime = content_share_ext == 'png' ? 'image/png' : (content_share_ext == 'webp' ? 'image/webp' : (content_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 
 {% block canonical %}
@@ -47,12 +46,18 @@
 	<meta property="og:title" content="{{ d.title|default(d.name) }}">
 	<meta property="og:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if content_share_image is not empty %}
-		<meta property="og:image" content="{{ content_share_jpg }}">
-		<meta property="og:image:secure_url" content="{{ content_share_jpg }}">
+		<meta property="og:image" content="{{ content_share_image }}">
+		<meta property="og:image:secure_url" content="{{ content_share_image }}">
 		<meta property="og:image:type" content="{{ content_share_mime }}">
-		<meta property="og:image:width" content="1200">
-		<meta property="og:image:height" content="630">
-		<link rel="image_src" href="{{ content_share_jpg }}">
+		{% if d.image is not empty %}
+			<meta property="og:image:width" content="1200">
+			<meta property="og:image:height" content="630">
+		{% else %}
+			<meta property="og:image:width" content="300">
+			<meta property="og:image:height" content="300">
+		{% endif %}
+		<meta property="og:image:alt" content="{{ d.title|default(d.name) }}">
+		<link rel="image_src" href="{{ content_share_image }}">
 	{% endif %}
 	<meta property="og:site_name" content="{{ site.title }}">
     {% set og_locale = site.lang %}
@@ -74,7 +79,7 @@
 	<meta name="twitter:title" content="{{ d.title|default(d.name) }}">
 	<meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if content_share_image is not empty %}
-		<meta name="twitter:image" content="{{ content_share_jpg }}">
+		<meta name="twitter:image" content="{{ content_share_image }}">
 	{% endif %}
 {% endblock %}
 

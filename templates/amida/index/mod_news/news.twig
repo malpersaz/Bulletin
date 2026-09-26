@@ -20,8 +20,7 @@
 
 {% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
-{% set news_share_jpg = news_share_image matches '/\\.webp$/i' ? news_share_image|replace({'.webp': '.jpg'}) : news_share_image %}
-{% set news_share_ext = news_share_jpg|split('?')|first|split('.')|last|lower %}
+{% set news_share_ext = news_share_image|split('?')|first|split('.')|last|lower %}
 {% set news_share_mime = news_share_ext == 'png' ? 'image/png' : (news_share_ext == 'webp' ? 'image/webp' : (news_share_ext == 'gif' ? 'image/gif' : 'image/jpeg')) %}
 
 {% block canonical %}
@@ -47,12 +46,18 @@
 	<meta property="og:title" content="{{ d.title|default(d.name) }}">
 	<meta property="og:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if news_share_image is not empty %}
-		<meta property="og:image" content="{{ news_share_jpg }}">
-		<meta property="og:image:secure_url" content="{{ news_share_jpg }}">
+		<meta property="og:image" content="{{ news_share_image }}">
+		<meta property="og:image:secure_url" content="{{ news_share_image }}">
 		<meta property="og:image:type" content="{{ news_share_mime }}">
-		<meta property="og:image:width" content="1200">
-		<meta property="og:image:height" content="630">
-		<link rel="image_src" href="{{ news_share_jpg }}">
+		{% if d.image is not empty %}
+			<meta property="og:image:width" content="1200">
+			<meta property="og:image:height" content="630">
+		{% else %}
+			<meta property="og:image:width" content="300">
+			<meta property="og:image:height" content="300">
+		{% endif %}
+		<meta property="og:image:alt" content="{{ d.title|default(d.name) }}">
+		<link rel="image_src" href="{{ news_share_image }}">
 	{% endif %}
 	<meta property="og:site_name" content="{{ site.title }}">
     {% set og_locale = site.lang %}
@@ -76,7 +81,7 @@
 	<meta name="twitter:title" content="{{ d.title|default(d.name) }}">
 	<meta name="twitter:description" content="{{ d.description|striptags|slice(0, 200) }}">
 	{% if news_share_image is not empty %}
-		<meta name="twitter:image" content="{{ news_share_jpg }}">
+		<meta name="twitter:image" content="{{ news_share_image }}">
 	{% endif %}
 {% endblock %}
 

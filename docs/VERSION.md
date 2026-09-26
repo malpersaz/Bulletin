@@ -1,3 +1,13 @@
+## v1.1.7 (2026-09-26)
+- **Open Graph & Social Share Preview Image Parity (`templates/amida/index/`)**:
+  - Resolved missing social media preview image issue on WhatsApp, Facebook, X (Twitter), and Telegram by eliminating artificial `.webp` to `.jpg` string replacements across detail templates (`mod_news/news.twig`, `mod_content/content.twig`, `mod_page/page.twig`, and `mod_announcements/announcement.twig`).
+  - Switched `og:image`, `og:image:secure_url`, `link[rel="image_src"]`, and `twitter:image` to reference authentic uploaded image assets directly (`.webp`), resolving CDN 500 errors caused by requests for non-existent `.jpg` files.
+  - Dynamically configured `og:image:type` to match actual asset MIME types (`image/webp`, `image/png`, `image/jpeg`).
+  - Standardized landscape Open Graph dimensions (`og:image:width: 1200`, `og:image:height: 630`) for primary content images and square fallback dimensions (`300x300`) for site logo fallbacks, in full parity with `mod_publication`.
+  - Added accessible `og:image:alt` tag mapped to content title for crawler and accessibility compliance.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.7`.
+
 ## v1.1.6 (2026-09-26)
 - **Production MCP Deployment & Admin Search Keywords Parity (`amidakurd.net`)**:
   - Expanded search index keywords for `mod_mcp` in `mod/mod_user/index.php` (`mcp`, `api`, `key`, `keys`, `mifte`, `anahtar`, `token`, `ai`, `gemini`, `claude`, `antigravity`) to ensure instant discovery in the mobile administration control panel (`/mod_user/panel`).
