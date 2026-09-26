@@ -326,6 +326,7 @@ $lang['index'] = [
             1 => 'Nûçe',
             2 => 'Hemûyan Bibîne',
             3 => 'Hêj tu nûçeya weşandî tune.',
+            'last_24_hours' => '24 Saetên Dawî',
         ],
     ],
     'mod_publication' => [

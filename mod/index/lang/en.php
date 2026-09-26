@@ -349,6 +349,7 @@ $lang['index']['mod_news'] = [
         '1' => 'News',
         '2' => 'View All',
         '3' => 'No published news is available yet.',
+        'last_24_hours' => 'Last 24 Hours',
     ]
 ];
 $lang['index']['comments'] = 'Comments';

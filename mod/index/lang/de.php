@@ -304,6 +304,7 @@ $lang['index'] = [
             1 => 'Nachrichten',
             2 => 'Alle anzeigen',
             3 => 'Bisher sind keine veröffentlichten Nachrichten verfügbar.',
+            'last_24_hours' => 'Letzte 24 Stunden',
         ],
     ],
     'mod_publication' => [

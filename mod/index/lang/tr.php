@@ -304,6 +304,7 @@ $lang['index'] = [
             1 => 'Haberler',
             2 => 'Tümünü Gör',
             3 => 'Henüz yayınlanmış bir haber bulunmuyor.',
+            'last_24_hours' => 'Son 24 Saat',
         ],
     ],
     'mod_publication' => [

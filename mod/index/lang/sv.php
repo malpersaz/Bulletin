@@ -304,6 +304,7 @@ $lang['index'] = [
             1 => 'Nyheter',
             2 => 'Visa alla',
             3 => 'Inga publicerade nyheter är tillgängliga än.',
+            'last_24_hours' => 'Senaste 24 timmarna',
         ],
     ],
     'mod_publication' => [

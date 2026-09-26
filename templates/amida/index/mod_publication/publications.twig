@@ -7,18 +7,34 @@
 {% set pagination = ctx_get('pagination') %}
 {% set page = ctx_get('page') %}
 
+{% set is_filtered_category = category_seo is not empty and category_seo != 'all' %}
+{% set current_page_title = is_filtered_category ? categoryname : (lang.index.mod_publication.all_publications ?? 'Hemû Weşan') %}
+{% set page_meta_description = is_filtered_category ? (categoryname ~ ' - ' ~ (lang.index.mod_publication.all_publications ?? 'Hemû Weşan')) : (lang.index.mod_publication.all_publications ?? 'Hemû Weşan') %}
+{% set share_image_asset = site.logo_path is defined and site.logo_path is not empty ? (site.iaddress ~ 'mod_settings/' ~ site.logo_path) : (site.iaddress ~ 'mod_settings/logo.png') %}
+
 {% block canonical %}
-    <link rel="canonical" href="{{ site.saddress }}publications{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
+    <link rel="canonical" href="{{ site.saddress }}publications{% if is_filtered_category %}/{{ category_seo }}{% endif %}{% if page is defined and page > 1 %}/{{ page }}{% endif %}">
 {% endblock %}
 
 {% block title %}
-    <title>
-        {% if category_seo is not empty and category_seo != 'all' %}
-            {{ categoryname }} - {{ lang.index.mod_publication.all_publications }} - {{ site.title }}
-        {% else %}
-            {{ lang.index.mod_publication.all_publications }} - {{ site.title }}
-        {% endif %}
-    </title>
+    <title>{{ current_page_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ page_meta_description }} - {{ site.title }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.saddress }}publications{% if is_filtered_category %}/{{ category_seo }}{% endif %}">
+    <meta property="og:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta property="og:description" content="{{ page_meta_description }} - {{ site.title }}">
+    <meta property="og:image" content="{{ share_image_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ page_meta_description }} - {{ site.title }}">
+    <meta name="twitter:image" content="{{ share_image_asset }}">
 {% endblock %}
 
 {% block css_custom %}
@@ -26,163 +42,228 @@
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ "now"|date("U") }}">
 {% endblock %}
 
-
 {% block content %}
-<div class="row mt-4" id="mod_publication_list">
-    <div class="col-lg-3 col-md-4">
-        <div class="card mb-4 border-0 shadow-sm">
-            <div class="card-header bg-white border-0 pt-4 px-4">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-journal-text me-2"></i>{{ lang.index.mod_publication.all_publications }}
-                </h5>
-            </div>
-            <div class="list-group list-group-flush">
-                <a href="{{ site.saddress }}publications"
-                   class="list-group-item list-group-item-action{% if category_seo == 'all' or category_seo is empty %} active{% endif %}">
-                    <i class="bi bi-grid me-2"></i>{{ lang.index.mod_publication.all_publications }}
-                </a>
-                {% for category in categories %}
-                    {% if category.publication_count > 0 %}
-                    <a href="{{ site.saddress }}publications/{{ category.seo }}"
-                       class="list-group-item list-group-item-action{% if category_seo == category.seo %} active{% endif %}">
-                        <i class="bi bi-bookmark me-2"></i>{{ category.name }}
-                        <span class="badge bg-secondary rounded-pill float-end">{{ category.publication_count }}</span>
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-9 col-md-8">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-4" itemscope itemtype="https://schema.org/BreadcrumbList">
+<main class="publications-page" itemscope itemtype="https://schema.org/CollectionPage">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home ?? 'Destpêk' }}</span></a>
+                <meta itemprop="position" content="1">
+            </li>
+            {% if is_filtered_category %}
                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
-                    <meta itemprop="position" content="1" />
+                    <a itemprop="item" href="{{ site.saddress }}publications"><span itemprop="name">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span></a>
+                    <meta itemprop="position" content="2">
                 </li>
-                {% if category_seo is not empty and category_seo != 'all' %}
-                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <a itemprop="item" href="{{ site.saddress }}publications"><span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span></a>
-                        <meta itemprop="position" content="2" />
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <span itemprop="name">{{ categoryname }}</span>
-                        <meta itemprop="position" content="3" />
-                    </li>
-                {% else %}
-                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span>
-                        <meta itemprop="position" content="2" />
-                    </li>
-                {% endif %}
-            </ol>
-        </nav>
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ categoryname }}</span>
+                    <meta itemprop="position" content="3">
+                </li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                    <meta itemprop="position" content="2">
+                </li>
+            {% endif %}
+        </ol>
+    </nav>
 
+    <header class="publications-header">
+        <div class="publications-header-lead">
+            <h1 class="publications-page-title" itemprop="name">
+                <i class="bi bi-journal-richtext" aria-hidden="true"></i>
+                <span>{{ current_page_title }}</span>
+            </h1>
+            {% if is_filtered_category %}
+                <p class="publications-subtitle">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</p>
+            {% endif %}
+        </div>
         {% if publications is not empty %}
-            <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-                {% for publication in publications %}
-                    {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
-                    {% if publication.summary is not empty %}
-                        {% set publication_excerpt = publication.summary|striptags %}
-                    {% elseif publication.description is not empty %}
-                        {% set publication_excerpt = publication.description|striptags %}
-                    {% else %}
-                        {% set publication_excerpt = publication_title|striptags %}
-                    {% endif %}
-                    <div class="col">
-                        <article class="card h-100 border-0 shadow-sm overflow-hidden">
-                            <a href="{{ site.saddress }}publication/{{ publication.seo }}" title="{{ publication_title }}" class="text-decoration-none">
-                                <div class="publication-media">
+            <span class="publications-count-badge">
+                <i class="bi bi-journal-text" aria-hidden="true"></i>
+                <span>{{ publications|length }}{% if pagination is not empty %}+{% endif %}</span>
+            </span>
+        {% endif %}
+    </header>
+
+    <div class="row g-4" id="mod_publication_list">
+        <aside class="col-lg-3 col-md-4 publications-sidebar-col" aria-label="{{ lang.index.mod_publication.category ?? 'Kategorî' }}">
+            <nav class="publication-filter-card" aria-label="{{ lang.index.mod_publication.category ?? 'Kategorî' }}">
+                <div class="publication-filter-header">
+                    <h2 class="publication-filter-title">
+                        <i class="bi bi-bookmarks" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_publication.category ?? 'Kategorî' }}</span>
+                    </h2>
+                </div>
+                <div class="publication-filter-list">
+                    <a href="{{ site.saddress }}publications"
+                       class="publication-filter-item{% if not is_filtered_category %} active{% endif %}">
+                        <span class="publication-filter-name">
+                            <i class="bi bi-grid-fill" aria-hidden="true"></i>
+                            <span>{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                        </span>
+                    </a>
+                    {% for category in categories %}
+                        {% if category.publication_count > 0 %}
+                            <a href="{{ site.saddress }}publications/{{ category.seo }}"
+                               class="publication-filter-item{% if category_seo == category.seo %} active{% endif %}">
+                                <span class="publication-filter-name">
+                                    <i class="bi bi-bookmark" aria-hidden="true"></i>
+                                    <span>{{ category.name }}</span>
+                                </span>
+                                <span class="publication-filter-badge">{{ category.publication_count }}</span>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </nav>
+        </aside>
+
+        <section class="col-lg-9 col-md-8 publications-main-col">
+            {% if publications is not empty %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 publications-grid">
+                    {% for publication in publications %}
+                        {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                        {% if publication.summary is not empty %}
+                            {% set publication_excerpt = publication.summary|striptags %}
+                        {% elseif publication.description is not empty %}
+                            {% set publication_excerpt = publication.description|striptags %}
+                        {% else %}
+                            {% set publication_excerpt = publication_title|striptags %}
+                        {% endif %}
+                        {% set words = publication_excerpt|split(' ')|length %}
+                        {% set reading_minutes = (words / 160)|round(0, 'ceil') %}
+                        {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+
+                        <div class="col publications-grid-col">
+                            <article class="publication-card" itemscope itemtype="https://schema.org/CreativeWork">
+                                <a href="{{ site.saddress }}publication/{{ publication.seo }}"
+                                   class="publication-media"
+                                   title="{{ publication_title }}"
+                                   itemprop="url">
                                     {% if publication.image is not empty %}
                                         <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}"
-                                             class="card-img-top object-fit-cover"
+                                             class="publication-img"
                                              alt="{{ publication_title }}"
-                                             loading="lazy">
+                                             width="640"
+                                             height="360"
+                                             loading="lazy"
+                                             decoding="async"
+                                             itemprop="image">
                                     {% else %}
-                                        <img src="{{ site.iaddress }}mod_settings/logo.png"
-                                             class="card-img-top p-4 bg-light object-fit-contain"
-                                             alt="{{ publication_title }}"
-                                             loading="lazy">
+                                        <div class="publication-placeholder">
+                                            <i class="bi bi-journal-text publication-placeholder-icon" aria-hidden="true"></i>
+                                        </div>
                                     {% endif %}
-                                    <div class="publication-author-badge">
-                                        <div class="publication-author-avatar">
-                                            {% if publication.user_image is defined and publication.user_image is not empty %}
-                                                <img src="{{ site.iaddress }}mod_user/thumb/{{ publication.user_image }}" alt="{{ publication.u_name }} {{ publication.u_last_name }}">
-                                            {% else %}
-                                                {{ (publication.u_name|default('')|slice(0, 1) ~ publication.u_last_name|default('')|slice(0, 1))|upper }}
-                                            {% endif %}
+
+                                    {% if publication.u_name is defined and publication.u_name is not empty %}
+                                        <div class="publication-author-badge" itemprop="author" itemscope itemtype="https://schema.org/Person">
+                                            <div class="publication-author-avatar">
+                                                {% if publication.user_image is defined and publication.user_image is not empty %}
+                                                    <img src="{{ site.iaddress }}mod_user/thumb/{{ publication.user_image }}"
+                                                         alt="{{ publication.u_name }} {{ publication.u_last_name }}"
+                                                         width="40"
+                                                         height="40"
+                                                         loading="lazy"
+                                                         decoding="async">
+                                                {% else %}
+                                                    <span class="publication-author-initials">
+                                                        {{ (publication.u_name|default('')|slice(0, 1) ~ publication.u_last_name|default('')|slice(0, 1))|upper }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="publication-author-meta">
+                                                <span class="publication-author-name" itemprop="name">{{ publication.u_name }} {{ publication.u_last_name }}</span>
+                                            </div>
                                         </div>
-                                        <div class="publication-author-meta">
-                                            <span class="publication-author-name">{{ publication.u_name }} {{ publication.u_last_name }}</span>
-                                        </div>
+                                    {% endif %}
+                                </a>
+
+                                <div class="publication-body">
+                                    <div class="publication-meta">
+                                        {% if publication.created_at is defined and publication.created_at is not empty %}
+                                            <span class="publication-meta-item">
+                                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                <time datetime="{{ publication.created_at }}" itemprop="datePublished">{{ publication.created_at|date('d.m.Y') }}</time>
+                                            </span>
+                                        {% endif %}
+
+                                        {% if publication.category_name is defined and publication.category_name is not empty %}
+                                            <span class="publication-category-pill" itemprop="genre">
+                                                <i class="bi bi-bookmark-fill" aria-hidden="true"></i>
+                                                <span>{{ publication.category_name }}</span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h2 class="publication-card-title" itemprop="headline">
+                                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" itemprop="url">
+                                            {{ publication_title }}
+                                        </a>
+                                    </h2>
+
+                                    <p class="publication-summary" itemprop="description">
+                                        {{ publication_excerpt|length > 150 ? publication_excerpt|slice(0, 147) ~ '...' : publication_excerpt }}
+                                    </p>
+
+                                    <div class="publication-footer">
+                                        <span class="publication-read-time">
+                                            <i class="bi bi-book" aria-hidden="true"></i>
+                                            <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
+                                        </span>
+                                        <a href="{{ site.saddress }}publication/{{ publication.seo }}"
+                                           class="publication-read-more"
+                                           aria-label="{{ publication_title }}">
+                                            <span class="publication-read-text">{{ lang.index.read_more ?? 'Bixwîne' }}</span>
+                                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                        </a>
                                     </div>
                                 </div>
-                            </a>
-                            <div class="card-body d-flex flex-column">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <small class="text-muted">
-                                        <i class="bi bi-calendar3 me-1"></i>{{ publication.created_at|date('d.m.Y') }}
-                                    </small>
-                                    {% if publication.category_name is defined and publication.category_name is not empty %}
-                                        <span class="badge text-bg-light border">{{ publication.category_name }}</span>
-                                    {% endif %}
-                                </div>
-                                <h2 class="h5 card-title mb-2">
-                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}"
-                                       title="{{ publication_title }}"
-                                       class="text-decoration-none text-dark publication-card-title d-inline-block">
-                                        {{ publication_title }}
-                                    </a>
-                                </h2>
-                                <p class="card-text text-muted flex-grow-1 publication-summary">
-                                    {{ publication_excerpt|slice(0, 150) }}{% if publication_excerpt|length > 150 %}...{% endif %}
-                                </p>
-                                <div class="mt-3 d-flex justify-content-between align-items-center">
-                                    <span></span>
-                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="btn btn-sm btn-outline-dark">
-                                        <i class="bi bi-eye me-1"></i>{{ lang.index.read_more }}
-                                    </a>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                {% endfor %}
-            </div>
-
-            {% if pagination is not empty %}
-                <nav aria-label="{{ lang.index.mod_publication.all_publications }}" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% for p in pagination %}
-                            {% if p == '...' %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">...</span>
-                                </li>
-                            {% elseif p == page %}
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">{{ p }}</span>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link"
-                                       href="{{ site.saddress }}publications{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}/{% if p != 1 %}{{ p }}{% endif %}">
-                                        {{ p }}
-                                    </a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </nav>
-            {% endif %}
-        {% else %}
-            <div class="card border-0 shadow-sm">
-                <div class="card-body text-center py-5">
-                    <i class="bi bi-journal-x display-5 text-muted mb-3"></i>
-                    <h4 class="text-muted">{{ lang.index.mod_publication.no_content_found }}</h4>
-                    <p class="text-muted mb-0">{{ lang.index.mod_publication.no_content_available }}</p>
+                            </article>
+                        </div>
+                    {% endfor %}
                 </div>
-            </div>
-        {% endif %}
+
+                {% if pagination is not empty %}
+                    <nav class="publications-pagination-nav" aria-label="{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}">
+                        <ul class="publications-pagination-list">
+                            {% for p in pagination %}
+                                {% if p == '...' %}
+                                    <li class="publications-page-item disabled" aria-disabled="true">
+                                        <span class="publications-page-link">&hellip;</span>
+                                    </li>
+                                {% elseif p == page %}
+                                    <li class="publications-page-item active" aria-current="page">
+                                        <span class="publications-page-link">{{ p }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="publications-page-item">
+                                        <a class="publications-page-link"
+                                           href="{{ site.saddress }}publications{% if is_filtered_category %}/{{ category_seo }}{% endif %}{% if p != 1 %}/{{ p }}{% endif %}">
+                                            {{ p }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="publication-empty-card">
+                    <div class="publication-empty-icon-wrap">
+                        <i class="bi bi-journal-x" aria-hidden="true"></i>
+                    </div>
+                    <h2 class="publication-empty-title">{{ lang.index.mod_publication.no_content_found ?? 'Di vê kategoriyê de weşan nehatin dîtin!' }}</h2>
+                    <p class="publication-empty-text">{{ lang.index.mod_publication.no_content_available ?? 'Di vê kategoriyê de weşanek tune.' }}</p>
+                    {% if is_filtered_category %}
+                        <a href="{{ site.saddress }}publications" class="publication-empty-action">
+                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                            <span>{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
     </div>
-</div>
+</main>
 {% endblock %}

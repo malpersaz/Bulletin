@@ -304,6 +304,7 @@ $lang['index'] = [
             1 => 'Xeberi',
             2 => 'Pêro Bıvêne',
             3 => 'Hêna xebera weşiyaye amade niyo.',
+            'last_24_hours' => '24 Saetê Peyênî',
         ],
     ],
     'mod_publication' => [

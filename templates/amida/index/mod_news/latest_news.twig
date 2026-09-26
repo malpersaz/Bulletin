@@ -1,5 +1,21 @@
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id"]}) }}
-{% set latest_news = ctx_get('latest_news') %}
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["12", "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id"]}) }}
+{% set all_latest_news = ctx_get('latest_news') %}
+{% set latest_news = all_latest_news|slice(0, 6) %}
+
+{% set now_ts = "now"|date("U") %}
+{% set news_24h = [] %}
+{% if all_latest_news is not empty %}
+    {% for item in all_latest_news %}
+        {% if item.created_at is defined and item.created_at is not empty %}
+            {% set item_ts = item.created_at|date("U") %}
+            {% set diff_sec = now_ts - item_ts %}
+            {# Check if within the last 24 hours (with tolerance for server/db clock differences) #}
+            {% if diff_sec >= -14400 and diff_sec <= 86400 %}
+                {% set news_24h = news_24h|merge([item]) %}
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
 
 <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ "now"|date("U") }}">
 
@@ -20,94 +36,248 @@
             </a>
         </header>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for news in latest_news %}
-                <article class="col latest-news-col" itemscope itemtype="https://schema.org/NewsArticle">
-                    <div class="latest-news-card">
-                        <a href="{{ site.saddress }}news/{{ news.seo }}"
-                           class="latest-news-media"
-                           title="{{ news.name }}"
-                           itemprop="url">
-                            {% if news.image is not empty %}
-                                <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
-                                     class="latest-news-img"
-                                     alt="{{ news.name }}"
-                                     width="640"
-                                     height="360"
-                                     loading="lazy"
-                                     decoding="async"
-                                     itemprop="image">
-                            {% else %}
-                                <div class="latest-news-placeholder">
-                                    <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
-                                </div>
-                            {% endif %}
+        {% if news_24h is not empty %}
+            {# Split Layout: Latest News Grid on the Left (col-lg-8) + 24 Hours Box on the Right (col-lg-4) #}
+            <div class="row g-4">
+                <div class="col-lg-8 col-xl-8">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for news in latest_news %}
+                            <article class="col latest-news-col" itemscope itemtype="https://schema.org/NewsArticle">
+                                <div class="latest-news-card">
+                                    <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                       class="latest-news-media"
+                                       title="{{ news.name }}"
+                                       itemprop="url">
+                                        {% if news.image is not empty %}
+                                            <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
+                                                 class="latest-news-img"
+                                                 alt="{{ news.name }}"
+                                                 width="640"
+                                                 height="360"
+                                                 loading="lazy"
+                                                 decoding="async"
+                                                 itemprop="image">
+                                        {% else %}
+                                            <div class="latest-news-placeholder">
+                                                <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
+                                            </div>
+                                        {% endif %}
 
-                            {% if news.published_ago is defined and news.published_ago is not empty %}
-                                <span class="latest-news-timeago">
+                                        {% if news.published_ago is defined and news.published_ago is not empty %}
+                                            <span class="latest-news-timeago">
+                                                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                                <span>{{ news.published_ago }}</span>
+                                            </span>
+                                        {% endif %}
+
+                                        {% if news.has_video or news.has_gallery %}
+                                            <div class="latest-news-type-badges">
+                                                {% if news.has_video %}
+                                                    <span class="latest-news-type-badge latest-news-type-badge-video" title="Vîdyo" aria-label="Vîdyo">
+                                                        <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+                                                    </span>
+                                                {% endif %}
+                                                {% if news.has_gallery %}
+                                                    <span class="latest-news-type-badge latest-news-type-badge-gallery" title="Galerî" aria-label="Galerî">
+                                                        <i class="bi bi-images" aria-hidden="true"></i>
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </a>
+
+                                    <div class="latest-news-body">
+                                        <div class="latest-news-meta">
+                                            {% if news.created_at is defined and news.created_at is not empty %}
+                                                <span class="latest-news-meta-item">
+                                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                    <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                                </span>
+                                            {% endif %}
+
+                                            {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
+                                            {% set words = clean_summary|split(' ')|length %}
+                                            {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
+                                            {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                                            <span class="latest-news-meta-item">
+                                                <i class="bi bi-book" aria-hidden="true"></i>
+                                                <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
+                                            </span>
+                                        </div>
+
+                                        <h3 class="latest-news-article-title" itemprop="headline">
+                                            <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                                                {{ news.name }}
+                                            </a>
+                                        </h3>
+
+                                        <p class="latest-news-summary" itemprop="description">
+                                            {{ clean_summary|length > 180 ? clean_summary|slice(0, 177) ~ '...' : clean_summary }}
+                                        </p>
+
+                                        <div class="latest-news-footer">
+                                            <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                               class="latest-news-read-more"
+                                               aria-label="{{ news.name }}">
+                                                <span class="latest-news-read-text">{{ lang.index.read_more ?? 'Zêdetir Bixwîne' }}</span>
+                                                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# Right Column: 24 Saetên Dawî Box #}
+                <aside class="col-lg-4 col-xl-4 latest-news-sidebar-col">
+                    <div class="news-24h-card">
+                        <header class="news-24h-header">
+                            <div class="news-24h-title-wrap">
+                                <span class="news-24h-pulse-dot" aria-hidden="true"></span>
+                                <h3 class="news-24h-title">
                                     <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                    <span>{{ news.published_ago }}</span>
-                                </span>
-                            {% endif %}
+                                    <span>{{ lang.index.latest_news.last_24_hours ?? '24 Saetên Dawî' }}</span>
+                                </h3>
+                            </div>
+                            <span class="news-24h-badge">{{ news_24h|length }}</span>
+                        </header>
 
-                            {% if news.has_video or news.has_gallery %}
-                                <div class="latest-news-type-badges">
-                                    {% if news.has_video %}
-                                        <span class="latest-news-type-badge latest-news-type-badge-video" title="Vîdyo" aria-label="Vîdyo">
-                                            <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
-                                        </span>
-                                    {% endif %}
-                                    {% if news.has_gallery %}
-                                        <span class="latest-news-type-badge latest-news-type-badge-gallery" title="Galerî" aria-label="Galerî">
-                                            <i class="bi bi-images" aria-hidden="true"></i>
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            {% endif %}
-                        </a>
+                        <div class="news-24h-list">
+                            {% for item in news_24h %}
+                                <article class="news-24h-item" itemscope itemtype="https://schema.org/NewsArticle">
+                                    <a href="{{ site.saddress }}news/{{ item.seo }}"
+                                       class="news-24h-media"
+                                       title="{{ item.name }}"
+                                       itemprop="url">
+                                        {% if item.image is not empty %}
+                                            <img src="{{ site.iaddress }}mod_news/{{ item.image }}"
+                                                 class="news-24h-img"
+                                                 alt="{{ item.name }}"
+                                                 width="180"
+                                                 height="120"
+                                                 loading="lazy"
+                                                 decoding="async"
+                                                 itemprop="image">
+                                        {% else %}
+                                            <div class="news-24h-placeholder">
+                                                <i class="bi bi-newspaper" aria-hidden="true"></i>
+                                            </div>
+                                        {% endif %}
+                                    </a>
 
-                        <div class="latest-news-body">
-                            <div class="latest-news-meta">
-                                {% if news.created_at is defined and news.created_at is not empty %}
-                                    <span class="latest-news-meta-item">
-                                        <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                        <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                    <div class="news-24h-content">
+                                        <h4 class="news-24h-headline" itemprop="headline">
+                                            <a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url">
+                                                {{ item.name }}
+                                            </a>
+                                        </h4>
+
+                                        {% if item.published_ago is defined and item.published_ago is not empty %}
+                                            <div class="news-24h-meta">
+                                                <i class="bi bi-clock" aria-hidden="true"></i>
+                                                <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </article>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        {% else %}
+            {# If NO news in the last 24 hours, the card does NOT appear at all. Full 3-column width layout. #}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for news in latest_news %}
+                    <article class="col latest-news-col" itemscope itemtype="https://schema.org/NewsArticle">
+                        <div class="latest-news-card">
+                            <a href="{{ site.saddress }}news/{{ news.seo }}"
+                               class="latest-news-media"
+                               title="{{ news.name }}"
+                               itemprop="url">
+                                {% if news.image is not empty %}
+                                    <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
+                                         class="latest-news-img"
+                                         alt="{{ news.name }}"
+                                         width="640"
+                                         height="360"
+                                         loading="lazy"
+                                         decoding="async"
+                                         itemprop="image">
+                                {% else %}
+                                    <div class="latest-news-placeholder">
+                                        <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>
+                                    </div>
+                                {% endif %}
+
+                                {% if news.published_ago is defined and news.published_ago is not empty %}
+                                    <span class="latest-news-timeago">
+                                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                        <span>{{ news.published_ago }}</span>
                                     </span>
                                 {% endif %}
 
-                                {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
-                                {% set words = clean_summary|split(' ')|length %}
-                                {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
-                                {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
-                                <span class="latest-news-meta-item">
-                                    <i class="bi bi-book" aria-hidden="true"></i>
-                                    <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
-                                </span>
-                            </div>
+                                {% if news.has_video or news.has_gallery %}
+                                    <div class="latest-news-type-badges">
+                                        {% if news.has_video %}
+                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="Vîdyo" aria-label="Vîdyo">
+                                                <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+                                            </span>
+                                        {% endif %}
+                                        {% if news.has_gallery %}
+                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="Galerî" aria-label="Galerî">
+                                                <i class="bi bi-images" aria-hidden="true"></i>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </a>
 
-                            <h3 class="latest-news-article-title" itemprop="headline">
-                                <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
-                                    {{ news.name }}
-                                </a>
-                            </h3>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    {% if news.created_at is defined and news.created_at is not empty %}
+                                        <span class="latest-news-meta-item">
+                                            <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                            <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                        </span>
+                                    {% endif %}
 
-                            <p class="latest-news-summary" itemprop="description">
-                                {{ clean_summary|length > 180 ? clean_summary|slice(0, 177) ~ '...' : clean_summary }}
-                            </p>
+                                    {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
+                                    {% set words = clean_summary|split(' ')|length %}
+                                    {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
+                                    {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-book" aria-hidden="true"></i>
+                                        <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
+                                    </span>
+                                </div>
 
-                            <div class="latest-news-footer">
-                                <a href="{{ site.saddress }}news/{{ news.seo }}"
-                                   class="latest-news-read-more"
-                                   aria-label="{{ news.name }}">
-                                    <span class="latest-news-read-text">{{ lang.index.read_more ?? 'Zêdetir Bixwîne' }}</span>
-                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                                </a>
+                                <h3 class="latest-news-article-title" itemprop="headline">
+                                    <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                                        {{ news.name }}
+                                    </a>
+                                </h3>
+
+                                <p class="latest-news-summary" itemprop="description">
+                                    {{ clean_summary|length > 180 ? clean_summary|slice(0, 177) ~ '...' : clean_summary }}
+                                </p>
+
+                                <div class="latest-news-footer">
+                                    <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                       class="latest-news-read-more"
+                                       aria-label="{{ news.name }}">
+                                        <span class="latest-news-read-text">{{ lang.index.read_more ?? 'Zêdetir Bixwîne' }}</span>
+                                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </article>
-            {% endfor %}
-        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <footer class="latest-news-mobile-footer text-center d-md-none">
             <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100">
