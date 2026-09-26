@@ -69,7 +69,7 @@ DEV_TERMS = {
     "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini",
     "modality", "modalities", "vimeo", "mailto", "telehealth", "og",
     "unhtmlentities", "temizle", "hsc", "cdata", "aylar", "kontrol",
-    "tema", "secenek", "resimgetir", "ust"
+    "tema", "secenek", "resimgetir", "ust", "arsiv", "yil", "fullmanset", "anket", "oyver", "kat"
 }
 
 # Non-English detection relies purely on the English dictionary and morphological rules (no hardcoded word lists)

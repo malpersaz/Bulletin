@@ -63,6 +63,32 @@ class mod_news_helper extends indexBase
                 $this->_mod_attachment('mod_news', $news->id);
             }
             $this->tema->ctx_set('d', $news->toArray());
+
+            $news_24h_model = Load::model('mod_news');
+            $news_24h_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id')
+                ->where_lang_and_status($this->site['lang'], 'y');
+            if (!empty($news->id)) {
+                $news_24h_model->addWhere("id != '" . (int)$news->id . "'");
+            }
+            $yesterday = date('Y-m-d H:i:s', time() - 86400);
+            $news_24h_model->addWhere("created_at >= '" . $yesterday . "'");
+            $news_24h_model->limit(8)->order('created_at', 'DESC');
+            $news_24h_model->gR();
+            $news_24h = [];
+            if ($news_24h_model->getSize() !== 0) {
+                $items = $news_24h_model->toArray();
+                if (is_array($items)) {
+                    foreach ($items as &$item) {
+                        $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
+                        $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
+                        $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
+                        $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
+                    }
+                    unset($item);
+                    $news_24h = $items;
+                }
+            }
+            $this->tema->ctx_set('news_24h', $news_24h);
         } else {
             return $this->_404();
         }
@@ -286,7 +312,7 @@ class mod_news_helper extends indexBase
         }
 
         $news = Load::model('mod_news');
-        $sql = "SELECT YEAR(MAX(created_at))  AS max_yil,YEAR(MIN(created_at))  AS min_yil FROM `mod_news` WHERE 1";
+        $sql = "SELECT YEAR(MAX(created_at)) max_yil, YEAR(MIN(created_at)) min_yil FROM `mod_news` WHERE 1";
         $news->fetch_array($sql);
         $news->getResultOne();
         $this->tema->ctx_set('arsiv_yil', $news->toArray());
