@@ -17,6 +17,24 @@
 {% set faqs = ctx_get('faqs') ?: ctx_get('faq') %}
 {% set faq_lang = ctx_get('faq_lang') %}
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
+{% set news_all_label = lang.index.mod_news[2] ?? 'Hemû Nûçe' %}
+
+{{ run({"mod": "index", "method": "_latest_news", "extra": ["12", "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id"]}) }}
+{% set all_latest_news = ctx_get('latest_news') %}
+{% set now_ts = "now"|date("U") %}
+{% set news_24h = [] %}
+{% if all_latest_news is not empty %}
+	{% for item in all_latest_news %}
+		{% if item.id != d.id and item.created_at is defined and item.created_at is not empty %}
+			{% set item_ts = item.created_at|date("U") %}
+			{% set diff_sec = now_ts - item_ts %}
+			{# Check if within the last 24 hours (with tolerance for server/db clock differences) #}
+			{% if diff_sec >= -14400 and diff_sec <= 86400 %}
+				{% set news_24h = news_24h|merge([item]) %}
+			{% endif %}
+		{% endif %}
+	{% endfor %}
+{% endif %}
 
 {% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
@@ -142,7 +160,7 @@
 		    {
 		      "@type": "ListItem",
 		      "position": 2,
-		      "name": {{ (lang.index.mod_news.all_items|default(lang.index.mod_news[2]|default('News')))|json_encode|raw }},
+		      "name": {{ news_all_label|json_encode|raw }},
 		      "item": {{ (site.saddress ~ 'newses')|json_encode|raw }}
 		    }{% if has_news_category %},
 		    {
@@ -163,7 +181,7 @@
 {% endblock %}
 
 {% block content %}
-	<div class="row justify-content-center detail-shell detail-shell-news" id="mod_news">
+	<div class="row g-4 {% if news_24h is empty %}justify-content-center{% endif %} detail-shell detail-shell-news" id="mod_news">
 
 		<div class="col-lg-8">
 			<article class="detail-card">
@@ -178,7 +196,7 @@
 							</li>
 							<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 								<a itemprop="item" href="{{ site.saddress }}newses">
-									<span itemprop="name">{{ lang.index.mod_news.all_items|default(lang.index.mod_news[2]|default('News')) }}</span>
+									<span itemprop="name">{{ news_all_label }}</span>
 								</a>
 								<meta itemprop="position" content="2"/>
 							</li>
@@ -381,7 +399,7 @@
 
 			{% if newses is not empty %}
 				<section class="detail-section" aria-labelledby="related-articles-title">
-					<h2 id="related-articles-title" class="detail-section-heading h4">{{ lang.index.mod_news.all_items|default(lang.index.mod_news[2]|default('News')) }}</h2>
+					<h2 id="related-articles-title" class="detail-section-heading h4">{{ news_all_label }}</h2>
 					<div class="detail-related-grid">
 						{% for news in newses %}
 							<div>
@@ -423,5 +441,63 @@
 				</section>
 			{% endif %}
 		</div>
+
+		{% if news_24h is not empty %}
+			<aside class="col-lg-4 news-sidebar-col">
+				<div class="news-24h-card">
+					<header class="news-24h-header">
+						<div class="news-24h-title-wrap">
+							<span class="news-24h-pulse-dot" aria-hidden="true"></span>
+							<h3 class="news-24h-title">
+								<i class="bi bi-clock-history" aria-hidden="true"></i>
+								<span>{{ lang.index.latest_news.last_24_hours ?? '24 Saetên Dawî' }}</span>
+							</h3>
+						</div>
+						<span class="news-24h-badge">{{ news_24h|length }}</span>
+					</header>
+
+					<div class="news-24h-list">
+						{% for item in news_24h %}
+							<article class="news-24h-item" itemscope itemtype="https://schema.org/NewsArticle">
+								<a href="{{ site.saddress }}news/{{ item.seo }}"
+								   class="news-24h-media"
+								   title="{{ item.name }}"
+								   itemprop="url">
+									{% if item.image is not empty %}
+										<img src="{{ site.iaddress }}mod_news/{{ item.image }}"
+											 class="news-24h-img"
+											 alt="{{ item.name }}"
+											 width="180"
+											 height="120"
+											 loading="lazy"
+											 decoding="async"
+											 itemprop="image">
+									{% else %}
+										<div class="news-24h-placeholder">
+											<i class="bi bi-newspaper" aria-hidden="true"></i>
+										</div>
+									{% endif %}
+								</a>
+
+								<div class="news-24h-content">
+									<h4 class="news-24h-headline" itemprop="headline">
+										<a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url">
+											{{ item.name }}
+										</a>
+									</h4>
+
+									{% if item.published_ago is defined and item.published_ago is not empty %}
+										<div class="news-24h-meta">
+											<i class="bi bi-clock" aria-hidden="true"></i>
+											<time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.published_ago }}</time>
+										</div>
+									{% endif %}
+								</div>
+							</article>
+						{% endfor %}
+					</div>
+				</div>
+			</aside>
+		{% endif %}
 	</div>
 {% endblock %}

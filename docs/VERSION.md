@@ -1,8 +1,9 @@
 ## v1.1.9 (2026-09-26)
-- **Latest News 24-Hour Editorial Card & Split Layout (`templates/amida/index/mod_news/latest_news.twig`, `static/css/latest-news.css`)**:
-  - Implemented real-time 24-hour news filtering (`news_24h`) displaying exclusively news published within the past 24 hours.
+- **News Detail 24-Hour Editorial Sidebar Card (`templates/amida/index/mod_news/news.twig`, `static/css/news.css`)**:
+  - Implemented real-time 24-hour news filtering (`news_24h`) displaying exclusively news published within the past 24 hours on the right side of the news detail page.
+  - Excluded the current active article (`d.id`) from the 24-hour sidebar to prevent redundant display while reading.
   - Added dedicated right-hand sidebar card (`.news-24h-card`) featuring an animated live pulsing indicator dot (`.news-24h-pulse-dot`), header badge with total article count, and a beautifully formatted title `"24 Saetên Dawî"`.
-  - Conditional rendering enforcement: if no news has been published within the last 24 hours, the card does not render and the layout gracefully falls back to the full 3-column broadsheet grid (`row-cols-1 row-cols-md-2 row-cols-lg-3`).
+  - Conditional rendering enforcement: if no news has been published within the last 24 hours, the card does not render and the layout gracefully falls back to the centered article shell (`justify-content-center`).
   - Added thumbnail media, headline links, and publication timeago indicators (`.news-24h-meta`) for every 24-hour story.
   - Added multi-language dictionary key `'last_24_hours'` across all 9 localized index language bundles (`ku`, `en`, `tr`, `de`, `fr`, `ar`, `ckb`, `sv`, `zza`).
   - Styled with sticky desktop positioning (`position: sticky; top: 1.5rem;`), mobile-friendly responsive breakpoints, dark mode token support, and impeccable design standards.
