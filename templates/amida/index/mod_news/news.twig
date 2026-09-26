@@ -19,23 +19,6 @@
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
 {% set news_all_label = lang.index.mod_news[2] ?? 'Hemû Nûçe' %}
 
-{{ run({"mod": "index", "method": "_latest_news", "extra": ["12", "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id"]}) }}
-{% set all_latest_news = ctx_get('latest_news') %}
-{% set now_ts = "now"|date("U") %}
-{% set news_24h = [] %}
-{% if all_latest_news is not empty %}
-	{% for item in all_latest_news %}
-		{% if item.id != d.id and item.created_at is defined and item.created_at is not empty %}
-			{% set item_ts = item.created_at|date("U") %}
-			{% set diff_sec = now_ts - item_ts %}
-			{# Check if within the last 24 hours (with tolerance for server/db clock differences) #}
-			{% if diff_sec >= -14400 and diff_sec <= 86400 %}
-				{% set news_24h = news_24h|merge([item]) %}
-			{% endif %}
-		{% endif %}
-	{% endfor %}
-{% endif %}
-
 {% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
 {% set news_share_ext = news_share_image|split('?')|first|split('.')|last|lower %}
@@ -181,6 +164,23 @@
 {% endblock %}
 
 {% block content %}
+	{{ run({"mod": "index", "method": "_latest_news", "extra": ["12", "id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id"]}) }}
+	{% set all_latest_news = ctx_get('latest_news') %}
+	{% set now_ts = "now"|date("U") %}
+	{% set news_24h = [] %}
+	{% if all_latest_news is not empty %}
+		{% for item in all_latest_news %}
+			{% if item.id != d.id and item.created_at is defined and item.created_at is not empty %}
+				{% set item_ts = item.created_at|date("U") %}
+				{% set diff_sec = now_ts - item_ts %}
+				{# Check if within the last 24 hours (with tolerance for server/db clock differences) #}
+				{% if diff_sec >= -14400 and diff_sec <= 86400 %}
+					{% set news_24h = news_24h|merge([item]) %}
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+
 	<div class="row g-4 {% if news_24h is empty %}justify-content-center{% endif %} detail-shell detail-shell-news" id="mod_news">
 
 		<div class="col-lg-8">
