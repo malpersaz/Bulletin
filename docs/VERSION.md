@@ -1,3 +1,10 @@
+## v1.1.11 (2026-09-28)
+- **News Detail Author Avatar Schema & Model Parity (`mod/mod_news/model/newses.model.php`, `installer/mod_news/newses.sql`)**:
+  - Added explicit `$user_image`, `$group_name`, and `$category_name` properties to `newses_model` so the ORM dynamically hydrates user avatar images and group metadata from the SQL view.
+  - Hardened `ensureViewExists()` with automatic column detection (`hasUserImageColumn()`) for both MySQL and SQLite, ensuring legacy `newses` views lacking `user_image` are seamlessly upgraded with `DROP VIEW IF EXISTS` and re-created with `mod_user.image AS user_image`.
+  - Removed legacy non-English properties (`$groupad`, `$rcount`) to comply with strict English identifier standards and repository i18n guards.
+  - Aligned installer view definition (`installer/mod_news/newses.sql`) with dual `category_name` and `categoryname` aliases for seamless backwards compatibility.
+
 ## v1.1.10 (2026-09-28)
 - **Model Context Protocol (MCP) News Author Delegation (`lib/McpNewsTools.class.php`, `lib/McpServer.class.php`)**:
   - Added support for explicit author attribution (`user_id` and `username`) in `create_news` and `update_news` tool endpoints.

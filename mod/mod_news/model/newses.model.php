@@ -21,14 +21,16 @@ class newses_model extends ORM
     public $hit;
     public $lang;
     public $categoryname;
+    public $category_name;
     public $category_seo;
     public $category_id;
     public $username;
     public $user_id;
     public $u_name;
     public $u_last_name;
-    public $groupad;
-    public $rcount;
+    public $user_image;
+    public $group_name;
+    public $gallery_count;
     public $video;
 
     public function __construct()
@@ -39,9 +41,11 @@ class newses_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('newses')) {
+        if ($this->viewExists('newses') && $this->hasUserImageColumn()) {
             return;
         }
+
+        $this->dropViewIfExists('newses');
 
         $sql = "CREATE VIEW newses AS SELECT
   mod_news.id,
@@ -62,6 +66,7 @@ class newses_model extends ORM
     mod_news.file_id AS file_id,
     mod_news.lang,
     mod_news.video,
+    mod_news_category.name AS category_name,
     mod_news_category.name AS categoryname,
     mod_news_category.seo AS category_seo,
     mod_news_category.id AS category_id,
@@ -69,17 +74,48 @@ class newses_model extends ORM
     mod_user.id AS user_id,
     mod_user.name AS u_name,
     mod_user.last_name AS u_last_name,
+    mod_user.image AS user_image,
     mod_user_group.name AS group_name,
-    ( SELECT count(mod_gallery.id) AS count
-           FROM mod_gallery
-          WHERE mod_news.id = mod_gallery.vid
-          AND mod_gallery.mod_name='mod_news') AS gallery_count
+    (
+        SELECT count(mod_gallery.id)
+        FROM mod_gallery
+        WHERE mod_news.id = mod_gallery.vid
+          AND mod_gallery.mod_name = 'mod_news'
+    ) AS gallery_count
    FROM mod_news
    LEFT JOIN mod_user ON mod_news.user_id = mod_user.id
    LEFT JOIN mod_user_group ON mod_user.group_id = mod_user_group.group_id
    LEFT JOIN mod_news_category ON mod_news.category_id = mod_news_category.id";
 
         $this->query($sql);
+    }
+
+    private function hasUserImageColumn()
+    {
+        try {
+            if ($this->getAdapterType() && strpos($this->getAdapterType(), 'PDO_SQLITE') !== false) {
+                $this->fetch_array("PRAGMA table_info('newses')");
+                if (is_array($this->_result)) {
+                    foreach ($this->_result as $col) {
+                        if (isset($col['name']) && $col['name'] === 'user_image') {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            $this->fetch_array("SHOW COLUMNS FROM newses LIKE 'user_image'");
+            return $this->getSize() !== 0;
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    private function dropViewIfExists($viewName)
+    {
+        $safeView = addslashes($viewName);
+        $this->query("DROP VIEW IF EXISTS " . $safeView);
     }
 
     private function viewExists($viewName)

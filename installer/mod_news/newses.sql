@@ -18,6 +18,7 @@ CREATE VIEW newses AS SELECT
     mod_news.lang,
     mod_news.video,
     mod_news_category.name AS category_name,
+    mod_news_category.name AS categoryname,
     mod_news_category.seo AS category_seo,
     mod_news_category.id AS category_id,
     mod_user.username,
