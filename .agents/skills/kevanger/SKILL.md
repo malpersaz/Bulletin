@@ -144,7 +144,7 @@ If the news is requested in Kurmanji (`ku`):
     - `status: "n"` (**STRICT REQUIREMENT: Save as draft, DO NOT publish**).
     - Valid `summary` (90–120 characters).
     - Full HTML formatted `content` with in-text citations and image credits.
-    - SEO slug and meta keywords/description.
+    - SEO slug, meta description, and 3–5 relevant keywords for search indexing completeness.
 - Report completion to the user in Kurmanji, providing:
   - Generated News ID
   - Author name (*Derya Welat @deryawelat*)

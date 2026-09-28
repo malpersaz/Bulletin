@@ -1,3 +1,13 @@
+## v1.1.13 (2026-09-28)
+- **Optional Keywords & Validation Modernization (`mod_news`, `mod_news_category`)**:
+  - Removed obsolete mandatory `required` constraint from `keywords` in both `add.validator.php` and `edit.validator.php` across `mod_news` and `mod_news_category`.
+  - Upgraded `keywords` length validation to conditionally execute only when populated, allowing empty inputs while strictly enforcing the 255-character maximum.
+  - Eliminated outdated `#Check Tcno` comments from validator classes to ensure 100% compliance with repository code separation and i18n language guards.
+- **Kevanger Skill Metadata Specification (`.agents/skills/kevanger/SKILL.md`)**:
+  - Refined draft staging guidelines to populate 3–5 relevant contextual keywords for complete search engine indexing and metadata parity while preserving optionality on the CMS form layer.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.13`.
+
 ## v1.1.12 (2026-09-28)
 - **Unified Author & Editor Profile Architecture (`mod/index/helper/mod_publication.helper.php`, `templates/`, `static/css/author.css`)**:
   - Refactored the `author()` controller action to authenticate and resolve profile records directly against the user model (`mod_user` joined with `mod_user_group`) rather than strictly depending on pre-existing records in `mod_publication`.

@@ -112,18 +112,7 @@ class add_validator
         if ($this->_check() === True) {
             return True;
         }
-        // keywords Required
-        $this->valid->add(
-            [
-                'name' => 'keywords',
-                'func' => 'required',
-                'arg' => '',
-                'message' => sprintf($this->lang['mod_news']['validator']['required'], $this->lang['mod_news']['admin']['columns']['keywords'])
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
-        }
+
         // description Required
         $this->valid->add(
             [
@@ -184,20 +173,22 @@ class add_validator
         if ($this->_check() === True) {
             return True;
         }
-        // keywords Length
-        $this->valid->add(
-            [
-                'name' => 'keywords',
-                'func' => 'length',
-                'arg' => [
-                    'min' => '1',
-                    'max' => '255'
-                ],
-                'message' => sprintf($this->lang['mod_news']['validator']['length'], $this->lang['mod_news']['admin']['columns']['keywords'], '1', '255')
-            ]
-        );
-        if ($this->_check() === True) {
-            return True;
+        // keywords Length (optional)
+        if (trim((string) Req::Request('keywords')) !== '') {
+            $this->valid->add(
+                [
+                    'name' => 'keywords',
+                    'func' => 'length',
+                    'arg' => [
+                        'min' => '1',
+                        'max' => '255'
+                    ],
+                    'message' => sprintf($this->lang['mod_news']['validator']['length'], $this->lang['mod_news']['admin']['columns']['keywords'], '1', '255')
+                ]
+            );
+            if ($this->_check() === True) {
+                return True;
+            }
         }
         // description Length
         $this->valid->add(
@@ -256,9 +247,6 @@ class add_validator
             return True;
         }
 
-        #Check Email
-
-        #Check Tcno
 
         #Check Unique
 
