@@ -891,6 +891,8 @@ class McpServer
                         'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Attached file/attachment ID.'],
                         'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control level ID.'],
                         'video' => ['type' => 'string', 'description' => 'Comma-separated video keys.'],
+                        'user_id' => ['type' => 'integer', 'description' => 'Optional author user ID. Defaults to acting user.'],
+                        'username' => ['type' => 'string', 'description' => 'Optional author username (e.g. deryawelat). Defaults to acting user.'],
                         'image' => [
                             'type' => 'object',
                             'nullable' => true,
@@ -932,6 +934,8 @@ class McpServer
                         'file_id' => ['type' => 'integer'],
                         'acl_id' => ['type' => 'integer'],
                         'video' => ['type' => 'string'],
+                        'user_id' => ['type' => 'integer', 'description' => 'Author user ID.'],
+                        'username' => ['type' => 'string', 'description' => 'Author username (e.g. deryawelat).'],
                         'image' => [
                             'type' => 'object',
                             'nullable' => true,

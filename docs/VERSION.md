@@ -1,3 +1,17 @@
+## v1.1.10 (2026-09-28)
+- **Model Context Protocol (MCP) News Author Delegation (`lib/McpNewsTools.class.php`, `lib/McpServer.class.php`)**:
+  - Added support for explicit author attribution (`user_id` and `username`) in `create_news` and `update_news` tool endpoints.
+  - Enabled dynamic resolution of target author accounts from registered system users (`mod_user`) with active status verification, maintaining backward-compatible fallback to the acting authenticated user.
+  - Updated tool schemas in `McpServer.class.php` and MCP server manifests to expose author delegation parameters.
+- **Kevanger News Drafting & Curation Skill (`.agents/skills/kevanger/SKILL.md`, `.agents/INDEX.md`)**:
+  - Implemented repository-local skill for automated fact-checking, multi-source Kurdish and international media investigation, and draft staging via MCP.
+  - Integrated structured source verification matrix across verified Kurdish regional outlets (Rûdaw, Kurdistan24, VOA Kurdî, 964media, NRT, Shafaq, NPA, Hawar News, Bianet Kurdî, Hengaw, Mezopotamya Ajansı, official KRG portals) and international verification quotas across US (DYE), Continental Europe, UK, Israel, Russia, Turkey, and Iran.
+  - Built-in automated Kurmanji linguistic pre-flight gate enforcing Bedirxan Latin orthography, diacritics, vocabulary conventions, and deck summary constraints (90–120 characters).
+  - Integrated ethical image labeling distinguishing verified source photojournalism from synthetic illustrations.
+  - Enforced human-in-the-loop draft staging (`status: "n"`) to prevent unverified publication.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.10`.
+
 ## v1.1.9 (2026-09-26)
 - **News Detail 24-Hour Editorial Sidebar Card (`templates/amida/index/mod_news/news.twig`, `static/css/news.css`)**:
   - Implemented real-time 24-hour news filtering (`news_24h`) displaying exclusively news published within the past 24 hours on the right side of the news detail page.

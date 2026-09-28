@@ -75,6 +75,9 @@ Use it to quickly locate:
 - `/.agents/skills/impeccable/SKILL.md`
   - Impeccable Design: design vocabulary and refinement protocol (/polish, /distill, /clarify, /audit, /critique)
 
+- `/.agents/skills/kevanger/SKILL.md`
+  - Kevanger: curate, cross-reference, and stage drafted news in mod_news via MCP with orthography validation
+
 - `/.agents/skills/lang-refactor/SKILL.md`
   - language-key refactoring helper for descriptive English key migrations
 
