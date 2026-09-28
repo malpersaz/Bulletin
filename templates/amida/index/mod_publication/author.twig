@@ -2,12 +2,18 @@
 
 {% set author = ctx_get('author') %}
 {% set publications = ctx_get('publications') %}
+{% set total_publications = ctx_get('total_publications')|default(0) %}
+{% set author_news = ctx_get('author_news') %}
+{% set total_news = ctx_get('total_news')|default(0) %}
+{% set active_tab = ctx_get('active_tab')|default('articles') %}
 {% set pagination = ctx_get('pagination') %}
 {% set page = ctx_get('page') %}
 {% set username = ctx_get('username') %}
 {% set author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
-{% set author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
-{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') %}
+{% if author_name == '' %}{% set author_name = username %}{% endif %}
+{% set author_initials = ((author.u_name is not empty ? author.u_name|slice(0, 1) : username|slice(0, 1)) ~ (author.u_last_name is not empty ? author.u_last_name|slice(0, 1) : ''))|upper %}
+{% set tab_query = active_tab == 'news' ? '?tab=news' : '' %}
+{% set author_url = site.saddress ~ 'author/' ~ username ~ ((page is not empty and page > 1) ? '/' ~ page : '') ~ tab_query %}
 {% set author_description = (author.about is defined and author.about is not empty ? author.about|striptags|trim : '') %}
 {% if author_description == '' and d is defined and d.description is defined and d.description is not empty %}
     {% set author_description = d.description|striptags|trim %}
@@ -21,7 +27,7 @@
 {% endif %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}" />
+    <link rel="canonical" href="{{ site.saddress }}author/{{ username }}{% if page is not empty and page > 1 %}/{{ page }}{% endif %}{{ tab_query }}" />
 {% endblock %}
 
 {% block title %}
@@ -97,7 +103,7 @@
                             </div>
                             {% endif %}
                             <div class="author-meta">
-                                <span class="author-role">{{ lang.index.mod_publication.author }}</span>
+                                <span class="author-role author-role-{{ author.group_id }}">{{ author.role_label|default(lang.index.mod_publication.author) }}</span>
                                 <span class="meta-divider">·</span>
                                 <span class="author-handle">
                                     <i class="bi bi-at"></i>{{ username }}
@@ -121,51 +127,170 @@
                     </div>
                 </section>
 
-                {% if publications %}
-                    <div class="author-stream">
-                        {% for publication in publications %}
-                            {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
-                            <article class="publication-row">
-                                <div class="publication-topline">
-                                    <span class="publication-date">
-                                        <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
-                                    </span>
-                                    {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
-                                        <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
-                                    {% endif %}
-                                </div>
-                                <h2 class="publication-title">
-                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication_title }}</a>
-                                </h2>
-                            </article>
-                        {% endfor %}
-                    </div>
+                <div class="author-content-card">
+                    {% if total_publications > 0 and total_news > 0 %}
+                        {# Both articles and news are available: render tab switcher #}
+                        <ul class="nav nav-tabs author-nav-tabs" id="authorTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link{% if active_tab == 'articles' %} active{% endif %}" id="articles-tab" data-bs-toggle="tab" data-bs-target="#author-articles-pane" type="button" role="tab" aria-controls="author-articles-pane" aria-selected="{% if active_tab == 'articles' %}true{% else %}false{% endif %}">
+                                    <i class="bi bi-journal-text me-1"></i>
+                                    <span>{{ lang.index.mod_publication.articles }}</span>
+                                    <span class="author-badge-count">{{ total_publications }}</span>
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link{% if active_tab == 'news' %} active{% endif %}" id="news-tab" data-bs-toggle="tab" data-bs-target="#author-news-pane" type="button" role="tab" aria-controls="author-news-pane" aria-selected="{% if active_tab == 'news' %}true{% else %}false{% endif %}">
+                                    <i class="bi bi-newspaper me-1"></i>
+                                    <span>{{ lang.index.mod_publication.news }}</span>
+                                    <span class="author-badge-count">{{ total_news }}</span>
+                                </button>
+                            </li>
+                        </ul>
 
-                    {% if pagination %}
-                        <div class="pagination-wrap">
-                            <nav aria-label="{{ author_name }}">
-                                <ul class="pagination justify-content-center">
-                                    {% for s in pagination %}
-                                        {% if s == '...' %}
-                                            <li class="page-item disabled"><span class="page-link">...</span></li>
-                                        {% elseif s == page %}
-                                            <li class="page-item active" aria-current="page">
-                                                <span class="page-link">{{ s }}</span>
-                                            </li>
-                                        {% elseif s == 1 %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}">{{ s }}</a>
-                                            </li>
-                                        {% else %}
-                                            <li class="page-item">
-                                                <a class="page-link" href="{{ site.saddress }}author/{{ username }}/{{ s }}">{{ s }}</a>
-                                            </li>
+                        <div class="tab-content author-tab-content" id="authorTabContent">
+                            <div class="tab-pane fade{% if active_tab == 'articles' %} show active{% endif %}" id="author-articles-pane" role="tabpanel" aria-labelledby="articles-tab">
+                                {% if publications %}
+                                    <div class="author-stream">
+                                        {% for publication in publications %}
+                                            {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                                            <article class="publication-row">
+                                                <div class="publication-topline">
+                                                    <span class="publication-date">
+                                                        <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                                    </span>
+                                                    {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
+                                                        <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
+                                                    {% endif %}
+                                                </div>
+                                                <h2 class="publication-title">
+                                                    <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication_title }}</a>
+                                                </h2>
+                                            </article>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="author-empty">
+                                        <p><i class="bi bi-info-circle me-1"></i>{{ lang.index.mod_publication.no_articles }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="tab-pane fade{% if active_tab == 'news' %} show active{% endif %}" id="author-news-pane" role="tabpanel" aria-labelledby="news-tab">
+                                {% if author_news %}
+                                    <div class="author-stream">
+                                        {% for item in author_news %}
+                                            {% set news_title = item.title is defined and item.title is not empty ? item.title : item.name %}
+                                            <article class="publication-row news-row">
+                                                <div class="publication-topline">
+                                                    <span class="publication-date">
+                                                        <i class="bi bi-clock-history"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                                    </span>
+                                                    {% if item.category_seo is defined and item.category_name is defined and item.category_name is not empty and item.category_seo != '#' %}
+                                                        <a class="publication-category news-category" href="{{ site.saddress }}newses/{{ item.category_seo }}">{{ item.category_name }}</a>
+                                                    {% endif %}
+                                                </div>
+                                                <h2 class="publication-title">
+                                                    <a href="{{ site.saddress }}news/{{ item.seo }}">{{ news_title }}</a>
+                                                </h2>
+                                            </article>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="author-empty">
+                                        <p><i class="bi bi-info-circle me-1"></i>{{ lang.index.mod_publication.no_news }}</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    {% elseif total_news > 0 and total_publications == 0 %}
+                        {# Only news is available (e.g. editor) #}
+                        <div class="author-card-header">
+                            <h2 class="author-card-title">
+                                <i class="bi bi-newspaper me-1"></i>
+                                <span>{{ lang.index.mod_publication.news }}</span>
+                                <span class="author-badge-count">{{ total_news }}</span>
+                            </h2>
+                        </div>
+                        <div class="author-stream">
+                            {% for item in author_news %}
+                                {% set news_title = item.title is defined and item.title is not empty ? item.title : item.name %}
+                                <article class="publication-row news-row">
+                                    <div class="publication-topline">
+                                        <span class="publication-date">
+                                            <i class="bi bi-clock-history"></i>{{ item.created_at|date('d.m.Y H:i') }}
+                                        </span>
+                                        {% if item.category_seo is defined and item.category_name is defined and item.category_name is not empty and item.category_seo != '#' %}
+                                            <a class="publication-category news-category" href="{{ site.saddress }}newses/{{ item.category_seo }}">{{ item.category_name }}</a>
                                         {% endif %}
-                                    {% endfor %}
-                                </ul>
-                            </nav>
+                                    </div>
+                                    <h2 class="publication-title">
+                                        <a href="{{ site.saddress }}news/{{ item.seo }}">{{ news_title }}</a>
+                                    </h2>
+                                </article>
+                            {% endfor %}
+                        </div>
+
+                    {% elseif total_publications > 0 %}
+                        {# Only publications are available (e.g. author) #}
+                        <div class="author-card-header">
+                            <h2 class="author-card-title">
+                                <i class="bi bi-journal-text me-1"></i>
+                                <span>{{ lang.index.mod_publication.articles }}</span>
+                                <span class="author-badge-count">{{ total_publications }}</span>
+                            </h2>
+                        </div>
+                        <div class="author-stream">
+                            {% for publication in publications %}
+                                {% set publication_title = publication.title is defined and publication.title is not empty ? publication.title : publication.name %}
+                                <article class="publication-row">
+                                    <div class="publication-topline">
+                                        <span class="publication-date">
+                                            <i class="bi bi-clock-history"></i>{{ publication.created_at|date('d.m.Y H:i') }}
+                                        </span>
+                                        {% if publication.category_seo is defined and publication.category_name is defined and publication.category_name is not empty and publication.category_seo != '#' %}
+                                            <a class="publication-category" href="{{ site.saddress }}publications/{{ publication.category_seo }}">{{ publication.category_name }}</a>
+                                        {% endif %}
+                                    </div>
+                                    <h2 class="publication-title">
+                                        <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication_title }}</a>
+                                    </h2>
+                                </article>
+                            {% endfor %}
+                        </div>
+
+                    {% else %}
+                        {# No content published yet #}
+                        <div class="author-empty">
+                            <p><i class="bi bi-info-circle me-1"></i>{{ lang.index.mod_publication.no_articles }}</p>
                         </div>
                     {% endif %}
+                </div>
+
+                {% if pagination %}
+                    <div class="pagination-wrap">
+                        <nav aria-label="{{ author_name }}">
+                            <ul class="pagination justify-content-center">
+                                {% for s in pagination %}
+                                    {% if s == '...' %}
+                                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                                    {% elseif s == page %}
+                                        <li class="page-item active" aria-current="page">
+                                            <span class="page-link">{{ s }}</span>
+                                        </li>
+                                    {% elseif s == 1 %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ site.saddress }}author/{{ username }}{{ tab_query }}">{{ s }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ site.saddress }}author/{{ username }}/{{ s }}{{ tab_query }}">{{ s }}</a>
+                                        </li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
                 {% endif %}
             </main>
 

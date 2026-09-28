@@ -407,6 +407,13 @@ $lang['index']['mod_publication']['latest_content'] = [
 ];
 $lang['index']['mod_publication']['authors'] = 'Our Authors';
 $lang['index']['mod_publication']['author'] = 'Author';
+$lang['index']['mod_publication']['editor'] = 'Editor';
+$lang['index']['mod_publication']['member'] = 'Member';
+$lang['index']['mod_publication']['site_management'] = 'Site Management';
+$lang['index']['mod_publication']['articles'] = 'Articles';
+$lang['index']['mod_publication']['news'] = 'News';
+$lang['index']['mod_publication']['no_articles'] = 'No articles published yet.';
+$lang['index']['mod_publication']['no_news'] = 'No news published yet.';
 $lang['index']['mod_publication']['other_authors'] = 'Other Authors';
 $lang['index']['mod_publication']['authors_latest_label'] = 'Latest publication';
 $lang['index']['mod_publication']['authors_empty_desc'] = 'There are no author records to display yet.';

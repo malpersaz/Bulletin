@@ -1,3 +1,13 @@
+## v1.1.12 (2026-09-28)
+- **Unified Author & Editor Profile Architecture (`mod/index/helper/mod_publication.helper.php`, `templates/`, `static/css/author.css`)**:
+  - Refactored the `author()` controller action to authenticate and resolve profile records directly against the user model (`mod_user` joined with `mod_user_group`) rather than strictly depending on pre-existing records in `mod_publication`.
+  - Prevented false 404 responses for editors, journalists, and registered contributors who author news articles or maintain accounts without prior column publications in the active language.
+  - Implemented multi-card and tabbed layout separating published articles (`mod_publication`) and editorial news stories (`mod_news`) into dedicated presentation sections with live badge counts.
+  - Designed automated tab heuristics that prioritize relevant content cards based on user group classification (e.g., editorial news for editors, opinion columns for authors) with explicit query parameter override support (`?tab=news`, `?tab=articles`).
+  - Added semantic role badges to profile headers dynamically resolved from user group identifiers (`Site Management`, `Editor`, `Member`, `Author`).
+  - Added localization keys across supported interface languages (`ku`, `en`, `tr`) for new user group roles and tab descriptors.
+  - Enforced strict code separation with responsive and dark-mode compliant CSS in `author.css` free of inline style attributes and embedded script logic.
+
 ## v1.1.11 (2026-09-28)
 - **News Detail Author Avatar Schema & Model Parity (`mod/mod_news/model/newses.model.php`, `installer/mod_news/newses.sql`)**:
   - Added explicit `$user_image`, `$group_name`, and `$category_name` properties to `newses_model` so the ORM dynamically hydrates user avatar images and group metadata from the SQL view.

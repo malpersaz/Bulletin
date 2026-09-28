@@ -356,71 +356,174 @@ class mod_publication_helper extends indexBase
         $pager_limit = 4;
         $offset = ($page - 1) * $page_limit;
 
-        $author = Load::model('mod_publication.publications');
-        $author_sql = "SELECT p.*
-            FROM publications p
-            WHERE p.username = '" . addslashes($username) . "'
-              AND p.status = 'y'
-              AND p.lang = '" . $this->site['lang'] . "'
-            ORDER BY p.created_at DESC
-            LIMIT 1";
-        $author->fetch_array($author_sql);
+        $userModel = Load::model('mod_user');
+        $safeUsername = addslashes($username);
+        $userSql = "SELECT u.id, u.group_id, u.status, u.name, u.last_name, u.username, u.image, u.city, u.blog_name, u.about,
+                           g.name AS group_name
+                    FROM mod_user u
+                    LEFT JOIN mod_user_group g ON u.group_id = g.group_id
+                    WHERE u.username = '{$safeUsername}'
+                      AND u.status = 'y'
+                    LIMIT 1";
+        $userModel->fetch_array($userSql);
 
-        if ($author->getSize() === 0) {
+        if ($userModel->getSize() === 0) {
             return $this->_404();
         }
 
-        $author_data = $author->toArray()[0];
-        $social_data = $this->loadAuthorSocialLinks($author_data['user_id'] ?? 0);
-        $author_data['twitter'] = $social_data['map']['twitter'];
-        $author_data['facebook'] = $social_data['map']['facebook'];
-        $this->theme->ctx_set('author', $author_data);
-        $this->theme->ctx_set('author_social_links', $social_data['items']);
-        $this->theme->ctx_set('username', $username);
+        $userData = $userModel->toArray()[0];
+        $userId = (int) $userData['id'];
+        $groupId = (int) ($userData['group_id'] ?? 4);
 
-        $publication = Load::model('mod_publication.publications');
-        $count_sql = "SELECT COUNT(*) total_count
-            FROM publications
-            WHERE username = '" . addslashes($username) . "'
-              AND status = 'y'
-              AND lang = '" . $this->site['lang'] . "'";
-        $publication->fetch_array($count_sql);
-        $total_rows = $publication->toArray();
-        $total_item = isset($total_rows[0]['total_count']) ? intval($total_rows[0]['total_count']) : 0;
-
-        $publication_sql = "SELECT *
-            FROM publications
-            WHERE username = '" . addslashes($username) . "'
-              AND status = 'y'
-              AND lang = '" . $this->site['lang'] . "'
-            ORDER BY created_at DESC
-            LIMIT " . intval($page_limit) . " OFFSET " . intval($offset);
-        $publication->fetch_array($publication_sql);
-
-        if ($publication->getSize() !== 0) {
-            $this->theme->ctx_set('publications', $publication->toArray());
+        $roleLabel = $this->lang['index']['mod_publication']['author'] ?? 'Author';
+        if ($groupId === 1) {
+            $roleLabel = $this->lang['index']['mod_publication']['site_management'] ?? ($userData['group_name'] ?? 'Site Management');
+        } elseif ($groupId === 2) {
+            $roleLabel = $this->lang['index']['mod_publication']['editor'] ?? ($userData['group_name'] ?? 'Editor');
+        } elseif ($groupId === 3) {
+            $roleLabel = $this->lang['index']['mod_publication']['member'] ?? ($userData['group_name'] ?? 'Member');
+        } elseif ($groupId === 4) {
+            $roleLabel = $this->lang['index']['mod_publication']['author'] ?? ($userData['group_name'] ?? 'Author');
+        } elseif (!empty($userData['group_name'])) {
+            $roleLabel = $userData['group_name'];
         }
 
+        $socialData = $this->loadAuthorSocialLinks($userId);
+        $authorData = [
+            'user_id' => $userId,
+            'id' => $userId,
+            'group_id' => $groupId,
+            'group_name' => $userData['group_name'] ?? '',
+            'role_label' => $roleLabel,
+            'u_name' => $userData['name'] ?? '',
+            'u_last_name' => $userData['last_name'] ?? '',
+            'name' => $userData['name'] ?? '',
+            'last_name' => $userData['last_name'] ?? '',
+            'user_image' => $userData['image'] ?? '',
+            'about' => $userData['about'] ?? '',
+            'city' => $userData['city'] ?? '',
+            'blog_name' => $userData['blog_name'] ?? '',
+            'username' => $userData['username'] ?? $username,
+            'twitter' => $socialData['map']['twitter'] ?? '',
+            'facebook' => $socialData['map']['facebook'] ?? '',
+        ];
+
+        $this->theme->ctx_set('author', $authorData);
+        $this->theme->ctx_set('author_social_links', $socialData['items']);
+        $this->theme->ctx_set('username', $username);
+
+        // Fetch publications count
+        $pubModel = Load::model('mod_publication.publications');
+        $countSql = "SELECT COUNT(*) AS total_count
+                     FROM publications
+                     WHERE user_id = {$userId}
+                       AND status = 'y'
+                       AND lang = '{$this->site['lang']}'";
+        $pubModel->fetch_array($countSql);
+        $pubCountRows = $pubModel->toArray();
+        $totalPublications = isset($pubCountRows[0]['total_count']) ? (int) $pubCountRows[0]['total_count'] : 0;
+
+        // Fetch news count
+        $newsModel = Load::model('mod_news.newses');
+        $newsCountSql = "SELECT COUNT(*) AS total_count
+                         FROM newses
+                         WHERE user_id = {$userId}
+                           AND status = 'y'
+                           AND lang = '{$this->site['lang']}'";
+        $newsModel->fetch_array($newsCountSql);
+        $newsCountRows = $newsModel->toArray();
+        $totalNews = isset($newsCountRows[0]['total_count']) ? (int) $newsCountRows[0]['total_count'] : 0;
+
+        // Determine active tab
+        $activeTab = isset($_GET['tab']) && in_array($_GET['tab'], ['articles', 'news'], true) ? $_GET['tab'] : null;
+        if ($activeTab === null) {
+            if ($totalPublications > 0 && $totalNews === 0) {
+                $activeTab = 'articles';
+            } elseif ($totalNews > 0 && $totalPublications === 0) {
+                $activeTab = 'news';
+            } elseif ($groupId === 2) {
+                $activeTab = ($totalNews > 0) ? 'news' : 'articles';
+            } else {
+                $activeTab = 'articles';
+            }
+        }
+        $this->theme->ctx_set('active_tab', $activeTab);
+
+        $publications = [];
+        $authorNews = [];
+
+        // Paginated items for the active tab
+        $totalItem = ($activeTab === 'news') ? $totalNews : $totalPublications;
+
+        if ($totalItem > 0 && $page > 1) {
+            $pager = Load::lib('Pager');
+            $pager->total_item = $totalItem;
+            $pager->page_limit = $page_limit;
+            $pager->pager_limit = $pager_limit;
+            $pager->page = $page;
+            if ($pager->check() === FALSE) {
+                return $this->_404();
+            }
+        }
+
+        // Fetch publications list
+        if ($totalPublications > 0) {
+            $pubOffset = ($activeTab === 'articles') ? $offset : 0;
+            $pubLimit = ($activeTab === 'articles') ? $page_limit : min(10, $totalPublications);
+            $pubListSql = "SELECT *
+                           FROM publications
+                           WHERE user_id = {$userId}
+                             AND status = 'y'
+                             AND lang = '{$this->site['lang']}'
+                           ORDER BY created_at DESC
+                           LIMIT " . (int) $pubLimit . " OFFSET " . (int) $pubOffset;
+            $pubModel->fetch_array($pubListSql);
+            if ($pubModel->getSize() !== 0) {
+                $publications = $pubModel->toArray();
+            }
+        }
+
+        // Fetch news list
+        if ($totalNews > 0) {
+            $newsOffset = ($activeTab === 'news') ? $offset : 0;
+            $newsLimit = ($activeTab === 'news') ? $page_limit : min(10, $totalNews);
+            $newsListSql = "SELECT *
+                            FROM newses
+                            WHERE user_id = {$userId}
+                              AND status = 'y'
+                              AND lang = '{$this->site['lang']}'
+                            ORDER BY created_at DESC
+                            LIMIT " . (int) $newsLimit . " OFFSET " . (int) $newsOffset;
+            $newsModel->fetch_array($newsListSql);
+            if ($newsModel->getSize() !== 0) {
+                $authorNews = $newsModel->toArray();
+            }
+        }
+
+        $this->theme->ctx_set('publications', $publications);
+        $this->theme->ctx_set('total_publications', $totalPublications);
+        $this->theme->ctx_set('author_news', $authorNews);
+        $this->theme->ctx_set('total_news', $totalNews);
+
         $pager = Load::lib('Pager');
-        $pager->total_item = $total_item;
+        $pager->total_item = $totalItem;
         $pager->page_limit = $page_limit;
         $pager->pager_limit = $pager_limit;
         $pager->page = $page;
 
-        if ($pager->check() === FALSE) {
-            return $this->_404();
-        }
-
-        if ($pager->Result() !== FALSE) {
+        if ($totalItem > 0 && $pager->check() !== FALSE && $pager->Result() !== FALSE) {
             $this->theme->ctx_set('pagination', $pager->Result());
         }
 
         $this->theme->ctx_set('page', $page);
 
-        $d['name'] = trim(($author_data['u_name'] ?? '') . ' ' . ($author_data['u_last_name'] ?? ''));
+        $d['name'] = trim(($authorData['u_name'] ?? '') . ' ' . ($authorData['u_last_name'] ?? ''));
+        if ($d['name'] === '') {
+            $d['name'] = $authorData['username'];
+        }
         $d['title'] = $d['name'];
         $d['keywords'] = $d['name'];
-        $d['description'] = $d['name'];
+        $d['description'] = !empty($authorData['about']) ? $authorData['about'] : $d['name'];
         $this->theme->ctx_set('d', $d);
         $this->theme->ctx_set('detail', $d);
 

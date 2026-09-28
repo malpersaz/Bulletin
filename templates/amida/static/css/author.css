@@ -124,11 +124,41 @@
 }
 
 #publication-author-page .author-role {
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--author-muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+    border: 1px solid rgba(15, 118, 110, 0.2);
+}
+
+#publication-author-page .author-role-1 {
+    background: rgba(225, 29, 72, 0.1);
+    color: #e11d48;
+    border-color: rgba(225, 29, 72, 0.2);
+}
+
+#publication-author-page .author-role-2 {
+    background: rgba(79, 70, 229, 0.1);
+    color: #4f46e5;
+    border-color: rgba(79, 70, 229, 0.2);
+}
+
+#publication-author-page .author-role-3 {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+    border-color: rgba(100, 116, 139, 0.2);
+}
+
+#publication-author-page .author-role-4 {
+    background: rgba(15, 118, 110, 0.1);
+    color: #0f766e;
+    border-color: rgba(15, 118, 110, 0.2);
 }
 
 #publication-author-page .author-handle,
@@ -148,6 +178,97 @@
     #publication-author-page .author-meta {
         justify-content: center;
     }
+}
+
+#publication-author-page .author-content-card {
+    background: var(--author-surface);
+    border: 1px solid var(--author-line);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(21, 32, 51, 0.04);
+}
+
+#publication-author-page .author-card-header {
+    padding-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--author-line);
+}
+
+#publication-author-page .author-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--author-ink);
+}
+
+#publication-author-page .author-nav-tabs {
+    border-bottom: 1px solid var(--author-line);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#publication-author-page .author-nav-tabs .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--author-muted);
+    background: transparent;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+#publication-author-page .author-nav-tabs .nav-link:hover {
+    color: var(--author-ink);
+    border-bottom-color: var(--author-line);
+}
+
+#publication-author-page .author-nav-tabs .nav-link.active {
+    color: #0f766e;
+    border-bottom-color: #0f766e;
+    background: transparent;
+}
+
+#publication-author-page .author-badge-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    border-radius: 999px;
+    background: rgba(21, 32, 51, 0.08);
+    color: var(--author-ink);
+}
+
+#publication-author-page .author-nav-tabs .nav-link.active .author-badge-count {
+    background: rgba(15, 118, 110, 0.15);
+    color: #0f766e;
+}
+
+#publication-author-page .news-category {
+    color: #4f46e5;
+    background: rgba(79, 70, 229, 0.10);
+}
+
+#publication-author-page .news-category:hover {
+    color: #3730a3;
+    background: rgba(79, 70, 229, 0.16);
+}
+
+#publication-author-page .author-empty {
+    padding: 2.5rem 1rem;
+    text-align: center;
+    color: var(--author-muted);
+    font-size: 1rem;
 }
 
 #publication-author-page .author-stream {
@@ -416,4 +537,72 @@ body.dark-mode #publication-author-page .page-item.active .page-link {
     background: #f8fafc;
     color: #0f172a;
     border-color: #f8fafc;
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-content-card,
+body.dark #publication-author-page .author-content-card,
+body.dark-mode #publication-author-page .author-content-card {
+    background: #101826;
+    border-color: var(--author-line);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-nav-tabs .nav-link.active,
+body.dark #publication-author-page .author-nav-tabs .nav-link.active,
+body.dark-mode #publication-author-page .author-nav-tabs .nav-link.active {
+    color: #2dd4bf;
+    border-bottom-color: #2dd4bf;
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-nav-tabs .nav-link.active .author-badge-count,
+body.dark #publication-author-page .author-nav-tabs .nav-link.active .author-badge-count,
+body.dark-mode #publication-author-page .author-nav-tabs .nav-link.active .author-badge-count {
+    background: rgba(45, 212, 191, 0.2);
+    color: #2dd4bf;
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-badge-count,
+body.dark #publication-author-page .author-badge-count,
+body.dark-mode #publication-author-page .author-badge-count {
+    background: rgba(148, 163, 184, 0.15);
+    color: var(--author-ink);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-role-1,
+body.dark #publication-author-page .author-role-1,
+body.dark-mode #publication-author-page .author-role-1 {
+    background: rgba(244, 63, 94, 0.15);
+    color: #fb7185;
+    border-color: rgba(244, 63, 94, 0.3);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-role-2,
+body.dark #publication-author-page .author-role-2,
+body.dark-mode #publication-author-page .author-role-2 {
+    background: rgba(99, 102, 241, 0.18);
+    color: #a5b4fc;
+    border-color: rgba(99, 102, 241, 0.3);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-role-3,
+body.dark #publication-author-page .author-role-3,
+body.dark-mode #publication-author-page .author-role-3 {
+    background: rgba(148, 163, 184, 0.15);
+    color: #cbd5e1;
+    border-color: rgba(148, 163, 184, 0.25);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .author-role-4,
+body.dark #publication-author-page .author-role-4,
+body.dark-mode #publication-author-page .author-role-4 {
+    background: rgba(45, 212, 191, 0.15);
+    color: #2dd4bf;
+    border-color: rgba(45, 212, 191, 0.3);
+}
+
+html[data-bs-theme="dark"] #publication-author-page .news-category,
+body.dark #publication-author-page .news-category,
+body.dark-mode #publication-author-page .news-category {
+    color: #a5b4fc;
+    background: rgba(99, 102, 241, 0.18);
 }
