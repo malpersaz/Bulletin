@@ -13,15 +13,20 @@
 {% endblock %}
 
 {% block content %}
+{% set stat_total_news_label = lang.management.total_news %}
+{% set stat_draft_news_label = lang.management.draft_news %}
+{% set empty_zero_records_label = lang.mod_news.datatable.zeroRecords|default(lang.mod_news.grid.no_data) %}
+{% set empty_table_label = lang.mod_news.datatable.emptyTable|default(lang.mod_news.grid.no_data) %}
+{% set loading_records_label = lang.mod_news.datatable.loadingRecords|default(lang.mod_news.grid.loading) %}
 <div class="content-stats-container">
     <div class="content-stats-row">
         <div class="content-stat-card">
             <div id="statTotalNews" class="content-stat-value">{{ total_news }}</div>
-            <div class="content-stat-label">{{ lang.management.total_news|default(lang.mod_news.total_news|default('Total News')) }}</div>
+            <div class="content-stat-label">{{ stat_total_news_label }}</div>
         </div>
         <div class="content-stat-card">
             <div id="statDraftNews" class="content-stat-value">{{ draft_news }}</div>
-            <div class="content-stat-label">{{ lang.management.draft_news|default(lang.mod_news.draft_news|default('Draft News')) }}</div>
+            <div class="content-stat-label">{{ stat_draft_news_label }}</div>
         </div>
     </div>
 </div>
@@ -40,15 +45,15 @@
 
 <div id="empty-state" class="empty-state is-hidden">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3>{{ lang.mod_news.datatable.zeroRecords|default(lang.mod_news.grid.no_data) }}</h3>
-    <p>{{ lang.mod_news.datatable.emptyTable|default(lang.mod_news.grid.no_data) }}</p>
+    <h3>{{ empty_zero_records_label }}</h3>
+    <p>{{ empty_table_label }}</p>
 </div>
 
 <div id="infinite-loader" class="infinite-loader is-hidden">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
-    <span>{{ lang.mod_news.datatable.loadingRecords|default(lang.mod_news.grid.loading) }}</span>
+    <span>{{ loading_records_label }}</span>
 </div>
 
 <form id="filterForm" class="is-hidden">
@@ -169,5 +174,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/templates/admin/assets/js/mod_news.js?v=4.3"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v=4.4"></script>
 {% endblock %}

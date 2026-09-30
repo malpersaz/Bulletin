@@ -41,3 +41,4 @@ page-*.yml
 .agents/worker_*/
 __pycache__/
 *.pyc
+top_menu_concept_*.png

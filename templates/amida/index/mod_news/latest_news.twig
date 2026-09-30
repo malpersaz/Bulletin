@@ -73,6 +73,7 @@
                                         <i class="bi bi-calendar3" aria-hidden="true"></i>
                                         <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
                                     </span>
+                                    <span class="latest-news-meta-sep" aria-hidden="true">·</span>
                                 {% endif %}
 
                                 {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
@@ -87,7 +88,7 @@
 
                             <h3 class="latest-news-article-title" itemprop="headline">
                                 <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
-                                    {{ news.name }}
+                                    {{ news.name|raw }}
                                 </a>
                             </h3>
 

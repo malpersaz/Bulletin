@@ -302,7 +302,8 @@ abstract class McpCrudToolsBase
             throw new McpToolException("Field 'image.mime' must be one of: " . implode(', ', array_keys(self::ALLOWED_IMAGE_MIMES)) . '.');
         }
 
-        $data = base64_decode((string) $image['data_base64'], true);
+        $cleanBase64 = preg_replace('/\s+/', '', (string) $image['data_base64']);
+        $data = base64_decode($cleanBase64, true);
         if ($data === false || $data === '') {
             throw new McpToolException("Field 'image.data_base64' is not valid base64 data.");
         }

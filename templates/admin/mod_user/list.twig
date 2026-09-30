@@ -77,23 +77,23 @@
 {% endblock %}
 
 {% block fixed_bottom %}
-<div class="standard-toolbar" id="userToolbar">
-    <button type="button" class="toolbar-item is-disabled" id="toolbarEdit">
+<div class="standard-toolbar user-toolbar" id="userToolbar">
+    <button type="button" class="toolbar-item is-disabled" id="toolbarEdit" title="{{ lang.mod_user.button.edit }}" aria-label="{{ lang.mod_user.button.edit }}">
         <i class="bi bi-pencil-fill"></i>
         <span>{{ lang.mod_user.button.edit }}</span>
     </button>
 
-    <button type="button" class="toolbar-item is-disabled" id="toolbarActivate">
+    <button type="button" class="toolbar-item is-disabled" id="toolbarActivate" title="{{ lang.mod_user.grid.status.key }}" aria-label="{{ lang.mod_user.grid.status.key }}">
         <i class="bi bi-eye-slash-fill" id="toolbarActivateIcon"></i>
         <span id="toolbarActivateText">{{ lang.mod_user.grid.deactivate_confirm.key }}</span>
     </button>
 
-    <button type="button" class="toolbar-item is-disabled" id="toolbarAcl">
+    <button type="button" class="toolbar-item is-disabled" id="toolbarAcl" title="{{ lang.mod_user.admin.roles }}" aria-label="{{ lang.mod_user.admin.roles }}">
         <i class="bi bi-shield-lock-fill"></i>
         <span>{{ lang.mod_user.admin.roles }}</span>
     </button>
 
-    <button type="button" class="toolbar-item is-disabled" id="toolbarDelete">
+    <button type="button" class="toolbar-item is-disabled" id="toolbarDelete" title="{{ lang.mod_user.button.delete }}" aria-label="{{ lang.mod_user.button.delete }}">
         <i class="bi bi-trash3-fill"></i>
         <span>{{ lang.mod_user.button.delete }}</span>
     </button>
@@ -106,5 +106,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/templates/admin/assets/js/mod_user.js?v=1.0"></script>
+<script src="/templates/admin/assets/js/mod_user.js?v=1.1"></script>
 {% endblock %}

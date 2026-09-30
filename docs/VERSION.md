@@ -1,3 +1,18 @@
+## v1.1.14 (2026-09-30)
+- **Hero News Slider Swiper Runtime & Parity (`templates/amida/static/js/hero-news-slider.js`, `templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`)**:
+  - Implemented standalone `templates/amida/static/js/hero-news-slider.js` providing full Swiper initialization with smooth fade transitions, autoplay (with pause on hover and tab visibility change), and full keyboard/touch support.
+  - Added event delegation on slider controls (`.hero-news-swiper-button-prev`, `.hero-news-swiper-button-next`) ensuring navigation clicks work reliably across all rendered slide instances.
+  - Added retry polling to safely instantiate Swiper when the library bundle finishes loading asynchronously in the browser.
+  - Added `defer` attribute to `hero_slider.twig` script tag for clean non-blocking document evaluation.
+  - Enhanced `hero-news-slider.css` with `pointer-events: none` on `.hero-slide__overlay` and automated control suppression for single-slide contexts (`.is-single-slide`).
+- **Editorial Skills Suite (`.agents/skills/`)**:
+  - Integrated specialized editorial skills `kevkolin` (multi-source research engine), `kevrast` (anti-hallucination and live citation gate), and `kevheng` (Kurmanji lexicon, orthography, and grammar verification).
+- **Public Theme JavaScript & i18n Quality (`templates/amida/static/js/custom.js`, `templates/admin/mod_news/list.twig`)**:
+  - Refactored legacy non-English script comments in `custom.js` into clean English documentation to pass repository `i18n-guard` with 0 errors.
+  - Normalized translation key usages in admin templates to eliminate forbidden inline fallbacks.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.14`.
+
 ## v1.1.13 (2026-09-28)
 - **Optional Keywords & Validation Modernization (`mod_news`, `mod_news_category`)**:
   - Removed obsolete mandatory `required` constraint from `keywords` in both `add.validator.php` and `edit.validator.php` across `mod_news` and `mod_news_category`.

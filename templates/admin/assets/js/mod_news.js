@@ -952,7 +952,7 @@ window.deleteSelected = function () {
                 .then(response => response.text())
                 .then(msg => {
                     const trimmedMsg = (msg || '').trim();
-                    if (trimmedMsg === 'Success') {
+                    if (trimmedMsg === 'Success' || trimmedMsg === 'OK') {
                         mgr.selectedContentId = null;
                         mgr.updateToolbar(false);
                         mgr.loadData(true);
@@ -1017,7 +1017,7 @@ window.handleContextAction = function (action) {
                         .then(response => response.text())
                         .then(msg => {
                             const trimmedMsg = (msg || '').trim();
-                            if (trimmedMsg === 'Success') {
+                            if (trimmedMsg === 'Success' || trimmedMsg === 'OK') {
                                 (window.newsManager || window.contentManager)?.loadData(true);
                                 closeContextMenu();
                                 showSnackbar(adminLang.context_menu?.delete_success || 'Deleted successfully', 'success');
@@ -1215,7 +1215,7 @@ window.toggleStatus = function (id, currentStatus) {
                 .then(response => response.text())
                 .then(msg => {
                     const trimmedMsg = (msg || '').trim();
-                    if (trimmedMsg === 'Success') {
+                    if (trimmedMsg === 'Success' || trimmedMsg === 'OK') {
                         (window.newsManager || window.contentManager)?.loadData(true);
                         showSnackbar(successMsg, 'success');
                     } else {

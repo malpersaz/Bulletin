@@ -2393,14 +2393,34 @@ Rêgezên te yên sereke:
             $i->gR();
             $data = [];
 
-            // Load group names mapping
+            // Load group names mapping with localization support
             $groupMap = [];
             try {
                 $groupModel = Load::model('mod_user_group');
                 $groupModel->select(['group_id', 'name']);
                 if ($groupModel->gR() && $groupModel->getSize() > 0) {
+                    $groupKeyMap = [
+                        'Site Management' => 'site_manager',
+                        'Site Manager' => 'site_manager',
+                        'Editors' => 'editors',
+                        'Editor' => 'editors',
+                        'Normal User' => 'normal_member',
+                        'Normal Member' => 'normal_member',
+                        'Member' => 'normal_member',
+                        'Employee' => 'employee',
+                        'Authors' => 'authors',
+                        'Author' => 'authors',
+                        'Writer' => 'authors',
+                        'Nivîskar' => 'authors',
+                    ];
+
                     foreach ($groupModel->toArray() as $userGroup) {
-                        $groupMap[$userGroup['group_id']] = $userGroup['name'];
+                        $rawName = $userGroup['name'];
+                        if (isset($groupKeyMap[$rawName]) && !empty($this->lang['mod_user']['groups'][$groupKeyMap[$rawName]])) {
+                            $groupMap[$userGroup['group_id']] = $this->lang['mod_user']['groups'][$groupKeyMap[$rawName]];
+                        } else {
+                            $groupMap[$userGroup['group_id']] = $rawName;
+                        }
                     }
                 }
             } catch (Exception $ge) {
@@ -2450,7 +2470,8 @@ Rêgezên te yên sereke:
                         $last,
                         $groupName,
                         $createdAt,
-                        $phone
+                        $phone,
+                        $content['status'] ?? 'n'
                     ];
                 }
             }

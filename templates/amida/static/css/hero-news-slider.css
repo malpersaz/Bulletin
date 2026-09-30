@@ -76,6 +76,7 @@
     position: absolute;
     inset: 0;
     z-index: 2;
+    pointer-events: none;
     background: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.85) 0%,
@@ -350,6 +351,12 @@
     display: flex;
     gap: 0.4rem;
     flex-shrink: 0;
+    position: relative;
+    z-index: 5;
+}
+
+.hero-news-slider.is-single-slide .hero-slider__controls {
+    display: none !important;
 }
 
 .hero-news-swiper-button-prev,

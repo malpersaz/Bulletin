@@ -45,9 +45,9 @@
                 confirm_deactivate: userLang.grid?.deactivate_confirm?.value || 'Are you sure you want to deactivate this user?',
                 confirm_yes: userLang.button?.yes || 'Yes',
                 confirm_no: userLang.button?.no || 'No',
-                activate: userLang.grid?.status?.key || 'Activate',
-                deactivate: userLang.grid?.deactivate_confirm?.key || 'Deactivate',
-                status_active: userLang.grid?.active || 'Active',
+                activate: userLang.grid?.status?.key || userLang.grid?.activate || 'Activate',
+                deactivate: userLang.grid?.deactivate_confirm?.key || userLang.grid?.deactivate || 'Deactivate',
+                status_active: userLang.grid?.active || userLang.active_users || 'Active',
                 status_email_pending: userLang.grid?.waiting_email_activation || 'Waiting for Email',
                 status_admin_pending: userLang.grid?.waiting_admin_activation || 'Waiting for Admin',
                 status_pending: userLang.pending_users || 'Pending',
@@ -263,21 +263,20 @@
                 const groupName = item[10] ? this.stripHtml(item[10]) : '';
                 const createdAt = item[11] ? this.stripHtml(item[11]) : '';
                 const phone = item[12] ? this.stripHtml(item[12]) : '';
+                const rawStatus = item[13] || (statusHtml.includes('success') ? 'y' : (statusHtml.includes(this.lang.status_admin_pending) ? 'a' : 'n'));
 
                 // Status Evaluation
-                const isActive = statusHtml.includes('success');
-                const isAdminPending = statusHtml.includes(this.lang.status_admin_pending);
                 let statusClass = 'inactive';
                 let statusText = this.lang.status_email_pending;
                 let statusCode = 'n';
                 let dotClass = 'dot-inactive';
 
-                if (isActive) {
+                if (rawStatus === 'y') {
                     statusClass = 'active';
                     statusText = this.lang.status_active;
                     statusCode = 'y';
                     dotClass = '';
-                } else if (isAdminPending) {
+                } else if (rawStatus === 'a') {
                     statusClass = 'pending';
                     statusText = this.lang.status_admin_pending;
                     statusCode = 'a';
@@ -360,10 +359,10 @@
                 const btn = document.getElementById(btnId);
                 if (!btn) return;
                 if (active) {
-                    btn.classList.add('is-active');
+                    btn.classList.add('active', 'is-active');
                     btn.classList.remove('is-disabled');
                 } else {
-                    btn.classList.remove('is-active');
+                    btn.classList.remove('active', 'is-active');
                     btn.classList.add('is-disabled');
                 }
             });

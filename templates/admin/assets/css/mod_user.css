@@ -255,11 +255,11 @@
 .user-group-badge {
     display: inline-flex;
     align-items: center;
-    padding: 1px 7px;
-    border-radius: 6px;
-    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 11px;
     font-weight: 600;
-    background: rgba(103, 80, 164, 0.1);
+    background: rgba(103, 80, 164, 0.12);
     color: var(--md-sys-color-primary, #6750a4);
     flex-shrink: 0;
 }
@@ -496,25 +496,82 @@
 }
 
 /* ==========================================================================
-   FIXED BOTTOM TOOLBAR
+   FIXED BOTTOM TOOLBAR FOR MOD_USER (Material 3 Phone-First)
    ========================================================================== */
 
-.standard-toolbar .toolbar-item.is-disabled {
+#userToolbar.standard-toolbar,
+.user-toolbar.standard-toolbar {
+    grid-template-columns: repeat(4, 1fr) !important;
+    justify-items: center;
+    align-items: center;
+    height: 64px;
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
+.user-toolbar .toolbar-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 48px;
+    padding: 6px 10px;
+    border-radius: 14px;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.user-toolbar .toolbar-item i {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.user-toolbar .toolbar-item span {
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0.15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 72px;
+}
+
+.user-toolbar .toolbar-item.is-disabled {
     pointer-events: none;
     opacity: 0.35;
 }
 
-.standard-toolbar .toolbar-item.is-active {
+.user-toolbar .toolbar-item.active,
+.user-toolbar .toolbar-item.is-active {
     pointer-events: auto;
     opacity: 1;
 }
 
-.standard-toolbar #toolbarDelete.is-active {
-    color: #b3261e;
+.user-toolbar #toolbarEdit.active,
+.user-toolbar #toolbarEdit.is-active {
+    color: var(--md-sys-color-primary, #6750a4) !important;
+    background: rgba(103, 80, 164, 0.1);
 }
 
-.standard-toolbar #toolbarActivate.is-active {
-    color: #2e7d32;
+.user-toolbar #toolbarActivate.active,
+.user-toolbar #toolbarActivate.is-active {
+    color: #2e7d32 !important;
+    background: rgba(46, 125, 50, 0.1);
+}
+
+.user-toolbar #toolbarAcl.active,
+.user-toolbar #toolbarAcl.is-active {
+    color: #0b57d0 !important;
+    background: rgba(11, 87, 208, 0.1);
+}
+
+.user-toolbar #toolbarDelete.active,
+.user-toolbar #toolbarDelete.is-active {
+    color: #ba1a1a !important;
+    background: rgba(186, 26, 26, 0.1);
 }
 
 .is-hidden {

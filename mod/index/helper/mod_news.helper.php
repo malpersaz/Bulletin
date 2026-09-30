@@ -23,9 +23,11 @@ class mod_news_helper extends indexBase
         
         if (is_array($categories)) {
             foreach ($categories as &$kat) {
+                $kat['name'] = html_entity_decode(html_entity_decode((string)$kat['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $news_model->flush();
                 $kat['news_count'] = $news_model->where_category_seo_and_status_and_lang($kat['seo'], 'y', $this->site['lang'])->getCount();
             }
+            unset($kat);
         }
         
         $this->tema->ctx_set('categories', $categories);
@@ -292,6 +294,10 @@ class mod_news_helper extends indexBase
             $items = $news_model->toArray();
             if (is_array($items)) {
                 foreach ($items as &$item) {
+                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    if (isset($item['summary'])) {
+                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                    }
                     $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
                     $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
                     $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
@@ -299,6 +305,7 @@ class mod_news_helper extends indexBase
                 }
                 unset($item);
             }
+            $cat['name'] = html_entity_decode(html_entity_decode((string)$cat['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
             $cat['news'] = $items;
             $categories[] = $cat;
         }

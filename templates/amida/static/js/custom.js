@@ -1,9 +1,9 @@
 /**
- * Rojname Custom JavaScript
- * Bootstrap 5.3 Uyumlu Modern JavaScript Fonksiyonları
+ * Public Theme Custom JavaScript
+ * Modern JavaScript Functions Compatible with Bootstrap 5.3
  */
 
-// Global değişkenler
+// Global state container
 window.AKM = {
     swiperInstances: {},
     lightbox: null,
@@ -16,49 +16,31 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /**
- * AKM Başlatma Fonksiyonu
+ * Initialize AKM Core
  */
 function initializeAKM() {
     if (AKM.initialized) return;
 
     console.log('Rojname initializing...');
 
-    // Bootstrap 5.3.8 ile auto-initialize edilen bileşenler:
-    // - Tooltips (data-bs-toggle="tooltip")
-    // - Popovers (data-bs-toggle="popover")
-    // - Modals (data-bs-toggle="modal")
-    // - Toasts (.toast)
-    // - Form validation (.needs-validation)
-
-    // Custom slider'ları başlat
+    // Custom sliders
     initializeCustomSliders();
 
-    // GLightbox'ı başlat
+    // Lightbox
     initializeLightbox();
 
-    // Diğer özel fonksiyonlar
+    // Additional features
     initializeOtherFeatures();
 
     AKM.initialized = true;
     console.log('Rojname initialized successfully!');
 }
 
-/* BOOTSTRAP 5.3.8 NOTU:
- * Aşağıdaki bileşenler artık otomatik olarak başlatılır:
- * - Tooltips: data-bs-toggle="tooltip" attribute ile
- * - Popovers: data-bs-toggle="popover" attribute ile
- * - Modals: data-bs-toggle="modal" attribute ile
- * - Toasts: .toast class ile
- * - Form Validation: .needs-validation class ile
- *
- * Bu fonksiyon Bootstrap 5.3.8 ile gereksizleşmiştir.
- */
-
 /**
- * Custom Slider'ları Başlat
+ * Initialize Custom Sliders
  */
 function initializeCustomSliders() {
-    // AKM Slider - Swiper ile modernleştirilmiş
+    // AKM Slider - modernized with Swiper
     const akmSliders = document.querySelectorAll('.akmslider');
     akmSliders.forEach(function(slider, index) {
         const swiperInstance = new Swiper(slider, {
@@ -112,7 +94,7 @@ function initializeCustomSliders() {
 }
 
 /**
- * GLightbox Başlat
+ * Initialize GLightbox
  */
 function initializeLightbox() {
     AKM.lightbox = GLightbox({
@@ -131,20 +113,11 @@ function initializeLightbox() {
     });
 }
 
-/* BOOTSTRAP 5.3.8 NOTU:
- * Form validation artık Bootstrap 5.3.8 ile otomatik çalışır:
- * - .needs-validation class ile form validasyonu
- * - :valid ve :invalid pseudo-class'ları
- * - .was-validated class'ı otomatik eklenir
- *
- * Bu fonksiyon Bootstrap 5.3.8 ile gereksizleşmiştir.
- */
-
 /**
- * Diğer Özel Özellikleri Başlat
+ * Initialize Other Features
  */
 function initializeOtherFeatures() {
-    // Lazy loading için Intersection Observer
+    // Lazy loading with Intersection Observer
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver(function(entries, observer) {
             entries.forEach(function(entry) {
@@ -184,7 +157,7 @@ function initializeOtherFeatures() {
 }
 
 /**
- * Modern AKM Slider Sınıfı
+ * Modern AKM Slider Class
  */
 class AKMSlider {
     constructor(element, options = {}) {
@@ -229,7 +202,7 @@ class AKMSlider {
 }
 
 /**
- * Owl Carousel'dan Swiper'e Geçiş Fonksiyonu
+ * Swiper initialization utility
  */
 function makeSwiper(name, options = {}) {
     const container = document.querySelector(`#${name}`);
@@ -264,14 +237,14 @@ function makeSwiper(name, options = {}) {
 }
 
 /**
- * SweetAlert2 İçin Yardımcı Fonksiyonlar
+ * SweetAlert2 notification helpers
  */
 function showSuccessAlert(title, message) {
     Swal.fire({
         title: title,
         text: message,
         icon: 'success',
-        confirmButtonText: 'Tamam',
+        confirmButtonText: 'OK',
         confirmButtonColor: '#28a745'
     });
 }
@@ -281,7 +254,7 @@ function showErrorAlert(title, message) {
         title: title,
         text: message,
         icon: 'error',
-        confirmButtonText: 'Tamam',
+        confirmButtonText: 'OK',
         confirmButtonColor: '#dc3545'
     });
 }
@@ -294,8 +267,8 @@ function showConfirmAlert(title, message, confirmCallback) {
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Evet',
-        cancelButtonText: 'İptal'
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'Cancel'
     }).then((result) => {
         if (result.isConfirmed && confirmCallback) {
             confirmCallback();
@@ -304,13 +277,13 @@ function showConfirmAlert(title, message, confirmCallback) {
 }
 
 /**
- * Flatpickr Date Picker Başlatma
+ * Initialize Date Pickers
  */
 function initializeDatePickers() {
     const dateInputs = document.querySelectorAll('.datepicker');
     dateInputs.forEach(function(input) {
         flatpickr(input, {
-            locale: "tr",
+            locale: "en",
             dateFormat: "d.m.Y",
             minDate: "today",
             allowInput: true
@@ -319,13 +292,13 @@ function initializeDatePickers() {
 }
 
 /**
- * Google Maps Entegrasyonu (Bootstrap 5 ile uyumlu)
+ * Initialize Google Maps
  */
 function initializeGoogleMaps() {
     if (typeof google !== 'undefined' && document.getElementById('map')) {
         const mapOptions = {
             zoom: 15,
-            center: { lat: 41.0082, lng: 28.9784 }, // İstanbul koordinatları
+            center: { lat: 37.9144, lng: 40.2306 },
             styles: [
                 {
                     featureType: "poi",
@@ -337,9 +310,8 @@ function initializeGoogleMaps() {
 
         const map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
-        // Özel marker ekle
         const marker = new google.maps.Marker({
-            position: { lat: 41.0082, lng: 28.9784 },
+            position: { lat: 37.9144, lng: 40.2306 },
             map: map,
             title: 'Rojname'
         });
@@ -361,7 +333,7 @@ function initializeResponsiveMenu() {
             navbarCollapse.classList.toggle('show');
         });
 
-        // Menu dışına tıklayınca kapat
+        // Close menu on outside click
         document.addEventListener('click', function(event) {
             if (!navbarToggler.contains(event.target) && !navbarCollapse.contains(event.target)) {
                 navbarCollapse.classList.remove('show');
@@ -370,23 +342,92 @@ function initializeResponsiveMenu() {
     }
 }
 
-// Global fonksiyonları export et
+/**
+ * Interactive Month Popover Listener
+ */
+function initializeMonthPopovers() {
+    let activePopover = null;
+
+    function closeActive() {
+        if (activePopover) {
+            activePopover.remove();
+            activePopover = null;
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        const trigger = e.target.closest('.month-popover');
+        if (!trigger) {
+            closeActive();
+            return;
+        }
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (activePopover && activePopover._trigger === trigger) {
+            closeActive();
+            return;
+        }
+
+        closeActive();
+
+        const ku = trigger.dataset.monthKu || trigger.textContent.trim();
+        const en = trigger.dataset.monthEn || '';
+        const tr = trigger.dataset.monthTr || '';
+        const ar = trigger.dataset.monthAr || '';
+
+        const pop = document.createElement('div');
+        pop.className = 'month-popover-box';
+        pop._trigger = trigger;
+
+        pop.innerHTML = `
+            <div class="month-row"><span class="month-lang">Kurdî</span><span class="month-val">${ku}</span></div>
+            ${en ? `<div class="month-row"><span class="month-lang">English</span><span class="month-val">${en}</span></div>` : ''}
+            ${tr ? `<div class="month-row"><span class="month-lang">Türkçe</span><span class="month-val">${tr}</span></div>` : ''}
+            ${ar ? `<div class="month-row"><span class="month-lang">العربية</span><span class="month-val" dir="rtl">${ar}</span></div>` : ''}
+        `;
+
+        document.body.appendChild(pop);
+
+        const rect = trigger.getBoundingClientRect();
+        const popRect = pop.getBoundingClientRect();
+
+        let top = rect.bottom + window.scrollY + 6;
+        let left = rect.left + window.scrollX + (rect.width / 2) - (popRect.width / 2);
+
+        if (left < 10) left = 10;
+        if (left + popRect.width > window.innerWidth - 10) {
+            left = window.innerWidth - popRect.width - 10;
+        }
+
+        pop.style.top = `${top}px`;
+        pop.style.left = `${left}px`;
+
+        activePopover = pop;
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeActive();
+    });
+}
+
+// Export global methods
 window.AKM = {
     ...window.AKM,
-    AKMSlider,
-    makeSwiper,
     showSuccessAlert,
     showErrorAlert,
     showConfirmAlert,
     initializeDatePickers,
     initializeGoogleMaps,
-    initializeResponsiveMenu
+    initializeResponsiveMenu,
+    initializeMonthPopovers
 };
 
-// Sayfa yüklendiğinde diğer başlatma fonksiyonlarını çağır
+// Initialize after load
 window.addEventListener('load', function() {
-    initializeLightbox();
     initializeDatePickers();
     initializeResponsiveMenu();
     initializeGoogleMaps();
+    initializeMonthPopovers();
 });

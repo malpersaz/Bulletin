@@ -253,6 +253,8 @@ $lang['mod_user'] = [
         'site_manager' => 'Site Yöneticisi',
         'editors' => 'Editörler',
         'normal_member' => 'Normal Üye',
+        'employee' => 'Çalışan',
+        'authors' => 'Yazarlar',
     ],
     'installer' => [
         'sql_error' => 'users.sql yüklenirken hata oluştu',

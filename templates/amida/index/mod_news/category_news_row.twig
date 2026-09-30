@@ -4,49 +4,75 @@
     <section class="nyt-news-section">
         <div class="row g-4">
             {% for news in news_items %}
-                <article class="col-12 nyt-article">
-                    {% if news.image is not empty %}
-                        <div class="nyt-article-img-wrapper">
-                            <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}">
-                                <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
-                                     class="nyt-article-img"
-                                     alt="{{ news.name }}"
-                                     loading="lazy">
-                            </a>
-                        </div>
-                    {% endif %}
-                    <h3 class="nyt-article-title">
-                        <a href="{{ site.saddress }}news/{{ news.seo }}">{{ news.name }}</a>
+                <article class="col-12 nyt-article" itemscope itemtype="https://schema.org/NewsArticle">
+                    <div class="nyt-article-media">
+                        {% if news.image is not empty %}
+                            <div class="nyt-article-img-wrapper">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" itemprop="url">
+                                    <img src="{{ site.iaddress }}mod_news/{{ news.image }}"
+                                         class="nyt-article-img"
+                                         alt="{{ news.name }}"
+                                         width="640"
+                                         height="360"
+                                         loading="lazy"
+                                         decoding="async"
+                                         itemprop="image">
+                                </a>
+                                {% if news.has_video or news.has_gallery %}
+                                    <div class="latest-news-type-badges">
+                                        {% if news.has_video %}
+                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="Vîdyo" aria-label="Vîdyo">
+                                                <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
+                                            </span>
+                                        {% endif %}
+                                        {% if news.has_gallery %}
+                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="Galerî" aria-label="Galerî">
+                                                <i class="bi bi-images" aria-hidden="true"></i>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="nyt-article-placeholder">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" itemprop="url" class="nyt-article-placeholder-link">
+                                    <i class="bi bi-newspaper" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <h3 class="nyt-article-title" itemprop="headline">
+                        <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">{{ news.name|raw }}</a>
                     </h3>
                     
                     {# Reading Time Calculation #}
-                    {% set words = news.summary|striptags|split(' ')|length %}
-                    {% set reading_minutes = (words / 200)|round(0, 'ceil') %}
+                    {% set clean_summary = (news.summary != '' ? news.summary : news.name)|striptags %}
+                    {% set words = clean_summary|split(' ')|length %}
+                    {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
                     {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
                     
-                    <div class="nyt-article-meta d-flex align-items-center gap-3">
-                        <span class="nyt-article-date">
+                    <div class="nyt-article-meta">
+                        <span class="nyt-article-meta-item nyt-article-date">
                             <i class="bi bi-calendar3" aria-hidden="true"></i>
-                            <time datetime="{{ news.created_at }}">{{ news.created_at|date('d.m.Y') }}</time>
+                            <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
                         </span>
-                        <span class="nyt-article-reading-time">
+                        <span class="nyt-article-meta-sep" aria-hidden="true">·</span>
+                        <span class="nyt-article-meta-item nyt-article-reading-time">
                             <i class="bi bi-book" aria-hidden="true"></i>
-                            {{ reading_minutes }} deqe
+                            <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
                         </span>
                         {% if news.published_ago is defined and news.published_ago is not empty %}
-                            <span class="nyt-article-timeago">
+                            <span class="nyt-article-meta-sep" aria-hidden="true">·</span>
+                            <span class="nyt-article-meta-item nyt-article-timeago">
                                 <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                {{ news.published_ago }}
+                                <span>{{ news.published_ago }}</span>
                             </span>
                         {% endif %}
                     </div>
-                    <div class="nyt-article-summary">
-                        {% if news.summary != '' %}
-                            {{ news.summary|raw|striptags|length > 140 ? news.summary|raw|striptags|slice(0, 137) ~ '...' : news.summary|raw|striptags }}
-                        {% else %}
-                            {{ news.name }}
-                        {% endif %}
-                    </div>
+                    <p class="nyt-article-summary" itemprop="description">
+                        {{ clean_summary|length > 160 ? clean_summary|slice(0, 157) ~ '...' : clean_summary }}
+                    </p>
                 </article>
             {% endfor %}
         </div>

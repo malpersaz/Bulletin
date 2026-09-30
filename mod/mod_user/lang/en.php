@@ -158,7 +158,9 @@ $lang['mod_user'] = [
     'groups' => [
         'site_manager' => 'Site Manager',
         'editors' => 'Editors',
-        'normal_member' => 'Member'
+        'normal_member' => 'Member',
+        'employee' => 'Employee',
+        'authors' => 'Authors',
     ],
     'installer' => [
         'sql_error' => 'Error occurred while loading users.sql',
