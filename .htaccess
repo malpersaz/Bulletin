@@ -15,6 +15,12 @@ RewriteRule ^([a-z]{2,3})/(news|publication|category|page)Sitemap\.xml$ index.ph
 RewriteRule ^nuce/(.*)$ index.php [L]
 RewriteRule ^tekst/(.*)$ index.php [L]
 
+# Root Brand Asset Rewrites (Fallback for direct /favicon.ico and manifest requests)
+RewriteRule ^favicon\.ico$ static/mod_settings/favicon.ico [L]
+RewriteRule ^favicon-96x96\.png$ static/mod_settings/favicon-96x96.png [L]
+RewriteRule ^apple-touch-icon\.png$ static/mod_settings/apple-touch-icon.png [L]
+RewriteRule ^site\.webmanifest$ static/mod_settings/site.webmanifest [L]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

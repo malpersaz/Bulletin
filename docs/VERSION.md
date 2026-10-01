@@ -1,3 +1,11 @@
+## v1.1.18 (2026-10-02)
+- **Database-Driven Favicon & Brand Asset Resolution (`templates/amida/layouts/base.twig`, `templates/admin/layout.twig`, `lib/Amed.class.php`, `.htaccess`)**:
+  - Dynamically resolved favicon, shortcut icon, apple touch icon, and web manifest tags from `mod_settings` database values (`site.favicon_96`, `site.favicon_path`, `site.apple_touch_icon`, `site.site_webmanifest`) and standard image prefix (`site.iaddress ~ 'mod_settings/'`) instead of hardcoding non-existent root-level URLs.
+  - Resolved browser favicon disappearance glitch where browsers rendered initial history cache icons then immediately wiped them out due to 404 responses from hardcoded root `/favicon-96x96.png` and `/favicon.ico` paths.
+  - Updated Open Graph (`og:image`) and Twitter (`twitter:image`) metadata tags to resolve dynamically from `site.logo_path` with graceful fallback to `logo.png`.
+  - Added robust cross-language brand asset fallback in `lib/Amed.class.php` ensuring brand asset attributes are populated from active or fallback `mod_settings` records across all language contexts.
+  - Added root rewrite rules in `.htaccess` mapping direct root requests (`/favicon.ico`, `/favicon-96x96.png`, `/apple-touch-icon.png`, `/site.webmanifest`) directly to `static/mod_settings/` to protect search engine crawlers and browser direct fallbacks from CMS 404 errors.
+
 ## v1.1.17 (2026-10-02)
 - **Author Spotlight & Dedicated Search Integration (`mod/index/helper/search.helper.php`, `templates/amida/index/search.twig`, `templates/amida/static/css/search.css`, `static/css/search.css`, `mod/index/lang/*.php`)**:
   - Implemented author discovery in site search: queries active authors and contributors (`mod_user` table) matching author first names, last names, combined full names, usernames, and column blog names.

@@ -7,9 +7,9 @@
     <title>{% block title %}{{ site.title }} {{ lang.management.admin_panel }}{% if site.version is defined and site.version %} v{{ site.version }}{% if site.build is defined and site.build %} ({{ site.build }}){% endif %}{% endif %}{% endblock %}</title>
 
     <!-- Favicon & Icons -->
-    <link rel="shortcut icon" href="/static/mod_settings/favicon.ico" type="image/x-icon">
-    <link rel="icon" type="image/png" sizes="96x96" href="/static/mod_settings/favicon-96x96.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/static/mod_settings/apple-touch-icon.png">
+    <link rel="shortcut icon" href="{{ site.iaddress }}mod_settings/{{ site.favicon_path|default('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ site.iaddress }}mod_settings/{{ site.favicon_96|default('favicon-96x96.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ site.iaddress }}mod_settings/{{ site.apple_touch_icon|default('apple-touch-icon.png') }}">
 
     <!-- Fonts & Icons CDN -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

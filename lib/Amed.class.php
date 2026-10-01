@@ -209,8 +209,8 @@ class Amed
             if ($cookieTheme && file_exists(template_dir . $cookieTheme) && is_dir(template_dir . $cookieTheme)) {
                 $activeTemplate = $cookieTheme;
             }
-            $fullTplPath = template_dir . $activeTemplate;
-            if (!file_exists($fullTplPath) || !is_dir($fullTplPath)) {
+            $fullTemplatePath = template_dir . $activeTemplate;
+            if (!file_exists($fullTemplatePath) || !is_dir($fullTemplatePath)) {
                 $activeTemplate = 'amida';
             }
             $this->site['app_template'] = $activeTemplate;
@@ -241,6 +241,30 @@ class Amed
                         $this->site['site_name'] = $db->toArray()[0]['site_name'];
                     }
                 } catch (Exception $db_e) {
+                }
+            }
+
+            $brandAssetFields = ['favicon_path', 'favicon_96', 'apple_touch_icon', 'site_webmanifest', 'logo_path', 'logo_symbol', 'site_icon'];
+            $needsAssetFallback = false;
+            foreach ($brandAssetFields as $assetField) {
+                if (empty($this->site[$assetField])) {
+                    $needsAssetFallback = true;
+                    break;
+                }
+            }
+
+            if ($needsAssetFallback) {
+                try {
+                    $db->fetch_array("SELECT " . implode(', ', $brandAssetFields) . " FROM mod_settings WHERE favicon_path IS NOT NULL AND favicon_path != '' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $assetRow = $db->toArray()[0];
+                        foreach ($brandAssetFields as $assetField) {
+                            if (empty($this->site[$assetField]) && !empty($assetRow[$assetField])) {
+                                $this->site[$assetField] = $assetRow[$assetField];
+                            }
+                        }
+                    }
+                } catch (Exception $asset_e) {
                 }
             }
 

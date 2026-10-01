@@ -29,7 +29,8 @@
 			<meta property="og:url" content="{{ site.address }}">
 			<meta property="og:title" content="{{ site.title }}">
 			<meta property="og:description" content="{{ site.description }}">
-			<meta property="og:image" content="{{ site.iaddress }}mod_settings/logo.png">
+			{% set meta_logo = (site.logo_path is defined and site.logo_path is not empty) ? site.logo_path : 'logo.png' %}
+			<meta property="og:image" content="{{ site.iaddress }}mod_settings/{{ meta_logo }}">
 			<meta property="og:site_name" content="{{ site.title }}">
 			{% set og_locale = site.lang ~ '_SE' %}
 			{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
@@ -43,18 +44,33 @@
 			<meta name="twitter:url" content="{{ site.address }}">
 			<meta name="twitter:title" content="{{ site.title }}">
 			<meta name="twitter:description" content="{{ site.description }}">
-			<meta name="twitter:image" content="{{ site.iaddress }}mod_settings/logo.png">
+			<meta name="twitter:image" content="{{ site.iaddress }}mod_settings/{{ meta_logo }}">
 		{% endblock %}
 
 		<base
 		href="{{ site.address }}">
 
+		{% set settings_asset_base = site.iaddress ~ 'mod_settings/' %}
+		{% set logo_asset = site.logo_path is defined and site.logo_path is not empty ? settings_asset_base ~ site.logo_path : '' %}
+		{% set favicon_asset = site.favicon_path is defined and site.favicon_path is not empty ? settings_asset_base ~ site.favicon_path : '' %}
+		{% set favicon_96_asset = site.favicon_96 is defined and site.favicon_96 is not empty ? settings_asset_base ~ site.favicon_96 : '' %}
+		{% set apple_touch_asset = site.apple_touch_icon is defined and site.apple_touch_icon is not empty ? settings_asset_base ~ site.apple_touch_icon : '' %}
+		{% set manifest_asset = site.site_webmanifest is defined and site.site_webmanifest is not empty ? settings_asset_base ~ site.site_webmanifest : '' %}
+
 		<!-- Favicons -->
-		<link rel="icon" type="image/png" href="{{ site.address }}favicon-96x96.png" sizes="96x96"/>
-		<link rel="icon" type="image/x-icon" href="{{ site.address }}favicon.ico" sizes="32x32"/>
-		<link rel="shortcut icon" href="{{ site.address }}favicon.ico"/>
-		<link rel="apple-touch-icon" sizes="180x180" href="{{ site.address }}apple-touch-icon.png"/>
-		<link rel="manifest" href="{{ site.address }}static/mod_settings/site.webmanifest"/>
+		{% if favicon_96_asset is not empty %}
+			<link rel="icon" type="image/png" href="{{ favicon_96_asset }}" sizes="96x96"/>
+		{% endif %}
+		{% if favicon_asset is not empty %}
+			<link rel="icon" type="image/x-icon" href="{{ favicon_asset }}" sizes="32x32">
+			<link rel="shortcut icon" href="{{ favicon_asset }}">
+		{% endif %}
+		{% if apple_touch_asset is not empty %}
+			<link rel="apple-touch-icon" sizes="180x180" href="{{ apple_touch_asset }}"/>
+		{% endif %}
+		{% if manifest_asset is not empty %}
+			<link rel="manifest" href="{{ manifest_asset }}" crossorigin="anonymous"/>
+		{% endif %}
 
 		<!-- Google Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
