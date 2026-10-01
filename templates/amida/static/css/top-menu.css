@@ -2,6 +2,15 @@
    Top Menu Styles - Amida Theme (Rojname Editorial CMS)
    ========================================================================== */
 
+@font-face {
+    font-family: 'Cloister Black';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/CloisterBlack.woff') format('woff'),
+         url('../fonts/CloisterBlack.ttf') format('truetype');
+    font-display: swap;
+}
+
 :root {
     --header-height: 70px;
     --header-height-scrolled: 62px;
@@ -71,6 +80,20 @@ nav.navbar#amidaMainHeader.scrolled {
     opacity: 0.88;
 }
 
+.navbar-brand .stacked-logo-svg {
+    height: 40px !important;
+    width: auto !important;
+    max-width: 220px !important;
+    object-fit: contain !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    transition: filter 0.25s ease, opacity 0.2s ease !important;
+}
+
+[data-bs-theme="dark"] .navbar-brand .stacked-logo-svg {
+    filter: brightness(0) invert(1) !important;
+}
+
 .navbar-brand img,
 .navbar-brand .logo-image {
     height: 38px !important;
@@ -81,6 +104,34 @@ nav.navbar#amidaMainHeader.scrolled {
     border-radius: 8px;
     flex-shrink: 0;
     display: inline-block;
+}
+
+.navbar-brand .logo-square {
+    width: 38px !important;
+    height: 38px !important;
+    aspect-ratio: 1 / 1;
+}
+
+.navbar-brand .logo-rect {
+    height: 38px !important;
+    width: auto !important;
+    max-width: 140px;
+}
+
+.mobile-menu-header .logo-image {
+    height: 32px !important;
+    width: auto !important;
+    max-width: 100px;
+    max-height: 32px;
+    object-fit: contain;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.mobile-menu-header .logo-square {
+    width: 32px !important;
+    height: 32px !important;
+    aspect-ratio: 1 / 1;
 }
 
 .navbar-brand .brand-mark {
@@ -105,9 +156,9 @@ nav.navbar#amidaMainHeader.scrolled {
 }
 
 .brand-text-gothic {
-    font-family: 'Grenze Gotisch', Georgia, serif !important;
-    font-size: 1.85rem !important;
-    font-weight: 700 !important;
+    font-family: 'Cloister Black', 'UnifrakturCook', 'UnifrakturMaguntia', Georgia, serif !important;
+    font-size: 2.25rem !important;
+    font-weight: 400 !important;
     line-height: 1 !important;
     color: var(--header-ink) !important;
     -webkit-text-fill-color: var(--header-ink) !important;
@@ -591,7 +642,7 @@ nav.navbar#amidaMainHeader.scrolled {
     }
 
     nav.navbar#amidaMainHeader .brand-text-gothic {
-        font-size: 1.55rem !important;
+        font-size: 1.85rem !important;
     }
 
     /* Off-Canvas Drawer Container */

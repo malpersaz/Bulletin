@@ -611,10 +611,12 @@ class mod_user_mod extends indexMain
     {
         if ($this->session->get('success_message')) {
             $this->apptemplate->set('success_message', $this->session->get('success_message'));
+            $this->session->remove('success_message');
         }
 
         if ($this->session->get('error_message')) {
             $this->apptemplate->set('error_message', $this->session->get('error_message'));
+            $this->session->remove('error_message');
         }
     }
 
@@ -643,30 +645,37 @@ class mod_user_mod extends indexMain
     private function _get_register_js_lang()
     {
         return [
-            'checking' => $this->lang['mod_user']['register']['js']['checking'],
-            'username_available' => $this->lang['mod_user']['register']['js']['username_available'],
-            'username_exists' => $this->lang['mod_user']['register']['js']['username_exists'],
-            'username_short' => $this->lang['mod_user']['register']['js']['username_short'],
-            'email_available' => $this->lang['mod_user']['register']['js']['email_available'],
-            'email_exists' => $this->lang['mod_user']['register']['js']['email_exists'],
-            'check_failed' => $this->lang['mod_user']['register']['js']['check_failed'],
-            'register_success' => $this->lang['mod_user']['register']['js']['register_success'],
-            'errors_title' => $this->lang['mod_user']['register']['js']['errors_title'],
-            'validation_required' => $this->lang['mod_user']['register']['js']['validation_required'],
-            'validation_required_name' => $this->lang['mod_user']['register']['js']['validation_required_name'],
-            'validation_required_surname' => $this->lang['mod_user']['register']['js']['validation_required_surname'],
-            'validation_required_username' => $this->lang['mod_user']['register']['js']['validation_required_username'],
-            'validation_username_short' => $this->lang['mod_user']['register']['js']['validation_username_short'],
-            'validation_username_long' => $this->lang['mod_user']['register']['js']['validation_username_long'],
-            'validation_required_email' => $this->lang['mod_user']['register']['js']['validation_required_email'],
-            'validation_invalid_email' => $this->lang['mod_user']['register']['js']['validation_invalid_email'],
-            'validation_required_password' => $this->lang['mod_user']['register']['js']['validation_required_password'],
-            'validation_password_short' => $this->lang['mod_user']['register']['js']['validation_password_short'],
-            'validation_password_long' => $this->lang['mod_user']['register']['js']['validation_password_long'],
-            'validation_confirm_password' => $this->lang['mod_user']['register']['js']['validation_confirm_password'],
-            'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'],
-            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha'],
-            'password_complexity_error' => $this->lang['mod_user']['error']['password_complexity_error']
+            'checking' => $this->lang['mod_user']['register']['js']['checking'] ?? '...',
+            'username_available' => $this->lang['mod_user']['register']['js']['username_available'] ?? '',
+            'username_exists' => $this->lang['mod_user']['register']['js']['username_exists'] ?? '',
+            'username_short' => $this->lang['mod_user']['register']['js']['username_short'] ?? '',
+            'username_long' => $this->lang['mod_user']['register']['js']['validation_username_long'] ?? '',
+            'email_available' => $this->lang['mod_user']['register']['js']['email_available'] ?? '',
+            'email_exists' => $this->lang['mod_user']['register']['js']['email_exists'] ?? '',
+            'check_failed' => $this->lang['mod_user']['register']['js']['check_failed'] ?? '',
+            'register_success' => $this->lang['mod_user']['register']['js']['register_success'] ?? '',
+            'errors_title' => $this->lang['mod_user']['register']['js']['errors_title'] ?? '',
+            'validation_required' => $this->lang['mod_user']['register']['js']['validation_required'] ?? '',
+            'validation_required_name' => $this->lang['mod_user']['register']['js']['validation_required_name'] ?? '',
+            'validation_required_surname' => $this->lang['mod_user']['register']['js']['validation_required_surname'] ?? '',
+            'validation_required_username' => $this->lang['mod_user']['register']['js']['validation_required_username'] ?? '',
+            'validation_username_short' => $this->lang['mod_user']['register']['js']['validation_username_short'] ?? '',
+            'validation_username_long' => $this->lang['mod_user']['register']['js']['validation_username_long'] ?? '',
+            'validation_required_email' => $this->lang['mod_user']['register']['js']['validation_required_email'] ?? '',
+            'validation_invalid_email' => $this->lang['mod_user']['register']['js']['validation_invalid_email'] ?? '',
+            'validation_required_password' => $this->lang['mod_user']['register']['js']['validation_required_password'] ?? '',
+            'validation_password_short' => $this->lang['mod_user']['register']['js']['validation_password_short'] ?? '',
+            'validation_password_long' => $this->lang['mod_user']['register']['js']['validation_password_long'] ?? '',
+            'validation_confirm_password' => $this->lang['mod_user']['register']['js']['validation_confirm_password'] ?? '',
+            'validation_required_phone' => $this->lang['mod_user']['register']['js']['validation_required_phone'] ?? '',
+            'validation_required_captcha' => $this->lang['mod_user']['register']['js']['validation_required_captcha'] ?? '',
+            'password_complexity_error' => $this->lang['mod_user']['error']['password_complexity_error'] ?? '',
+            'password_match' => $this->lang['mod_user']['password_match']['success'] ?? '',
+            'password_mismatch' => $this->lang['mod_user']['password_match']['error'] ?? '',
+            'strength_weak' => $this->lang['mod_user']['password_strength']['weak'] ?? '',
+            'strength_fair' => $this->lang['mod_user']['password_strength']['fair'] ?? '',
+            'strength_good' => $this->lang['mod_user']['password_strength']['good'] ?? '',
+            'strength_strong' => $this->lang['mod_user']['password_strength']['strong'] ?? '',
         ];
     }
 

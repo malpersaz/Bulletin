@@ -133,7 +133,7 @@ body.dark-mode .latest-videos-section {
     height: 100%;
     background: var(--video-card-bg);
     border: 1px solid var(--video-card-border);
-    border-radius: 8px;
+    border-radius: 10px;
     overflow: hidden;
     box-shadow: var(--video-card-shadow);
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease, border-color 0.25s ease;

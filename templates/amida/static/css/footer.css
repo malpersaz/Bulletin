@@ -127,12 +127,21 @@ body.dark-mode .social-icon-btn {
     color: #adb5bd;
 }
 
+@font-face {
+    font-family: 'Cloister Black';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/CloisterBlack.woff') format('woff'),
+         url('../fonts/CloisterBlack.ttf') format('truetype');
+    font-display: swap;
+}
+
 /* Brand Gothic Style in Footer */
 .site-footer .brand-text-gothic {
-    font-family: 'Grenze Gotisch', serif !important;
-    font-weight: 600 !important;
-    font-size: 1.5rem !important;
-    letter-spacing: 0.03em !important;
+    font-family: 'Cloister Black', 'UnifrakturCook', 'UnifrakturMaguntia', serif !important;
+    font-weight: 400 !important;
+    font-size: 1.85rem !important;
+    letter-spacing: 0.01em !important;
     line-height: 1.1 !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
@@ -144,3 +153,30 @@ body.dark-mode .site-footer .brand-text-gothic {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
+
+/* Footer Brand Logo */
+.site-footer .footer-brand {
+    padding: 0.2rem 0;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+
+.site-footer .footer-brand:hover {
+    opacity: 0.88;
+}
+
+.site-footer .footer-brand .footer-logo-svg {
+    height: 42px;
+    width: auto;
+    max-width: 220px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+    transition: filter 0.25s ease, opacity 0.2s ease;
+}
+
+[data-bs-theme="dark"] .site-footer .footer-brand .footer-logo-svg,
+body.dark-mode .site-footer .footer-brand .footer-logo-svg {
+    filter: brightness(0) invert(1) !important;
+}
+

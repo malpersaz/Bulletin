@@ -1,4 +1,4 @@
-/* Top Menu JavaScript - Amida Theme (Rojname) */
+/* Top Menu JavaScript - Amida Theme */
 
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize mobile overlay
@@ -69,75 +69,80 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- Mobile Drawer & Overlay Management ---
-    const navbarCollapse = document.querySelector('#amidaMobileMenu');
-    const navbarToggler = document.querySelector('.navbar-toggler');
-    const drawerCloseBtn = document.querySelector('.mobile-menu-close');
+    // --- Mobile Offcanvas Drawer Controller ---
+    const mobileDrawer = document.getElementById('amidaMobileMenu');
+    const drawerOpenBtn = document.getElementById('mobileDrawerOpenBtn') || document.querySelector('.btn-header-toggler');
+    const drawerCloseBtn = document.getElementById('mobileDrawerCloseBtn') || document.querySelector('.mobile-menu-close');
 
-    function closeMobileMenu() {
-        if (navbarCollapse && navbarCollapse.classList.contains('show')) {
-            if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
-                const instance = bootstrap.Collapse.getInstance(navbarCollapse);
-                if (instance) {
-                    instance.hide();
-                    return;
-                }
-            }
-            navbarToggler?.click();
+    function openMobileDrawer() {
+        if (!mobileDrawer) return;
+        mobileDrawer.classList.add('show', 'is-open');
+        mobileDrawer.setAttribute('aria-hidden', 'false');
+        if (overlay) {
+            overlay.classList.add('show');
+            overlay.style.pointerEvents = 'auto';
+        }
+        document.body.style.overflow = 'hidden';
+        drawerOpenBtn?.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMobileDrawer() {
+        if (!mobileDrawer) return;
+        mobileDrawer.classList.remove('show', 'is-open');
+        mobileDrawer.setAttribute('aria-hidden', 'true');
+        if (overlay) {
+            overlay.classList.remove('show');
+            overlay.style.pointerEvents = 'none';
+        }
+        document.body.style.overflow = '';
+        drawerOpenBtn?.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleMobileDrawer(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const isOpen = mobileDrawer?.classList.contains('show') || mobileDrawer?.classList.contains('is-open');
+        if (isOpen) {
+            closeMobileDrawer();
+        } else {
+            openMobileDrawer();
         }
     }
 
-    window.closeMobileMenu = closeMobileMenu;
+    window.openMobileMenu = openMobileDrawer;
+    window.closeMobileMenu = closeMobileDrawer;
+    window.toggleMobileMenu = toggleMobileDrawer;
+
+    drawerOpenBtn?.addEventListener('click', toggleMobileDrawer);
 
     drawerCloseBtn?.addEventListener('click', function (e) {
         e.preventDefault();
-        closeMobileMenu();
+        e.stopPropagation();
+        closeMobileDrawer();
     });
-
-    function toggleMobileMenuState(isOpen) {
-        if (!overlay) return;
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            overlay.classList.add('show');
-            overlay.style.display = 'block';
-            overlay.style.pointerEvents = 'auto';
-        } else {
-            document.body.style.overflow = '';
-            overlay.classList.remove('show');
-            overlay.style.display = 'none';
-            overlay.style.pointerEvents = 'none';
-        }
-    }
 
     if (overlay) {
         overlay.addEventListener('click', function (e) {
             e.preventDefault();
-            closeMobileMenu();
-        });
-    }
-
-    if (navbarCollapse) {
-        const observer = new MutationObserver(function (mutations) {
-            mutations.forEach(function (mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    const isOpen = navbarCollapse.classList.contains('show');
-                    toggleMobileMenuState(isOpen);
-                }
-            });
-        });
-
-        observer.observe(navbarCollapse, {
-            attributes: true,
-            attributeFilter: ['class']
+            closeMobileDrawer();
         });
     }
 
     // Close mobile menu when navigating on mobile
-    document.querySelectorAll('.navbar-nav .nav-link').forEach(link => {
+    document.querySelectorAll('#amidaMobileMenu .nav-link').forEach(link => {
         link.addEventListener('click', function () {
-            if (window.innerWidth <= 991.98 && !link.classList.contains('dropdown-toggle')) {
-                setTimeout(closeMobileMenu, 200);
+            if (!link.classList.contains('dropdown-toggle')) {
+                setTimeout(closeMobileDrawer, 180);
             }
+        });
+    });
+
+    // Close mobile menu when modal trigger or auth button is clicked inside drawer
+    document.querySelectorAll('#amidaMobileMenu [data-bs-toggle="modal"], #amidaMobileMenu .btn-header-login, #amidaMobileMenu .btn-header-register').forEach(btn => {
+        btn.addEventListener('click', function () {
+            closeMobileDrawer();
         });
     });
 
@@ -159,22 +164,21 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
 
     function handleSwipe() {
-        const swipeThreshold = 60;
-        const verticalThreshold = 80;
+        const swipeThreshold = 50;
+        const verticalThreshold = 75;
 
         const diffX = touchEndX - touchStartX;
         const diffY = touchEndY - touchStartY;
 
         if (Math.abs(diffX) > swipeThreshold && Math.abs(diffY) < verticalThreshold) {
+            const isOpen = mobileDrawer?.classList.contains('show') || mobileDrawer?.classList.contains('is-open');
             // Swipe right to close drawer
-            if (diffX > 0 && navbarCollapse?.classList.contains('show')) {
-                closeMobileMenu();
+            if (diffX > 0 && isOpen) {
+                closeMobileDrawer();
             }
             // Swipe left from right edge to open drawer
-            else if (diffX < 0 && navbarCollapse && !navbarCollapse.classList.contains('show')) {
-                if (touchStartX > window.innerWidth - 45) {
-                    navbarToggler?.click();
-                }
+            else if (diffX < 0 && !isOpen && touchStartX > window.innerWidth - 45) {
+                openMobileDrawer();
             }
         }
     }
@@ -182,8 +186,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Keyboard Accessibility ---
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            closeMobileMenu();
-            const openDropdowns = document.querySelectorAll('#amidaMainHeader .dropdown-menu.show');
+            closeMobileDrawer();
+            const openDropdowns = document.querySelectorAll('#amidaStackedHeader .dropdown-menu.show, #amidaMobileMenu .dropdown-menu.show, #amidaMainHeader .dropdown-menu.show');
             openDropdowns.forEach(dropdown => {
                 dropdown.classList.remove('show');
                 const btn = dropdown.previousElementSibling;
@@ -192,36 +196,59 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // --- High-Performance Scroll Effects ---
-    const navbar = document.querySelector('#amidaMainHeader');
+    // --- High-Performance Headroom Scroll Physics ---
+    const navbar = document.querySelector('#amidaStackedHeader') || document.querySelector('#amidaMainHeader');
     if (navbar) {
         let lastScrollTop = 0;
         let ticking = false;
+        let upScrollDistance = 0;
+        let downScrollDistance = 0;
+
+        const safeZone = 140; // Pixels from top where navbar remains anchored
+        const downThreshold = 12; // Minimum downward travel required to trigger hide
+        const upThreshold = 16; // Intentional upward travel required to reveal (prevents rapid toggle)
 
         window.addEventListener('scroll', function () {
             if (!ticking) {
                 window.requestAnimationFrame(function () {
-                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollTop = Math.max(0, window.pageYOffset || document.documentElement.scrollTop);
                     const isMobileOpen = navbarCollapse?.classList.contains('show');
                     const hasOpenDropdown = Boolean(navbar.querySelector('.dropdown-menu.show'));
+                    const diff = scrollTop - lastScrollTop;
 
-                    if (!isMobileOpen && !hasOpenDropdown) {
-                        if (scrollTop > lastScrollTop && scrollTop > 120) {
-                            navbar.classList.add('navbar-hidden');
-                        } else {
+                    if (diff > 0) {
+                        // Scrolling DOWN
+                        downScrollDistance += diff;
+                        upScrollDistance = 0;
+
+                        if (!isMobileOpen && !hasOpenDropdown && scrollTop > safeZone) {
+                            if (downScrollDistance >= downThreshold) {
+                                navbar.classList.add('navbar-hidden');
+                            }
+                        }
+                    } else if (diff < 0) {
+                        // Scrolling UP
+                        upScrollDistance += Math.abs(diff);
+                        downScrollDistance = 0;
+
+                        if (upScrollDistance >= upThreshold || scrollTop <= safeZone) {
                             navbar.classList.remove('navbar-hidden');
                         }
-                    } else {
+                    }
+
+                    // Scrolled state handling with zero layout bounce
+                    if (scrollTop <= 20) {
                         navbar.classList.remove('navbar-hidden');
-                    }
-
-                    if (scrollTop > 40) {
-                        navbar.classList.add('scrolled');
-                    } else {
+                        navbar.classList.remove('is-scrolled');
                         navbar.classList.remove('scrolled');
+                        upScrollDistance = 0;
+                        downScrollDistance = 0;
+                    } else if (scrollTop > safeZone) {
+                        navbar.classList.add('is-scrolled');
+                        navbar.classList.add('scrolled');
                     }
 
-                    lastScrollTop = Math.max(0, scrollTop);
+                    lastScrollTop = scrollTop;
                     ticking = false;
                 });
                 ticking = true;

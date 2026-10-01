@@ -1,0 +1,582 @@
+/* ==========================================================================
+   Amida Registration Page Modern Styles (Super Polish)
+   Strict Separation: Amida Theme Phone & Desktop Optimized
+   ========================================================================== */
+
+.register-page-wrapper {
+    padding-top: 2rem;
+    padding-bottom: 4rem;
+}
+
+.register-card {
+    max-width: 660px;
+    margin: 0 auto;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background-color: var(--bs-body-bg, #ffffff);
+    box-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.08), 0 0 1px 1px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-bs-theme="dark"] .register-card {
+    background-color: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 25px 50px -15px rgba(0, 0, 0, 0.5);
+}
+
+/* Card Header */
+.register-header {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(99, 102, 241, 0.04) 100%);
+    padding: 2rem 2.25rem 1.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+[data-bs-theme="dark"] .register-header {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.14) 0%, rgba(99, 102, 241, 0.06) 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.register-header-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(59, 130, 246, 0.12);
+    color: #2563eb;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 0.75rem;
+}
+
+[data-bs-theme="dark"] .register-header-icon {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}
+
+.register-header-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.015em;
+    margin-bottom: 0.25rem;
+}
+
+[data-bs-theme="dark"] .register-header-title {
+    color: #f8fafc;
+}
+
+.register-header-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-bottom: 0;
+}
+
+[data-bs-theme="dark"] .register-header-desc {
+    color: #94a3b8;
+}
+
+/* Card Body */
+.register-body {
+    padding: 2.25rem;
+}
+
+/* Form Controls & Labels */
+.register-form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0.4rem;
+}
+
+[data-bs-theme="dark"] .register-form-label {
+    color: #cbd5e1;
+}
+
+.register-input-group {
+    border-radius: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.register-input-group .input-group-text {
+    background-color: transparent;
+    border-color: #e2e8f0;
+    color: #64748b;
+    padding-left: 1rem;
+    padding-right: 0.75rem;
+}
+
+[data-bs-theme="dark"] .register-input-group .input-group-text {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.register-input-group .form-control,
+.register-input-group .form-select {
+    border-color: #e2e8f0;
+    padding: 0.72rem 1rem;
+    font-size: 0.95rem;
+    color: #0f172a;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+[data-bs-theme="dark"] .register-input-group .form-control,
+[data-bs-theme="dark"] .register-input-group .form-select {
+    background-color: rgba(15, 23, 42, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+}
+
+.register-input-group .form-control:focus,
+.register-input-group .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16);
+    z-index: 3;
+}
+
+/* Password Toggle Button */
+.register-toggle-password {
+    background-color: transparent;
+    border-color: #e2e8f0;
+    color: #64748b;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .register-toggle-password {
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+
+.register-toggle-password:hover {
+    color: #2563eb;
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+[data-bs-theme="dark"] .register-toggle-password:hover {
+    color: #60a5fa;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Real-Time Live Validation Feedback */
+.register-feedback-text {
+    font-size: 0.8125rem;
+    margin-top: 0.35rem;
+    min-height: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+/* Password Strength & Criteria */
+.password-meter-box {
+    margin-top: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 0.75rem;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+[data-bs-theme="dark"] .password-meter-box {
+    background-color: rgba(15, 23, 42, 0.4);
+    border-color: rgba(255, 255, 255, 0.07);
+}
+
+.password-meter-progress {
+    height: 6px;
+    border-radius: 3px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+}
+
+[data-bs-theme="dark"] .password-meter-progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.password-meter-bar {
+    height: 100%;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-criteria-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.35rem 0.75rem;
+    margin-top: 0.75rem;
+}
+
+.password-criteria-item {
+    font-size: 0.775rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: color 0.2s ease;
+}
+
+[data-bs-theme="dark"] .password-criteria-item {
+    color: #94a3b8;
+}
+
+.password-criteria-item.is-valid {
+    color: #10b981;
+    font-weight: 500;
+}
+
+.password-criteria-item.is-valid .criteria-icon {
+    color: #10b981;
+}
+
+.password-criteria-item.is-invalid .criteria-icon {
+    color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .password-criteria-item.is-invalid .criteria-icon {
+    color: #475569;
+}
+
+/* Password Match Indicator */
+.password-match-indicator {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 0.5rem;
+    font-size: 0.8125rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.password-match-indicator.match-success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+[data-bs-theme="dark"] .password-match-indicator.match-success {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.password-match-indicator.match-fail {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+[data-bs-theme="dark"] .password-match-indicator.match-fail {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Phone Selector */
+.register-country-select {
+    max-width: 140px;
+    flex-shrink: 0;
+}
+
+/* Captcha Module */
+.register-captcha-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.register-captcha-input {
+    max-width: 150px;
+    letter-spacing: 0.15em;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.register-captcha-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.register-captcha-img {
+    height: 42px;
+    border-radius: 0.5rem;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+[data-bs-theme="dark"] .register-captcha-img {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.register-captcha-img:hover {
+    opacity: 0.85;
+}
+
+.register-captcha-reload {
+    width: 42px;
+    height: 42px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+[data-bs-theme="dark"] .register-captcha-reload {
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #94a3b8;
+}
+
+.register-captcha-reload:hover {
+    background-color: #f1f5f9;
+    color: #2563eb;
+    border-color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .register-captcha-reload:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #60a5fa;
+}
+
+.register-captcha-reload.is-spinning i {
+    animation: rotateCaptcha 0.5s ease-in-out;
+}
+
+@keyframes rotateCaptcha {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Submit Action Button */
+.btn-register-submit {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border: none;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-register-submit:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.45);
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+
+.btn-register-submit:active {
+    transform: translateY(0);
+}
+
+.btn-register-submit:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Footer Section */
+.register-footer {
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    text-align: center;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+[data-bs-theme="dark"] .register-footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+}
+
+.register-footer a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.register-footer a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+[data-bs-theme="dark"] .register-footer a {
+    color: #60a5fa;
+}
+
+[data-bs-theme="dark"] .register-footer a:hover {
+    color: #93c5fd;
+}
+
+/* ==========================================================================
+   Super Polished Success & Error State Views
+   ========================================================================== */
+
+.register-status-wrapper {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+}
+
+.register-status-icon-badge {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.register-status-icon-badge.success-badge {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.16) 0%, rgba(5, 150, 105, 0.08) 100%);
+    color: #10b981;
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.08);
+}
+
+[data-bs-theme="dark"] .register-status-icon-badge.success-badge {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(5, 150, 105, 0.12) 100%);
+    color: #34d399;
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.12);
+}
+
+.register-status-icon-badge.error-badge {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.16) 0%, rgba(220, 38, 38, 0.08) 100%);
+    color: #ef4444;
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.08);
+}
+
+[data-bs-theme="dark"] .register-status-icon-badge.error-badge {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(220, 38, 38, 0.12) 100%);
+    color: #f87171;
+    box-shadow: 0 0 0 10px rgba(239, 68, 68, 0.12);
+}
+
+.register-status-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.015em;
+    margin-bottom: 1rem;
+}
+
+[data-bs-theme="dark"] .register-status-title {
+    color: #f8fafc;
+}
+
+.register-status-callout {
+    max-width: 520px;
+    margin: 0 auto 2rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    font-size: 1rem;
+    line-height: 1.65;
+    text-align: center;
+}
+
+.register-status-callout.callout-success {
+    background-color: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    color: #065f46;
+}
+
+[data-bs-theme="dark"] .register-status-callout.callout-success {
+    background-color: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+    color: #a7f3d0;
+}
+
+.register-status-callout.callout-error {
+    background-color: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: #991b1b;
+}
+
+[data-bs-theme="dark"] .register-status-callout.callout-error {
+    background-color: rgba(239, 68, 68, 0.12);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #fecaca;
+}
+
+.register-status-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.register-status-btn {
+    padding: 0.75rem 1.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 576px) {
+    .register-page-wrapper {
+        padding-top: 1rem;
+        padding-bottom: 2.5rem;
+    }
+
+    .register-header {
+        padding: 1.5rem 1.25rem 1.25rem;
+    }
+
+    .register-body {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .password-criteria-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .register-country-select {
+        max-width: 110px;
+    }
+
+    .register-status-actions {
+        flex-direction: column;
+    }
+
+    .register-status-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

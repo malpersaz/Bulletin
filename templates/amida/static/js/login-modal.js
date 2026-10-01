@@ -28,12 +28,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const btnNext = document.getElementById('btnNextStep');
     const btnBack = document.getElementById('btnBackToStep1');
     const btnTogglePassword = document.getElementById('togglePassword');
-    const usernameInput = document.getElementById('loginUsername');
-    const passwordInput = document.getElementById('loginPassword');
+    const usernameInput = document.getElementById('loginUsername') || document.getElementById('stackedLoginUsername');
+    const passwordInput = document.getElementById('loginPassword') || document.getElementById('stackedLoginPassword');
     const displayUsername = document.getElementById('displayUsername');
     const modalBody = loginModal.querySelector('.modal-body');
 
-    if (!loginForm) return;
+    if (!loginForm || !usernameInput || !passwordInput) return;
 
     // --- Step Transitions ---
 

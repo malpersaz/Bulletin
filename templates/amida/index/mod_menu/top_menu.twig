@@ -12,18 +12,15 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@600;700;800&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Pirata+One&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@600;700;800&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Pirata+One&family=UnifrakturCook:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
 
 <nav class="navbar navbar-expand-lg sticky-top" aria-label="{{ lang.index.navigation }}" id="amidaMainHeader">
 	<div class="container">
 		<!-- Brand/Logo -->
-		<a class="navbar-brand d-flex align-items-center {% if (site.show_logo is defined and site.show_logo == 'n' ? false : true) and site.logo_path is defined and site.logo_path is not empty %}has-image-logo{% endif %}" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }}">
-			{% if (site.show_logo is defined and site.show_logo == 'n' ? false : true) and site.logo_path is defined and site.logo_path is not empty %}
-				<img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" alt="{{ site.title }}" width="40" height="40" class="me-2 d-inline-block align-text-top logo-image">
-			{% elseif (site.show_logo is defined and site.show_logo == 'n' ? false : true) %}
-				<span class="brand-mark me-2 d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle">{{ site.title|slice(0, 1) }}</span>
-			{% endif %}
-			<span class="brand-text brand-text-gothic">{{ site.title }}</span>
+		<!-- Brand/Logo (Vector SVG Masthead) -->
+		{% set header_svg_logo = 'static/mod_settings/amida_kurd_logo.svg' %}
+		<a class="navbar-brand d-flex align-items-center" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }}">
+			<img src="{{ site.address }}{{ header_svg_logo }}" alt="{{ site.title }}" width="175" height="40" class="stacked-logo-svg d-inline-block">
 		</a>
 
 		<!-- Mobile toggle button -->
@@ -35,7 +32,12 @@
 		<div class="collapse navbar-collapse" id="amidaMobileMenu">
 			<!-- Mobile drawer header -->
 			<div class="mobile-menu-header d-flex align-items-center justify-content-between p-3 border-bottom d-lg-none">
-				<span class="brand-text brand-text-gothic fs-4">{{ site.title }}</span>
+				<div class="d-flex align-items-center gap-2">
+					{% if header_show_logo and header_logo_image %}
+						<img src="{{ site.iaddress }}mod_settings/{{ header_logo_image }}" alt="{{ site.title }}" width="32" height="32" class="logo-image {% if header_is_square %}logo-square{% else %}logo-rect{% endif %}">
+					{% endif %}
+					<span class="brand-text brand-text-gothic fs-4">{{ site.title }}</span>
+				</div>
 				<button type="button" class="btn-close mobile-menu-close" data-bs-toggle="collapse" data-bs-target="#amidaMobileMenu" aria-controls="amidaMobileMenu" aria-label="{{ lang.index.modal.close }}"></button>
 			</div>
 

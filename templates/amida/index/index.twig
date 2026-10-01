@@ -6,17 +6,17 @@
     {{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
 
-    <section class="row mt-3" id="orta">
+    <section class="row mt-3 homepage-hero-row" id="homepageHeroRow">
         {% if homepage_hero_slider and homepage_hero_slider|length > 0 %}
-        <article id="orta-sol" class="col-md-9">
+        <article id="homepageHeroMain" class="col-md-9 homepage-hero-main">
             {% include 'index/hero_slider.twig' with { hero_slider_items: homepage_hero_slider } %}
             {% include 'index/mod_video_embed/latest_videos.twig' with { limit: 3 } %}
         </article>
-        <aside id="orta-sag" class="col-md-3">
+        <aside id="homepageHeroSidebar" class="col-md-3 homepage-hero-sidebar">
             {% include 'index/mod_publication/latest_authors.twig' %}
         </aside>
         {% else %}
-        <aside id="orta-sag" class="col-12 col-md-3 ms-md-auto">
+        <aside id="homepageHeroSidebar" class="col-12 col-md-3 ms-md-auto homepage-hero-sidebar">
             {% include 'index/mod_publication/latest_authors.twig' %}
         </aside>
         {% endif %}

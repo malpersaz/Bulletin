@@ -1,3 +1,31 @@
+## v1.1.15 (2026-10-01)
+- **User Registration Architecture & Interactive Security (`mod/mod_user/`, `templates/amida/mod_user/register.twig`, `templates/amida/static/css/register.css`, `templates/amida/static/js/register.js`)**:
+  - Refactored user registration to strictly comply with the Code Separation Mandate by extracting inline styles and scripts into dedicated `templates/amida/static/css/register.css` and `templates/amida/static/js/register.js` assets.
+  - Implemented interactive real-time password strength meter and validation requirements checklist (length, uppercase, lowercase, number, special character) with live visual feedback.
+  - Added password match confirmation checking, phone/email validation, and real-time form state indicators.
+  - Integrated internationalized UI copy (`have_account`, `login_now`, `back_to_home`, `password_requirements`, `rule_min_length`, `rule_uppercase`, `rule_lowercase`, `rule_number`, `rule_special`, `strength_label`) across Kurmanji (`ku`), English (`en`), and Turkish (`tr`).
+  - Cleaned embedded `<br/>` HTML tags from core translation strings in `mod_user/lang/` to maintain clean separation between presentation and localized text.
+  - Provided client-side localized validation dictionaries injected cleanly via data attributes and decoded in JavaScript.
+- **Stacked Header & Broadsheet Navigation Architecture (`templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/static/css/stacked-top-menu.css`, `templates/amida/static/js/top-menu.js`, `templates/amida/static/fonts/`)**:
+  - Designed and integrated `stacked_top_menu.twig` and `stacked-top-menu.css` featuring an authentic newspaper masthead layout with embedded vector SVG brand identity.
+  - Embedded local `Cloister Black` Gothic typography (`CloisterBlack.woff`, `CloisterBlack.ttf`) for authentic editorial branding without external font dependencies.
+  - Enhanced headroom scroll physics in `top-menu.js` with directional scroll thresholds (`downThreshold`, `upThreshold`, `safeZone`) to eliminate header jitter and bounce during fast navigation.
+  - Refactored mobile drawer gesture controls with touch swipe support, backdrop overlay handling, and keyboard accessibility (Escape to dismiss).
+  - Integrated dual-input authentication bindings (`loginUsername`/`stackedLoginUsername`, `loginPassword`/`stackedLoginPassword`) in `login-modal.js`.
+- **Homepage Layout Modernization & Code Cleanliness (`templates/amida/index/index.twig`, `templates/amida/layouts/base.twig`)**:
+  - Replaced legacy non-English layout selectors (`orta`, `orta-sol`, `orta-sag`) with semantic English identifiers (`homepageHeroRow`, `homepageHeroMain`, `homepageHeroSidebar`) to align with repository design and naming standards.
+  - Updated `templates/amida/layouts/base.twig` to incorporate the stacked broadsheet header and typography assets.
+- **Brand Asset Modernization & Web Manifest (`static/mod_settings/`, `templates/amida/index/footer.twig`, `templates/amida/static/css/footer.css`)**:
+  - Modernized website brand identities with vector SVGs (`amida_kurd_logo.svg`, `amida_kurd_logo.png`, `amida_kurd_full_logo.png`, `logo_square.png`, `logo_symbol.png`).
+  - Updated `site.webmanifest` name and short name to "Amîda Kurd" with synchronized PWA icons (`favicon-96x96.png`, `apple-touch-icon.png`, `web-app-manifest-192x192.png`, `web-app-manifest-512x512.png`).
+  - Upgraded footer brand masthead in `footer.twig` and `footer.css` using Cloister Black typography and dark mode inverted SVG filtering.
+  - Staged deletion of obsolete legacy logo/icon assets (`templates/amida/static/img/logo*.png`, `templates/amida/static/img/logo*.svg`, `templates/amida/static/img/favicon.ico`).
+- **Visual Polish & Card Styling (`templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/latest-videos.css`)**:
+  - Refined hero news slider with rounded corner radii (14px desktop / 10px mobile), refined borders, and dark mode box-shadow depth.
+  - Aligned card border radius across latest video embed cards for visual consistency.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.15`.
+
 ## v1.1.14 (2026-09-30)
 - **Hero News Slider Swiper Runtime & Parity (`templates/amida/static/js/hero-news-slider.js`, `templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`)**:
   - Implemented standalone `templates/amida/static/js/hero-news-slider.js` providing full Swiper initialization with smooth fade transitions, autoplay (with pause on hover and tab visibility change), and full keyboard/touch support.
