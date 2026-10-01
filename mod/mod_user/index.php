@@ -2165,6 +2165,50 @@ Rêgezên te yên sereke:
         }
     }
 
+    public function ajax_upload_avatar()
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        if ($this->check() === FALSE) {
+            echo json_encode(['status' => 'error', 'message' => 'Unauthorized']);
+            exit;
+        }
+
+        if (!isset($_FILES['image']['name']) || $_FILES['image']['name'] === '') {
+            echo json_encode(['status' => 'error', 'message' => 'No image provided']);
+            exit;
+        }
+
+        $image = Load::mod('image');
+        $image->mod = 'mod_user';
+        $image->name = 'image';
+        $option = [
+            '/' => ['width' => 200, 'height' => NULL, 'option' => 'width'],
+            '/thumb' => ['width' => 100, 'height' => NULL, 'option' => 'width']
+        ];
+
+        if ($image->_resize($option)) {
+            $u = Load::model('mod_user');
+            $u->id = (int) $this->session->get('id');
+            $u->image = $image->url;
+            $u->updated_at = date('Y-m-d H:i:s');
+            if ($u->update('id')) {
+                $this->session->set('image', $image->url);
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $this->lang['mod_user']['message']['success']['edit'] ?? 'Avatar updated successfully',
+                    'image' => $image->url
+                ]);
+                exit;
+            }
+        }
+
+        echo json_encode([
+            'status' => 'error',
+            'message' => $image->error ?: ($this->lang['mod_user']['database_error'] ?? 'Failed to upload avatar')
+        ]);
+        exit;
+    }
+
     public function delete_image()
     {
         // Is Member?
@@ -2172,18 +2216,35 @@ Rêgezên te yên sereke:
             return FALSE;
         }
         $id = intval(Req::Post_Safe('id'));
+        if (!$id) {
+            $id = (int) $this->session->get('id');
+        }
 
         $this->mod_user = Load::model('mod_user');
 
         if ($this->mod_user->where_id($id)->getResultOne(TRUE, TRUE)->getSize() === 0) {
+            if ($this->_is_ajax_request()) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $this->lang['mod_user']['error']['user_not_found'] ?? 'User not found'
+                ]);
+                exit;
+            }
             exit(':');
-            return FALSE;
         }
-
 
         $d = $this->mod_user->toArray();
 
-        if ($d['id'] !== $this->session->get('id')) {
+        if ((int) $d['id'] !== (int) $this->session->get('id')) {
+            if ($this->_is_ajax_request()) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => $this->lang['mod_user']['error']['permission_error'] ?? 'Permission denied'
+                ]);
+                exit;
+            }
             exit('::');
         }
 
@@ -2207,16 +2268,30 @@ Rêgezên te yên sereke:
                     'option' => 'width',
                 ]
             ];
-            if ($image->_delete_files($option)) {
-                $this->mod_user->image = '';
-                $this->mod_user->update('id');
-                $this->session->set('image', '');
-            echo 'Success';
-            } else {
-                echo $image->error;
-                return FALSE;
+            $image->_delete_files($option);
+            $this->mod_user->image = '';
+            $this->mod_user->update('id');
+            $this->session->set('image', '');
+
+            if ($this->_is_ajax_request()) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $this->lang['mod_user']['remove_image_success'] ?? 'Image removed successfully'
+                ]);
+                exit;
             }
+            echo 'Success';
         } else {
+            $this->session->set('image', '');
+            if ($this->_is_ajax_request()) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'success',
+                    'message' => $this->lang['mod_user']['remove_image_success'] ?? 'Image removed successfully'
+                ]);
+                exit;
+            }
             echo 'Success';
         }
     }

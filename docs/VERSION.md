@@ -1,3 +1,19 @@
+## v1.1.16 (2026-10-01)
+- **User Profile Avatar Management & Instant Upload (`mod/mod_user/index.php`, `templates/admin/assets/js/modals/modal_user_profile.js`, `templates/admin/layout.twig`)**:
+  - Implemented `ajax_upload_avatar` endpoint in `mod_user` enabling instant avatar upload and persistence upon file selection without requiring current password verification or form submission.
+  - Resolved profile image deletion failure in admin user profile modal (`mod_user/info`) by binding delegated event listeners for `data-action="delete-avatar"`.
+  - Upgraded `delete_image` backend action to robustly handle authenticated session comparison with type safety, defaulting missing payload IDs to the authenticated user ID and returning structured JSON responses for AJAX clients.
+  - Modernized `modal_user_profile.js` to strictly follow the Code Separation Mandate: eradicated inline CSS styles and inline `onclick` handlers in `previewAvatar` and container renderers.
+  - Added interactive avatar cancellation (`data-action="cancel-avatar"`), file picker triggering (`data-action="select-avatar"`), and segmented tab switching (`data-action="switch-tab"`).
+  - Registered module dynamically with `window.AFModalEngine.loadedModules['modal_user_profile'] = true` to preserve modal lifecycle parity with `AF/Business`.
+  - Integrated real-time synchronization across all avatar presentation surfaces (`.user-avatar`, `.user-avatar-sm`, `.avatar-img`) upon instant upload or deletion.
+  - Integrated password visibility toggles (`data-action="toggle-password"`), real-time password strength / matching listeners, and character counters without inline handlers.
+  - Bumped modal script cache asset version to `v=1.07` in `templates/admin/layout.twig`.
+- **Session Image Synchronization & Frontend Avatar Parity (`mod/mod_user/model/user.model.php`, `templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/index/mod_menu/top_menu.twig`)**:
+  - Enhanced `checklogin()` in `user.model.php` to query `image` alongside status credentials, automatically synchronizing `$_SESSION['image']` with the MySQL database on page loads or session checks if any external or out-of-band updates occurred.
+  - Aligned public frontend theme menu avatar image paths across `stacked_top_menu.twig` and `top_menu.twig` with `AF/Business` standards (`site.address ~ 'static/mod_user/' ~ session.image`).
+  - Added user profile identity card (avatar, display name, handle, and account portal button) inside the mobile drawer navigation for authenticated sessions.
+
 ## v1.1.15 (2026-10-01)
 - **User Registration Architecture & Interactive Security (`mod/mod_user/`, `templates/amida/mod_user/register.twig`, `templates/amida/static/css/register.css`, `templates/amida/static/js/register.js`)**:
   - Refactored user registration to strictly comply with the Code Separation Mandate by extracting inline styles and scripts into dedicated `templates/amida/static/css/register.css` and `templates/amida/static/js/register.js` assets.

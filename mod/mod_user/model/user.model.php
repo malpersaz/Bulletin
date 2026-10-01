@@ -256,7 +256,7 @@ class user_model extends ORM
         }
 
         $db = Load::lib('Database');
-        $db->fetch_array("SELECT id, sid, status FROM `mod_user` WHERE `id` = " . $userId . " AND `status` = 'y' LIMIT 1");
+        $db->fetch_array("SELECT id, sid, status, image FROM `mod_user` WHERE `id` = " . $userId . " AND `status` = 'y' LIMIT 1");
         if ($db->getSize() === 0) {
             $this->session->clear();
             return False;
@@ -266,6 +266,10 @@ class user_model extends ORM
         if (!empty($sessionSid) && !empty($user['sid']) && $user['sid'] !== $sessionSid) {
             $this->session->clear();
             return False;
+        }
+
+        if (isset($user['image']) && $user['image'] !== $this->session->get('image')) {
+            $this->session->set('image', $user['image']);
         }
 
         return TRUE;

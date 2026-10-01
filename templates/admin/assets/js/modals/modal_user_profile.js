@@ -2,24 +2,176 @@
  * User Profile & Password Modal Management Sub-Module
  */
 
+if (typeof window.AFModalEngine !== 'undefined' && window.AFModalEngine.loadedModules) {
+    window.AFModalEngine.loadedModules['modal_user_profile'] = true;
+}
+
 function previewAvatar(input) {
     if (input.files && input.files[0]) {
+        const file = input.files[0];
         const reader = new FileReader();
         reader.onload = function (e) {
             const container = document.getElementById('avatarPreviewContainer');
-            if (container) {
+            if (container && !container.dataset.uploadFinished) {
                 container.innerHTML = `
-                    <div id="image-container" style="display: flex; flex-direction: column; align-items: center;">
-                        <img src="${e.target.result}" id="avatarPreview" alt="Avatar">
-                        <div style="text-align: center;">
-                            <button type="button" class="m3-btn-outlined" onclick="location.reload()" style="color: var(--md-sys-color-outline); border-color: var(--md-sys-color-outline); font-size: 12px; padding: 4px 16px; border-radius: 20px;">
-                                <i class="bi bi-x-circle"></i> ${ (window.adminLang && window.adminLang.general && window.adminLang.general.cancel) || 'Cancel' }
-                            </button>
-                        </div>
-                    </div>`;
+                    <img src="${e.target.result}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+                    <button type="button" class="m3-hero-avatar-btn" disabled>
+                        <i class="bi bi-arrow-repeat spin"></i>
+                    </button>`;
             }
         };
-        reader.readAsDataURL(input.files[0]);
+        reader.readAsDataURL(file);
+
+        const container = document.getElementById('avatarPreviewContainer');
+        if (container) delete container.dataset.uploadFinished;
+
+        // Upload and persist avatar immediately
+        uploadAvatarFile(file);
+    }
+}
+
+function uploadAvatarFile(file) {
+    if (!file) return;
+
+    const siteUrl = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+    const container = document.getElementById('avatarPreviewContainer');
+    const initialId = container?.dataset?.initialId || '';
+    const deleteTitle = (window.adminLang && window.adminLang.mod_user && window.adminLang.mod_user.button && window.adminLang.mod_user.button.delete) || 'Delete';
+    const successMsg = (window.adminLang && window.adminLang.mod_user && window.adminLang.mod_user.message && window.adminLang.mod_user.message.success && window.adminLang.mod_user.message.success.edit) || 'Avatar updated successfully';
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    fetch(siteUrl + 'mod_user/ajax_upload_avatar', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.status === 'success' && res.image) {
+            if (navigator.vibrate) navigator.vibrate(10);
+            if (typeof showAFToast === 'function') {
+                showAFToast(res.message || successMsg, 'success', 2000);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: res.message || successMsg,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+
+            const iAddress = (window.siteData && window.siteData.iaddress) ? window.siteData.iaddress : ((typeof SITE_ADDRESS !== 'undefined' && SITE_ADDRESS) ? SITE_ADDRESS + 'static/' : '/static/');
+            const newImgUrl = iAddress + 'mod_user/' + res.image;
+
+            if (container) {
+                container.dataset.uploadFinished = 'true';
+                container.dataset.initialSrc = newImgUrl;
+                container.innerHTML = `
+                    <img src="${newImgUrl}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+                    <button type="button" class="m3-hero-avatar-btn remove-btn" data-action="delete-avatar" data-id="${initialId}" title="${deleteTitle}">
+                        <i class="bi bi-trash"></i>
+                    </button>`;
+            }
+
+            // Sync user avatar across open page surfaces
+            document.querySelectorAll('.user-avatar, .user-avatar-sm, .avatar-img').forEach(img => {
+                if (img.tagName === 'IMG') {
+                    img.src = newImgUrl;
+                }
+            });
+
+            document.querySelectorAll('.user-avatar-placeholder, .user-avatar-sm-placeholder').forEach(placeholder => {
+                const isSm = placeholder.classList.contains('user-avatar-sm-placeholder');
+                const size = isSm ? 28 : 32;
+                const cls = isSm ? 'user-avatar-sm rounded-circle me-2' : 'user-avatar rounded-circle';
+                const newImg = document.createElement('img');
+                newImg.src = newImgUrl;
+                newImg.alt = 'Avatar';
+                newImg.className = cls;
+                newImg.width = size;
+                newImg.height = size;
+                placeholder.replaceWith(newImg);
+            });
+
+            document.querySelectorAll('.user-menu-avatar-large').forEach(parent => {
+                parent.innerHTML = `<img src="${newImgUrl}" alt="Avatar">`;
+            });
+        } else {
+            const err = res.message || 'Failed to upload avatar';
+            if (typeof showAFToast === 'function') {
+                showAFToast(err, 'error', 2500);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'error', title: 'Error', text: err });
+            }
+            cancelAvatarSelection();
+        }
+    })
+    .catch(err => {
+        console.error('Avatar upload error:', err);
+        if (typeof showAFToast === 'function') {
+            showAFToast('Failed to upload avatar', 'error', 2500);
+        }
+        cancelAvatarSelection();
+    });
+}
+
+function cancelAvatarSelection() {
+    const fileInput = document.getElementById('image');
+    if (fileInput) fileInput.value = '';
+
+    const container = document.getElementById('avatarPreviewContainer');
+    if (container) {
+        delete container.dataset.uploadFinished;
+        const initialSrc = container.dataset.initialSrc;
+        const initialId = container.dataset.initialId;
+        const deleteTitle = (window.adminLang && window.adminLang.mod_user && window.adminLang.mod_user.button && window.adminLang.mod_user.button.delete) || 'Delete';
+        const selectTitle = (window.adminLang && window.adminLang.mod_user && window.adminLang.mod_user.button && window.adminLang.mod_user.button.select_image) || 'Select Image';
+
+        if (initialSrc) {
+            container.innerHTML = `
+                <img src="${initialSrc}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+                <button type="button" class="m3-hero-avatar-btn remove-btn" data-action="delete-avatar" data-id="${initialId || ''}" title="${deleteTitle}">
+                    <i class="bi bi-trash"></i>
+                </button>`;
+        } else {
+            container.innerHTML = `
+                <div class="m3-hero-avatar-placeholder" data-action="select-avatar">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+                <button type="button" class="m3-hero-avatar-btn upload-btn" data-action="select-avatar" title="${selectTitle}">
+                    <i class="bi bi-camera-fill"></i>
+                </button>`;
+        }
+    }
+}
+
+function switchProfileTab(btn) {
+    if (!btn) return;
+    const targetId = btn.dataset.tabTarget;
+    if (!targetId) return;
+
+    const tabsContainer = btn.closest('.m3-profile-tabs') || document;
+    tabsContainer.querySelectorAll('.m3-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+
+    const form = btn.closest('form') || document;
+    form.querySelectorAll('.m3-tab-content').forEach(pane => {
+        pane.classList.remove('active');
+    });
+
+    const targetPane = document.getElementById(targetId);
+    if (targetPane) {
+        targetPane.classList.add('active');
     }
 }
 
@@ -38,47 +190,129 @@ function updateCharCounter(input, counterId, max) {
 }
 
 function deleteImage(id) {
-    const siteUrl = typeof SITE_URL !== 'undefined' ? SITE_URL : '';
+    const siteUrl = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+    const lang = (window.adminLang && window.adminLang.mod_user) || {};
+    const confirmTitle = lang.remove_image || lang.confirm_remove_image || 'Are you sure you want to remove this image?';
+    const confirmYes = (lang.button && lang.button.yes) || 'Yes';
+    const confirmNo = (lang.button && lang.button.no) || 'No';
+    const successTitle = lang.remove_image_success || 'Image removed successfully';
+    const selectTitle = (lang.button && lang.button.select_image) || 'Select Image';
+
+    const executeDelete = () => {
+        const formData = new FormData();
+        const deleteId = id || (document.getElementById('avatarPreviewContainer')?.dataset?.initialId) || '';
+        if (deleteId) {
+            formData.append('id', deleteId);
+        }
+
+        fetch(siteUrl + "mod_user/delete_image", {
+            method: "POST",
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: formData
+        })
+        .then(r => {
+            const contentType = r.headers.get('content-type') || '';
+            if (contentType.includes('application/json')) {
+                return r.json();
+            }
+            return r.text().then(text => {
+                if (text.trim() === 'Success') {
+                    return { status: 'success', message: successTitle };
+                }
+                return { status: 'error', message: text };
+            });
+        })
+        .then(res => {
+            if (res.status === 'success') {
+                if (navigator.vibrate) navigator.vibrate(10);
+                if (typeof showAFToast === 'function') {
+                    showAFToast(res.message || successTitle, 'success', 2000);
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: res.message || successTitle,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+
+                const fileInput = document.getElementById('image');
+                if (fileInput) fileInput.value = '';
+
+                const container = document.getElementById('avatarPreviewContainer');
+                if (container) {
+                    container.dataset.initialSrc = '';
+                    container.innerHTML = `
+                        <div class="m3-hero-avatar-placeholder" data-action="select-avatar">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <button type="button" class="m3-hero-avatar-btn upload-btn" data-action="select-avatar" title="${selectTitle}">
+                            <i class="bi bi-camera-fill"></i>
+                        </button>`;
+                }
+
+                document.querySelectorAll('.avatar-img').forEach(img => {
+                    const parent = img.parentElement;
+                    if (parent && parent.classList.contains('avatar-small')) {
+                        const userName = (window.siteData && window.siteData.username) || '';
+                        const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
+                        parent.innerHTML = `<span class="avatar-initials">${initial}</span>`;
+                    } else {
+                        img.remove();
+                    }
+                });
+                document.querySelectorAll('.user-menu-avatar-large img').forEach(img => {
+                    const parent = img.parentElement;
+                    if (parent) {
+                        const userName = (window.siteData && window.siteData.username) || '';
+                        const initial = userName ? userName.charAt(0).toUpperCase() : 'U';
+                        parent.innerHTML = `<span>${initial}</span>`;
+                    }
+                });
+            } else {
+                const errMsg = res.message || 'Error removing image';
+                if (typeof showAFToast === 'function') {
+                    showAFToast(errMsg, 'error', 2500);
+                } else if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: errMsg
+                    });
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Delete image error:', err);
+            const errNetwork = 'An error occurred while removing the image.';
+            if (typeof showAFToast === 'function') {
+                showAFToast(errNetwork, 'error', 2500);
+            } else if (typeof Swal !== 'undefined') {
+                Swal.fire('Error', errNetwork, 'error');
+            }
+        });
+    };
+
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: 'Are you sure you want to remove this image?',
+            title: confirmTitle,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ba1a1a',
             cancelButtonColor: '#6e7881',
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No'
+            confirmButtonText: confirmYes,
+            cancelButtonText: confirmNo
         }).then((result) => {
             if (result.isConfirmed) {
-                const formData = new FormData();
-                formData.append('id', id);
-
-                fetch(siteUrl + "mod_user/delete_image", {
-                    method: "POST",
-                    body: formData
-                })
-                .then(r => r.text())
-                .then(msg => {
-                    if (msg === 'Success') {
-                        if (navigator.vibrate) navigator.vibrate(10);
-                        Swal.fire('Image removed successfully', '', 'success');
-                        const container = document.getElementById('avatarPreviewContainer');
-                        if (container) {
-                            container.innerHTML = `
-                                <div class="upload-btn-wrapper">
-                                    <button type="button" class="m3-upload-button" onclick="document.getElementById('image').click()">
-                                        <i class="bi bi-cloud-arrow-up"></i>
-                                        Select Image
-                                    </button>
-                                    <div style="color: var(--md-sys-color-on-surface-variant); font-size: 12px;">Select Image</div>
-                                </div>`;
-                        }
-                    } else {
-                        Swal.fire('Error', msg, 'error');
-                    }
-                });
+                executeDelete();
             }
         });
+    } else if (confirm(confirmTitle)) {
+        executeDelete();
     }
 }
 
@@ -262,6 +496,21 @@ function submitEditProfileAjax(event) {
             if (data.full_name) {
                 document.querySelectorAll('.user-full-name').forEach(el => el.textContent = data.full_name);
             }
+            if (data.image) {
+                const siteUrl = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+                const iAddress = (window.siteData && window.siteData.iaddress) ? window.siteData.iaddress : ((typeof SITE_ADDRESS !== 'undefined' && SITE_ADDRESS) ? SITE_ADDRESS + 'static/' : '/static/');
+                const newImgUrl = iAddress + 'mod_user/' + data.image;
+                const container = document.getElementById('avatarPreviewContainer');
+                if (container) {
+                    const deleteTitle = (window.adminLang && window.adminLang.mod_user && window.adminLang.mod_user.button && window.adminLang.mod_user.button.delete) || 'Delete';
+                    container.dataset.initialSrc = newImgUrl;
+                    container.innerHTML = `
+                        <img src="${newImgUrl}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+                        <button type="button" class="m3-hero-avatar-btn remove-btn" data-action="delete-avatar" data-id="${container.dataset.initialId || ''}" title="${deleteTitle}">
+                            <i class="bi bi-trash"></i>
+                        </button>`;
+                }
+            }
         } else {
             if (typeof showAFToast === 'function') {
                 showAFToast(data.message || 'Error updating profile', 'error', 2500);
@@ -415,3 +664,78 @@ document.addEventListener('submit', function(e) {
         submitChangePasswordAjax(e);
     }
 });
+
+document.addEventListener('click', function(e) {
+    // 1. Delete Avatar
+    const deleteBtn = e.target.closest('[data-action="delete-avatar"]');
+    if (deleteBtn) {
+        e.preventDefault();
+        const id = deleteBtn.dataset.id || (document.getElementById('avatarPreviewContainer')?.dataset?.initialId) || '';
+        deleteImage(id);
+        return;
+    }
+
+    // 2. Cancel Avatar Selection
+    const cancelBtn = e.target.closest('[data-action="cancel-avatar"]');
+    if (cancelBtn) {
+        e.preventDefault();
+        cancelAvatarSelection();
+        return;
+    }
+
+    // 3. Select Avatar (trigger file input)
+    const selectBtn = e.target.closest('[data-action="select-avatar"]');
+    if (selectBtn) {
+        e.preventDefault();
+        const fileInput = document.getElementById('image');
+        if (fileInput) {
+            fileInput.click();
+        }
+        return;
+    }
+
+    // 4. Switch Tab
+    const tabBtn = e.target.closest('[data-action="switch-tab"]');
+    if (tabBtn) {
+        e.preventDefault();
+        switchProfileTab(tabBtn);
+        return;
+    }
+
+    // 5. Toggle Password
+    const toggleBtn = e.target.closest('[data-action="toggle-password"]');
+    if (toggleBtn) {
+        e.preventDefault();
+        const targetId = toggleBtn.dataset.target;
+        if (targetId) {
+            togglePassword(targetId, toggleBtn);
+        }
+        return;
+    }
+});
+
+// Change event for file input
+document.addEventListener('change', function(e) {
+    if (e.target && (e.target.id === 'image' || (e.target.dataset && e.target.dataset.action === 'preview-avatar'))) {
+        previewAvatar(e.target);
+    }
+});
+
+// Input events for char counter, password strength, and password match
+document.addEventListener('input', function(e) {
+    if (!e.target) return;
+
+    if (e.target.dataset && e.target.dataset.counterId) {
+        const max = parseInt(e.target.dataset.counterMax, 10) || 255;
+        updateCharCounter(e.target, e.target.dataset.counterId, max);
+    }
+
+    if (e.target.dataset && e.target.dataset.action === 'check-strength') {
+        checkStrength(e.target.value);
+    }
+
+    if ((e.target.dataset && e.target.dataset.action === 'check-match') || e.target.id === 'new_password') {
+        checkMatch();
+    }
+});
+
