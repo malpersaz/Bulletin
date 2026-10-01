@@ -1,3 +1,26 @@
+## v1.1.17 (2026-10-02)
+- **Author Spotlight & Dedicated Search Integration (`mod/index/helper/search.helper.php`, `templates/amida/index/search.twig`, `templates/amida/static/css/search.css`, `static/css/search.css`, `mod/index/lang/*.php`)**:
+  - Implemented author discovery in site search: queries active authors and contributors (`mod_user` table) matching author first names, last names, combined full names, usernames, and column blog names.
+  - Added dedicated caching layer (`Cache::set` / `Cache::get`) for author search results with standard cache key naming convention (`<keyword>-search-mod_authors`).
+  - Created prominent "Spotlight" author presentation card in `search.twig` rendered ahead of news/publication results with author avatar rendering (and graceful fallback to site brand icon `mod_settings.site_icon` / `logo_square.png` when no custom photo is present), role badge, handle, location, biography excerpt, article/news statistics, latest article link, and direct link to the author page (`/author/<username>`).
+  - Added dedicated `search.css` stylesheet for search page layout and author spotlight styling with comprehensive dark mode support and responsive mobile layout.
+  - Enforced AGENTS.md Rule 2 (Strict Code Separation Mandate): eradicated inline styles and inline script tags from `search.twig`.
+  - Added localized author search dictionary entries (`authors`, `view_profile`, `author`, `articles`, `news`, `latest_publication`) across all 9 supported languages (`ku`, `en`, `tr`, `de`, `sv`, `fr`, `ar`, `ckb`, `zza`).
+- **Cross-Module Image Search Results Integration (`mod/index/helper/search.helper.php`, `templates/amida/index/search.twig`, `templates/amida/static/css/search.css`, `static/css/search.css`, `mod/index/lang/*.php`)**:
+  - Implemented unified cross-module image search (`searchImages`) querying `mod_gallery`, `mod_news`, and `mod_publication` when matching search keywords or image file names.
+  - Added automated deduplication preventing identical image entries across multiple modules from appearing repeatedly.
+  - Resolved parent entity targets (`news/<seo>`, `publication/<seo>`, `page/<seo>`) dynamically based on origin module and record ID for direct navigation.
+  - Added dedicated caching layer (`Cache::set` / `Cache::get`) with standard key convention (`<keyword>-search-mod_images`).
+  - Added responsive image grid presentation in `search.twig` with 4:3 aspect-ratio thumbnails, source badges (`Gallery`, `News`, `Publication`), title captions, hover zoom effect, and links pointing directly to the target article or media detail page.
+  - Synchronized image search CSS styles with full dark mode support across `templates/amida/static/css/search.css` and `static/css/search.css`.
+  - Added localized translation keys (`images`, `image`, `gallery`) across all 9 supported languages (`ku`, `en`, `tr`, `de`, `sv`, `fr`, `ar`, `ckb`, `zza`) and verified 100% compliance with `tools/i18n_guard.py` and `tools/code_separation_guard.py`.
+- **Header Search UI & Form Input Accessibility (`templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/index/mod_menu/top_menu.twig`)**:
+  - Replaced hardcoded ellipsis and repetitive `lang.index.search.search` placeholders with descriptive, internationalized `lang.index.search.placeholder` ("Li nûçe, nivîs, nivîskar û hwd bigere") across desktop and mobile search form inputs.
+  - Resolved accessibility label association with dedicated input element IDs and matching label `for` targets.
+- **Header Navigation Desktop Layout & Mobile Drawer Toggler Isolation (`templates/amida/static/css/stacked-top-menu.css`)**:
+  - Resolved visual layout defect where the mobile hamburger drawer toggler (`.btn-header-toggler` / `#mobileDrawerOpenBtn`) incorrectly rendered on desktop screens due to CSS specificity overriding Bootstrap's `d-lg-none`.
+  - Enforced `display: none !important` on `.btn-header-toggler` for desktop screens (`min-width: 992px`) while preserving responsive `inline-flex` presentation on mobile viewports (`max-width: 991.98px`).
+
 ## v1.1.16 (2026-10-01)
 - **User Profile Avatar Management & Instant Upload (`mod/mod_user/index.php`, `templates/admin/assets/js/modals/modal_user_profile.js`, `templates/admin/layout.twig`)**:
   - Implemented `ajax_upload_avatar` endpoint in `mod_user` enabling instant avatar upload and persistence upon file selection without requiring current password verification or form submission.

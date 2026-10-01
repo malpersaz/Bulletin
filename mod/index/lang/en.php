@@ -44,6 +44,7 @@ $lang['index'] = [
 $lang['index']['search'] = [
     'searched_word' => 'Enter search keyword!',
     'search' => 'Search',
+    'placeholder' => 'Search news, articles, authors etc.',
     'not_found' => 'No results found!',
     'search_results' => 'Search results for "<strong>%s</strong>"',
     'mod_content' => 'Content results for "<strong>%s</strong>"',
@@ -52,6 +53,15 @@ $lang['index']['search'] = [
     'mod_announcements' => 'Announcement results for "<strong>%s</strong>".',
     'mod_page' => 'Page results for "<strong>%s</strong>".',
     'mod_video_embed' => 'Video results for "<strong>%s</strong>".',
+    'authors' => 'Author results for "<strong>%s</strong>"',
+    'view_profile' => 'View Author Profile',
+    'author' => 'Author',
+    'articles' => 'Articles',
+    'news' => 'News',
+    'latest_publication' => 'Latest Publication',
+    'images' => 'Image results for "<strong>%s</strong>"',
+    'image' => 'Image',
+    'gallery' => 'Gallery',
 ];
 
 # mod_content

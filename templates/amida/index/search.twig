@@ -1,5 +1,10 @@
 {% extends "layouts/base.twig" %}
 
+{% block css_custom %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/search.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
 {% block content %}
 {% set search_keyword = keyword|default(query|default(''))|trim %}
 
@@ -9,7 +14,7 @@
         <div class="col-12">
             <h2 class="display-6 border-bottom pb-3">
                 <i class="bi bi-search me-2 text-primary"></i>
-                {{ (lang.index.search.search_results|default(''))|format(search_keyword)|raw }}
+                {{ lang.index.search.search_results|format(search_keyword)|raw }}
             </h2>
         </div>
     </div>
@@ -25,13 +30,161 @@
                         {{ search_notice }}
                     </div>
                 </div>
-            {% elseif (news is empty) and (publications is empty) and (announcements is empty) and (sayfalar is empty) and (videos is empty) %}
+            {% elseif (authors is empty) and (images is empty) and (news is empty) and (publications is empty) and (announcements is empty) and (sayfalar is empty) and (videos is empty) %}
                 <div class="alert alert-warning d-flex align-items-center shadow-sm" role="alert">
                     <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2 fs-4"></i>
                     <div>
                         {{ lang.index.search.not_found }}
                     </div>
                 </div>
+            {% endif %}
+
+            {# Author Results (Spotlight) #}
+            {% if authors is not empty %}
+                <section class="search-authors-section mb-5" aria-labelledby="search-authors-heading">
+                    <div class="search-authors-header d-flex align-items-center justify-content-between mb-3 pb-2">
+                        <h4 id="search-authors-heading" class="search-authors-title mb-0 text-primary">
+                            <i class="bi bi-person-badge me-2"></i>
+                            {{ lang.index.search.authors|format(search_keyword)|raw }}
+                        </h4>
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold px-3 py-2">
+                            {{ authors|length }} {{ lang.index.search.author }}
+                        </span>
+                    </div>
+
+                    <div class="search-authors-grid{% if authors|length == 1 %} single-author{% endif %}">
+                        {% for author in authors %}
+                            <article class="search-author-card card border-0 shadow-sm">
+                                <div class="card-body p-4">
+                                    <div class="search-author-body">
+                                        <div class="search-author-avatar-wrap{% if not author.has_image %} has-site-icon{% endif %}">
+                                            {% if author.has_image and author.user_image_url is not empty %}
+                                                <img src="{{ author.user_image_url }}" alt="{{ author.full_name }}" class="search-author-avatar-img" loading="lazy">
+                                            {% elseif author.site_icon_url is defined and author.site_icon_url is not empty %}
+                                                <img src="{{ author.site_icon_url }}" alt="{{ site.title }}" class="search-author-avatar-img site-icon-img" loading="lazy">
+                                            {% elseif site.site_icon is defined and site.site_icon is not empty %}
+                                                <img src="{{ site.iaddress }}mod_settings/{{ site.site_icon }}" alt="{{ site.title }}" class="search-author-avatar-img site-icon-img" loading="lazy">
+                                            {% elseif site.logo_symbol is defined and site.logo_symbol is not empty %}
+                                                <img src="{{ site.iaddress }}mod_settings/{{ site.logo_symbol }}" alt="{{ site.title }}" class="search-author-avatar-img site-icon-img" loading="lazy">
+                                            {% else %}
+                                                <div class="search-author-avatar-placeholder">
+                                                    <span>{{ author.initials }}</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="search-author-info">
+                                            <div class="search-author-meta-top">
+                                                <span class="search-author-role role-{{ author.group_id }}">{{ author.role_label }}</span>
+                                                {% if author.city is defined and author.city is not empty %}
+                                                    <span class="search-author-city"><i class="bi bi-geo-alt"></i> {{ author.city }}</span>
+                                                {% endif %}
+                                                <span class="search-author-handle">@{{ author.username }}</span>
+                                            </div>
+
+                                            <h3 class="search-author-name">
+                                                <a href="{{ site.saddress }}author/{{ author.username }}" title="{{ author.full_name }}">
+                                                    {{ author.full_name }}
+                                                </a>
+                                            </h3>
+
+                                            {% if author.blog_name is defined and author.blog_name is not empty %}
+                                                <p class="search-author-blog">
+                                                    <i class="bi bi-feather me-1"></i>{{ author.blog_name }}
+                                                </p>
+                                            {% endif %}
+
+                                            {% if author.about_excerpt is defined and author.about_excerpt is not empty %}
+                                                <p class="search-author-bio">{{ author.about_excerpt }}</p>
+                                            {% endif %}
+
+                                            <div class="search-author-stats">
+                                                {% if author.total_publications > 0 %}
+                                                    <span class="search-author-stat-item">
+                                                        <i class="bi bi-journal-richtext text-primary"></i>
+                                                        <strong>{{ author.total_publications }}</strong> {{ lang.index.search.articles }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if author.total_news > 0 %}
+                                                    <span class="search-author-stat-item">
+                                                        <i class="bi bi-newspaper text-success"></i>
+                                                        <strong>{{ author.total_news }}</strong> {{ lang.index.search.news }}
+                                                    </span>
+                                                {% endif %}
+                                            </div>
+
+                                            {% if author.latest_publication is defined and author.latest_publication is not empty %}
+                                                <div class="search-author-latest">
+                                                    <span class="search-author-latest-label">{{ lang.index.search.latest_publication }}:</span>
+                                                    {% if author.latest_publication.is_news %}
+                                                        <a href="{{ site.saddress }}news/{{ author.latest_publication.seo }}" class="search-author-latest-link text-truncate">
+                                                            {{ author.latest_publication.name }}
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{{ site.saddress }}publication/{{ author.latest_publication.seo }}" class="search-author-latest-link text-truncate">
+                                                            {{ author.latest_publication.name }}
+                                                        </a>
+                                                    {% endif %}
+                                                    {% if author.latest_publication.timeago is defined and author.latest_publication.timeago is not empty %}
+                                                        <small class="search-author-latest-time text-muted">({{ author.latest_publication.timeago }})</small>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+
+                                            <div class="search-author-action mt-3">
+                                                <a href="{{ site.saddress }}author/{{ author.username }}" class="btn btn-primary search-author-btn">
+                                                    <span>{{ lang.index.search.view_profile }}</span>
+                                                    <i class="bi bi-arrow-right ms-2"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {# Image Results #}
+            {% if images is not empty %}
+                <section class="search-images-section mb-5" aria-labelledby="search-images-heading">
+                    <div class="search-images-header d-flex align-items-center justify-content-between mb-3 pb-2">
+                        <h4 id="search-images-heading" class="search-images-title mb-0 text-primary">
+                            <i class="bi bi-images me-2"></i>
+                            {{ lang.index.search.images|format(search_keyword)|raw }}
+                        </h4>
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-semibold px-3 py-2">
+                            {{ images|length }} {{ lang.index.search.image }}
+                        </span>
+                    </div>
+
+                    <div class="search-images-grid">
+                        {% for img_item in images %}
+                            <article class="search-image-card card border-0 shadow-sm">
+                                <a href="{{ img_item.target_url }}" 
+                                   class="search-image-link" 
+                                   target="_blank" 
+                                   title="{{ img_item.title }}">
+                                    <div class="search-image-thumb-wrap">
+                                        <img src="{{ img_item.thumb_url }}" 
+                                             alt="{{ img_item.title }}" 
+                                             class="search-image-img" 
+                                             loading="lazy">
+                                        <span class="search-image-badge badge-{{ img_item.source_type }}">
+                                            {{ img_item.source_label }}
+                                        </span>
+                                    </div>
+                                    <div class="search-image-info p-3">
+                                        <h5 class="search-image-title text-truncate mb-0" title="{{ img_item.title }}">
+                                            {{ img_item.title }}
+                                        </h5>
+                                    </div>
+                                </a>
+                            </article>
+                        {% endfor %}
+                    </div>
+                </section>
             {% endif %}
 
             {# News Results #}
@@ -52,7 +205,7 @@
                                 <div>
                                     <span class="fw-medium">{{ item.name }}</span>
                                     {% if item.summary is defined and item.summary is not empty %}
-                                        <small class="d-block text-muted mt-1 text-truncate" style="max-width: 600px;">
+                                        <small class="d-block text-muted mt-1 text-truncate search-item-summary">
                                             {{ item.summary|striptags }}
                                         </small>
                                     {% endif %}
@@ -82,7 +235,7 @@
                                 <div>
                                     <span class="fw-medium">{{ item.name }}</span>
                                     {% if item.summary is defined and item.summary is not empty %}
-                                        <small class="d-block text-muted mt-1 text-truncate" style="max-width: 600px;">
+                                        <small class="d-block text-muted mt-1 text-truncate search-item-summary">
                                             {{ item.summary|striptags }}
                                         </small>
                                     {% endif %}
@@ -166,15 +319,5 @@
         </div>
     </div>
 </div>
-
-{# Tooltipleri aktif etmek için küçük bir script (Eğer ana dosyada yoksa) #}
-<script>
-    document.addEventListener("DOMContentLoaded", function(){
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-          return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-    });
-</script>
 
 {% endblock %}

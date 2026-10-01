@@ -281,8 +281,16 @@ header.stacked-header .stacked-search-input {
     width: 100% !important;
 }
 
+header.stacked-header .stacked-search-input::placeholder {
+    color: #94a3b8 !important;
+}
+
 [data-bs-theme="dark"] header.stacked-header .stacked-search-input {
     color: var(--stacked-ink-dark) !important;
+}
+
+[data-bs-theme="dark"] header.stacked-header .stacked-search-input::placeholder {
+    color: #64748b !important;
 }
 
 header.stacked-header .stacked-search-btn {
@@ -355,12 +363,20 @@ header.stacked-header .btn-header-action.btn-icon {
 }
 
 header.stacked-header .btn-header-toggler {
+    display: none !important;
     width: 38px !important;
     height: 38px !important;
     padding: 0 !important;
     font-size: 1.25rem !important;
     line-height: 1 !important;
     cursor: pointer !important;
+}
+
+@media (min-width: 992px) {
+    header.stacked-header .btn-header-action.btn-header-toggler,
+    header.stacked-header .btn-header-toggler {
+        display: none !important;
+    }
 }
 
 header.stacked-header .btn-header-lang {
@@ -668,6 +684,7 @@ header.stacked-header .dropdown-item.active {
     }
 
     /* Mobile Hamburger Toggler */
+    header.stacked-header .btn-header-action.btn-header-toggler,
     header.stacked-header .btn-header-toggler {
         width: 36px !important;
         height: 34px !important;
