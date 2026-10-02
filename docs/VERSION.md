@@ -1,3 +1,26 @@
+## v1.1.21 (2026-10-02)
+- **Hero News Slider Super Polish & Broadsheet Journalism Parity (`mod/index/helper/mod_hero_slider.helper.php`, `templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/js/hero-news-slider.js`)**:
+  - Implemented Taste Skill and AF/Business architectural standards for the homepage Hero News Slider, elevating headline readability and visual depth for high-end digital journalism.
+  - Resolved raw HTML entity rendering glitch (e.g. `Çapa 2&#039;yem a 6 Pirtûkên Kurmancî`) in `mod/index/helper/mod_hero_slider.helper.php` by running `html_entity_decode(..., ENT_QUOTES | ENT_HTML5, 'UTF-8')` across article names, summaries, category names, and author names.
+  - Implemented dual-layer image presentation architecture (`.hero-slide__backdrop` + `.hero-slide__picture`):
+    - Ambient backdrop with Gaussian blur (`blur(26px)`), calibrated brightness (`0.46`), saturation boost (`1.2`), and subtle Ken Burns zoom (`scale(1.12)` to `1.18`), eliminating awkward letterboxing on portrait book covers and editorial graphics.
+    - Foreground picture with high-resolution image (`object-fit: contain; object-position: center; drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55))`), ensuring entire graphics, typography, and cover artwork render uncropped.
+    - Added patterned SVG brand symbol placeholder fallback when no slide media is provided or when media loading fails (`has-failed-image`).
+  - Overhauled typography and scrim overlay:
+    - Multi-stop cinematic gradient overlay (`rgba(9, 13, 22, 0.95)` to transparent) ensuring high WCAG contrast across light, dark, and complex photographic backgrounds.
+    - Fluid responsive `Literata` headline typography (`clamp(1.22rem, 1.8vw + 0.55rem, 1.72rem)`), line-height `1.25`, text shadow (`0 2px 10px rgba(0,0,0,0.75)`), and line clamping (`-webkit-line-clamp: 3`) to prevent long news titles from occluding the visual canvas.
+  - Refactored badge, author and navigation control placement:
+    - Relocated category badge and relative timestamp to the top-left corner as modern pills (`border-radius: 9999px`) with glassmorphism backdrop blur.
+    - Removed duplicate slide-by-slide navigation buttons and consolidated them into top-right fixed frosted circular controls (`.hero-slider__controls.hero-slider__controls--fixed`), providing stable, flicker-free Swiper navigation with hover elevation.
+    - Unified editorial content hierarchy across all slides: author identity pill is positioned above the headline with clean `flex-start` left alignment, eliminating centered/indented layout discrepancies.
+    - Built-in resilient author avatar fallback: displays localized initials badge (e.g. `MF` for Mahabad Felat) cleanly if an author avatar image is missing or 404s, eradicating broken image browser boxes.
+    - Added fail-safe base placeholder background underneath all slides, guaranteeing rich branded visual depth and preventing washed-out voids if remote image assets fail to resolve.
+  - Enhanced JavaScript Swiper runtime (`hero-news-slider.js`) with container-level event delegation, broken image fallback detection (`handleBrokenSlideImage`), avatar error interception, and automatic control suppression on single-slide configurations.
+  - Calibrated responsive height scale: desktop `390px`, tablet `350px`, mobile `280px`, small mobile `240px`.
+  - Enforced AGENTS.md Rule 2 (Strict Code Separation Mandate) with zero inline CSS styles and zero inline JavaScript handlers.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.21`.
+
 ## v1.1.20 (2026-10-02)
 - **Native Lightbox Engine & Cross-Module Media Gallery Parity (`templates/base_static/`, `templates/amida/layouts/base.twig`, `mod/index/indexBase.php`, `mod/index/helper/`, `templates/amida/index/`)**:
   - Integrated standalone, zero-dependency `AFLightbox` engine assets (`templates/base_static/css/lightbox-engine.css` and `templates/base_static/js/lightbox-engine.js`), providing fullscreen overlay, animated transitions, zoom, download, share, mobile swipe gestures, keyboard navigation (Esc, Arrows), thumbnail ribbon, and built-in 9-language i18n (`ku`, `ckb`, `zza`, `en`, `tr`, `de`, `fr`, `sv`, `ar`).

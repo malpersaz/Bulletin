@@ -7,27 +7,46 @@
     <div class="swiper hero-news-swiper">
         <div class="swiper-wrapper">
             {% for item in hero_slider %}
-            <div class="swiper-slide hero-slide" data-slide-index="{{ loop.index0 }}">
+            <div class="swiper-slide hero-slide{% if loop.first %} swiper-slide-active{% endif %}" data-slide-index="{{ loop.index0 }}">
                 <a class="hero-slide__hitbox" href="{{ item.detail_url }}" aria-label="{{ item.name }}"></a>
 
                 <div class="hero-slide__image">
+                    {# Fail-safe base background: dark branded placeholder is always present underneath #}
+                    <div class="hero-slide__placeholder" aria-hidden="true">
+                        <div class="hero-slide__placeholder-pattern"></div>
+                        {% set hero_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
+                        <img src="{{ site.iaddress }}mod_settings/thumb/{{ hero_fallback_icon }}" class="hero-slide__placeholder-symbol" width="48" height="48" alt="" loading="lazy">
+                    </div>
+
                     {% if item.video_url is defined and item.video_url is not empty %}
-                        <video autoplay loop muted playsinline poster="{{ item.image_url ? item.image_url : (site.iaddress ~ 'mod_settings/logo.png') }}" class="hero-bg-video" aria-hidden="true">
+                        <video autoplay loop muted playsinline {% if item.image_url %}poster="{{ item.image_url }}"{% endif %} class="hero-bg-video" aria-hidden="true">
                             <source src="{{ item.video_url }}" type="video/mp4">
                         </video>
-                    {% elseif item.embed_slider_url is defined and item.embed_slider_url is not empty %}
-                        <iframe src="{{ item.embed_slider_url }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
-                    {% elseif item.embed_url is defined and item.embed_url is not empty %}
-                        <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
+                    {% elseif item.embed_slider_url is defined and item.embed_slider_url is not empty and ('youtube' in item.embed_slider_url or 'vimeo' in item.embed_slider_url or 'dailymotion' in item.embed_slider_url) %}
+                        <iframe src="{{ item.embed_slider_url }}" title="{{ item.name|escape('html_attr') }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
+                    {% elseif item.embed_url is defined and item.embed_url is not empty and ('youtube' in item.embed_url or 'vimeo' in item.embed_url or 'dailymotion' in item.embed_url) %}
+                        <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" title="{{ item.name|escape('html_attr') }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
                     {% elseif item.image_url is not empty %}
-                        <img src="{{ item.image_url }}"
-                             alt="{{ item.name }}"
-                             loading="{{ loop.first ? 'eager' : 'lazy' }}"
-                             fetchpriority="{{ loop.first ? 'high' : 'auto' }}">
-                    {% else %}
-                        <div class="hero-slide__placeholder">
-                            <i class="bi bi-journal-text hero-slide__placeholder-icon" aria-hidden="true"></i>
+                        <div class="hero-slide__backdrop" aria-hidden="true">
+                            <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
+                                 alt=""
+                                 class="hero-slide__backdrop-img"
+                                 loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                                 decoding="async">
                         </div>
+                        <picture class="hero-slide__picture">
+                            {% if item.thumb_url is defined and item.thumb_url is not empty %}
+                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}">
+                            {% endif %}
+                            <img src="{{ item.image_url }}"
+                                 alt="{{ item.name }}"
+                                 width="1200"
+                                 height="675"
+                                 class="hero-slide__cover-img"
+                                 loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                                 fetchpriority="{{ loop.first ? 'high' : 'auto' }}"
+                                 decoding="async">
+                        </picture>
                     {% endif %}
                 </div>
 
@@ -46,67 +65,42 @@
                             {{ item.published_ago }}
                         </span>
                     {% endif %}
-
-                    <div class="hero-slider__controls">
-                        <button type="button" class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide }}">
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        <button type="button" class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide }}">
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-                    </div>
                 </div>
 
                 <div class="hero-slide__content">
-                    <div class="hero-slide__body hero-slide__body--{{ item.source_mod == 'mod_publication' ? 'publication' : 'news' }}">
-                        {% if item.source_mod == 'mod_publication' %}
-                        <div class="hero-slide__publication-head">
-                            <div class="hero-slide__meta">
-                                <div class="hero-slide__author hero-slide__author--publication">
-                                    <span class="hero-slide__avatar">
-                                        {% if item.author_image_url is not empty %}
-                                            <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
-                                        {% else %}
-                                            <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
-                                        {% endif %}
-                                    </span>
-                                    <span class="hero-slide__author-copy">
-                                        <span class="hero-slide__author-name">{{ item.author_name }}</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <h3 class="hero-slide__title">
-                                <a href="{{ item.detail_url }}">{{ item.name }}</a>
-                            </h3>
-                        </div>
-                        {% endif %}
-
-                        {% if item.source_mod != 'mod_publication' %}
-                        <h3 class="hero-slide__title">
-                            <a href="{{ item.detail_url }}">{{ item.name }}</a>
-                        </h3>
+                    <div class="hero-slide__body">
                         <div class="hero-slide__meta">
-                            <div class="hero-slide__author hero-slide__author--news">
+                            <div class="hero-slide__author">
                                 <span class="hero-slide__avatar">
                                     {% if item.author_image_url is not empty %}
-                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" loading="lazy">
-                                    {% else %}
-                                        <span class="hero-slide__avatar-initials">{{ item.author_initials }}</span>
+                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="36" height="36" loading="lazy">
                                     {% endif %}
+                                    <span class="hero-slide__avatar-initials{% if item.author_image_url is empty %} is-visible{% endif %}">{{ item.author_initials }}</span>
                                 </span>
                                 <span class="hero-slide__author-copy">
                                     <span class="hero-slide__author-name">{{ item.author_name }}</span>
                                 </span>
                             </div>
                         </div>
-                        {% endif %}
+
+                        <h2 class="hero-slide__title">
+                            <a href="{{ item.detail_url }}">{{ item.name }}</a>
+                        </h2>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         <div class="hero-news-swiper-pagination"></div>
+    </div>
+
+    <div class="hero-slider__controls hero-slider__controls--fixed" aria-label="{{ lang.index.hero_slider.title }}">
+        <button type="button" class="hero-news-swiper-button-prev" aria-label="{{ lang.index.hero_slider.previous_slide }}">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <button type="button" class="hero-news-swiper-button-next" aria-label="{{ lang.index.hero_slider.next_slide }}">
+            <i class="bi bi-chevron-right"></i>
+        </button>
     </div>
 </section>
 

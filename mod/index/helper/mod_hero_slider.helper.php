@@ -265,12 +265,21 @@ class mod_hero_slider_helper extends indexBase
         $category_seo = isset($record['category_seo']) ? (string) $record['category_seo'] : '';
         $created_at = isset($record['created_at']) ? (string) $record['created_at'] : '';
 
+        $raw_name = isset($record['name']) ? (string) $record['name'] : '';
+        $name = html_entity_decode($raw_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $raw_summary = isset($record['summary']) ? (string) $record['summary'] : '';
+        $summary = html_entity_decode($raw_summary, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        $category_name = html_entity_decode($category_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $author_name = html_entity_decode($author_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
         return [
             'source_mod' => $source_mod,
             'source_id' => $source_id,
-            'name' => isset($record['name']) ? (string) $record['name'] : '',
+            'name' => $name,
             'seo' => isset($record['seo']) ? (string) $record['seo'] : '',
-            'summary' => isset($record['summary']) ? (string) $record['summary'] : '',
+            'summary' => $summary,
             'lang' => isset($record['lang']) ? (string) $record['lang'] : $this->site['lang'],
             'created_at' => $created_at,
             'published_ago' => $this->formatRelativeTime($created_at),

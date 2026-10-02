@@ -1,5 +1,5 @@
 /**
- * Hero News Slider (Swiper Integration)
+ * Hero News Slider (Swiper Integration & Fault-Tolerant Engine)
  * Amed Framework - Public Theme (Amida)
  */
 (function () {
@@ -7,6 +7,14 @@
 
     var retryCount = 0;
     var maxRetries = 50;
+
+    function handleBrokenSlideImage(img) {
+        var parent = img.closest('.hero-slide__image');
+        if (parent) {
+            parent.classList.add('has-failed-image');
+            img.style.display = 'none';
+        }
+    }
 
     function initHeroSlider() {
         var sliderEl = document.querySelector('.hero-news-swiper');
@@ -26,15 +34,13 @@
             return;
         }
 
+        var sliderContainer = sliderEl.closest('.hero-news-slider');
         var slides = sliderEl.querySelectorAll('.swiper-slide');
         var slideCount = slides.length;
         var isMultiple = slideCount > 1;
 
-        if (!isMultiple) {
-            var sliderContainer = sliderEl.closest('.hero-news-slider');
-            if (sliderContainer) {
-                sliderContainer.classList.add('is-single-slide');
-            }
+        if (!isMultiple && sliderContainer) {
+            sliderContainer.classList.add('is-single-slide');
         }
 
         var swiperConfig = {
@@ -45,7 +51,7 @@
                 crossFade: true
             },
             autoplay: isMultiple ? {
-                delay: 5000,
+                delay: 6000,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true
             } : false,
@@ -67,22 +73,56 @@
 
         var swiperInstance = new Swiper(sliderEl, swiperConfig);
 
-        // Event delegation for next/prev controls across all slides
-        sliderEl.addEventListener('click', function (e) {
-            var nextBtn = e.target.closest('.hero-news-swiper-button-next');
-            if (nextBtn) {
-                e.preventDefault();
-                e.stopPropagation();
-                swiperInstance.slideNext();
+        // Click delegation on container for controls
+        if (sliderContainer) {
+            sliderContainer.addEventListener('click', function (e) {
+                var nextBtn = e.target.closest('.hero-news-swiper-button-next');
+                if (nextBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    swiperInstance.slideNext();
+                    return;
+                }
+
+                var prevBtn = e.target.closest('.hero-news-swiper-button-prev');
+                if (prevBtn) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    swiperInstance.slidePrev();
+                    return;
+                }
+            });
+        }
+
+        // Defensive broken slide image fallback
+        var slideImages = sliderEl.querySelectorAll('.hero-slide__image > img, .hero-slide__image .hero-slide__cover-img, .hero-slide__image .hero-slide__backdrop-img');
+        slideImages.forEach(function (img) {
+            if (img.classList.contains('hero-slide__placeholder-symbol')) {
                 return;
             }
+            img.addEventListener('error', function () {
+                handleBrokenSlideImage(this);
+            });
+        });
 
-            var prevBtn = e.target.closest('.hero-news-swiper-button-prev');
-            if (prevBtn) {
-                e.preventDefault();
-                e.stopPropagation();
-                swiperInstance.slidePrev();
-                return;
+        // Resilient author avatar fallback: show initials if image fails or 404s
+        var avatarImages = sliderEl.querySelectorAll('.hero-slide__avatar img');
+        avatarImages.forEach(function (img) {
+            function fallbackToInitials() {
+                img.style.display = 'none';
+                var avatarBox = img.closest('.hero-slide__avatar');
+                if (avatarBox) {
+                    var initials = avatarBox.querySelector('.hero-slide__avatar-initials');
+                    if (initials) {
+                        initials.classList.add('is-visible');
+                    }
+                }
+            }
+
+            if (img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)) {
+                fallbackToInitials();
+            } else {
+                img.addEventListener('error', fallbackToInitials);
             }
         });
 
