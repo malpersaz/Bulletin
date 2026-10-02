@@ -1,7 +1,7 @@
-## v1.1.24 (2026-10-03)
-- **Lighthouse Performance & Core Web Vitals Optimization (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`)**:
-  - **LCP Hero Preload Discovery**: Integrated dynamic `<link rel="preload" as="image" href="..." fetchpriority="high">` via `{% block head_preload %}` on the homepage (`templates/amida/index/index.twig`) to ensure the primary hero image begins downloading immediately during `<head>` parsing, eliminating element render latency.
-  - **Mobile LCP Acceleration & Single-Image Pipeline**: De-prioritized backdrop image downloads on mobile viewports via transparent placeholder `<source media="(max-width: 768px)">` and CSS `.hero-slide__backdrop { display: none !important; }` at `@media (max-width: 767px)`, eliminating heavy mobile GPU `filter: blur(26px)` computation. Reserved `fetchpriority="high"` strictly for the foreground cover image (`first_hero_img`) with `object-fit: cover !important` on mobile screens to instantly fill the slide container and slash Largest Contentful Paint.
+## v1.1.25 (2026-10-03)
+- **Mobile LCP Acceleration & Single-Image Pipeline (`templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`)**:
+  - De-prioritized backdrop image downloads on mobile viewports via transparent placeholder `<source media="(max-width: 768px)">` and CSS `.hero-slide__backdrop { display: none !important; }` at `@media (max-width: 767px)`, eliminating heavy mobile GPU `filter: blur(26px)` computation.
+  - Reserved `fetchpriority="high"` strictly for the foreground cover image (`first_hero_img`) with `object-fit: cover !important` on mobile screens to instantly fill the slide container and slash Largest Contentful Paint.
 - **WCAG AA 100/100 Accessibility & Contrast Standardization (`templates/amida/static/css/footer.css`, `templates/amida/index/footer.twig`)**:
   - Replaced low-contrast `#6c757d` text color on footer version/build elements with dedicated `.footer-version-text` class (`#52565b`, font-weight: 500, contrast ratio: 5.5:1+) and updated `.copyright-section` to `#495057` with dark mode support (`#adb5bd`), guaranteeing full WCAG AA contrast compliance and achieving a perfect **100/100** Accessibility score in Lighthouse.
 - **Single Canonical Cookie Consent Dialog Architecture (`templates/amida/index/footer.twig`, `templates/amida/layouts/base.twig`)**:
@@ -11,6 +11,13 @@
 - **Render-Blocking CSS & Script Modernization (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`)**:
   - Eliminated unused `flatpickr.min.css`, `flatpickr.min.js`, and `flatpickr/l10n/tr.js` from the base layout, reducing critical render-blocking network requests.
   - Added `defer` attribute to non-critical external libraries (`glightbox.min.js`, `sweetalert2@11`, `imagesloaded.pkgd.min.js`, `cookie-consent.js`) and moved `hero-news-slider.js` into page-level `{% block js_custom %}` inside `index.twig` in accordance with AGENTS.md Rule 2 (Strict Code Separation Mandate).
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.25`.
+
+## v1.1.24 (2026-10-03)
+- **Lighthouse Performance & Core Web Vitals Optimization (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`)**:
+  - **LCP Hero Preload Discovery**: Integrated dynamic `<link rel="preload" as="image" href="..." fetchpriority="high">` via `{% block head_preload %}` on the homepage (`templates/amida/index/index.twig`) to ensure the primary hero image begins downloading immediately during `<head>` parsing, eliminating element render latency.
+  - **Adaptive Slide Image Priority**: Filtered the hero items to accurately detect the first slide containing a valid image (`first_hero_img`), assigning `loading="eager"` and `fetchpriority="high"` to both its backdrop and cover images in `templates/amida/index/hero_slider.twig`, while strictly preserving `loading="lazy"` and `fetchpriority="auto"` on all subsequent slides.
 - **Strict Code Separation & Stylesheet Consolidation (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`, `templates/amida/index/mod_publication/latest_authors.twig`, `templates/amida/index/footer.twig`)**:
   - Extracted inline `<link rel="stylesheet">` tags from inside template bodies (`hero_slider.twig`, `latest_authors.twig`, `footer.twig`) and consolidated them cleanly into the `<head>` section via base layout styles and page-level `{% block stylesheets %}` in full compliance with AGENTS.md Rule 2 (Strict Code Separation Mandate), preventing parser-blocking layout recalculations during initial HTML rendering.
 - **Canonical URL & SEO Integrity (`templates/amida/layouts/base.twig`)**:
@@ -19,6 +26,11 @@
   - Added an optimized front-controller route in `index.php` for `/site.webmanifest` delivering `application/manifest+json; charset=utf-8` with `Access-Control-Allow-Origin: *` and 7-day browser caching headers.
   - Extended Apache `.htaccess` `<FilesMatch>` directives to deliver universal `Access-Control-Allow-Origin: "*"` headers across `.webmanifest` and `.json` assets.
   - Configured `base.twig` to reference the same-origin manifest endpoint (`{{ site.address }}site.webmanifest`), completely eliminating cross-origin `ERR_FAILED` browser console errors.
+- **Accessibility & Contrast Enhancements (WCAG AA Compliance) (`templates/amida/index/footer.twig`, `templates/amida/partials/_cookie_consent.twig`, `templates/amida/static/css/`)**:
+  - Re-aligned footer column headings from non-sequential `<h5>` to semantically hierarchical `<h3>` (styled using Bootstrap `.h5`), passing Lighthouse's strict `heading-order` audit.
+  - Added accessible `aria-modal="false"` and localized `aria-label="{{ lang.index.cookie_policy }}"` attributes to the cookie consent banner dialog (`_cookie_consent.twig`), resolving the `aria-dialog-name` audit.
+  - Standardized cookie consent localization keys to eliminate all forbidden `|default(...)` fallbacks, achieving 100% compliance with `tools/i18n_guard.py`.
+  - Upgraded primary blue color tokens across `custom.css`, `hero-news-slider.css`, and `latest-authors.css` to `#0a58ca` (4.64:1+ contrast ratio against white and light backgrounds) and refined footer metadata opacity to `text-secondary`, passing WCAG AA color contrast standards.
 - **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
   - Advanced framework version constant and fallback baseline to `1.1.24`.
 
