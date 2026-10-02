@@ -97,8 +97,14 @@
 /* Copyright Section */
 .copyright-section {
     border-top: 1px solid var(--bs-border-color, #dee2e6);
-    color: var(--bs-secondary-color, #6c757d);
+    color: #495057;
 }
+
+.footer-version-text {
+    color: #52565b;
+    font-weight: 500;
+}
+
 
 /* Dark Mode Compatibility */
 [data-bs-theme="dark"] .site-footer,
@@ -125,6 +131,13 @@ body.dark-mode .footer-icon-box {
 body.dark-mode .social-icon-btn {
     background-color: #2c3034;
     color: #adb5bd;
+}
+
+[data-bs-theme="dark"] .copyright-section,
+body.dark-mode .copyright-section,
+[data-bs-theme="dark"] .footer-version-text,
+body.dark-mode .footer-version-text {
+    color: #adb5bd !important;
 }
 
 @font-face {

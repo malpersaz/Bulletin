@@ -151,15 +151,13 @@
             </p>
 			<div class="text-md-end text-secondary">
                 {% if site.build is defined and site.build %}
-                    <span class="me-2">{{ site.build }}</span>
+                    <span class="me-2 footer-version-text">{{ site.build }}</span>
                 {% endif %}
                 {% if site.version is defined and site.version %}
-                    <span class="ms-1">v{{ site.version }}</span>
+                    <span class="ms-1 footer-version-text">v{{ site.version }}</span>
                 {% endif %}
 			</div>
 		</div>
 	</div>
 </footer>
-
-{% include 'partials/_cookie_consent.twig' %}
 

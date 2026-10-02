@@ -28,12 +28,14 @@
                     {% elseif item.image_url is not empty %}
                         {% set is_lcp_img = (item == first_hero_img) %}
                         <div class="hero-slide__backdrop" aria-hidden="true">
-                            <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
-                                 alt=""
-                                 class="hero-slide__backdrop-img"
-                                 loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
-                                 fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"
-                                 decoding="async">
+                            <picture>
+                                <source media="(max-width: 768px)" srcset="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+                                <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
+                                     alt=""
+                                     class="hero-slide__backdrop-img"
+                                     loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
+                                     decoding="async">
+                            </picture>
                         </div>
                         <picture class="hero-slide__picture">
                             {% if item.thumb_url is defined and item.thumb_url is not empty %}
@@ -104,6 +106,4 @@
         </button>
     </div>
 </section>
-
-<script defer src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ "now"|date("U") }}"></script>
 {% endif %}

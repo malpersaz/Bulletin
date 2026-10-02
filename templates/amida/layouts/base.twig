@@ -87,15 +87,14 @@
 		<!-- Modern Plugin Styles -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css">
-		<link rel="stylesheet" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.0') }}">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
+		<link rel="stylesheet" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.1.24') }}">
 
 		<!-- Custom CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css?v={{ site.version|default('1.1.24') }}">
 		<!-- Stacked Top Menu CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/stacked-top-menu.css?v={{ "now"|date("U") }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/stacked-top-menu.css?v={{ site.version|default('1.1.24') }}">
 		<!-- Footer CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ "now"|date("U") }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.24') }}">
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
@@ -142,24 +141,22 @@
 
 		<!-- Modern Eklenti CDN'leri -->
 		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/l10n/tr.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+		<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js" defer></script>
+		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 
 		<!-- Masonry & ImagesLoaded CDN -->
 		<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
-		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js" defer></script>
 
 		<!-- jQuery -->
 		<script src="{{ site.taddress }}base_static/js/jquery.js"></script>
 		<script src="{{ site.taddress }}base_static/js/jquery.cookie.js"></script>
 
 		<!-- Lightbox Engine -->
-		<script src="{{ site.taddress }}base_static/js/lightbox-engine.js?v={{ site.version|default('1.0') }}" defer></script>
+		<script src="{{ site.taddress }}base_static/js/lightbox-engine.js?v={{ site.version|default('1.1.24') }}" defer></script>
 
 		<!-- Month Popover Engine -->
-		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/month-popover.js?v={{ site.version|default('1.0') }}" defer></script>
+		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/month-popover.js?v={{ site.version|default('1.1.24') }}" defer></script>
 		{% block js_custom %}
 		{% endblock %}
 

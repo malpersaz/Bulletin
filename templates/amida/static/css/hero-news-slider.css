@@ -544,6 +544,17 @@
    Responsive — Mobile
    ------------------------------------------------------------------------- */
 @media (max-width: 767px) {
+    .hero-slide__backdrop {
+        display: none !important;
+    }
+
+    .hero-slide__picture,
+    .hero-slide__image .hero-slide__cover-img {
+        object-fit: cover !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
     .hero-news-slider {
         margin-bottom: 1.25rem;
         border-radius: 12px;

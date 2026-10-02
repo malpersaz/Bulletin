@@ -12,8 +12,13 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ site.version|default('1.1.24') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.24') }}">
+{% endblock %}
+
+{% block js_custom %}
+    {{ parent() }}
+    <script defer src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ site.version|default('1.1.24') }}"></script>
 {% endblock %}
 
 {% block content %}
