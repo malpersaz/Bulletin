@@ -22,6 +22,20 @@ class index_mod extends indexBase
         unset($page);
     }
 
+    public function legal($type = null)
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render($type);
+        unset($legal);
+    }
+
+    public function cookie_policy()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('cookies');
+        unset($legal);
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {
@@ -456,7 +470,7 @@ class index_mod extends indexBase
             <item>
                 <title>' . htmlspecialchars($o['title']) . '</title>
                 <link>' . $link . '</link>
-                <description><![CDATA[' . ($imageUrl ? '<img src="' . $imageUrl . '" align="left" style="margin-right:10px; margin-bottom:10px;" />' : '') . mb_substr(strip_tags($o['summary']), 0, 500) . '...]]></description>
+                <description><![CDATA[' . ($imageUrl ? '<img src="' . $imageUrl . '" align="left" hspace="10" vspace="10" />' : '') . mb_substr(strip_tags($o['summary']), 0, 500) . '...]]></description>
                 <pubDate>' . date(DATE_RSS, strtotime($o['created_at'])) . '</pubDate>
                 <guid isPermaLink="true">' . $link . '</guid>';
                 if ($imageUrl) {

@@ -319,6 +319,297 @@ class mod_page extends installerbase implements installerbaseinterface
                 'root' => 'n',
                 'user_id' => 1
             )
+,
+            // =============================================
+            // Legal Information Page (All 9 Languages)
+            // =============================================
+
+            // 1 - English Legal Information
+            array(
+                'name' => 'Legal Information',
+                'lang' => 'en',
+                'parent_id' => '1',
+                'seo' => 'Legal_Information',
+                'title' => 'Legal Information | Rojname',
+                'keywords' => 'Legal Information, Corporate Information, Trade Registry, Tax ID, MERSIS, Company Details',
+                'description' => 'Official legal and corporate information, commercial registration, tax identification, and statutory disclosures.',
+                'summary' => 'Official corporate, legal, tax, and commercial registration details.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 2 - Kurdish Northern Legal Information
+            array(
+                'name' => 'Agahdariya Zagônî',
+                'lang' => 'ku',
+                'parent_id' => '2',
+                'seo' => 'Agahdariya_Zagônî',
+                'title' => 'Agahdariya Zagônî | Rojname',
+                'keywords' => 'Agahdariya Zagônî, Agahiyên Qanûnî, Şîrket, Sicîla Bazirganiyê, Hejmara Bacê, Daîreya Bacê, MERSÎS, Garantî',
+                'description' => 'Agahiyên fermî û qanûnî yên malperê, tomarkirina sicîla bazirganiyê, nasnameya bacê û polîtîkayên fermî.',
+                'summary' => 'Agahiyên fermî yên malperê, qeyda bazirganiyê û agahiyên darayî yên qanûnî.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 3 - Kurdish Central Legal Information
+            array(
+                'name' => 'زانیارییە یاساییەکان',
+                'lang' => 'ckb',
+                'parent_id' => '3',
+                'seo' => 'زانیارییە_یاساییەکان',
+                'title' => 'زانیارییە یاساییەکان | Rojname',
+                'keywords' => 'زانیارییە یاساییەکان, ناوی کۆمپانیا, تۆماری بازرگانی, ژمارەی باج, نووسینگەی باج, مێرسیس, گەرەنتی',
+                'description' => 'زانیارییە فەرمی و یاساییەکانی کۆمپانیا، تۆماری بازرگانی و پابەندبوونە یاساییەکان.',
+                'summary' => 'زانیارییە فەرمی و بازرگانییەکان، ژمارەی باج و بەڵگەنامە یاساییەکانی کۆمپانیا.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 4 - Arabic Legal Information
+            array(
+                'name' => 'المعلومات القانونية',
+                'lang' => 'ar',
+                'parent_id' => '4',
+                'seo' => 'المعلومات_القانونية',
+                'title' => 'المعلومات القانونية | Rojname',
+                'keywords' => 'المعلومات القانونية, السجل التجاري, الرقم الضريبي, مكتب الضرائب, ميرسيس, سياسات الضمان',
+                'description' => 'البيانات الرسمية والقانونية للشركة، القيد في السجل التجاري، الرقم الضريبي والامتثال القانوني.',
+                'summary' => 'البيانات المؤسسية الرسمية، بيانات السجل التجاري والامتثال الضريبي القانوني.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 5 - German Legal Information
+            array(
+                'name' => 'Rechtliche Hinweise',
+                'lang' => 'de',
+                'parent_id' => '5',
+                'seo' => 'Rechtliche_Hinweise',
+                'title' => 'Rechtliche Hinweise | Rojname',
+                'keywords' => 'Rechtliche Hinweise, Impressum, Handelsregister, Steuernummer, USt-IdNr, Unternehmensdaten',
+                'description' => 'Offizielle Unternehmens- und Rechtsangaben, Handelsregistereintragung, steuerliche Identifikation und gesetzliche Pflichtangaben.',
+                'summary' => 'Offizielle Angaben zum Unternehmen, Handelsregister und steuerliche Pflichtangaben.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 6 - French Legal Information
+            array(
+                'name' => 'Informations Légales',
+                'lang' => 'fr',
+                'parent_id' => '6',
+                'seo' => 'Informations_Légales',
+                'title' => 'Informations Légales | Rojname',
+                'keywords' => 'Informations Légales, Mentions Légales, Registre du Commerce, Numéro Fiscal, TVA, Données Entreprise',
+                'description' => 'Informations légales et institutionnelles officielles, immatriculation au registre du commerce et identifiants fiscaux.',
+                'summary' => 'Données officielles d\'enregistrement commercial, fiscalité et mentions légales statutaires.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 7 - Swedish Legal Information
+            array(
+                'name' => 'Juridisk Information',
+                'lang' => 'sv',
+                'parent_id' => '7',
+                'seo' => 'Juridisk_Information',
+                'title' => 'Juridisk Information | Rojname',
+                'keywords' => 'Juridisk Information, Företagsinformation, Bolagsverket, Organisationsnummer, Momsnummer, Skatt',
+                'description' => 'Officiell juridisk företagsinformation, registrering i Bolagsverket, momsregistreringsnummer och legala villkor.',
+                'summary' => 'Officiella företagsuppgifter, registrering i handelsregister och skatterättslig information.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 8 - Turkish Legal Information
+            array(
+                'name' => 'Yasal Bilgiler',
+                'lang' => 'tr',
+                'parent_id' => '8',
+                'seo' => 'Yasal_Bilgiler',
+                'title' => 'Yasal Bilgiler | Rojname',
+                'keywords' => 'Yasal Bilgiler, Şirket Bilgileri, Ticaret Sicil No, Vergi No, Vergi Dairesi, MERSİS, Yasal Uyarı',
+                'description' => 'Resmi şirket kimliği, ticaret sicil kaydı, vergi dairesi ve numarası ile yasal bildirimler.',
+                'summary' => 'Şirketin resmi sicil, vergi ve kurumsal yasal kimlik bilgileri.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 9 - Southern Legal Information
+            array(
+                'name' => 'Melumatê Huqûqî',
+                'lang' => 'zza',
+                'parent_id' => '9',
+                'seo' => 'Melumatê_Huqûqî',
+                'title' => 'Melumatê Huqûqî | Rojname',
+                'keywords' => 'Melumatê Huqûqî, Şîrkete, Sicîlê Bazirganîye, Numreyê Bacî, Dayîreyê Bacî, MERSÎS, Garantî',
+                'description' => 'Melumatê fermî û huqûqî yê şîrkete, tomarkerdina sicîlê bazirganîye, nasnameyê bacî û mercê qanûnî.',
+                'summary' => 'Melumatê fermî yê şîrkete, qeydê sicîlê bazirganîye û daeyê darayî yê qanûnî.',
+                'content' => '',
+                'root' => 'n',
+                'user_id' => 1
+            ),
+
+            // =============================================
+            // Cookie Policy Page (All 9 Languages)
+            // =============================================
+
+            // 1 - English Cookie Policy
+            array(
+                'name' => 'Cookie Policy',
+                'lang' => 'en',
+                'parent_id' => '1',
+                'seo' => 'Cookie_Policy',
+                'title' => 'Cookie Policy | Rojname',
+                'keywords' => 'Cookie Policy, cookies, tracking technologies, privacy settings, data protection, GDPR',
+                'description' => 'Learn how we use cookies and similar technologies, their categories, and how to manage your privacy choices.',
+                'summary' => 'Detailed information on cookie usage, categories, and browser privacy controls.',
+                'content' => "<h2>Cookie Policy</h2>
+<p>This Cookie Policy explains how cookies and tracking technologies are used across our website to ensure smooth functionality and secure browsing.</p>
+<h3><strong>1. What Are Cookies?</strong></h3>
+<p>Cookies are small text files placed on your device to remember preferences and assist security protocols.</p>
+<h3><strong>2. Cookie Categories</strong></h3>
+<ul>
+<li><strong>Strictly Necessary:</strong> Core functions and session authentication.</li>
+<li><strong>Functional:</strong> Preferences such as language and theme mode.</li>
+<li><strong>Analytics:</strong> Aggregated anonymous performance measurement.</li>
+</ul>
+<h3><strong>3. Managing Cookies</strong></h3>
+<p>You can adjust cookie settings anytime directly through your browser preference panel.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 2 - Kurdish Northern Cookie Policy
+            array(
+                'name' => 'Rêbaza Çerezan',
+                'lang' => 'ku',
+                'parent_id' => '2',
+                'seo' => 'Polîtîkaya_Çerezan',
+                'title' => 'Rêbaza Çerezan | Rojname',
+                'keywords' => 'Rêbaza Çerezan, Polîtîkaya Çerezan, çerez, kûkî, nepenî, mîhengên gerokê, parastina daneyan',
+                'description' => 'Fêr bibin ka çerez çawa tên bikaranîn, cureyên wan çi ne û hûn çawa dikarin wan birêve bibin.',
+                'summary' => 'Agahiyên berfireh li ser bikaranîna çerezan û birêvebirina tercîhên gerokê.',
+                'content' => "<h2>Polîtîkaya Çerezan</h2>
+<p>Ev polîtîka rohnî dike ka çerez çawa ji bo ewlehî û baştirkirina karûbarên malperê tên bikaranîn.</p>
+<h3><strong>1. Çerez Çi Ne?</strong></h3>
+<p>Çerez pelên piçûk ên nivîsê ne ku ji bo tomarkirina tercîhên we li ser cîhaza we tên bicihkirin.</p>
+<h3><strong>2. Cureyên Çerezan</strong></h3>
+<ul>
+<li><strong>Çerezên Pêwîst:</strong> Ji bo rûniştin û ewlehiyê mecbûrî ne.</li>
+<li><strong>Çerezên Fonksiyonel:</strong> Tercîhên ziman û rengê şev/roj diparêzin.</li>
+<li><strong>Çerezên Analîtîk:</strong> Ji bo pîvandina lez û performansa malperê tên xebitandin.</li>
+</ul>
+<h3><strong>3. Birêvebirina Çerezan</strong></h3>
+<p>Hûn dikarin di geroka xwe de çerezan asteng bikin an jê bibin.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 3 - Kurdish Central Cookie Policy
+            array(
+                'name' => 'سیاسەتی کووکییەکان',
+                'lang' => 'ckb',
+                'parent_id' => '3',
+                'seo' => 'سیاسەتی_کووکییەکان',
+                'title' => 'سیاسەتی کووکییەکان | Rojname',
+                'keywords' => 'سیاسەتی کووکییەکان, کووکی, ڕێکخستنی تایبەتمەندی, پاراستنی زانیارییەکان',
+                'description' => 'بزانن چۆن کووکی بەکاردەهێنین و چۆن دەتوانن هەڵبژاردنەکانی تایبەتمەندیتان بەڕێوەببەن.',
+                'summary' => 'ڕوونکردنەوەی بەکارهێنانی کووکی و شێوازی کۆنترۆڵکردنیان لە وێبگەڕەکەتاندا.',
+                'content' => "<h2>سیاسەتی کووکییەکان</h2>
+<p>ئەم سیاسەتە ڕوونی دەکاتەوە کە چۆن کووکی بەکاردەهێنرێت بۆ پێشکەشکردنی ئەزموونێکی باشتر لە ماڵپەڕەکەماندا.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 4 - Arabic Cookie Policy
+            array(
+                'name' => 'سياسة ملفات تعريف الارتباط',
+                'lang' => 'ar',
+                'parent_id' => '4',
+                'seo' => 'سياسة_ملفات_تعريف_الارتباط',
+                'title' => 'سياسة ملفات تعريف الارتباط | Rojname',
+                'keywords' => 'سياسة ملفات تعريف الارتباط, كوكيز, خصوصية, إعدادات المتصفح',
+                'description' => 'تعرف على كيفية استخدام ملفات تعريف الارتباط وأنواعها وكيفية إدارة تفضيلات الخصوصية.',
+                'summary' => 'معلومات تفصيلية حول استخدام ملفات تعريف الارتباط وخيارات التحكم فيها.',
+                'content' => "<h2>سياسة ملفات تعريف الارتباط</h2>
+<p>توضح هذه السياسة كيفية استخدام ملفات تعريف الارتباط والتقنيات المشابهة على موقعنا الإلكتروني.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 5 - German Cookie Policy
+            array(
+                'name' => 'Cookie-Richtlinie',
+                'lang' => 'de',
+                'parent_id' => '5',
+                'seo' => 'Cookie-Richtlinie',
+                'title' => 'Cookie-Richtlinie | Rojname',
+                'keywords' => 'Cookie-Richtlinie, Cookies, Tracking-Technologien, Datenschutzeinstellungen, DSGVO',
+                'description' => 'Erfahren Sie, wie wir Cookies verwenden und wie Sie Ihre Datenschutzeinstellungen anpassen können.',
+                'summary' => 'Detaillierte Informationen zur Verwendung von Cookies und deren Verwaltung im Browser.',
+                'content' => "<h2>Cookie-Richtlinie</h2>
+<p>Diese Cookie-Richtlinie erläutert die Verwendung von Cookies zur Bereitstellung unserer Online-Dienste.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 6 - French Cookie Policy
+            array(
+                'name' => 'Politique de Cookies',
+                'lang' => 'fr',
+                'parent_id' => '6',
+                'seo' => 'Politique_de_Cookies',
+                'title' => 'Politique de Cookies | Rojname',
+                'keywords' => 'Politique de Cookies, traceurs, confidentialité, paramètres navigateur, RGPD',
+                'description' => 'Découvrez comment nous utilisons les cookies et comment gérer vos préférences de confidentialité.',
+                'summary' => 'Informations détaillées sur l\'utilisation des cookies et vos options de paramétrage.',
+                'content' => "<h2>Politique de Cookies</h2>
+<p>Cette politique relative aux cookies vous informe sur les finalités et la gestion des traceurs.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 7 - Swedish Cookie Policy
+            array(
+                'name' => 'Cookiepolicy',
+                'lang' => 'sv',
+                'parent_id' => '7',
+                'seo' => 'Cookiepolicy',
+                'title' => 'Cookiepolicy | Rojname',
+                'keywords' => 'Cookiepolicy, kakor, cookies, spårningsteknik, sekretess, dataskydd, GDPR',
+                'description' => 'Läs om hur vi använder kakor (cookies) och hur du hanterar dina sekretessinställningar.',
+                'summary' => 'Detaljerad information om användning av cookies och hur du administrerar dina inställningar.',
+                'content' => "<h2>Cookiepolicy</h2>
+<p>Denna cookiepolicy förklarar hur vi använder kakor (cookies) för en säker användarupplevelse.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 8 - Turkish Cookie Policy
+            array(
+                'name' => 'Çerez Politikası',
+                'lang' => 'tr',
+                'parent_id' => '8',
+                'seo' => 'Cerez_Politikasi',
+                'title' => 'Çerez Politikası | Rojname',
+                'keywords' => 'Çerez Politikası, çerezler, cookies, gizlilik tercihleri, KVKK, GDPR',
+                'description' => 'Web sitemizde çerezlerin nasıl kullanıldığını ve tercihlerinizi nasıl yöneteceğinizi öğrenin.',
+                'summary' => 'Web sitemizde kullanılan çerezler ve çerez tercihlerinizi yönetme yöntemleri hakkında bilgilendirme.',
+                'content' => "<h2>Çerez Politikası</h2>
+<p>Bu Çerez Politikası, web sitemizde çerezlerin ve benzer teknolojilerin kullanımını açıklamaktadır.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
+            // 9 - Southern Cookie Policy
+            array(
+                'name' => 'Siyasetê Çerezan',
+                'lang' => 'zza',
+                'parent_id' => '9',
+                'seo' => 'Siyasetê_Çerezan',
+                'title' => 'Siyasetê Çerezan | Rojname',
+                'keywords' => 'Siyasetê Çerezan, çerezî, teknolojîyê şopnayîşî, eyarê nepenîye',
+                'description' => 'Bimusê ke ma çerezan senî şuxilnenê û şima senî şenê eyaranê xo îdare bikerê.',
+                'summary' => 'Melumato berfireh derheqê şuxilnayîşê çerezan û îdarekerdişê tercihan de.',
+                'content' => "<h2>Siyasetê Çerezan</h2>
+<p>No Siyasetê Çerezan eşkera keno ke çerezî semedê asanîya bikarhêneran senî yenê şuxilnayene.</p>",
+                'root' => 'n',
+                'user_id' => 1
+            ),
         );
 
         $this->model = Load::model('mod_page');

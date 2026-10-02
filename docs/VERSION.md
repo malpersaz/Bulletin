@@ -1,3 +1,12 @@
+## v1.1.19 (2026-10-02)
+- **Statutory Legal & Cookie Policy Resolution & Multilingual Routing Parity (`mod/index/lang/`, `config/url.config.php`, `mod/index/index.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/legal.helper.php`, `templates/amida/`)**:
+  - Implemented full 9-language dictionary parity for statutory corporate, legal, warranty, and cookie preferences keys across `ar`, `ckb`, `de`, `en`, `fr`, `ku`, `sv`, `tr`, and `zza`.
+  - Registered statutory routing endpoints (`/legal`, `/legal/(:any)`, `/cookie-policy`, `/cookies`) in `config/url.config.php` and controller actions in `mod/index/index.php` using dedicated `legal_helper.php`.
+  - Hardened `mod_page_helper::page()` with slug variation fallbacks and statutory fallback interception, preventing 404 errors on direct navigation to `/page/Cookie_Policy`, `/page/Legal_Information`, `/page/Polîtîkaya_Çerezan`, and `/page/Agahiyên_Qanûnî`.
+  - Created accessible `_cookie_policy.twig` partial and dedicated templates `templates/amida/index/legal/index.twig` and `templates/amida/index/legal/cookie_policy.twig` adhering to the Strict Code Separation Mandate with zero inline CSS/JS and zero forbidden `|default` filters.
+  - Seeded 9-language Legal Information and Cookie Policy page fixtures in `installer/mod_page/index.php`.
+  - Configured permanent 301 redirects (`page/Cookie_Policy` -> `page/Polîtîkaya_Çerezan`, `page/Legal_Information` -> `page/Agahiyên_Qanûnî`) and created production pages on Amîda Kurd via MCP.
+
 ## v1.1.18 (2026-10-02)
 - **Database-Driven Favicon & Brand Asset Resolution (`templates/amida/layouts/base.twig`, `templates/admin/layout.twig`, `lib/Amed.class.php`, `.htaccess`)**:
   - Dynamically resolved favicon, shortcut icon, apple touch icon, and web manifest tags from `mod_settings` database values (`site.favicon_96`, `site.favicon_path`, `site.apple_touch_icon`, `site.site_webmanifest`) and standard image prefix (`site.iaddress ~ 'mod_settings/'`) instead of hardcoding non-existent root-level URLs.

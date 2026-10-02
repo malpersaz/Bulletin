@@ -220,7 +220,7 @@
 									{% endfor %}
 								{% endif %}
 								{% if not kicker_shown %}
-									<span class="detail-page-kicker">{{ lang.index.mod_page.subtitle|default('Page') }}</span>
+									<span class="detail-page-kicker">{{ lang.index.mod_page.subtitle }}</span>
 								{% endif %}
 								<span class="detail-page-reading">
 									<i class="bi bi-clock-history"></i>
@@ -276,9 +276,26 @@
 							'Melumatê_Huqûqî'
 						] %}
 
+						{% set is_cookie_page = d.seo in [
+							lang.index.cookie_policy_slug,
+							'Cookie_Policy',
+							'Polîtîkaya_Çerezan',
+							'سیاسەتی_کووکییەکان',
+							'سياسة_ملفات_تعريف_الارتباط',
+							'Cookie_Richtlinie',
+							'Cookie-Richtlinie',
+							'Politique_de_Cookies',
+							'Cookiepolicy',
+							'Cerez_Politikasi',
+							'Çerez_Politikası',
+							'Siyasetê_Çerezan'
+						] %}
+
 						<div id="amed_content" class="detail-body">
 							{% if is_legal_page %}
 								{% include 'partials/_legal_info.twig' %}
+							{% elseif is_cookie_page and (d.content is not defined or d.content is empty) %}
+								{% include 'partials/_cookie_policy.twig' %}
 							{% else %}
 								{{ d.content|raw }}
 							{% endif %}
@@ -357,7 +374,7 @@
 							<section class="detail-list-card mt-5" aria-labelledby="subpages-title">
 								<div class="card-header">
 									<h5 id="subpages-title" class="fw-bold mb-0">
-										<i class="bi bi-layers me-2 text-primary"></i> {{ lang.index.mod_page.description|default('Subpages') }}
+										<i class="bi bi-layers me-2 text-primary"></i> {{ lang.index.mod_page.description }}
 									</h5>
 								</div>
 								<div class="list-group list-group-flush p-3">
@@ -374,7 +391,7 @@
 							<section class="detail-list-card mt-4" aria-labelledby="related-contents-title">
 								<div class="card-header">
 									<h5 id="related-contents-title" class="fw-bold mb-0">
-										<i class="bi bi-journal-text me-2 text-primary"></i> {{ lang.index.mod_content.title|default('Related Articles') }}
+										<i class="bi bi-journal-text me-2 text-primary"></i> {{ lang.index.mod_content.title }}
 									</h5>
 								</div>
 								<div class="list-group list-group-flush p-3">

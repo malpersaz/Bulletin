@@ -1,0 +1,74 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ "now"|date("U") }}">
+{% endblock %}
+
+{% set page_meta_title = lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' %}
+{% set page_meta_description = lang.index.legal_info_pending is defined and lang.index.legal_info_pending is not empty ? lang.index.legal_info_pending : site.description %}
+
+{% block canonical %}
+	<link rel="canonical" href="{{ site.saddress }}legal"/>
+{% endblock %}
+
+{% block title %}
+	<title>{{ page_meta_title }} - {{ site.name }}</title>
+{% endblock %}
+
+{% block description %}
+	<meta name="description" content="{{ page_meta_description }}">
+{% endblock %}
+
+{% block meta_tags %}
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="{{ site.saddress }}legal">
+	<meta property="og:title" content="{{ page_meta_title }}">
+	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	<meta property="og:site_name" content="{{ site.name }}">
+	<meta property="og:locale" content="{{ site.lang }}">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:url" content="{{ site.saddress }}legal">
+	<meta name="twitter:title" content="{{ page_meta_title }}">
+	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_legal">
+	<div class="col-lg-10">
+		<div class="detail-page-layout">
+			<div class="detail-page-content w-100">
+				<article class="detail-card">
+					<div class="detail-breadcrumb-wrap mb-4">
+						<nav aria-label="{{ lang.index.home }}">
+							<ol class="breadcrumb">
+								<li class="breadcrumb-item">
+									<a href="{{ site.saddress }}">
+										<span>{{ lang.index.home }}</span>
+									</a>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page">
+									<span>{{ page_meta_title }}</span>
+								</li>
+							</ol>
+						</nav>
+					</div>
+
+					<div class="detail-content position-relative">
+						<div class="detail-page-intro mb-4">
+							<div class="detail-page-meta mb-2">
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill"><i class="bi bi-shield-check me-1"></i>{{ page_meta_title }}</span>
+							</div>
+							<h1 class="detail-title fw-bold">{{ page_meta_title }}</h1>
+						</div>
+
+						<div id="amed_content" class="detail-body">
+							{% include 'partials/_legal_info.twig' %}
+						</div>
+					</div>
+				</article>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -33,6 +33,14 @@ $url['announcements/(:any)']='index/announcements/$1';
 // Page
 $url['page/(:any)']='index/page/$1';
 
+// Statutory Legal & Policy Routes
+$url['legal'] = 'index/legal';
+$url['legal/'] = 'index/legal';
+$url['legal/(:any)'] = 'index/legal/$1';
+$url['cookie-policy'] = 'index/cookie_policy';
+$url['cookie-policy/'] = 'index/cookie_policy';
+$url['cookies'] = 'index/cookie_policy';
+
 // Sitemaps
 $url['rss.xml'] = 'index/rss';
 $url['seo'] = 'mod_seo/index';
