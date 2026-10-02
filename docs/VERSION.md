@@ -1,3 +1,27 @@
+## v1.1.22 (2026-10-02)
+- **Interactive Multilingual Month Popover Engine & Editorial Parity (`templates/amida/static/js/month-popover.js`, `templates/amida/layouts/base.twig`, `templates/amida/static/css/custom.css`, `templates/amida/static/js/custom.js`, `mod/mod_news`, `.agents/skills/kevanger`, `.agents/skills/kevheng`)**:
+  - Developed a standalone, zero-dependency `AFMonthPopover` engine (`templates/amida/static/js/month-popover.js`) providing aesthetic, accessible multilingual translation popovers for Kurdish month names across public news and editorial content.
+  - Built-in comprehensive 12-month Kurdish lexicon dictionary with dialectal and suffixed variant resolution (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), ensuring resilient multi-language popovers (`Kurdî`, `English`, `Türkçe`, `العربية` with RTL support) even when authors omit explicit HTML `data-month-*` attributes.
+  - Implemented dynamic boundary-aware positioning with viewport edge detection and vertical flipping (top/bottom) to prevent modal clipping.
+  - Enforced full WAI-ARIA dialog accessibility semantics (`role="dialog"`, `role="button"`, `tabindex="0"`, `aria-haspopup="dialog"`, `aria-expanded`) and keyboard navigation support (`Enter`, `Space` to activate; `Escape` or outside click to dismiss).
+  - Wired `month-popover.js` with `defer` directly into `templates/amida/layouts/base.twig` and refactored `.month-popover` CSS in `templates/amida/static/css/custom.css` to `display: inline` to preserve seamless inline grammatical suffixation in Kurdish prose (e.g. `Kewçêrê`).
+  - Synced production news records #8355 and #8356 via Amîda Kurd MCP to include complete `data-month-*` attributes in full accordance with Kevanger editorial standard.
+  - Updated article #8356 SEO slug to canonical Amed Framework Wikipedia-style parity (`ji_bo_qaymeqamtiya_şingalê_deriyê_xweberbijêrkirinê_tê_vekirin`).
+  - Enhanced Kevanger editorial workflow (`.agents/skills/kevanger/SKILL.md`) with explicit 12-month multilingual canonical mapping table and mandatory Wikipedia-style SEO slug policy (Rule 10: underscore delimiters, strict Kurdish diacritic preservation, zero hyphens).
+  - Extended Kevheng linguistic validator (`.agents/skills/kevheng/scripts/validate_kurmanji.py` and `.agents/skills/kevheng/SKILL.md`) with automated `--seo` slug audit and mandatory interactive month popover validation, blocking articles with malformed/missing popover attributes or non-compliant URL slugs from passing editorial clearance.
+- **M3 Mobile-First Slider Management Bottom Toolbar & Removal Workflow (`templates/admin/mod_slider/list.twig`, `templates/admin/assets/js/mod_slider.js`, `templates/admin/assets/css/mod_slider.css`, `mod/mod_slider/index.php`)**:
+  - Implemented the phone-first M3 fixed bottom toolbar (`.standard-toolbar.slider-toolbar`) in `templates/admin/mod_slider/list.twig` within `{% block fixed_bottom %}`, providing full parity with `mod_content` and `mod_news`.
+  - Added interactive toolbar action buttons:
+    - `#toolbarSlider` & `#toolbarDelete` (`data-action="remove-slider"`): Prompts for confirmation (SweetAlert2/M3 dialog) and removes the selected compound entity (`module:id`) from the hero slider via `mod_slider/unpublish` without deleting the underlying content item.
+    - `#toolbarGallery` (`data-action="open-gallery"`): Directly routes to the selected entity's gallery manager via `mod_gallery/list/{module}/{id}` using `AFModalEngine`.
+    - `#toolbarFiles` (`data-action="open-files"`): Routes to the entity's file attachment manager via `mod_attachment/list/{module}/{id}`.
+    - `#toolbarEdit` (`data-action="edit-content"`): Opens the entity's editor route (`{module}/edit/{id}`).
+  - Extracted inline styles and scripts from `templates/admin/mod_slider/list.twig` into dedicated phone-first stylesheet `templates/admin/assets/css/mod_slider.css` and upgraded controller `templates/admin/assets/js/mod_slider.js`, achieving 100% compliance with AGENTS.md Rule 2 (Strict Code Separation Mandate).
+  - Modernized `SliderManager` with declarative event delegation on `[data-action]`, touch selection toggle, haptic feedback (`navigator.vibrate(10)`), dismiss-on-outside-click, and animated `.fade-out` card removal.
+  - Hardened backend endpoint `delete()` in `mod/mod_slider/index.php` to seamlessly accept `delete[]` and `query[]` compound IDs and route to `_unpublish()` as a fail-safe fallback.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.22`.
+
 ## v1.1.21 (2026-10-02)
 - **Hero News Slider Super Polish & Broadsheet Journalism Parity (`mod/index/helper/mod_hero_slider.helper.php`, `templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/js/hero-news-slider.js`)**:
   - Implemented Taste Skill and AF/Business architectural standards for the homepage Hero News Slider, elevating headline readability and visual depth for high-end digital journalism.

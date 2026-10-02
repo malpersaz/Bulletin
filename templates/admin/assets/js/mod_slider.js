@@ -1,13 +1,52 @@
 /**
  * mod_slider.js
- * Handles fetching data from existing Datatable JSON endpoint and rendering M3 Cards.
+ * Material 3 Phone-First Controller for mod_slider
+ * Mobile-first touch contract, zero inline JavaScript, clean data-* contracts.
  */
+
+function getSliderModuleUrl() {
+    if (typeof window.MODULE_URL !== 'undefined' && window.MODULE_URL) return window.MODULE_URL;
+    const container = document.getElementById('content-list-container');
+    if (container && container.dataset.moduleUrl) return container.dataset.moduleUrl;
+    const siteUrl = (typeof window.SITE_URL !== 'undefined' && window.SITE_URL) ? window.SITE_URL : '/';
+    return siteUrl + 'mod_slider/';
+}
+
+function getSliderDataUrl() {
+    if (typeof window.DATA_URL !== 'undefined' && window.DATA_URL) return window.DATA_URL;
+    const container = document.getElementById('content-list-container');
+    if (container && container.dataset.dataUrl) return container.dataset.dataUrl;
+    return getSliderModuleUrl() + 'datatable_json';
+}
+
+function getSliderLang() {
+    if (typeof window.CONTENT_LANG !== 'undefined' && window.CONTENT_LANG) return window.CONTENT_LANG;
+    const al = (typeof window.adminLang !== 'undefined' && window.adminLang) ? window.adminLang : {};
+    const mod = al.active_module || al.mod_slider || {};
+    const ctx = al.context_menu || {};
+    const dt = al.datatable || {};
+
+    return {
+        confirm_remove: mod.grid?.unpublish?.value || mod.messages?.confirm_delete || 'Ma tu bawer î ku tu dixwazî vê slaydirê ji weşanê rakî?',
+        success_remove: mod.messages?.success_delete || 'Ji slaydirê hat rakirin!',
+        error_general: mod.error || ctx.error || 'Çewtiyek derket!',
+        load_more: mod.grid?.load_more || 'Bêtir Barke',
+        yes: mod.button?.yes || 'Erê',
+        no: mod.button?.no || 'Na',
+        ok: mod.button?.ok || 'Baş e',
+        cancel: mod.button?.cancel || 'Betal',
+        remove: mod.button?.remove || 'Rake',
+        empty_no_data: mod.empty?.no_data || 'Hîn Slaydir nehatiye çêkirin.',
+        empty_no_search_results: mod.empty?.no_search_results || 'Li gorî lêgerînê ti encam nehat dîtin.'
+    };
+}
 
 class SliderManager {
     constructor() {
         this.container = document.getElementById('content-list-container');
         this.loader = document.getElementById('infinite-loader');
         this.emptyState = document.getElementById('empty-state');
+        this.loadMoreBtn = null;
 
         this.isLoading = false;
         this.hasMore = true;
@@ -25,15 +64,18 @@ class SliderManager {
         this.loadData();
         this.initSearchListener();
         this.initPullToRefresh();
+        this.initActionListeners();
+        this.initOutsideClickListener();
     }
 
     createLoadMoreButton() {
         this.loadMoreBtn = document.createElement('button');
-        this.loadMoreBtn.className = 'm3-btn-outlined';
-        this.loadMoreBtn.style.cssText = 'display:none; margin: 20px auto; width: fit-content; cursor:pointer;';
+        this.loadMoreBtn.className = 'm3-btn-outlined is-hidden';
+        this.loadMoreBtn.type = 'button';
+        this.loadMoreBtn.id = 'loadMoreBtn';
 
-        let btnText = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.load_more) ? CONTENT_LANG.load_more : 'Load More';
-        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+        const btnText = getSliderLang().load_more;
+        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle"></i> <span>${btnText}</span>`;
 
         if (this.container && this.loader) {
             this.container.parentNode.insertBefore(this.loadMoreBtn, this.loader);
@@ -50,24 +92,28 @@ class SliderManager {
 
         if (this.loadMoreBtn) {
             this.loadMoreBtn.disabled = true;
-            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right:8px;"></span>...`;
+            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <span>...</span>`;
         }
 
         if (reset) {
             this.start = 0;
-            if (this.container) this.container.innerHTML = '';
+            if (this.container) {
+                this.container.innerHTML = '';
+                this.container.classList.add('is-hidden');
+            }
             this.hasMore = true;
             this.draw = 1;
-            if (this.emptyState) this.emptyState.style.display = 'none';
-            if (this.loader) this.loader.style.display = 'flex';
-            if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
+            this.clearSelection();
+            if (this.emptyState) this.emptyState.classList.add('is-hidden');
+            if (this.loader) this.loader.classList.remove('is-hidden');
+            if (this.loadMoreBtn) this.loadMoreBtn.classList.add('is-hidden');
         } else {
-            if (this.loader) this.loader.style.display = 'flex';
+            if (this.loader) this.loader.classList.remove('is-hidden');
         }
 
         const filterLengthInput = document.getElementById('filterLength');
         if (filterLengthInput && filterLengthInput.value) {
-            this.length = parseInt(filterLengthInput.value) || 10;
+            this.length = parseInt(filterLengthInput.value, 10) || 10;
         }
 
         const filterForm = document.getElementById('filterForm');
@@ -80,7 +126,7 @@ class SliderManager {
         formData.set('draw', this.draw);
 
         try {
-            const response = await fetch(DATA_URL, {
+            const response = await fetch(getSliderDataUrl(), {
                 method: 'POST',
                 body: formData
             });
@@ -96,29 +142,37 @@ class SliderManager {
             }
 
             if (data.recordsFiltered === 0 && this.emptyState) {
-                this.emptyState.style.display = 'flex';
+                this.emptyState.classList.remove('is-hidden');
+                if (this.container) this.container.classList.add('is-hidden');
                 const searchInput = document.getElementById('filterSearch');
                 const descEl = document.getElementById('empty-state-desc');
                 if (descEl) {
                     if (searchInput && searchInput.value.trim() !== '') {
-                        descEl.innerHTML = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.empty_no_search_results) ? CONTENT_LANG.empty_no_search_results : 'No search results.';
+                        descEl.textContent = getSliderLang().empty_no_search_results;
                     } else {
-                        descEl.innerHTML = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.empty_no_data) ? CONTENT_LANG.empty_no_data : 'No data yet.';
+                        descEl.textContent = getSliderLang().empty_no_data;
                     }
                 }
+            } else if (this.container) {
+                this.container.classList.remove('is-hidden');
+                if (this.emptyState) this.emptyState.classList.add('is-hidden');
             }
 
         } catch (error) {
-            console.error('Data Load Error:', error);
+            console.error('Slider Data Load Error:', error);
         } finally {
             this.isLoading = false;
-            if (this.loader) this.loader.style.display = 'none';
+            if (this.loader) this.loader.classList.add('is-hidden');
 
             if (this.loadMoreBtn) {
-                this.loadMoreBtn.style.display = (this.hasMore && this.container && this.container.innerHTML !== '') ? 'block' : 'none';
+                if (this.hasMore && this.container && this.container.children.length > 0) {
+                    this.loadMoreBtn.classList.remove('is-hidden');
+                } else {
+                    this.loadMoreBtn.classList.add('is-hidden');
+                }
                 this.loadMoreBtn.disabled = false;
-                let btnText = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.load_more) ? CONTENT_LANG.load_more : 'Load More';
-                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+                const btnText = getSliderLang().load_more;
+                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle"></i> <span>${btnText}</span>`;
             }
         }
     }
@@ -129,47 +183,46 @@ class SliderManager {
         const fragment = document.createDocumentFragment();
 
         items.forEach((item) => {
-            const id = this.stripHtml(item[1]);
+            const compoundId = this.stripHtml(item[1]);
             const titleHtml = item[2];
             const imgHtml = item[3];
             const lang = this.stripHtml(item[4]);
             const date = this.stripHtml(item[5]);
-            const statusHtml = item[6]; 
+            const moduleBadge = this.stripHtml(item[6]);
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = titleHtml;
-            const titleText = tempDiv.textContent || tempDiv.innerText;
+            const titleText = tempDiv.textContent || tempDiv.innerText || '';
 
             tempDiv.innerHTML = imgHtml;
             const imgTag = tempDiv.querySelector('img');
             const imgSrc = imgTag ? imgTag.src : '';
 
             const card = document.createElement('div');
-            card.className = 'm3-card content-card';
-            card.dataset.id = id;
-            card.onclick = () => window.sliderManager.selectContent(id, card);
+            card.className = 'content-card';
+            card.dataset.id = compoundId;
+            card.onclick = (e) => {
+                e.stopPropagation();
+                this.selectContent(compoundId, card);
+            };
+
+            const hasValidImage = Boolean(imgSrc && !imgSrc.includes('slider_no_image') && !imgSrc.endsWith('/'));
+
+            const thumbnailHtml = hasValidImage
+                ? `<div class="card-thumbnail" style="background-image: url('${imgSrc}');"></div>`
+                : `<div class="card-thumbnail empty-thumb"><i class="bi bi-image"></i></div>`;
 
             card.innerHTML = `
                 <div class="card-content-layout">
-                    <!-- Thumbnail -->
-                    <div class="card-thumbnail" 
-                         style="display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc && !imgSrc.includes('slider_no_image') ? `background-image: url('${imgSrc}'); background-size: cover; background-position: center;` : 'background-color: #f0f0f0;'}">
-                        ${!imgSrc ? '<i class="bi bi-image" style="font-size: 24px;"></i>' : ''}
-                    </div>
-                    
+                    ${thumbnailHtml}
                     <div class="card-body-col">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                             <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    ${statusHtml}
-                                </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${titleText}</h3>
-                             </div>
+                        <div class="card-header-row">
+                            <span class="module-badge">${moduleBadge}</span>
                         </div>
-
-                        <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${lang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${date}</span>
+                        <h3 class="card-title">${titleText}</h3>
+                        <div class="card-meta-row">
+                            <span class="meta-item"><i class="bi bi-translate"></i> ${lang}</span>
+                            <span class="meta-item"><i class="bi bi-calendar3"></i> ${date}</span>
                         </div>
                     </div>
                 </div>
@@ -183,13 +236,13 @@ class SliderManager {
 
     stripHtml(html) {
         if (!html) return "";
-        let tmp = document.createElement("DIV");
+        const tmp = document.createElement('DIV');
         tmp.innerHTML = html;
         return tmp.textContent || tmp.innerText || "";
     }
 
     initSearchListener() {
-        const searchInput = document.getElementById('searchInput'); 
+        const searchInput = document.getElementById('searchInput');
         if (searchInput) {
             let timeout = null;
             searchInput.addEventListener('input', (e) => {
@@ -200,7 +253,7 @@ class SliderManager {
                         filterSearch.value = e.target.value;
                         this.loadData(true);
                     }
-                }, 500);
+                }, 400);
             });
         }
     }
@@ -209,39 +262,192 @@ class SliderManager {
         window.refreshContent = () => this.loadData(true);
     }
 
+    initActionListeners() {
+        document.addEventListener('click', (e) => {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+
+            const action = target.dataset.action;
+            if (action === 'remove-slider' || action === 'delete-content') {
+                this.removeSelectedFromSlider();
+            } else if (action === 'edit-content') {
+                this.editSelectedContent();
+            } else if (action === 'open-gallery') {
+                this.openSelectedGallery();
+            } else if (action === 'open-files') {
+                this.openSelectedFiles();
+            }
+        });
+    }
+
+    initOutsideClickListener() {
+        document.addEventListener('click', (e) => {
+            if (!this.selectedId) return;
+            const clickedCard = e.target.closest('.content-card');
+            const clickedToolbar = e.target.closest('.standard-toolbar');
+            const clickedModal = e.target.closest('.swal2-container, .modal');
+            if (!clickedCard && !clickedToolbar && !clickedModal) {
+                this.clearSelection();
+            }
+        });
+    }
+
     selectContent(id, cardElement) {
         const isCurrent = cardElement.classList.contains('selected');
 
-        document.querySelectorAll('.m3-card.selected, .content-card.selected').forEach(el => {
+        if (isCurrent) {
+            this.clearSelection();
+            return;
+        }
+
+        document.querySelectorAll('.content-card.selected').forEach(el => {
             el.classList.remove('selected');
         });
 
-        if (!isCurrent) {
-            cardElement.classList.add('selected');
-            this.selectedId = id;
-            this.updateToolbar(true);
-            if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
-        } else {
-            this.selectedId = null;
-            this.updateToolbar(false);
-        }
+        cardElement.classList.add('selected');
+        this.selectedId = id;
+        this.updateToolbar(true);
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(10);
+    }
+
+    clearSelection() {
+        document.querySelectorAll('.content-card.selected').forEach(el => {
+            el.classList.remove('selected');
+        });
+
+        this.selectedId = null;
+        this.updateToolbar(false);
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(8);
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFile', 'toolbarDelete'];
+        const ids = ['toolbarSlider', 'toolbarGallery', 'toolbarFiles', 'toolbarEdit', 'toolbarDelete'];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
             if (active) {
                 btn.classList.add('active');
+                btn.classList.remove('is-disabled');
                 btn.style.pointerEvents = 'auto';
                 btn.style.opacity = '1';
             } else {
                 btn.classList.remove('active');
+                btn.classList.add('is-disabled');
                 btn.style.pointerEvents = 'none';
                 btn.style.opacity = '0.3';
             }
         });
+    }
+
+    parseCompoundId() {
+        if (!this.selectedId) return null;
+        const parts = this.selectedId.split(':');
+        if (parts.length === 2) {
+            return {
+                module: parts[0],
+                id: parts[1]
+            };
+        }
+        return null;
+    }
+
+    editSelectedContent() {
+        const parsed = this.parseCompoundId();
+        if (!parsed) return;
+        const siteUrl = (typeof window.SITE_URL !== 'undefined' && window.SITE_URL) ? window.SITE_URL : '/';
+        window.location.href = siteUrl + parsed.module + '/edit/' + parsed.id;
+    }
+
+    openSelectedGallery() {
+        const parsed = this.parseCompoundId();
+        if (!parsed) return;
+        const siteUrl = (typeof window.SITE_URL !== 'undefined' && window.SITE_URL) ? window.SITE_URL : '/';
+        const url = siteUrl + 'mod_gallery/list/' + parsed.module + '/' + parsed.id;
+        if (window.AFModalEngine) {
+            window.AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            window.location.href = url;
+        }
+    }
+
+    openSelectedFiles() {
+        const parsed = this.parseCompoundId();
+        if (!parsed) return;
+        const siteUrl = (typeof window.SITE_URL !== 'undefined' && window.SITE_URL) ? window.SITE_URL : '/';
+        const url = siteUrl + 'mod_attachment/list/' + parsed.module + '/' + parsed.id;
+        if (window.AFModalEngine) {
+            window.AFModalEngine.push(url, { skipHistory: true });
+        } else {
+            window.location.href = url;
+        }
+    }
+
+    removeSelectedFromSlider() {
+        if (!this.selectedId) return;
+        const id = this.selectedId;
+        const lang = getSliderLang();
+
+        const doUnpublish = () => {
+            const formData = new FormData();
+            formData.append('query[]', id);
+
+            fetch(getSliderModuleUrl() + 'unpublish', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(msg => {
+                const trimmed = (msg || '').trim();
+                if (trimmed === 'Success') {
+                    const card = document.querySelector(`.content-card[data-id="${id}"]`);
+                    if (card) {
+                        card.classList.add('fade-out');
+                        setTimeout(() => {
+                            card.remove();
+                            if (this.container && this.container.children.length === 0) {
+                                if (this.emptyState) this.emptyState.classList.remove('is-hidden');
+                                this.container.classList.add('is-hidden');
+                            }
+                        }, 300);
+                    }
+                    this.clearSelection();
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(lang.success_remove, 'success');
+                    }
+                } else {
+                    if (typeof showSnackbar === 'function') {
+                        showSnackbar(trimmed || lang.error_general, 'error');
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Slider removal error:', err);
+                if (typeof showSnackbar === 'function') {
+                    showSnackbar(lang.error_general, 'error');
+                }
+            });
+        };
+
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: lang.confirm_remove,
+                icon: 'warning',
+                showCancelButton: true,
+                showDenyButton: false,
+                confirmButtonColor: '#B71C1C',
+                cancelButtonColor: '#6750A4',
+                confirmButtonText: '<i class="bi bi-trash3"></i> ' + lang.yes,
+                cancelButtonText: '<i class="bi bi-x-lg"></i> ' + lang.cancel,
+                background: 'var(--md-sys-color-surface-container-high, #fff)',
+                color: 'var(--md-sys-color-on-surface, #1C1B1F)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    doUnpublish();
+                }
+            });
+        } else if (confirm(lang.confirm_remove)) {
+            doUnpublish();
+        }
     }
 }
 
@@ -249,89 +455,19 @@ document.addEventListener('DOMContentLoaded', () => {
     window.sliderManager = new SliderManager();
 });
 
+// Backward compatibility global wrappers
 window.editSelected = function () {
-    const mgr = window.sliderManager;
-    if (mgr && mgr.selectedId) {
-        window.location.href = MODULE_URL + 'edit/' + mgr.selectedId;
-    }
+    window.sliderManager?.editSelectedContent();
 };
 
 window.gallerySelected = function () {
-    const mgr = window.sliderManager;
-    if (mgr && mgr.selectedId) {
-        const url = SITE_URL + 'mod_gallery/list/mod_slider/' + mgr.selectedId;
-        if (window.AFModalEngine) {
-            AFModalEngine.push(url, { skipHistory: true });
-        } else {
-            window.location.href = url;
-        }
-    }
+    window.sliderManager?.openSelectedGallery();
 };
 
 window.filesSelected = function () {
-    const mgr = window.sliderManager;
-    if (mgr && mgr.selectedId) {
-        const url = SITE_URL + 'mod_attachment/list/mod_slider/' + mgr.selectedId;
-        if (window.AFModalEngine) {
-            AFModalEngine.push(url, { skipHistory: true });
-        } else {
-            window.location.href = url;
-        }
-    }
+    window.sliderManager?.openSelectedFiles();
 };
 
 window.deleteSelected = function () {
-    const mgr = window.sliderManager;
-    if (!mgr || !mgr.selectedId) return;
-    const id = mgr.selectedId;
-
-    let confirmMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.confirm_delete) ? CONTENT_LANG.confirm_delete : 'Are you sure?';
-
-    Swal.fire({
-        title: confirmMsg,
-        icon: 'warning',
-        showCancelButton: true,
-        showDenyButton: false,
-        confirmButtonColor: '#B71C1C',
-        cancelButtonColor: '#6750A4',
-        confirmButtonText: '<i class="bi bi-trash3"></i> ' + ((typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.yes) ? CONTENT_LANG.yes : 'Yes'),
-        cancelButtonText: '<i class="bi bi-x-lg"></i> ' + ((typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.no) ? CONTENT_LANG.no : 'No'),
-        background: 'var(--md-sys-color-surface-container-high, #fff)',
-        color: 'var(--md-sys-color-on-surface, #1C1B1F)'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const formData = new FormData();
-            formData.append('delete[]', id);
-
-            fetch(MODULE_URL + 'delete', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(msg => {
-                if (msg === 'Success') {
-                    mgr.selectedId = null;
-                    mgr.updateToolbar(false);
-                    mgr.loadData(true);
-                    let successMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.success_delete) ? CONTENT_LANG.success_delete : 'Successfully deleted';
-                    if(typeof showSnackbar === 'function') {
-                        showSnackbar(successMsg, 'success');
-                    } else {
-                        let okMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.ok) ? CONTENT_LANG.ok : 'OK';
-                        Swal.fire(okMsg, successMsg, 'success');
-                    }
-                } else {
-                    if(typeof showSnackbar === 'function') showSnackbar(msg, 'error');
-                    else Swal.fire('Error', msg, 'error');
-                }
-            })
-            .catch(err => {
-                console.error('Delete error:', err);
-                if(typeof showSnackbar === 'function') {
-                    let errMsg = (typeof CONTENT_LANG !== 'undefined' && CONTENT_LANG.error_general) ? CONTENT_LANG.error_general : 'Error';
-                    showSnackbar(errMsg, 'error');
-                }
-            });
-        }
-    });
+    window.sliderManager?.removeSelectedFromSlider();
 };

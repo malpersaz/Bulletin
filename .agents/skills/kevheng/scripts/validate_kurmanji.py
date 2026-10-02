@@ -82,6 +82,21 @@ FORBIDDEN_CHARS = {
     'Ğ': 'X',
 }
 
+KURMANJI_MONTHS = {
+    "Rêbendan": {"en": "January", "tr": "Ocak", "ar": "كانون الثاني"},
+    "Reşemî": {"en": "February", "tr": "Şubat", "ar": "شباط"},
+    "Adar": {"en": "March", "tr": "Mart", "ar": "آذار"},
+    "Avrêl": {"en": "April", "tr": "Nisan", "ar": "نيسان"},
+    "Gulan": {"en": "May", "tr": "Mayıs", "ar": "أيار"},
+    "Pûşper": {"en": "June", "tr": "Haziran", "ar": "حزيران"},
+    "Tîrmeh": {"en": "July", "tr": "Temmuz", "ar": "تموز"},
+    "Gelawêj": {"en": "August", "tr": "Ağustos", "ar": "آب"},
+    "Rezber": {"en": "September", "tr": "Eylül", "ar": "أيلول"},
+    "Kewçêr": {"en": "October", "tr": "Ekim", "ar": "تشرين الأول"},
+    "Sermawez": {"en": "November", "tr": "Kasım", "ar": "تشرين الثاني"},
+    "Berfanbar": {"en": "December", "tr": "Aralık", "ar": "كانون الأول"},
+}
+
 class KevhengValidator:
     def __init__(self, db_path: str = DB_PATH):
         self.db_path = db_path
@@ -225,12 +240,117 @@ class KevhengValidator:
             "unknown_words": sorted(list(unknown_words))
         }
 
-    def audit(self, text: str, summary: str = None) -> Dict[str, Any]:
+    def check_month_annotations(self, html_text: str) -> List[Dict[str, Any]]:
+        """
+        Audit that any Kurdish month names in HTML content are properly enclosed
+        within <span class="month-popover" role="button" tabindex="0" data-month-ku="..." data-month-en="..." data-month-tr="..." data-month-ar="...">.
+        """
+        issues = []
+        popover_pattern = re.compile(r'<span\s+([^>]*class=["\'][^"\']*month-popover[^"\']*["\'][^>]*)>(.*?)</span>', re.IGNORECASE | re.DOTALL)
+        
+        # Check existing popover tags for required attributes
+        for m in popover_pattern.finditer(html_text):
+            attrs_str = m.group(1)
+            inner_text = m.group(2).strip()
+            
+            required_attrs = ['role="button"', 'tabindex="0"', 'data-month-ku', 'data-month-en', 'data-month-tr', 'data-month-ar']
+            missing_attrs = [a for a in required_attrs if a not in attrs_str]
+            if missing_attrs:
+                issues.append({
+                    "type": "incomplete_month_popover",
+                    "month": inner_text,
+                    "missing_attributes": missing_attrs,
+                    "matched": m.group(0),
+                    "suggestion": f"Add missing attributes: {', '.join(missing_attrs)}"
+                })
+
+        # Replace all month-popover spans with neutral placeholder to inspect unannotated months
+        stripped_for_months = popover_pattern.sub(' __MONTH_POPOVER_PLACEHOLDER__ ', html_text)
+        # Strip all remaining HTML tags
+        clean_text = re.sub(r'<[^>]+>', ' ', stripped_for_months)
+
+        # Look for raw/unannotated month names
+        month_names_regex = r'\b(Rêbendan|Reşemî|Adar|Avrêl|Gulan|Pûşper|Tîrmeh|Gelawêj|Rezber|Kewçêr|Sermawez|Berfanbar)(?:y?ê|y?a|y?an|y?ên)?\b'
+        for m in re.finditer(month_names_regex, clean_text, re.IGNORECASE):
+            raw_match = m.group(0)
+            canonical = m.group(1).capitalize()
+            for k in KURMANJI_MONTHS.keys():
+                if k.lower() == canonical.lower():
+                    canonical = k
+                    break
+            data = KURMANJI_MONTHS.get(canonical, {})
+            issues.append({
+                "type": "unannotated_month",
+                "month": raw_match,
+                "canonical": canonical,
+                "suggestion": f'<span class="month-popover" role="button" tabindex="0" data-month-ku="{canonical}" data-month-en="{data.get("en", "")}" data-month-tr="{data.get("tr", "")}" data-month-ar="{data.get("ar", "")}">{canonical}</span>'
+            })
+
+        return issues
+
+    def check_seo_slug(self, seo: str) -> List[Dict[str, Any]]:
+        """
+        Audit SEO slug for Amed Framework Wikipedia-style parity (AGENTS.md Rule 10).
+        Requires underscores ('_'), zero hyphens ('-'), and preservation of Kurdish diacritics.
+        """
+        issues = []
+        if not seo:
+            return issues
+        
+        # Rule 1: No hyphens/dashes allowed (must use underscores)
+        if '-' in seo:
+            issues.append({
+                "type": "disallowed_hyphen",
+                "slug": seo,
+                "reason": "Amed Framework Wikipedia-style URLs strictly require underscores ('_') instead of hyphens ('-').",
+                "suggestion": seo.replace('-', '_')
+            })
+        
+        # Rule 2: No consecutive underscores
+        if '__' in seo:
+            issues.append({
+                "type": "consecutive_underscores",
+                "slug": seo,
+                "reason": "Slug contains consecutive underscores ('__').",
+                "suggestion": re.sub(r'_+', '_', seo)
+            })
+
+        # Rule 3: Check for English/ASCII-mangled common Kurmanji tokens where diacritics were stripped
+        mangled_patterns = [
+            (r'\bsingale\b', 'şingalê / şingal'),
+            (r'\bderiye\b', 'deriyê'),
+            (r'\bte_vekirin\b', 'tê_vekirin'),
+            (r'\bcapa\b', 'çapa'),
+            (r'\bpirtuken\b', 'pirtûkên'),
+            (r'\bkurmanci\b', 'kurmancî'),
+            (r'\bvekirine\b', 'vekirinê'),
+            (r'\bxweberbijerkirine\b', 'xweberbijêrkirinê'),
+        ]
+        for pattern, replacement in mangled_patterns:
+            if re.search(pattern, seo, re.IGNORECASE):
+                issues.append({
+                    "type": "mangled_kurdish_character",
+                    "slug": seo,
+                    "matched": pattern,
+                    "reason": f"Kurdish diacritics appear to have been ASCII-stripped. Prefer authentic '{replacement}'.",
+                    "suggestion": "Preserve authentic Kurdish alphabet diacritics in Wikipedia-style slugs."
+                })
+
+        return issues
+
+    def audit(self, text: str, summary: str = None, seo: str = None) -> Dict[str, Any]:
         forbidden = self.check_forbidden_chars(text)
         conjunction = self.check_conjunction(text)
         apostrophes = self.check_apostrophe_conventions(text)
         vocabulary = self.check_disallowed_terms(text)
         lexicon = self.check_lexicon(text)
+        
+        # Check month annotations if HTML tags are detected
+        month_issues = []
+        if "<" in text and ">" in text:
+            month_issues = self.check_month_annotations(text)
+            
+        seo_issues = self.check_seo_slug(seo) if seo else []
         
         deck_report = None
         if summary is not None:
@@ -241,6 +361,8 @@ class KevhengValidator:
             len(conjunction) == 0 and
             len(apostrophes) == 0 and
             len(vocabulary) == 0 and
+            len(month_issues) == 0 and
+            len(seo_issues) == 0 and
             (deck_report is None or deck_report["valid"])
         )
 
@@ -250,6 +372,8 @@ class KevhengValidator:
             "conjunction_issues": conjunction,
             "apostrophe_issues": apostrophes,
             "vocabulary_issues": vocabulary,
+            "month_issues": month_issues,
+            "seo_issues": seo_issues,
             "deck_summary": deck_report,
             "lexicon_audit": lexicon
         }
@@ -258,6 +382,7 @@ def main():
     parser = argparse.ArgumentParser(description="Kevheng Kurmanji Linguistic & Orthographic Auditor")
     parser.add_argument("--file", "-f", help="Path to text or HTML file to audit")
     parser.add_argument("--summary", "-s", help="Optional deck summary string to audit (90-120 chars)")
+    parser.add_argument("--seo", help="Optional SEO slug to audit for Amed Framework Wikipedia-style parity")
     parser.add_argument("--text", "-t", help="Raw text string to audit")
     parser.add_argument("--json", action="store_true", help="Output results in JSON format")
 
@@ -276,7 +401,7 @@ def main():
         sys.exit(1)
 
     validator = KevhengValidator()
-    report = validator.audit(content, summary=args.summary)
+    report = validator.audit(content, summary=args.summary, seo=args.seo)
 
     if args.json:
         print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -308,6 +433,19 @@ def main():
             print(f"\n[!] Disallowed Vocabulary ({len(report['vocabulary_issues'])}):")
             for item in report["vocabulary_issues"]:
                 print(f"  - '{item['term']}' -> Prefer '{item['preferred']}'")
+
+        if report["month_issues"]:
+            print(f"\n[!] Month Annotation Issues ({len(report['month_issues'])}):")
+            for item in report["month_issues"]:
+                if item["type"] == "incomplete_month_popover":
+                    print(f"  - Month '{item['month']}' missing attributes: {', '.join(item['missing_attributes'])}")
+                else:
+                    print(f"  - Month '{item['month']}' is unannotated. Required: {item['suggestion']}")
+
+        if report["seo_issues"]:
+            print(f"\n[!] SEO Slug Issues ({len(report['seo_issues'])}):")
+            for item in report["seo_issues"]:
+                print(f"  - {item['reason']} (Suggestion: {item['suggestion']})")
 
         lex = report["lexicon_audit"]
         print(f"\n[Lexicon Statistics]")

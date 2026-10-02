@@ -42,6 +42,7 @@ $lang['mod_slider'] = [
     'refresh' => 'Nû bike',
     'delete' => 'Jêbibe',
     'gallery' => 'Wênedank',
+    'files' => 'Pel',
     'remove' => 'Rake',
   ],
   'grid' => [

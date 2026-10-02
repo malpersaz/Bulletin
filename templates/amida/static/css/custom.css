@@ -1356,15 +1356,14 @@ body {
    ========================================================================== */
 .month-popover {
     cursor: pointer;
-    display: inline-flex;
-    align-items: baseline;
+    display: inline;
     font-weight: 600;
     color: var(--bs-primary, #0d6efd);
     text-decoration: underline dotted 1.5px;
     text-underline-offset: 3px;
     transition: color 0.15s ease, background-color 0.15s ease;
     border-radius: 3px;
-    padding: 0 2px;
+    padding: 0 1px;
 }
 
 .month-popover:hover,

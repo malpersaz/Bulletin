@@ -49,6 +49,8 @@ class mod_slider_mod extends indexMain
 
         Run::import('management', '_index');
         $this->site['title'] = $this->lang['mod_slider']['list'];
+        $this->theme->set('active_module_lang', $this->lang['mod_slider']);
+        $this->theme->set('active_module_lang_key', 'mod_slider');
         $this->theme->tpl('mod_slider/list');
         $this->theme->set('site', $this->site);
     }
@@ -366,10 +368,24 @@ class mod_slider_mod extends indexMain
 
     public function delete()
     {
+        if ($this->user->hasPermission('mod_slider', 'edit', $this->lang['mod_slider']['role_errors']['edit']) === False) {
+            return False;
+        }
+        $query = Req::Post_Safe('delete');
+        if (empty($query)) {
+            $query = Req::Post_Safe('query');
+        }
+        if (!is_array($query) && !empty($query)) {
+            $query = [$query];
+        }
+        if (!empty($query) && $this->_unpublish($query) === TRUE) {
+            echo 'Success';
+            return;
+        }
         exit($this->lang['mod_slider']['errors']['record']);
     }
 
-    public function _delete($sil)
+    public function _delete($id)
     {
         return TRUE;
     }
@@ -436,8 +452,8 @@ class mod_slider_mod extends indexMain
         if ($this->_tableExists('mod_news') && $this->_hasColumn('mod_news', 'slider')) {
             $queries[] = [
                 'table' => 'mod_news',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_news' AS module FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_news' module FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) total FROM mod_news WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
         
@@ -445,8 +461,8 @@ class mod_slider_mod extends indexMain
         if ($this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
             $queries[] = [
                 'table' => 'mod_publication',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' AS module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
         
@@ -454,8 +470,8 @@ class mod_slider_mod extends indexMain
         if ($this->_tableExists('mod_content') && $this->_hasColumn('mod_content', 'slider')) {
             $queries[] = [
                 'table' => 'mod_content',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_content' AS module FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_content' module FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) total FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
         
@@ -463,8 +479,8 @@ class mod_slider_mod extends indexMain
         if ($this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
             $queries[] = [
                 'table' => 'mod_publication',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' AS module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
 
@@ -472,8 +488,8 @@ class mod_slider_mod extends indexMain
         if ($this->_tableExists('mod_video') && $this->_hasColumn('mod_video', 'slider')) {
             $queries[] = [
                 'table' => 'mod_video',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_video' AS module FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) as total FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter
+                'select' => "SELECT id, name, image, lang, created_at, 'mod_video' module FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
+                'count' => "SELECT COUNT(*) total FROM mod_video WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
 
@@ -491,7 +507,7 @@ class mod_slider_mod extends indexMain
         foreach ($queries as $q) {
             $count_selects[] = $q['count'];
         }
-        $count_query = "SELECT SUM(total) as total_count FROM (" . implode(" UNION ALL ", $count_selects) . ") t";
+        $count_query = "SELECT SUM(total) total_count FROM (" . implode(" UNION ALL ", $count_selects) . ") t";
         $db->fetch_array($count_query);
         $countRow = $db->toArray();
         $totalRecords = isset($countRow[0]['total_count']) ? intval($countRow[0]['total_count']) : 0;

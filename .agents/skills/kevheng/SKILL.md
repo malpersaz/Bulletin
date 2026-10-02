@@ -15,18 +15,18 @@ Keep this skill as a short ordered execution checklist. All checks must pass bef
 - Confirm that `/home/malpersaz/Desktop/projects/ocr/ferheng_kurmanci.db` is present and accessible.
 - Confirm that the validator script `.agents/skills/kevheng/scripts/validate_kurmanji.py` is present and executable.
 
-### 2. Automated Text Audit
-Run the automated validator against the drafted article body and deck summary:
+### 2. Automated Text & Metadata Audit
+Run the automated validator against the drafted article body, deck summary, and optional SEO slug:
 ```bash
-.agents/skills/kevheng/scripts/validate_kurmanji.py --text "$CONTENT" --summary "$SUMMARY"
+.agents/skills/kevheng/scripts/validate_kurmanji.py --text "$CONTENT" --summary "$SUMMARY" --seo "$SEO"
 ```
 Or when auditing a staged file:
 ```bash
-.agents/skills/kevheng/scripts/validate_kurmanji.py --file "$FILE_PATH" --summary "$SUMMARY"
+.agents/skills/kevheng/scripts/validate_kurmanji.py --file "$FILE_PATH" --summary "$SUMMARY" --seo "$SEO"
 ```
 
 ### 3. Verification Criteria Checklist
-The audit evaluates five mandatory quality checkpoints:
+The audit evaluates seven mandatory quality checkpoints:
 
 1. **Strict Alphabet & Diacritics**:
    - Strictly Latin alphabet with authentic diacritics (`ç`, `ê`, `î`, `ş`, `û`).
@@ -54,6 +54,11 @@ The audit evaluates five mandatory quality checkpoints:
    - Together with / With: `bi ... re` (never `digel` or `di gel`).
 5. **Deck Summary Length**:
    - The summary deck must strictly be **90 to 120 characters**.
+6. **Interactive Month Annotation Completeness**:
+   - Any Kurmanji month name in drafted HTML content must be enclosed in `<span class="month-popover" role="button" tabindex="0" data-month-ku="..." data-month-en="..." data-month-tr="..." data-month-ar="...">`. Bare month names or popovers with missing attributes will fail validation.
+7. **Amed Framework Wikipedia-Style SEO Slug (AGENTS.md Rule 10)**:
+   - SEO slug must exclusively use underscores (`_`), never hyphens (`-`).
+   - Must preserve authentic Kurdish diacritics (`ç, ê, î, ş, û`). Stripping diacritics to English ASCII equivalents will fail validation.
 
 ### 4. Neologism & Typo Inspection
 - Review any tokens flagged in `unknown_words`.

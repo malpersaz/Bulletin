@@ -346,70 +346,10 @@ function initializeResponsiveMenu() {
  * Interactive Month Popover Listener
  */
 function initializeMonthPopovers() {
-    let activePopover = null;
-
-    function closeActive() {
-        if (activePopover) {
-            activePopover.remove();
-            activePopover = null;
-        }
+    if (window.AFMonthPopover && typeof window.AFMonthPopover.refresh === 'function') {
+        window.AFMonthPopover.refresh();
+        return;
     }
-
-    document.addEventListener('click', function(e) {
-        const trigger = e.target.closest('.month-popover');
-        if (!trigger) {
-            closeActive();
-            return;
-        }
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (activePopover && activePopover._trigger === trigger) {
-            closeActive();
-            return;
-        }
-
-        closeActive();
-
-        const ku = trigger.dataset.monthKu || trigger.textContent.trim();
-        const en = trigger.dataset.monthEn || '';
-        const tr = trigger.dataset.monthTr || '';
-        const ar = trigger.dataset.monthAr || '';
-
-        const pop = document.createElement('div');
-        pop.className = 'month-popover-box';
-        pop._trigger = trigger;
-
-        pop.innerHTML = `
-            <div class="month-row"><span class="month-lang">Kurdî</span><span class="month-val">${ku}</span></div>
-            ${en ? `<div class="month-row"><span class="month-lang">English</span><span class="month-val">${en}</span></div>` : ''}
-            ${tr ? `<div class="month-row"><span class="month-lang">Türkçe</span><span class="month-val">${tr}</span></div>` : ''}
-            ${ar ? `<div class="month-row"><span class="month-lang">العربية</span><span class="month-val" dir="rtl">${ar}</span></div>` : ''}
-        `;
-
-        document.body.appendChild(pop);
-
-        const rect = trigger.getBoundingClientRect();
-        const popRect = pop.getBoundingClientRect();
-
-        let top = rect.bottom + window.scrollY + 6;
-        let left = rect.left + window.scrollX + (rect.width / 2) - (popRect.width / 2);
-
-        if (left < 10) left = 10;
-        if (left + popRect.width > window.innerWidth - 10) {
-            left = window.innerWidth - popRect.width - 10;
-        }
-
-        pop.style.top = `${top}px`;
-        pop.style.left = `${left}px`;
-
-        activePopover = pop;
-    });
-
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeActive();
-    });
 }
 
 // Export global methods

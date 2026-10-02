@@ -46,6 +46,7 @@ $lang['mod_slider']= [
     'refresh' => 'Refresh',
     'delete' => 'Delete',
     'gallery' => 'Image Gallery',
+    'files' => 'Files',
     'remove' => 'Remove',
   ],
   'grid' => 

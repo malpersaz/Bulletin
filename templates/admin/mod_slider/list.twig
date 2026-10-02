@@ -1,6 +1,7 @@
+{% set module_lang_key = 'mod_slider' %}
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
-{% set show_search = false %}
+{% set show_search = true %}
 {% set show_search_filter_button = false %}
 {% set search_placeholder = lang.mod_slider.search_placeholder %}
 {% extends 'admin/layout.twig' %}
@@ -8,143 +9,11 @@
 
 {% block headline %}{{ lang.mod_slider.list }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_slider.css?v=1.0">
+{% endblock %}
+
 {% block content %}
-<style>
-    /* Card Container */
-    .content-list {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        padding: 16px;
-        padding-bottom: 96px; /* Space for bottom toolbar */
-    }
-
-    .content-card {
-        background: var(--md-sys-color-surface, #ffffff);
-        border-radius: 24px; /* var(--md-sys-shape-corner-large) */
-        padding: 16px;
-        display: flex;
-        align-items: center;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-        border: 1px solid rgba(0, 0, 0, 0.03);
-        cursor: pointer;
-        transition: 
-            opacity 0.3s ease-out,
-            translate 0.3s ease-out,
-            transform 0.2s ease,
-            box-shadow 0.2s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .content-card:active {
-        transform: scale(0.98);
-    }
-
-    /* Thumbnail */
-    .card-thumbnail {
-        width: 88px;
-        height: 88px;
-        border-radius: 16px; /* var(--md-sys-shape-corner-medium) */
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        flex-shrink: 0;
-    }
-
-    /* Card Body */
-    .card-body-col {
-        flex: 1;
-        padding-left: 16px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-width: 0; /* Prevents overflow */
-    }
-
-    /* Top Row (Badge and Switch) */
-    .card-header-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        margin-bottom: 6px;
-    }
-
-    /* Badge styling */
-    .module-badge {
-        background-color: var(--md-sys-color-outline-variant, #5d5d6a);
-        color: #ffffff;
-        border-radius: 8px;
-        font-size: 11px;
-        padding: 3px 8px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-    }
-
-    /* Toggle Switch with Label */
-    .switch-container {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .switch-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--md-sys-color-outline, #5d5d6a);
-    }
-
-    /* Title styling */
-    .card-title {
-        margin: 0 0 8px 0;
-        font-size: 16px;
-        font-weight: 700;
-        line-height: 1.35;
-        color: var(--md-sys-color-on-surface, #1C1B1F);
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-align: left;
-    }
-
-    /* Meta metadata row */
-    .card-meta-row {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        font-size: 12px;
-        color: var(--md-sys-color-on-surface-variant, #707070);
-    }
-
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-    }
-
-    .meta-item i {
-        font-size: 12px;
-    }
-
-    /* Fade out animation for removed cards */
-    .content-card.fade-out {
-        opacity: 0;
-        translate: 0 -10px;
-        pointer-events: none;
-    }
-
-    /* Card Entry Starting Style */
-    @starting-style {
-        .content-card {
-            opacity: 0;
-            translate: 0 10px;
-        }
-    }
-
-</style>
-
 <!-- PULL TO REFRESH SPINNER -->
 <div id="ptr-spinner" class="ptr-spinner">
     <div class="spinner-track">
@@ -153,26 +22,27 @@
 </div>
 
 <!-- DYNAMIC CONTENT (Cards) -->
-<div id="content-list-container" class="content-list">
-    <!-- Cards will be injected here via JS -->
+<div id="content-list-container" class="content-list"
+    data-module-url="{{ site.saddress }}mod_slider/"
+    data-data-url="{{ site.saddress }}mod_slider/datatable_json">
 </div>
 
 <!-- EMPTY STATE -->
-<div id="empty-state" class="empty-state" style="display: none;">
+<div id="empty-state" class="empty-state is-hidden">
     <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-    <h3 id="empty-state-desc"></h3>
+    <h3 id="empty-state-desc">{{ lang.mod_slider.empty.no_data }}</h3>
 </div>
 
 <!-- INFINITE SCROLL LOADER -->
-<div id="infinite-loader" class="infinite-loader" style="display: none;">
+<div id="infinite-loader" class="infinite-loader is-hidden">
     <div class="spinner-track">
         <div class="spinner-fill"></div>
     </div>
     <span>{{ lang.mod_slider.datatable.loadingRecords }}</span>
 </div>
 
-<!-- HIDDEN FILTERS (Synced with Bottom Sheet) -->
-<form id="filterForm" style="display: none;">
+<!-- HIDDEN FILTERS -->
+<form id="filterForm" class="is-hidden">
     <input type="hidden" name="start" id="filterStart" value="0">
     <input type="hidden" name="length" id="filterLength" value="10">
     <input type="hidden" name="draw" id="filterDraw" value="1">
@@ -187,29 +57,30 @@
 </form>
 {% endblock %}
 
+{% block fixed_bottom %}
+    <div class="standard-toolbar slider-toolbar" id="contentToolbar">
+        <button id="toolbarSlider" class="toolbar-item is-disabled is-selected" data-action="remove-slider" title="{{ lang.mod_slider.button.remove }}" aria-label="{{ lang.mod_slider.button.remove }}">
+            <i class="bi bi-stars"></i>
+        </button>
+
+        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_slider.button.gallery }}" aria-label="{{ lang.mod_slider.button.gallery }}">
+            <i class="bi bi-image"></i>
+        </button>
+
+        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_slider.button.files }}" aria-label="{{ lang.mod_slider.button.files }}">
+            <i class="bi bi-paperclip"></i>
+        </button>
+
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_slider.button.edit }}" aria-label="{{ lang.mod_slider.button.edit }}">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="remove-slider" title="{{ lang.mod_slider.button.remove }}" aria-label="{{ lang.mod_slider.button.remove }}">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    </div>
+{% endblock %}
 
 {% block scripts %}
-<script>
-    const MODULE_URL = SITE_URL + "mod_slider/";
-    const DATA_URL = SITE_URL + "mod_slider/datatable_json";
-    
-    const CONTENT_LANG = {
-        active: "{{ lang.mod_slider.admin.radio.publish_yes|e('js') }}",
-        draft: "{{ lang.mod_slider.admin.radio.publish_no|e('js') }}",
-        confirm_delete: "{{ lang.mod_slider.messages.confirm_delete|e('js') }}",
-        error_general: "{{ lang.mod_slider.error|e('js') }}",
-        loading: "{{ lang.mod_slider.datatable.loadingRecords|e('js') }}",
-        load_more: "{{ lang.mod_slider.grid.load_more|e('js') }}",
-        success_delete: "{{ lang.mod_slider.messages.success_delete|e('js') }}",
-        ok: "{{ lang.mod_slider.button.ok|e('js') }}",
-        cancel: "{{ lang.mod_slider.button.cancel|e('js') }}",
-        yes: "{{ lang.mod_slider.button.yes|e('js') }}",
-        no: "{{ lang.mod_slider.button.no|e('js') }}",
-        empty_no_data: "{{ lang.mod_slider.empty.no_data|e('js') }}",
-        empty_no_search_results: "{{ lang.mod_slider.empty.no_search_results|e('js') }}",
-        publish: "{{ lang.mod_slider.publish.key|e('js') }}",
-        unpublish: "{{ lang.mod_slider.unpublish.key|e('js') }}"
-    };
-</script>
-<script src="{{ site.address }}templates/admin/assets/js/mod_slider.js?v=2.0"></script>
+<script src="/templates/admin/assets/js/mod_slider.js?v=3.0"></script>
 {% endblock %}

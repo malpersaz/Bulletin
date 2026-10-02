@@ -29,9 +29,26 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
 - Craft a compelling headline and deck summary (aiming for 90 to 120 characters).
 - Embed in-text citations linking to verified live URLs:
   - Format: `<a href="$URL">çavkaniya $Name</a>` (e.g., `<a href="https://rudaw.net/kurmanci">çavkaniya Rûdaw</a>`).
-- **Interactive Month Name Annotation**:
-  - Whenever a Kurmanji month name appears in the drafted prose or date references (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), wrap it in a clickable semantic element with multilingual data attributes so that clicking it triggers an aesthetic, compact contextual popover/box displaying the month name in English, Turkish, and Arabic without mentioning "Gregorian calendar":
-  - Format: `<span class="month-popover" role="button" tabindex="0" data-month-ku="Rezber" data-month-en="September" data-month-tr="Eylül" data-month-ar="أيلول">Rezber</span>`
+- **Interactive Month Name Annotation (MANDATORY)**:
+  - Whenever a Kurmanji month name appears in the drafted prose or date references (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), wrap it in a clickable semantic element with all multilingual data attributes so that clicking it triggers the contextual popover displaying the month name in English, Turkish, and Arabic:
+  - **Required HTML Structure**:
+    `<span class="month-popover" role="button" tabindex="0" data-month-ku="$KU" data-month-en="$EN" data-month-tr="$TR" data-month-ar="$AR">$KU</span>`
+  - **Canonical 12-Month Mapping Table**:
+    | Kurdî (`data-month-ku`) | English (`data-month-en`) | Türkçe (`data-month-tr`) | العربية (`data-month-ar`) |
+    | :--- | :--- | :--- | :--- |
+    | `Rêbendan` | `January` | `Ocak` | `كانون الثاني` |
+    | `Reşemî` | `February` | `Şubat` | `شباط` |
+    | `Adar` | `March` | `Mart` | `آذار` |
+    | `Avrêl` | `April` | `Nisan` | `نيسان` |
+    | `Gulan` | `May` | `Mayıs` | `أيار` |
+    | `Pûşper` | `June` | `Haziran` | `حزيران` |
+    | `Tîrmeh` | `July` | `Temmuz` | `تموز` |
+    | `Gelawêj` | `August` | `Ağustos` | `آب` |
+    | `Rezber` | `September` | `Eylül` | `أيلول` |
+    | `Kewçêr` | `October` | `Ekim` | `تشرين الأول` |
+    | `Sermawez` | `November` | `Kasım` | `تشرين الثاني` |
+    | `Berfanbar` | `December` | `Aralık` | `كانون الأول` |
+  - Grammatical Suffixes: Place Kurdish case/construct suffixes outside the element (e.g. `<span class="month-popover" ...>Kewçêr</span>ê` or `2'yê <span class="month-popover" ...>Kewçêr</span>a 2026'an`).
   - Strict Code Separation: Do not insert inline `style` or inline JavaScript handlers; styling and behavior are provided via repository frontend theme assets.
 
 ### 4. Ethical Image Creation & WebP Optimization
@@ -50,24 +67,31 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
 - **Rule**: Do not proceed to `kevheng` until `kevrast` passes 100% (`Status: PASSED`).
 - If any link fails (not HTTP 200) or claim drifts, correct the draft text immediately.
 
-### 6. Linguistic & Orthographic Gate (`kevheng`)
-- Execute `kevheng` validator script against the fact-checked article and deck summary:
+### 6. Linguistic, Orthographic & SEO Gate (`kevheng`)
+- Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.
+- Execute `kevheng` validator script against the fact-checked article, deck summary, and SEO slug:
   ```bash
-  .agents/skills/kevheng/scripts/validate_kurmanji.py --text "$DRAFT_HTML" --summary "$SUMMARY"
+  .agents/skills/kevheng/scripts/validate_kurmanji.py --text "$DRAFT_HTML" --summary "$SUMMARY" --seo "$SEO_SLUG"
   ```
-- Enforce strict Latin alphabet, diacritics, conjunction `û`, apostrophes on numbers/acronyms (`14'emîn`, `DYE'yê`), direct suffixation on proper nouns (`SpaceXê`, `Amerîkayê`), mandatory vocabulary, and exact 90-120 character deck constraint.
-- Address any flagged typos or neologisms.
+- Enforce strict Latin alphabet, diacritics, conjunction `û`, apostrophes on numbers/acronyms (`14'emîn`, `DYE'yê`), direct suffixation on proper nouns (`SpaceXê`, `Amerîkayê`), mandatory vocabulary, exact 90-120 character deck constraint, complete interactive month annotations, and Wikipedia-style SEO slug compliance.
+- Address any flagged typos, missing month attributes, or invalid URL slugs before proceeding.
 
 ### 7. Provenance Tracking, Categorization & Draft Staging
 - Map article to the appropriate category in `mod_news` matching the language (`ku`).
 - Attribute to author **Derya Welat** (`user_id: 535` / `username: "deryawelat"`).
+- **Amed Framework Wikipedia-Style SEO Slug (AGENTS.md Rule 10)**:
+  - Strictly adhere to Amed Framework's Wikipedia-style URL generation parity (`Helper::legacy_seo`).
+  - **Delimiters**: Use underscores (`_`), NEVER hyphens/dashes (`-`). Hyphenated slugs are strictly prohibited.
+  - **Diacritics**: Preserve authentic Kurdish Unicode characters (`ç, ê, î, ş, û`). Never strip, flatten, or ASCII-fold characters (`ş` must NEVER become `s`, `î` must NEVER become `i`, `ê` must NEVER become `e`).
+  - Example: For headline `Ji bo qaymeqamtiya Şingalê deriyê xweberbijêrkirinê tê vekirin`, the canonical slug is `ji_bo_qaymeqamtiya_şingalê_deriyê_xweberbijêrkirinê_tê_vekirin`.
+  - Alternatively, omit the `seo` argument when calling `create_news` so that MCP automatically computes it via `makeSeo($name, $lang)`.
 - Call `create_news` on the `amidakurd` MCP server with:
   - `user_id: 535`
   - `status: "n"` (**STRICT REQUIREMENT: Save as draft, DO NOT publish**)
   - `deck: "y"` (**STRICT REQUIREMENT: Show summary deck**)
   - Valid `summary` (90–120 characters)
-  - Full HTML `content` with in-text citations and image credits
-  - SEO slug, meta description, and 3–5 relevant keywords.
+  - Full HTML `content` with in-text citations, complete interactive month annotations, and image credits
+  - Wikipedia-style `seo` slug (with underscores and Kurdish diacritics), meta description, and 3–5 relevant keywords.
 - Attach the WebP image via `update_news`.
 
 ### 8. Editorial Reporting & User Handoff
