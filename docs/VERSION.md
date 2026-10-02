@@ -10,8 +10,6 @@
   - Added an optimized front-controller route in `index.php` for `/site.webmanifest` delivering `application/manifest+json; charset=utf-8` with `Access-Control-Allow-Origin: *` and 7-day browser caching headers.
   - Extended Apache `.htaccess` `<FilesMatch>` directives to deliver universal `Access-Control-Allow-Origin: "*"` headers across `.webmanifest` and `.json` assets.
   - Configured `base.twig` to reference the same-origin manifest endpoint (`{{ site.address }}site.webmanifest`), completely eliminating cross-origin `ERR_FAILED` browser console errors.
-- **Fast Root Redirect Performance (`.htaccess`)**:
-  - Configured high-performance Apache mod_rewrite rule `RewriteRule ^$ ku/ [R=301,L,QSA]` in `.htaccess` to handle the bare root `/` to default language `/ku/` redirect in sub-10ms without initiating the full PHP bootstrap stack.
 - **Accessibility & Contrast Enhancements (WCAG AA Compliance) (`templates/amida/index/footer.twig`, `templates/amida/partials/_cookie_consent.twig`, `templates/amida/static/css/`)**:
   - Re-aligned footer column headings from non-sequential `<h5>` to semantically hierarchical `<h3>` (styled using Bootstrap `.h5`), passing Lighthouse's strict `heading-order` audit.
   - Added accessible `aria-modal="false"` and localized `aria-label="{{ lang.index.cookie_policy }}"` attributes to the cookie consent banner dialog (`_cookie_consent.twig`), resolving the `aria-dialog-name` audit.

@@ -30,9 +30,6 @@ RewriteRule ^favicon-96x96\.png$ static/mod_settings/favicon-96x96.png [L]
 RewriteRule ^apple-touch-icon\.png$ static/mod_settings/apple-touch-icon.png [L]
 RewriteRule ^site\.webmanifest$ static/mod_settings/site.webmanifest [L]
 
-# Fast redirect bare root to default language for sub-10ms performance
-RewriteRule ^$ ku/ [R=301,L,QSA]
-
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
