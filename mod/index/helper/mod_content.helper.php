@@ -53,7 +53,7 @@ class mod_content_helper extends indexBase
             if (isset($content->gallery_id) && $content->gallery_id != 0) {
                 $this->_exact_gallery($content->gallery_id);
             } else {
-                $this->_gallery_resimgetir('mod_content', $content->id);
+                $this->_fetch_gallery_images('mod_content', $content->id);
             }
             if (isset($content->file_id) && $content->file_id != 0) {
                 $this->_exact_attachment($content->file_id);

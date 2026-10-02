@@ -225,7 +225,7 @@
 
 						{% if d.image is not empty and d.image != '#' %}
 							<div class="detail-hero">
-								<a href="{{ site.iaddress }}mod_news/{{ d.image }}" data-bs-toggle="lightbox" data-gallery="news-main-image">
+								<a href="{{ site.iaddress }}mod_news/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="news-main-image" aria-label="{{ d.name|escape('html_attr') }}">
 									<img src="{{ site.iaddress }}mod_news/{{ d.image }}" fetchpriority="high" class="detail-hero-image" alt="{{ d.name }}" title="{{ d.name }}">
 								</a>
 							</div>
@@ -317,17 +317,18 @@
 
                         {% if gallery is not empty %}
                             <section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
-                                <h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images"></i>{{ lang.index.mod_pictures.title }}</h2>
+                                <h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_pictures.title }}</h2>
                                 <div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
                                     {% for image in gallery %}
+                                        {% set img_mod = image.mod_name ?: 'mod_news' %}
                                         <div class="col-6 col-md-4 mb-3">
                                             <div class="detail-gallery-card">
-                                                <a href="{{ site.iaddress }}mod_gallery/mod_news/original/{{ image.url }}" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ image.name }}" aria-label="{{ lang.index.enlarge_image }}: {{ image.name }}">
-                                                    <img src="{{ site.iaddress }}mod_gallery/mod_news/thumb/{{ image.url }}" class="card-img-top" alt="{{ image.name }}">
+                                                <a href="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image.url }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ image.name|escape('html_attr') }}" aria-label="{{ lang.index.enlarge_image }}: {{ image.name|escape('html_attr') }}">
+                                                    <img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image.url }}" class="card-img-top" alt="{{ image.name|escape('html_attr') }}" loading="lazy">
                                                 </a>
                                                 {% if image.name %}
                                                     <div class="card-body p-2 text-center">
-                                                        <p class="card-text small text-muted text-truncate">{{ image.name }}</p>
+                                                        <p class="card-text small text-muted text-truncate mb-0">{{ image.name }}</p>
                                                     </div>
                                                 {% endif %}
                                             </div>

@@ -41,9 +41,9 @@ class mod_page_helper extends indexBase
             }
 
             if (isset($page->gallery_id) && $page->gallery_id != 0) {
-                $this->_gallery_get_images('mod_page', $page->gallery_id);
+                $this->_exact_gallery($page->gallery_id);
             } else {
-                $this->_gallery_get_images('mod_page', $page->id);
+                $this->_fetch_gallery_images('mod_page', $page->id);
             }
 
             if (isset($page->file_id) && $page->file_id != 0) {

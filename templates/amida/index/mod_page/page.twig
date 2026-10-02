@@ -239,7 +239,7 @@
 
 						{% if d.image is not empty and d.image != '#' %}
 							<div class="detail-hero">
-								<a href="{{ site.iaddress }}mod_page/{{ d.image }}" data-bs-toggle="lightbox" data-gallery="page-main-image">
+								<a href="{{ site.iaddress }}mod_page/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="page-main-image" aria-label="{{ d.name|escape('html_attr') }}">
 									<img src="{{ site.iaddress }}mod_page/{{ d.image }}" fetchpriority="high" class="detail-hero-image" alt="{{ d.name }}" title="{{ d.name }}">
 								</a>
 							</div>
@@ -310,17 +310,19 @@
 
 						{% if gallery is not empty %}
 							<section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
-								<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images"></i>{{ lang.index.mod_pictures.title }}</h2>
+								<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_pictures.title }}</h2>
 								<div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
 									{% for image_item in gallery %}
+										{% set img_mod = image_item.mod_name ?: 'mod_page' %}
 										<div class="col-6 col-md-4 mb-3">
 											<div class="detail-gallery-card">
-												<a href="{{ site.iaddress }}mod_gallery/mod_page/original/{{ image_item.url }}"
+												<a href="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image_item.url }}"
+												   class="glightbox"
 												   data-bs-toggle="lightbox"
 												   data-gallery="multiimages"
-												   data-title="{{ image_item.name }}"
-												   aria-label="{{ lang.index.enlarge_image }}: {{ image_item.name }}">
-													<img src="{{ site.iaddress }}mod_gallery/mod_page/thumb/{{ image_item.url }}" class="card-img-top" alt="{{ image_item.name }}">
+												   data-title="{{ image_item.name|escape('html_attr') }}"
+												   aria-label="{{ lang.index.enlarge_image }}: {{ image_item.name|escape('html_attr') }}">
+													<img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image_item.url }}" class="card-img-top" alt="{{ image_item.name|escape('html_attr') }}" loading="lazy">
 												</a>
 												{% if image_item.name %}
 													<div class="card-body text-center">

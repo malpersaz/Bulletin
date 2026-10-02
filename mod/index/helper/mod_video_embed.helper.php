@@ -48,9 +48,9 @@ class mod_video_embed_helper extends indexBase
 
             $this->tema->ctx_set('d', $this->normalizeVideoRow($video->toArray()));
             if (isset($video->gallery_id) && $video->gallery_id != 0) {
-                $this->_gallery_resimgetir('mod_video_embed', $video->gallery_id);
+                $this->_exact_gallery($video->gallery_id);
             } else {
-                $this->_gallery_resimgetir('mod_video_embed', $video->id);
+                $this->_fetch_gallery_images('mod_video_embed', $video->id);
             }
 
             if (isset($video->file_id) && $video->file_id != 0) {
@@ -81,7 +81,7 @@ class mod_video_embed_helper extends indexBase
                 }
 
                 // Build modern, clean HTML5 video player instead of standard YouTube iframe embed
-                $embed_code = '<video class="w-100 rounded shadow" controls preload="metadata"' . $poster_attr . ' style="max-height: 500px; background: #000;">';
+                $embed_code = '<video class="w-100 rounded shadow bg-black object-fit-contain" controls preload="metadata"' . $poster_attr . '>';
                 $embed_code .= '<source src="' . $video_path . '" type="video/mp4" />';
                 $embed_code .= '</video>';
 

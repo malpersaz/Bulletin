@@ -1,0 +1,302 @@
+/* ==========================================================================
+   AKM Business - World-Class Fullscreen Lightbox Engine CSS (UI/UX)
+   ========================================================================== */
+
+#af-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  flex-direction: column;
+  background: rgba(10, 15, 26, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  color: #ffffff;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#af-lightbox-overlay.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Header Action Bar */
+.af-lightbox-header {
+  height: 64px;
+  min-height: 64px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 10;
+}
+
+.af-lightbox-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.af-lightbox-counter {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.af-lightbox-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.af-lightbox-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.af-lightbox-btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.af-lightbox-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.af-lightbox-btn-close {
+  background: #ef4444;
+  border-color: #f87171;
+  font-weight: 700;
+}
+
+.af-lightbox-btn-close:hover {
+  background: #dc2626;
+  border-color: #ef4444;
+}
+
+/* Main Viewport */
+.af-lightbox-viewport {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.af-lightbox-stage {
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.af-lightbox-stage img {
+  max-width: 100%;
+  max-height: calc(100vh - 170px);
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease;
+}
+
+.af-lightbox-stage.is-zoomed img {
+  transform: scale(1.6);
+  cursor: grab;
+}
+
+/* Navigation Chevrons */
+.af-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.af-lightbox-nav:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.af-lightbox-prev {
+  left: 20px;
+}
+
+.af-lightbox-next {
+  right: 20px;
+}
+
+/* Bottom Thumbnails Strip Bar */
+.af-lightbox-footer {
+  height: 86px;
+  min-height: 86px;
+  background: rgba(15, 23, 42, 0.85);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  overflow-x: auto;
+  z-index: 10;
+}
+
+.af-lightbox-thumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 8px 0;
+  scroll-behavior: smooth;
+}
+
+.af-lightbox-thumbs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.af-lightbox-thumbs::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
+
+.af-lightbox-thumb {
+  width: 60px;
+  height: 60px;
+  min-width: 60px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.af-lightbox-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.af-lightbox-thumb:hover {
+  opacity: 0.85;
+}
+
+.af-lightbox-thumb.is-active {
+  opacity: 1;
+  border-color: #3b82f6;
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);
+}
+
+/* Toast Tooltip Notification */
+.af-lightbox-toast {
+  position: absolute;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-10px);
+  background: rgba(16, 185, 129, 0.95);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+  z-index: 20;
+}
+
+.af-lightbox-toast.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Mobile Responsive Adaptation */
+@media (max-width: 767.98px) {
+  .af-lightbox-header {
+    height: 56px;
+    min-height: 56px;
+    padding: 0 12px;
+  }
+  .af-lightbox-btn span {
+    display: none;
+  }
+  .af-lightbox-btn {
+    padding: 0 10px;
+    height: 36px;
+  }
+  .af-lightbox-nav {
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+  }
+  .af-lightbox-prev {
+    left: 10px;
+  }
+  .af-lightbox-next {
+    right: 10px;
+  }
+  .af-lightbox-footer {
+    height: 72px;
+    min-height: 72px;
+  }
+  .af-lightbox-thumb {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+}

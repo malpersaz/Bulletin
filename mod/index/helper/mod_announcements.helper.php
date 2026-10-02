@@ -49,9 +49,9 @@ class mod_announcements_helper extends indexBase
 
             $this->tema->ctx_set('d', $announcement->toArray());
             if (isset($announcement->gallery_id) && $announcement->gallery_id != 0) {
-                $this->_gallery_resimgetir('mod_announcements', $announcement->gallery_id);
+                $this->_exact_gallery($announcement->gallery_id);
             } else {
-                $this->_gallery_resimgetir('mod_announcements', $announcement->id);
+                $this->_fetch_gallery_images('mod_announcements', $announcement->id);
             }
 
             if (isset($announcement->file_id) && $announcement->file_id != 0) {

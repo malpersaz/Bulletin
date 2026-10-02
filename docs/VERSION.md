@@ -1,3 +1,19 @@
+## v1.1.20 (2026-10-02)
+- **Native Lightbox Engine & Cross-Module Media Gallery Parity (`templates/base_static/`, `templates/amida/layouts/base.twig`, `mod/index/indexBase.php`, `mod/index/helper/`, `templates/amida/index/`)**:
+  - Integrated standalone, zero-dependency `AFLightbox` engine assets (`templates/base_static/css/lightbox-engine.css` and `templates/base_static/js/lightbox-engine.js`), providing fullscreen overlay, animated transitions, zoom, download, share, mobile swipe gestures, keyboard navigation (Esc, Arrows), thumbnail ribbon, and built-in 9-language i18n (`ku`, `ckb`, `zza`, `en`, `tr`, `de`, `fr`, `sv`, `ar`).
+  - Wired `lightbox-engine.css` into `<head>` and `lightbox-engine.js` with `defer` before `</body>` in `templates/amida/layouts/base.twig`, removing broken commented-out inline scripts and deprecated script blocks to strictly uphold AGENTS.md Rule 2 (Strict Code Separation Mandate).
+  - Modernized gallery data ingestion in `mod/index/indexBase.php`:
+    - Replaced legacy Turkish `_gallery_resimgetir` with canonical `_fetch_gallery_images($mod, $vid)` selecting `id, url, name, mod_name` and synchronously populating `gallery`, `images`, and `res` template context buckets.
+    - Upgraded `_exact_gallery($id)` to resolve album collections from `mod_gallery_mod` via `_fetch_gallery_images('mod_gallery_mod', $id)` with graceful fallback to single-image rows.
+    - Preserved legacy aliases (`_gallery_get_images`, `_gallery_resimgetir`) for backward compatibility.
+  - Aligned index helper actions across `mod_news`, `mod_content`, `mod_publication`, `mod_announcements`, `mod_page`, and `mod_video_embed` to invoke `_fetch_gallery_images` and `_exact_gallery`.
+  - Refactored frontend detail templates (`mod_news/news.twig`, `mod_content/content.twig`, `mod_publication/publication.twig`, `mod_announcements/announcement.twig`, `mod_page/page.twig`, `mod_imagecategories/gallery.twig`):
+    - Added `class="glightbox"` alongside `data-bs-toggle="lightbox"` and grouped with `data-gallery="multiimages"`.
+    - Dynamically resolved image origin folder paths (`image.mod_name ?: 'mod_...'`) so both direct entity attachments and dedicated `mod_gallery_mod` album collections render seamless original/thumb URLs.
+    - Eradicated inline styles from `mod_video_embed.helper.php` HTML player generators to achieve 100% compliance with `tools/code_separation_guard.py`.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Bumped framework version constant and fallback baseline to `1.1.20`.
+
 ## v1.1.19 (2026-10-02)
 - **Statutory Legal & Cookie Policy Resolution & Multilingual Routing Parity (`mod/index/lang/`, `config/url.config.php`, `mod/index/index.php`, `mod/index/helper/mod_page.helper.php`, `mod/index/helper/legal.helper.php`, `templates/amida/`)**:
   - Implemented full 9-language dictionary parity for statutory corporate, legal, warranty, and cookie preferences keys across `ar`, `ckb`, `de`, `en`, `fr`, `ku`, `sv`, `tr`, and `zza`.

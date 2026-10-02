@@ -89,23 +89,30 @@ abstract class indexBase
     }
 
 
-    public function _gallery_get_images($mod, $vid)
+    public function _fetch_gallery_images($mod, $vid)
     {
         $gallery = Load::model('mod_gallery');
         $gallery->where_mod_name_and_vid($mod, $vid);
-        $gallery->select('id,url,name')->order('id', 'DESC');
+        $gallery->select('id,url,name,mod_name')->order('id', 'DESC');
         $gallery->gR();
 
         if ($gallery->getSize() !== 0) {
-            $this->tema->ctx_set('res', $gallery->toArray());
-            $this->tema->ctx_set('images', $gallery->toArray());
+            $gallery_array = $gallery->toArray();
+            $this->tema->ctx_set('gallery', $gallery_array);
+            $this->tema->ctx_set('images', $gallery_array);
+            $this->tema->ctx_set('res', $gallery_array);
         }
         unset($gallery);
     }
 
+    public function _gallery_get_images($mod, $vid)
+    {
+        return $this->_fetch_gallery_images($mod, $vid);
+    }
+
     public function _gallery_resimgetir($mod, $vid)
     {
-        return $this->_gallery_get_images($mod, $vid);
+        return $this->_fetch_gallery_images($mod, $vid);
     }
 
     public function _mod_attachment($mod, $vid)
@@ -116,7 +123,9 @@ abstract class indexBase
         $file->gR();
 
         if ($file->getSize() !== 0) {
-            $this->tema->ctx_set('file', $file->toArray());
+            $file_array = $file->toArray();
+            $this->tema->ctx_set('file', $file_array);
+            $this->tema->ctx_set('files', $file_array);
         }
         unset($file);
     }
@@ -128,21 +137,30 @@ abstract class indexBase
         $file->select('id,url,original_name,filename')->gRo();
         
         if ($file->getSize() !== 0) {
-            $this->tema->ctx_set('file', [$file->toArray()]);
+            $file_array = [$file->toArray()];
+            $this->tema->ctx_set('file', $file_array);
+            $this->tema->ctx_set('files', $file_array);
         }
         unset($file);
     }
 
     public function _exact_gallery($id)
     {
-        $gallery = Load::model('mod_gallery');
-        $gallery->where_id($id);
-        $gallery->select('id,url,name')->gRo();
+        $this->_fetch_gallery_images('mod_gallery_mod', $id);
+        $currentGallery = $this->tema->ctx_get('gallery');
+        if (empty($currentGallery)) {
+            $gallery = Load::model('mod_gallery');
+            $gallery->where_id($id);
+            $gallery->select('id,url,name,mod_name')->gRo();
 
-        if ($gallery->getSize() !== 0) {
-            $this->tema->ctx_set('res', [$gallery->toArray()]);
+            if ($gallery->getSize() !== 0) {
+                $gallery_items = [$gallery->toArray()];
+                $this->tema->ctx_set('gallery', $gallery_items);
+                $this->tema->ctx_set('images', $gallery_items);
+                $this->tema->ctx_set('res', $gallery_items);
+            }
+            unset($gallery);
         }
-        unset($gallery);
     }
 
     public function _mod_video($v)

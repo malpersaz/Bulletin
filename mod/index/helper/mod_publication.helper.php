@@ -74,7 +74,7 @@ class mod_publication_helper extends indexBase
         if (isset($publication->gallery_id) && $publication->gallery_id != 0) {
             $this->_exact_gallery($publication->gallery_id);
         } else {
-            $this->_gallery_resimgetir('mod_publication', $publication->id);
+            $this->_fetch_gallery_images('mod_publication', $publication->id);
         }
 
         if (isset($publication->file_id) && $publication->file_id != 0) {

@@ -137,13 +137,14 @@
                                     <li class="col-md-4">
                                         <div class="thumbnail">
                                             <a href="{{ site.iaddress }}mod_gallery/mod_imagecategories/original/{{ image.url }}"
-                                               title="{{ image.name }}"
+                                               class="glightbox"
+                                               title="{{ image.name|escape('html_attr') }}"
                                                data-bs-toggle="lightbox"
                                                data-gallery="multiimages"
-                                               data-title="{{ image.name }}"
+                                               data-title="{{ image.name|escape('html_attr') }}"
                                                data-parent="#gallery_image">
                                                 <img src="{{ site.iaddress }}mod_gallery/mod_imagecategories/thumb/{{ image.url }}"
-                                                     alt="{{ image.name }}">
+                                                     alt="{{ image.name|escape('html_attr') }}" loading="lazy">
                                             </a>
                                         </div>
                                     </li>
