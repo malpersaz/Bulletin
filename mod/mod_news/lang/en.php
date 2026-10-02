@@ -416,4 +416,19 @@ $lang['mod_news'] = [
         'unknown_type' => 'Unknown relation type',
         'relation_updated' => 'Relation successfully updated',
     ],
+
+    // === AI Assistant ===
+    'ai' => [
+        'generate_deck' => 'Generate Deck with AI',
+        'suggest_headlines' => 'Suggest Headlines with AI',
+        'generate_seo' => 'Generate SEO with AI',
+        'generating' => 'Generating...',
+        'missing_key' => 'Gemini API key is not configured in Google Services Hub.',
+        'content_required' => 'Article title or content is required for AI generation.',
+        'select_headline' => 'Select a Headline',
+        'deck_success' => 'Deck generated successfully (%d chars)',
+        'deck_error' => 'Failed to generate deck.',
+        'headline_success' => 'Headlines suggested successfully.',
+        'copy' => 'Use This',
+    ],
 ];

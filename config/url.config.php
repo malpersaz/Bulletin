@@ -55,6 +55,11 @@ $url['videoSitemap.xml'] = 'index/videoSitemap';
 $url['gallerySitemap.xml'] = 'index/gallerySitemap';
 $url['contentSitemap.xml'] = 'index/contentSitemap';
 
+// LLMS AI Feeds
+$url['llms.txt'] = 'index/llms';
+$url['llms-full.txt'] = 'index/llmsFull';
+$url['.well-known/llms.txt'] = 'index/llms';
+
 // Legacy Redirects
 $url['nuce/(:any)'] = 'index/legacyRedirect/$1';
 $url['tekst/(:any)'] = 'index/legacyRedirectPublication/$1';

@@ -408,4 +408,19 @@ $lang['mod_news'] = [
         'unknown_type' => 'Okänd relationstyp',
         'relation_updated' => 'Relationen har uppdaterats',
     ],
+
+    // === AI Assistant ===
+    'ai' => [
+        'generate_deck' => 'Generera ingress med AI',
+        'suggest_headlines' => 'Föreslå rubriker med AI',
+        'generate_seo' => 'Generera SEO med AI',
+        'generating' => 'Genererar...',
+        'missing_key' => 'Gemini API-nyckel är inte konfigurerad i Google Services Hub.',
+        'content_required' => 'Artikelrubrik eller innehåll krävs för AI-generering.',
+        'select_headline' => 'Välj en rubrik',
+        'deck_success' => 'Ingress skapad (%d tecken)',
+        'deck_error' => 'Kunde inte generera ingress.',
+        'headline_success' => 'Rubrikförslag skapade.',
+        'copy' => 'Använd denna',
+    ],
 ];

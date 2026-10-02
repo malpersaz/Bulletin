@@ -27,29 +27,33 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
 ### 3. Journalistic Drafting & Storytelling
 - Write fluent, engaging Kurmanji prose following standard newsroom practices (lead paragraph, inverted pyramid, concise paragraphs).
 - Craft a compelling headline and deck summary (aiming for 90 to 120 characters).
+  - Use lightweight punctuation: prefer a comma (`,`) over redundant conjunctions (`ku`) after reporting verbs (e.g. `ragihand, ew...` instead of `ragihand ku ew...`).
 - Embed in-text citations linking to verified live URLs:
   - Format: `<a href="$URL">çavkaniya $Name</a>` (e.g., `<a href="https://rudaw.net/kurmanci">çavkaniya Rûdaw</a>`).
-- **Interactive Month Name Annotation (MANDATORY)**:
-  - Whenever a Kurmanji month name appears in the drafted prose or date references (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), wrap it in a clickable semantic element with all multilingual data attributes so that clicking it triggers the contextual popover displaying the month name in English, Turkish, and Arabic:
+- **Quotation Marks**: Strictly use standard double quotes **`" ... "`** for direct speech and quotes. NEVER use French guillemets (`« ... »`).
+- **Preposition Constraint**: Strictly use **`ji bo`**; NEVER use bare **`bo`** alone!
+- **Interactive Month Name Annotation (MANDATORY & SIMPLIFIED)**:
+  - Whenever a Kurmanji month name appears in the drafted prose or date references (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), wrap it in a clean semantic element:
   - **Required HTML Structure**:
-    `<span class="month-popover" role="button" tabindex="0" data-month-ku="$KU" data-month-en="$EN" data-month-tr="$TR" data-month-ar="$AR">$KU</span>`
-  - **Canonical 12-Month Mapping Table**:
-    | Kurdî (`data-month-ku`) | English (`data-month-en`) | Türkçe (`data-month-tr`) | العربية (`data-month-ar`) |
-    | :--- | :--- | :--- | :--- |
-    | `Rêbendan` | `January` | `Ocak` | `كانون الثاني` |
-    | `Reşemî` | `February` | `Şubat` | `شباط` |
-    | `Adar` | `March` | `Mart` | `آذار` |
-    | `Avrêl` | `April` | `Nisan` | `نيسان` |
-    | `Gulan` | `May` | `Mayıs` | `أيار` |
-    | `Pûşper` | `June` | `Haziran` | `حزيران` |
-    | `Tîrmeh` | `July` | `Temmuz` | `تموز` |
-    | `Gelawêj` | `August` | `Ağustos` | `آب` |
-    | `Rezber` | `September` | `Eylül` | `أيلول` |
-    | `Kewçêr` | `October` | `Ekim` | `تشرين الأول` |
-    | `Sermawez` | `November` | `Kasım` | `تشرين الثاني` |
-    | `Berfanbar` | `December` | `Aralık` | `كانون الأول` |
-  - Grammatical Suffixes: Place Kurdish case/construct suffixes outside the element (e.g. `<span class="month-popover" ...>Kewçêr</span>ê` or `2'yê <span class="month-popover" ...>Kewçêr</span>a 2026'an`).
-  - Strict Code Separation: Do not insert inline `style` or inline JavaScript handlers; styling and behavior are provided via repository frontend theme assets.
+    `<span class="month-popover">$KU</span>`
+  - Do NOT repeat verbose data attributes (`data-month-ku`, `data-month-en`, etc.); the frontend engine (`month-popover.js`) automatically resolves multilingual translations from its built-in canonical catalog.
+  - **Grammatical Suffixes**: Always place Kurdish case/construct suffixes outside the element (e.g. `<span class="month-popover">Kewçêr</span>ê` or `2'yê <span class="month-popover">Kewçêr</span>a 2026'an`).
+  - **Strict Code Separation**: Do not insert inline `style` or inline JavaScript handlers; styling and behavior are provided via repository frontend theme assets.
+- **Country, Region, and Acronym Parity**:
+  - Always consult and strictly enforce the Kurdish toponymy and country reference (`Desktop/projects/ocr/Nave_Dewletan_u_Cihan.md`):
+    - `Turkî` (never `Turkiye` / `Tirkiye`)
+    - `Yewnan` (never `Yunanistan` / `Yunan` / `Yûnan`)
+    - `Ûrisya` (never `Rusya` / `Rûsya`)
+    - `Sûrî` (never `Suriye` / `Sûriye`)
+    - `Îraq` (never `Irak` / `Iraq`)
+    - `Îran`
+    - `London` (never `Londra`)
+    - `Frensa` (never `Fransa`)
+    - `Hewlêr` (never `Erbîl` / `Erbil`)
+    - `Amed` (never `Diyarbekir` / `Diyarbakır`)
+    - `Stenbol` (never `İstanbul`)
+    - `Hisiça` (never `Hesekê` / `Heseke`)
+  - Strictly use **`HSD`** for Syrian Democratic Forces in Kurmanji (never Arabic `QSD`).
 
 ### 4. Ethical Image Creation & WebP Optimization
 - If an existing image from verified sources is attached:

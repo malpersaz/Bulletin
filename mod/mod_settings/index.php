@@ -479,7 +479,7 @@ class mod_settings_mod extends indexMain
             'ku' => [
                 'session' => 'Nasnameya rûniştinê ya bikarhêner û parastina ewlehiyê tomar dike.',
                 'lang_theme' => 'Zimanê bijartî û tercîhên xuyabûna sêwiranê (şev/roj) diparêze.',
-                'consent' => 'Hilbijartin û pejirandina komên çerezan di bîrê de dihêle.',
+                'consent' => 'Hilbijartin û pejirandina komên kulîçeyan di bîrê de dihêle.',
                 'sidebar' => 'Rewşa vebûn/girtinê ya pêkhateyên rûpelê tomar dike.',
                 'analytics' => 'Amarên anonîm ên serdanvanan û leza rûpelan dipîve.',
                 'marketing' => 'Bandor û têkiliyên kampanyayên danasînê dipîve.'
@@ -2075,7 +2075,7 @@ class mod_settings_mod extends indexMain
     private function _get_default_cookie_policy_sample($langCode)
     {
         $samples = [
-            'ku' => "Ev malper çerezan (cookies) û teknolojiyên wekhev bi kar tîne da ku ezmûna bikaranînê ya ewle û hêsan pêşkêş bike, performansa rûpelan bipîve û xizmetên guncaw pêşkêş bike. Bi rêya vê rûpelê hûn dikarin hûrguliyên çerezan bibînin û her dem tercîhên xwe li gorî daxwaza xwe birêve bibin.",
+            'ku' => "Ev malper kulîçeyan (cookies) û teknolojiyên wekhev bi kar tîne da ku ezmûna bikaranînê ya ewle û hêsan pêşkêş bike, performansa rûpelan bipîve û xizmetên guncaw pêşkêş bike. Bi rêya vê rûpelê hûn dikarin hûrguliyên kulîçeyan bibînin û her dem tercîhên xwe li gorî daxwaza xwe birêve bibin.",
             'en' => "This website uses cookies and related technologies to provide an optimal browsing experience, measure performance, and ensure secure digital services. You can review cookie disclosures and manage your consent preferences at any time.",
             'tr' => "Bu web sitesi; güvenli ve kesintisiz bir kullanıcı deneyimi sunmak, site performansını analiz etmek ve hizmetlerimizi geliştirmek amacıyla çerezleri (cookies) kullanmaktadır. Çerez politikamızı inceleyebilir ve tercihlerinizi dilediğiniz zaman güncelleyebilirsiniz.",
             'de' => "Diese Website verwendet Cookies und ähnliche Technologien, um ein optimales Nutzererlebnis zu gewährleisten, die Leistung zu analysieren und sichere Dienste bereitzustellen. Sie können Ihre Einstellungen jederzeit anpassen.",

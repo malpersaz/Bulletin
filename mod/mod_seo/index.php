@@ -379,16 +379,6 @@ class mod_seo_mod extends indexMain
 
     public function generate_meta()
     {
-        $googleConfig = Registry::get('google_config');
-        $apiKey = $googleConfig['gemini_api_key'] ?? '';
-
-        if ($apiKey === '') {
-            $this->jsonResponse([
-                'success' => false,
-                'error' => 'Gemini API Key is not configured.'
-            ]);
-        }
-
         $title = Req::Post_Safe('title');
         $content = Req::Post_Safe('content');
 
@@ -399,72 +389,30 @@ class mod_seo_mod extends indexMain
             ]);
         }
 
-        $prompt = "Analyze the following content and generate an SEO title, a meta description (max 160 characters), and relevant keywords/tags. Return the output strictly matching the requested JSON structure.\n\nTitle: " . $title . "\nContent: " . $content;
-
-        $payload = [
-            'contents' => [
-                ['parts' => [['text' => $prompt]]]
-            ],
-            'generationConfig' => [
-                'responseMimeType' => 'application/json',
-                'responseSchema' => [
-                    'type' => 'OBJECT',
-                    'properties' => [
-                        'seo_title' => ['type' => 'STRING'],
-                        'meta_description' => ['type' => 'STRING'],
-                        'keywords' => [
-                            'type' => 'ARRAY',
-                            'items' => ['type' => 'STRING']
-                        ]
-                    ],
-                    'required' => ['seo_title', 'meta_description', 'keywords']
-                ]
-            ]
-        ];
-
-        $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' . $apiKey;
-
-        $ch = curl_init($apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-
-        $response = curl_exec($ch);
-        $err = curl_error($ch);
-        curl_close($ch);
-
-        if ($err) {
+        $aiService = new AIService();
+        if (!$aiService->hasApiKey()) {
             $this->jsonResponse([
                 'success' => false,
-                'error' => 'cURL Error: ' . $err
+                'error' => 'Gemini API Key is not configured.'
             ]);
         }
 
-        $data = json_decode($response, true);
-        $rawText = $data['candidates'][0]['content']['parts'][0]['text'] ?? null;
+        $currentLang = Registry::has('lang') ? Registry::get('lang') : 'ku';
+        $res = $aiService->generateSeoMeta($title, $content, $currentLang);
 
-        if (!$rawText) {
+        if (!$res['success']) {
             $this->jsonResponse([
                 'success' => false,
-                'error' => 'Failed to generate content from Gemini API. Response: ' . $response
-            ]);
-        }
-
-        $decodedMeta = json_decode($rawText, true);
-        if (!$decodedMeta) {
-            $this->jsonResponse([
-                'success' => false,
-                'error' => 'Failed to decode structured JSON from Gemini.'
+                'error' => $res['error'] ?? 'Failed to generate SEO metadata.'
             ]);
         }
 
         $this->jsonResponse([
             'success' => true,
-            'seo_title' => $decodedMeta['seo_title'] ?? '',
-            'meta_description' => $decodedMeta['meta_description'] ?? '',
-            'keywords' => implode(', ', $decodedMeta['keywords'] ?? [])
+            'seo_title' => $res['seo_title'] ?? '',
+            'meta_description' => $res['meta_description'] ?? '',
+            'keywords' => $res['keywords'] ?? '',
+            'model' => $res['model'] ?? ''
         ]);
     }
 

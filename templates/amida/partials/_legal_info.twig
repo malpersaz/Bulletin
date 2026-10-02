@@ -13,7 +13,8 @@
 
 {% set has_contact_info = (site.authorized_person is defined and site.authorized_person is not empty)
     or (site.registered_email is defined and site.registered_email is not empty)
-    or (site.legal_contact_phone is defined and site.legal_contact_phone is not empty) %}
+    or (site.legal_contact_phone is defined and site.legal_contact_phone is not empty)
+    or (site.contact_address is defined and site.contact_address is not empty) %}
 
 {% set has_publishing_info = (site.managing_director is defined and site.managing_director is not empty)
     or (site.editor_in_chief is defined and site.editor_in_chief is not empty)
@@ -27,117 +28,386 @@
     or (site.return_policy_days is defined and site.return_policy_days is not empty)
     or (site.warranty_description is defined and site.warranty_description is not empty) %}
 
-{% set has_any_legal_info = has_company_info or has_tax_info or has_contact_info or has_publishing_info or has_warranty_info %}
+{% set has_any_legal_info = has_company_info or has_publishing_info or has_tax_info or has_contact_info or has_warranty_info %}
 
 {% if not has_any_legal_info %}
-    <div class="legal-info-empty text-center py-4 px-3 my-3 border rounded-3 bg-light">
-        <i class="bi bi-info-circle text-primary fs-3 d-block mb-2" aria-hidden="true"></i>
-        <p class="mb-0 text-secondary fs-6 fw-medium">
+    <div class="legal-empty-card" role="region" aria-label="{{ lang.index.legal_info|default('Legal Information') }}">
+        <div class="legal-empty-icon">
+            <i class="bi bi-shield-slash" aria-hidden="true"></i>
+        </div>
+        <h2 class="legal-empty-title">{{ lang.index.legal_info|default('Legal Information') }}</h2>
+        <p class="legal-empty-desc">
             {{ lang.index.legal_info_pending|default('Legal information is currently being updated.') }}
         </p>
     </div>
 {% else %}
-    <div class="legal-info-content">
-        {% if has_company_info %}
-            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.company_registry_title|default('Company & Commercial Registry') }}</strong></h3>
-            <ul class="list-unstyled mb-4">
-                {% if site.legal_company_name is defined and site.legal_company_name is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.legal_company_name|default('Legal Company Name') }}:</strong> {{ site.legal_company_name }}</li>
-                {% endif %}
-                {% if site.legal_trading_name is defined and site.legal_trading_name is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.legal_trading_name|default('Trading Name') }}:</strong> {{ site.legal_trading_name }}</li>
-                {% endif %}
-                {% if site.company_registration_number is defined and site.company_registration_number is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.company_registration_number|default('Company Registration Number') }}:</strong> {{ site.company_registration_number }}</li>
-                {% endif %}
-                {% if site.trade_registry_number is defined and site.trade_registry_number is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.trade_registry_number|default('Trade Registry Number') }}:</strong> {{ site.trade_registry_number }}</li>
-                {% endif %}
-                {% if site.central_registration_number is defined and site.central_registration_number is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.central_registration_number|default('Central Registration Number (MERSIS)') }}:</strong> {{ site.central_registration_number }}</li>
-                {% endif %}
-                {% if site.chamber_of_commerce is defined and site.chamber_of_commerce is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.chamber_of_commerce|default('Chamber of Commerce') }}:</strong> {{ site.chamber_of_commerce }}</li>
-                {% endif %}
-                {% if site.corporate_address is defined and site.corporate_address is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.corporate_address|default('Corporate Address') }}:</strong> {{ site.corporate_address }}</li>
-                {% endif %}
-                {% if site.country is defined and site.country is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.country|default('Country') }}:</strong> {{ site.country }}</li>
-                {% endif %}
-            </ul>
-        {% endif %}
+    <div class="legal-info-wrapper" role="region" aria-label="{{ lang.index.legal_info|default('Legal Information') }}">
+        <!-- Official Trust & Actions Header Box -->
+        <header class="legal-header-box">
+            <div class="legal-header-top">
+                <div class="legal-verified-badge" aria-label="{{ lang.index.verified_company|default('Verified Publication') }}">
+                    <span class="legal-verified-pulse" aria-hidden="true"></span>
+                    <span>{{ lang.index.verified_company|default('Verified Official Publication') }}</span>
+                </div>
+                <div class="legal-actions-bar">
+                    <button type="button" class="legal-action-btn legal-print-btn" title="{{ lang.index.print_record|default('Print Record') }}" aria-label="{{ lang.index.print_record|default('Print Record') }}">
+                        <i class="bi bi-printer" aria-hidden="true"></i>
+                        <span>{{ lang.index.print_record|default('Print') }}</span>
+                    </button>
+                    <button type="button" class="legal-action-btn legal-share-btn" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.copy_link|default('Copy Link') }}" aria-label="{{ lang.index.copy_link|default('Copy Link') }}">
+                        <i class="bi bi-share" aria-hidden="true"></i>
+                        <span>{{ lang.index.copy_link|default('Share') }}</span>
+                    </button>
+                </div>
+            </div>
+            <p class="legal-header-desc">
+                {{ lang.index.legal_notice_desc|default('Official statutory and regulatory disclosures according to applicable press and electronic media regulations.') }}
+            </p>
+        </header>
 
-        {% if has_publishing_info %}
-            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.publishing_credentials_title|default('Publishing Credentials & Governance') }}</strong></h3>
-            <ul class="list-unstyled mb-4">
-                {% if site.managing_director is defined and site.managing_director is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.managing_director|default('Managing Director') }}:</strong> {{ site.managing_director }}</li>
-                {% endif %}
-                {% if site.editor_in_chief is defined and site.editor_in_chief is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.editor_in_chief|default('Editor-in-Chief') }}:</strong> {{ site.editor_in_chief }}</li>
-                {% endif %}
-                {% if site.press_code_license is defined and site.press_code_license is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.press_code_license|default('Press Code / License') }}:</strong> {{ site.press_code_license }}</li>
-                {% endif %}
-                {% if site.dpo_email is defined and site.dpo_email is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.dpo_email|default('Data Protection Officer (DPO)') }}:</strong> <a href="mailto:{{ site.dpo_email }}" class="text-decoration-none">{{ site.dpo_email }}</a></li>
-                {% endif %}
-                {% if site.hosting_provider is defined and site.hosting_provider is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.hosting_provider|default('Hosting Provider') }}:</strong> {{ site.hosting_provider }}</li>
-                {% endif %}
-                {% if site.compliance_jurisdiction is defined and site.compliance_jurisdiction is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.compliance_jurisdiction|default('Jurisdiction') }}:</strong> {{ site.compliance_jurisdiction }}</li>
-                {% endif %}
-            </ul>
-        {% endif %}
+        <!-- Bento Grid Cards -->
+        <div class="legal-bento-grid">
+            <!-- 1. Publishing Credentials & Editorial Governance (Kunya) -->
+            {% if has_publishing_info %}
+                <section class="legal-card span-2" aria-labelledby="card-publishing-title">
+                    <div class="legal-card-header">
+                        <div class="legal-card-icon" aria-hidden="true">
+                            <i class="bi bi-journal-bookmark"></i>
+                        </div>
+                        <div>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Editorial & Press Compliance') }}</span>
+                            <h2 id="card-publishing-title" class="legal-card-title">{{ lang.index.publishing_credentials_title|default('Publishing Credentials & Governance') }}</h2>
+                        </div>
+                    </div>
+                    <ul class="legal-field-list">
+                        {% if site.managing_director is defined and site.managing_director is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.managing_director|default('Managing Director') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value fw-semibold">{{ site.managing_director }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
 
-        {% if has_tax_info %}
-            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.tax_fiscal_title|default('Tax & Fiscal Disclosures') }}</strong></h3>
-            <ul class="list-unstyled mb-4">
-                {% if site.tax_office is defined and site.tax_office is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.tax_office|default('Tax Office') }}:</strong> {{ site.tax_office }}</li>
-                {% endif %}
-                {% if site.tax_number is defined and site.tax_number is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.tax_number|default('Tax Identification Number') }}:</strong> {{ site.tax_number }}</li>
-                {% endif %}
-                {% if site.vat_number is defined and site.vat_number is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.vat_number|default('VAT Identification Number') }}:</strong> {{ site.vat_number }}</li>
-                {% endif %}
-            </ul>
-        {% endif %}
+                        {% if site.editor_in_chief is defined and site.editor_in_chief is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.editor_in_chief|default('Editor-in-Chief') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value fw-semibold">{{ site.editor_in_chief }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
 
-        {% if has_contact_info %}
-            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.legal_contact_title|default('Statutory & Legal Contact') }}</strong></h3>
-            <ul class="list-unstyled mb-4">
-                {% if site.authorized_person is defined and site.authorized_person is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.authorized_person|default('Authorized Representative') }}:</strong> {{ site.authorized_person }}</li>
-                {% endif %}
-                {% if site.registered_email is defined and site.registered_email is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.registered_email|default('Registered Corporate Email') }}:</strong> <a href="mailto:{{ site.registered_email }}" class="text-decoration-none">{{ site.registered_email }}</a></li>
-                {% endif %}
-                {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.legal_contact_phone|default('Legal Contact Phone') }}:</strong> <a href="tel:{{ site.legal_contact_phone }}" class="text-decoration-none">{{ site.legal_contact_phone }}</a></li>
-                {% endif %}
-            </ul>
-        {% endif %}
+                        {% if site.press_code_license is defined and site.press_code_license is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.press_code_license|default('Press Code / License') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.press_code_license }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.press_code_license }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.press_code_license|default('Press Code') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
 
-        {% if has_warranty_info %}
-            <h3 class="h5 fw-bold mt-4 mb-3"><strong>{{ lang.index.warranty_policies_title|default('Consumer & Warranty Policies') }}</strong></h3>
-            <ul class="list-unstyled mb-3">
-                {% if site.default_warranty_duration is defined and site.default_warranty_duration is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.default_warranty_duration|default('Warranty Duration') }}:</strong> {{ site.default_warranty_duration }} {{ lang.index.months|default('months') }}</li>
-                {% endif %}
-                {% if site.warranty_type is defined and site.warranty_type is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.warranty_type|default('Warranty Type') }}:</strong> {{ site.warranty_type }}</li>
-                {% endif %}
-                {% if site.return_policy_days is defined and site.return_policy_days is not empty %}
-                    <li class="mb-2"><strong>{{ lang.index.return_policy_days|default('Return Policy') }}:</strong> {{ site.return_policy_days }} {{ lang.index.days|default('days') }}</li>
-                {% endif %}
-            </ul>
-            {% if site.warranty_description is defined and site.warranty_description is not empty %}
-                <p class="mb-3">{{ site.warranty_description|nl2br }}</p>
+                        {% if site.dpo_email is defined and site.dpo_email is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.dpo_email|default('Data Protection Officer (DPO)') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <a href="mailto:{{ site.dpo_email }}" class="legal-field-value font-monospace">{{ site.dpo_email }}</a>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.dpo_email }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.dpo_email|default('DPO Email') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.hosting_provider is defined and site.hosting_provider is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.hosting_provider|default('Hosting Provider') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.hosting_provider }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.compliance_jurisdiction is defined and site.compliance_jurisdiction is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.compliance_jurisdiction|default('Jurisdiction') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.compliance_jurisdiction }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </section>
             {% endif %}
-        {% endif %}
+
+            <!-- 2. Company & Registry Card -->
+            {% if has_company_info %}
+                <section class="legal-card" aria-labelledby="card-company-title">
+                    <div class="legal-card-header">
+                        <div class="legal-card-icon" aria-hidden="true">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <div>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
+                            <h2 id="card-company-title" class="legal-card-title">{{ lang.index.company_registry_title|default('Company & Commercial Registry') }}</h2>
+                        </div>
+                    </div>
+                    <ul class="legal-field-list">
+                        {% if site.legal_company_name is defined and site.legal_company_name is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.legal_company_name|default('Legal Company Name') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value legal-company-highlight">{{ site.legal_company_name }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_company_name }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.legal_company_name|default('Company Name') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.legal_trading_name is defined and site.legal_trading_name is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.legal_trading_name|default('Trading Name') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.legal_trading_name }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.company_registration_number is defined and site.company_registration_number is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.company_registration_number|default('Company Registration Number') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.company_registration_number }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.company_registration_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.company_registration_number|default('Company Registration Number') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.trade_registry_number is defined and site.trade_registry_number is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.trade_registry_number|default('Trade Registry Number') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.trade_registry_number }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.trade_registry_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.trade_registry_number|default('Trade Registry Number') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.central_registration_number is defined and site.central_registration_number is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.central_registration_number|default('Central Registration (MERSIS)') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.central_registration_number }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.central_registration_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.central_registration_number|default('Central Registration Number') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.chamber_of_commerce is defined and site.chamber_of_commerce is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.chamber_of_commerce|default('Chamber of Commerce') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.chamber_of_commerce }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.corporate_address is defined and site.corporate_address is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.corporate_address|default('Corporate Address') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.corporate_address }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.country is defined and site.country is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.country|default('Country') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.country }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            <!-- 3. Tax & Fiscal Identification Card -->
+            {% if has_tax_info %}
+                <section class="legal-card" aria-labelledby="card-tax-title">
+                    <div class="legal-card-header">
+                        <div class="legal-card-icon" aria-hidden="true">
+                            <i class="bi bi-receipt-cutoff"></i>
+                        </div>
+                        <div>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
+                            <h2 id="card-tax-title" class="legal-card-title">{{ lang.index.tax_fiscal_title|default('Tax & Fiscal Disclosures') }}</h2>
+                        </div>
+                    </div>
+                    <ul class="legal-field-list">
+                        {% if site.tax_office is defined and site.tax_office is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.tax_office|default('Tax Office') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.tax_office }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.tax_number is defined and site.tax_number is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.tax_number|default('Tax Identification Number') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.tax_number }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.tax_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.tax_number|default('Tax Number') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.vat_number is defined and site.vat_number is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.vat_number|default('VAT Identification Number') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value font-monospace">{{ site.vat_number }}</span>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.vat_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.vat_number|default('VAT Number') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            <!-- 4. Legal Contact & Statutory Representation Card -->
+            {% if has_contact_info %}
+                <section class="legal-card" aria-labelledby="card-contact-title">
+                    <div class="legal-card-header">
+                        <div class="legal-card-icon" aria-hidden="true">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <div>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
+                            <h2 id="card-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title|default('Statutory & Legal Contact') }}</h2>
+                        </div>
+                    </div>
+                    <ul class="legal-field-list">
+                        {% if site.authorized_person is defined and site.authorized_person is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.authorized_person|default('Authorized Representative') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.authorized_person }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.registered_email is defined and site.registered_email is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.registered_email|default('Registered Corporate Email') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <a href="mailto:{{ site.registered_email }}" class="legal-field-value font-monospace">{{ site.registered_email }}</a>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.registered_email }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.registered_email|default('Registered Email') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.legal_contact_phone|default('Legal Contact Phone') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <a href="tel:{{ site.legal_contact_phone }}" class="legal-field-value">{{ site.legal_contact_phone }}</a>
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_contact_phone }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.legal_contact_phone|default('Legal Phone') }}">
+                                        <i class="bi bi-copy" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+
+                        {% if site.contact_address is defined and site.contact_address is not empty %}
+                            <li class="legal-field-row">
+                                <span class="legal-field-label">{{ lang.index.registered_address|default('Registered Address') }}</span>
+                                <div class="legal-field-value-wrap">
+                                    <span class="legal-field-value">{{ site.contact_address }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </section>
+            {% endif %}
+
+            <!-- 5. Consumer & Warranty Policies Card (If Applicable) -->
+            {% if has_warranty_info %}
+                <section class="legal-card span-2" aria-labelledby="card-warranty-title">
+                    <div class="legal-card-header">
+                        <div class="legal-card-icon" aria-hidden="true">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
+                            <h2 id="card-warranty-title" class="legal-card-title">{{ lang.index.warranty_policies_title|default('Consumer & Warranty Policies') }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="legal-policy-badges">
+                        {% if site.default_warranty_duration is defined and site.default_warranty_duration is not empty %}
+                            <div class="legal-policy-pill">
+                                <div class="legal-policy-pill-icon" aria-hidden="true">
+                                    <i class="bi bi-hourglass-split"></i>
+                                </div>
+                                <div class="legal-policy-pill-text">
+                                    <span class="legal-policy-pill-title">{{ lang.index.default_warranty_duration|default('Warranty Duration') }}</span>
+                                    <span class="legal-policy-pill-val">{{ site.default_warranty_duration }} {{ lang.index.months|default('months') }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if site.warranty_type is defined and site.warranty_type is not empty %}
+                            <div class="legal-policy-pill">
+                                <div class="legal-policy-pill-icon" aria-hidden="true">
+                                    <i class="bi bi-patch-check"></i>
+                                </div>
+                                <div class="legal-policy-pill-text">
+                                    <span class="legal-policy-pill-title">{{ lang.index.warranty_type|default('Warranty Type') }}</span>
+                                    <span class="legal-policy-pill-val">{{ site.warranty_type }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        {% if site.return_policy_days is defined and site.return_policy_days is not empty %}
+                            <div class="legal-policy-pill">
+                                <div class="legal-policy-pill-icon" aria-hidden="true">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </div>
+                                <div class="legal-policy-pill-text">
+                                    <span class="legal-policy-pill-title">{{ lang.index.return_policy_days|default('Return Policy') }}</span>
+                                    <span class="legal-policy-pill-val">{{ site.return_policy_days }} {{ lang.index.days|default('days') }}</span>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    {% if site.warranty_description is defined and site.warranty_description is not empty %}
+                        <div class="legal-policy-desc">
+                            {{ site.warranty_description|nl2br }}
+                        </div>
+                    {% endif %}
+                </section>
+            {% endif %}
+        </div>
     </div>
 {% endif %}

@@ -28,7 +28,9 @@ $autoload['libfile'] = array(
     'BaseModuleValidator',
     'DataTableService',
     'ImageService',
-    'GoogleIndexingService'
+    'GoogleIndexingService',
+    'AIService',
+    'LlmsService'
 );
 // Libraries to run automatically
 $autoload['lib'] = array();

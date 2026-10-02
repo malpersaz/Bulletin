@@ -1,9 +1,19 @@
 User-agent: *
 Allow: /
 
-# Master Sitemap Index for Amida Kurd
-Sitemap: https://amidakurd.net/sitemap.xml
+# Disallow internal utility and tool endpoints
+Disallow: /tools/
+Disallow: /*/tools/
+Disallow: /cache/
+Disallow: /installer/
 
-# Specific Language fallbacks (Google will discover these via Index)
+# Master Sitemap Index for Amida Kurd / Rojname
+Sitemap: https://amidakurd.net/sitemap.xml
+Sitemap: https://amidakurd.net/newsSitemap.xml
+
+# Specific Language fallbacks
 Sitemap: https://amidakurd.net/ku/newsSitemap.xml
 Sitemap: https://amidakurd.net/en/newsSitemap.xml
+
+# AI / LLM Index
+# LLMS-Txt: https://amidakurd.net/llms.txt

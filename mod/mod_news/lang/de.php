@@ -416,4 +416,19 @@ $lang['mod_news'] = [
         'unknown_type' => 'Unknown relation type',
         'relation_updated' => 'Relation successfully updated',
     ],
+
+    // === AI Assistant ===
+    'ai' => [
+        'generate_deck' => 'Vorspann mit KI generieren',
+        'suggest_headlines' => 'Schlagzeilen mit KI vorschlagen',
+        'generate_seo' => 'SEO mit KI generieren',
+        'generating' => 'Wird generiert...',
+        'missing_key' => 'Gemini API-Schlüssel ist im Google Services Hub nicht konfiguriert.',
+        'content_required' => 'Titel oder Inhalt des Artikels für die KI-Generierung erforderlich.',
+        'select_headline' => 'Schlagzeile auswählen',
+        'deck_success' => 'Vorspann erfolgreich generiert (%d Zeichen)',
+        'deck_error' => 'Vorspann konnte nicht generiert werden.',
+        'headline_success' => 'Schlagzeilenvorschläge erfolgreich erstellt.',
+        'copy' => 'Verwenden',
+    ],
 ];

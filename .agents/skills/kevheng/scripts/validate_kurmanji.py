@@ -59,6 +59,30 @@ DISALLOWED_TERMS = {
     "fêrbûna kûr": "hînbûna kûr",
     "damezrandin": "sazkirin / avakirin",
     "wesayît": "wesayet",
+    # Standard Country and Place Names (Nave_Dewletan_u_Cihan.md)
+    "turkiye": "Turkî",
+    "tirkiye": "Turkî",
+    "yunanistan": "Yewnan",
+    "yunan": "Yewnan",
+    "yûnan": "Yewnan",
+    "rusya": "Ûrisya",
+    "rûsya": "Ûrisya",
+    "suriye": "Sûrî",
+    "sûriye": "Sûrî",
+    "irak": "Îraq",
+    "iraq": "Îraq",
+    "londra": "London",
+    "fransa": "Frensa",
+    "erbîl": "Hewlêr",
+    "erbil": "Hewlêr",
+    "diyarbekir": "Amed",
+    "diyarbakir": "Amed",
+    "diyarbakır": "Amed",
+    "i̇stanbul": "Stenbol",
+    "istanbul": "Stenbol",
+    "hesekê": "Hisiça",
+    "heseke": "Hisiça",
+    "qsd": "HSD",
 }
 
 if os.path.exists(VOCAB_RULES_FILE):
@@ -240,29 +264,41 @@ class KevhengValidator:
             "unknown_words": sorted(list(unknown_words))
         }
 
+    def check_quotes(self, text: str) -> List[Dict[str, Any]]:
+        issues = []
+        guillemets = list(re.finditer(r'[«»]', text))
+        if guillemets:
+            issues.append({
+                "type": "disallowed_french_guillemets",
+                "message": "French guillemets (« ... ») are disallowed. Strictly use standard double quotes (\" ... \").",
+                "count": len(guillemets),
+                "positions": [m.start() for m in guillemets[:5]]
+            })
+        return issues
+
+    def check_preposition_bo(self, text: str) -> List[Dict[str, Any]]:
+        issues = []
+        clean_text = re.sub(r'<[^>]+>', ' ', text)
+        clean_text = re.sub(r'https?://\S+', ' ', clean_text)
+        matches = list(re.finditer(r'(?<!\bji\s)\bbo\b', clean_text, re.IGNORECASE))
+        if matches:
+            issues.append({
+                "type": "disallowed_bare_bo",
+                "message": "Never use bare 'bo' alone as preposition. Strictly use 'ji bo'.",
+                "count": len(matches),
+                "positions": [m.start() for m in matches[:5]]
+            })
+        return issues
+
     def check_month_annotations(self, html_text: str) -> List[Dict[str, Any]]:
         """
         Audit that any Kurdish month names in HTML content are properly enclosed
-        within <span class="month-popover" role="button" tabindex="0" data-month-ku="..." data-month-en="..." data-month-tr="..." data-month-ar="...">.
+        within <span class="month-popover">...</span>.
+        Verbose data attributes (data-month-*) are NOT required because the frontend engine
+        (month-popover.js) automatically resolves multilingual translations via its built-in catalog.
         """
         issues = []
-        popover_pattern = re.compile(r'<span\s+([^>]*class=["\'][^"\']*month-popover[^"\']*["\'][^>]*)>(.*?)</span>', re.IGNORECASE | re.DOTALL)
-        
-        # Check existing popover tags for required attributes
-        for m in popover_pattern.finditer(html_text):
-            attrs_str = m.group(1)
-            inner_text = m.group(2).strip()
-            
-            required_attrs = ['role="button"', 'tabindex="0"', 'data-month-ku', 'data-month-en', 'data-month-tr', 'data-month-ar']
-            missing_attrs = [a for a in required_attrs if a not in attrs_str]
-            if missing_attrs:
-                issues.append({
-                    "type": "incomplete_month_popover",
-                    "month": inner_text,
-                    "missing_attributes": missing_attrs,
-                    "matched": m.group(0),
-                    "suggestion": f"Add missing attributes: {', '.join(missing_attrs)}"
-                })
+        popover_pattern = re.compile(r'<span\s+[^>]*class=["\'][^"\']*month-popover[^"\']*["\'][^>]*>(.*?)</span>', re.IGNORECASE | re.DOTALL)
 
         # Replace all month-popover spans with neutral placeholder to inspect unannotated months
         stripped_for_months = popover_pattern.sub(' __MONTH_POPOVER_PLACEHOLDER__ ', html_text)
@@ -278,12 +314,11 @@ class KevhengValidator:
                 if k.lower() == canonical.lower():
                     canonical = k
                     break
-            data = KURMANJI_MONTHS.get(canonical, {})
             issues.append({
                 "type": "unannotated_month",
                 "month": raw_match,
                 "canonical": canonical,
-                "suggestion": f'<span class="month-popover" role="button" tabindex="0" data-month-ku="{canonical}" data-month-en="{data.get("en", "")}" data-month-tr="{data.get("tr", "")}" data-month-ar="{data.get("ar", "")}">{canonical}</span>'
+                "suggestion": f'<span class="month-popover">{canonical}</span>'
             })
 
         return issues
@@ -343,6 +378,8 @@ class KevhengValidator:
         conjunction = self.check_conjunction(text)
         apostrophes = self.check_apostrophe_conventions(text)
         vocabulary = self.check_disallowed_terms(text)
+        quotes = self.check_quotes(text)
+        bare_bo = self.check_preposition_bo(text)
         lexicon = self.check_lexicon(text)
         
         # Check month annotations if HTML tags are detected
@@ -361,6 +398,8 @@ class KevhengValidator:
             len(conjunction) == 0 and
             len(apostrophes) == 0 and
             len(vocabulary) == 0 and
+            len(quotes) == 0 and
+            len(bare_bo) == 0 and
             len(month_issues) == 0 and
             len(seo_issues) == 0 and
             (deck_report is None or deck_report["valid"])
@@ -372,6 +411,8 @@ class KevhengValidator:
             "conjunction_issues": conjunction,
             "apostrophe_issues": apostrophes,
             "vocabulary_issues": vocabulary,
+            "quote_issues": quotes,
+            "bare_bo_issues": bare_bo,
             "month_issues": month_issues,
             "seo_issues": seo_issues,
             "deck_summary": deck_report,
@@ -434,13 +475,20 @@ def main():
             for item in report["vocabulary_issues"]:
                 print(f"  - '{item['term']}' -> Prefer '{item['preferred']}'")
 
+        if report["quote_issues"]:
+            print(f"\n[!] Quotation Mark Issues ({len(report['quote_issues'])}):")
+            for item in report["quote_issues"]:
+                print(f"  - {item['message']}")
+
+        if report["bare_bo_issues"]:
+            print(f"\n[!] Preposition Issue ({len(report['bare_bo_issues'])}):")
+            for item in report["bare_bo_issues"]:
+                print(f"  - {item['message']}")
+
         if report["month_issues"]:
             print(f"\n[!] Month Annotation Issues ({len(report['month_issues'])}):")
             for item in report["month_issues"]:
-                if item["type"] == "incomplete_month_popover":
-                    print(f"  - Month '{item['month']}' missing attributes: {', '.join(item['missing_attributes'])}")
-                else:
-                    print(f"  - Month '{item['month']}' is unannotated. Required: {item['suggestion']}")
+                print(f"  - Month '{item['month']}' is unannotated. Required: {item['suggestion']}")
 
         if report["seo_issues"]:
             print(f"\n[!] SEO Slug Issues ({len(report['seo_issues'])}):")

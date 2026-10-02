@@ -1277,6 +1277,7 @@ class NewsEditManager {
         this.initSelectionCards();
         this.initAdvancedAccordion();
         this.initTitleSync();
+        this.initAiAssistant();
         this.initActionHandlers();
         this.initAlerts();
     }
@@ -1455,6 +1456,174 @@ class NewsEditManager {
                 if (descriptionInput && (!descriptionInput.value || descriptionInput.dataset.touched !== 'true')) {
                     const cleanDesc = typeof sanitizeText === 'function' ? sanitizeText(introText) : introText;
                     descriptionInput.value = cleanDesc.substring(0, 120);
+                }
+            });
+        }
+    }
+
+    initAiAssistant() {
+        const aiUrl = this.form.dataset.aiUrl || '/mod_news/ajax_ai_assist';
+        const generatingText = this.form.dataset.aiGenerating || 'Generating...';
+        const selectHeadlineText = this.form.dataset.aiSelectHeadline || 'Select a Headline';
+        const copyText = this.form.dataset.aiCopy || 'Use This';
+
+        const btnDeck = document.getElementById('btnAiGenerateDeck');
+        const btnHeadlines = document.getElementById('btnAiSuggestHeadlines');
+        const headlinesContainer = document.getElementById('aiHeadlinesContainer');
+        const titleInput = document.getElementById('editTitleInput');
+        const introInput = document.getElementById('editIntroInput');
+        const introCounter = document.getElementById('editIntroCounter');
+        const langInput = document.getElementById('editLang');
+
+        const getContentText = () => {
+            if (typeof tinymce !== 'undefined' && tinymce.get('editContentTextarea')) {
+                return tinymce.get('editContentTextarea').getContent({ format: 'text' }) || '';
+            }
+            const textarea = document.getElementById('editContentTextarea');
+            return textarea ? textarea.value : '';
+        };
+
+        const getCurrentLang = () => {
+            return (langInput && langInput.value) ? langInput.value.toLowerCase().trim() : 'ku';
+        };
+
+        if (btnDeck && introInput) {
+            btnDeck.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const content = getContentText();
+                const title = titleInput ? titleInput.value.trim() : '';
+
+                if (!content && !title) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Hişyarî',
+                            text: 'Ji bo çêkirina kurtenivîsê divê sernav an naverok hebe.',
+                            confirmButtonColor: '#6750a4'
+                        });
+                    }
+                    return;
+                }
+
+                const originalHtml = btnDeck.innerHTML;
+                btnDeck.classList.add('is-loading');
+                btnDeck.disabled = true;
+                btnDeck.innerHTML = `<i class="bi bi-arrow-repeat"></i> <span>${generatingText}</span>`;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'generate_deck');
+                    formData.append('title', title);
+                    formData.append('content', content);
+                    formData.append('lang', getCurrentLang());
+
+                    const res = await fetch(aiUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success && data.deck) {
+                        introInput.value = data.deck;
+                        introInput.dispatchEvent(new Event('input', { bubbles: true }));
+                        if (introCounter) {
+                            introCounter.textContent = `${data.deck.length} / 120`;
+                        }
+                        if (navigator.vibrate) navigator.vibrate(15);
+                    } else {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Çewtî',
+                                text: data.error || 'Çêkirina kurtenivîsê bi ser neket.',
+                                confirmButtonColor: '#6750a4'
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error('AI Deck error:', err);
+                } finally {
+                    btnDeck.classList.remove('is-loading');
+                    btnDeck.disabled = false;
+                    btnDeck.innerHTML = originalHtml;
+                }
+            });
+        }
+
+        if (btnHeadlines && titleInput && headlinesContainer) {
+            btnHeadlines.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const content = getContentText();
+                const currentTitle = titleInput.value.trim();
+
+                if (!content && !currentTitle) {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Hişyarî',
+                            text: 'Ji bo pêşniyara sernivîsan divê naverok an sernav hebe.',
+                            confirmButtonColor: '#6750a4'
+                        });
+                    }
+                    return;
+                }
+
+                const originalHtml = btnHeadlines.innerHTML;
+                btnHeadlines.classList.add('is-loading');
+                btnHeadlines.disabled = true;
+                btnHeadlines.innerHTML = `<i class="bi bi-arrow-repeat"></i> <span>${generatingText}</span>`;
+
+                try {
+                    const formData = new FormData();
+                    formData.append('action', 'suggest_headlines');
+                    formData.append('title', currentTitle);
+                    formData.append('content', content);
+                    formData.append('lang', getCurrentLang());
+
+                    const res = await fetch(aiUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.success && Array.isArray(data.headlines) && data.headlines.length > 0) {
+                        headlinesContainer.innerHTML = '';
+                        const titleEl = document.createElement('div');
+                        titleEl.className = 'ai-suggestions-title';
+                        titleEl.innerHTML = `<i class="bi bi-stars"></i> <span>${selectHeadlineText}</span>`;
+                        headlinesContainer.appendChild(titleEl);
+
+                        data.headlines.forEach((hl) => {
+                            const item = document.createElement('div');
+                            item.className = 'ai-suggestion-item';
+                            item.innerHTML = `<div class="ai-suggestion-text">${hl}</div><button type="button" class="ai-suggestion-btn">${copyText}</button>`;
+                            item.addEventListener('click', () => {
+                                titleInput.value = hl;
+                                titleInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                headlinesContainer.classList.add('is-hidden');
+                                if (navigator.vibrate) navigator.vibrate(15);
+                            });
+                            headlinesContainer.appendChild(item);
+                        });
+
+                        headlinesContainer.classList.remove('is-hidden');
+                        if (navigator.vibrate) navigator.vibrate(20);
+                    } else {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Çewtî',
+                                text: data.error || 'Pêşniyara sernivîsan bi ser neket.',
+                                confirmButtonColor: '#6750a4'
+                            });
+                        }
+                    }
+                } catch (err) {
+                    console.error('AI Headlines error:', err);
+                } finally {
+                    btnHeadlines.classList.remove('is-loading');
+                    btnHeadlines.disabled = false;
+                    btnHeadlines.innerHTML = originalHtml;
                 }
             });
         }

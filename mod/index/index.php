@@ -828,4 +828,26 @@ class index_mod extends indexBase
         header("Location: " . $this->site['address']);
         exit();
     }
+
+    public function llms()
+    {
+        /** @var LlmsService $llmsService */
+        $llmsService = Load::lib('LlmsService');
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
+        header('X-Robots-Tag: all');
+        echo $llmsService->render($this->site['lang'] ?? '', false);
+        exit;
+    }
+
+    public function llmsFull()
+    {
+        /** @var LlmsService $llmsService */
+        $llmsService = Load::lib('LlmsService');
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
+        header('X-Robots-Tag: all');
+        echo $llmsService->render($this->site['lang'] ?? '', true);
+        exit;
+    }
 }

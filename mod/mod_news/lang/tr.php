@@ -408,4 +408,19 @@ $lang['mod_news'] = [
         'unknown_type' => 'Bilinmeyen ilişki türü',
         'relation_updated' => 'İlişki başarıyla güncellendi',
     ],
+
+    // === AI Assistant ===
+    'ai' => [
+        'generate_deck' => 'AI ile Özet Çıkar',
+        'suggest_headlines' => 'AI ile Başlık Öner',
+        'generate_seo' => 'AI ile SEO Oluştur',
+        'generating' => 'Oluşturuluyor...',
+        'missing_key' => 'Gemini API anahtarı Google Services Hub üzerinde yapılandırılmamış.',
+        'content_required' => 'AI üretimi için başlık veya içerik gereklidir.',
+        'select_headline' => 'Bir Başlık Seçin',
+        'deck_success' => 'Özet başarıyla oluşturuldu (%d karakter)',
+        'deck_error' => 'Özet oluşturulamadı.',
+        'headline_success' => 'Başlık önerileri hazırlandı.',
+        'copy' => 'Bunu Kullan',
+    ],
 ];

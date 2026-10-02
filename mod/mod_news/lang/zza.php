@@ -409,4 +409,19 @@ $lang['mod_news'] = [
         'unknown_type' => 'Cureyê nenas (ZZA)',
         'relation_updated' => 'Peywendî bi serkeftî hate nûjenkirin (ZZA)',
     ],
+
+    // === AI Assistant ===
+    'ai' => [
+        'generate_deck' => 'Bi AI Kurte Çêke',
+        'suggest_headlines' => 'Bi AI Sernivîs Pêşniyar Bike',
+        'generate_seo' => 'Bi AI SEO Çêke',
+        'generating' => 'Tê çêkirin...',
+        'missing_key' => 'Mifteya Gemini API di Google Services Hubê de nehatiye mîhengkirin.',
+        'content_required' => 'Ji bo hilberîna bi AI, sernav an naveroka nûçeyê pêwîst e.',
+        'select_headline' => 'Sernivîsekê Hilbijêre',
+        'deck_success' => 'Kurtenivîs bi serfirazî hat çêkirin (%d tîp)',
+        'deck_error' => 'Çêkirina kurtenivîsê bi ser neket.',
+        'headline_success' => 'Pêşniyarên sernivîsan hatin amadekirin.',
+        'copy' => 'Vê Bikar Bîne',
+    ],
 ];

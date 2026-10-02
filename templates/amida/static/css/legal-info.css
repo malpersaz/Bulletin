@@ -1,0 +1,624 @@
+/**
+ * Legal Information & Statutory Profile CSS
+ * templates/default/static/css/legal-info.css
+ * Enterprise Bento-Grid Layout, Accessibility, Dark Mode & Official Print Styles
+ */
+
+/* ==========================================================================
+   1. Root Variables & Theme Tokens
+   ========================================================================== */
+:root {
+  --legal-primary: var(--detail-accent, #0f5bd7);
+  --legal-primary-soft: rgba(15, 91, 215, 0.08);
+  --legal-primary-border: rgba(15, 91, 215, 0.18);
+  --legal-surface: var(--detail-surface, #ffffff);
+  --legal-surface-subtle: #f8fafc;
+  --legal-surface-hover: #f1f5f9;
+  --legal-border: var(--detail-border, rgba(15, 23, 42, 0.08));
+  --legal-border-strong: rgba(15, 23, 42, 0.14);
+  --legal-text-main: var(--detail-title, #0f172a);
+  --legal-text-muted: var(--detail-muted, #475569);
+  --legal-text-soft: #64748b;
+  --legal-success: #059669;
+  --legal-success-bg: rgba(5, 150, 105, 0.1);
+  --legal-success-border: rgba(5, 150, 105, 0.2);
+  --legal-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05), 0 2px 6px -1px rgba(15, 23, 42, 0.03);
+  --legal-shadow-hover: 0 12px 30px -4px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  --legal-radius-lg: 1.25rem;
+  --legal-radius-md: 0.85rem;
+  --legal-radius-sm: 0.5rem;
+}
+
+[data-bs-theme="dark"],
+.theme-dark {
+  --legal-primary: #3b82f6;
+  --legal-primary-soft: rgba(59, 130, 246, 0.15);
+  --legal-primary-border: rgba(59, 130, 246, 0.3);
+  --legal-surface: #1e293b;
+  --legal-surface-subtle: #0f172a;
+  --legal-surface-hover: #334155;
+  --legal-border: rgba(255, 255, 255, 0.1);
+  --legal-border-strong: rgba(255, 255, 255, 0.18);
+  --legal-text-main: #f8fafc;
+  --legal-text-muted: #cbd5e1;
+  --legal-text-soft: #94a3b8;
+  --legal-success: #34d399;
+  --legal-success-bg: rgba(52, 211, 153, 0.15);
+  --legal-success-border: rgba(52, 211, 153, 0.3);
+  --legal-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  --legal-shadow-hover: 0 12px 32px -4px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   2. Header, Verified Trust Badge & Action Bar
+   ========================================================================== */
+.legal-header-box {
+  background: var(--legal-surface-subtle);
+  border: 1px solid var(--legal-border);
+  border-radius: var(--legal-radius-lg);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: var(--legal-shadow);
+  transition: all 0.25s ease;
+}
+
+.legal-header-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.legal-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: var(--legal-success-bg);
+  border: 1px solid var(--legal-success-border);
+  color: var(--legal-success);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.legal-verified-pulse {
+  width: 8px;
+  height: 8px;
+  background-color: var(--legal-success);
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7);
+  animation: legal-pulse 2s infinite;
+}
+
+@keyframes legal-pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(5, 150, 105, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0);
+  }
+}
+
+.legal-actions-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legal-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: var(--legal-surface);
+  border: 1px solid var(--legal-border);
+  color: var(--legal-text-main);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.legal-action-btn:hover {
+  background: var(--legal-surface-hover);
+  border-color: var(--legal-primary-border);
+  color: var(--legal-primary);
+  transform: translateY(-1px);
+}
+
+.legal-header-desc {
+  color: var(--legal-text-muted);
+  font-size: 0.96rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. Operations Modes & Activity Tags
+   ========================================================================== */
+.legal-operations-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--legal-border);
+}
+
+.legal-op-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--legal-radius-sm);
+  background: var(--legal-surface);
+  border: 1px solid var(--legal-border);
+  color: var(--legal-text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.legal-op-tag i {
+  color: var(--legal-primary);
+}
+
+/* ==========================================================================
+   4. Bento Grid Layout & Cards
+   ========================================================================== */
+.legal-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.legal-card {
+  position: relative;
+  background: var(--legal-surface);
+  border: 1px solid var(--legal-border);
+  border-radius: var(--legal-radius-lg);
+  padding: 1.6rem 1.65rem;
+  box-shadow: var(--legal-shadow);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.legal-card:hover {
+  border-color: var(--legal-primary-border);
+  box-shadow: var(--legal-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.legal-card.span-2 {
+  grid-column: span 2;
+}
+
+.legal-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--legal-border);
+}
+
+.legal-card-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: var(--legal-radius-md);
+  background: var(--legal-primary-soft);
+  border: 1px solid var(--legal-primary-border);
+  color: var(--legal-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  transition: transform 0.2s ease;
+}
+
+.legal-card:hover .legal-card-icon {
+  transform: scale(1.06);
+}
+
+.legal-card-title {
+  margin: 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--legal-text-main);
+  letter-spacing: -0.01em;
+}
+
+.legal-card-kicker {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--legal-text-soft);
+  margin-bottom: 0.15rem;
+}
+
+/* ==========================================================================
+   5. Key-Value Structured Fields
+   ========================================================================== */
+.legal-field-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-grow: 1;
+}
+
+.legal-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--legal-surface-subtle);
+  border-radius: var(--legal-radius-sm);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.legal-field-row:hover {
+  background: var(--legal-surface-hover);
+  border-color: var(--legal-border);
+}
+
+.legal-field-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--legal-text-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.legal-field-value-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.legal-field-value {
+  font-size: 0.96rem;
+  font-weight: 600;
+  color: var(--legal-text-main);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.legal-field-value a {
+  color: var(--legal-primary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.legal-field-value a:hover {
+  text-decoration: underline;
+}
+
+.legal-company-highlight {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--legal-text-main);
+  letter-spacing: -0.01em;
+}
+
+/* ==========================================================================
+   6. Copy-to-Clipboard Interactive Button
+   ========================================================================== */
+.legal-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: var(--legal-radius-sm);
+  background: var(--legal-surface);
+  border: 1px solid var(--legal-border);
+  color: var(--legal-text-soft);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.legal-copy-btn:hover {
+  background: var(--legal-primary-soft);
+  color: var(--legal-primary);
+  border-color: var(--legal-primary-border);
+  transform: scale(1.05);
+}
+
+.legal-copy-btn.copied {
+  background: var(--legal-success-bg);
+  color: var(--legal-success);
+  border-color: var(--legal-success-border);
+}
+
+/* ==========================================================================
+   7. Policy & Warranty Rich Card Details
+   ========================================================================== */
+.legal-policy-badges {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.legal-policy-pill {
+  background: var(--legal-surface-subtle);
+  border: 1px solid var(--legal-border);
+  border-radius: var(--legal-radius-md);
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.legal-policy-pill-icon {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 50%;
+  background: var(--legal-primary-soft);
+  color: var(--legal-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+}
+
+.legal-policy-pill-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.legal-policy-pill-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--legal-text-soft);
+}
+
+.legal-policy-pill-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--legal-text-main);
+}
+
+.legal-policy-desc {
+  background: var(--legal-surface-subtle);
+  border: 1px solid var(--legal-border);
+  border-radius: var(--legal-radius-md);
+  padding: 1.1rem 1.25rem;
+  color: var(--legal-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+  margin: 0;
+}
+
+/* ==========================================================================
+   8. Empty State
+   ========================================================================== */
+.legal-empty-card {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--legal-surface);
+  border: 1px dashed var(--legal-border-strong);
+  border-radius: var(--legal-radius-lg);
+  box-shadow: var(--legal-shadow);
+  margin: 2rem 0;
+}
+
+.legal-empty-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  background: var(--legal-primary-soft);
+  border: 1px solid var(--legal-primary-border);
+  color: var(--legal-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+}
+
+.legal-empty-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--legal-text-main);
+  margin-bottom: 0.65rem;
+}
+
+.legal-empty-desc {
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--legal-text-muted);
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   9. Copy Notification Toast
+   ========================================================================== */
+.legal-toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--legal-text-main);
+  color: var(--legal-surface);
+  padding: 0.75rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 9999;
+}
+
+.legal-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   10. Responsive Viewports & Mobile Optimizations
+   ========================================================================== */
+@media (max-width: 991.98px) {
+  .legal-bento-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .legal-card.span-2 {
+    grid-column: span 1;
+  }
+
+  .legal-header-box {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .legal-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .legal-actions-bar {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .legal-action-btn {
+    flex: 1;
+  }
+
+  .legal-card {
+    padding: 1.25rem;
+  }
+
+  .legal-policy-badges {
+    grid-template-columns: 1fr;
+  }
+
+  .legal-field-value {
+    font-size: 0.9rem;
+  }
+}
+
+/* ==========================================================================
+   11. Official Print Stylesheet (@media print)
+   ========================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 11pt !important;
+  }
+
+  /* Hide non-printable web UI furniture */
+  header,
+  footer,
+  nav,
+  .site-header,
+  .site-footer,
+  .detail-breadcrumb-wrap,
+  .legal-actions-bar,
+  .legal-copy-btn,
+  .legal-toast,
+  .btn,
+  .social-share-wrap,
+  .comments-section {
+    display: none !important;
+  }
+
+  .detail-shell,
+  .detail-card {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .legal-header-box {
+    border: 1px solid #000000 !important;
+    background: #f8fafc !important;
+    padding: 1rem !important;
+    page-break-after: avoid;
+  }
+
+  .legal-verified-badge {
+    border: 1px solid #000000 !important;
+    color: #000000 !important;
+    background: transparent !important;
+  }
+
+  .legal-bento-grid {
+    display: block !important;
+  }
+
+  .legal-card {
+    border: 1px solid #cccccc !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+    margin-bottom: 1.5rem !important;
+    page-break-inside: avoid;
+  }
+
+  .legal-field-row {
+    background: transparent !important;
+    border-bottom: 1px solid #eeeeee !important;
+    padding: 0.4rem 0 !important;
+  }
+
+  .legal-field-label {
+    color: #555555 !important;
+  }
+
+  .legal-field-value {
+    color: #000000 !important;
+  }
+
+  a {
+    color: #000000 !important;
+    text-decoration: none !important;
+  }
+}

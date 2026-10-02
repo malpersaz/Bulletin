@@ -278,25 +278,25 @@ class mod_news_mod extends BaseModuleController
             foreach ($records as $content) {
                 $last = "";
                 if (Role::hasPermission('mod_news', 'edit')) {
-                    $last .= '<button onclick="mod_news_table_ajax.akm.processEdit(' . $content['id'] . ');return false;" class="btn default btn-xs purple hidden-xs">
+                    $last .= '<button data-action="edit" data-id="' . $content['id'] . '" class="btn default btn-xs purple hidden-xs">
     <i class="fa fa-edit"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['edit'] . '</span> </button>';
                 }
                 if (Role::hasPermission('mod_news', 'delete')) {
-                    $last .= '<button onclick="mod_news_table_ajax.akm.processDelete(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs red hidden-xs">
+                    $last .= '<button data-action="delete" data-id="' . $content['id'] . '" class="btn default btn-xs red hidden-xs">
     <i class="fa fa-trash-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['delete'] . '</span> </button>';
                 }
                 if (Role::hasPermission('mod_news', 'gallery')) {
-                    $last .= '<button onclick="mod_news_table_ajax.akm.processGallery(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs blue hidden-xs">
+                    $last .= '<button data-action="gallery" data-id="' . $content['id'] . '" class="btn default btn-xs blue hidden-xs">
     <i class="fa fa-file-image-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['gallery'] . '</span> </button>';
                 }
                 if (Role::hasPermission('mod_news', 'file')) {
-                    $last .= '<button onclick="mod_news_table_ajax.akm.processFile(\'' . $content['id'] . '\'); return false;" class="btn default btn-xs green hidden-xs">
+                    $last .= '<button data-action="file" data-id="' . $content['id'] . '" class="btn default btn-xs green hidden-xs">
     <i class="fa fa-file-zip-o"></i> <span class="hidden-xs">' . $this->lang['mod_news']['button']['file'] . '</span> </button>';
                 }
                 if ($content['status'] == 'y') {
-                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" onclick="mod_news_table_ajax.akm.processQuickUnpublish(' . $content['id'] . '); return false;" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-check"></i></button>';
+                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" data-action="unpublish" data-id="' . $content['id'] . '" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-check"></i></button>';
                 } else {
-                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" onclick="mod_news_table_ajax.akm.processQuickPublish(' . $content['id'] . '); return false;" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-times"></i></button>';
+                     $last .= '<button class="btn btn-xs btn-' . $status_list[$content['status']]['0'] . ' hidden-xs" data-action="publish" data-id="' . $content['id'] . '" title="' . $status_list[$content['status']]['1'] . '"><i class="fa fa-times"></i></button>';
                 }
 
                 $author_name = isset($user_map[$content['user_id']]) ? $user_map[$content['user_id']] : 'Admin';
@@ -305,8 +305,8 @@ class mod_news_mod extends BaseModuleController
                     '<input type="checkbox" name="id[]" value="' . $content['id'] . '">',
                     $content['id'],
                     $content['name'],
-                    '<div style="cursor:pointer;" onclick="mod_news_table_ajax.akm.processImageUpload(' . $content['id'] . '); return false;" title="' . $this->lang['mod_news']['upload_image'] . '">' .
-                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" style="object-fit:cover;">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['add_image'] . '</span></button>') .
+                    '<div class="table-img-trigger" data-action="upload-image" data-id="' . $content['id'] . '" title="' . $this->lang['mod_news']['upload_image'] . '">' .
+                    ($content['image'] ? '<img src="' . $this->site['iaddress'] . 'mod_news/thumb/' . $content['image'] . '" width="50" height="50" class="table-thumb-cover">' : '<button class="btn btn-xs btn-default"><i class="fa fa-plus"></i> <span class="hidden-xs">' . $this->lang['mod_news']['add_image'] . '</span></button>') .
                     '</div>',
                     $content['lang'],
                     $content['created_at'],
@@ -673,6 +673,83 @@ class mod_news_mod extends BaseModuleController
             echo json_encode(['status' => 'error', 'message' => $this->lang['mod_news']['validator']['title_exists']]);
         } else {
             echo json_encode(['status' => 'success', 'message' => $this->lang['mod_news']['validator']['title_unique']]);
+        }
+    }
+
+    /**
+     * AJAX AI Assistant endpoint for editorial tasks (deck generation, headlines, SEO)
+     */
+    public function ajax_ai_assist()
+    {
+        if (Role::hasPermission('mod_news', 'edit') === false && Role::hasPermission('mod_news', 'add') === false) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_news']['role_errors']['edit'] ?? 'Unauthorized.'
+            ]);
+            return;
+        }
+
+        $action = trim((string) Req::Post_Safe('action'));
+        $title = trim((string) Req::Post_Safe('title'));
+        $content = trim((string) Req::Post_Safe('content'));
+        $lang = strtolower(trim((string) Req::Post_Safe('lang')));
+        if (empty($lang)) {
+            $lang = Registry::has('lang') ? Registry::get('lang') : 'ku';
+        }
+
+        $aiService = new AIService();
+        if (!$aiService->hasApiKey()) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_news']['ai']['missing_key'] ?? 'Gemini API key is not configured.'
+            ]);
+            return;
+        }
+
+        switch ($action) {
+            case 'generate_deck':
+                if (empty($content) && empty($title)) {
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'success' => false,
+                        'error' => $this->lang['mod_news']['ai']['content_required'] ?? 'Title or content required.'
+                    ]);
+                    return;
+                }
+                $res = $aiService->generateDeck($title, $content, $lang);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($res);
+                return;
+
+            case 'suggest_headlines':
+                if (empty($content) && empty($title)) {
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'success' => false,
+                        'error' => $this->lang['mod_news']['ai']['content_required'] ?? 'Title or content required.'
+                    ]);
+                    return;
+                }
+                $res = $aiService->suggestHeadlines($content, $title, $lang);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($res);
+                return;
+
+            case 'generate_seo':
+                $res = $aiService->generateSeoMeta($title, $content, $lang);
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($res);
+                return;
+
+            default:
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Invalid AI action.'
+                ]);
+                return;
         }
     }
 

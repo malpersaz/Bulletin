@@ -4,20 +4,331 @@
  * Amed Framework
  * Class: AIService
  * File: AIService.class.php
- * Description: Google Gemini Interactions API REST Client (Stream/cURL Hybrid)
+ * Description: Unified Google Gemini AI Service (generateContent & Interactions API client)
  */
 
 class AIService
 {
-    private $apiKey;
-    private $model;
-    private $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+    private string $apiKey = '';
+    private string $model = 'gemini-3.8-flash';
+    private string $baseUrl = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+    private array $fallbackModels = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-2.5-flash'];
 
-    public function __construct()
+    public function __construct(?string $apiKey = null, ?string $model = null)
     {
-        $site = Registry::has('site_config') ? Registry::get('site_config') : [];
-        $this->apiKey = $site['gemini_api_key'] ?? '';
-        $this->model = $site['gemini_model'] ?? 'gemini-2.5-flash';
+        if (!empty($apiKey)) {
+            $this->apiKey = trim($apiKey);
+        } else {
+            $googleConfig = Registry::has('google_config') ? Registry::get('google_config') : [];
+            if (!empty($googleConfig['gemini_api_key'])) {
+                $this->apiKey = trim((string) $googleConfig['gemini_api_key']);
+            }
+
+            if (empty($this->apiKey)) {
+                $site = Registry::has('site_config') ? Registry::get('site_config') : [];
+                if (!empty($site['gemini_api_key'])) {
+                    $this->apiKey = trim((string) $site['gemini_api_key']);
+                }
+            }
+
+            if (empty($this->apiKey)) {
+                $settingsPath = root_dir . 'data' . DS . 'google_settings.json';
+                if (file_exists($settingsPath)) {
+                    $raw = json_decode((string) file_get_contents($settingsPath), true);
+                    if (!empty($raw['gemini_api_key'])) {
+                        $this->apiKey = trim((string) $raw['gemini_api_key']);
+                    }
+                }
+            }
+        }
+
+        if (!empty($model)) {
+            $this->model = $model;
+        } else {
+            $site = Registry::has('site_config') ? Registry::get('site_config') : [];
+            $this->model = !empty($site['gemini_model']) ? (string) $site['gemini_model'] : 'gemini-3.8-flash';
+        }
+    }
+
+    public function hasApiKey(): bool
+    {
+        return !empty($this->apiKey);
+    }
+
+    public function getApiKey(): string
+    {
+        return $this->apiKey;
+    }
+
+    public function getModel(): string
+    {
+        return $this->model;
+    }
+
+    /**
+     * Executes resilient Gemini API calls with automated model fallback and transient retry
+     */
+    public function generateContent(array $payload, ?string $preferredModel = null): array
+    {
+        if (empty($this->apiKey)) {
+            return [
+                'success' => false,
+                'error' => 'Gemini API Key is not configured in Google Services Hub.'
+            ];
+        }
+
+        $modelsToTry = $this->fallbackModels;
+        if (!empty($preferredModel)) {
+            array_unshift($modelsToTry, $preferredModel);
+            $modelsToTry = array_values(array_unique($modelsToTry));
+        } elseif (!empty($this->model) && !in_array($this->model, $modelsToTry, true)) {
+            array_unshift($modelsToTry, $this->model);
+        }
+
+        $lastError = '';
+
+        foreach ($modelsToTry as $modelName) {
+            $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' . $modelName . ':generateContent?key=' . $this->apiKey;
+
+            for ($attempt = 0; $attempt < 2; $attempt++) {
+                if ($attempt > 0) {
+                    usleep(400000); // 400ms pause before retry
+                }
+
+                $ch = curl_init($apiUrl);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_POST, true);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ]);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+                $response = curl_exec($ch);
+                $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                $curlErr = curl_error($ch);
+                curl_close($ch);
+
+                if ($curlErr) {
+                    $lastError = 'Connection error (cURL): ' . $curlErr;
+                    continue;
+                }
+
+                $resData = json_decode((string) $response, true);
+                if ($httpCode === 200 && !empty($resData['candidates'])) {
+                    $text = $resData['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                    return [
+                        'success' => true,
+                        'data' => $resData,
+                        'text' => $text,
+                        'model' => $modelName,
+                    ];
+                }
+
+                if (($httpCode === 503 || $httpCode === 429) && $attempt === 0) {
+                    continue;
+                }
+
+                if (!empty($resData['error']['message'])) {
+                    $lastError = '[' . $modelName . '] ' . $resData['error']['message'];
+                } elseif ($httpCode !== 200) {
+                    $lastError = '[' . $modelName . '] Google API Error (HTTP ' . $httpCode . ')';
+                }
+                break;
+            }
+        }
+
+        return [
+            'success' => false,
+            'error' => !empty($lastError) ? $lastError : 'No response received from Gemini API.',
+        ];
+    }
+
+    /**
+     * Generates a broadsheet news deck strictly matching Rojname's 90-120 character constraint
+     */
+    public function generateDeck(string $title, string $content, string $lang = 'ku'): array
+    {
+        $langNames = [
+            'ku' => 'Kurmanji Kurdish (Latin alphabet, authentic Kurmancî grammar and orthography)',
+            'ckb' => 'Sorani Kurdish (Arabic script)',
+            'zza' => 'Zazaki Kurdish (Kirmanckî)',
+            'en' => 'English',
+            'tr' => 'Turkish',
+            'de' => 'German',
+            'fr' => 'French',
+            'sv' => 'Swedish',
+            'ar' => 'Arabic'
+        ];
+        $targetLang = $langNames[strtolower($lang)] ?? 'Kurmanji Kurdish';
+
+        $prompt = "You are a senior news copy-editor for a premier broadsheet newspaper (Rojname).\n"
+            . "Task: Analyze the news article provided below and write an editorial deck / summary in {$targetLang}.\n"
+            . "CRITICAL MANDATORY CONSTRAINT:\n"
+            . "- The total length of the deck MUST BE EXACTLY between 90 and 120 characters (including letters, spaces, and punctuation).\n"
+            . "- It must be a complete, grammatically sound sentence.\n"
+            . "- Do not include any meta text or quotes around the deck.\n\n"
+            . "Title: " . $title . "\n"
+            . "Content: " . strip_tags($content);
+
+        $payload = [
+            'contents' => [
+                ['parts' => [['text' => $prompt]]]
+            ],
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+                'responseSchema' => [
+                    'type' => 'OBJECT',
+                    'properties' => [
+                        'deck' => ['type' => 'STRING'],
+                        'char_count' => ['type' => 'INTEGER']
+                    ],
+                    'required' => ['deck']
+                ],
+                'temperature' => 0.3
+            ]
+        ];
+
+        $res = $this->generateContent($payload);
+        if (!$res['success'] || empty($res['text'])) {
+            return $res;
+        }
+
+        $decoded = json_decode($res['text'], true);
+        $deck = trim((string) ($decoded['deck'] ?? ''));
+
+        // Smart calibration if slightly outside bounds
+        $len = mb_strlen($deck);
+        if ($len > 120) {
+            // Trim to nearest word within 120 chars
+            $trimmed = mb_substr($deck, 0, 119);
+            $lastSpace = mb_strrpos($trimmed, ' ');
+            if ($lastSpace !== false && $lastSpace >= 90) {
+                $deck = mb_substr($trimmed, 0, $lastSpace) . '.';
+            } else {
+                $deck = mb_substr($deck, 0, 119) . '.';
+            }
+        }
+
+        return [
+            'success' => true,
+            'deck' => $deck,
+            'length' => mb_strlen($deck),
+            'model' => $res['model']
+        ];
+    }
+
+    /**
+     * Suggests 3 compelling broadsheet headlines for news
+     */
+    public function suggestHeadlines(string $content, string $currentTitle = '', string $lang = 'ku'): array
+    {
+        $langNames = [
+            'ku' => 'Kurmanji Kurdish (Latin alphabet, authentic Kurmancî vocabulary)',
+            'ckb' => 'Sorani Kurdish',
+            'zza' => 'Zazaki Kurdish',
+            'en' => 'English',
+            'tr' => 'Turkish',
+            'de' => 'German',
+            'fr' => 'French',
+            'sv' => 'Swedish',
+            'ar' => 'Arabic'
+        ];
+        $targetLang = $langNames[strtolower($lang)] ?? 'Kurmanji Kurdish';
+
+        $prompt = "You are a chief headline editor for a respected broadsheet news publication.\n"
+            . "Read the article and provide 3 distinct, strong, and journalistic headlines in {$targetLang}.\n"
+            . "Headlines should be clear, objective, and impactful without clickbait.\n\n"
+            . (!empty($currentTitle) ? "Current Working Title: " . $currentTitle . "\n" : "")
+            . "Content: " . strip_tags($content);
+
+        $payload = [
+            'contents' => [
+                ['parts' => [['text' => $prompt]]]
+            ],
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+                'responseSchema' => [
+                    'type' => 'OBJECT',
+                    'properties' => [
+                        'headlines' => [
+                            'type' => 'ARRAY',
+                            'items' => ['type' => 'STRING']
+                        ]
+                    ],
+                    'required' => ['headlines']
+                ],
+                'temperature' => 0.4
+            ]
+        ];
+
+        $res = $this->generateContent($payload);
+        if (!$res['success'] || empty($res['text'])) {
+            return $res;
+        }
+
+        $decoded = json_decode($res['text'], true);
+        $headlines = is_array($decoded['headlines'] ?? null) ? $decoded['headlines'] : [];
+
+        return [
+            'success' => true,
+            'headlines' => array_values(array_filter(array_map('trim', $headlines))),
+            'model' => $res['model']
+        ];
+    }
+
+    /**
+     * Generates structured SEO metadata (Title, Description, Keywords)
+     */
+    public function generateSeoMeta(string $title, string $content, string $lang = 'ku'): array
+    {
+        $prompt = "Analyze the following content and generate an SEO title, a meta description (max 160 characters), and relevant keywords/tags. Return output strictly matching the requested JSON schema.\n\n"
+            . "Title: " . $title . "\n"
+            . "Content: " . strip_tags($content);
+
+        $payload = [
+            'contents' => [
+                ['parts' => [['text' => $prompt]]]
+            ],
+            'generationConfig' => [
+                'responseMimeType' => 'application/json',
+                'responseSchema' => [
+                    'type' => 'OBJECT',
+                    'properties' => [
+                        'seo_title' => ['type' => 'STRING'],
+                        'meta_description' => ['type' => 'STRING'],
+                        'keywords' => [
+                            'type' => 'ARRAY',
+                            'items' => ['type' => 'STRING']
+                        ]
+                    ],
+                    'required' => ['seo_title', 'meta_description', 'keywords']
+                ],
+                'temperature' => 0.3
+            ]
+        ];
+
+        $res = $this->generateContent($payload);
+        if (!$res['success'] || empty($res['text'])) {
+            return $res;
+        }
+
+        $decoded = json_decode($res['text'], true);
+        if (!$decoded) {
+            return [
+                'success' => false,
+                'error' => 'Failed to decode structured JSON from Gemini.'
+            ];
+        }
+
+        return [
+            'success' => true,
+            'seo_title' => $decoded['seo_title'] ?? '',
+            'meta_description' => $decoded['meta_description'] ?? '',
+            'keywords' => implode(', ', $decoded['keywords'] ?? []),
+            'model' => $res['model']
+        ];
     }
 
     /**
@@ -40,7 +351,6 @@ class AIService
             'input' => $inputText
         ];
 
-        // Merge extra config if provided
         if (isset($options['store'])) {
             $payload['store'] = (bool)$options['store'];
         }
@@ -62,7 +372,6 @@ class AIService
 
         $jsonPayload = json_encode($payload);
 
-        // Fallback to PHP Streams if curl is not installed/enabled
         if (!function_exists('curl_init')) {
             return $this->sendViaStreams($url, $headers, $jsonPayload);
         }
@@ -86,7 +395,7 @@ class AIService
                 'method'  => 'POST',
                 'content' => $jsonPayload,
                 'timeout' => 30,
-                'ignore_errors' => true // Capture response body even on non-200 HTTP codes
+                'ignore_errors' => true
             ]
         ];
 
@@ -99,14 +408,13 @@ class AIService
             return null;
         }
 
-        // Extract HTTP Response Code from response headers
         $httpCode = 0;
-        $headers = function_exists('http_get_last_response_headers')
+        $respHeaders = function_exists('http_get_last_response_headers')
             ? http_get_last_response_headers()
             : ($http_response_header ?? null);
 
-        if ($headers !== null && is_array($headers) && isset($headers[0])) {
-            preg_match('{HTTP\/\S*\s(\d+)}', $headers[0], $matches);
+        if ($respHeaders !== null && is_array($respHeaders) && isset($respHeaders[0])) {
+            preg_match('{HTTP\/\S*\s(\d+)}', $respHeaders[0], $matches);
             $httpCode = isset($matches[1]) ? intval($matches[1]) : 0;
         }
 

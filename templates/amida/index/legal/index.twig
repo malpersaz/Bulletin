@@ -1,12 +1,15 @@
 {% extends "layouts/base.twig" %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ "now"|date("U") }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
 {% set page_meta_title = lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' %}
 {% set page_meta_description = lang.index.legal_info_pending is defined and lang.index.legal_info_pending is not empty ? lang.index.legal_info_pending : site.description %}
+{% set site_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
+{% set page_logo_asset = site.iaddress ~ 'mod_settings/' ~ site_fallback_icon %}
 
 {% block canonical %}
 	<link rel="canonical" href="{{ site.saddress }}legal"/>
@@ -26,11 +29,73 @@
 	<meta property="og:title" content="{{ page_meta_title }}">
 	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
 	<meta property="og:site_name" content="{{ site.name }}">
-	<meta property="og:locale" content="{{ site.lang }}">
+	{% set og_locale = site.lang %}
+	{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+	{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+	{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+	{% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
+	{% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
+	{% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
+	{% endif %}
+	<meta property="og:locale" content="{{ og_locale }}">
+
 	<meta name="twitter:card" content="summary">
 	<meta name="twitter:url" content="{{ site.saddress }}legal">
 	<meta name="twitter:title" content="{{ page_meta_title }}">
 	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+{% endblock %}
+
+{% block schema %}
+	<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@graph": [
+		    {
+		      "@type": "AboutPage",
+		      "@id": {{ (site.saddress ~ 'legal#webpage')|json_encode|raw }},
+		      "url": {{ (site.saddress ~ 'legal')|json_encode|raw }},
+		      "name": {{ page_meta_title|json_encode|raw }},
+		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
+		      "isPartOf": {
+		        "@type": "WebSite",
+		        "@id": {{ (site.saddress ~ '#website')|json_encode|raw }},
+		        "name": {{ site.name|json_encode|raw }},
+		        "url": {{ site.address|json_encode|raw }}
+		      },
+		      "breadcrumb": {
+		        "@type": "BreadcrumbList",
+		        "itemListElement": [
+		          {
+		            "@type": "ListItem",
+		            "position": 1,
+		            "name": {{ lang.index.home|default('Home')|json_encode|raw }},
+		            "item": {{ site.saddress|json_encode|raw }}
+		          },
+		          {
+		            "@type": "ListItem",
+		            "position": 2,
+		            "name": {{ page_meta_title|json_encode|raw }},
+		            "item": {{ (site.saddress ~ 'legal')|json_encode|raw }}
+		          }
+		        ]
+		      }
+		    },
+		    {
+		      "@type": "NewsMediaOrganization",
+		      "@id": {{ (site.saddress ~ '#organization')|json_encode|raw }},
+		      "name": {{ site.name|json_encode|raw }},
+		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
+		      {% if site.vat_number is defined and site.vat_number is not empty %}"vatID": {{ site.vat_number|json_encode|raw }},{% endif %}
+		      {% if site.tax_number is defined and site.tax_number is not empty %}"taxID": {{ site.tax_number|json_encode|raw }},{% endif %}
+		      {% if site.central_registration_number is defined and site.central_registration_number is not empty %}"leiCode": {{ site.central_registration_number|json_encode|raw }},{% endif %}
+		      {% if site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_encode|raw }},{% endif %}
+		      {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_encode|raw }},{% endif %}
+		      "url": {{ site.address|json_encode|raw }},
+		      "logo": {{ page_logo_asset|json_encode|raw }}
+		    }
+		  ]
+		}
+	</script>
 {% endblock %}
 
 {% block content %}
@@ -40,15 +105,17 @@
 			<div class="detail-page-content w-100">
 				<article class="detail-card">
 					<div class="detail-breadcrumb-wrap mb-4">
-						<nav aria-label="{{ lang.index.home }}">
-							<ol class="breadcrumb">
-								<li class="breadcrumb-item">
-									<a href="{{ site.saddress }}">
-										<span>{{ lang.index.home }}</span>
+						<nav aria-label="{{ lang.index.home|default('Home') }}">
+							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<a itemprop="item" href="{{ site.saddress }}">
+										<span itemprop="name">{{ lang.index.home|default('Home') }}</span>
 									</a>
+									<meta itemprop="position" content="1"/>
 								</li>
-								<li class="breadcrumb-item active" aria-current="page">
-									<span>{{ page_meta_title }}</span>
+								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<span itemprop="name">{{ page_meta_title }}</span>
+									<meta itemprop="position" content="2"/>
 								</li>
 							</ol>
 						</nav>
@@ -71,4 +138,8 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block js_custom %}
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/legal-info.js?v={{ site.version|default('1.0') }}"></script>
 {% endblock %}

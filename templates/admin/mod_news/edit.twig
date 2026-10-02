@@ -24,7 +24,11 @@
 		data-error-message="{{ (message is defined ? message : (errors is defined and errors is not empty ? errors[0] : ''))|escape('html_attr') }}"
 		data-ok-text="{{ lang.mod_news.button.ok|escape('html_attr') }}"
 		data-success-url="{% if success is defined %}{{ site.saddress }}mod_news/list{% endif %}"
-		data-redirect-delay="2000">
+		data-redirect-delay="2000"
+		data-ai-url="{{ site.saddress }}mod_news/ajax_ai_assist"
+		data-ai-generating="{{ (lang.mod_news.ai.generating is defined ? lang.mod_news.ai.generating : 'Generating...')|escape('html_attr') }}"
+		data-ai-select-headline="{{ (lang.mod_news.ai.select_headline is defined ? lang.mod_news.ai.select_headline : 'Select a Headline')|escape('html_attr') }}"
+		data-ai-copy="{{ (lang.mod_news.ai.copy is defined ? lang.mod_news.ai.copy : 'Use This')|escape('html_attr') }}">
 		<input type="hidden" name="edit" value="1">
 		<input type="hidden" name="lang" id="editLang" value="{{ d.lang|lower }}">
 		<input type="hidden" name="category_id" id="editCategoryId" value="{{ d.category_id }}">
@@ -86,6 +90,13 @@
 						<input type="text" class="m3-input-lg" name="name" id="editTitleInput" placeholder=" " autocomplete="off" value="{{ d.name }}" required>
 						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title }}</label>
 					</div>
+					<div class="ai-action-bar">
+						<button type="button" class="m3-ai-btn" id="btnAiSuggestHeadlines" data-action="ai-suggest-headlines" title="{{ (lang.mod_news.ai.suggest_headlines is defined ? lang.mod_news.ai.suggest_headlines : 'Suggest Headlines with AI')|escape('html_attr') }}">
+							<i class="bi bi-stars"></i>
+							<span>{{ lang.mod_news.ai.suggest_headlines is defined ? lang.mod_news.ai.suggest_headlines : 'Suggest Headlines' }}</span>
+						</button>
+					</div>
+					<div id="aiHeadlinesContainer" class="ai-suggestions-container is-hidden"></div>
 				</div>
 
 				<div class="form-row">
@@ -110,7 +121,13 @@
 						<textarea class="m3-input-lg" name="summary" id="editIntroInput" rows="3" placeholder=" " minlength="90" maxlength="120" data-counter-target="editIntroCounter" data-counter-min="90" data-counter-max="120" required>{{ d.summary|striptags }}</textarea>
 						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.intro_text }}</label>
 					</div>
-					<div class="char-counter" id="editIntroCounter">{{ d.summary|length }} / 120</div>
+					<div class="deck-helper-bar">
+						<div class="char-counter" id="editIntroCounter">{{ d.summary|length }} / 120</div>
+						<button type="button" class="m3-ai-btn" id="btnAiGenerateDeck" data-action="ai-generate-deck" title="{{ (lang.mod_news.ai.generate_deck is defined ? lang.mod_news.ai.generate_deck : 'Generate Deck with AI')|escape('html_attr') }}">
+							<i class="bi bi-stars"></i>
+							<span>{{ lang.mod_news.ai.generate_deck is defined ? lang.mod_news.ai.generate_deck : 'Generate Deck with AI' }}</span>
+						</button>
+					</div>
 				</div>
 
 				{# Deck toggle #}
