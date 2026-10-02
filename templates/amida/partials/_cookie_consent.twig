@@ -1,12 +1,12 @@
-<div id="cookieConsentBanner" class="cookie-consent-banner d-none" aria-hidden="true" role="dialog" aria-live="polite">
+<div id="cookieConsentBanner" class="cookie-consent-banner d-none" aria-hidden="true" role="dialog" aria-modal="false" aria-label="{{ lang.index.cookie_policy }}" aria-live="polite">
     <div class="container cookie-consent-container">
         <div class="cookie-consent-content">
             <i class="bi bi-cookie cookie-consent-icon" aria-hidden="true"></i>
-            <p class="cookie-consent-text">{{ lang.index.cookie_consent_message|default(lang.index.cookie_consent.message|default('We use cookies to improve your experience and analyze website traffic.')) }}</p>
+            <p class="cookie-consent-text">{{ lang.index.cookie_consent.message }}</p>
         </div>
         <div class="cookie-consent-actions">
-            <button id="acceptCookies" type="button" class="btn btn-primary btn-sm">{{ lang.index.cookie_consent_accept|default(lang.index.cookie_consent.accept_button|default('Accept')) }}</button>
-            <a href="{{ site.saddress }}page/{{ lang.index.cookie_policy_slug is defined and lang.index.cookie_policy_slug is not empty ? lang.index.cookie_policy_slug : 'Cookie_Policy' }}" class="btn btn-outline-light btn-sm cookie-policy-btn">{{ lang.index.cookie_policy|default(lang.index.cookie_consent.policy_link|default('Cookie Policy')) }}</a>
+            <button id="acceptCookies" type="button" class="btn btn-primary btn-sm">{{ lang.index.cookie_consent.accept_button }}</button>
+            <a href="{{ site.saddress }}page/{{ lang.index.cookie_policy_slug }}" class="btn btn-outline-light btn-sm cookie-policy-btn">{{ lang.index.cookie_consent.policy_link }}</a>
         </div>
     </div>
 </div>

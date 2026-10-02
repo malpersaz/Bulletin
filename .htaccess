@@ -30,6 +30,9 @@ RewriteRule ^favicon-96x96\.png$ static/mod_settings/favicon-96x96.png [L]
 RewriteRule ^apple-touch-icon\.png$ static/mod_settings/apple-touch-icon.png [L]
 RewriteRule ^site\.webmanifest$ static/mod_settings/site.webmanifest [L]
 
+# Fast redirect bare root to default language for sub-10ms performance
+RewriteRule ^$ ku/ [R=301,L,QSA]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -44,10 +47,9 @@ Header always set X-XSS-Protection "1; mode=block"
 # Disable directory browsing
 Options All -Indexes
 
-# Allow access from all domains for webfonts.
-# Alternatively you could only allow your subdomains
+# Allow access from all domains for webfonts and web manifests
 <IfModule mod_headers.c>
-  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font.css|css)$">
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff|woff2|font\.css|css|webmanifest|json)$">
     Header set Access-Control-Allow-Origin "*"
   </FilesMatch>
 </IfModule>

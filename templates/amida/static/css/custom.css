@@ -8,8 +8,8 @@
    ------------------------------------------------------------------------- */
 :root {
   /* Bootstrap Ana Renkler */
-  --bs-primary: #007bff;
-  --bs-secondary: #6c757d;
+  --bs-primary: #0a58ca;
+  --bs-secondary: #595c5f;
   --bs-success: #28a745;
   --bs-info: #17a2b8;
   --bs-warning: #ffc107;
@@ -23,10 +23,10 @@
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* AKM Özel Renk Paleti */
-  --akm-primary: #007bff;
-  --akm-secondary: #6c757d;
+  --akm-primary: #0a58ca;
+  --akm-secondary: #595c5f;
   --akm-accent: #28a745;
-  --akm-blue: #007bff;
+  --akm-blue: #0a58ca;
   --akm-green: #28a745;
   --akm-orange: #ffc107;
   --akm-red: #dc3545;

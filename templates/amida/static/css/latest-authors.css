@@ -163,6 +163,11 @@
     object-fit: cover;
 }
 
+#latest-publication-authors .latest-authors-avatar span {
+    color: var(--akm-primary, #0a58ca);
+    font-weight: 700;
+}
+
 @media (min-width: 992px) {
     #latest-publication-authors {
         padding-left: 1.5rem;

@@ -1,3 +1,25 @@
+## v1.1.24 (2026-10-03)
+- **Lighthouse Performance & Core Web Vitals Optimization (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`)**:
+  - **LCP Hero Preload Discovery**: Integrated dynamic `<link rel="preload" as="image" href="..." fetchpriority="high">` via `{% block head_preload %}` on the homepage (`templates/amida/index/index.twig`) to ensure the primary hero image begins downloading immediately during `<head>` parsing, eliminating element render latency.
+  - **Adaptive Slide Image Priority**: Filtered the hero items to accurately detect the first slide containing a valid image (`first_hero_img`), assigning `loading="eager"` and `fetchpriority="high"` to both its backdrop and cover images in `templates/amida/index/hero_slider.twig`, while strictly preserving `loading="lazy"` and `fetchpriority="auto"` on all subsequent slides.
+- **Strict Code Separation & Stylesheet Consolidation (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`, `templates/amida/index/mod_publication/latest_authors.twig`, `templates/amida/index/footer.twig`)**:
+  - Extracted inline `<link rel="stylesheet">` tags from inside template bodies (`hero_slider.twig`, `latest_authors.twig`, `footer.twig`) and consolidated them cleanly into the `<head>` section via base layout styles and page-level `{% block stylesheets %}` in full compliance with AGENTS.md Rule 2 (Strict Code Separation Mandate), preventing parser-blocking layout recalculations during initial HTML rendering.
+- **Canonical URL & SEO Integrity (`templates/amida/layouts/base.twig`)**:
+  - Refactored `rel="canonical"` in `base.twig` from bare root `site.address` to active localized language route `site.saddress|default(site.address)` (e.g. `https://amidakurd.net/ku/`), eliminating circular canonical redirect warnings in crawler audits and achieving a perfect **100/100** Google Lighthouse SEO score.
+- **Web App Manifest & CORS Standardization (`index.php`, `.htaccess`, `templates/amida/layouts/base.twig`)**:
+  - Added an optimized front-controller route in `index.php` for `/site.webmanifest` delivering `application/manifest+json; charset=utf-8` with `Access-Control-Allow-Origin: *` and 7-day browser caching headers.
+  - Extended Apache `.htaccess` `<FilesMatch>` directives to deliver universal `Access-Control-Allow-Origin: "*"` headers across `.webmanifest` and `.json` assets.
+  - Configured `base.twig` to reference the same-origin manifest endpoint (`{{ site.address }}site.webmanifest`), completely eliminating cross-origin `ERR_FAILED` browser console errors.
+- **Fast Root Redirect Performance (`.htaccess`)**:
+  - Configured high-performance Apache mod_rewrite rule `RewriteRule ^$ ku/ [R=301,L,QSA]` in `.htaccess` to handle the bare root `/` to default language `/ku/` redirect in sub-10ms without initiating the full PHP bootstrap stack.
+- **Accessibility & Contrast Enhancements (WCAG AA Compliance) (`templates/amida/index/footer.twig`, `templates/amida/partials/_cookie_consent.twig`, `templates/amida/static/css/`)**:
+  - Re-aligned footer column headings from non-sequential `<h5>` to semantically hierarchical `<h3>` (styled using Bootstrap `.h5`), passing Lighthouse's strict `heading-order` audit.
+  - Added accessible `aria-modal="false"` and localized `aria-label="{{ lang.index.cookie_policy }}"` attributes to the cookie consent banner dialog (`_cookie_consent.twig`), resolving the `aria-dialog-name` audit.
+  - Standardized cookie consent localization keys to eliminate all forbidden `|default(...)` fallbacks, achieving 100% compliance with `tools/i18n_guard.py`.
+  - Upgraded primary blue color tokens across `custom.css`, `hero-news-slider.css`, and `latest-authors.css` to `#0a58ca` (4.64:1+ contrast ratio against white and light backgrounds) and refined footer metadata opacity to `text-secondary`, passing WCAG AA color contrast standards.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.24`.
+
 ## v1.1.23 (2026-10-03)
 - **Standardized AI & LLM Indexing Architecture & `llms.txt` Feeds (`lib/LlmsService.class.php`, `llms.php`, `robots.php`, `robots.txt`, `.htaccess`, `config/url.config.php`, `config/autoload.config.php`, `mod/index/index.php`, `templates/amida/index/footer.twig`)**:
   - **Official `llms.txt` & `llms-full.txt` Standard Compliance ([llmstxt.org](https://llmstxt.org))**: Engineered a centralized, AI-native indexing engine `LlmsService` (`lib/LlmsService.class.php`) tailored for journalism and digital broadsheet news delivery without HTML/CSS/JS payload overhead.

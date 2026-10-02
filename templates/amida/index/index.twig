@@ -1,5 +1,20 @@
 {% extends "layouts/base.twig" %}
 
+{% block head_preload %}
+    {{ parent() }}
+    {{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
+    {% set first_hero_img = (ctx_get('hero_slider')|filter(s => s.image_url is defined and s.image_url is not empty))|first %}
+    {% if first_hero_img and first_hero_img.image_url is not empty %}
+        {% set preload_img = first_hero_img.thumb_url is defined and first_hero_img.thumb_url is not empty ? first_hero_img.thumb_url : first_hero_img.image_url %}
+        <link rel="preload" as="image" href="{{ preload_img }}" fetchpriority="high">
+    {% endif %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ "now"|date("U") }}">
+{% endblock %}
 
 {% block content %}
 <!-- START: index/index.twig -->

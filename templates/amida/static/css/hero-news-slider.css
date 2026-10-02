@@ -264,11 +264,11 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: #ffffff;
-    background: var(--akm-primary, #0d6efd);
+    background: var(--akm-primary, #0a58ca);
     border-radius: 9999px;
     text-decoration: none;
     transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.35);
+    box-shadow: 0 2px 8px rgba(10, 88, 202, 0.35);
     font-family: var(--bs-font-sans-serif);
 }
 

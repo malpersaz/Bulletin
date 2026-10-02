@@ -14,8 +14,9 @@
 		{% endblock %}
 		{% block keywords %}<meta name="keywords" content="{{ site.keywords }}">
 		{% endblock %}
-		{% block canonical %}<link rel="canonical" href="{{ site.address }}"/>
+		{% block canonical %}<link rel="canonical" href="{{ site.saddress|default(site.address) }}"/>
 		{% endblock %}
+		{% block head_preload %}{% endblock %}
 
 		{% block meta_tags %}
 			<!-- Standard Meta -->
@@ -69,7 +70,7 @@
 			<link rel="apple-touch-icon" sizes="180x180" href="{{ apple_touch_asset }}"/>
 		{% endif %}
 		{% if manifest_asset is not empty %}
-			<link rel="manifest" href="{{ manifest_asset }}" crossorigin="anonymous"/>
+			<link rel="manifest" href="{{ site.address }}site.webmanifest"/>
 		{% endif %}
 
 		<!-- Google Fonts -->
@@ -93,6 +94,9 @@
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.css?v={{ "now"|date("U") }}">
 		<!-- Stacked Top Menu CSS -->
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/stacked-top-menu.css?v={{ "now"|date("U") }}">
+		<!-- Footer CSS -->
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ "now"|date("U") }}">
+		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
 			<!-- Google tag (gtag.js) -->

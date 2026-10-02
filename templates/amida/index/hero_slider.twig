@@ -1,8 +1,7 @@
 {% set hero_slider = hero_slider_items|default(ctx_get('hero_slider')) %}
+{% set first_hero_img = (hero_slider|filter(s => s.image_url is defined and s.image_url is not empty))|first %}
 
 {% if hero_slider and hero_slider|length > 0 %}
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ "now"|date("U") }}">
-
 <section id="heroNewsSlider" class="hero-news-slider hero-slider-shell" aria-label="{{ lang.index.hero_slider.title }}">
     <div class="swiper hero-news-swiper">
         <div class="swiper-wrapper">
@@ -27,11 +26,13 @@
                     {% elseif item.embed_url is defined and item.embed_url is not empty and ('youtube' in item.embed_url or 'vimeo' in item.embed_url or 'dailymotion' in item.embed_url) %}
                         <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" title="{{ item.name|escape('html_attr') }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
                     {% elseif item.image_url is not empty %}
+                        {% set is_lcp_img = (item == first_hero_img) %}
                         <div class="hero-slide__backdrop" aria-hidden="true">
                             <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
                                  alt=""
                                  class="hero-slide__backdrop-img"
-                                 loading="{{ loop.first ? 'eager' : 'lazy' }}"
+                                 loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
+                                 fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"
                                  decoding="async">
                         </div>
                         <picture class="hero-slide__picture">
@@ -43,8 +44,8 @@
                                  width="1200"
                                  height="675"
                                  class="hero-slide__cover-img"
-                                 loading="{{ loop.first ? 'eager' : 'lazy' }}"
-                                 fetchpriority="{{ loop.first ? 'high' : 'auto' }}"
+                                 loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
+                                 fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"
                                  decoding="async">
                         </picture>
                     {% endif %}

@@ -24,6 +24,19 @@ if (!$isAjaxRequest) {
     ob_start();
 }
 
+// Direct handler for site.webmanifest with proper CORS and MIME type
+$reqPath = parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '';
+if ($reqPath === '/site.webmanifest') {
+    $manifestFile = __DIR__ . '/static/mod_settings/site.webmanifest';
+    if (file_exists($manifestFile)) {
+        header('Content-Type: application/manifest+json; charset=utf-8');
+        header('Access-Control-Allow-Origin: *');
+        header('Cache-Control: public, max-age=604800');
+        readfile($manifestFile);
+        exit;
+    }
+}
+
 // Error display
 if ($isAjaxRequest) {
     ini_set('display_errors', 0);
