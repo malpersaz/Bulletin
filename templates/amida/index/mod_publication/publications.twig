@@ -39,7 +39,7 @@
 
 {% block css_custom %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/publications.css?v={{ site.version|default('1.1.25') }}">
 {% endblock %}
 
 {% block content %}

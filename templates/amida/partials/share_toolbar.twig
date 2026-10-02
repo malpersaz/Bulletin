@@ -18,7 +18,7 @@
 {% set can_show_tools = show_tools|default(true) and target_mod is not empty and target_id is not empty %}
 {% set can_show_share = show_share|default(true) %}
 
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version|default('1.1.25') }}">
 
 <div class="share-toolbar-wrapper d-print-none {{ share_wrap_class|default('') }}">
     {% if can_show_share %}
@@ -52,7 +52,7 @@
                     <i class="bi bi-whatsapp"></i>
                 </a>
 
-                {# TikTok #}
+                {# TikTok share #}
                 <button type="button" class="social-share-btn btn-tiktok border-0" aria-label="TikTok" data-bs-toggle="tooltip" data-bs-placement="top" title="TikTok" data-share-network="tiktok" data-share-title="{{ target_title|escape('html_attr') }}" data-share-url="{{ target_url }}" data-copied-text="{{ lang.index.link_copied }}">
                     <i class="bi bi-tiktok"></i>
                 </button>
@@ -96,4 +96,4 @@
     </div>
 </div>
 
-<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ "now"|date("U") }}"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version|default('1.1.25') }}"></script>

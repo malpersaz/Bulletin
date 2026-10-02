@@ -33,7 +33,7 @@
                     </span>
                     <a class="latest-authors-avatar" href="{{ site.saddress }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
                         {% if author.user_image is defined and author.user_image is not empty %}
-                            <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" loading="lazy">
+                            <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" width="52" height="52" loading="lazy" decoding="async">
                         {% else %}
                             <span>{{ latest_author_initials }}</span>
                         {% endif %}

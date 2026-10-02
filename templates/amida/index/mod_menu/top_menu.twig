@@ -10,10 +10,6 @@
 	: (session.name is defined and session.name is not empty ? session.name : session_username) %}
 {% set session_logout_sid = session.sid is defined and session.sid is not empty ? session.sid : null %}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@600;700;800&family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Pirata+One&family=UnifrakturCook:wght@700&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
-
 <nav class="navbar navbar-expand-lg sticky-top" aria-label="{{ lang.index.navigation }}" id="amidaMainHeader">
 	<div class="container">
 		<!-- Brand/Logo -->
@@ -334,13 +330,13 @@
 {% endif %}
 
 <!-- CSS -->
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/top-menu.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/top-menu.css?v={{ site.version|default('1.1.25') }}">
 {% if not is_logged_in %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version|default('1.1.25') }}">
 {% endif %}
 
 <!-- JavaScript -->
-<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ "now"|date("U") }}"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1.1.25') }}"></script>
 {% if not is_logged_in %}
-	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ "now"|date("U") }}"></script>
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1.1.25') }}"></script>
 {% endif %}

@@ -1,7 +1,7 @@
 {{ run({"mod": "index", "method": "_latest_publications", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,deck"]}) }}
 {% set latest_publications = ctx_get('latest_publications') %}
 
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.25') }}">
 
 {% if latest_publications is not empty %}
     <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
@@ -25,10 +25,16 @@
                     <div class="latest-pub-card">
                         <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="latest-pub-media" title="{{ publication.name }}">
                             {% if publication.image is not empty %}
-                                <img src="{{ site.iaddress }}mod_publication/{{ publication.image }}"
-                                     class="latest-pub-img"
-                                     alt="{{ publication.name }}"
-                                     loading="lazy">
+                                <picture>
+                                    <source srcset="{{ site.iaddress }}mod_publication/thumb/{{ publication.image }}" media="(max-width: 768px)">
+                                    <img src="{{ site.iaddress }}mod_publication/thumb/{{ publication.image }}"
+                                         class="latest-pub-img"
+                                         alt="{{ publication.name }}"
+                                         width="400"
+                                         height="260"
+                                         loading="lazy"
+                                         decoding="async">
+                                </picture>
                             {% else %}
                                 <div class="latest-pub-placeholder">
                                     <i class="bi bi-journal-text latest-pub-placeholder-icon" aria-hidden="true"></i>

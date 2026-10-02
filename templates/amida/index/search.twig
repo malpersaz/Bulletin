@@ -2,7 +2,7 @@
 
 {% block css_custom %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/search.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/search.css?v={{ site.version|default('1.1.25') }}">
 {% endblock %}
 
 {% block content %}

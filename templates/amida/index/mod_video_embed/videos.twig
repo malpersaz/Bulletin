@@ -1,7 +1,7 @@
 {% extends "layouts/base.twig" %}
 
 {% block css_custom %}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ "now"|date("U") }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version|default('1.1.25') }}">
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,7 @@
 
     <!-- Sol Sütun: Kategoriler -->
     <aside class="col-lg-3 order-lg-1 mb-4">
-        <div class="card position-sticky" style="top: 2rem;" aria-labelledby="video-categories-title">
+        <div class="card sticky-top" aria-labelledby="video-categories-title">
             <div class="card-header">
                 <h2 id="video-categories-title" class="h5"><i class="bi bi-camera-video me-2"></i>{{ lang.index.mod_video_embed.1 }}</h2>
             </div>
@@ -55,7 +55,8 @@
                                        data-bs-toggle="lightbox"
                                        data-gallery="videos"
                                        data-title="{{ video.name }}">
-                                        <div class="video-poster" style="background-image: url('{{ site.iaddress }}mod_video_embed/{{ video.image }}');">
+                                        <div class="video-poster">
+                                            <img src="{{ site.iaddress }}mod_video_embed/thumb/{{ video.image }}" alt="{{ video.name }}" class="w-100 h-100 object-fit-cover" width="480" height="270" loading="lazy" decoding="async">
                                             <i class="bi bi-play-circle-fill play-icon"></i>
                                         </div>
                                     </a>

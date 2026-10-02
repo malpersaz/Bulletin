@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/register.css?v={{ "now"|date("U") }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/register.css?v={{ site.version|default('1.1.25') }}">
 {% endblock %}
 
 {% block content %}
@@ -277,5 +277,5 @@
 {% endblock %}
 
 {% block js_custom %}
-	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/register.js?v={{ "now"|date("U") }}" defer></script>
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/register.js?v={{ site.version|default('1.1.25') }}" defer></script>
 {% endblock %}

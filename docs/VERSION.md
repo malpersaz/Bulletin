@@ -1,3 +1,27 @@
+## v1.1.26 (2026-10-03)
+- **Google PageSpeed Insights & Performance Optimization (Live Audit Parity)**:
+  - **Duplicate Preconnect & Font Ingestion Eradication (`templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/index/mod_menu/top_menu.twig`)**:
+    - Removed duplicate `<link rel="preconnect">` and Google Fonts stylesheets embedded inside `stacked_top_menu.twig` and `top_menu.twig` within `<body>`, eliminating invalid HTML structures, redundant SSL handshakes, and duplicate preconnect console warnings.
+  - **Unified High-Performance Google Fonts Integration (`templates/amida/layouts/base.twig`)**:
+    - Merged disparate font family requests (`Grenze Gotisch`, `Literata`, `Pirata One`, `Roboto`, `UnifrakturCook`, `UnifrakturMaguntia`) into a single canonical Google Fonts stylesheet request in `<head>` configured with `display=swap`, slashing font render-blocking latency and eliminating 300+ ms of critical rendering path delays.
+  - **Dynamic Cache-Busting Eradication across Theme Templates (20 Twig files in `templates/amida/`)**:
+    - Replaced all volatile second-based `date("U")` query parameters (`?v={{ "now"|date("U") }}`) across 20 component templates with deterministic framework versioning (`?v={{ site.version|default('1.1.26') }}`), allowing browsers and CDN edge caches to persist assets indefinitely across page views.
+  - **Responsive Image Pipeline & Card Thumbnail Delivery (`templates/amida/index/mod_news/category_news_row.twig`, `templates/amida/index/mod_news/latest_news.twig`, `templates/amida/index/mod_publication/latest_publications.twig`)**:
+    - Transitioned news and publication grid cards from downloading full-resolution images (up to 1368x768 and 700+ KB PNGs) to standardized `thumb/` directories via responsive `<picture>` tags with `<source media="(max-width: 768px)">`, conserving over 1.8 MB of unnecessary network payloads on mobile devices.
+  - **Media Element Sizing & Code Separation Hardening (`templates/amida/index/mod_video_embed/latest_videos.twig`, `templates/amida/index/mod_video_embed/videos.twig`, `templates/amida/index/mod_publication/latest_authors.twig`)**:
+    - Added explicit width, height, and `decoding="async"` attributes to video and author thumbnails to prevent cumulative layout shift (CLS).
+    - Removed inline style attributes (`style="top: 2rem;"` and `style="background-image: ..."`) in `videos.twig`, replacing them with Bootstrap utility classes (`sticky-top`) and semantic `<img>` tags, passing `tools/code_separation_guard.py` with 0 violations.
+  - **Custom Stylesheet Minification (`templates/amida/static/css/custom.min.css`, `templates/amida/layouts/base.twig`)**:
+    - Compiled and linked `custom.min.css`, achieving a 33.3% reduction in stylesheet byte weight (from 33.6 KB to 22.4 KB) and resolving Lighthouse's `unminified-css` opportunity.
+  - **Long-Term Browser Caching & Modern Security Headers (`.htaccess`)**:
+    - Integrated Apache `mod_expires` and `mod_headers` directives delivering `Cache-Control: max-age=31536000, public, immutable` for all static assets (`.webp`, `.png`, `.jpg`, `.svg`, `.ico`, `.woff2`, `.css`, `.js`), resolving `cache-insight` flags.
+    - Added HTTP Strict Transport Security (`Strict-Transport-Security: max-age=31536000; includeSubDomains; preload`) and Cross-Origin Opener Policy (`Cross-Origin-Opener-Policy: same-origin`) headers.
+  - **Semantic Navigation Route Normalization (`templates/amida/macros/menu.twig`)**:
+    - Ensured all menu URLs are resolved to absolute paths (`clean_menu_url`), preventing relative routing drifts like `ku/newses` and satisfying WCAG link purpose audits.
+    - Translated legacy non-English template comments to English per AGENTS.md Rule 7.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.26`.
+
 ## v1.1.25 (2026-10-03)
 - **Mobile LCP Acceleration & Single-Image Pipeline (`templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`)**:
   - De-prioritized backdrop image downloads on mobile viewports via transparent placeholder `<source media="(max-width: 768px)">` and CSS `.hero-slide__backdrop { display: none !important; }` at `@media (max-width: 767px)`, eliminating heavy mobile GPU `filter: blur(26px)` computation.

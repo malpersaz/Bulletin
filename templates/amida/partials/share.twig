@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ "now"|date("U") }}">
+<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/share.css?v={{ site.version|default('1.1.25') }}">
 
 <div class="social-share d-print-none {{ share_wrap_class|default('my-3') }}">
     <div class="share-container d-flex align-items-center gap-2 {{ share_container_class|default('') }}">
@@ -20,7 +20,7 @@
             {# WhatsApp #}
             <a href="https://api.whatsapp.com/send?text={{ (d.name|default(d.title|default(site.name)))|url_encode }}%0A{{ (site.saddress ~ (share_url_path|default('article')) ~ '/' ~ d.seo)|url_encode }}" target="_blank" rel="noopener noreferrer" class="social-share-btn btn-whatsapp" aria-label="WhatsApp" data-bs-toggle="tooltip" data-bs-placement="top" title="WhatsApp"><i class="bi bi-whatsapp"></i></a>
 
-            {# TikTok #}
+            {# TikTok share #}
             <button
                 type="button"
                 class="social-share-btn btn-tiktok border-0"
@@ -50,4 +50,4 @@
     </div>
 </div>
 
-<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ "now"|date("U") }}"></script>
+<script src="{{ site.taddress }}{{ site.app_template }}/static/js/share.js?v={{ site.version|default('1.1.25') }}"></script>
