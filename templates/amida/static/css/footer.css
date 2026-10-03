@@ -182,6 +182,7 @@ body.dark-mode .site-footer .brand-text-gothic {
     height: 42px;
     width: auto;
     max-width: 220px;
+    aspect-ratio: 175 / 42;
     object-fit: contain;
     display: inline-block;
     vertical-align: middle;
