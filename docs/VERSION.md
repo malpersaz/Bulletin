@@ -1,3 +1,11 @@
+## v1.1.28 (2026-10-03)
+- **Responsive Media & Image Preload Diagnostics**:
+  - **Inline SVG Data URI Srcset Encoding (`templates/amida/index/hero_slider.twig`)**:
+    - Resolved Chrome/Blink console parser error (`Failed parsing 'srcset' attribute value since it has an unknown descriptor. Dropped srcset candidate "<URL>"`) across hero slider slides.
+    - Percent-encoded literal whitespace (`%20`) and quotes (`%27`) in the mobile transparent vector placeholder data URI (`data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27/%3E`), strictly preserving RFC 2397 and WHATWG HTML `srcset` candidate parsing compliance while keeping the mobile backdrop network payload at zero bytes.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.28`.
+
 ## v1.1.27 (2026-10-03)
 - **Google PageSpeed Insights Mobile 100/100 Optimization (Phase 1 & Phase 2 Diagnostic Parity)**:
   - **Render-Blocking CSS Eradication & Asynchronous Preload Architecture (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`)**:

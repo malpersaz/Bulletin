@@ -29,7 +29,7 @@
                         {% set is_lcp_img = loop.first %}
                         <div class="hero-slide__backdrop" aria-hidden="true">
                             <picture>
-                                <source media="(max-width: 768px)" srcset="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
+                                <source media="(max-width: 768px)" srcset="data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27/%3E">
                                 <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
                                      alt=""
                                      class="hero-slide__backdrop-img"
