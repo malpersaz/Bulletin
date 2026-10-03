@@ -9,7 +9,8 @@
 
 // import the Intervention Image Manager Class
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
 
 class image_mod extends indexMain
 {
@@ -56,7 +57,8 @@ class image_mod extends indexMain
     public function _resize($option)
     {
 
-        $manager = new ImageManager(new Driver());
+        $driver = extension_loaded('gd') ? new GdDriver() : new ImagickDriver();
+        $manager = new ImageManager($driver);
 
         $file = $_FILES[$this->name];
         $ext = strtolower(Helper::extension($file['name']));
@@ -92,43 +94,55 @@ class image_mod extends indexMain
 
 
             $image = $manager->read($file['tmp_name']);
+            $quality = isset($v['quality']) ? (int) $v['quality'] : 80;
+            if ($quality <= 0 || $quality > 100) {
+                $quality = 80;
+            }
+
             if (isset($v['option'])) {
                 // Calculate target dimensions
-                $targetWidth = $v['width'];
-                $targetHeight = $v['height'];
-                
-                if ($v['option'] == 'width') {
-                    if ($image->width() > $v['width']) {
-                        $targetHeight = round($image->height() * ($v['width'] / $image->width()));
-                    } else {
-                        $targetWidth = $image->width();
-                        $targetHeight = $image->height();
-                    }
-                } elseif ($v['option'] == 'height') {
-                    if ($image->height() > $v['height']) {
-                        $targetWidth = round($image->width() * ($v['height'] / $image->height()));
-                    } else {
-                        $targetWidth = $image->width();
-                        $targetHeight = $image->height();
-                    }
-                } elseif ($v['option'] == 'original') {
-                    $targetWidth = $image->width();
-                    $targetHeight = $image->height();
-                } else {
-                    // Explicit resize
-                }
+                $targetWidth = isset($v['width']) && $v['width'] !== null ? (int) $v['width'] : null;
+                $targetHeight = isset($v['height']) && $v['height'] !== null ? (int) $v['height'] : null;
+                $optionType = (string) $v['option'];
 
-                // Resize the original image
-                $image->resize($targetWidth, $targetHeight);
+                if ($optionType === 'cover' || $optionType === 'crop') {
+                    if ($targetWidth && $targetHeight) {
+                        $image->cover($targetWidth, $targetHeight);
+                    } elseif ($targetWidth) {
+                        $image->scale(width: $targetWidth);
+                    } elseif ($targetHeight) {
+                        $image->scale(height: $targetHeight);
+                    }
+                } elseif ($optionType === 'coverDown') {
+                    if ($targetWidth && $targetHeight) {
+                        $image->coverDown($targetWidth, $targetHeight);
+                    } elseif ($targetWidth) {
+                        $image->scaleDown(width: $targetWidth);
+                    } elseif ($targetHeight) {
+                        $image->scaleDown(height: $targetHeight);
+                    }
+                } elseif ($optionType === 'width') {
+                    if ($targetWidth && $image->width() > $targetWidth) {
+                        $calcHeight = (int) round($image->height() * ($targetWidth / $image->width()));
+                        $image->resize($targetWidth, $calcHeight);
+                    }
+                } elseif ($optionType === 'height') {
+                    if ($targetHeight && $image->height() > $targetHeight) {
+                        $calcWidth = (int) round($image->width() * ($targetHeight / $image->height()));
+                        $image->resize($calcWidth, $targetHeight);
+                    }
+                } elseif ($optionType === 'original') {
+                    // Retain original dimensions
+                } else {
+                    if ($targetWidth && $targetHeight) {
+                        $image->resize($targetWidth, $targetHeight);
+                    }
+                }
 
                 // Create a new transparent canvas with the target dimensions
                 // This ensures we have a clean alpha channel
-                $canvas = $manager->create($targetWidth, $targetHeight);
-                
-                // Place the resized image onto the canvas
+                $canvas = $manager->create($image->width(), $image->height());
                 $canvas->place($image);
-                
-                // Use the canvas as the main image for saving
                 $image = $canvas;
 
             } else {
@@ -137,17 +151,17 @@ class image_mod extends indexMain
                     $targetHeight = $v['height'];
                     
                     if ($targetWidth === NULL) {
-                        $targetWidth = round($image->width() * ($targetHeight / $image->height()));
+                        $targetWidth = (int) round($image->width() * ($targetHeight / $image->height()));
                     }
                     if ($targetHeight === NULL) {
-                        $targetHeight = round($image->height() * ($targetWidth / $image->width()));
+                        $targetHeight = (int) round($image->height() * ($targetWidth / $image->width()));
                     }
                     
                     if ($image->width() > $targetWidth || $image->height() > $targetHeight) {
                          $image->resize($targetWidth, $targetHeight);
                          
                          // Apply same canvas logic for this case too
-                         $canvas = $manager->create($targetWidth, $targetHeight);
+                         $canvas = $manager->create($image->width(), $image->height());
                          $canvas->place($image);
                          $image = $canvas;
                     }
@@ -158,7 +172,7 @@ class image_mod extends indexMain
             $success = false;
             
             if ($target_ext === 'webp') {
-                $success = $image->toWebp(80)->save($dir . $url);
+                $success = $image->toWebp($quality)->save($dir . $url);
             } elseif ($ext === 'png') {
                 $success = $image->toPng()->save($dir . $url);
             } elseif ($ext === 'gif') {

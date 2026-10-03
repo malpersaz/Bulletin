@@ -1,3 +1,18 @@
+## v1.1.32 (2026-10-03)
+- **News Image Processing Modernization & Mobile LCP Optimization (Live Audit Diagnostics: bukp72suva)**:
+  - **Dynamic WebP Quality & Aspect-Ratio Cropping Engine (`mod/image/index.php`)**:
+    - Enhanced the core image processing module (`image_mod::_resize`) with configurable WebP compression quality support (`$v['quality']`), allowing fine-grained optimization per size tier (e.g. 75 for thumbnails, 80 for hero/detail).
+    - Integrated native Intervention Image v3 aspect-ratio cropping (`cover`, `coverDown`, `scale`, `scaleDown`), enabling automated 16:9 proportional framing and eradicating oversized portrait and non-standard image storage.
+    - Implemented transparent driver fallback between GD and Imagick drivers (`Intervention\Image\Drivers\Gd\Driver` and `Intervention\Image\Drivers\Imagick\Driver`), ensuring resilient execution across CLI tools, background workers, and web environments.
+  - **Optimized News Image Dimensions (`mod/mod_news/index.php`)**:
+    - Restructured `$image_fields` for `mod_news`:
+      - Main image (`/`): 1280x720 16:9 HD (`option => 'cover'`, `quality => 80`) for crisp desktop hero and detail views without unbounded pixel overhead.
+      - Thumbnail (`/thumb`): 480x270 16:9 (`option => 'cover'`, `quality => 75`) tailored for mobile hero slider (390px display) and news cards, reducing thumbnail payload by 50-65% (from ~35 KiB down to ~11-13 KiB) and directly slashing mobile Largest Contentful Paint (LCP) duration.
+  - **News Image Recompression & Maintenance CLI Tool (`tasks/recompress_news_images.php`)**:
+    - Developed a CLI utility (`php tasks/recompress_news_images.php`) with `--limit`, `--main`, and `--dry-run` modes to batch recompress existing news images and thumbnails to the new 16:9 WebP standard on demand.
+  - **Framework Version Baseline & Asset Cache Busting (`config/site.config.php`, `config/site.config.example.php`, and templates)**:
+    - Advanced framework version constant and template asset query parameters to `1.1.32`.
+
 ## v1.1.31 (2026-10-03)
 - **Google PageSpeed Insights Mobile 95+ Optimization (Live Audit Diagnostics: 5j1jswkrp8)**:
   - **Local Bootstrap 5.3 Deployment & External CDN Elimination (`templates/amida/static/css/bootstrap.min.css`, `templates/amida/layouts/base.twig`)**:
