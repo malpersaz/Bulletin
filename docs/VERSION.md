@@ -1,3 +1,17 @@
+## v1.1.34 (2026-10-03)
+- **Standalone Cache Management Restoration & Parity with AF/Business**:
+  - **Standalone Cache Cleaning Interface (`clear_cache.php`)**:
+    - Restored direct cache management interface (`clear_cache.php`) at repository root, enabling frictionless maintenance without administrative login credentials.
+    - Implemented modular cleaning functions for `templates_c`, `cache/css`, `cache/js`, `cache/sql`, `cache/test_sql`, `cache/img`, `cache/video`, `cache/llms`, and `cache/captcha`.
+    - Preserved backwards compatibility alias `c($dir, $lang)` matching AF/Business while structuring modern recursive directory cleaner `clear_directory()`.
+  - **Strict Code Separation Mandate (`static/css/clear_cache.css`)**:
+    - Extracted all styling to dedicated external stylesheet (`static/css/clear_cache.css`), strictly eliminating embedded `<style>` blocks and conforming to AGENTS.md Rule 2 and `code_separation_guard.py`.
+  - **Localization & Vocabulary Consistency (`mod/index/lang/en.php`, `mod/index/lang/ku.php`)**:
+    - Added localized labels for `cache_llms` and `cache_captcha`.
+    - Whitelisted legitimate GDPR term `dpo` in `tools/i18n_guard.py`.
+  - **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+    - Advanced framework version constant to `1.1.34`.
+
 ## v1.1.33 (2026-10-03)
 - **Hero Slider Layout Shift Elimination & Module Image Dimensions Parity (Live Audit Diagnostics: cdjhf7cquc)**:
   - **Synchronous Critical Hero Slider Stylesheet (`templates/amida/index/index.twig`)**:

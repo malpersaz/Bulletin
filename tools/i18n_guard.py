@@ -56,7 +56,7 @@ DEV_TERMS = {
     "timeout", "mega", "step1", "step2", "details", "email",
     "sitemap", "fullscreen", "cta", "perm", "perms", "addperm", "addpage", "installerbase", "installerbaseinterface",
     "ckb", "zza", "ku", "sv", "ar", "de", "fr", "tr", "fa", "en", "ru", "rtl", "meetup",
-    "mbstring", "sef", "sefurl", "gdpr", "sla", "kpi", "roi", "ctr", "swot", "kaizen",
+    "mbstring", "sef", "sefurl", "gdpr", "dpo", "sla", "kpi", "roi", "ctr", "swot", "kaizen",
     "gantt", "biometric", "uc", "runtime", "webhook", "endpoints", "imagecategories",
     "popup", "inarray", "lifecycle", "fallback", "fallbacks", "validator", "validators",
     "sustainability", "entrepreneurship", "scalability", "centricity", "inclusivity",
