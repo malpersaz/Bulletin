@@ -1,7 +1,8 @@
 {{ run({"mod": "index", "method": "_latest_publications", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,deck"]}) }}
 {% set latest_publications = ctx_get('latest_publications') %}
 
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.25') }}">
+<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.26') }}"></noscript>
 
 {% if latest_publications is not empty %}
     <section class="latest-publications-section" aria-labelledby="latest-publications-heading">

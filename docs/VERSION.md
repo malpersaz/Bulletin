@@ -1,3 +1,31 @@
+## v1.1.27 (2026-10-03)
+- **Google PageSpeed Insights Mobile 100/100 Optimization (Phase 1 & Phase 2 Diagnostic Parity)**:
+  - **Render-Blocking CSS Eradication & Asynchronous Preload Architecture (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`)**:
+    - Replaced synchronous render-blocking `<link rel="stylesheet">` tags for non-critical assets (`bootstrap-icons.min.css`, `glightbox.min.css`, `lightbox-engine.css`, `footer.css`, `latest-authors.css`, `latest-news.css`) with standard asynchronous stylesheet preloading (`<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript>...`), eliminating up to 2,770ms of render-blocking delays.
+  - **Parser-Blocking Script and CSS Eradication from Header Navigation (`templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/index/mod_menu/top_menu.twig`, `templates/amida/layouts/base.twig`)**:
+    - Extracted inline `<script>` tags (`top-menu.js`, `login-modal.js`) from inside `<header>` and repositioned them before `</body>` in `base.twig` with `defer`, ensuring unblocked DOM parser execution across all viewports. Converted `login-modal.css` to non-blocking preload.
+  - **Google Fonts Streamlining & Asynchronous Preload (`templates/amida/layouts/base.twig`)**:
+    - Removed unused `Grenze Gotisch` font family from Google Fonts request. Transitioned Google Fonts stylesheet to asynchronous preload with `display=swap`, removing font CSS render blocking.
+  - **Loop-Repeated Stylesheet Eradication (`templates/amida/index/mod_news/category_news_row.twig`, `templates/amida/index/mod_video_embed/latest_videos.twig`)**:
+    - Eradicated `<link rel="stylesheet">` invocations executed inside category iterations, centralizing `latest-news.css` inside `index.twig` block stylesheets.
+  - **Responsive Dual-Target LCP Image Preload (`templates/amida/index/index.twig`, `templates/amida/index/hero_slider.twig`)**:
+    - Implemented media-targeted `<link rel="preload" as="image">` with `media="(max-width: 768px)"` directing mobile browsers to download lightweight thumbnail WebP images (`thumb_url`) at high priority, while preserving full-resolution preloading for desktop viewports (`media="(min-width: 769px)"`).
+    - Added `sizes="(max-width: 768px) 100vw, 900px"` to hero slider `<source>` and `<img>` tags and scoped `fetchpriority="high"` and `loading="eager"` exclusively to the first slide (`loop.first`).
+  - **Long-Term Static & Asset Subdomain Caching (`static/.htaccess`, `templates/.htaccess`)**:
+    - Added dedicated `.htaccess` files with `mod_expires` and `mod_headers` rules enforcing `Cache-Control: max-age=31536000, public, immutable` and CORS across `static.amidakurd.net` and `assets.amidakurd.net`.
+  - **Font-Display Swap Enforced on Bootstrap Icons (`templates/amida/static/css/custom.css`, `templates/amida/static/css/custom.min.css`)**:
+    - Added `@font-face` override with `font-display: swap` for `bootstrap-icons.woff2`, resolving Lighthouse's `font-display-insight` diagnostic. Recompiled `custom.min.css`.
+  - **Non-Blocking JavaScript Deferment (`templates/amida/layouts/base.twig`)**:
+    - Added `defer` attribute to `bootstrap.bundle.min.js` and `swiper-bundle.min.js` in `base.twig`, ensuring zero main-thread parsing blockage at the end of the body.
+  - **Responsive Layout Density Alignment via Sizing Attributes (`templates/amida/index/hero_slider.twig`, `templates/amida/index/mod_news/category_news_row.twig`, `templates/amida/index/mod_news/latest_news.twig`)**:
+    - Added explicit `sizes` attributes (`(max-width: 768px) calc(100vw - 32px), 380px` and `100vw`) to eliminate Lighthouse's `image-delivery-insight` warnings across mobile article grids.
+  - **Forced Reflow Prevention via requestAnimationFrame (`templates/amida/static/js/hero-news-slider.js`)**:
+    - Wrapped Swiper initialization inside `requestAnimationFrame`, eradicating layout thrashing and forced reflows (`forced-reflow-insight`) during initial paint.
+  - **Non-Blocking Publication & Video Embed Stylesheets (`templates/amida/index/mod_publication/latest_publications.twig`, `templates/amida/index/mod_video_embed/latest_videos.twig`)**:
+    - Converted `latest-publications.css` and `latest-videos.css` to asynchronous preloading stylesheets.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.27`.
+
 ## v1.1.26 (2026-10-03)
 - **Google PageSpeed Insights & Performance Optimization (Live Audit Parity)**:
   - **Duplicate Preconnect & Font Ingestion Eradication (`templates/amida/index/mod_menu/stacked_top_menu.twig`, `templates/amida/index/mod_menu/top_menu.twig`)**:

@@ -26,7 +26,7 @@
                     {% elseif item.embed_url is defined and item.embed_url is not empty and ('youtube' in item.embed_url or 'vimeo' in item.embed_url or 'dailymotion' in item.embed_url) %}
                         <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" title="{{ item.name|escape('html_attr') }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
                     {% elseif item.image_url is not empty %}
-                        {% set is_lcp_img = (item == first_hero_img) %}
+                        {% set is_lcp_img = loop.first %}
                         <div class="hero-slide__backdrop" aria-hidden="true">
                             <picture>
                                 <source media="(max-width: 768px)" srcset="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E">
@@ -39,12 +39,13 @@
                         </div>
                         <picture class="hero-slide__picture">
                             {% if item.thumb_url is defined and item.thumb_url is not empty %}
-                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}">
+                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}" sizes="100vw">
                             {% endif %}
                             <img src="{{ item.image_url }}"
                                  alt="{{ item.name }}"
                                  width="1200"
                                  height="675"
+                                 sizes="(max-width: 768px) 100vw, 900px"
                                  class="hero-slide__cover-img"
                                  loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
                                  fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"

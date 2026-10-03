@@ -2,7 +2,8 @@
 {{ run({"mod": "index", "method": "_latest_videos", "extra": [video_count, "id,image,name,content,keywords,duration,created_at"]}) }}
 {% set latest_videos = ctx_get('latest_videos') %}
 
-<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version|default('1.1.25') }}">
+<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version|default('1.1.26') }}"></noscript>
 
 {% if latest_videos is not empty %}
     <section class="latest-videos-section" aria-labelledby="latest-videos-heading">

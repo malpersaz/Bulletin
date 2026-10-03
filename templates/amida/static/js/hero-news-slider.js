@@ -140,8 +140,10 @@
     }
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initHeroSlider);
+        document.addEventListener('DOMContentLoaded', function () {
+            requestAnimationFrame(initHeroSlider);
+        });
     } else {
-        initHeroSlider();
+        requestAnimationFrame(initHeroSlider);
     }
 })();

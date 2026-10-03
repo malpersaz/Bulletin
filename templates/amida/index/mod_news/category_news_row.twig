@@ -1,6 +1,4 @@
 {% if news_items is not empty %}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.25') }}">
-
     <section class="nyt-news-section">
         <div class="row g-4">
             {% for news in news_items %}
@@ -10,12 +8,13 @@
                             <div class="nyt-article-img-wrapper">
                                 <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" itemprop="url">
                                     <picture>
-                                        <source srcset="{{ site.iaddress }}mod_news/thumb/{{ news.image }}" media="(max-width: 768px)">
+                                        <source srcset="{{ site.iaddress }}mod_news/thumb/{{ news.image }}" media="(max-width: 768px)" sizes="(max-width: 768px) calc(100vw - 32px), 380px">
                                         <img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}"
                                              class="nyt-article-img"
                                              alt="{{ news.name }}"
                                              width="640"
                                              height="360"
+                                             sizes="(max-width: 768px) calc(100vw - 32px), 380px"
                                              loading="lazy"
                                              decoding="async"
                                              itemprop="image">
