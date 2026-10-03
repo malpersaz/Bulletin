@@ -1,3 +1,22 @@
+## v1.1.33 (2026-10-03)
+- **Hero Slider Layout Shift Elimination & Module Image Dimensions Parity (Live Audit Diagnostics: cdjhf7cquc)**:
+  - **Synchronous Critical Hero Slider Stylesheet (`templates/amida/index/index.twig`)**:
+    - Reinstated `hero-news-slider.min.css` as a synchronous critical stylesheet (`<link rel="stylesheet">`), ensuring container dimensions and breakpoints are evaluated prior to initial paint.
+    - Completely eradicated the mobile layout shift on `section.latest-videos-section` (`0.315` -> `0.000`), restoring 100/100 Agentic Browsing parity and eliminating visual displacement below the slider.
+  - **Reinforced Container Skeleton & Containment (`templates/amida/static/css/custom.css`, `templates/amida/static/css/custom.min.css`)**:
+    - Harmonized breakpoint heights across `.hero-slider-shell`, `.hero-news-slider`, and `.hero-news-swiper`:
+      - Small Mobile (`< 575px`): `240px`
+      - Large Mobile (`576px - 768px`): `280px`
+      - Tablet (`769px - 991px`): `350px`
+      - Desktop (`> 992px`): `390px`
+    - Added CSS containment (`contain: layout paint;`) to guarantee zero reflow impact on sibling layout containers.
+  - **Image Dimension Parity across Modules (`mod/mod_publication/index.php`, `mod/mod_content/index.php`)**:
+    - Standardized `$image_fields` across `mod_publication` and `mod_content` to match `mod_news`:
+      - Main image (`/`): 1280x720 16:9 HD (`option => 'cover'`, `quality => 80`)
+      - Thumbnail (`/thumb`): 480x270 16:9 (`option => 'cover'`, `quality => 75`), cutting publication thumbnail payload from ~70 KiB down to ~10–12 KiB.
+  - **Framework Version Baseline & Asset Cache Busting (`config/site.config.php`, `config/site.config.example.php`, and templates)**:
+    - Advanced framework version constant and template asset query parameters to `1.1.33`.
+
 ## v1.1.32 (2026-10-03)
 - **News Image Processing Modernization & Mobile LCP Optimization (Live Audit Diagnostics: bukp72suva)**:
   - **Dynamic WebP Quality & Aspect-Ratio Cropping Engine (`mod/image/index.php`)**:

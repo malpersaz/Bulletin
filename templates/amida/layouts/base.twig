@@ -83,15 +83,15 @@
 		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,200..900;1,7..72,200..900&family=Pirata+One&family=Roboto:wght@300;400;500;700&display=swap"></noscript>
 
 		<!-- Bootstrap 5.3 CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/bootstrap.min.css?v={{ site.version|default('1.1.32') }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/bootstrap.min.css?v={{ site.version|default('1.1.33') }}">
 		<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" onload="this.onload=null;this.rel='stylesheet'">
 		<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"></noscript>
 
 		<!-- Core Theme CSS (Custom Styles & Navigation Consolidated) -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version|default('1.1.32') }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version|default('1.1.33') }}">
 		<!-- Footer CSS -->
-		<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.32') }}" onload="this.onload=null;this.rel='stylesheet'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.32') }}"></noscript>
+		<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.33') }}" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.33') }}"></noscript>
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
@@ -142,9 +142,9 @@
 		<script src="{{ site.taddress }}base_static/js/jquery.cookie.js" defer></script>
 
 		<!-- Top Menu Engine -->
-		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1.1.32') }}" defer></script>
+		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1.1.33') }}" defer></script>
 		{% if not is_logged_in %}
-			<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1.1.32') }}" defer></script>
+			<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1.1.33') }}" defer></script>
 		{% endif %}
 
 		{% block detail_plugins %}{% endblock %}

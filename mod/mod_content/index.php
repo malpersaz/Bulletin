@@ -32,14 +32,16 @@ class mod_content_mod extends BaseModuleController
             'name' => 'image',
             'sizes' => [
                 '/' => [
-                    'width' => 1600,
-                    'height' => NULL,
-                    'option' => 'width',
+                    'width' => 1280,
+                    'height' => 720,
+                    'option' => 'cover',
+                    'quality' => 80,
                 ],
                 '/thumb' => [
-                    'width' => 600,
-                    'height' => NULL,
-                    'option' => 'width',
+                    'width' => 480,
+                    'height' => 270,
+                    'option' => 'cover',
+                    'quality' => 75,
                 ],
             ]
         ]
