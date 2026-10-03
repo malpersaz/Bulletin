@@ -1,4 +1,19 @@
-## v1.1.30 (In Progress)
+## v1.1.31 (2026-10-03)
+- **Google PageSpeed Insights Mobile 95+ Optimization (Live Audit Diagnostics: 5j1jswkrp8)**:
+  - **Local Bootstrap 5.3 Deployment & External CDN Elimination (`templates/amida/static/css/bootstrap.min.css`, `templates/amida/layouts/base.twig`)**:
+    - Downloaded and locally hosted minified Bootstrap 5.3 (`bootstrap.min.css`) under `templates/amida/static/css/`, eliminating 1,952 ms of render-blocking network delay, third-party TLS handshakes, and DNS resolution latency from `cdn.jsdelivr.net`.
+    - Leveraged HTTP/2 connection multiplexing and 1-year immutable caching on `assets.amidakurd.net` via `templates/.htaccess`.
+  - **Critical CSS Consolidation & Navigation Bundling (`templates/amida/static/css/custom.css`, `templates/amida/static/css/custom.min.css`, `templates/amida/layouts/base.twig`)**:
+    - Embedded the critical hero slider container skeleton (`#homepageHeroRow`, `.hero-news-slider`, `.hero-news-swiper` responsive heights `240px`/`280px`/`390px`, and image layout constraints) directly into `custom.css` and compiled `custom.min.css`.
+    - Consolidated `stacked-top-menu.css` into `custom.min.css`, completely eliminating a separate render-blocking stylesheet request across all pages of the theme.
+  - **Zero-Shift Asynchronous Hero Slider Preload (`templates/amida/index/index.twig`)**:
+    - Transitioned `hero-news-slider.min.css` to non-blocking asynchronous stylesheet preloading (`<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript>...`), unblocking First Contentful Paint (FCP) while preserving 0.000 Cumulative Layout Shift (CLS) through the pre-reserved container skeleton.
+  - **Responsive Author Avatar Dimensions & Aspect Ratio (`templates/amida/index/mod_publication/latest_authors.twig`, `templates/amida/static/css/latest-authors.css`)**:
+    - Synchronized avatar image display dimensions to `width="54" height="54"` and added explicit `aspect-ratio: 1 / 1` in `latest-authors.css`, eliminating image re-scaling overhead and visual layout distortion.
+  - **Framework Version Baseline & Asset Cache Busting (`config/site.config.php`, `config/site.config.example.php`, `templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/partials/_detail_scripts.twig`, and detail templates)**:
+    - Advanced framework version constant and asset query parameters to `1.1.31`.
+
+## v1.1.30 (2026-10-03)
 - **Google PageSpeed Insights & Core Web Vitals Optimization (Live Audit Diagnostics: rj253aypub)**:
   - **Hero Slider Layout Shift Elimination & Minification (`templates/amida/static/css/hero-news-slider.min.css`, `templates/amida/index/index.twig`)**:
     - Resolved critical mobile Cumulative Layout Shift (CLS) regression (`0.538` -> `0.000`), restoring 100/100 Agentic Browsing parity and eliminating post-load layout displacement on `section.latest-videos-section`.
