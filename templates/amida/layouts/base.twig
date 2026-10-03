@@ -84,20 +84,13 @@
 		<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" onload="this.onload=null;this.rel='stylesheet'">
 		<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"></noscript>
 
-		<!-- Modern Plugin Styles -->
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
-		<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css" onload="this.onload=null;this.rel='stylesheet'">
-		<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css"></noscript>
-		<link rel="preload" as="style" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.1.26') }}"></noscript>
-
 		<!-- Custom CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version|default('1.1.26') }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version|default('1.1.29') }}">
 		<!-- Stacked Top Menu CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/stacked-top-menu.css?v={{ site.version|default('1.1.26') }}">
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/stacked-top-menu.min.css?v={{ site.version|default('1.1.29') }}">
 		<!-- Footer CSS -->
-		<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.26') }}"></noscript>
+		<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.29') }}" onload="this.onload=null;this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version|default('1.1.29') }}"></noscript>
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
@@ -140,61 +133,44 @@
 		</div>
 		</main>{% include "index/footer.twig" %}
 
-		<!-- Bootstrap 5.3 JS Bundle CDN (Popper.js dahil) --><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer> </script>
-
-		<!-- Modern Eklenti CDN'leri -->
-		<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
-		<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js" defer></script>
-		<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
-
-		<!-- Masonry & ImagesLoaded CDN -->
-		<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
-		<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js" defer></script>
+		<!-- Bootstrap 5.3 JS Bundle CDN (Popper.js included) -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous" defer></script>
 
 		<!-- jQuery -->
-		<script src="{{ site.taddress }}base_static/js/jquery.js"></script>
-		<script src="{{ site.taddress }}base_static/js/jquery.cookie.js"></script>
-
-		<!-- Lightbox Engine -->
-		<script src="{{ site.taddress }}base_static/js/lightbox-engine.js?v={{ site.version|default('1.1.26') }}" defer></script>
-
-		<!-- Month Popover Engine -->
-		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/month-popover.js?v={{ site.version|default('1.1.26') }}" defer></script>
+		<script src="{{ site.taddress }}base_static/js/jquery.js" defer></script>
+		<script src="{{ site.taddress }}base_static/js/jquery.cookie.js" defer></script>
 
 		<!-- Top Menu Engine -->
-		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1.1.26') }}" defer></script>
+		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version|default('1.1.29') }}" defer></script>
 		{% if not is_logged_in %}
-			<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1.1.26') }}" defer></script>
+			<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version|default('1.1.29') }}" defer></script>
 		{% endif %}
-		{% block js_custom %}
-		{% endblock %}
+
+		{% block detail_plugins %}{% endblock %}
+		{% block js_custom %}{% endblock %}
 
 		{# Context JavaScript #}
-			{% if ctx_get('javascript') is not empty %}
-				<script>
+		{% if ctx_get('javascript') is not empty %}
+			<script>
 {% for script in ctx_get('javascript') %}
 {{ script|raw }}
 {% endfor %}
-		</script>
+			</script>
 		{% endif %}
 
 		{# jQuery Document Ready Scripts #}
-
-			{% if ctx_get('jquery_document') is not empty %}
-
-				<script>
-
-$(document).ready(function () {
-
+		{% if ctx_get('jquery_document') is not empty %}
+			<script>
+document.addEventListener('DOMContentLoaded', function () {
+	if (typeof jQuery !== 'undefined') {
+		jQuery(document).ready(function ($) {
 {% for script in ctx_get('jquery_document') %}
-
 {{ script|raw }}
-
 {% endfor %}
-
+		});
+	}
 });
-		</script>
-
+			</script>
 		{% endif %}
 
 

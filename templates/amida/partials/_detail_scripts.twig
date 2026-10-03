@@ -1,0 +1,9 @@
+{# Detail Page Plugins: GLightbox, Masonry, ImagesLoaded, Lightbox Engine #}
+<link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/css/glightbox.min.css"></noscript>
+<link rel="preload" as="style" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.1.29') }}" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{{ site.taddress }}base_static/css/lightbox-engine.css?v={{ site.version|default('1.1.29') }}"></noscript>
+<script src="https://cdn.jsdelivr.net/npm/glightbox@3.2.0/dist/js/glightbox.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha384-GNFwBvfVxBkLMJpYMOABq3c+d3KnQxudP/mGPkzpZSTYykLBNsZEnG2D9G/X/+7D" crossorigin="anonymous" async></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js" defer></script>
+<script src="{{ site.taddress }}base_static/js/lightbox-engine.js?v={{ site.version|default('1.1.29') }}" defer></script>

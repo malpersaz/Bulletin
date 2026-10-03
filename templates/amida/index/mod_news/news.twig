@@ -2,9 +2,13 @@
 {% import "macros/faq.twig" as faq %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.1.25') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.1.25') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version|default('1.1.25') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.1.29') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.1.29') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version|default('1.1.29') }}">
+{% endblock %}
+
+{% block detail_plugins %}
+	{% include 'partials/_detail_scripts.twig' %}
 {% endblock %}
 
 {% set d = ctx_get('detail') ?: ctx_get('d') %}

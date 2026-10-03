@@ -16,16 +16,20 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ site.version|default('1.1.26') }}">
-    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.26') }}"></noscript>
-    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.26') }}"></noscript>
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ site.version|default('1.1.29') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ site.version|default('1.1.29') }}"></noscript>
+    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.29') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.29') }}"></noscript>
+    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.29') }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.29') }}"></noscript>
 {% endblock %}
 
 {% block js_custom %}
     {{ parent() }}
-    <script defer src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ site.version|default('1.1.26') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ site.version|default('1.1.29') }}" defer></script>
 {% endblock %}
 
 {% block content %}

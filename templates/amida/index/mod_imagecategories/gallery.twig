@@ -36,6 +36,10 @@
 
 {% extends "layouts/base.twig" %}
 
+{% block detail_plugins %}
+	{% include 'partials/_detail_scripts.twig' %}
+{% endblock %}
+
 {% set d = ctx_get('d') %}
 {% set rkat = ctx_get('rkat') %}
 {% set keto = ctx_get('keto') %}

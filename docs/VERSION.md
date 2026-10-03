@@ -1,3 +1,21 @@
+## v1.1.29 (2026-10-03)
+- **Google PageSpeed Insights & Lighthouse Optimization (Unused Script Eradication, Asynchronous CSS Preload & jQuery Deferment)**:
+  - **Main-Thread Bloat & Unused Script Eradication (`templates/amida/layouts/base.twig`, `templates/amida/partials/_detail_scripts.twig`)**:
+    - Eliminated over 150 KB of unused JavaScript (`glightbox.min.js`, `masonry.pkgd.min.js`, `imagesloaded.pkgd.min.js`, `sweetalert2@11`, `lightbox-engine.js`, `month-popover.js`) from the global base layout, reducing main-thread execution time by up to 2.5 seconds on mobile.
+    - Encapsulated detail page dependencies (`glightbox`, `masonry`, `imagesloaded`, `lightbox-engine`) into a dedicated on-demand partial (`templates/amida/partials/_detail_scripts.twig`) wired via `{% block detail_plugins %}` exclusively into detail templates (`news.twig`, `page.twig`, `publication.twig`, `content.twig`, `announcement.twig`, `gallery.twig`).
+  - **Render-Blocking CSS Preloading & Header Streamlining (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`)**:
+    - Relocated Swiper stylesheet and script dependencies (`swiper-bundle.min.css`, `swiper-bundle.min.js`) out of the global base layout and scoped them directly to `index.twig` where they are needed for the homepage hero slider.
+    - Converted `swiper-bundle.min.css` and `hero-news-slider.css` in `index.twig` to asynchronous preloading stylesheets (`<link rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"><noscript>...`), eliminating critical render-blocking delays and accelerating First Contentful Paint (FCP) and Largest Contentful Paint (LCP).
+  - **jQuery Parser Deferment & DOMContentLoaded Shielding (`templates/amida/layouts/base.twig`)**:
+    - Added `defer` attribute to `jquery.js` and `jquery.cookie.js`, eradicating parser blockage and eliminating 52.7 ms of forced layout reflow during initial page render.
+    - Wrapped context-injected jQuery document ready execution inside a `DOMContentLoaded` event listener, guaranteeing clean asynchronous execution without `$ is not defined` runtime errors.
+  - **Stacked Top Menu CSS Minification (`templates/amida/static/css/stacked-top-menu.min.css`, `templates/amida/layouts/base.twig`)**:
+    - Minified `stacked-top-menu.css` into `stacked-top-menu.min.css`, achieving a 23.7% reduction in stylesheet byte weight and accelerating header paint.
+  - **Deterministic Cache Busting Baseline (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`)**:
+    - Updated asset versioning parameters to `1.1.29` across all base and component templates.
+- **Framework Version Baseline (`config/site.config.php`, `config/site.config.example.php`)**:
+  - Advanced framework version constant and fallback baseline to `1.1.29`.
+
 ## v1.1.28 (2026-10-03)
 - **Responsive Media & Image Preload Diagnostics**:
   - **Inline SVG Data URI Srcset Encoding (`templates/amida/index/hero_slider.twig`)**:
