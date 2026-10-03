@@ -9,6 +9,8 @@
     - Eliminated 300ms to 900ms of initial TCP handshake and TLS negotiation latency across critical stylesheets, fonts, and media assets.
   - **Unsized Media Shift Eradication in Footer Logo (`templates/amida/static/css/footer.css`)**:
     - Added explicit `aspect-ratio: 175 / 42` to `.site-footer .footer-brand .footer-logo-svg` alongside existing dimensions, resolving Google Lighthouse's unsized media element warning.
+  - **Runtime ReferenceError Eradication in Headroom Scroll Engine (`templates/amida/static/js/top-menu.js`)**:
+    - Resolved `Uncaught ReferenceError: navbarCollapse is not defined` inside `requestAnimationFrame` scroll physics loop by explicitly querying `.navbar-collapse` and safeguarding mobile drawer and navbar collapse state evaluations against undeclared identifier references.
   - **Deterministic Cache Busting & Version Baseline (`templates/amida/layouts/base.twig`, `templates/amida/index/index.twig`, `templates/amida/partials/_detail_scripts.twig`, `config/site.config.php`, `config/site.config.example.php`)**:
     - Advanced framework version constant and asset query parameters to `1.1.30`.
 

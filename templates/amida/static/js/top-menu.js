@@ -199,6 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- High-Performance Headroom Scroll Physics ---
     const navbar = document.querySelector('#amidaStackedHeader') || document.querySelector('#amidaMainHeader');
     if (navbar) {
+        const navbarCollapse = document.querySelector('.navbar-collapse');
         let lastScrollTop = 0;
         let ticking = false;
         let upScrollDistance = 0;
@@ -212,7 +213,11 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!ticking) {
                 window.requestAnimationFrame(function () {
                     const scrollTop = Math.max(0, window.pageYOffset || document.documentElement.scrollTop);
-                    const isMobileOpen = navbarCollapse?.classList.contains('show');
+                    const isMobileOpen = Boolean(
+                        mobileDrawer?.classList.contains('show') ||
+                        mobileDrawer?.classList.contains('is-open') ||
+                        navbarCollapse?.classList.contains('show')
+                    );
                     const hasOpenDropdown = Boolean(navbar.querySelector('.dropdown-menu.show'));
                     const diff = scrollTop - lastScrollTop;
 
