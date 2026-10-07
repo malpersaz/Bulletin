@@ -123,7 +123,6 @@ $lang['index']['search'] = [
     'placeholder' => 'Search news, articles, authors etc.',
     'not_found' => 'No results found!',
     'search_results' => 'Search results for "<strong>%s</strong>"',
-    'mod_content' => 'Content results for "<strong>%s</strong>"',
     'mod_news' => 'News results for "<strong>%s</strong>"',
     'mod_publication' => 'Publication results for "<strong>%s</strong>"',
     'mod_announcements' => 'Announcement results for "<strong>%s</strong>".',
@@ -138,49 +137,6 @@ $lang['index']['search'] = [
     'images' => 'Image results for "<strong>%s</strong>"',
     'image' => 'Image',
     'gallery' => 'Gallery',
-];
-
-# mod_content
-$lang['index']['mod_content'] = [
-    '1' => '%s ',
-    '2' => 'All Content',
-    '3' => 'content,information,description',
-    '4' => 'No content found in this category!',
-    '5' => '%s Archive - Page %s',
-    '6' => 'Archive',
-    '7' => 'This content was published on %s in <a href="%s" title="%s">%s</a> category',
-    '8' => 'Files',
-    '9' => 'Select the Year and Month you want to view and click the View button.',
-    '10' => 'No data found for the specified Date and Category!',
-    '11' => 'Search results',
-    '12' => 'Category',
-    '13' => 'Year',
-    '14' => 'Month',
-    '15' => 'View',
-    '16' => 'Go to page %s',
-    '17' => 'Pagination',
-    '18' => 'No content available in this category.',
-];
-
-$lang['index']['mod_content']['aylar'] = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December"
-];
-
-$lang['index']['mod_content']['latest_content'] = [
-    '1' => 'Our Content',
-    '2' => 'All Content',
-    '3' => 'No published news is available yet.',
 ];
 
 
@@ -452,7 +408,21 @@ $lang['index']['latest_publications'] = 'Latest Publications';
 $lang['index']['view_all_publications'] = 'View All Publications';
 $lang['index']['publications'] = 'Publications';
 
-$lang['index']['mod_publication'] = array_merge($lang['index']['mod_content'], [
+$lang['index']['mod_publication'] = [
+    'aylar' => [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    ],
     'all_publications' => 'All Publications',
     'hero_description' => 'Discover latest research papers, technical reports, academic publications, and deep dives.',
     'search_placeholder' => 'Search publications by title or topic...',
@@ -487,7 +457,7 @@ $lang['index']['mod_publication'] = array_merge($lang['index']['mod_content'], [
     '14' => 'Month',
     '15' => 'View',
     '18' => 'No publications available in this category.',
-]);
+];
 $lang['index']['mod_publication']['latest_content'] = [
     'title' => 'Our Articles',
     'all_items' => 'View All Content',

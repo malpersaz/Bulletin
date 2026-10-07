@@ -43,13 +43,6 @@ class mod_attachment_mod extends installerbase implements installerbaseinterface
     {
         $records = array(
             array(
-                'name' => 'Content Files',
-                'mod_name' => 'mod_content',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
                 'name' => 'Page Files',
                 'mod_name' => 'mod_page',
                 'mod_key' => 'id',

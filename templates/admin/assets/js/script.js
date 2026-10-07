@@ -428,6 +428,101 @@ function toggleSelectionMode() {
 }
 
 
+// Navigation Drawer & Accordion Handlers
+function toggleDrawer() {
+    const drawer = document.getElementById('navDrawer');
+    const scrim = document.getElementById('drawerScrim');
+    if (drawer) drawer.classList.toggle('active');
+    if (scrim) scrim.classList.toggle('active');
+}
+
+function toggleGroup(btn) {
+    const group = btn ? btn.closest('.nav-group') : null;
+    if (group) {
+        group.classList.toggle('expanded');
+    }
+}
+
+function filterDrawerNav(query) {
+    const q = (query || '').toLowerCase().trim();
+    const navDrawer = document.getElementById('navDrawer');
+    const emptyEl = document.getElementById('drawerSearchEmpty');
+    const groups = document.querySelectorAll('.nav-group');
+    const rootLinks = document.querySelector('.drawer-root-links');
+
+    if (!q) {
+        if (navDrawer) navDrawer.classList.remove('search-mode');
+        document.querySelectorAll('.is-filtered-out').forEach(el => el.classList.remove('is-filtered-out'));
+        if (emptyEl) emptyEl.hidden = true;
+        return;
+    }
+
+    if (navDrawer) navDrawer.classList.add('search-mode');
+    let totalVisible = 0;
+    groups.forEach(group => {
+        let groupVisible = 0;
+        const items = group.querySelectorAll('.nav-item');
+        items.forEach(item => {
+            const label = (item.getAttribute('data-nav-label') || item.textContent || '').toLowerCase();
+            if (label.includes(q)) {
+                item.classList.remove('is-filtered-out');
+                groupVisible++;
+                totalVisible++;
+            } else {
+                item.classList.add('is-filtered-out');
+            }
+        });
+        if (groupVisible > 0) {
+            group.classList.remove('is-filtered-out');
+            group.classList.add('expanded');
+        } else {
+            group.classList.add('is-filtered-out');
+        }
+    });
+
+    if (rootLinks) {
+        let rootVisible = 0;
+        rootLinks.querySelectorAll('.nav-item').forEach(item => {
+            const label = (item.getAttribute('data-nav-label') || item.textContent || '').toLowerCase();
+            if (label.includes(q)) {
+                item.classList.remove('is-filtered-out');
+                rootVisible++;
+                totalVisible++;
+            } else {
+                item.classList.add('is-filtered-out');
+            }
+        });
+        if (rootVisible > 0) rootLinks.classList.remove('is-filtered-out');
+        else rootLinks.classList.add('is-filtered-out');
+    }
+
+    if (emptyEl) emptyEl.hidden = (totalVisible > 0);
+}
+
+// Global Drawer & FAB Event Listener Init
+document.addEventListener('DOMContentLoaded', () => {
+    const drawerScrim = document.getElementById('drawerScrim');
+    if (drawerScrim) drawerScrim.addEventListener('click', toggleDrawer);
+
+    const drawerCloseBtn = document.getElementById('drawerCloseBtn');
+    if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', toggleDrawer);
+
+    const drawerSearchInput = document.getElementById('drawerSearchInput');
+    if (drawerSearchInput) {
+        drawerSearchInput.addEventListener('input', (e) => filterDrawerNav(e.target.value));
+    }
+
+    document.querySelectorAll('.nav-group-header').forEach(header => {
+        header.addEventListener('click', () => toggleGroup(header));
+    });
+
+    const fabOverlay = document.getElementById('fabOverlay');
+    if (fabOverlay) fabOverlay.addEventListener('click', toggleFabMenu);
+
+    const fabLarge = document.querySelector('.fab-large');
+    if (fabLarge) fabLarge.addEventListener('click', toggleFabMenu);
+});
+
 // Speed Dial Logic
 function toggleFabMenu() {
     const container = document.getElementById('fabContainer');
@@ -540,7 +635,7 @@ function closeContextMenu() {
 
 /**
  * Global fallback for context actions. 
- * Modules like mod_content.js should override window.handleContextAction.
+ * Modules like mod_news.js should override window.handleContextAction.
  */
 function handleContextAction(action) {
     closeContextMenu();
@@ -2442,7 +2537,7 @@ function prepareAndSubmitWizard() {
     }
 
     // Send AJAX
-    const wizardModuleName = (typeof WIZARD_MODULE !== 'undefined' && WIZARD_MODULE) ? WIZARD_MODULE : 'mod_content';
+    const wizardModuleName = (typeof WIZARD_MODULE !== 'undefined' && WIZARD_MODULE) ? WIZARD_MODULE : 'mod_news';
     const url = (typeof SITE_URL !== 'undefined' ? SITE_URL : '/') + wizardModuleName + '/add';
     console.log('Sending to URL:', url);
     console.log('FormData entries:');
@@ -3181,8 +3276,6 @@ function prevPage() {
 document.addEventListener('DOMContentLoaded', () => {
     updatePaginationUI();
     // Initial Load
-    // loadMoreContent(); // Disabled for production - using mod_content.js instead
-    // setupInfiniteScroll(); // DISABLED - mod_content.js manages its own scroll listener
     setupPullToRefresh();
 });
 

@@ -3464,7 +3464,7 @@ body.reorder-active .m3-list-card {
   font-weight: 700;
 }
 
-/* Selected card highlight for mod_content cards */
+/* Selected card highlight for article and news cards */
 .m3-card.content-card.selected,
 .content-card.selected {
   outline: 2px solid var(--md-sys-color-primary);

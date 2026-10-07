@@ -6,7 +6,6 @@ import re
 MODULES = [
     'mod_news',
     'mod_announcements',
-    'mod_content',
     'mod_page',
     'mod_publication',
     'mod_video',

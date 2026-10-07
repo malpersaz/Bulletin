@@ -1,3 +1,15 @@
+## v1.1.35 (2026-10-07)
+- **Domain Boundary Purification & MCP Author Attribution Parity**:
+  - **Strict Domain Boundary Enforcement & Foreign Module Eradication**:
+    - Eradicated foreign commercial content modules (`mod_content`, `mod_content_category`) across installers, controllers, validators, models, language definitions, and administrative views to strictly satisfy the AF/Rojname journalism domain specification.
+    - Updated `installer/app/InstallerTaskRunner.php` and `installer/app/InstallerModuleCatalog.php` to permanently exclude commercial content tables and seeds.
+    - Purged `McpContentTools` from `lib/McpServer.class.php` and cleaned module references in `lib/BaseModuleController.class.php` and `templates/admin/partials/sidebar.twig`.
+  - **Publication Author Attribution & Multilingual Provenance Parity (`lib/McpPublicationTools.class.php`, `lib/McpServer.class.php`)**:
+    - Enhanced `createPublication` and `updatePublication` MCP handlers and schemas with explicit `user_id` and `username` resolution, bringing full author parity with `mod_news`.
+    - Enforced author invariance across multilingual translation workflows, eliminating automatic fallback to default administrative user IDs.
+  - **Framework Version Baseline & Configuration Parity (`config/site.config.php`, `config/site.config.example.php`)**:
+    - Advanced framework version constant and runtime parser baseline to `1.1.35`.
+
 ## v1.1.34 (2026-10-03)
 - **Standalone Cache Management Restoration & Parity with AF/Business**:
   - **Standalone Cache Cleaning Interface (`clear_cache.php`)**:

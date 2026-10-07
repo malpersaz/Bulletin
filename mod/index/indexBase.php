@@ -372,21 +372,6 @@ abstract class indexBase
         return [];
     }
 
-    public function _related_content($category_id, $limit = 5)
-    {
-        $content = Load::model('mod_content.contents');
-        $content->where_category_id_and_status($category_id, 'y');
-        $content->select('name,seo,summary,image');
-        $content->order('created_at', 'DESC');
-        $content->limit($limit);
-        $content->gR();
-        if ($content->getSize() !== 0) {
-            $this->tema->ctx_set('contents', $content->toArray());
-            $content->getResultOne();
-            $this->tema->ctx_set('son_icerik', $content->toArray());
-        }
-        unset($content);
-    }
 
     public function _related_images($id)
     {

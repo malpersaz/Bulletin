@@ -400,7 +400,7 @@ abstract class BaseModuleController
         $this->view->tpl($this->module_name . '/list');
         $this->view->set('site', $this->site);
 
-        // Fetch total and draft statistics if requested by list templates (like mod_content, mod_news, mod_publication)
+        // Fetch total and draft statistics if requested by list templates (like mod_news, mod_publication)
         $has_status = false;
         $has_user_id = false;
         $adapter = $this->db->getAdapterType();
@@ -1596,7 +1596,7 @@ abstract class BaseModuleController
 
     protected function echoSuccessResponse()
     {
-        if (in_array($this->module_name, ['mod_content', 'mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed'])) {
+        if (in_array($this->module_name, ['mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed'])) {
             echo 'Success';
         } else {
             echo 'OK';

@@ -497,13 +497,7 @@ class mod_page_mod extends BaseModuleController
         $this->db->fetch_array("SELECT * FROM `mod_acl` ORDER BY id DESC");
         $this->theme->set('mod_acl_acl_id', $this->db->getResult()->toArray());
 
-        $mod_category_nested = Load::model('mod_content_category');
-        $mod_category_nested->flush();
-        if ($selectedLang !== '') {
-            $mod_category_nested->where_lang($selectedLang);
-        }
-        $mod_category_nested->order('order', 'ASC')->all();
-        $this->theme->set('select_nested_category_id_result', $this->buildNestedRows($mod_category_nested->toArray()));
+        $this->theme->set('select_nested_category_id_result', []);
 
         $menuContext = $this->getMenuParentContext($selectedLang, $selectedMenuSlot);
         $this->theme->set('select_nested_menu_result', $menuContext['tree']);

@@ -350,14 +350,14 @@ class mod_seo_mod extends indexMain
             }
         }
 
-        // 2. Contents (mod_content)
-        $db->fetch_array("SELECT name, seo, lang FROM `mod_content` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
+        // 2. News (mod_news)
+        $db->fetch_array("SELECT name, seo, lang FROM `mod_news` WHERE status='y' AND lang='" . addslashes($langCode) . "'");
         if ($db->getSize() > 0) {
             foreach ($db->toArray() as $r) {
                 $urls[] = [
-                    'type' => 'Content',
+                    'type' => 'News',
                     'name' => html_entity_decode($r['name'], ENT_QUOTES, 'UTF-8'),
-                    'path' => $r['lang'] . '/content/' . $r['seo']
+                    'path' => $r['lang'] . '/news/' . $r['seo']
                 ];
             }
         }

@@ -22,16 +22,28 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
 - Receive the verified Research Dossier produced by `kevkolin` and pre-verified by `kevrast` (Stage 1).
 - Ensure all source evidence, dates, numbers, and live URLs are grounded before beginning prose writing.
 - If contradictory reports were identified by `kevkolin`, formulate the prose to explicitly reflect the variance:
-  - Format: *"Li gor çavkaniya $A weşandiye ..., lê li gor çavkaniya $B ... "*
+  - Format: *"Li gor $A weşandiye ..., lê li gor $B ... "*
 
 ### 3. Journalistic Drafting & Storytelling
 - Write fluent, engaging Kurmanji prose following standard newsroom practices (lead paragraph, inverted pyramid, concise paragraphs).
 - Craft a compelling headline and deck summary (aiming for 90 to 120 characters).
   - Use lightweight punctuation: prefer a comma (`,`) over redundant conjunctions (`ku`) after reporting verbs (e.g. `ragihand, ew...` instead of `ragihand ku ew...`).
 - Embed in-text citations linking to verified live URLs:
-  - Format: `<a href="$URL">çavkaniya $Name</a>` (e.g., `<a href="https://rudaw.net/kurmanci">çavkaniya Rûdaw</a>`).
+  - Format: `Li gor <a href="$URL">$Name</a> weşandiye` (e.g., `Li gor <a href="https://rudaw.net/kurmanci">Rûdawê</a> weşandiye`). Do not use verbose formulas like `"li gor çavkaniya $Name di $zeman de weşandiye"`; keep it clean as `"li gor $Name weşandiye"`.
+- **Date Grounding Constraint**:
+  - Do NOT inject today's date or current date into the news content if it was not explicitly stated in the source text. Only include dates or days of the week that appear in verified source reporting.
+- **Kurmancî Syntax & Kinetic Strike Distinction (Desktop/projects/ocr/Kurmanci_Syntax.md)**:
+  - For physical, kinetic strikes, missile hits, or bombings, strictly use **`li ... xistin`** (e.g. `Ûrisyayê li Kyîvê li pira duyemîn a sereke xist`) or passive **`hat lêdan`** (e.g. `Pira duyemîn a sereke hat lêdan`).
+  - Reserve **`kirin armanc`** strictly for abstract, rhetorical, debate, or political contexts (e.g. `Rêzan di konferansê de Derya kir armanc`). Do not use `kirin armanc` when a physical strike/impact has occurred.
+- **Capitalization of Day Names**:
+  - Always capitalize names of the week in all contexts: **`Yekşem, Duşem, Sêşem, Çarşem, Pêncşem, În, Şemî`** (e.g. `serê sibeha Şemiyê`, `rojên Pêncşem û Înê`, `roja Duşemê`).
+- **Vowel Reduction Before "y" (`î` and `ê` -> `i`)**:
+  - Before the consonant **`y`**, long vowels **`î`** and **`ê`** are shortened to **`i`** (sequences `îy` and `êy` are strictly prohibited):
+    - `î` + `y` -> `iy` (e.g. `Şemî` + `yê` -> `Şemiyê`, never `Şemîyê`; `welatî` + `yek` -> `welatiyek`, never `welatîyek`).
+    - `ê` + `y` -> `iy` (e.g. `rê` + `ya` -> `riya`, never `rêya`; `pê` + `yê` -> `piyê`, never `pêyê`; `sê` + `yan` -> `siyan`, never `sêyan`).
 - **Quotation Marks**: Strictly use standard double quotes **`" ... "`** for direct speech and quotes. NEVER use French guillemets (`« ... »`).
 - **Preposition Constraint**: Strictly use **`ji bo`**; NEVER use bare **`bo`** alone!
+- **Cargo & Freight Terminology**: Strictly use **`bar`** (e.g. `keştiya bar`, `firokeya bar`); NEVER use `barhilgir`!
 - **Interactive Month Name Annotation (MANDATORY & SIMPLIFIED)**:
   - Whenever a Kurmanji month name appears in the drafted prose or date references (`Rêbendan`, `Reşemî`, `Adar`, `Avrêl`, `Gulan`, `Pûşper`, `Tîrmeh`, `Gelawêj`, `Rezber`, `Kewçêr`, `Sermawez`, `Berfanbar`), wrap it in a clean semantic element:
   - **Required HTML Structure**:
@@ -44,6 +56,8 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
     - `Turkî` (never `Turkiye` / `Tirkiye`)
     - `Yewnan` (never `Yunanistan` / `Yunan` / `Yûnan`)
     - `Ûrisya` (never `Rusya` / `Rûsya`)
+    - `Mosqow` (never `Moskow` / `Moskova` / `Mosco`)
+    - `Kyîv` (never `Kiev` / `Kyiv` / `Kîev`)
     - `Sûrî` (never `Suriye` / `Sûriye`)
     - `Îraq` (never `Irak` / `Iraq`)
     - `Îran`
@@ -83,6 +97,7 @@ Keep this skill as a short ordered execution checklist. Follow the 4-tier pipeli
 ### 7. Provenance Tracking, Categorization & Draft Staging
 - Map article to the appropriate category in `mod_news` matching the language (`ku`).
 - Attribute to author **Derya Welat** (`user_id: 535` / `username: "deryawelat"`).
+- **Multilingual Translation & Author Invariance**: When translating, syndicating, or porting news articles to other active languages (`en`, `sv`, `de`, `fr`, `zza`, `ckb`), ALWAYS preserve and propagate the exact author `user_id` (or `username`) of the source article. Never allow `user_id` to default to the acting API key / admin (`user_id: 1`).
 - **Amed Framework Wikipedia-Style SEO Slug (AGENTS.md Rule 10)**:
   - Strictly adhere to Amed Framework's Wikipedia-style URL generation parity (`Helper::legacy_seo`).
   - **Delimiters**: Use underscores (`_`), NEVER hyphens/dashes (`-`). Hyphenated slugs are strictly prohibited.

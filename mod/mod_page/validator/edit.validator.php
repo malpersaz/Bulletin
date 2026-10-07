@@ -360,7 +360,6 @@ class edit_validator
         }
 
         $this->validateReferenceExists('mod_page', $parentId, $this->lang['mod_page']['admin']['columns']['parent_id'], $lang);
-        $this->validateReferenceExists('mod_content_category', $categoryId, $this->lang['mod_page']['admin']['columns']['category_id'], $lang);
         if ($menuSelection !== FALSE && $menuSelection['parent_id'] > 0) {
             $this->validateReferenceExists('mod_menu', $menuSelection['parent_id'], $this->lang['mod_page']['admin']['columns']['menu'], $lang);
         }

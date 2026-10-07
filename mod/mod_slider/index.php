@@ -465,26 +465,8 @@ class mod_slider_mod extends indexMain
                 'count' => "SELECT COUNT(*) total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
             ];
         }
-        
-        // 3. mod_content
-        if ($this->_tableExists('mod_content') && $this->_hasColumn('mod_content', 'slider')) {
-            $queries[] = [
-                'table' => 'mod_content',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_content' module FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) total FROM mod_content WHERE slider = 'y' AND status = 'y'" . $user_id_filter
-            ];
-        }
-        
-        // 4. mod_publication
-        if ($this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
-            $queries[] = [
-                'table' => 'mod_publication',
-                'select' => "SELECT id, name, image, lang, created_at, 'mod_publication' module FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter,
-                'count' => "SELECT COUNT(*) total FROM mod_publication WHERE slider = 'y' AND status = 'y'" . $user_id_filter
-            ];
-        }
 
-        // 5. mod_video
+        // 3. mod_video
         if ($this->_tableExists('mod_video') && $this->_hasColumn('mod_video', 'slider')) {
             $queries[] = [
                 'table' => 'mod_video',
@@ -533,8 +515,6 @@ class mod_slider_mod extends indexMain
         $module_labels = [
             'mod_news' => isset($this->lang['mod_slider']['modules']['news']) ? $this->lang['mod_slider']['modules']['news'] : 'Nûçe',
             'mod_publication' => isset($this->lang['mod_slider']['modules']['publication']) ? $this->lang['mod_slider']['modules']['publication'] : 'Weşan',
-            'mod_content' => isset($this->lang['mod_slider']['modules']['content']) ? $this->lang['mod_slider']['modules']['content'] : 'Naverok',
-            'mod_publication' => isset($this->lang['mod_slider']['modules']['publication']) ? $this->lang['mod_slider']['modules']['publication'] : 'Nivîs',
             'mod_video' => isset($this->lang['mod_slider']['modules']['video']) ? $this->lang['mod_slider']['modules']['video'] : 'Vîdyo',
         ];
 
@@ -596,9 +576,7 @@ class mod_slider_mod extends indexMain
                 if (count($parts) === 2) {
                     $module = Req::Clear($parts[0]);
                     $id = intval($parts[1]);
-                    if ($module === 'mod_publication' && $id > 0 && $this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
-                        $db->query("UPDATE `mod_publication` SET slider = 'y' WHERE id = " . $id);
-                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                    if (in_array($module, ['mod_news', 'mod_publication', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
                         $db->query("UPDATE `" . $module . "` SET slider = 'y' WHERE id = " . $id);
                     }
                 }
@@ -631,9 +609,7 @@ class mod_slider_mod extends indexMain
                 if (count($parts) === 2) {
                     $module = Req::Clear($parts[0]);
                     $id = intval($parts[1]);
-                    if ($module === 'mod_publication' && $id > 0 && $this->_tableExists('mod_publication') && $this->_hasColumn('mod_publication', 'slider')) {
-                        $db->query("UPDATE `mod_publication` SET slider = 'n' WHERE id = " . $id);
-                    } elseif (in_array($module, ['mod_news', 'mod_publication', 'mod_content', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
+                    if (in_array($module, ['mod_news', 'mod_publication', 'mod_video']) && $id > 0 && $this->_tableExists($module) && $this->_hasColumn($module, 'slider')) {
                         $db->query("UPDATE `" . $module . "` SET slider = 'n' WHERE id = " . $id);
                     }
                 }

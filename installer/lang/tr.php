@@ -260,8 +260,6 @@ $installerLang = [
       'mod_video_embed' => 'Gömülü Video',
       'mod_news' => 'Haberler',
       'mod_publication' => 'Yayınlar',
-      'mod_content_category' => 'Kategoriler',
-      'mod_content' => 'İçerik',
     ],
     'checks' => [
       'php_version' => [

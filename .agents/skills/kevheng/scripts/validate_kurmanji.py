@@ -83,6 +83,12 @@ DISALLOWED_TERMS = {
     "hesekê": "Hisiça",
     "heseke": "Hisiça",
     "qsd": "HSD",
+    "moskow": "Mosqow",
+    "moskova": "Mosqow",
+    "mosco": "Mosqow",
+    "kiev": "Kyîv",
+    "kyiv": "Kyîv",
+    "kîev": "Kyîv",
 }
 
 if os.path.exists(VOCAB_RULES_FILE):
@@ -192,9 +198,45 @@ class KevhengValidator:
             })
         return issues
 
+    def check_vowels_before_y(self, text: str) -> List[Dict[str, Any]]:
+        # Strip HTML tags and URLs
+        clean_text = re.sub(r'<[^>]+>', ' ', text)
+        clean_text = re.sub(r'https?://\S+', ' ', clean_text)
+        issues = []
+        # Find 'îy' or 'êy' within words (not across apostrophes like DYE'yê or 3'yê)
+        matches = list(re.finditer(r"\b[a-zA-ZçêîşûÇÊÎŞÛ]*([îê]y)[a-zA-ZçêîşûÇÊÎŞÛ]*\b", clean_text, re.IGNORECASE))
+        for m in matches:
+            word = m.group(0)
+            corrected = re.sub(r'îy', 'iy', word, flags=re.IGNORECASE)
+            corrected = re.sub(r'êy', 'iy', corrected, flags=re.IGNORECASE)
+            issues.append({
+                "type": "invalid_vowel_before_y",
+                "matched": word,
+                "suggestion": corrected,
+                "message": "Vowels 'î' and 'ê' must become 'i' before 'y' (e.g. 'iy', never 'îy' or 'êy')."
+            })
+        return issues
+
+    def check_day_names(self, text: str) -> List[Dict[str, Any]]:
+        clean_text = re.sub(r'<[^>]+>', ' ', text)
+        clean_text = re.sub(r'https?://\S+', ' ', clean_text)
+        issues = []
+        # Match lowercase day names (yekşem, duşem, sêşem, çarşem, pêncşem, în, şemî/şemi)
+        days_regex = r'\b(yekşem|duşem|sêşem|çarşem|pêncşem|în|şemî|şemi)(?:y?ê|y?a|y?an|y?ên|ê|a|an)?\b'
+        for m in re.finditer(days_regex, clean_text):
+            issues.append({
+                "type": "lowercase_day_name",
+                "matched": m.group(0),
+                "suggestion": m.group(0).capitalize(),
+                "message": "Names of days must be capitalized (Yekşem, Duşem, Sêşem, Çarşem, Pêncşem, În, Şemî)."
+            })
+        return issues
+
     def check_disallowed_terms(self, text: str) -> List[Dict[str, Any]]:
         issues = []
-        text_lower = text.lower()
+        clean_text = re.sub(r'<[^>]+>', ' ', text)
+        clean_text = re.sub(r'https?://\S+', ' ', clean_text)
+        text_lower = clean_text.lower()
         for term, preferred in DISALLOWED_TERMS.items():
             if " " in term:
                 pattern = r'\b' + re.escape(term) + r'\b'
@@ -380,6 +422,8 @@ class KevhengValidator:
         vocabulary = self.check_disallowed_terms(text)
         quotes = self.check_quotes(text)
         bare_bo = self.check_preposition_bo(text)
+        vowel_y_issues = self.check_vowels_before_y(text)
+        day_issues = self.check_day_names(text)
         lexicon = self.check_lexicon(text)
         
         # Check month annotations if HTML tags are detected
@@ -400,6 +444,8 @@ class KevhengValidator:
             len(vocabulary) == 0 and
             len(quotes) == 0 and
             len(bare_bo) == 0 and
+            len(vowel_y_issues) == 0 and
+            len(day_issues) == 0 and
             len(month_issues) == 0 and
             len(seo_issues) == 0 and
             (deck_report is None or deck_report["valid"])
@@ -413,6 +459,8 @@ class KevhengValidator:
             "vocabulary_issues": vocabulary,
             "quote_issues": quotes,
             "bare_bo_issues": bare_bo,
+            "vowel_before_y_issues": vowel_y_issues,
+            "day_name_issues": day_issues,
             "month_issues": month_issues,
             "seo_issues": seo_issues,
             "deck_summary": deck_report,

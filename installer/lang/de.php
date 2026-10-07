@@ -259,8 +259,6 @@ $installerLang = [
       'mod_video_embed' => 'Video-Einbettung',
       'mod_news' => 'Nachrichten',
       'mod_publication' => 'Publikationen',
-      'mod_content_category' => 'Kategorien',
-      'mod_content' => 'Inhalt',
     ],
     'checks' => [
       'php_version' => [

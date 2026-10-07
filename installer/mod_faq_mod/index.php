@@ -43,13 +43,6 @@ class mod_faq_mod extends installerbase implements installerbaseinterface
     {
         $records = array(
             array(
-                'name' => 'Content FAQs',
-                'mod_name' => 'mod_content',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
                 'name' => 'News FAQs',
                 'mod_name' => 'mod_news',
                 'mod_key' => 'id',

@@ -20,7 +20,6 @@ require_once dirname(__DIR__) . '/init.php';
 $runtime = Load::lib('ModuleRuntime');
 
 $moduleFeatureMap = [
-    'mod_content' => 'content.front',
     'mod_news' => 'news.front',
     'mod_publication' => 'publication.front',
     'mod_video_embed' => 'video_embed.front',

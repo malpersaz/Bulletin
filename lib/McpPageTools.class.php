@@ -124,9 +124,6 @@ class McpPageTools extends McpCrudToolsBase
         $model->menu = 0;
         $model->user_id = $this->actingUserId;
 
-        if ($model->category_id > 0) {
-            $this->assertRecordMatchesLang('mod_content_category', $model->category_id, $lang, 'Content category');
-        }
         if ($model->gallery_id > 0) {
             $this->assertRecordMatchesLang('mod_page', $model->gallery_id, $lang, 'Gallery page');
         }

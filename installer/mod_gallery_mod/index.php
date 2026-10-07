@@ -43,13 +43,6 @@ class mod_gallery_mod extends installerbase implements installerbaseinterface
     {
         $records = array(
             array(
-                'name' => 'Content Galleries',
-                'mod_name' => 'mod_content',
-                'mod_key' => 'id',
-                'mod_value' => 'name',
-                'user_id' => 1
-            ),
-            array(
                 'name' => 'Page Galleries',
                 'mod_name' => 'mod_page',
                 'mod_key' => 'id',

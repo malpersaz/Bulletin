@@ -1309,11 +1309,6 @@ Rêgezên te yên sereke:
                 'label' => $management['content_and_page'],
                 'icon' => 'bi bi-rocket-takeoff-fill',
                 'modules' => array_filter([
-                    $mod('mod_content', 'list', $management['content_management'], 'bi bi-file-earmark-text-fill', [
-                        $list('mod_content', 'list', $base . 'mod_content/list'),
-                        $add('mod_content', 'add', $base . 'mod_content/add'),
-                        $cats('mod_content_category', 'list', $base . 'mod_content_category/list'),
-                    ]),
                     $mod('mod_news', 'list', $management['news_management'], 'bi bi-newspaper', [
                         $list('mod_news', 'list', $base . 'mod_news/list'),
                         $add('mod_news', 'add', $base . 'mod_news/add'),

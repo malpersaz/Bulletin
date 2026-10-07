@@ -1,6 +1,6 @@
-<div class="drawer-scrim" id="drawerScrim" onclick="toggleDrawer()"></div>
+<div class="drawer-scrim" id="drawerScrim"></div>
 
-{% set content_active = mod == 'mod_content_category' or mod == 'mod_news_category' or mod == 'mod_content' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' %}
+{% set content_active = mod == 'mod_news_category' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' %}
 {% set media_active = mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' %}
 {% set announcements_active = mod == 'mod_announcements' or mod == 'mod_popup' or mod == 'mod_newsletter' %}
 {% set seo_active = mod == 'mod_seo' or mod == 'mod_redirect' %}
@@ -11,7 +11,7 @@
             <div class="drawer-title site-title-font">{{ site.title }}</div>
             <div class="drawer-subtitle">v{{ site.version }}{% if site.build %} ({{ site.build }}){% endif %}</div>
         </div>
-        <button type="button" class="drawer-close-btn" onclick="toggleDrawer()" aria-label="{{ lang.management.quick_menu }}">
+        <button type="button" class="drawer-close-btn" id="drawerCloseBtn" aria-label="{{ lang.management.quick_menu }}">
             <i class="bi bi-x-lg"></i>
         </button>
     </div>
@@ -25,7 +25,6 @@
                 class="drawer-search-input"
                 placeholder="{{ lang.management.module_search_placeholder }}"
                 autocomplete="off"
-                oninput="filterDrawerNav(this.value)"
             >
         </div>
         <div class="drawer-search-results" id="drawerSearchResults" hidden></div>
@@ -45,18 +44,12 @@
         <div class="nav-divider"></div>
 
         <div class="nav-group{% if content_active %} expanded{% endif %}" data-nav-group="content">
-            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.content_and_page }}">
+            <button type="button" class="nav-group-header" data-nav-label="{{ lang.management.content_and_page }}">
                 <i class="bi bi-rocket-takeoff-fill nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.content_and_page }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
             </button>
             <div class="nav-group-items">
-                {% if session.permissions.mod_content_category.list is defined %}
-                    <a href="{{ site.saddress }}mod_content_category/list" class="nav-item {% if mod == 'mod_content_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_content_category" data-nav-label="{{ lang.management.content_categories }}">
-                        <i class="bi bi-tags-fill nav-item-icon"></i>
-                        <span class="nav-item-label">{{ lang.management.content_categories }}</span>
-                    </a>
-                {% endif %}
                 {% if session.permissions.mod_news_category.list is defined %}
                     <a href="{{ site.saddress }}mod_news_category/list" class="nav-item {% if mod == 'mod_news_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_news_category" data-nav-label="{{ lang.management.news_categories }}">
                         <i class="bi bi-bookmarks-fill nav-item-icon"></i>
@@ -99,7 +92,7 @@
         </div>
 
         <div class="nav-group{% if media_active %} expanded{% endif %}" data-nav-group="media">
-            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.video_and_images }}">
+            <button type="button" class="nav-group-header" data-nav-label="{{ lang.management.video_and_images }}">
                 <i class="bi bi-camera-video-fill nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.video_and_images }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
@@ -151,7 +144,7 @@
         </div>
 
         <div class="nav-group{% if announcements_active %} expanded{% endif %}" data-nav-group="announcements">
-            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.announcement_management }}">
+            <button type="button" class="nav-group-header" data-nav-label="{{ lang.management.announcement_management }}">
                 <i class="bi bi-megaphone-fill nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.announcement_management }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>
@@ -179,7 +172,7 @@
         </div>
 
         <div class="nav-group{% if seo_active %} expanded{% endif %}" data-nav-group="seo">
-            <button type="button" class="nav-group-header" onclick="toggleGroup(this)" data-nav-label="{{ lang.management.seo_and_redirects }}">
+            <button type="button" class="nav-group-header" data-nav-label="{{ lang.management.seo_and_redirects }}">
                 <i class="bi bi-globe nav-item-icon"></i>
                 <span class="nav-item-label">{{ lang.management.seo_and_redirects }}</span>
                 <i class="bi bi-chevron-down group-indicator"></i>

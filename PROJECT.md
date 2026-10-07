@@ -19,7 +19,7 @@
 | 7 | Admin Partials Code Separation | Decouple inline styles/handlers from `header.twig`, `filter_sheet.twig`, `sheets_extra.twig` to `modal_user_menu.js` & `core_modals.css` | M2 | Survey / R1 |
 | 8 | Reusable Share Toolbar Component | `templates/amida/partials/share_toolbar.twig`, `static/css/share.css`, `static/js/share.js` with `data-action="print"` & TikTok | M3 | Survey / R3 |
 | 9 | Compact Share Partial Modernization | Zero-inline `templates/amida/partials/share.twig`, external CSS/JS, clipboard confirmation tooltip | M3 | Survey / R3 |
-| 10 | Detail Views Share Toolbar Integration | Replace legacy toolbars in `mod_news`, `mod_publication`, `mod_content`, `mod_page`, `mod_announcements`, `mod_imagecategories` | M3 | Survey / R3 |
+| 10 | Detail Views Share Toolbar Integration | Replace legacy toolbars in `mod_news`, `mod_publication`, `mod_page`, `mod_announcements`, `mod_imagecategories` | M3 | Survey / R3 |
 | 11 | Document Export & Tools Cleanliness | Modernize `mod/tools/index.php` (`_check_permission`, clean `$output`), add dictionary keys in `mod/index/lang/` across 9 languages | M3 | Survey / R3 |
 | 12 | Corporate & Fiscal Settings Schema | 16 corporate fields added to `installer/mod_settings/mod_settings.sql` and `mod/mod_settings/mod_settings.sql` | M4 | Survey / R4 |
 | 13 | Multilingual Legal & Cookie Page Fixtures | 9 Legal Information + 9 Cookie Policy page seeds in `installer/mod_page/index.php` | M4 | Survey / R4 |

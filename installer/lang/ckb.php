@@ -259,8 +259,6 @@ $installerLang = [
       'mod_video_embed' => 'تێخستنی ڤیدیۆ',
       'mod_news' => 'هەواڵ',
       'mod_publication' => 'بڵاوکراوە',
-      'mod_content_category' => 'هاوپۆل',
-      'mod_content' => 'ناوەڕۆک',
     ],
     'checks' => [
       'php_version' => [

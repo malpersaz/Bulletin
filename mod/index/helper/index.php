@@ -60,29 +60,6 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_pictures", "gallery", [$category]);
     }
 
-
-
-    // Mod Content
-    public function content($seo = null)
-    {
-        return $this->_loadHelper("index.mod_content", "content", [$seo]);
-    }
-
-    public function contents($category = null, $page = 1)
-    {
-        return $this->_loadHelper("index.mod_content", "contents", [$category, $page]);
-    }
-
-    public function archive()
-    {
-        return $this->_loadHelper("index.mod_content", "arsiv");
-    }
-
-    public function arsiv()
-    {
-        return $this->archive();
-    }
-
     public function news($seo = null)
     {
         return $this->_loadHelper("index.mod_news", "content", [$seo]);
@@ -122,12 +99,6 @@ class index_mod extends indexBase
     public function announcements()
     {
         return $this->_loadHelper("index.mod_announcements", "announcements");
-    }
-
-    // Latest Content
-    public function _latest_content($limit, $select)
-    {
-        return $this->_loadHelper("index.mod_content", "_latest_content", [$limit, $select]);
     }
 
     public function _latest_news($limit, $select)

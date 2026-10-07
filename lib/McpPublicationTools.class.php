@@ -126,7 +126,19 @@ class McpPublicationTools extends McpCrudToolsBase
         $model->gallery_id = (int) ($args['gallery_id'] ?? 0);
         $model->file_id = (int) ($args['file_id'] ?? 0);
         $model->acl_id = (int) ($args['acl_id'] ?? 0);
-        $model->user_id = $this->actingUserId;
+        $authorUserId = $this->actingUserId;
+        if (!empty($args['user_id'])) {
+            $authorUserId = (int) $args['user_id'];
+        } elseif (!empty($args['username'])) {
+            $targetUsername = trim((string) $args['username']);
+            $db = Load::lib('Database');
+            $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
+            if ($db->getSize() > 0) {
+                $userRow = $db->get_row();
+                $authorUserId = (int) ($userRow['id'] ?? $this->actingUserId);
+            }
+        }
+        $model->user_id = $authorUserId;
         $model->menu = 0;
 
         $imageUrl = null;
@@ -219,6 +231,18 @@ class McpPublicationTools extends McpCrudToolsBase
 
         if (isset($args['video'])) {
             $model->video = $this->serializeVideoRefs($args['video']);
+        }
+
+        if (isset($args['user_id'])) {
+            $model->user_id = (int) $args['user_id'];
+        } elseif (isset($args['username'])) {
+            $targetUsername = trim((string) $args['username']);
+            $db = Load::lib('Database');
+            $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
+            if ($db->getSize() > 0) {
+                $userRow = $db->get_row();
+                $model->user_id = (int) $userRow['id'];
+            }
         }
 
         $model->lang = $lang;

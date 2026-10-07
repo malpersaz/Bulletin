@@ -52,6 +52,7 @@ The audit evaluates seven mandatory quality checkpoints:
    - Rule / Principle: `qayîde` (never `qaîde`).
    - About / Concerning: `li ser` (never `derbarê`, `der barê`, `derheqê`, or `der heqê`).
    - Together with / With: `bi ... re` (never `digel` or `di gel`).
+   - Cargo / Freight: `bar` / `keştiya bar` (never `barhilgir`).
 5. **Deck Summary Length**:
    - The summary deck must strictly be **90 to 120 characters**.
 6. **Interactive Month Annotation Completeness**:

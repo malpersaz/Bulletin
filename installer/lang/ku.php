@@ -260,8 +260,6 @@ $installerLang = [
       'mod_video_embed' => 'Cihgirtina vîdyoyê',
       'mod_news' => 'Nûçe',
       'mod_publication' => 'Weşan',
-      'mod_content_category' => 'Kategorî',
-      'mod_content' => 'Naverok',
     ],
     'checks' => [
       'php_version' => [

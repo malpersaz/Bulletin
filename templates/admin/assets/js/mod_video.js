@@ -1,7 +1,7 @@
 /**
  * mod_video.js
  * Handles fetching data from existing Datatable JSON endpoint and rendering M3 Cards.
- * Modeled after mod_content.js & mod_video_embed.js
+ * Modeled after mod_news.js & mod_video_embed.js
  */
 
 class VideoManager {

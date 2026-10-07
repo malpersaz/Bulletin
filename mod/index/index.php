@@ -73,39 +73,6 @@ class index_mod extends indexBase
     }
 
 
-    public function content($seo = null)
-    {
-        if (!$this->guardFeatureOr404('content.front')) {
-            return;
-        }
-
-        Load::lib("Session");
-        $content = Load::helper("index.mod_content");
-        $content->content($seo);
-        unset($content);
-    }
-
-    public function contents($category = null, $page = 1)
-    {
-        if (!$this->guardFeatureOr404('content.front')) {
-            return;
-        }
-
-        $content = Load::helper("index.mod_content");
-        $content->contents($category, $page);
-        unset($content);
-    }
-
-    public function arsiv()
-    {
-        if (!$this->guardFeatureOr404('content.archive')) {
-            return;
-        }
-
-        $content = Load::helper('index.mod_content');
-        $content->arsiv();
-        unset($content);
-    }
 
     public function news($seo = null)
     {
@@ -345,18 +312,6 @@ class index_mod extends indexBase
     }
 
 
-    public function _latest_content($t, $limit, $select)
-    {
-        if (!$this->isFeatureReady('content.latest')) {
-            $t->ctx_set('latest_content', []);
-            return;
-        }
-
-        $helper = Load::helper('index.mod_content');
-        $result = $helper->_latest_content($limit, $select);
-        $t->ctx_set('latest_content', $result);
-        unset($helper);
-    }
 
     public function _latest_news($t, $limit, $select)
     {
@@ -750,21 +705,6 @@ class index_mod extends indexBase
             }
         }
 
-        if ($this->isFeatureReady('content.front')) {
-            $cat_content = Load::model('mod_content_category');
-            $cat_content->where_lang($this->site['lang'])->select(['seo', 'lang']);
-            $cat_content->gR();
-            if ($cat_content->getSize() != 0) {
-                foreach ($cat_content->toArray() as $o) {
-                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
-                        echo '<url>
-                                  <loc>' . $this->site['address'] . $o['lang'] . '/category/' . $o['seo'] . '</loc>
-                                  <priority>0.60</priority>
-                            </url>';
-                    }
-                }
-            }
-        }
 
         echo '</urlset>';
         exit;

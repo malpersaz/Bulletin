@@ -145,70 +145,70 @@ function build_runtime(array $tables, array $modsRows)
 function test_registry_maps()
 {
     $registry = new ModuleRegistry();
-    $content = $registry->getFeatureConfig('content.front');
+    $news = $registry->getFeatureConfig('news.front');
 
-    assert_same(['mod_content', 'mod_content_category'], $content['modules'], 'content.front module map changed unexpectedly');
-    assert_same(['mod_content', 'mod_content_category'], $content['tables'], 'content.front table map changed unexpectedly');
-    assert_same(['mod_content'], $registry->getUninstallDependents('mod_content_category'), 'mod_content_category uninstall dependents mismatch');
+    assert_same(['mod_news', 'mod_news_category'], $news['modules'], 'news.front module map changed unexpectedly');
+    assert_same(['mod_news', 'mod_news_category'], $news['tables'], 'news.front table map changed unexpectedly');
+    assert_same(['mod_news'], $registry->getUninstallDependents('mod_news_category'), 'mod_news_category uninstall dependents mismatch');
 }
 
 function test_runtime_ready_feature()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_content_category'],
+        ['mods', 'mod_news', 'mod_news_category'],
         [
-            ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
-    assert_true($runtime->isReady('content.front'), 'content.front should be ready');
-    assert_same(null, $runtime->getFailureReason('content.front'), 'ready feature should not expose a failure reason');
+    assert_true($runtime->isReady('news.front'), 'news.front should be ready');
+    assert_same(null, $runtime->getFailureReason('news.front'), 'ready feature should not expose a failure reason');
 }
 
 function test_runtime_missing_table_reason()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content'],
+        ['mods', 'mod_news'],
         [
-            ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
-    assert_false($runtime->isReady('content.front'), 'content.front should fail when mod_content_category table is missing');
-    $failure = $runtime->getFailureReason('content.front');
+    assert_false($runtime->isReady('news.front'), 'news.front should fail when mod_news_category table is missing');
+    $failure = $runtime->getFailureReason('news.front');
     assert_same('missing_table', $failure['reason'], 'missing table reason mismatch');
-    assert_same(['mod_content_category'], $failure['missing_tables'], 'missing table payload mismatch');
+    assert_same(['mod_news_category'], $failure['missing_tables'], 'missing table payload mismatch');
 }
 
 function test_runtime_disabled_module_reason()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_content_category'],
+        ['mods', 'mod_news', 'mod_news_category'],
         [
-            ['mod_name' => 'mod_content', 'status' => 'disabled', 'schema_ready' => 'n'],
-            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news', 'status' => 'disabled', 'schema_ready' => 'n'],
+            ['mod_name' => 'mod_news_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
-    assert_false($runtime->isReady('content.front'), 'disabled module should not be ready');
-    $failure = $runtime->getFailureReason('content.front');
+    assert_false($runtime->isReady('news.front'), 'disabled module should not be ready');
+    $failure = $runtime->getFailureReason('news.front');
     assert_same('missing_module', $failure['reason'], 'disabled module should surface as missing module for feature readiness');
-    assert_same(['mod_content'], $failure['missing_modules'], 'disabled module payload mismatch');
+    assert_same(['mod_news'], $failure['missing_modules'], 'disabled module payload mismatch');
 }
 
 function test_module_health_detects_dependency_gaps()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content', 'mod_content_category'],
+        ['mods', 'mod_news', 'mod_news_category'],
         [
-            ['mod_name' => 'mod_content', 'status' => 'degraded', 'schema_ready' => 'n'],
-            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news', 'status' => 'degraded', 'schema_ready' => 'n'],
+            ['mod_name' => 'mod_news_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
-    $health = $runtime->getModuleHealth('mod_content');
+    $health = $runtime->getModuleHealth('mod_news');
     assert_same('degraded', $health['status'], 'module health should preserve degraded status');
     assert_same(['mod_gallery', 'mod_user'], $health['missing_modules'], 'module health should report missing dependency modules');
     assert_same(['mod_gallery', 'mod_user'], $health['missing_tables'], 'module health should report missing dependency tables');
@@ -217,10 +217,10 @@ function test_module_health_detects_dependency_gaps()
 function test_require_ready_logs_block()
 {
     $runtime = build_runtime(
-        ['mods', 'mod_content'],
+        ['mods', 'mod_news'],
         [
-            ['mod_name' => 'mod_content', 'status' => 'ready', 'schema_ready' => 'y'],
-            ['mod_name' => 'mod_content_category', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news', 'status' => 'ready', 'schema_ready' => 'y'],
+            ['mod_name' => 'mod_news_category', 'status' => 'ready', 'schema_ready' => 'y'],
         ]
     );
 
@@ -228,13 +228,13 @@ function test_require_ready_logs_block()
     ini_set('error_log', $logFile);
 
     assert_false(
-        $runtime->requireReady('content.front', ['url' => '/contents']),
+        $runtime->requireReady('news.front', ['url' => '/news']),
         'requireReady should fail for missing dependency table'
     );
 
     $logContent = file_get_contents($logFile);
     assert_true(strpos($logContent, 'module_runtime_blocked:') !== false, 'requireReady should emit a blocked-feature log entry');
-    assert_true(strpos($logContent, '"feature":"content.front"') !== false, 'blocked-feature log should include feature name');
+    assert_true(strpos($logContent, '"feature":"news.front"') !== false, 'blocked-feature log should include feature name');
 
     @unlink($logFile);
 }

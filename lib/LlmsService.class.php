@@ -116,22 +116,6 @@ class LlmsService
             }
         }
 
-        // 6. Articles & Analytical Features (mod_content)
-        $articles = [];
-        if ($this->runtime->isModuleReady('mod_content')) {
-            $articles = $this->getActiveContent($lang, 15);
-            if (!empty($articles)) {
-                $md[] = "## Articles & Opinions";
-                foreach ($articles as $c) {
-                    $artTitle = !empty($c['name']) ? $c['name'] : (!empty($c['title']) ? $c['title'] : 'Article');
-                    $artSlug = !empty($c['seo']) ? $c['seo'] : Helper::legacy_seo($artTitle);
-                    $artUrl = $this->buildUrl($lang, 'content/' . $artSlug);
-                    $artDesc = $this->resolveItemSummary($c, 'Feature article and analytical commentary.');
-                    $md[] = "- [" . $artTitle . "](" . $artUrl . "): " . $artDesc;
-                }
-                $md[] = "";
-            }
-        }
 
         // 7. Pages & Institutional Information (mod_page)
         $pages = [];
@@ -416,21 +400,6 @@ class LlmsService
         return [];
     }
 
-    private function getActiveContent(string $lang, int $limit = 15): array
-    {
-        try {
-            $model = Load::model('mod_content');
-            $model->where_status_and_lang('y', $lang);
-            $model->order('created_at', 'DESC');
-            $model->limit($limit);
-            $model->gR();
-            if ($model->getSize() > 0) {
-                return $model->toArray();
-            }
-        } catch (\Throwable $e) {
-        }
-        return [];
-    }
 
     private function getActivePages(string $lang): array
     {

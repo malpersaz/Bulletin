@@ -16,7 +16,6 @@ require_once(lib_dir . 'McpToolException.php');
 require_once(lib_dir . 'McpCrudToolsBase.class.php');
 require_once(lib_dir . 'McpOAuth.class.php');
 require_once(lib_dir . 'McpNewsTools.class.php');
-require_once(lib_dir . 'McpContentTools.class.php');
 require_once(lib_dir . 'McpPublicationTools.class.php');
 require_once(lib_dir . 'McpAnnouncementTools.class.php');
 require_once(lib_dir . 'McpSettingsTools.class.php');
@@ -68,9 +67,6 @@ class McpServer
     private array $groupPermissions = [];
 
     private McpNewsTools $newsTools;
-
-    private McpContentTools $tools;
-
     private McpPublicationTools $publicationTools;
 
     private McpAnnouncementTools $announcementTools;
@@ -119,7 +115,6 @@ class McpServer
     private function initTools(int $userId, array $groupPermissions): void
     {
         $this->newsTools = new McpNewsTools($userId, $groupPermissions);
-        $this->tools = new McpContentTools($userId, $groupPermissions);
         $this->publicationTools = new McpPublicationTools($userId, $groupPermissions);
         $this->announcementTools = new McpAnnouncementTools($userId, $groupPermissions);
         $this->settingsTools = new McpSettingsTools($userId, $groupPermissions);
@@ -782,7 +777,7 @@ class McpServer
             'slider' => $this->sliderTools,
             'survey' => $this->surveyTools,
             'video' => $this->videoTools,
-            default => $this->tools,
+            default => throw new McpToolException("Unknown tool domain: {$domain}"),
         };
 
         $payload = $domainTools->{$tool['handler']}($arguments);
@@ -1073,208 +1068,6 @@ class McpServer
                 ],
             ],
 
-            'list_contents' => [
-                'module' => 'mod_content',
-                'role' => 'list',
-                'handler' => 'listContents',
-                'description' => 'List contents with optional filters. Returns paginated items (id, lang, name, category_id, status, deck, slider, seo, created_at, updated_at) plus the total count.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'category_id' => ['type' => 'integer', 'description' => 'Filter by category ID.'],
-                        'lang' => ['type' => 'string', 'description' => 'Filter by language code (e.g. ku, en, tr).'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by publish status: y (published) or n (draft).'],
-                        'search' => ['type' => 'string', 'description' => 'Search term matched against content names.'],
-                        'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 50, 'default' => 10, 'description' => 'Page size (1-50, default 10).'],
-                        'offset' => ['type' => 'integer', 'minimum' => 0, 'default' => 0, 'description' => 'Number of items to skip for pagination.'],
-                    ],
-                ],
-            ],
-
-            'get_content' => [
-                'module' => 'mod_content',
-                'role' => 'list',
-                'handler' => 'getContent',
-                'description' => 'Get a single content record with all fields, including the full body content, summary, and SEO metadata.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Content record ID.'],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
-            'create_content' => [
-                'module' => 'mod_content',
-                'role' => 'add',
-                'handler' => 'createContent',
-                'description' => 'Create a content record. The summary must be between 90 and 120 characters (deck summary SEO standard). The category must exist and match the content language. The seo slug must be unique per language; it defaults to a slug generated from the name.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'name' => ['type' => 'string', 'maxLength' => 255, 'description' => 'Content name (1-255 characters).'],
-                        'lang' => ['type' => 'string', 'description' => 'Language code of an active site language (e.g. ku, en, tr).'],
-                        'category_id' => ['type' => 'integer', 'description' => 'ID of an existing content category with the same language.'],
-                        'content' => ['type' => 'string', 'description' => 'Full HTML body of the content.'],
-                        'summary' => ['type' => 'string', 'minLength' => 90, 'maxLength' => 120, 'description' => 'Deck summary (exactly 90-120 characters).'],
-                        'seo' => ['type' => 'string', 'maxLength' => 255, 'description' => 'URL slug. Defaults to a slug generated from the name. Must be unique per language.'],
-                        'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO title. Defaults to the name.'],
-                        'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO keywords. Defaults to empty.'],
-                        'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO description. Defaults to the summary.'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Publish status: y (published) or n (draft).'],
-                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show on deck: y or n.'],
-                        'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show in hero slider: y or n.'],
-                        'created_at' => ['type' => 'string', 'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.'],
-                        'video' => ['type' => 'string', 'description' => 'Comma-separated video references (video:ID for local videos, vid:ID for embedded).'],
-                        'gallery_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related gallery ID.'],
-                        'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related attachment file ID.'],
-                        'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control group ID (0 = public).'],
-                        'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
-                    ],
-                    'required' => ['name', 'lang', 'category_id', 'content', 'summary'],
-                ],
-            ],
-
-            'update_content' => [
-                'module' => 'mod_content',
-                'role' => 'edit',
-                'handler' => 'updateContent',
-                'description' => 'Partially update a content record. Only provided fields change; the summary (if provided) must be between 90 and 120 characters, and the seo slug (if provided) must remain unique per language.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Content record ID.'],
-                        'name' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New content name.'],
-                        'lang' => ['type' => 'string', 'description' => 'New language code of an active site language. The category must match it.'],
-                        'category_id' => ['type' => 'integer', 'description' => 'New category ID with a matching language.'],
-                        'content' => ['type' => 'string', 'description' => 'New full HTML body.'],
-                        'summary' => ['type' => 'string', 'minLength' => 90, 'maxLength' => 120, 'description' => 'New deck summary (90-120 characters).'],
-                        'seo' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New URL slug, unique per language.'],
-                        'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO title.'],
-                        'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO keywords.'],
-                        'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO description.'],
-                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New publish status.'],
-                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New deck flag.'],
-                        'slider' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New hero slider flag.'],
-                        'created_at' => ['type' => 'string', 'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).'],
-                        'video' => ['type' => 'string', 'description' => 'New comma-separated video references.'],
-                        'gallery_id' => ['type' => 'integer', 'description' => 'New related gallery ID.'],
-                        'file_id' => ['type' => 'integer', 'description' => 'New related attachment file ID.'],
-                        'acl_id' => ['type' => 'integer', 'description' => 'New access control group ID.'],
-                        'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
-            'delete_content' => [
-                'module' => 'mod_content',
-                'role' => 'delete',
-                'handler' => 'deleteContent',
-                'description' => 'Delete a content record. Related gallery, attachment, and FAQ relations and uploaded image files are cleaned up automatically.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Content record ID.'],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
-            'list_content_categories' => [
-                'module' => 'mod_content_category',
-                'role' => 'list',
-                'handler' => 'listContentCategories',
-                'description' => 'List content categories ordered by their sort order. Root categories are structural per-language roots and carry root="y".',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'lang' => ['type' => 'string', 'description' => 'Filter by language code (e.g. ku, en, tr).'],
-                        'root' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by root flag: y (structural root) or n (regular category).'],
-                        'search' => ['type' => 'string', 'description' => 'Search term matched against category names.'],
-                        'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 50, 'default' => 50, 'description' => 'Page size (1-50, default 50).'],
-                        'offset' => ['type' => 'integer', 'minimum' => 0, 'default' => 0, 'description' => 'Number of items to skip for pagination.'],
-                    ],
-                ],
-            ],
-
-            'get_content_category' => [
-                'module' => 'mod_content_category',
-                'role' => 'list',
-                'handler' => 'getContentCategory',
-                'description' => 'Get a single content category record with all fields.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Category record ID.'],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
-            'create_content_category' => [
-                'module' => 'mod_content_category',
-                'role' => 'add',
-                'handler' => 'createContentCategory',
-                'description' => 'Create a content category. When a parent_id is given it must reference a category with the same language. The sort order defaults to the end of its sibling list. A menu entry is not created automatically.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'name' => ['type' => 'string', 'maxLength' => 255, 'description' => 'Category name (1-255 characters).'],
-                        'lang' => ['type' => 'string', 'description' => 'Language code of an active site language (e.g. ku, en, tr).'],
-                        'parent_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Parent category ID with the same language, or 0 for a top-level category.'],
-                        'root' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Structural root flag. Keep "n" for regular categories.'],
-                        'seo' => ['type' => 'string', 'maxLength' => 255, 'description' => 'URL slug. Defaults to a slug generated from the name.'],
-                        'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO title. Defaults to the name.'],
-                        'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO keywords. Defaults to empty.'],
-                        'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'SEO description. Defaults to empty.'],
-                        'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control group ID (0 = public).'],
-                        'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
-                    ],
-                    'required' => ['name', 'lang'],
-                ],
-            ],
-
-            'update_content_category' => [
-                'module' => 'mod_content_category',
-                'role' => 'edit',
-                'handler' => 'updateContentCategory',
-                'description' => 'Partially update a content category. When the name, language, seo, or acl changes, an existing menu entry pointing at the old category URL is updated automatically.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Category record ID.'],
-                        'name' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New category name.'],
-                        'lang' => ['type' => 'string', 'description' => 'New language code of an active site language.'],
-                        'parent_id' => ['type' => 'integer', 'description' => 'New parent category ID with the same language, or 0 for top level.'],
-                        'root' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New structural root flag.'],
-                        'seo' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New URL slug.'],
-                        'title' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO title.'],
-                        'keywords' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO keywords.'],
-                        'description' => ['type' => 'string', 'maxLength' => 255, 'description' => 'New SEO description.'],
-                        'acl_id' => ['type' => 'integer', 'description' => 'New access control group ID.'],
-                        'order' => ['type' => 'integer', 'minimum' => 0, 'description' => 'New sort order.'],
-                        'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
-            'delete_content_category' => [
-                'module' => 'mod_content_category',
-                'role' => 'delete',
-                'handler' => 'deleteContentCategory',
-                'description' => 'Delete a content category and all of its child categories recursively. Related images, gallery/attachment relations, and menu entries are cleaned up automatically.',
-                'schema' => [
-                    'type' => 'object',
-                    'properties' => [
-                        'id' => ['type' => 'integer', 'description' => 'Category record ID.'],
-                    ],
-                    'required' => ['id'],
-                ],
-            ],
-
             'list_publications' => [
                 'module' => 'mod_publication',
                 'role' => 'list',
@@ -1337,6 +1130,8 @@ class McpServer
                         'gallery_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related gallery ID.'],
                         'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related attachment file ID.'],
                         'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control group ID (0 = public).'],
+                        'user_id' => ['type' => 'integer', 'description' => 'Author user ID.'],
+                        'username' => ['type' => 'string', 'description' => 'Author username (e.g. deryawelat).'],
                         'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
                     ],
                     'required' => ['name', 'lang', 'category_id', 'content', 'summary'],
@@ -1371,6 +1166,8 @@ class McpServer
                         'gallery_id' => ['type' => 'integer', 'description' => 'New related gallery ID.'],
                         'file_id' => ['type' => 'integer', 'description' => 'New related attachment file ID.'],
                         'acl_id' => ['type' => 'integer', 'description' => 'New access control group ID.'],
+                        'user_id' => ['type' => 'integer', 'description' => 'Author user ID.'],
+                        'username' => ['type' => 'string', 'description' => 'Author username (e.g. deryawelat).'],
                         'image' => ['type' => 'object', 'nullable' => true, 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
                     ],
                     'required' => ['id'],
@@ -2024,7 +1821,7 @@ class McpServer
                     'properties' => [
                     'mod_name' => [
                     'type' => 'string',
-                    'description' => 'Filter by host module name (e.g. mod_content, mod_page).'
+                    'description' => 'Filter by host module name (e.g. mod_news, mod_page).'
                 ],
                     'vid' => [
                     'type' => 'integer',
@@ -2087,7 +1884,7 @@ class McpServer
                     'properties' => [
                     'mod_name' => [
                     'type' => 'string',
-                    'description' => 'Host module name the file is attached to (e.g. mod_content). Must be registered in the attachment bridge.'
+                    'description' => 'Host module name the file is attached to (e.g. mod_news). Must be registered in the attachment bridge.'
                 ],
                     'vid' => [
                     'type' => 'integer',
@@ -2683,7 +2480,7 @@ class McpServer
                     'properties' => [
                     'mod_name' => [
                     'type' => 'string',
-                    'description' => 'Filter galleries by target module name (for example mod_content).'
+                    'description' => 'Filter galleries by target module name (for example mod_news).'
                 ],
                     'vid' => [
                     'type' => 'integer',
@@ -2720,7 +2517,7 @@ class McpServer
                     'properties' => [
                     'mod_name' => [
                     'type' => 'string',
-                    'description' => 'Target module name that owns the gallery (for example mod_content).'
+                    'description' => 'Target module name that owns the gallery (for example mod_news).'
                 ],
                     'vid' => [
                     'type' => 'integer',

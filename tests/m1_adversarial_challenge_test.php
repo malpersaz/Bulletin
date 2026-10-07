@@ -314,7 +314,7 @@ class M1AdversarialChallenge
         echo "\n[Group 2.2] Obuilder::where Clause Construction\n";
 
         $schema = ["id", "title", "status", "category_id", "author_id", "created_at", "content", "name", "summary", "lang"];
-        $table = "mod_content";
+        $table = "mod_news";
 
         // 1. Simple single condition
         $sql = Obuilder::where("status", [1], $schema, $table);
@@ -346,7 +346,7 @@ class M1AdversarialChallenge
         echo "\n[Group 2.3] Obuilder Syntax Error Handling & English Exceptions\n";
 
         $schema = ["id", "title", "status"];
-        $table = "mod_content";
+        $table = "mod_news";
 
         // Mismatched keys and values count in check_where_colom_size
         $mismatchCaught = false;

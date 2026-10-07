@@ -259,8 +259,6 @@ $installerLang = [
       'mod_video_embed' => 'Cihdayışê vîdyoyî',
       'mod_news' => 'Xeber',
       'mod_publication' => 'Weşan',
-      'mod_content_category' => 'Kategori',
-      'mod_content' => 'Naverok',
     ],
     'checks' => [
       'php_version' => [

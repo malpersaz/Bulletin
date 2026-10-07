@@ -33,8 +33,7 @@ class mod_hero_slider_helper extends indexBase
 
         $items = array_merge(
             $this->loadNewsItems(),
-            $this->loadPublicationItems(),
-            $this->loadContentItems()
+            $this->loadPublicationItems()
         );
 
         if (empty($items)) {
@@ -141,54 +140,6 @@ class mod_hero_slider_helper extends indexBase
         return array_values(array_filter($items));
     }
 
-    private function loadContentItems()
-    {
-        if (!$this->hasSliderColumn('mod_content')) {
-            return [];
-        }
-
-        $db = Load::lib('Database');
-        $rows = $db->fetch_array("
-            SELECT
-                c.id,
-                c.name,
-                c.seo,
-                c.image,
-                c.summary,
-                c.created_at,
-                c.lang,
-                c.user_id,
-                u.name AS u_name,
-                u.last_name AS u_last_name,
-                u.username AS username,
-                cat.name AS category_name,
-                cat.seo AS category_seo
-            FROM mod_content c
-            LEFT JOIN mod_content_category cat ON cat.id = c.category_id
-            LEFT JOIN mod_user u ON u.id = c.user_id
-            WHERE c.status = 'y'
-              AND c.slider = 'y'
-              AND LOWER(c.lang) = '" . strtolower(Req::Clear($this->site['lang'])) . "'
-            ORDER BY c.created_at DESC, c.id DESC
-        ")->getResult()->toArray();
-
-        if (!is_array($rows) || empty($rows)) {
-            return [];
-        }
-
-        $user_image_map = $this->loadUserImageMap($rows);
-        $items = [];
-
-        foreach ($rows as $row) {
-            $items[] = $this->normalizeItem(
-                'mod_content',
-                $row,
-                isset($user_image_map[(int) $row['user_id']]) ? $user_image_map[(int) $row['user_id']] : ''
-            );
-        }
-
-        return array_values(array_filter($items));
-    }
 
     private function loadUserImageMap(array $records)
     {
@@ -255,11 +206,6 @@ class mod_hero_slider_helper extends indexBase
             $category_path = 'publications/';
             $image_base = 'mod_publication/';
             $thumb_base = 'mod_publication/thumb/';
-        } elseif ($source_mod === 'mod_content') {
-            $detail_path = 'content/';
-            $category_path = 'category/';
-            $image_base = 'mod_content/';
-            $thumb_base = 'mod_content/thumb/';
         }
         $image = isset($record['image']) ? (string) $record['image'] : '';
         $category_seo = isset($record['category_seo']) ? (string) $record['category_seo'] : '';

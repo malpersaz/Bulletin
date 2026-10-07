@@ -77,22 +77,6 @@ $url['videos/']='index/videos';
 $url['videos/(:any)']='index/videos/$1';
 $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
-// Content and Category
-$url['article/(:any)']='index/content/$1';
-$url['content/detail/(:any)']='index/content/$1';
-$url['content/(:any)']='index/content/$1';
-$url['content']='index/contents';
-$url['content/']='index/contents';
-$url['contents']='index/contents';
-$url['contents/']='index/contents';
-$url['contents/(:num)']='index/contents/$1';
-$url['contents/(:any)']='index/contents/$1';
-$url['contents/(:any)/(:num)']='index/contents/$1/$2';
-$url['category']='index/contents';
-$url['category/']='index/contents';
-$url['category/(:num)']='index/contents/$1';
-$url['category/(:any)']='index/contents/$1';
-$url['category/(:any)/(:num)']='index/contents/$1/$2';
 
 // News and News Category
 $url['news/detail/(:any)']='index/news/$1';

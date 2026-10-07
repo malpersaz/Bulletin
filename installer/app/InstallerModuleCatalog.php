@@ -33,8 +33,6 @@ class InstallerModuleCatalog
         'mod_video_embed' => array('group' => 'media', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_user', 'mod_video_embed_category'), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mod_news' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array('mod_news_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'not_available'),
         'mod_publication' => array('group' => 'project_specific', 'required' => false, 'default_selected' => true, 'project_specific' => true, 'dependencies' => array('mod_publication_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'not_available'),
-        'mod_content_category' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => true, 'sample_content_mode' => 'module_bootstrap_optional'),
-        'mod_content' => array('group' => 'content', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array('mod_content_category', 'mod_gallery', 'mod_user'), 'supports_sample_content' => true, 'sample_content_mode' => 'module_bootstrap_optional'),
         'mod_seo' => array('group' => 'core_system', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
         'mod_redirect' => array('group' => 'core_system', 'required' => false, 'default_selected' => true, 'project_specific' => false, 'dependencies' => array(), 'supports_sample_content' => false, 'sample_content_mode' => 'none'),
     );
@@ -70,8 +68,6 @@ class InstallerModuleCatalog
         'mod_video_embed',
         'mod_news',
         'mod_publication',
-        'mod_content_category',
-        'mod_content',
         'mod_seo',
         'mod_redirect'
     );

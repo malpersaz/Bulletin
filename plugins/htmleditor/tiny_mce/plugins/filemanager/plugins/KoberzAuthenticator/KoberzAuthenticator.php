@@ -36,11 +36,10 @@ class Moxiecode_KoberzAuthenticator extends Moxiecode_ManagerPlugin
 
 
 
-            Role::hasPermission('mod_content', 'ekle') === True OR
-            Role::hasPermission('mod_content', 'duzenle') === True OR
-
-            Role::hasPermission('mod_haber', 'ekle') === True OR
-            Role::hasPermission('mod_haber', 'duzenle') === True
+            Role::hasPermission('mod_news', 'add') === True OR
+            Role::hasPermission('mod_news', 'edit') === True OR
+            Role::hasPermission('mod_publication', 'add') === True OR
+            Role::hasPermission('mod_publication', 'edit') === True
         ) {
             return True;
 

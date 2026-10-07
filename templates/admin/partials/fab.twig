@@ -1,46 +1,43 @@
 <!-- SPEED DIAL FAB -->
 {% if not hide_fab %}
 <div class="fab-container" id="fabContainer">
-    <div class="fab-overlay" id="fabOverlay" onclick="toggleFabMenu()"></div>
+    <div class="fab-overlay" id="fabOverlay"></div>
     <div class="fab-actions">
-        
-        
-        
-        {% if shared_admin_modules is defined and shared_admin_modules.mod_content %}
-        <button class="fab-mini fab-row-content" onclick="window.location.href='{{ site.saddress }}mod_content/add'" title="{{ lang.mod_user.fab.add_content }}" data-action="content-add">
-            <span class="fab-label">{{ lang.mod_user.fab.add_content }}</span>
-            <i class="bi bi-file-text-fill main-icon"></i>
+        {% if shared_admin_modules is defined and shared_admin_modules.mod_news %}
+        <a href="{{ site.saddress }}mod_news/add" class="fab-mini fab-row-news" title="{{ lang.mod_user.fab.add_news|default('Add News') }}" data-action="news-add">
+            <span class="fab-label">{{ lang.mod_user.fab.add_news|default('Add News') }}</span>
+            <i class="bi bi-newspaper main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
-        </button>
+        </a>
         {% endif %}
         {% if shared_admin_modules is defined and shared_admin_modules.mod_page %}
-        <button class="fab-mini fab-row-page" onclick="window.location.href='{{ site.saddress }}mod_page/add'" title="{{ lang.mod_user.fab.add_page }}" data-action="page-add">
+        <a href="{{ site.saddress }}mod_page/add" class="fab-mini fab-row-page" title="{{ lang.mod_user.fab.add_page }}" data-action="page-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_page }}</span>
             <i class="bi bi-file-earmark-richtext-fill main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
-        </button>
+        </a>
         {% endif %}
         {% if shared_admin_modules is defined and shared_admin_modules.mod_publication %}
-        <button class="fab-mini fab-row-publication" onclick="window.location.href='{{ site.saddress }}mod_publication/add'" title="{{ lang.mod_user.fab.add_publication }}" data-action="publication-add">
+        <a href="{{ site.saddress }}mod_publication/add" class="fab-mini fab-row-publication" title="{{ lang.mod_user.fab.add_publication }}" data-action="publication-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_publication }}</span>
             <i class="bi bi-journal-richtext main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
-        </button>
+        </a>
         {% endif %}
         {% if shared_admin_modules is defined and shared_admin_modules.mod_video_embed %}
-        <button class="fab-mini fab-row-video" onclick="window.location.href='{{ site.saddress }}mod_video_embed/add'" title="{{ lang.mod_user.fab.add_video }}" data-action="video-embed-add">
+        <a href="{{ site.saddress }}mod_video_embed/add" class="fab-mini fab-row-video" title="{{ lang.mod_user.fab.add_video }}" data-action="video-embed-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_video }}</span>
             <i class="bi bi-camera-reels-fill main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
-        </button>
+        </a>
         {% endif %}
-        <button class="fab-mini fab-row-announcement" onclick="window.location.href='{{ site.saddress }}mod_announcements/add'" title="{{ lang.mod_user.fab.add_announcement }}" data-action="announcement-add">
+        <a href="{{ site.saddress }}mod_announcements/add" class="fab-mini fab-row-announcement" title="{{ lang.mod_user.fab.add_announcement }}" data-action="announcement-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_announcement }}</span>
             <i class="bi bi-megaphone-fill main-icon"></i>
             <div class="add-badge"><i class="bi bi-plus"></i></div>
-        </button>
+        </a>
     </div>
-    <div class="fab-large" onclick="toggleFabMenu()" aria-label="{{ lang.mod_user.panel.admin_brand }}">
+    <div class="fab-large" id="fabLarge" role="button" tabindex="0" aria-label="{{ lang.mod_user.panel.admin_brand }}">
         <i class="bi bi-plus-lg" id="fabIcon"></i>
     </div>
 </div>

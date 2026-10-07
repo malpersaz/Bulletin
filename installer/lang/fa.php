@@ -259,8 +259,6 @@ $installerLang = [
       'mod_video_embed' => 'جاسازی ویدئو',
       'mod_news' => 'خبرها',
       'mod_publication' => 'انتشارها',
-      'mod_content_category' => 'دسته‌ها',
-      'mod_content' => 'محتوا',
     ],
     'checks' => [
       'php_version' => [

@@ -5,7 +5,6 @@ require_once(__DIR__ . '/../index/indexBase.php');
 class management_mod extends indexBase
 {
     private $toggleableModules = [
-        'mod_content',
         'mod_news',
         'mod_publication',
         'mod_video_embed',
@@ -153,18 +152,15 @@ class management_mod extends indexBase
         $this->theme->lang(Load::lang('mod_settings'));
 
         $sharedModules = [
-            'mod_content' => $this->isFeatureReady('content.front'),
             'mod_news' => $this->isFeatureReady('news.front'),
             'mod_publication' => $this->isFeatureReady('publication.front'),
             'mod_video_embed' => $this->isFeatureReady('video_embed.front'),
             'mod_page' => $this->runtime()->isModuleReady('mod_page'),
         ];
         $sharedModuleHealth = [
-            'mod_content' => $this->getModuleHealth('mod_content'),
             'mod_news' => $this->getModuleHealth('mod_news'),
             'mod_publication' => $this->getModuleHealth('mod_publication'),
             'mod_video_embed' => $this->getModuleHealth('mod_video_embed'),
-            'mod_content_category' => $this->getModuleHealth('mod_content_category'),
             'mod_news_category' => $this->getModuleHealth('mod_news_category'),
             'mod_publication_category' => $this->getModuleHealth('mod_publication_category'),
             'mod_video_embed_category' => $this->getModuleHealth('mod_video_embed_category'),

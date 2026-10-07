@@ -33,7 +33,7 @@ class TogglePermissionSimulator
         $this->inTransaction = false;
         $this->transactionBackup = [];
         $this->currentUserGroupId = 1;
-        $this->loadedPermissions = [1 => ['mod_user.acl', 'mod_content.edit']];
+        $this->loadedPermissions = [1 => ['mod_user.acl', 'mod_news.edit']];
         $this->response = [];
         $this->responseCode = 200;
     }

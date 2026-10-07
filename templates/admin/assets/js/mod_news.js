@@ -41,7 +41,7 @@ function getNewsCategoryMap() {
 function getNewsLang() {
     if (typeof window.CONTENT_LANG !== 'undefined' && window.CONTENT_LANG) return window.CONTENT_LANG;
     const al = (typeof window.adminLang !== 'undefined' && window.adminLang) ? window.adminLang : {};
-    const mod = al.mod_news || al.mod_content || {};
+    const mod = al.mod_news || {};
     const ctx = al.context_menu || {};
     const dt = al.datatable || {};
 

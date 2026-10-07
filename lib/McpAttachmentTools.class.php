@@ -226,7 +226,7 @@ class McpAttachmentTools extends McpCrudToolsBase
     {
         $modName = basename(trim((string) ($args['mod_name'] ?? '')));
         if ($modName === '') {
-            throw new McpToolException("Field 'mod_name' is required (host module name, e.g. mod_content).");
+            throw new McpToolException("Field 'mod_name' is required (host module name, e.g. mod_news).");
         }
         if (preg_match('/^[a-z][a-z0-9_]*$/', $modName) !== 1) {
             throw new McpToolException("Field 'mod_name' must be a valid module name.");
