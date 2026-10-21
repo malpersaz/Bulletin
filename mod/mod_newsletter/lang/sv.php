@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Software Business CMS Framework
+ * Amed Framework (AKM Bulletin CMS)
  * Newsletter Module Swedish Language Pack
  * mod/mod_newsletter/lang/sv.php
  */

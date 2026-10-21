@@ -2,7 +2,7 @@
 /**
  * News Management Module - Turkish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -164,8 +164,8 @@ $lang['mod_news'] = [
         'approval' => 'Haber onaylama yetkiniz yok',
         'moderate_edit' => 'Başkalarına ait haber kayıtlarını düzenleyemezsiniz',
         'moderate_delete' => 'Başkalarına ait haber kayıtlarını silemezsiniz',
-        'gallery' => 'Galeri yönetme permissionniz yok',
-        'file' => 'Dosya yönetme permissionniz yok',
+        'gallery' => 'Galeri yönetme yetkiniz yok',
+        'file' => 'Dosya yönetme yetkiniz yok',
     ],
 
     // === Admin Panel Configuration ===
@@ -365,6 +365,8 @@ $lang['mod_news'] = [
         'gallery' => 'Galeri İşlemleri',
         'files' => 'Dosya Ekle',
         'video' => 'Habere Video Ekle',
+        'add_video' => 'Video Ekle',
+        'add_file' => 'Dosya Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
         'delete_error' => 'Silme işlemi başarısız!',
@@ -407,6 +409,13 @@ $lang['mod_news'] = [
         'record_not_found' => 'Haber bulunamadı!',
         'unknown_type' => 'Bilinmeyen ilişki türü',
         'relation_updated' => 'İlişki başarıyla güncellendi',
+    ],
+
+    // === Media Picker UI ===
+    'picker' => [
+        'gallery' => 'Mevcut Galeriyi Seç',
+        'file' => 'Mevcut Dosyayı Seç',
+        'video' => 'Mevcut Videoyu Seç',
     ],
 
     // === AI Assistant ===

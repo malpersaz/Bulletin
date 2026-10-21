@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Kurdish Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -394,14 +394,14 @@ $lang['mod_publication'] = [
         'titles' => [
             "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",
             "Bernameya Festîvala Çand û Hunerê ya Amedê hat eşkerekirin",
-            "Komxebata AKM ARTIST CMSgeriya Herêmî bi dawî bû",
+            "Komxebata Rojnamegeriya Herêmî bi dawî bû",
             "Nîşeyên li ser Têkiliya Aqilê Çêkirî û Medyayê",
-            "Derbasbûna ji AKM ARTIST CMSgeriya Kevneşopî bo Medyaya Dijîtal",
+            "Derbasbûna ji Rojnamegeriya Kevneşopî bo Medyaya Dijîtal",
             "Amarên Bikaranîna Medyaya Civakî 2024",
             "Kurteya Teknolojiya Heftane: Çi Qewimî?",
             "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
             "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a AKM ARTIST CMS hat nûkirin"
+            "Serlêdana Mobîl a AKM Bulletin CMS hat nûjenkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],

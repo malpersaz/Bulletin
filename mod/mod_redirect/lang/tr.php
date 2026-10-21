@@ -29,6 +29,7 @@ $lang['mod_redirect'] = [
         'cancel' => 'İptal',
         'yes' => 'Evet',
         'no' => 'Hayır',
+        'save' => 'Değişiklikleri Kaydet',
     ],
     'validator' => [
         'required' => 'Lütfen %s alanını boş bırakmayınız',
@@ -54,6 +55,9 @@ $lang['mod_redirect'] = [
         'intro_add' => 'Yeni bir yönlendirme eklemek için eski URL ve yeni URL değerlerini girip durum kodunu seçiniz.',
         'intro_edit' => 'Buradan yönlendirme URL değerlerini ve durum kodunu düzenleyebilirsiniz.',
         'empty_description' => 'Burada kayıtlı herhangi bir yönlendirme bulunamadı.',
+        'no_search_results' => 'Aramanızla eşleşen yönlendirme bulunamadı.',
+        'clear_search' => 'Aramayı temizle',
+        'fill_required_fields' => 'Lütfen hem kaynak hem de hedef URL alanlarını doldurun.',
         'dashboard' => [
             'active_redirects' => 'Aktif Yönlendirmeler',
             'standard_type' => 'Standart Tür',
@@ -63,6 +67,8 @@ $lang['mod_redirect'] = [
             'old_url' => 'Eski URL (Kaynak)',
             'new_url' => 'Yeni URL (Hedef)',
             'status_code' => 'Durum Kodu (Status Code)',
+            'status_code_301' => '301 - Kalıcı',
+            'status_code_302' => '302 - Geçici',
             'created_at' => 'Oluşturulma Tarihi',
         ],
     ],

@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - Zazaki Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -171,7 +171,6 @@ $lang['mod_gallery_mod'] = [
         'image_gallery' => 'Galeriya Resiman',
         'photo_album' => 'Albumê Resiman',
         'portfolio' => 'Portfolyo',
-        'product_gallery' => 'Galeriya Berheman',
         'showcase' => 'Pêşengeh',
         'slider_gallery' => 'Galeriya Slayderî',
         'masonry' => 'Rêbaza Masonry',

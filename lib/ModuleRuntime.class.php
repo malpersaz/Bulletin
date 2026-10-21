@@ -243,15 +243,10 @@ class ModuleRuntime
         if (strpos($adapter, 'PDO_SQLITE') !== false) {
             $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
             $rows = $this->db->toArray();
-            $this->columnExistsCache[$cacheKey] = false;
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    if (isset($row['name']) && $row['name'] === $column) {
-                        $this->columnExistsCache[$cacheKey] = true;
-                        break;
-                    }
-                }
-            }
+            $this->columnExistsCache[$cacheKey] = is_array($rows) && array_any(
+                $rows,
+                fn($row) => isset($row['name']) && $row['name'] === $column
+            );
             return $this->columnExistsCache[$cacheKey];
         }
 

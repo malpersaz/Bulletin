@@ -1,10 +1,10 @@
 ## 2026-08-23T19:26:56Z
 You are Explorer 2 for Milestone 1 (Admin Assets & Modal Engine Sync).
-Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_2.
-Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md.
-Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md.
+Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_2.
+Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md.
+Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md.
 Reference source: /home/malpersaz/Desktop/projects/htdocs/AF/Business
-Target workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+Target workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 
 Scope:
 Investigate the exact assets to synchronize:
@@ -13,4 +13,4 @@ Investigate the exact assets to synchronize:
 3. Creation of `mod_newsletter.css` and `mod_newsletter.js`.
 4. Deletion of `templates/admin/assets/js/mod_product.js`.
 
-DO NOT write source code. Write your findings to /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_2/report.md and send completion message.
+DO NOT write source code. Write your findings to /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_2/report.md and send completion message.

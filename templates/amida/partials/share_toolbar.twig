@@ -77,18 +77,18 @@
 
         {% if can_show_tools %}
         <div class="share-toolbar-section share-toolbar-tools">
-            <a href="{{ site.saddress }}tools/saveHtml/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-html" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_html }}" aria-label="{{ lang.index.download_html }}">
+            <a href="{{ site.saddress }}tools/saveHtml/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-html" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.save_html }}" aria-label="{{ lang.index.mod_gallery.save_html }}">
                 <i class="bi bi-file-earmark-arrow-down"></i>
             </a>
-            <a href="{{ site.saddress }}tools/saveText/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_text }}" aria-label="{{ lang.index.download_text }}">
+            <a href="{{ site.saddress }}tools/saveText/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-text" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.save_txt }}" aria-label="{{ lang.index.mod_gallery.save_txt }}">
                 <i class="bi bi-file-text"></i>
             </a>
             {% if has_gallery|default(false) %}
-            <a href="{{ site.saddress }}tools/saveAll/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-zip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.download_all }}" aria-label="{{ lang.index.download_all }}">
+            <a href="{{ site.saddress }}tools/saveAll/{{ target_mod }}/{{ target_id }}" class="tool-action-btn btn-tool-zip" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.save_images }}" aria-label="{{ lang.index.mod_gallery.save_images }}">
                 <i class="bi bi-images"></i>
             </a>
             {% endif %}
-            <button type="button" data-action="print" class="tool-action-btn btn-tool-print border-0" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.print }}" aria-label="{{ lang.index.print }}">
+            <button type="button" data-action="print" class="tool-action-btn btn-tool-print border-0" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ lang.index.mod_gallery.print }}" aria-label="{{ lang.index.mod_gallery.print }}">
                 <i class="bi bi-printer"></i>
             </button>
         </div>

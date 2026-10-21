@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="tr" data-bs-theme="light" class="h-100">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Amed Bülten — Prototype 4: Modern Press</title>
+
+	<!-- Google Fonts from Live Docker Site -->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+
+	<!-- Bootstrap 5.3 & Bootstrap Icons -->
+	<link rel="stylesheet" href="../../templates/amida/static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+
+	<!-- Prototype 4 Modern Press Stylesheet -->
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="d-flex flex-column h-100">
+
+	<!-- Stacked Header: 100% Exact DOM parity with templates/amida/index/mod_menu/stacked_top_menu.twig (Zero fabricated rows or elements) -->
+	<header class="stacked-header sticky-top" id="amidaStackedHeader" aria-label="Amed Bülten - Menü">
+		<div class="container">
+			<div class="stacked-header-card">
+				<!-- TOP ROW: Brand, Centered Search, Utilities -->
+				<div class="stacked-header-top">
+					<!-- Brand/Logo (Vector SVG Masthead) -->
+					<a class="stacked-brand d-inline-flex align-items-center" href="#home" title="Amed Bülten" aria-label="Amed Bülten">
+						<img src="../../static/mod_settings/logo.svg" alt="Amed Bülten" width="160" height="42" class="stacked-logo-svg d-inline-block">
+					</a>
+
+					<!-- Centered Search Field (Desktop) -->
+					<div class="stacked-search-slot d-none d-lg-block">
+						<form class="search-form" role="search" method="get" action="#search">
+							<div class="stacked-search-wrapper" id="stackedSearchWrapper">
+								<label for="stackedSearchInput" class="visually-hidden">Haber, yazı, yazar vb. ara</label>
+								<input type="search" id="stackedSearchInput" name="query" class="form-control stacked-search-input" placeholder="Haber, yazı, yazar vb. ara..." aria-label="Haber, yazı, yazar vb. ara" autocomplete="off">
+								<kbd class="stacked-search-kbd" aria-hidden="true" title="Aramak için / tuşuna basın">/</kbd>
+								<button class="stacked-search-clear" id="stackedSearchClear" type="button" aria-label="Aramayı temizle" title="Temizle">
+									<i class="bi bi-x-lg" aria-hidden="true"></i>
+								</button>
+								<button class="stacked-search-btn" type="submit" aria-label="Ara" title="Ara">
+									<i class="bi bi-search" aria-hidden="true"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+
+					<!-- Right Utility & Account Actions -->
+					<div class="stacked-utility-zone d-flex align-items-center gap-1 gap-md-2">
+						<!-- Language Selector -->
+						<div class="dropdown">
+							<button class="btn btn-header-action btn-header-lang dropdown-toggle" type="button" id="stackedLanguageDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Dil">
+								<i class="bi bi-globe2 me-1" aria-hidden="true"></i>
+								<span class="lang-text">TR</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="stackedLanguageDropdown">
+								<li>
+									<h6 class="dropdown-header">
+										<i class="bi bi-translate me-2" aria-hidden="true"></i>Dil
+									</h6>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between active" href="#lang-tr">
+										<span>Türkçe</span>
+										<i class="bi bi-check2 text-success ms-2" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#lang-ku">
+										<span>Kurdî</span>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#lang-en">
+										<span>English</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Dark Mode Toggle -->
+						<button class="btn btn-header-action btn-icon" id="darkModeToggle" type="button" aria-label="Karanlık Mod" title="Karanlık Mod">
+							<i class="bi bi-moon-stars" aria-hidden="true"></i>
+						</button>
+
+						<!-- Guest User Action (Desktop Only in Top Bar — Option 1: Single Refined Login CTA) -->
+						<div class="auth-buttons d-none d-lg-flex align-items-center" id="guestAuthDesktop">
+							<button class="btn btn-header-login" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
+								<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
+								<span>Giriş</span>
+							</button>
+						</div>
+
+						<!-- Logged-in User Menu (Toggled via demo switcher) -->
+						<div class="dropdown d-none" id="userProfileDesktop">
+							<button class="btn user-profile-btn d-flex align-items-center" type="button" id="stackedUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Hesabım" title="Hesabım">
+								<div class="user-avatar-container">
+									<div class="user-avatar user-avatar-placeholder rounded-circle">
+										A
+									</div>
+									<div class="avatar-status-indicator online"></div>
+								</div>
+								<span class="user-name d-none d-lg-inline ms-1 me-1">Azad Amed</span>
+								<i class="bi bi-chevron-down user-dropdown-arrow d-none d-lg-inline" aria-hidden="true"></i>
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="stackedUserDropdown">
+								<li class="dropdown-header">
+									<div class="d-flex align-items-center">
+										<div class="user-avatar-sm user-avatar-sm-placeholder rounded-circle me-2">
+											A
+										</div>
+										<div class="user-info-text text-truncate">
+											<div class="fw-bold text-truncate">Azad Amed</div>
+											<small class="text-muted">@azadamed</small>
+										</div>
+									</div>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#inbox">
+										<div>
+											<i class="bi bi-envelope me-2 text-primary" aria-hidden="true"></i>
+											<span>Mesajlar</span>
+										</div>
+										<span class="badge bg-danger rounded-pill">2</span>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#panel">
+										<i class="bi bi-person-circle me-2 text-primary" aria-hidden="true"></i>
+										Hesabım
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#add-news">
+										<i class="bi bi-newspaper me-2 text-primary" aria-hidden="true"></i>
+										Haber Ekle
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#add-publication">
+										<i class="bi bi-journal-richtext me-2 text-primary" aria-hidden="true"></i>
+										Makale Ekle
+									</a>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item text-danger" href="#logout">
+										<i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+										Çıkış
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Mobile Menu Toggler (d-lg-none) -->
+						<button class="btn btn-header-action btn-icon btn-header-toggler d-lg-none navbar-toggler" type="button" id="mobileDrawerOpenBtn" aria-controls="amidaMobileMenu" aria-expanded="false" aria-label="Menüyü aç/kapat" title="Menüyü aç/kapat">
+							<i class="bi bi-list fs-5" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- BOTTOM ROW: Editorial Category Navigation (Dominant Editorial Blue Bar, 5 Real Categories) -->
+				<div class="stacked-header-nav">
+					<nav class="stacked-nav-bar" aria-label="Menü">
+						<ul class="navbar-nav stacked-nav-list mb-0" data-menu-root>
+							<li class="nav-item active">
+								<a class="nav-link" href="#newses" title="Haberler">Haberler</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#publications" title="Makaleler">Makaleler</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#authors" title="Yazarlar">Yazarlar</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#videos" title="Videolar">Videolar</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#announcements" title="Duyurular">Duyurular</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Mobile Menu Drawer (Offcanvas Drawer - Exact Live Structure) -->
+	<div class="amida-mobile-drawer" id="amidaMobileMenu" aria-hidden="true">
+		<div class="mobile-menu-header d-flex align-items-center justify-content-between">
+			<a class="mobile-drawer-brand d-inline-flex align-items-center" href="#home" title="Amed Bülten">
+				<img src="../../static/mod_settings/logo.svg" alt="Amed Bülten" width="130" height="30" class="stacked-logo-svg d-inline-block">
+			</a>
+			<button type="button" class="btn-close mobile-menu-close" id="mobileDrawerCloseBtn" aria-label="Kapat"></button>
+		</div>
+
+		<!-- Mobile Search Form -->
+		<div class="mobile-menu-search">
+			<form class="search-form" role="search" method="get" action="#search">
+				<div class="search-wrapper w-100 position-relative">
+					<button class="search-btn" type="submit" aria-label="Ara" title="Ara">
+						<i class="bi bi-search" aria-hidden="true"></i>
+					</button>
+					<input type="search" name="query" class="form-control search-input" placeholder="Haber, yazı, yazar vb. ara" aria-label="Haber, yazı, yazar vb. ara" autocomplete="off">
+				</div>
+			</form>
+		</div>
+
+		<!-- Mobile Navigation Links -->
+		<ul class="navbar-nav mobile-nav-list mb-0">
+			<li class="nav-item active"><a class="nav-link" href="#newses" title="Haberler">Haberler</a></li>
+			<li class="nav-item"><a class="nav-link" href="#publications" title="Makaleler">Makaleler</a></li>
+			<li class="nav-item"><a class="nav-link" href="#authors" title="Yazarlar">Yazarlar</a></li>
+			<li class="nav-item"><a class="nav-link" href="#videos" title="Videolar">Videolar</a></li>
+			<li class="nav-item"><a class="nav-link" href="#announcements" title="Duyurular">Duyurular</a></li>
+		</ul>
+
+		<!-- Mobile Controls Row -->
+		<div class="mobile-controls-row w-100">
+			<div class="d-flex align-items-center gap-2">
+				<!-- Language Selector Mobile -->
+				<div class="language-selector flex-grow-1">
+					<div class="dropdown">
+						<button class="btn btn-header-action mobile-lang-btn w-100 d-flex align-items-center justify-content-between p-2" type="button" id="stackedLanguageDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false" title="Dil">
+							<div class="d-flex align-items-center">
+								<i class="bi bi-globe2 me-2 text-muted" aria-hidden="true"></i>
+								<span class="fw-semibold">TR</span>
+							</div>
+							<i class="bi bi-chevron-down small text-muted" aria-hidden="true"></i>
+						</button>
+						<ul class="dropdown-menu shadow-sm" aria-labelledby="stackedLanguageDropdownMobile">
+							<li>
+								<h6 class="dropdown-header">
+									<i class="bi bi-translate me-2" aria-hidden="true"></i>Dil
+								</h6>
+							</li>
+							<li>
+								<a class="dropdown-item d-flex align-items-center justify-content-between active" href="#lang-tr">
+									<span>Türkçe</span>
+									<i class="bi bi-check2 text-success" aria-hidden="true"></i>
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item d-flex align-items-center justify-content-between" href="#lang-ku">
+									<span>Kurdî</span>
+								</a>
+							</li>
+							<li>
+								<a class="dropdown-item d-flex align-items-center justify-content-between" href="#lang-en">
+									<span>English</span>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+
+				<!-- Dark Mode Toggle Mobile -->
+				<div class="mobile-dark-mode">
+					<button class="btn btn-header-action btn-icon mobile-dark-mode-btn" id="darkModeToggleMobile" type="button" aria-label="Karanlık Mod">
+						<i class="bi bi-moon-stars" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Mobile Auth Buttons -->
+			<div class="mobile-auth-group d-flex gap-2 mt-3 pt-3 border-top" id="guestAuthMobile">
+				<button class="btn btn-header-login flex-fill justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
+					<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
+					<span>Giriş</span>
+				</button>
+				<a href="#register" class="btn btn-header-register flex-fill justify-content-center text-center">
+					<i class="bi bi-person-plus me-1" aria-hidden="true"></i>
+					<span>Kayıt</span>
+				</a>
+			</div>
+
+			<div class="mobile-auth-group mt-3 pt-3 border-top d-none" id="userProfileMobile">
+				<div class="mobile-user-card d-flex align-items-center gap-2 mb-3 p-2 rounded">
+					<div class="user-avatar-container">
+						<div class="user-avatar user-avatar-placeholder rounded-circle">
+							A
+						</div>
+					</div>
+					<div class="mobile-user-info text-truncate flex-grow-1">
+						<div class="fw-bold text-truncate">Azad Amed</div>
+						<small class="text-muted">@azadamed</small>
+					</div>
+					<a href="#panel" class="btn btn-sm btn-outline-primary" title="Hesabım" aria-label="Hesabım">
+						<i class="bi bi-person-circle"></i>
+					</a>
+				</div>
+				<a class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center" href="#logout">
+					<i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+					<span>Çıkış</span>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Mobile Menu Overlay -->
+	<div class="mobile-overlay"></div>
+
+	<!-- Login Modal (Exact Live Structure) -->
+	<div class="modal" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header border-0">
+					<h5 class="modal-title fw-bold" id="loginModalLabel">
+						<i class="bi bi-box-arrow-in-right me-2"></i>
+						Giriş
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+				</div>
+				<div class="modal-body">
+					<form action="#login" method="post" id="loginForm">
+						<!-- Step 1: Username -->
+						<div id="loginStep1" class="login-step">
+							<div class="mb-3">
+								<label for="loginUsername" class="form-label">Kullanıcı Adı</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input type="text" class="form-control" id="loginUsername" name="username" required autocomplete="username">
+								</div>
+							</div>
+							<button type="button" class="btn btn-primary w-100" id="btnNextStep">
+								İleri
+								<i class="bi bi-arrow-right ms-2"></i>
+							</button>
+						</div>
+
+						<!-- Step 2: Password -->
+						<div id="loginStep2" class="login-step d-none">
+							<div class="d-flex align-items-center mb-2">
+								<button type="button" class="btn btn-link p-0 text-decoration-none me-2" id="btnBackToStep1" aria-label="Geri">
+									<i class="bi bi-arrow-left" aria-hidden="true"></i>
+								</button>
+								<span id="displayUsername" class="fw-bold text-primary"></span>
+							</div>
+
+							<div class="mb-3">
+								<label for="loginPassword" class="form-label">Şifre</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-lock"></i></span>
+									<input type="password" class="form-control" id="loginPassword" name="password" required autocomplete="current-password">
+									<button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Şifreyi Göster">
+										<i class="bi bi-eye" id="togglePasswordIcon" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+									<label class="form-check-label" for="rememberMe">
+										Beni hatırla
+									</label>
+								</div>
+								<a href="#forgot-password" class="text-decoration-none">
+									Şifremi unuttum
+								</a>
+							</div>
+							<button type="submit" class="btn btn-primary w-100" name="login">
+								<i class="bi bi-box-arrow-in-right me-2"></i>
+								Giriş
+							</button>
+						</div>
+					</form>
+					<div class="text-center mt-3">
+						<span class="text-muted">Hesabınız yok mu? </span>
+						<a href="#register" class="text-decoration-none">Kayıt olun</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Live Site Context Below Header -->
+	<main class="flex-shrink-0 flex-grow-1">
+		<div class="mp-editorial-preview">
+			<div class="mp-spec-card d-flex flex-wrap align-items-center justify-content-between gap-3">
+				<div>
+					<h1 class="h6 fw-bold mb-1">Prototype 4: "Modern Press" (`docs/top-menu-modern-press/`)</h1>
+					<p class="text-muted small mb-0">
+						100% real 2-row <code>stacked_top_menu.twig</code> DOM parity. Row 1 combines the Blue Masthead, tactile <code>/</code> Search Bar, unified quiet Utility Controls, and a single refined Blue <strong>Giriş</strong> CTA. Row 2 is a flat, pure-typographic Newsroom Category Rail aligned flush with the masthead logo.
+					</p>
+				</div>
+				<div class="d-flex flex-wrap align-items-center gap-2">
+					<span class="badge mp-swatch-white px-3 py-2">Row 1: White Masthead &amp; Tactile Search</span>
+					<span class="badge mp-swatch-blue px-3 py-2">Row 2: Flat Newsroom Category Rail</span>
+					<button type="button" class="btn btn-sm btn-header-action" id="toggleAuthStateBtn" data-label-guest="Misafir Görünümü (Üye için tıkla)" data-label-member="Üye Görünümü (Misafir için tıkla)">
+						Misafir Görünümü (Üye için tıkla)
+					</button>
+				</div>
+			</div>
+		</div>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+	<script src="script.js"></script>
+</body>
+</html>

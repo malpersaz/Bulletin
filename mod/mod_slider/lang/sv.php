@@ -2,7 +2,7 @@
 /**
  * Slider Module - Swedish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_slider
  * @version 1.0.0
  * @author  AKM Software
@@ -152,7 +152,6 @@ $lang['mod_slider']= [
     'news' => 'Nyheter',
     'publication' => 'Publikation',
     'content' => 'Innehåll',
-    'product' => 'Produkt',
     'video' => 'Video',
   ],
 ];

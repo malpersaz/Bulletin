@@ -1,7 +1,7 @@
 # Milestone 1 Review & Adversarial Critic Report
 
 **Agent**: `m1_reviewer_2` (Reviewer & Adversarial Critic)  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_2`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_2`  
 **Date**: 2026-08-23T22:38:45+03:00  
 **Verdict**: **REQUEST_CHANGES**
 
@@ -17,7 +17,7 @@
          new dBug(self::$data);
      }
      ```
-     When `Registry::all()` is invoked, PHP throws a fatal error: `PHP Fatal error: Uncaught Error: Failed opening required '/.../lib/dBug.php' in /.../lib/Registry.class.php:44`. The file `lib/dBug.php` does not exist in `AF/Rojname`.
+     When `Registry::all()` is invoked, PHP throws a fatal error: `PHP Fatal error: Uncaught Error: Failed opening required '/.../lib/dBug.php' in /.../lib/Registry.class.php:44`. The file `lib/dBug.php` does not exist in `AF/Bulletin`.
    - `lib/Registry.class.php:15-17`:
      ```php
      static public function get($key) {

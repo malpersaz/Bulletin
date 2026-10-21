@@ -10,11 +10,7 @@
             {# If url is ##, it indicates root container menu #}
             {% if m.url == '##' %}
                 {{ _self.renderMenu(menu, parent_id, ss) }}
-            {% endif %}
-
-
-
-                {% if m.lang == site.lang and m.status == 'y' %}
+            {% elseif m.lang == site.lang and m.status == 'y' %}
                     {% set ss = 1 %}
                     <li class="nav-item{% if menu[parent_id] is defined and menu[parent_id] is iterable %} dropdown{% endif %}">
                         <a class="nav-link{% if menu[parent_id] is defined and menu[parent_id] is iterable %} dropdown-toggle{% endif %}"
@@ -26,8 +22,7 @@
                            {% endif %}
                            {% if menu[parent_id] is defined and menu[parent_id] is iterable %}
                                data-bs-toggle="dropdown" role="button"
-                           {% endif %}
-                           title="{{ m.name }}">
+                           {% endif %}>
                             {% if m.icon is defined and m.icon != '' %}<i class="{{ m.icon }} me-1"></i>{% endif %}
                             {{ m.name }}
                         </a>
@@ -39,7 +34,7 @@
                             {% if ss == '1' %}</ul>{% endif %}
                         {% endif %}
                     </li>
-                {% endif %}
+            {% endif %}
             {% endif %}
             {% endif %}
         {% endfor %}

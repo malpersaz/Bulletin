@@ -45,7 +45,7 @@ $limit = isset($options['limit']) ? (int) $options['limit'] : 0;
 $recompressMain = isset($options['main']);
 $isDryRun = isset($options['dry-run']);
 
-echo "=== Rojname News Image Recompression ===\n";
+echo "=== Bulletin News Image Recompression ===\n";
 echo "Dry Run: " . ($isDryRun ? "YES (simulation mode)" : "NO (writing files)") . "\n";
 echo "Recompress Main Images: " . ($recompressMain ? "YES" : "NO (thumbs only)") . "\n";
 if ($limit > 0) {

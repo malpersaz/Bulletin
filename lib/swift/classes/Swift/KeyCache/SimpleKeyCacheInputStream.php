@@ -54,7 +54,7 @@ class Swift_KeyCache_SimpleKeyCacheInputStream
    * @param string $bytes
    * @param Swift_InputByteStream $is, optional
    */
-  public function write($bytes, Swift_InputByteStream $is = null)
+  public function write($bytes, ?Swift_InputByteStream $is = null)
   {
     $this->_keyCache->setString(
       $this->_nsKey, $this->_itemKey, $bytes, Swift_KeyCache::MODE_APPEND

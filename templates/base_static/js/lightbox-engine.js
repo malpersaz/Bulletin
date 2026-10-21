@@ -1,5 +1,5 @@
 /**
- * AKM Business - World-Class Fullscreen Lightbox Engine (UI/UX)
+ * AKM Bulletin CMS - World-Class Fullscreen Lightbox Engine (UI/UX)
  * Inspired by Airbnb, Apple, PhotoSwipe 5 & Fancybox 5.
  */
 (function () {

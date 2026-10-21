@@ -1,0 +1,640 @@
+/* ==========================================================================
+   Stacked Top Menu — Prototype 2: Blue Horizon (Editorial Blue Dominance)
+   Color Architecture:
+   - White Surface: Clean white header canvas (never a solid blue background block)
+   - Dominant Blue: Structural borders, masthead typography, search framing,
+     utility buttons, category links, active blue pill tabs, and icons
+   - 20% Green: Strategic editorial accent (Live pulse, Subscribe CTA, Special Dossier)
+   Strict Code Separation & English-Only Code Standard
+   ========================================================================== */
+
+:root {
+  /* White & Tinted Ice Surfaces (Never solid dark background) */
+  --bh-white: #ffffff;
+  --bh-page-bg: #f4f7fb;
+  --bh-blue-surface-soft: #f0f6ff;
+  --bh-blue-surface-pill: #e0ecff;
+
+  /* Dominant Editorial Blue Palette */
+  --bh-blue-950: #0c1e4a;
+  --bh-blue-900: #153275;
+  --bh-blue-800: #1e40af;
+  --bh-blue-700: #1d4ed8;
+  --bh-blue-600: #2563eb;
+  --bh-blue-500: #3b82f6;
+  --bh-blue-300: #93c5fd;
+  --bh-blue-200: #bfdbfe;
+  --bh-blue-100: #dbeafe;
+
+  /* 20% Strategic Green Palette */
+  --bh-green-800: #166534;
+  --bh-green-700: #15803d;
+  --bh-green-600: #16a34a;
+  --bh-green-200: #bbf7d0;
+  --bh-green-100: #dcfce7;
+  --bh-green-50: #f0fdf4;
+
+  /* Shadows & Geometry */
+  --bh-shadow-card: 0 8px 28px -6px rgba(29, 78, 216, 0.14), 0 2px 6px -1px rgba(29, 78, 216, 0.08);
+  --bh-shadow-scrolled: 0 14px 34px -6px rgba(21, 50, 117, 0.22);
+  --bh-radius-card: 16px;
+  --bh-radius-btn: 10px;
+  --bh-radius-pill: 9999px;
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+  --bh-white: #0b1528;
+  --bh-page-bg: #070e1c;
+  --bh-blue-surface-soft: #132342;
+  --bh-blue-surface-pill: #1b325f;
+  --bh-blue-950: #f8fafc;
+  --bh-blue-900: #e2e8f0;
+  --bh-blue-800: #93c5fd;
+  --bh-blue-700: #60a5fa;
+  --bh-blue-200: #1e3a8a;
+  --bh-blue-100: #172554;
+  --bh-green-50: rgba(22, 163, 74, 0.18);
+  --bh-green-200: rgba(74, 222, 128, 0.35);
+}
+
+body.bh-demo-page {
+  background-color: var(--bh-page-bg);
+  color: var(--bh-blue-950);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Top Utility Ticker Bar — White Surface with Strong Blue Structural Framing */
+.bh-utility-bar {
+  background-color: var(--bh-white);
+  border-bottom: 2px solid var(--bh-blue-100);
+  padding: 0.45rem 0;
+  font-size: 0.8rem;
+}
+
+.bh-live-indicator {
+  background-color: var(--bh-green-50);
+  color: var(--bh-green-800);
+  border: 1.5px solid var(--bh-green-200);
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.65rem;
+  border-radius: var(--bh-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+[data-theme="dark"] .bh-live-indicator {
+  color: #86efac;
+}
+
+.bh-live-dot {
+  width: 7px;
+  height: 7px;
+  background-color: var(--bh-green-600);
+  border-radius: 50%;
+  display: inline-block;
+  animation: bhPulse 1.6s infinite ease-in-out;
+}
+
+@keyframes bhPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+}
+
+.bh-ticker-headline {
+  color: var(--bh-blue-800);
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.bh-ticker-headline:hover {
+  color: var(--bh-blue-600);
+  text-decoration: underline;
+}
+
+.bh-utility-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bh-meta-chip {
+  background-color: var(--bh-blue-surface-soft);
+  color: var(--bh-blue-800);
+  border: 1px solid var(--bh-blue-200);
+  padding: 0.18rem 0.6rem;
+  border-radius: var(--bh-radius-pill);
+  font-weight: 700;
+  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Main Stacked Header Container */
+.stacked-header {
+  padding: 0.9rem 0;
+  z-index: 1030;
+}
+
+.stacked-header-card {
+  background-color: var(--bh-white);
+  border: 2px solid var(--bh-blue-200);
+  border-top: 5px solid var(--bh-blue-700);
+  border-radius: var(--bh-radius-card);
+  box-shadow: var(--bh-shadow-card);
+  padding: 0.9rem 1.35rem 0.65rem 1.35rem;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.stacked-header.is-scrolled .stacked-header-card {
+  box-shadow: var(--bh-shadow-scrolled);
+  border-color: var(--bh-blue-500);
+}
+
+/* TOP ROW: Brand, Centered Search, Right Utility Actions */
+.stacked-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid var(--bh-blue-100);
+}
+
+/* Brand Masthead — Dominant Editorial Blue Typography & Crest */
+.stacked-brand {
+  text-decoration: none;
+  gap: 0.75rem;
+}
+
+.stacked-brand-crest {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--bh-blue-700);
+  border: 2px solid var(--bh-blue-500);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.45rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+}
+
+.stacked-brand-crest-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 13px;
+  height: 13px;
+  background-color: var(--bh-green-600);
+  border: 2.5px solid var(--bh-white);
+  border-radius: 50%;
+}
+
+.stacked-brand-wordmark {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--bh-blue-700);
+  display: block;
+}
+
+.stacked-brand-tagline {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--bh-green-700);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.2rem;
+}
+
+[data-theme="dark"] .stacked-brand-tagline {
+  color: #4ade80;
+}
+
+/* Centered Search Field — Blue Framed & Tinted */
+.stacked-search-slot {
+  flex: 1 1 auto;
+  max-width: 460px;
+}
+
+.stacked-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.stacked-search-input {
+  width: 100%;
+  background-color: var(--bh-blue-surface-soft);
+  color: var(--bh-blue-950);
+  border: 2px solid var(--bh-blue-300);
+  border-radius: var(--bh-radius-pill);
+  padding: 0.52rem 3rem 0.52rem 1.15rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.stacked-search-input::placeholder {
+  color: var(--bh-blue-800);
+  opacity: 0.7;
+}
+
+.stacked-search-input:focus {
+  background-color: var(--bh-white);
+  border-color: var(--bh-blue-700);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
+  outline: none;
+}
+
+.stacked-search-btn {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(29, 78, 216, 0.3);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.stacked-search-btn:hover {
+  background-color: var(--bh-blue-800);
+  transform: translateY(-50%) scale(1.04);
+}
+
+/* Right Utility & Account Actions — All Styled in Blue Hierarchy */
+.btn-header-action {
+  background-color: var(--bh-blue-surface-soft);
+  color: var(--bh-blue-800);
+  border: 1.5px solid var(--bh-blue-200);
+  border-radius: var(--bh-radius-btn);
+  padding: 0.44rem 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+.btn-header-action:hover,
+.btn-header-action:focus {
+  background-color: var(--bh-blue-700);
+  border-color: var(--bh-blue-700);
+  color: #ffffff;
+}
+
+.btn-icon {
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Login Button — Strong Editorial Blue Action */
+.btn-header-login {
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+  border: 1.5px solid var(--bh-blue-800);
+  border-radius: var(--bh-radius-btn);
+  padding: 0.45rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.24);
+  transition: all 0.15s ease;
+}
+
+.btn-header-login:hover {
+  background-color: var(--bh-blue-800);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Subscribe / Register Button — 20% Green Strategic Accent */
+.btn-header-register {
+  background-color: var(--bh-green-700);
+  color: #ffffff;
+  border: 1.5px solid var(--bh-green-800);
+  border-radius: var(--bh-radius-btn);
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 3px 8px rgba(21, 128, 61, 0.25);
+  transition: all 0.15s ease;
+}
+
+.btn-header-register:hover {
+  background-color: var(--bh-green-800);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Logged-in User Profile Pill */
+.user-profile-btn {
+  background-color: var(--bh-blue-surface-soft);
+  border: 1.5px solid var(--bh-blue-300);
+  border-radius: var(--bh-radius-pill);
+  padding: 0.22rem 0.75rem 0.22rem 0.28rem;
+  color: var(--bh-blue-900);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.user-avatar-container {
+  position: relative;
+  display: inline-flex;
+}
+
+.user-avatar-placeholder {
+  width: 30px;
+  height: 30px;
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-status-indicator.online {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  background-color: var(--bh-green-600);
+  border: 2px solid var(--bh-white);
+  border-radius: 50%;
+}
+
+/* BOTTOM ROW: Editorial Category Navigation — Rich Blue Typography & Pills */
+.stacked-header-nav {
+  padding-top: 0.6rem;
+}
+
+.stacked-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stacked-nav-list {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  width: 100%;
+}
+
+.stacked-nav-list::-webkit-scrollbar {
+  display: none;
+}
+
+.stacked-nav-list .nav-item {
+  white-space: nowrap;
+}
+
+.stacked-nav-list .nav-link {
+  color: var(--bh-blue-900);
+  font-size: 0.86rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--bh-radius-btn);
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.stacked-nav-list .nav-link i {
+  color: var(--bh-blue-600);
+}
+
+.stacked-nav-list .nav-link:hover,
+.stacked-nav-list .nav-link:focus {
+  background-color: var(--bh-blue-surface-soft);
+  border-color: var(--bh-blue-200);
+  color: var(--bh-blue-700);
+}
+
+/* Active Category Pill in Dominant Blue */
+.stacked-nav-list .nav-link.active {
+  background-color: var(--bh-blue-700);
+  border-color: var(--bh-blue-700);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25);
+}
+
+.stacked-nav-list .nav-link.active i {
+  color: #ffffff;
+}
+
+/* Secondary Blue Highlighted Category (e.g. Economy / Data) */
+.stacked-nav-list .nav-link.nav-link-blue-tinted {
+  background-color: var(--bh-blue-surface-soft);
+  border-color: var(--bh-blue-200);
+  color: var(--bh-blue-800);
+}
+
+/* 20% Green Category Pill in Nav */
+.stacked-nav-list .nav-link.nav-link-green-special {
+  background-color: var(--bh-green-50);
+  color: var(--bh-green-800);
+  border: 1.5px solid var(--bh-green-200);
+  border-radius: var(--bh-radius-pill);
+  padding: 0.4rem 0.9rem;
+  font-weight: 800;
+}
+
+.stacked-nav-list .nav-link.nav-link-green-special i {
+  color: var(--bh-green-700);
+}
+
+.stacked-nav-list .nav-link.nav-link-green-special:hover {
+  background-color: var(--bh-green-700);
+  border-color: var(--bh-green-700);
+  color: #ffffff;
+}
+
+.stacked-nav-list .nav-link.nav-link-green-special:hover i {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .stacked-nav-list .nav-link.nav-link-green-special {
+  color: #86efac;
+}
+
+/* Dropdown Menus */
+.stacked-header .dropdown-menu {
+  border: 2px solid var(--bh-blue-200);
+  border-top: 4px solid var(--bh-blue-700);
+  border-radius: 12px;
+  box-shadow: var(--bh-shadow-card);
+  background-color: var(--bh-white);
+  padding: 0.5rem;
+}
+
+.stacked-header .dropdown-item {
+  border-radius: 7px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--bh-blue-900);
+  padding: 0.48rem 0.8rem;
+}
+
+.stacked-header .dropdown-item:hover,
+.stacked-header .dropdown-item.active {
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+}
+
+/* Mobile Menu Drawer (Offcanvas) */
+.amida-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  max-width: 86vw;
+  height: 100vh;
+  background-color: var(--bh-white);
+  border-left: 3px solid var(--bh-blue-700);
+  box-shadow: -8px 0 28px rgba(12, 30, 74, 0.22);
+  z-index: 1055;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.amida-mobile-drawer.is-open {
+  right: 0;
+}
+
+.mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(12, 30, 74, 0.55);
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.mobile-overlay.is-visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobile-menu-header {
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--bh-blue-200);
+}
+
+.mobile-menu-search .search-input {
+  background-color: var(--bh-blue-surface-soft);
+  border-radius: var(--bh-radius-pill);
+  padding-left: 2.35rem;
+  font-size: 0.85rem;
+  border: 2px solid var(--bh-blue-300);
+}
+
+.mobile-menu-search .search-btn {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--bh-blue-700);
+}
+
+.mobile-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mobile-nav-list .nav-link {
+  color: var(--bh-blue-900);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+}
+
+.mobile-nav-list .nav-link:hover,
+.mobile-nav-list .nav-link.active {
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+}
+
+/* Demo Specification Banner Below Header */
+.bh-showcase-banner {
+  background-color: var(--bh-white);
+  border: 2px solid var(--bh-blue-200);
+  border-left: 6px solid var(--bh-blue-700);
+  border-radius: var(--bh-radius-card);
+  padding: 1.35rem 1.5rem;
+  margin-top: 0.75rem;
+  box-shadow: var(--bh-shadow-card);
+}
+
+.bh-Showcase-title {
+  color: var(--bh-blue-800);
+}
+
+.bh-ratio-pill-white {
+  background-color: #ffffff;
+  color: var(--bh-blue-900);
+  border: 1.5px solid var(--bh-blue-300);
+}
+
+.bh-ratio-pill-blue {
+  background-color: var(--bh-blue-700);
+  color: #ffffff;
+}
+
+.bh-ratio-pill-green {
+  background-color: var(--bh-green-700);
+  color: #ffffff;
+}

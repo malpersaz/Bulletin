@@ -1,8 +1,8 @@
 # Implementation Plan - Run & Validator Modernization
 
 ## Phase 1: Investigation & Comparison
-- Inspect `lib/Run.class.php` and `lib/Validator.class.php` in `AF/Rojname` and compare with `AF/Business`.
-- Check all callers of `Run::` and `Validator::` across `AF/Rojname`.
+- Inspect `lib/Run.class.php` and `lib/Validator.class.php` in `AF/Bulletin` and compare with `AF/Business`.
+- Check all callers of `Run::` and `Validator::` across `AF/Bulletin`.
 - Check for any leftover Turkish identifiers in core library files.
 
 ## Phase 2: Implementation

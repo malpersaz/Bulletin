@@ -1,8 +1,8 @@
 # Handoff Report: Modernization Survey for R3 & R5
 
 - **Role**: Codebase & Architecture Explorer (R3 & R5 Focus)
-- **Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2`
-- **Target Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- **Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2`
+- **Target Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - **Reference Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`
 - **Date**: 2026-08-23
 
@@ -10,7 +10,7 @@
 
 ## 1. Observation
 
-Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `AF/Business` (reference) revealed the following exact facts:
+Direct codebase scan and pattern comparison between `AF/Bulletin` (target) and `AF/Business` (reference) revealed the following exact facts:
 
 ### A. R3: Universal Social Share & Document Export Toolbar
 
@@ -22,9 +22,9 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
    - Completely lacks TikTok share intent support.
 
 2. **Missing Share Components & Assets**:
-   - `templates/default/partials/share_toolbar.twig`: **DOES NOT EXIST** in AF/Rojname. (Present in AF/Business, lines 1–101).
-   - `templates/default/static/css/share.css`: **DOES NOT EXIST** in AF/Rojname. (Present in AF/Business, lines 1–199).
-   - `templates/default/static/js/share.js`: **DOES NOT EXIST** in AF/Rojname. (Present in AF/Business, lines 1–104).
+   - `templates/default/partials/share_toolbar.twig`: **DOES NOT EXIST** in AF/Bulletin. (Present in AF/Business, lines 1–101).
+   - `templates/default/static/css/share.css`: **DOES NOT EXIST** in AF/Bulletin. (Present in AF/Business, lines 1–199).
+   - `templates/default/static/js/share.js`: **DOES NOT EXIST** in AF/Bulletin. (Present in AF/Business, lines 1–104).
 
 3. **Broken/Missing Partial Includes in Existing Detail Views**:
    - `templates/default/index/mod_announcements/announcement.twig:25`: `<div class="col-md-6 col-md-6 col-12">{{ include("index/paylas.twig") }}</div>`. The file `templates/default/index/paylas.twig` **does not exist**, triggering runtime template exceptions if rendered.
@@ -40,10 +40,10 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
 5. **Backend Document Export Endpoints (`mod/tools/index.php`)**:
    - Already provides `saveHtml($mod_name, $vid)`, `saveText($mod_name, $vid)`, `saveAll($mod_name, $vid)` (ZIP creation), `saveFile($mod_name, $vid, $id)`, `videoResim()`, `videoFlv()`, `saveVideo()`.
    - Uses non-English/Turkish method names on lines 34, 88, 154, 223, 326: `Run::import('index', '_permission_kontrol', [$content->acl_id])` instead of `_check_permission`.
-   - In AF/Business `mod/tools/index.php`, lines 59 and 123 contain a minor variable mismatch (`$output` defined but `echo strip_tags($sonuc)` called). In AF/Rojname, `$output = ...; echo strip_tags($output);` must be used cleanly.
+   - In AF/Business `mod/tools/index.php`, lines 59 and 123 contain a minor variable mismatch (`$output` defined but `echo strip_tags($sonuc)` called). In AF/Bulletin, `$output = ...; echo strip_tags($output);` must be used cleanly.
 
 6. **Language Dictionary Keys (`mod/index/lang/*.php`)**:
-   - AF/Rojname `mod/index/lang/en.php` (and other 8 language packs) are missing dedicated action keys: `download_html`, `download_text`, `download_all`, `print`, whereas AF/Business contains complete translations across all 9 languages.
+   - AF/Bulletin `mod/index/lang/en.php` (and other 8 language packs) are missing dedicated action keys: `download_html`, `download_text`, `download_all`, `print`, whereas AF/Business contains complete translations across all 9 languages.
 
 ---
 
@@ -51,7 +51,7 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
 
 1. **Brand Placeholder Fallback Hierarchy**:
    - Required hierarchy: `Logo -> Symbol -> Radial Gradient Pattern`.
-   - In AF/Rojname, detail templates (`news.twig:277`, `publication.twig:241`, `content.twig:240`) have hardcoded fallback `<img src="{{ site.iaddress }}mod_settings/logo.png" ...>`:
+   - In AF/Bulletin, detail templates (`news.twig:277`, `publication.twig:241`, `content.twig:240`) have hardcoded fallback `<img src="{{ site.iaddress }}mod_settings/logo.png" ...>`:
      * Does not check if `site.logo_path`, `site.logo_symbol`, or `site.site_icon` are configured.
      * Does not provide the secondary symbol fallback or the tertiary geometric dark radial gradient pattern.
      * Hardcoded `logo.png` will show a broken 404 image if the file name on disk is different (e.g. `logo.svg`, `logo.webp`).
@@ -75,12 +75,12 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
          </div>
      {% endif %}
      ```
-   - `templates/default/static/css/detail-foundation.css`: **DOES NOT EXIST** in AF/Rojname. Classes `.detail-hero-placeholder`, `.detail-media-placeholder`, `.detail-placeholder-logo`, `.detail-placeholder-symbol` are missing from AF/Rojname styles.
+   - `templates/default/static/css/detail-foundation.css`: **DOES NOT EXIST** in AF/Bulletin. Classes `.detail-hero-placeholder`, `.detail-media-placeholder`, `.detail-placeholder-logo`, `.detail-placeholder-symbol` are missing from AF/Bulletin styles.
 
 2. **Hero Slider Brand Placeholder & Broken Slide Resilience**:
-   - In AF/Rojname `templates/default/index/hero_slider.twig:27-31`, fallback is hardcoded to `<img src="{{ site.iaddress }}mod_settings/logo.png">`.
+   - In AF/Bulletin `templates/default/index/hero_slider.twig:27-31`, fallback is hardcoded to `<img src="{{ site.iaddress }}mod_settings/logo.png">`.
    - In AF/Business `templates/default/index/hero_slider.twig:23-39`, the base DOM structure always renders `.hero-slide__placeholder` with `.hero-slide__placeholder-pattern` and `logo -> symbol` fallback beneath `.hero-slide__cover-img`.
-   - In AF/Rojname `templates/default/static/css/hero-news-slider.css`, the placeholder styles (`.hero-slide__placeholder`, `.hero-slide__placeholder-pattern`, `.hero-slide__placeholder-logo`, `.hero-slide__placeholder-symbol`, `.has-failed-image`, `.hero-slide__cover-img`) are missing.
+   - In AF/Bulletin `templates/default/static/css/hero-news-slider.css`, the placeholder styles (`.hero-slide__placeholder`, `.hero-slide__placeholder-pattern`, `.hero-slide__placeholder-logo`, `.hero-slide__placeholder-symbol`, `.has-failed-image`, `.hero-slide__cover-img`) are missing.
 
 3. **Backend Image Disk Asset Verification (`file_exists()`, `is_file()`)**:
    - `mod/index/helper/mod_content.helper.php:128,134`: Has `file_exists($image_file) && is_file($image_file)` validation.
@@ -91,8 +91,8 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
    - `mod_hero_slider.helper.php:280-285`: **NO disk checks** in `normalizeItem()`. It assigns `'image_url' => $image !== '' ? $this->site['iaddress'] . $image_base . $image : ''` blindly without verifying whether the image file actually exists on disk.
 
 4. **Frontend Runtime Client-Side Error Interception**:
-   - `templates/default/static/js/app.js`: **DOES NOT EXIST** in AF/Rojname. (In AF/Business, lines 100–180 implement global `document.addEventListener('error', ..., true)` capture phase interception to swap/hide broken images without layout shifts).
-   - `templates/default/static/js/hero-news-slider.js`: **DOES NOT EXIST** in AF/Rojname. (In AF/Business, lines 55–69 inspect `img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)` and attach `error` listeners to add `.has-failed-image` and reveal the placeholder pattern).
+   - `templates/default/static/js/app.js`: **DOES NOT EXIST** in AF/Bulletin. (In AF/Business, lines 100–180 implement global `document.addEventListener('error', ..., true)` capture phase interception to swap/hide broken images without layout shifts).
+   - `templates/default/static/js/hero-news-slider.js`: **DOES NOT EXIST** in AF/Bulletin. (In AF/Business, lines 55–69 inspect `img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0)` and attach `error` listeners to add `.has-failed-image` and reveal the placeholder pattern).
    - `templates/default/layouts/base.twig`: Does not load `app.js`.
 
 ---
@@ -127,10 +127,10 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
 
 1. **Excluded Commercial Modules**:
    - Sibling repository `AF/Business` contains references to `mod_client`, `mod_service`, `mod_product`, and `mod_reference` in its helpers and templates.
-   - **Crucial Rule**: In `AF/Rojname`, these commercial modules are strictly forbidden. When porting or adapting patterns from `AF/Business`, DO NOT include any cases or routes for `mod_client`, `mod_service`, `mod_product`, or `mod_reference`.
+   - **Crucial Rule**: In `AF/Bulletin`, these commercial modules are strictly forbidden. When porting or adapting patterns from `AF/Business`, DO NOT include any cases or routes for `mod_client`, `mod_service`, `mod_product`, or `mod_reference`.
 2. **Frontend Theme Scope**:
    - `AF/Business` contains 4 frontend themes (`default`, `forest`, `furniture`, `stoon`).
-   - `AF/Rojname` contains only 1 public frontend theme (`default`). Therefore, frontend changes apply exclusively to `templates/default/` and `templates/base_static/`.
+   - `AF/Bulletin` contains only 1 public frontend theme (`default`). Therefore, frontend changes apply exclusively to `templates/default/` and `templates/base_static/`.
 3. **Language Dictionaries**:
    - All 9 languages (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `sv`, `tr`, `zza`) in `mod/index/lang/` must receive toolbar keys to maintain 100% dictionary completeness.
 
@@ -138,7 +138,7 @@ Direct codebase scan and pattern comparison between `AF/Rojname` (target) and `A
 
 ## 4. Conclusion & Required Action Plan
 
-To fully satisfy R3 and R5 in AF/Rojname, the implementation phase must execute the following concrete steps:
+To fully satisfy R3 and R5 in AF/Bulletin, the implementation phase must execute the following concrete steps:
 
 ### Action Items for R3: Universal Social Share & Document Export Toolbar
 

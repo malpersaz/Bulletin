@@ -8,8 +8,8 @@
 {% set page = ctx_get('page') %}
 
 {% set is_filtered_category = category_seo is not empty and category_seo != 'all' %}
-{% set current_page_title = is_filtered_category ? categoryname : (lang.index.mod_publication.all_publications ?? 'Hemû Weşan') %}
-{% set page_meta_description = is_filtered_category ? (categoryname ~ ' - ' ~ (lang.index.mod_publication.all_publications ?? 'Hemû Weşan')) : (lang.index.mod_publication.all_publications ?? 'Hemû Weşan') %}
+{% set current_page_title = is_filtered_category ? categoryname : lang.index.mod_publication.all_publications %}
+{% set page_meta_description = is_filtered_category ? (categoryname ~ ' - ' ~ lang.index.mod_publication.all_publications) : lang.index.mod_publication.all_publications %}
 {% set share_image_asset = site.logo_path is defined and site.logo_path is not empty ? (site.iaddress ~ 'mod_settings/' ~ site.logo_path) : (site.iaddress ~ 'mod_settings/logo.png') %}
 
 {% block canonical %}
@@ -47,12 +47,12 @@
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
             <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home ?? 'Destpêk' }}</span></a>
+                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
                 <meta itemprop="position" content="1">
             </li>
             {% if is_filtered_category %}
                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}publications"><span itemprop="name">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span></a>
+                    <a itemprop="item" href="{{ site.saddress }}publications"><span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span></a>
                     <meta itemprop="position" content="2">
                 </li>
                 <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
@@ -61,7 +61,7 @@
                 </li>
             {% else %}
                 <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <span itemprop="name">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                    <span itemprop="name">{{ lang.index.mod_publication.all_publications }}</span>
                     <meta itemprop="position" content="2">
                 </li>
             {% endif %}
@@ -75,7 +75,7 @@
                 <span>{{ current_page_title }}</span>
             </h1>
             {% if is_filtered_category %}
-                <p class="publications-subtitle">{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</p>
+                <p class="publications-subtitle">{{ lang.index.mod_publication.all_publications }}</p>
             {% endif %}
         </div>
         {% if publications is not empty %}
@@ -87,12 +87,12 @@
     </header>
 
     <div class="row g-4" id="mod_publication_list">
-        <aside class="col-lg-3 col-md-4 publications-sidebar-col" aria-label="{{ lang.index.mod_publication.category ?? 'Kategorî' }}">
-            <nav class="publication-filter-card" aria-label="{{ lang.index.mod_publication.category ?? 'Kategorî' }}">
+        <aside class="col-lg-3 col-md-4 publications-sidebar-col" aria-label="{{ lang.index.mod_publication.category }}">
+            <nav class="publication-filter-card" aria-label="{{ lang.index.mod_publication.category }}">
                 <div class="publication-filter-header">
                     <h2 class="publication-filter-title">
                         <i class="bi bi-bookmarks" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_publication.category ?? 'Kategorî' }}</span>
+                        <span>{{ lang.index.mod_publication.category }}</span>
                     </h2>
                 </div>
                 <div class="publication-filter-list">
@@ -100,7 +100,7 @@
                        class="publication-filter-item{% if not is_filtered_category %} active{% endif %}">
                         <span class="publication-filter-name">
                             <i class="bi bi-grid-fill" aria-hidden="true"></i>
-                            <span>{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                            <span>{{ lang.index.mod_publication.all_publications }}</span>
                         </span>
                     </a>
                     {% for category in categories %}
@@ -209,12 +209,12 @@
                                     <div class="publication-footer">
                                         <span class="publication-read-time">
                                             <i class="bi bi-book" aria-hidden="true"></i>
-                                            <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
+                                            <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
                                         </span>
                                         <a href="{{ site.saddress }}publication/{{ publication.seo }}"
                                            class="publication-read-more"
                                            aria-label="{{ publication_title }}">
-                                            <span class="publication-read-text">{{ lang.index.read_more ?? 'Bixwîne' }}</span>
+                                            <span class="publication-read-text">{{ lang.index.read_more }}</span>
                                             <i class="bi bi-arrow-right" aria-hidden="true"></i>
                                         </a>
                                     </div>
@@ -225,7 +225,7 @@
                 </div>
 
                 {% if pagination is not empty %}
-                    <nav class="publications-pagination-nav" aria-label="{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}">
+                    <nav class="publications-pagination-nav" aria-label="{{ lang.index.mod_publication.all_publications }}">
                         <ul class="publications-pagination-list">
                             {% for p in pagination %}
                                 {% if p == '...' %}
@@ -253,12 +253,12 @@
                     <div class="publication-empty-icon-wrap">
                         <i class="bi bi-journal-x" aria-hidden="true"></i>
                     </div>
-                    <h2 class="publication-empty-title">{{ lang.index.mod_publication.no_content_found ?? 'Di vê kategoriyê de weşan nehatin dîtin!' }}</h2>
-                    <p class="publication-empty-text">{{ lang.index.mod_publication.no_content_available ?? 'Di vê kategoriyê de weşanek tune.' }}</p>
+                    <h2 class="publication-empty-title">{{ lang.index.mod_publication.no_content_found }}</h2>
+                    <p class="publication-empty-text">{{ lang.index.mod_publication.no_content_available }}</p>
                     {% if is_filtered_category %}
                         <a href="{{ site.saddress }}publications" class="publication-empty-action">
                             <i class="bi bi-arrow-left" aria-hidden="true"></i>
-                            <span>{{ lang.index.mod_publication.all_publications ?? 'Hemû Weşan' }}</span>
+                            <span>{{ lang.index.mod_publication.all_publications }}</span>
                         </a>
                     {% endif %}
                 </div>

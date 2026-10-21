@@ -2,7 +2,7 @@
 /**
  * User Module - Kurdish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module mod_user
  * @version 1.0.0
  * @author AKM Software
@@ -464,28 +464,20 @@ $lang['mod_user'] = [
     'goto_content' => 'Here Naverokê',
     'search_placeholder' => 'Lêgerîn...',
     'quick_access' => 'Gihaştina Lezgîn',
-    'products_metrics_title' => 'Kurteya Hilberan',
     'metrics_active' => '%s tomara çalak',
-    'metrics_products' => '%s tomara hilberan',
     'metrics_clients' => '%s tomara mişteriyan',
     'metrics_homepage' => '%s tomara rûpela malê',
     'metrics_references' => '%s tomara referansan',
-    'metrics_product_categories' => '%s tomara kategoriyên hilberan',
     'family_quick_access' => 'Gihaştina Qadê',
-    'products_spotlight_title' => 'Qada Berheman',
-    'products_spotlight_copy' => 'Berhem, delîlên mişteriyan û taksonomiya piştgirîker ji yek rûyê malbatê ve rêve bibe.',
     'pinned_modules' => 'Modulên Girtî',
     'recent_workspace' => 'Qada Dawî',
-    'add_product' => 'Berhemê Lêzêde Bike',
     'add_reference' => 'Referans Lêzêde Bike',
     'add_client' => 'Mişterî Lêzêde Bike',
     'add_service' => 'Xizmetê Lêzêde Bike',
-    'manage_product_categories' => 'Qada Kategoriyan Veke',
     'manage_service_categories' => 'Kategoriyên Xizmetan Veke',
     'workspace_nav_dashboard' => 'Panel',
     'workspace_nav_content' => 'Naverok',
     'workspace_nav_media' => 'Medya',
-    'workspace_nav_products' => 'Berhem',
     'workspace_nav_more' => 'Zêdetir',
     'more_sheet_title' => 'Amûrên Zêde',
     'more_sheet_copy' => 'Bêyî ku xeta sereke ya karê tijî bike, rûyên rêveberiyê yên kêm-bikaranîn veke.',
@@ -496,16 +488,16 @@ $lang['mod_user'] = [
     'link_submissions' => 'Encam',
     'clear_search' => 'Paqij bike',
     'home_title' => 'Serûpel',
-    'admin_brand' => 'Rêveberiya AKM Rojname',
+    'admin_brand' => 'Rêveberiya AKM Bulletin CMS',
   ],
   'fab' => [
     'add_announcement' => 'Daxuyaniyê Lêzêde Bike',
-    'add_product' => 'Berhemê Lêzêde Bike',
     'add_service' => 'Xizmetê Lêzêde Bike',
     'add_page' => 'Rûpelê Lêzêde Bike',
     'add_video_embed' => 'Vîdewo Embed Lêzêde Bike',
     'add_video' => 'Vîdeoyê Lêzêde Bike',
     'add_content' => 'Nûçeyê Lêzêde Bike',
+        'add_news' => 'Nûçeyekê Lêke',
     'add_publication' => 'Weşanê Lêzêde Bike',
     'add_announcement_alert' => 'Forma Daxuyaniyê',
     'add_video_alert' => 'Forma Vîdeoyê',

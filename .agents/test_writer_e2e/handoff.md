@@ -1,7 +1,7 @@
 # Handoff Report: E2E Test Suite Designer & Implementer
 
 ## 1. Observation
-- **Target Repository**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- **Target Repository**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - **Scope & Specifications**: `PROJECT.md` (21 features across 6 milestones M1–M6) and `TEST_INFRA.md`.
 - **Delivered Test Files**:
   - `tests/e2e/run.php`: Primary standalone E2E CLI test runner with support for `--tier`, `--filter`, `--json`, `--help`.
@@ -23,7 +23,7 @@
   - Syntax check: `find tests/ -name "*.php" -exec php -l {} +` reported 0 syntax errors across 27 files.
 
 ## 2. Logic Chain
-1. *Requirement analysis*: `PROJECT.md` dictates 21 discrete features to be synchronized/modernized from AF/Business into AF/Rojname, requiring opaque-box testing without reliance on internals.
+1. *Requirement analysis*: `PROJECT.md` dictates 21 discrete features to be synchronized/modernized from AF/Business into AF/Bulletin, requiring opaque-box testing without reliance on internals.
 2. *Multi-tiered architecture*:
    - Tier 0 enforces quality gates (strict code separation, zero Turkish keywords, 44px touch targets).
    - Tier 1 exercises the happy path of every feature (5 test methods per feature = 105 tests).
@@ -40,7 +40,7 @@
 The comprehensive E2E test harness (`tests/e2e/run.php`) and full 236-test suite covering all 21 modernization features across 6 tiers has been successfully implemented, verified, and published. `TEST_READY.md` is published and ready for orchestrator coordination.
 
 ## 5. Verification Method
-Run the following commands in `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`:
+Run the following commands in `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`:
 ```bash
 # 1. Run the entire test suite
 php tests/e2e/run.php

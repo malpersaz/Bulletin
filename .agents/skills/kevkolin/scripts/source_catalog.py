@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Kevkolin Source Catalog & Research Dossier Formatter
-Manages the authoritative registry of verified Kurdish, regional, and international media sources
+Manages the authoritative registry of verified local (Diyarbakır/Amed), national, regional, and international media sources
 and formats structured Research Dossiers for downstream processing by Kevrast and Kevanger.
 """
 
@@ -12,18 +12,37 @@ import argparse
 from typing import Dict, List, Any
 
 VERIFIED_SOURCES = {
-    "kurdish_and_regional": [
-        {"name": "Rûdaw", "urls": ["https://rudaw.net/kurmanci", "https://rudaw.net/english", "https://rudaw.net/turkish", "https://rudaw.net/sorani", "https://www.rudawarabia.net/arabic"]},
-        {"name": "Kurdistan24", "urls": ["https://www.kurdistan24.net/kmr", "https://www.kurdistan24.net/ckb", "https://www.kurdistan24.net/en", "https://www.kurdistan24.net/tr", "https://www.kurdistan24.net/ar"]},
-        {"name": "Dengê Amerîka (VOA Kurdî)", "urls": ["https://www.dengiamerika.com"]},
+    "amed_diyarbakir": {
+        "quota": 19,
+        "sources": [
+            {"name": "Amida Haber", "url": "https://amidahaber.com", "type": "local_media"},
+            {"name": "Tigris Haber", "url": "https://www.tigrishaber.com", "type": "local_media"},
+            {"name": "Güneydoğu Ekspres", "url": "https://www.guneydoguekspres.com", "type": "local_media"},
+            {"name": "Diyarbakır Yenigün", "url": "https://diyarbakiryenigun.com", "type": "local_media"},
+            {"name": "Mücadele Gazetesi", "url": "https://www.mucadelegazetesi.com.tr", "type": "local_media"},
+            {"name": "CEGA Medya", "url": "https://www.cegamedya.com", "type": "local_media"},
+            {"name": "Amed Times", "url": "https://www.amedtimes.com.tr", "type": "local_media"},
+            {"name": "Diyarbakır Söz", "url": "https://diyarbakirsoz.com", "type": "local_media"},
+            {"name": "Özgür Haber Gazetesi", "url": "https://www.ozgurhabergazetesi.com", "type": "local_media"},
+            {"name": "Güneydoğu Güncel", "url": "https://www.guneydoguguncel.com", "type": "local_media"},
+            {"name": "Amed Haber", "url": "https://www.amedhaber.net", "type": "local_media"},
+            {"name": "Amed Radyo TV", "url": "http://www.amedradyotv.com", "type": "local_media"},
+            {"name": "Diyarbakır Büyükşehir Belediyesi", "url": "https://www.diyarbakir.bel.tr", "type": "institutional"},
+            {"name": "Diyarbakır Ticaret ve Sanayi Odası (DTSO)", "url": "https://www.dtso.org.tr", "type": "institutional"},
+            {"name": "Diyarbakır Ticaret Borsası (DTB)", "url": "https://www.diyarbakirtb.org.tr", "type": "institutional"},
+            {"name": "Diyarbakır Barosu", "url": "https://diyarbakirbarosu.org.tr", "type": "institutional"},
+            {"name": "Karacadağ Kalkınma Ajansı", "url": "https://www.karacadag.gov.tr", "type": "institutional"},
+            {"name": "Dicle Üniversitesi", "url": "https://www.dicle.edu.tr", "type": "institutional"},
+            {"name": "Amedspor (Resmi)", "url": "https://www.amedspor.com.tr", "type": "sports"}
+        ]
+    },
+    "regional_and_middle_east": [
+        {"name": "Rûdaw Türkçe", "urls": ["https://rudaw.net/turkish", "https://rudaw.net/english"]},
+        {"name": "Kurdistan24 Türkçe", "urls": ["https://www.kurdistan24.net/tr", "https://www.kurdistan24.net/en"]},
         {"name": "964media", "urls": ["https://964media.com"]},
-        {"name": "NRT TV", "urls": ["https://nrttv.com"]},
         {"name": "Shafaq News", "urls": ["https://shafaq.com"]},
-        {"name": "North Press Agency (NPA)", "urls": ["https://npasyria.com"]},
-        {"name": "Hawar News (ANHA)", "urls": ["https://hawarnews.com"]},
-        {"name": "Bianet Kurdî", "urls": ["https://bianet.org/kurdi"]},
-        {"name": "Hengaw Human Rights Organization", "urls": ["https://hengaw.net"]},
-        {"name": "Mezopotamya Ajansı (MA)", "urls": ["https://mezopotamyaajansi44.com/kr"]},
+        {"name": "Bianet", "urls": ["https://bianet.org"]},
+        {"name": "Mezopotamya Ajansı (MA)", "urls": ["https://mezopotamyaajansi44.com"]},
         {"name": "Official KRG Portals", "urls": ["https://gov.krd", "https://presidency.gov.krd"]}
     ],
     "united_states": {
@@ -127,6 +146,7 @@ def create_dossier_template(topic: str, date: str) -> Dict[str, Any]:
 def main():
     parser = argparse.ArgumentParser(description="Kevkolin Source Catalog & Dossier Formatter")
     parser.add_argument("--list-sources", action="store_true", help="List all verified sources and quotas")
+    parser.add_argument("--category", default="", help="Filter listed sources by category key (e.g. amed_diyarbakir)")
     parser.add_argument("--json", action="store_true", help="Output source list in JSON")
     parser.add_argument("--new-dossier", help="Generate a blank structured research dossier for a topic")
     parser.add_argument("--date", default="", help="Date string for the dossier")
@@ -134,13 +154,17 @@ def main():
     args = parser.parse_args()
 
     if args.list_sources:
+        selected = VERIFIED_SOURCES
+        if args.category:
+            key = args.category.strip().lower()
+            selected = {k: v for k, v in VERIFIED_SOURCES.items() if k == key}
         if args.json:
-            print(json.dumps(VERIFIED_SOURCES, ensure_ascii=False, indent=2))
+            print(json.dumps(selected, ensure_ascii=False, indent=2))
         else:
             print("=" * 60)
             print("KEVKOLIN: Authoritative Verified Source Registry")
             print("=" * 60)
-            for region, data in VERIFIED_SOURCES.items():
+            for region, data in selected.items():
                 print(f"\n[{region.upper().replace('_', ' ')}]")
                 if isinstance(data, list):
                     for s in data:
@@ -149,8 +173,9 @@ def main():
                 elif isinstance(data, dict):
                     print(f"  Quota: {data.get('quota', 'N/A')}")
                     for s in data.get("sources", []):
-                        extra = f" [{s.get('country')}]" if "country" in s else ""
-                        print(f"  - {s['name']}{extra}: {s['url']}")
+                        extra = f" [{s.get('country')}]" if "country" in s else (f" [{s.get('type')}]" if "type" in s else "")
+                        urls_str = ", ".join(s["urls"]) if "urls" in s else s.get("url", "")
+                        print(f"  - {s['name']}{extra}: {urls_str}")
             print("=" * 60)
     elif args.new_dossier:
         dossier = create_dossier_template(args.new_dossier, args.date)

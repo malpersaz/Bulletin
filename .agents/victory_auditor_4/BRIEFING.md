@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-24T01:03:50Z
 
 ## Mission
-Conduct an independent 3-phase Victory Audit for AF/Rojname to verify that the implementation satisfies all requirements in ORIGINAL_REQUEST.md authentically and completely without regressions or cheating.
+Conduct an independent 3-phase Victory Audit for AF/Bulletin to verify that the implementation satisfies all requirements in ORIGINAL_REQUEST.md authentically and completely without regressions or cheating.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_4
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_4
 - Original parent: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 - Target: full project
 
@@ -21,7 +21,7 @@ Conduct an independent 3-phase Victory Audit for AF/Rojname to verify that the i
 - Updated: 2026-08-24T01:03:50Z
 
 ## Audit Scope
-- **Work product**: AF/Rojname codebase
+- **Work product**: AF/Bulletin codebase
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit
 
@@ -56,6 +56,6 @@ Conduct an independent 3-phase Victory Audit for AF/Rojname to verify that the i
 - Delivered VICTORY REJECTED verdict with complete forensic evidence.
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md — Authoritative user requirements
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/handoff.md — Implementation handoff report
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_4/handoff.md — Victory Audit Report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md — Authoritative user requirements
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/handoff.md — Implementation handoff report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_4/handoff.md — Victory Audit Report

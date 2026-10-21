@@ -18,7 +18,7 @@ Use `python3 tools/i18n_guard.py` to perform instant, automated code quality and
 
 2. **Audit Specific Path or Directory**:
    ```bash
-   python3 tools/i18n_guard.py --path templates/admin/mod_content
+   python3 tools/i18n_guard.py --path templates/amida/index/mod_publication
    ```
 
 3. **Audit Entire Repository**:
@@ -41,8 +41,8 @@ Use `python3 tools/i18n_guard.py` to perform instant, automated code quality and
 - **FORBIDDEN_ALIAS**: Flags SQL and code alias usage (e.g. `AS alias_name`).
 - **INLINE_STYLE_ATTR / INLINE_STYLE_TAG**: Flags inline CSS attributes or `<style>` blocks in PHP/Twig/HTML files.
 - **INLINE_SCRIPT_TAG / INLINE_EVENT_HANDLER**: Flags inline JavaScript blocks or inline event handlers (`onclick=`, etc.) in PHP/Twig/HTML files.
-- **FORBIDDEN_FALLBACK**: Flags forbidden inline default fallbacks (e.g. `lang.*|default(...)`).
-- **MISSING_KEY**: Flags referenced translation keys that do not exist across language packs.
+- **FORBIDDEN_FALLBACK**: Flags forbidden inline default or null-coalescing fallbacks (e.g. `lang.*|default(...)` or `lang.* ?? '...'`).
+- **MISSING_KEY**: Flags referenced translation keys (including nested keys) that are missing in any core language pack (`en`, `ku`, `tr`).
 
 ## Resolution Workflow
 
@@ -51,6 +51,6 @@ If `i18n-guard` reports violations:
 2. Translate all code comments into English.
 3. Remove SQL aliases and reference canonical column or entity names directly.
 4. Move inline styles to external CSS files and inline scripts/handlers to external JS files.
-5. Fix missing keys in the respective language packs.
-6. Remove inline `|default(...)` fallbacks from template keys.
+5. Fix missing keys in all respective language packs (`mod/*/lang/*.php`).
+6. Remove inline `|default(...)` and `??` fallbacks from `lang.*` template keys.
 7. Re-run `python3 tools/i18n_guard.py` to confirm 100% clean pass.

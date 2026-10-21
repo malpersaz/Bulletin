@@ -6,7 +6,7 @@ Empirically stress-test Milestone 1 (M1) changes: Core Framework, ORM Resilience
 ## 🔒 My Identity
 - Archetype: Empirical Challenger
 - Roles: critic, specialist
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m1_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m1_2
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M1
 - Instance: 2 of 2
@@ -27,8 +27,8 @@ Empirically stress-test Milestone 1 (M1) changes: Core Framework, ORM Resilience
   - `lib/Orm/Orm.php`
   - `lib/Orm/Obuilder.php`
   - `lib/BaseModuleController.class.php`
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
-- **Worker Handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
+- **Worker Handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md`
 - **Review criteria**: correctness, robustness, edge cases, regression avoidance, unicode parity
 
 ## Attack Surface

@@ -23,12 +23,12 @@
                                 {% if news.has_video or news.has_gallery %}
                                     <div class="latest-news-type-badges">
                                         {% if news.has_video %}
-                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="Vîdyo" aria-label="Vîdyo">
+                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.1 }}" aria-label="{{ lang.index.mod_video_embed.1 }}">
                                                 <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
                                             </span>
                                         {% endif %}
                                         {% if news.has_gallery %}
-                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="Galerî" aria-label="Galerî">
+                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.search.gallery }}" aria-label="{{ lang.index.search.gallery }}">
                                                 <i class="bi bi-images" aria-hidden="true"></i>
                                             </span>
                                         {% endif %}
@@ -62,7 +62,7 @@
                         <span class="nyt-article-meta-sep" aria-hidden="true">·</span>
                         <span class="nyt-article-meta-item nyt-article-reading-time">
                             <i class="bi bi-book" aria-hidden="true"></i>
-                            <span>{{ reading_minutes }} {{ lang.index.minute ?? 'deqe' }}</span>
+                            <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
                         </span>
                         {% if news.published_ago is defined and news.published_ago is not empty %}
                             <span class="nyt-article-meta-sep" aria-hidden="true">·</span>

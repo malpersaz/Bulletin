@@ -14,7 +14,7 @@
 	<div class="container">
 		<!-- Brand/Logo -->
 		<!-- Brand/Logo (Vector SVG Masthead) -->
-		{% set header_svg_logo = 'static/mod_settings/amida_kurd_logo.svg' %}
+		{% set header_svg_logo = 'static/mod_settings/logo.svg' %}
 		<a class="navbar-brand d-flex align-items-center" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }}">
 			<img src="{{ site.address }}{{ header_svg_logo }}" alt="{{ site.title }}" width="175" height="40" class="stacked-logo-svg d-inline-block">
 		</a>
@@ -38,9 +38,12 @@
 			</div>
 
 			<!-- Main Navigation -->
+			{% set header_menu = ctx_get('menu_header') %}
+			{% set active_menu = header_menu is defined and header_menu is not empty ? header_menu : menu %}
+			{% set active_menu_root = (header_menu is defined and header_menu is not empty) ? ctx_get('menu_header_root_id') : 0 %}
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-				{% if menu is defined and menu is not empty %}
-					{{ renderMenu(menu, 0, 0, 0) }}
+				{% if active_menu is defined and active_menu is not empty %}
+					{{ renderMenu(active_menu, active_menu_root|default(0), 0, 0) }}
 				{% endif %}
 			</ul>
 

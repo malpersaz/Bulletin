@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T20:20:00Z
 
 ## Mission
-Investigate and survey AF/Rojname for R1 (Strict Code Separation & Admin User ACL Modernization) and R2 (Core Framework, ORM & Twig SEO Unicode Preservation) compared with AF/Business standards.
+Investigate and survey AF/Bulletin for R1 (Strict Code Separation & Admin User ACL Modernization) and R2 (Core Framework, ORM & Twig SEO Unicode Preservation) compared with AF/Business standards.
 
 ## 🔒 My Identity
 - Archetype: explorer
 - Roles: Codebase & Architecture Explorer (R1 & R2 Focus)
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_1
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: Survey and Gap Analysis for R1 and R2
 
@@ -44,5 +44,5 @@ Investigate and survey AF/Rojname for R1 (Strict Code Separation & Admin User AC
 - Fully documented all file paths, exact line numbers, code diffs, and modernization requirements in handoff.md.
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_1/handoff.md` — Survey & Gap Analysis Report
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_1/progress.md` — Heartbeat Tracking
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_1/handoff.md` — Survey & Gap Analysis Report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_1/progress.md` — Heartbeat Tracking

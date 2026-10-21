@@ -154,7 +154,7 @@ class TwigTemplateAdversarialTest
     private function testBaseModuleControllerTemaGuarantees(): void
     {
         $ref = new \ReflectionClass(BaseModuleController::class);
-        $this->assert($ref->hasProperty('tema'), 'BaseModuleController declares public $tema property');
+        $this->assert(!$ref->hasProperty('tema'), 'BaseModuleController enforces English-only properties (no $tema)');
         $this->assert($ref->hasProperty('theme'), 'BaseModuleController declares public $theme property');
         $this->assert($ref->hasProperty('view'), 'BaseModuleController declares public $view property');
 
@@ -164,10 +164,9 @@ class TwigTemplateAdversarialTest
         $adminTpl = new AdminTemplate();
         $mock->theme = $adminTpl;
         $mock->view = $adminTpl;
-        $mock->tema = $adminTpl;
 
-        $this->assert($mock->tema === $adminTpl, 'BaseModuleController::$tema holds AdminTemplate instance');
-        $this->assert($mock->__get('tema') === $adminTpl, 'BaseModuleController::__get("tema") dynamically falls back to $theme');
+        $this->assert($mock->theme === $adminTpl, 'BaseModuleController::$theme holds AdminTemplate instance');
+        $this->assert($mock->view === $adminTpl, 'BaseModuleController::$view holds AdminTemplate instance');
     }
 
     private function testIndexBaseTemaThemeViewParity(): void
@@ -201,7 +200,7 @@ class TwigTemplateAdversarialTest
 
     private function testCacheModernizationAndTtlAliases(): void
     {
-        $testData = ['message' => 'Rojname Cache Test', 'status' => true];
+        $testData = ['message' => 'Bulletin Cache Test', 'status' => true];
         $key = 'test_cache_parity_' . time();
         $testDir = 'cache/test_sql/';
         $fullTestDir = root_dir . $testDir;
@@ -209,7 +208,7 @@ class TwigTemplateAdversarialTest
             @mkdir($fullTestDir, 0777, true);
         }
 
-        $origDir = Cache::$cachedir;
+        $origDir = Cache::getCacheDir();
         Cache::setCacheDir($testDir);
 
         try {

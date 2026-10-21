@@ -2,7 +2,7 @@
 
 **Author**: Explorer 1 (Codebase & Architecture Explorer)  
 **Date**: 2026-08-23  
-**Target Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 **Reference Codebase**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`  
 **Scope**: 
 1. **R1**: Strict Code Separation & Admin User ACL Modernization (`mod_user/acl.twig`, `mod_acl/`, `mod_user/index.php`, admin partials `header.twig`, `filter_sheet.twig`, `sheets_extra.twig`, `modal_user_menu.js`, `core_modals.css`)
@@ -197,7 +197,7 @@ Observation 6: BaseModuleController lacks centralized AJAX relation handlers
 ## 3. Caveats & Assumptions
 
 1. **Database Schema Parity**:
-   - `mod_user_perm` and `mod_user_role` table column names (`role_id` vs `roll_id`): Models in `AF/Rojname` support `role_id` / `roll_id` via ORM mappings, but the SQL queries in `toggle_permission()` should use `role_id` (or verify active table column name via schema helper).
+   - `mod_user_perm` and `mod_user_role` table column names (`role_id` vs `roll_id`): Models in `AF/Bulletin` support `role_id` / `roll_id` via ORM mappings, but the SQL queries in `toggle_permission()` should use `role_id` (or verify active table column name via schema helper).
 2. **Excluded Modules Assurance**:
    - All investigations strictly confirmed zero inclusion of excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
 3. **External Dependencies**:

@@ -3,11 +3,11 @@ You are the Forensic Auditor for Milestone 1 (M1): Core Framework, ORM Resilienc
 
 Identity & Working Directory:
 - Role: Forensic Integrity Auditor (M1)
-- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/auditor_m1
-- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md
-- Worker Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md
+- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/auditor_m1
+- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md
+- Worker Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md
 
 Integrity Forensics Scope:
 Verify that all M1 implementations in:
@@ -22,5 +22,5 @@ Check for:
 3. No fabricated test outputs.
 4. No reintroduction of excluded modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
 5. Determine verdict: CLEAN or INTEGRITY VIOLATION.
-6. Write full forensic audit report to `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/auditor_m1/handoff.md`.
+6. Write full forensic audit report to `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/auditor_m1/handoff.md`.
 7. Send message to parent orchestrator with verdict and evidence.

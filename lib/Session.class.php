@@ -1,6 +1,6 @@
 <?php
 /*
- * AKM Business Content Management System
+ * Amed Framework
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
  * @ 2010
@@ -38,7 +38,9 @@ class Session
             session_name(Registry::get('session_name'));
             $this->sessionName = Registry::get('session_name');
         }
-        @session_start();
+        if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
+            session_start();
+        }
 
         if (!$this->sid) {
             $this->sid = session_id();
@@ -67,12 +69,13 @@ class Session
             $this->set('ip', $this->ip);
         }
         if (Registry::get('session_check_agent') == true) {
-            if ($this->has('agent') && $this->get('agent') != md5($this->agent)) {
+            $agentHash = hash('sha256', $this->agent);
+            if ($this->has('agent') && $this->get('agent') != $agentHash && $this->get('agent') != md5($this->agent)) {
                 print('Please log in again: 2!');
                 $this->clear();
                 exit();
             }
-            $this->set('agent', md5($this->agent));
+            $this->set('agent', $agentHash);
         }
 
         if ($this->has('sid') === false) {

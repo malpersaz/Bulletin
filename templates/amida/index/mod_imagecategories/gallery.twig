@@ -48,9 +48,9 @@
 {% block title %}
 	<title>
 		{% if d.name is not empty %}
-			{{ d.name }} - {{ lang.index.mod_pictures.title|default('Gallery') }} - {{ site.title }}
+			{{ d.name }} - {{ lang.index.mod_pictures.title }} - {{ site.title }}
 		{% else %}
-			{{ lang.index.mod_pictures.title|default('Gallery') }} - {{ site.title }}
+			{{ lang.index.mod_pictures.title }} - {{ site.title }}
 		{% endif %}
 	</title>
 {% endblock %}
@@ -60,7 +60,7 @@
 {% endblock %}
 
 {% block description %}
-	<meta name="description" content="{{ d.name is not empty ? (d.name ~ ' - ' ~ (lang.index.mod_pictures.title|default('Gallery')) ~ ' - ' ~ site.description) : ((lang.index.mod_pictures.title|default('Gallery')) ~ ' - ' ~ site.description) }}">
+	<meta name="description" content="{{ d.name is not empty ? (d.name ~ ' - ' ~ lang.index.mod_pictures.title ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description) }}">
 {% endblock %}
 
 {% block keywords %}
@@ -72,8 +72,8 @@
 		{
 		  "@context": "https://schema.org",
 		  "@type": "ImageGallery",
-		  "name": {{ (d.name is not empty ? d.name : (lang.index.mod_pictures.title|default('Gallery')))|json_encode|raw }},
-		  "description": {{ (d.name is not empty ? (d.name ~ ' - ' ~ site.description) : ((lang.index.mod_pictures.title|default('Gallery')) ~ ' - ' ~ site.description))|striptags|slice(0, 200)|json_encode|raw }},
+		  "name": {{ (d.name is not empty ? d.name : lang.index.mod_pictures.title)|json_encode|raw }},
+		  "description": {{ (d.name is not empty ? (d.name ~ ' - ' ~ site.description) : (lang.index.mod_pictures.title ~ ' - ' ~ site.description))|striptags|slice(0, 200)|json_encode|raw }},
 		  "url": {{ (site.saddress ~ 'gallery' ~ (d.seo is not empty ? '/' ~ d.seo : ''))|json_encode|raw }},
 		  "isPartOf": {
 		    "@type": "WebSite",
@@ -92,7 +92,7 @@
 		      {
 		        "@type": "ListItem",
 		        "position": 2,
-		        "name": {{ (lang.index.mod_pictures.title|default('Gallery'))|json_encode|raw }},
+		        "name": {{ lang.index.mod_pictures.title|json_encode|raw }},
 		        "item": {{ (site.saddress ~ 'gallery')|json_encode|raw }}
 		      }{% if d.name is not empty %},
 		      {
@@ -112,7 +112,7 @@
         <div class="card-header">
             <ol class="breadcrumb panel-title">
                 <li>
-                    <a href="{{ site.saddress }}">{{ lang.index.home|default('Home') }}</a>
+                    <a href="{{ site.saddress }}">{{ lang.index.home }}</a>
                 </li>
                 {% if d.name is not empty %}
                     <li>

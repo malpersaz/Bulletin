@@ -7,13 +7,13 @@ Disallow: /*/tools/
 Disallow: /cache/
 Disallow: /installer/
 
-# Master Sitemap Index for Amida Kurd / Rojname
-Sitemap: https://amidakurd.net/sitemap.xml
-Sitemap: https://amidakurd.net/newsSitemap.xml
+# Master Sitemap Index for AKM Bulletin CMS
+Sitemap: /sitemap.xml
+Sitemap: /newsSitemap.xml
 
 # Specific Language fallbacks
-Sitemap: https://amidakurd.net/ku/newsSitemap.xml
-Sitemap: https://amidakurd.net/en/newsSitemap.xml
+Sitemap: /ku/newsSitemap.xml
+Sitemap: /en/newsSitemap.xml
 
 # AI / LLM Index
-# LLMS-Txt: https://amidakurd.net/llms.txt
+# LLMS-Txt: /llms.txt

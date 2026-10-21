@@ -1,10 +1,10 @@
 {
-  "name": "AKMbusiness",
+  "name": "AKMbulletin",
   "version": "1.0.0",
   "authors": [
     "AKM <akmsoftware.co.uk>"
   ],
-  "description": "AKMbusiness",
+  "description": "AKMbulletin",
   "main": "index.html",
   "moduleType": [
     "amd"

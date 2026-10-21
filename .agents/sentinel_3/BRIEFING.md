@@ -1,11 +1,11 @@
 # BRIEFING — 2026-08-23T22:22:21Z
 
 ## Mission
-Fix fatal errors in AF/Rojname (`Run::execute()`, missing `Kayit` class, `TwigTemplate::veri()`), purge all legacy Turkish identifiers/methods across core and modules, and eliminate all remaining references to excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) while achieving 100% E2E test verification.
+Fix fatal errors in AF/Bulletin (`Run::execute()`, missing `Kayit` class, `TwigTemplate::veri()`), purge all legacy Turkish identifiers/methods across core and modules, and eliminate all remaining references to excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) while achieving 100% E2E test verification.
 
 ## 🔒 My Identity
 - Archetype: sentinel
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/sentinel_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/sentinel_3
 - Orchestrator: 59844731-4ab0-4800-8858-0e251ecc9755 (swe_3)
 - Victory Auditor: 869d2f01-a277-4b51-b13d-5bec90300a80 (victory_auditor_6)
 
@@ -31,7 +31,7 @@ Fix fatal errors in AF/Rojname (`Run::execute()`, missing `Kayit` class, `TwigTe
 - **Retry count**: 1
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md — Authoritative user request
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_3/handoff.md — SWE Orchestrator 3 handoff
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_6/handoff.md — Independent Victory Auditor report (VICTORY CONFIRMED)
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/sentinel_3/handoff.md — Sentinel handoff report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md — Authoritative user request
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_3/handoff.md — SWE Orchestrator 3 handoff
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_6/handoff.md — Independent Victory Auditor report (VICTORY CONFIRMED)
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/sentinel_3/handoff.md — Sentinel handoff report

@@ -1,7 +1,7 @@
 # Plana Nirxandina Dijberî (Adversarial Review Plan)
 
 ## Armanc
-Kontrolkirin û ceribandina kûr a hemû guhertinên ku ji bo jêbirina referansên modulên kevnare (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) di repoya `Rojname` de hatine kirin.
+Kontrolkirin û ceribandina kûr a hemû guhertinên ku ji bo jêbirina referansên modulên kevnare (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) di repoya `Bulletin` de hatine kirin.
 
 ## Pêngavên Nirxandinê (Review Steps)
 1. **Lêgerîn û Kontrola Statîk (Static Audit & Grep):**

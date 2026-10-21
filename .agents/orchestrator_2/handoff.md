@@ -17,7 +17,7 @@
    - `php tests/module_management_runtime_test.php`: 6 tests, 100% pass.
 
 ## 2. Logic Chain
-- **Step 1 (Milestone 3 Execution)**: Replacing `mod_category` with `mod_content_category` eliminated legacy non-standard nomenclature and aligned Rojname with AF/Business baseline. Updating `contents.model.php` view to join `mod_content_category` ensured that all content queries in backend and frontend receive correct category slug, name, and SEO data.
+- **Step 1 (Milestone 3 Execution)**: Replacing `mod_category` with `mod_content_category` eliminated legacy non-standard nomenclature and aligned Bulletin with AF/Business baseline. Updating `contents.model.php` view to join `mod_content_category` ensured that all content queries in backend and frontend receive correct category slug, name, and SEO data.
 - **Step 2 (Milestone 4 Execution)**: Porting `mod_faq`, `mod_faq_mod`, `mod_newsletter`, `mod_seo`, and `mod_settings` directly from AF/Business provided required feature parity without introducing legacy foreign patterns. All Twig templates were refactored to adhere strictly to Rule 2 (Strict Code Separation) with dedicated CSS/JS asset files.
 - **Step 3 (Milestone 5 & Hardening Execution)**: Constructing Tier 5 Adversarial Coverage Hardening ensured the system is tested against blind SQL injection, XSS vectors, corrupt batch payloads, deep hierarchical cascades, and Kurdish Unicode preservation.
 - **Step 4 (Verification)**: Running the complete test suite confirmed 100% pass rate and zero regressions.
@@ -26,10 +26,10 @@
 - No caveats. All 5 milestones (M1-M5) are 100% complete, verified with opaque-box tests, and compliant with all project quality contracts.
 
 ## 4. Conclusion
-The entire project modernization and synchronization for `AF/Rojname` is complete. The system has zero remnants of deprecated modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`), zero legacy `Kayit`/`Register` references, zero Turkish variable/comment identifiers in active code, zero inline style/script violations in modernized templates, and full operational parity with `AF/Business`. All test suites pass with 100% success rate.
+The entire project modernization and synchronization for `AF/Bulletin` is complete. The system has zero remnants of deprecated modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`), zero legacy `Kayit`/`Register` references, zero Turkish variable/comment identifiers in active code, zero inline style/script violations in modernized templates, and full operational parity with `AF/Business`. All test suites pass with 100% success rate.
 
 ## 5. Verification Method
-Run the following commands in the workspace root (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`):
+Run the following commands in the workspace root (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`):
 ```bash
 # 1. Complete 6-Tier E2E Test Suite (48 tests, 241 assertions)
 php tests/run_e2e_tests.php

@@ -4,11 +4,11 @@ You are Reviewer 1 for Milestone 1 (M1): Core Framework, ORM Resilience & Twig S
 
 Identity & Working Directory:
 - Role: Code Reviewer (M1)
-- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m1_1
-- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md
-- Worker Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md
+- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m1_1
+- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md
+- Worker Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md
 
 Scope of Review:
 Review M1 changes across:
@@ -20,5 +20,5 @@ Tasks:
 1. Verify code correctness, robustness, and architectural alignment.
 2. Run build/syntax checks (`php -l`) and unit tests.
 3. Determine verdict: APPROVE or REQUEST_CHANGES.
-4. Write structured review handoff to `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m1_1/handoff.md`.
+4. Write structured review handoff to `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m1_1/handoff.md`.
 5. Send message with verdict and summary to parent orchestrator.

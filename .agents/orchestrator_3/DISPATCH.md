@@ -1,11 +1,11 @@
 # Dispatch Record
 
 ## 2026-08-23T20:15:16Z
-You are the Project Orchestrator (orchestrator_3) for AF/Rojname.
+You are the Project Orchestrator (orchestrator_3) for AF/Bulletin.
 
-Workspace Root: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Your Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3
-Original Request Path: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
+Workspace Root: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Your Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3
+Original Request Path: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
 
 Key Mission & Requirements:
 1. R1: Strict Code Separation & Admin User ACL Modernization
@@ -16,7 +16,7 @@ Key Mission & Requirements:
 6. R6: Multilingual 9-Language Parity & Code Language Standards
 
 Boundaries & Strict Exclusions:
-The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Rojname:
+The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Bulletin:
 1. mod_client
 2. mod_service & mod_service_category
 3. mod_product & mod_product_category
@@ -31,16 +31,16 @@ Verification & Acceptance:
 - Kurdish characters in legacy_seo generate clean Wikipedia-style slugs.
 
 ## 2026-08-23T20:41:15Z
-You are the Project Orchestrator Successor (orchestrator_3_gen2) for AF/Rojname.
+You are the Project Orchestrator Successor (orchestrator_3_gen2) for AF/Bulletin.
 
 Identity & Working Directory:
 - Role: Project Orchestrator (Successor Generation 2)
-- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3
-- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+- Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3
+- Target Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 - Reference Codebase: /home/malpersaz/Desktop/projects/htdocs/AF/Business
-- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md
-- Soft Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3/handoff.md
+- Original Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+- Project Scope: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md
+- Soft Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3/handoff.md
 
 Your parent is 766de567-ae77-402e-97e3-790d1974e31d — use this ID for all status reporting and final completion notification via send_message.
 

@@ -3,18 +3,18 @@ services:
     build:
       context: ./docker/php
       dockerfile: Dockerfile
-    container_name: rojname_app
+    container_name: bulletin_app
     volumes:
       - ./:/var/www/html
       - ./docker/php/php.dev.ini:/usr/local/etc/php/conf.d/local.ini
     depends_on:
       - db
     networks:
-      - rojname_net
+      - bulletin_net
 
   web:
     image: nginx:alpine
-    container_name: rojname_web
+    container_name: bulletin_web
     ports:
       - "8080:80"
     volumes:
@@ -23,39 +23,39 @@ services:
     depends_on:
       - app
     networks:
-      - rojname_net
+      - bulletin_net
 
   db:
     image: mysql:8.0
-    container_name: rojname_db
+    container_name: bulletin_db
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      MYSQL_DATABASE: rojname
-      MYSQL_USER: rojname
-      MYSQL_PASSWORD: rojname_password
-      MYSQL_ROOT_PASSWORD: rojname_root_password
+      MYSQL_DATABASE: bulletin
+      MYSQL_USER: bulletin
+      MYSQL_PASSWORD: bulletin_password
+      MYSQL_ROOT_PASSWORD: bulletin_root_password
     volumes:
       - db_data:/var/lib/mysql
     networks:
-      - rojname_net
+      - bulletin_net
 
   pma:
     image: phpmyadmin/phpmyadmin
-    container_name: rojname_pma
+    container_name: bulletin_pma
     environment:
       PMA_HOST: db
-      PMA_USER: rojname
-      PMA_PASSWORD: rojname_password
+      PMA_USER: bulletin
+      PMA_PASSWORD: bulletin_password
     ports:
       - "8081:80"
     depends_on:
       - db
     networks:
-      - rojname_net
+      - bulletin_net
 
 networks:
-  rojname_net:
+  bulletin_net:
     driver: bridge
 
 volumes:

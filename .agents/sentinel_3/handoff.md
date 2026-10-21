@@ -1,4 +1,4 @@
-# Sentinel Handoff Report — AF/Rojname Modernization & Integrity Verification
+# Sentinel Handoff Report — AF/Bulletin Modernization & Integrity Verification
 
 ## 1. Observation
 1. **Initial Task & Routing**:

@@ -55,7 +55,7 @@ interface Swift_KeyCache
    * @return Swift_InputByteStream
    */
   public function getInputByteStream($nsKey, $itemKey,
-    Swift_InputByteStream $is = null);
+    ?Swift_InputByteStream $is = null);
   
   /**
    * Get data back out of the cache as a string.

@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Software Business CMS Framework
+ * Amed Framework (AKM Bulletin CMS)
  * Newsletter Module Kurdish Language Pack
  * mod/mod_newsletter/lang/ku.php
  */

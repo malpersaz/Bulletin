@@ -29,8 +29,6 @@ class McpSettingsTools extends McpCrudToolsBase
     ];
 
     private const SETTINGS_INT_FIELDS = [
-        'stat_completed_projects',
-        'stat_ongoing_projects',
         'stat_workforce',
         'stat_offices',
         'maintenance_retry_after',

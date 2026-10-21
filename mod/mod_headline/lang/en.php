@@ -2,7 +2,7 @@
 /**
  * Featured Content/Headline Management - English Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_headline
  * @version 1.0.0
  * @author  AKM Software
@@ -306,7 +306,6 @@ $lang['mod_headline'] = [
         'news' => 'News',
         'blog' => 'Blog',
         'portfolio' => 'Portfolio',
-        'products' => 'Products',
         'services' => 'Services',
         'events' => 'Events',
         'announcements' => 'Announcements',

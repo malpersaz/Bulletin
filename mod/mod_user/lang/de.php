@@ -2,7 +2,7 @@
 /**
  * User Module - German Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -455,28 +455,20 @@ $lang['mod_user']['panel'] = [
     'goto_content' => 'Zum Inhalt gehen',
     'search_placeholder' => 'Suche...',
     'quick_access' => 'Schnellzugriff',
-    'products_metrics_title' => 'Produkt-Snapshot',
     'metrics_active' => '%s aktive Datensätze',
-    'metrics_products' => '%s Produktdatensätze',
     'metrics_clients' => '%s Kundendatensätze',
     'metrics_homepage' => '%s Homepage-Datensätze',
     'metrics_references' => '%s Referenzdatensätze',
-    'metrics_product_categories' => '%s Produktkategorie-Datensätze',
     'family_quick_access' => 'Arbeitsbereich-Zugriff',
-    'products_spotlight_title' => 'Produkte-Arbeitsbereich',
-    'products_spotlight_copy' => 'Verwalten Sie Produkte, Kundenreferenzen und die unterstützende Taxonomie über eine zentrale Oberfläche.',
     'pinned_modules' => 'Angepinnte Module',
     'recent_workspace' => 'Letzter Arbeitsbereich',
-    'add_product' => 'Produkt hinzufügen',
     'add_reference' => 'Referenz hinzufügen',
     'add_client' => 'Kunde hinzufügen',
     'add_service' => 'Dienstleistung hinzufügen',
-    'manage_product_categories' => 'Kategorie-Arbeitsbereich öffnen',
     'manage_service_categories' => 'Dienstleistungskategorien öffnen',
     'workspace_nav_dashboard' => 'Dashboard',
     'workspace_nav_content' => 'Inhalt',
     'workspace_nav_media' => 'Medien',
-    'workspace_nav_products' => 'Produkte',
     'workspace_nav_more' => 'Mehr',
     'more_sheet_title' => 'Weitere Tools',
     'more_sheet_copy' => 'Öffnen Sie seltener genutzte System- und Verwaltungsoberflächen, ohne die Hauptleiste zu überfüllen.',
@@ -487,17 +479,17 @@ $lang['mod_user']['panel'] = [
     'link_submissions' => 'Einreichungen',
     'clear_search' => 'Löschen',
     'home_title' => 'Startseite',
-    'admin_brand' => 'AKM Rojname Admin'
+    'admin_brand' => 'AKM Bulletin CMS Admin'
 ];
 
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Ankündigung hinzufügen',
-    'add_product' => 'Produkt hinzufügen',
     'add_service' => 'Dienstleistung hinzufügen',
     'add_page' => 'Seite hinzufügen',
     'add_video_embed' => 'Video-Einbettung hinzufügen',
     'add_video' => 'Video hinzufügen',
     'add_content' => 'Nachricht hinzufügen',
+        'add_news' => 'Nachricht hinzufügen',
     'add_publication' => 'Veröffentlichung hinzufügen',
     'add_announcement_alert' => 'Ankündigungsformular',
     'add_video_alert' => 'Videoformular',

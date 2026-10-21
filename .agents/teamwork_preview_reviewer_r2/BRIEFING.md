@@ -1,7 +1,7 @@
 # SWE Adversarial Reviewer Round 2 Briefing
 
 ## Objective
-Review, attack, and harden the `Run::execute()` modernization, `Validator::add()` refactoring, repository boundary isolation, and quality verification across `AF/Rojname`.
+Review, attack, and harden the `Run::execute()` modernization, `Validator::add()` refactoring, repository boundary isolation, and quality verification across `AF/Bulletin`.
 
 ## Focus Areas
 1. Core execution pipeline (`Run::execute`, `Validator::execute`, `Validator::add`).

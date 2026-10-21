@@ -27,8 +27,6 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `site_icon` VARCHAR(500) DEFAULT NULL,
   `logo_type` VARCHAR(50) NOT NULL DEFAULT 'rectangle',
   `logo_symbol` VARCHAR(500) DEFAULT NULL,
-  `stat_completed_projects` INT DEFAULT 250,
-  `stat_ongoing_projects` INT DEFAULT 45,
   `stat_workforce` INT DEFAULT 1200,
   `stat_offices` INT DEFAULT 18,
   `app_template` VARCHAR(64) DEFAULT 'amida',

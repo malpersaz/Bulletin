@@ -264,7 +264,6 @@ $lang['mod_headline'] = [
         'news' => 'News',
         'blog' => 'Blog',
         'portfolio' => 'Portfolio',
-        'products' => 'Products',
         'services' => 'Services',
         'events' => 'Events',
         'announcements' => 'Announcements',

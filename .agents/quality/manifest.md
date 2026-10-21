@@ -150,7 +150,7 @@ When a task is completed and repository documentation is updated, agents must tr
 
 ## Repository Boundary Rule
 
-The following modules are `Rojname`-only:
+The following modules are `Bulletin`-only:
 
 - `mod_news`
 - `mod_news_category`
@@ -159,9 +159,9 @@ The following modules are `Rojname`-only:
 
 Agents must preserve them as project-specific modules and must not propose them as shared-core changes for sibling projects unless the user explicitly overrides the rule.
 
-The following installer decisions are also `Rojname`-specific and must remain local unless the user explicitly overrides the rule:
+The following installer decisions are also `Bulletin`-specific and must remain local unless the user explicitly overrides the rule:
 
-- `Rojname` branding/default project name
+- `Bulletin` branding/default project name
 - removal of default sample menu/category/content seeds
 
 Outside those project-specific boundaries, refactoring work should be treated as shared-core candidate work and reviewed for synchronization across sibling repositories.

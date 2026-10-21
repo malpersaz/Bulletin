@@ -86,18 +86,18 @@ The entire administrative interface is built as a **phone-only product**.
 - **Micro-Animations**: Use smooth transitions (200ms ease) for state changes (hover, active, sheet opening).
 
 ### Reference Implementations (Admin)
-- **Primary List Template**: [`mod_news/list.twig`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/mod_news/list.twig)
+- **Primary List Template**: [`mod_news/list.twig`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/mod_news/list.twig)
   - Uses `app-scroll-frame` for smooth scrolling.
   - Implements Pull-to-Refresh and Infinite Scroll patterns.
-- **Standard Toolbar**: [`.standard-toolbar`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/assets/css/style.css)
+- **Standard Toolbar**: [`.standard-toolbar`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/assets/css/style.css)
   - Layout: Symmetric distribution of control/action items (such as edit, delete, gallery, etc.) with a central start menu button.
   - Behavior: Actions are disabled (`opacity: 0.3` and `pointer-events: none`) until an item/card is selected.
-- **Primary Floating Action Button (FAB)**: [`.main-fab`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/assets/css/style.css)
+- **Primary Floating Action Button (FAB)**: [`.main-fab`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/assets/css/style.css)
   - Position: Fixed at `bottom: 80px` (or `calc(80px + env(safe-area-inset-bottom))`) and `right: 18px` relative to the mobile wrapper / viewport.
   - Color: Background is `var(--md-sys-color-blue, #0B57D0)` (blue), icon/foreground is `#FFFFFF` (white), with a shadow of `rgba(11, 87, 208, 0.3)` in default state and `rgba(11, 87, 208, 0.4)` on hover.
   - Size: Width and height of `58x58px` with a border radius of `20px` (`radii.lg`) to ensure touch target compliance (min 48px).
   - Role: Dedicated exclusively to primary creative/addition actions (e.g., adding a new news post, page, product). This separation prevents crowding and overlap on narrow mobile viewports.
-- **Content Cards**: [`.m3-card.content-card`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/assets/js/mod_news.js)
+- **Content Cards**: [`.m3-card.content-card`](file:///home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/assets/js/mod_news.js)
   - Layout: `80x80px` fixed thumbnail on the left with 8px border-radius, `flex-shrink: 0`. Title, action menu button, and high-contrast MD3 solid chips (Active green `#2E7D32`, Draft blue `#0B57D0` - 18px height) on the right side.
   - Metadata & Divider: Bottom metadata row containing language code, compact date, xwedî/nivîskar name, and category pushed to the right (`margin-left: auto`) with a `bi-diagram-2` icon. The row is placed directly under the `.card-content-layout` column spanning the full width, separated by a top border divider (`border-top: 1px solid var(--md-sys-color-outline-variant)`) with 8px top padding and 12px top margin.
   - Tokens: Use `var(--md-sys-color-surface)` for background, `var(--md-sys-elevation-1)` for shadow, and `var(--md-sys-color-outline-variant)` for dividers.

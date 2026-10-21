@@ -1,18 +1,18 @@
 # BRIEFING — 2026-08-23T19:19:50Z
 
 ## Mission
-Synchronize AF/Rojname with latest AF/Business standards: modernize mod_content/mod_content_category, port/sync core modules, remove deprecated modules, and enforce strict repository policies.
+Synchronize AF/Bulletin with latest AF/Business standards: modernize mod_content/mod_content_category, port/sync core modules, remove deprecated modules, and enforce strict repository policies.
 
 ## 🔒 My Identity
 - Archetype: Project Orchestrator
 - Roles: orchestrator, user_liaison, human_reporter, successor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1
 - Original parent: parent
 - Original parent conversation ID: 0e5c10bf-4949-4641-8aa3-2d95a1d5bab0
 
 ## 🔒 My Workflow
 - **Pattern**: Project Pattern (Dual Track: Implementation + E2E Testing)
-- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md
+- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md
 1. **Decompose**: Decompose repository modernization into clear modular milestones.
 2. **Dispatch & Execute**:
    - Step 0: Survey codebase with 3 parallel Explorers.
@@ -26,7 +26,7 @@ Synchronize AF/Rojname with latest AF/Business standards: modernize mod_content/
   0. Survey full scope [in-progress]
   1. Milestone decomposition & E2E track spawn [pending]
 - **Current phase**: 0 (Survey)
-- **Current focus**: Surveying repository status, module comparison between AF/Business and AF/Rojname, deprecated module footprints, and repo compliance.
+- **Current focus**: Surveying repository status, module comparison between AF/Business and AF/Bulletin, deprecated module footprints, and repo compliance.
 
 ## 🔒 Key Constraints
 - NEVER write, modify, or create source code files directly.
@@ -77,6 +77,6 @@ Synchronize AF/Rojname with latest AF/Business standards: modernize mod_content/
 - Safety timer: none
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md — Authoritative User Request
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/DISPATCH.md — Dispatch log
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/progress.md — Progress & Liveness
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md — Authoritative User Request
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/DISPATCH.md — Dispatch log
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/progress.md — Progress & Liveness

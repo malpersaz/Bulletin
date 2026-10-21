@@ -1,18 +1,18 @@
 # BRIEFING — 2026-08-24T00:41:20+03:00
 
 ## Mission
-Orchestrate SWE Light loop to replace legacy `->veri()` calls with canonical English `->set()` in AF/Rojname, update TwigTemplate with backward-compatible fallback, and verify test passes.
+Orchestrate SWE Light loop to replace legacy `->veri()` calls with canonical English `->set()` in AF/Bulletin, update TwigTemplate with backward-compatible fallback, and verify test passes.
 
 ## 🔒 My Identity
 - Archetype: orchestrator
 - Roles: orchestrator, user_liaison, human_reporter, successor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2
 - Original parent: parent
 - Original parent conversation ID: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 
 ## 🔒 My Workflow
 - **Pattern**: SWE Light
-- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/plan.md
+- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/plan.md
 1. **Decompose**: SWE Light does not decompose. Pass whole task verbatim sequentially.
 2. **Dispatch & Execute**:
    - teamwork_preview_implementer -> produces working diff
@@ -76,6 +76,6 @@ Orchestrate SWE Light loop to replace legacy `->veri()` calls with canonical Eng
 - Safety timer: none
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/DISPATCH.md — Dispatch prompt record
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/plan.md — Orchestration plan
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/progress.md — Execution progress & ledger
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/DISPATCH.md — Dispatch prompt record
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/plan.md — Orchestration plan
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/progress.md — Execution progress & ledger

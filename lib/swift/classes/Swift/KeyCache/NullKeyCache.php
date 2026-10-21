@@ -51,7 +51,7 @@ class Swift_KeyCache_NullKeyCache implements Swift_KeyCache
    * @return Swift_InputByteStream
    */
   public function getInputByteStream($nsKey, $itemKey,
-    Swift_InputByteStream $writeThrough = null)
+    ?Swift_InputByteStream $writeThrough = null)
   {
   }
   

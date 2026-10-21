@@ -7,16 +7,16 @@
     'information' => 'Bilgi!',
     'success' => 'İşlem Başarılı!',
     'error' => 'Hata Oluştu!',
-    'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
+    'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Emin misiniz?',
     'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
-    'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
+    'remove_record' => 'Bu Kaydı Silmek İstediğinize Emin misiniz?',
     'converting' => 'Video Dönüştürülüyor Lütfen Bekleyin...',
     'converted' => 'Video Yükleme Tamamlandı! Şimdi Videoyu Dönüştürebilirsiniz.',
     'video_gallery' => 'Video Dönüştürülürken Hatalar Oluştu %s',
     'video_list' => 'Video Dönüştürülme Tamamlandı.<br>Bu İşlem %s Saniye Sürdü.',
-    'add_remote' => 'Bu Videoyu Uzak Video Olarakta Sisteme Ekle',
-    'unremove_original' => 'Bu Videonun Orjinal Halini Kaydet',
+    'add_remote' => 'Bu Videoyu Uzak Video Olarak da Sisteme Ekle',
+    'unremove_original' => 'Bu Videonun Orijinal Halini Kaydet',
     'message' =>
     [
         'success' =>
@@ -39,12 +39,12 @@
     [
         'title' => 'TMP dizininden FLV dosyası Taşınırken Hata Oluştu',
         'subtitle' => 'TMP dizininden Resim dosyası Taşınırken Hata Oluştu',
-        'description' => 'TMP dizininden ORjinal Video Dosyası Taşınırken Hata Oluştu',
+        'description' => 'TMP dizininden Orijinal Video Dosyası Taşınırken Hata Oluştu',
         'record' => 'Belirttiğiniz Kayıt Bulunamadı!',
         'in_valid_ext' => 'Geçersiz Bir Video Yükleme İstediniz.
-	 Yanlızca <font color="black">%s</font> uzantılı Videolar Yükleyebilirsiniz.',
-        'in_valid_ext_original' => 'Göndermiş Olduğunuz Orjinal Video Hatalı.
-	 Yanlızca <font color="black">%s</font> uzantılı Videolar Yükleyebilirsiniz.'
+	 Yalnızca <font color="black">%s</font> uzantılı Videolar Yükleyebilirsiniz.',
+        'in_valid_ext_original' => 'Göndermiş Olduğunuz Orijinal Video Hatalı.
+	 Yalnızca <font color="black">%s</font> uzantılı Videolar Yükleyebilirsiniz.'
     ],
     'button' =>
     [
@@ -74,12 +74,12 @@
         'publish' =>
              [
                 'key' => 'Yayınla',
-                'value' => 'Bu Videoyu Yayınlamak İstediğinize Eminmisiniz?',
+                'value' => 'Bu Videoyu Yayınlamak İstediğinize Emin misiniz?',
             ],
         'unpublish' =>
              [
                 'key' => 'Yayından Al',
-                'value' => 'Bu Videoyu Yayından Kaldırmak İstediğinize Eminmisiniz?',
+                'value' => 'Bu Videoyu Yayından Kaldırmak İstediğinize Emin misiniz?',
             ],
         'publishing' => 'Yayınlanıyor...',
         'unpublishing' => 'Yayından kaldırılıyor...',
@@ -90,9 +90,9 @@
     'validator' =>
     [
         'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-        'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
+        'length' => '%s En Kısa %s En Uzun %s Karakterden Oluşabilir',
         'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-        'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
+        'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı. Lütfen Başka Bir %s Belirleyin!',
         'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
     ],
     'role' =>
@@ -102,6 +102,9 @@
         'edit' => 'Video Düzenleyebilir',
         'delete' => 'Video Silebilir',
         'list' => 'Video Yönetimini Görüntüleyebilir',
+        'acl' => 'Video İzinlerini Düzenleyebilir',
+        'setting' => 'Video Ayarlarını Değiştirebilir',
+        'link' => 'Video Bağlantılarını Görüntüleyebilir',
         'moderate_edit' => 'Kendisine Ait Olmayan Video Kaydını Düzenleyebilir',
         'moderate_delete' => 'Kendisine Ait Olmayan Video Kaydını Silebilir',
     ],
@@ -109,10 +112,10 @@
     [
         'moderate_edit' => 'Size Ait Olmayan Video Kaydını Düzenleyemezsiniz',
         'moderate_delete' => 'Size Ait Olmayan Video Kaydını Silemezsiniz',
-        'add' => 'Video Eklemeye Permissionniz Yok',
-        'edit' => 'Video Düzenlemeye Permissionniz Yok',
-        'list' => 'Video Yönetimini Görüntülemeye Permissionniz Yok',
-        'delete' => 'Video Silmeye Permissionniz Yok',
+        'add' => 'Video Eklemeye Yetkiniz Yok',
+        'edit' => 'Video Düzenlemeye Yetkiniz Yok',
+        'list' => 'Video Yönetimini Görüntülemeye Yetkiniz Yok',
+        'delete' => 'Video Silmeye Yetkiniz Yok',
     ],
     'admin' =>
     [

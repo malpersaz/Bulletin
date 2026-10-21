@@ -971,11 +971,11 @@ class mod_user_mod extends indexMain
 
         // Strict system instructions for Kurdish dialect and MCP tool execution
         $activeLang = $this->site['lang'] ?? 'ku';
-        $systemInstruction = "Tu alîkarê zana, jêhatî û rêveberê xweser ê pergala Amed CMS (Amed Business) yî.
+        $systemInstruction = "Tu alîkarê zana, jêhatî û rêveberê xweser ê pergala AKM Bulletin CMS yî.
 Rêgezên te yên sereke:
 1. Zimanê te her dem Kurdiya Kurmancî ya standard, resen û bi alfabeya Latînî (a-z, ç, ê, î, ş, û) ye.
 2. Peyvên taybet: ji bo 'update' peyva 'nûjenkirin', ji bo 'click' peyva 'tikandin', û ji bo 'add' peyva 'lêke' (mînak: gotarekê lêke, pêşekekê lêke) bi kar bîne.
-3. Şiyana te ya fermî heye ku bi riya amûrên Amed Business MCP rasterast di sîstemê de çalakiyan pêk bînî.
+3. Şiyana te ya fermî heye ku bi riya amûrên AKM Bulletin CMS MCP rasterast di sîstemê de çalakiyan pêk bînî.
 4. Zimanê niha yê çalakiya rêveberiyê: '{$activeLang}'. Dema tu tiştekî çêdikî an lê digerî, heke ziman nehatibe diyarkirin vê zimanê '{$activeLang}' bi kar bîne.
 5. Rêbaza xebatê ya çalak, rasterast û lezgîn:
    - Daxwaza rêveber di kêmtirîn gavan de (1 an 2 gavan) pêk bîne.
@@ -1156,64 +1156,11 @@ Rêgezên te yên sereke:
      */
     private function _call_gemini_api(array $payload, string $apiKey): array
     {
-        $modelsToTry = ['gemini-3.8-flash', 'gemini-3.6-flash', 'gemini-3.7-flash'];
-        $lastError = '';
-
-        foreach ($modelsToTry as $modelName) {
-            $apiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/' . $modelName . ':generateContent?key=' . $apiKey;
-
-            for ($attempt = 0; $attempt < 2; $attempt++) {
-                if ($attempt > 0) {
-                    usleep(400000); // 400ms pause before retry
-                }
-
-                $ch = curl_init($apiUrl);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Accept: application/json'
-                ]);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 45);
-
-                $response = curl_exec($ch);
-                $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $curlErr = curl_error($ch);
-                curl_close($ch);
-
-                if ($curlErr) {
-                    $lastError = 'Çewtiya girêdanê (cURL): ' . $curlErr;
-                    continue;
-                }
-
-                $resData = json_decode((string) $response, true);
-                if ($httpCode === 200 && !empty($resData['candidates'])) {
-                    return [
-                        'success' => true,
-                        'data' => $resData,
-                        'model' => $modelName,
-                    ];
-                }
-
-                // If transient 503 or 429, retry once
-                if (($httpCode === 503 || $httpCode === 429) && $attempt === 0) {
-                    continue;
-                }
-
-                if (!empty($resData['error']['message'])) {
-                    $lastError = '[' . $modelName . '] ' . $resData['error']['message'];
-                } elseif ($httpCode !== 200) {
-                    $lastError = '[' . $modelName . '] Google API Error (HTTP ' . $httpCode . ')';
-                }
-                break;
-            }
+        if (!class_exists('AIService')) {
+            require_once lib_dir . 'AIService.class.php';
         }
-
-        return [
-            'success' => false,
-            'error' => !empty($lastError) ? $lastError : 'Tu bersiv ji modelê nehat standin.',
-        ];
+        $aiService = new AIService($apiKey);
+        return $aiService->generateContent($payload);
     }
 
     private function _panel_module($module, $permAction, $title, $icon, array $links, array $extraKeywords = [])

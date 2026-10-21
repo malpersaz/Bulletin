@@ -2,7 +2,7 @@
 /**
  * User Module - Central Kurdish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -381,9 +381,9 @@ $lang['mod_user'] = [
         'security_code' => 'Security Code',
         'activate_button' => 'Activate',
         'lost_code' => 'If you have lost your activation code
-	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation">Click here</a> to request a new activation code.',
         'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login">Click here</a> to log in to your account.',
         'membership_activation' => 'Membership Activation',
         'error' => [
             'invalid_captcha' => 'You entered the security code incorrectly, please check your activation code
@@ -451,10 +451,9 @@ $lang['mod_user'] = [
     'link_submissions' => 'ئەنجامەکان',
     'clear_search' => 'پاککردنەوە',
         'home_title' => 'Home Page',
-        'admin_brand' => 'Rêveberiya AKM Rojname',
+        'admin_brand' => 'Rêveberiya AKM Bulletin CMS',
         'recent_workspace' => 'شوێنی کاری ئەم دواییە',
         'workspace_nav_media' => 'میدیا',
-        'workspace_nav_products' => 'بەرهەمەکان',
         'workspace_nav_more' => 'زیاتر',
         'more_sheet_title' => 'ئامرازەکانی تر',
         'more_sheet_copy' => 'بڕگە کەم بەکارهێنراوەکانی سیستەم و بەڕێوەبردن بکەرەوە بەبێ قەرەباڵغکردنی شوێنی کاری سەرەکی.',
@@ -462,12 +461,12 @@ $lang['mod_user'] = [
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',
-        'add_product' => 'زیادکردنی بەرهەم',
         'add_service' => 'زیادکردنی خزمەتگوزاری',
         'add_page' => 'زیادکردنی پەڕە',
         'add_video_embed' => 'زیادکردنی ڤیدیۆی جێگیرکراو',
         'add_video' => 'Add Video',
         'add_content' => 'Add Content',
+        'add_news' => 'زیادکردنی هەواڵ',
         'add_publication' => 'Add Publication',
         'add_announcement_alert' => 'Add Announcement Form',
         'add_video_alert' => 'Add Video Form',

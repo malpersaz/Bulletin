@@ -2,7 +2,7 @@
 /**
  * File Management Module - English Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  dosya
  * @version 1.0.0
  * @author  AKM Software

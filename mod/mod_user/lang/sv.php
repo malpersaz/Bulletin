@@ -2,7 +2,7 @@
 /**
  * User Module - Swedish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -381,9 +381,9 @@ $lang['mod_user'] = [
         'security_code' => 'Security Code',
         'activate_button' => 'Activate',
         'lost_code' => 'If you have lost your activation code
-	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation">Click here</a> to request a new activation code.',
         'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login">Click here</a> to log in to your account.',
         'membership_activation' => 'Membership Activation',
         'error' => [
             'invalid_captcha' => 'You entered the security code incorrectly, please check your activation code
@@ -449,10 +449,9 @@ $lang['mod_user'] = [
     'link_submissions' => 'Inskickade',
     'clear_search' => 'Rensa',
         'home_title' => 'Startsida',
-        'admin_brand' => 'AKM Rojname Admin',
+        'admin_brand' => 'AKM Bulletin CMS Admin',
         'recent_workspace' => 'Senaste arbetsytan',
         'workspace_nav_media' => 'Media',
-        'workspace_nav_products' => 'Produkter',
         'workspace_nav_more' => 'Mer',
         'more_sheet_title' => 'Fler verktyg',
         'more_sheet_copy' => 'Öppna mindre använda system- och administrationsgränssnitt utan att tränga ihop huvudfältet för arbetsytan.',
@@ -460,12 +459,12 @@ $lang['mod_user'] = [
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',
-        'add_product' => 'Lägg till produkt',
         'add_service' => 'Lägg till tjänst',
         'add_page' => 'Lägg till sida',
         'add_video_embed' => 'Lägg till videoinbäddning',
         'add_video' => 'Add Video',
         'add_content' => 'Add Content',
+        'add_news' => 'Lägg till nyhet',
         'add_publication' => 'Add Publication',
         'add_announcement_alert' => 'Add Announcement Form',
         'add_video_alert' => 'Add Video Form',

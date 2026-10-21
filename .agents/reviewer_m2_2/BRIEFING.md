@@ -6,7 +6,7 @@ Conduct independent adversarial and quality code review (Reviewer 2) for Milesto
 ## 🔒 My Identity
 - Archetype: reviewer_and_adversarial_critic
 - Roles: reviewer, critic
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m2_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m2_2
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M2 - Admin User ACL Modernization & Strict Code Separation
 - Instance: 2 of 2
@@ -39,8 +39,8 @@ Conduct independent adversarial and quality code review (Reviewer 2) for Milesto
   - `templates/admin/partials/header.twig`
   - `templates/admin/partials/filter_sheet.twig`
   - `templates/admin/partials/sheets_extra.twig`
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
-- **Worker Handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m2/handoff.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
+- **Worker Handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m2/handoff.md`
 - **Review criteria**: Correctness, integrity, security, strict code separation, mobile-first phone contract, zero non-English identifiers/comments, test pass rate.
 
 ## Review Checklist

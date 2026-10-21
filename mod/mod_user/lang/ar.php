@@ -2,7 +2,7 @@
 /**
  * User Module - Arabic Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -381,9 +381,9 @@ $lang['mod_user'] = [
         'security_code' => 'Security Code',
         'activate_button' => 'Activate',
         'lost_code' => 'If you have lost your activation code
-	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation">Click here</a> to request a new activation code.',
         'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login">Click here</a> to log in to your account.',
         'membership_activation' => 'Membership Activation',
         'error' => [
             'invalid_captcha' => 'You entered the security code incorrectly, please check your activation code
@@ -449,10 +449,9 @@ $lang['mod_user'] = [
     'link_submissions' => 'الطلبات',
     'clear_search' => 'مسح',
         'home_title' => 'الصفحة الرئيسية',
-        'admin_brand' => 'إدارة AKM Rojname',
+        'admin_brand' => 'إدارة AKM Bulletin CMS',
         'recent_workspace' => 'مساحة العمل الأخيرة',
         'workspace_nav_media' => 'ميديا',
-        'workspace_nav_products' => 'المنتجات',
         'workspace_nav_more' => 'المزيد',
         'more_sheet_title' => 'المزيد من الأدوات',
         'more_sheet_copy' => 'افتح واجهات النظام والإدارة الأقل استخداماً دون ازدحام شريط مساحة العمل الرئيسي.',
@@ -460,12 +459,12 @@ $lang['mod_user'] = [
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',
-        'add_product' => 'إضافة منتج',
         'add_service' => 'إضافة خدمة',
         'add_page' => 'إضافة صفحة',
         'add_video_embed' => 'إضافة تضمين فيديو',
         'add_video' => 'Add Video',
         'add_content' => 'Add Content',
+        'add_news' => 'إضافة خبر',
         'add_publication' => 'Add Publication',
         'add_announcement_alert' => 'Add Announcement Form',
         'add_video_alert' => 'Add Video Form',

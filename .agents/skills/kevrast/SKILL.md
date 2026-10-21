@@ -1,6 +1,6 @@
 ---
 name: kevrast
-description: Automated fact-checking, anti-hallucination gate, and live link verification auditor for news drafts. Verifies live HTTP 200 URLs, cross-references numbers, dates, quotes, and prevents citation drift before publication.
+description: Automated fact-checking, anti-hallucination gate, and live link verification auditor for Turkish news drafts. Verifies live HTTP 200 URLs, cross-references numbers, dates, quotes, and prevents citation drift before publication.
 ---
 
 # Kevrast Fact-Checking & Verification Gate
@@ -38,18 +38,18 @@ The audit evaluates five core journalistic safeguards:
    - Zero speculative grouping: Never extrapolate or fabricate participant lists (e.g. organizations attending an event) unless explicitly confirmed by sources.
 
 3. **Anti-Citation Drift (Citation-Anchor Integrity)**:
-   - When citing `li gor çavkaniya $name weşandiye`, the attached claim MUST be the exact claim published by `$name`.
-   - Never shift claims from another outlet onto `$name`.
+   - When citing `$Name tarafından aktarılan bilgilere göre` or `$Name haberine göre`, the attached claim MUST be the exact claim published by `$Name`.
+   - Never shift claims from another outlet onto `$Name`.
 
 4. **Negative-Fact & Absence Invariance**:
-   - If an entity, party, or state is reported as boycotting, withdrawing, or declining participation:
+   - If an entity, party, or institution is reported as boycotting, withdrawing, or declining participation:
      - Strictly forbid reporting or implying their presence or participation.
      - Report their boycott or absence as a distinct fact citing their rationale.
 
 5. **Multi-Source Contradiction Resolution**:
-   - If verified outlets report conflicting data (e.g., flight duration, casualty figures, turnout numbers), document the variance explicitly in the prose:
-     *Format*: `"Li gor çavkaniya $A weşandiye ..., lê belê li gor çavkaniya $B ... "`
+   - If verified outlets report conflicting data (e.g., turnout numbers, budget figures, dates), document the variance explicitly in the Turkish prose:
+     *Format*: `"$A tarafından paylaşılan bilgilere göre ..., ancak $B kaynağında ..."`
 
 ### 4. Gate Clearance & Reporting
-- If all links are live and claims are entailed by source evidence (`Status: PASSED`), report clearance to the user in Kurmanji.
+- If all links are live and claims are entailed by source evidence (`Status: PASSED`), report clearance to the user in Kurmanji (per user communication protocol).
 - If broken links, fabricated URLs, or factual contradictions are found, output the exact issues and required corrections.

@@ -1,4 +1,4 @@
-# Victory Audit Report — AF/Rojname Modernization & Purge
+# Victory Audit Report — AF/Bulletin Modernization & Purge
 
 === VICTORY AUDIT REPORT ===
 
@@ -53,7 +53,7 @@ EVIDENCE (if REJECTED):
 4. **Commercial Module Elimination**:
    - All 7 commercial variants (`mod_client`, `mod_service`, `mod_product`, `mod_reference`, `mod_service_category`, `mod_product_category`, `mod_reference_category`) are completely absent from `mod/`, `installer/`, `lib/`, `templates/`, `config/`.
    - `grep -rnE "(mod_client|mod_service|mod_product|mod_reference|mod_service_category|mod_product_category|mod_reference_category)" mod/ installer/ lib/ templates/ config/ plugins/` returns **0 occurrences**.
-   - `mod/index/index.php` routes and sitemaps are cleanly restricted to Rojname publishing features (`newsSitemap`, `publicationSitemap`, `announcementSitemap`, `videoSitemap`, `gallerySitemap`, `categorySitemap`, `pageSitemap`).
+   - `mod/index/index.php` routes and sitemaps are cleanly restricted to Bulletin publishing features (`newsSitemap`, `publicationSitemap`, `announcementSitemap`, `videoSitemap`, `gallerySitemap`, `categorySitemap`, `pageSitemap`).
    - `templates/admin/partials/sidebar.twig` and `templates/admin/mod_user/panel.twig` render without orphaned links or commercial cards.
 
 5. **Independent Test Execution**:

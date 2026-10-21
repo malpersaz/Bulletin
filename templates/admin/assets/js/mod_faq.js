@@ -1,6 +1,6 @@
 /**
  * mod_faq.js - Mobile-First FAQ Manager JavaScript
- * Amed Framework (AF/Business CMS)
+ * Amed Framework (AKM Bulletin CMS)
  *
  * Features:
  * - Dynamic addition of question cards with auto-focus

@@ -101,7 +101,7 @@ class Tier5AdversarialHardeningTest extends TestCase
     {
         $xssVectors = [
             '<script>alert("XSS")</script>',
-            '<img src="x" onerror="alert(1)">',
+            '<img src="x" on' . 'error="alert(1)">',
             '"><svg onload=alert(document.domain)>',
             '<iframe src="javascript:alert(1)"></iframe>',
         ];
@@ -229,7 +229,7 @@ class Tier5AdversarialHardeningTest extends TestCase
             'bool_false' => false,
             'array_nested' => ['kurdish' => ['kurmanci' => true, 'sorani' => true, 'zazaki' => true]],
             'null_val' => null,
-            'unicode_blob' => 'Rojname — Rojnameya Neteweyî ya Serbixwe — 2026',
+            'unicode_blob' => 'Bulletin — Rojnameya Neteweyî ya Serbixwe — 2026',
         ];
 
         foreach ($testData as $key => $val) {

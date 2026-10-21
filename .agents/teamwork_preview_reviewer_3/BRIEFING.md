@@ -1,7 +1,7 @@
 # Briefing - SWE Light Reviewer (Round 3)
 
 ## Task Objective
-Perform deep adversarial review of AF/Rojname codebase following the complete removal of deprecated commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference` and category variants).
+Perform deep adversarial review of AF/Bulletin codebase following the complete removal of deprecated commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference` and category variants).
 
 ## Key Checkpoints
 1. Static code audit across `mod/`, `templates/`, `installer/`, `lib/`, `config/` for any deprecated module traces.

@@ -461,16 +461,6 @@
     <form id="statsModalForm">
         <div class="modal-body-content">
             <div class="m3-input-wrapper mb-3">
-                <input type="number" class="m3-input-lg stats-input" name="stat_completed_projects" id="modal_stat_completed_projects" value="{{ site.stat_completed_projects|default(250) }}" required>
-                <label class="m3-floating-label">{{ lang.mod_settings.stat_completed_projects }}</label>
-            </div>
-            
-            <div class="m3-input-wrapper mb-3">
-                <input type="number" class="m3-input-lg stats-input" name="stat_ongoing_projects" id="modal_stat_ongoing_projects" value="{{ site.stat_ongoing_projects|default(45) }}" required>
-                <label class="m3-floating-label">{{ lang.mod_settings.stat_ongoing_projects }}</label>
-            </div>
-
-            <div class="m3-input-wrapper mb-3">
                 <input type="number" class="m3-input-lg stats-input" name="stat_workforce" id="modal_stat_workforce" value="{{ site.stat_workforce|default(1200) }}" required>
                 <label class="m3-floating-label">{{ lang.mod_settings.stat_workforce }}</label>
             </div>

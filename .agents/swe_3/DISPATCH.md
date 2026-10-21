@@ -2,12 +2,12 @@
 
 ## 2026-08-24T01:04:11+03:00
 
-You are the SWE Orchestrator for AF/Rojname.
+You are the SWE Orchestrator for AF/Bulletin.
 
-Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_3
-Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-Audit Report: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_4/handoff.md
+Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_3
+Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+Audit Report: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_4/handoff.md
 
 The Victory Audit rejected the previous completion due to 30 lingering references to excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) across 6 files in `mod/`.
 

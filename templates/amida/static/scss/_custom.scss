@@ -1,4 +1,4 @@
-// Rojname Custom Styles
+// AKM Bulletin CMS Custom Styles
 // Bootstrap 5.3 ile uyumlu özel stiller
 
 // Base stil override'ları
@@ -204,80 +204,6 @@ body {
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 1px;
-      }
-    }
-  }
-}
-
-// Products Section
-.products-section {
-  padding: 4rem 0;
-  background-color: $akm-light-gray;
-
-  .product-card {
-    border: none;
-    border-radius: $border-radius-lg;
-    overflow: hidden;
-    transition: all $transition-base;
-    background: white;
-    box-shadow: $box-shadow;
-
-    &:hover {
-      transform: translateY(-5px);
-      box-shadow: $box-shadow-lg;
-
-      .product-image {
-        transform: scale(1.05);
-      }
-    }
-
-    .product-image-container {
-      overflow: hidden;
-      height: 200px;
-      position: relative;
-
-      .product-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform $transition-base;
-      }
-
-      .product-badge {
-        position: absolute;
-        top: 1rem;
-        right: 1rem;
-        background-color: $akm-danger;
-        color: white;
-        padding: 0.25rem 0.75rem;
-        border-radius: 50px;
-        font-size: $font-size-sm;
-        font-weight: 600;
-        text-transform: uppercase;
-      }
-    }
-
-    .product-info {
-      padding: 1.5rem;
-
-      .product-title {
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: $akm-primary;
-        margin-bottom: 0.5rem;
-      }
-
-      .product-price {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: $akm-success;
-        margin-bottom: 0.75rem;
-      }
-
-      .product-description {
-        font-size: $font-size-sm;
-        color: $akm-gray;
-        line-height: $line-height-lg;
       }
     }
   }
@@ -591,8 +517,7 @@ body {
   }
 
   .feature-item,
-  .testimonial-card,
-  .product-card {
+  .testimonial-card {
     margin-bottom: 2rem;
   }
 }

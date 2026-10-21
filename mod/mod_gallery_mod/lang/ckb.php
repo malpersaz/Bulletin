@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - Kurdish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -168,7 +168,6 @@ $lang['mod_gallery_mod'] = [
         'image_gallery' => 'Galeriya Wêneyan',
         'photo_album' => 'Albuma Wêneyan',
         'portfolio' => 'Portfolyo',
-        'product_gallery' => 'Galeriya Hilberan',
         'showcase' => 'Pêşangeh',
         'slider_gallery' => 'Galeriya Slayderê',
         'masonry' => 'Rêbaza Mason',

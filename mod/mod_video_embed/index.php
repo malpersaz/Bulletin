@@ -723,21 +723,21 @@ class mod_video_embed_mod extends BaseModuleController
 
                 $last = "";
                 if (Role::hasPermission('mod_video_embed', 'edit')) {
-                    $last .= '<button onclick="window.location.href=\''. $this->site['saddress'] .'mod_video_embed/edit/' . $content['id'] . '\';return false;" class="btn default btn-xs purple">
+                    $last .= '<button data-action="edit" data-id="' . $content['id'] . '" class="btn default btn-xs purple">
     <i class="fa fa-edit"></i> ' . $this->lang['mod_video_embed']['button']['edit'] . ' </button>';
                 }
                 if (Role::hasPermission('mod_video_embed',  'delete')) {
-                    $last .= '<button onclick="mod_video_embed_table_ajax.akm.processDelete(\''. $content['id'] .'\'); return false;" class="btn default btn-xs red">
+                    $last .= '<button data-action="delete" data-id="' . $content['id'] . '" class="btn default btn-xs red">
     <i class="fa fa-trash-o"></i> ' . $this->lang['mod_video_embed']['button'][ 'delete'] . ' </button>';
                 }
 
                 if (Role::hasPermission('mod_video_embed', 'gallery')) {
-                    $last .= '<button onclick="mod_video_embed_table_ajax.akm.processGallery(\''. $content['id'] .'\'); return false;" class="btn default btn-xs blue">
+                    $last .= '<button data-action="gallery" data-id="' . $content['id'] . '" class="btn default btn-xs blue">
     <i class="fa fa-file-image-o"></i> ' . $this->lang['mod_video_embed']['button']['gallery'] . ' </button>';
                 }
 
                 if (Role::hasPermission('mod_video_embed', 'file')) {
-                    $last .= '<button onclick="mod_video_embed_table_ajax.akm.processDosya(\''. $content['id'] .'\'); return false;" class="btn default btn-xs green">
+                    $last .= '<button data-action="file" data-id="' . $content['id'] . '" class="btn default btn-xs green">
     <i class="fa fa-file-zip-o"></i> ' . $this->lang['mod_video_embed']['button']['file'] . ' </button>';
                 }
                 $data[] = [
@@ -1091,6 +1091,10 @@ class mod_video_embed_mod extends BaseModuleController
 
     private function _httpRequest($url)
     {
+        if (!is_string($url) || !preg_match('/^https?:\/\//i', $url)) {
+            return ['status' => 0, 'headers' => [], 'body' => ''];
+        }
+
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
             curl_setopt_array($ch, [
@@ -1098,15 +1102,16 @@ class mod_video_embed_mod extends BaseModuleController
                 CURLOPT_FOLLOWLOCATION => true,
                 CURLOPT_CONNECTTIMEOUT => 10,
                 CURLOPT_TIMEOUT => 20,
-                CURLOPT_USERAGENT => 'RojnameVideoEmbed/1.0',
+                CURLOPT_USERAGENT => 'BulletinNewsCMSVideoEmbed/1.0',
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
+                CURLOPT_REDIR_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
                 CURLOPT_HEADER => true,
             ]);
 
             $result = curl_exec($ch);
             if ($result === false) {
-                curl_close($ch);
                 return ['status' => 0, 'headers' => [], 'body' => ''];
             }
 
@@ -1114,7 +1119,6 @@ class mod_video_embed_mod extends BaseModuleController
             $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
             $body = substr($result, $headerSize);
             $headerText = substr($result, 0, $headerSize);
-            curl_close($ch);
 
             return [
                 'status' => $status,
@@ -1128,7 +1132,7 @@ class mod_video_embed_mod extends BaseModuleController
                 'method' => 'GET',
                 'timeout' => 20,
                 'ignore_errors' => true,
-                'header' => "User-Agent: RojnameVideoEmbed/1.0\r\n",
+                'header' => "User-Agent: BulletinNewsCMSVideoEmbed/1.0\r\n",
             ],
         ]);
 

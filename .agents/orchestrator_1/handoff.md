@@ -2,8 +2,8 @@
 
 **Date**: 2026-08-23T22:52:00Z  
 **Original Parent Conversation ID**: `0e5c10bf-4949-4641-8aa3-2d95a1d5bab0`  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1`  
-**Successor Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_2`
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1`  
+**Successor Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_2`
 
 ---
 
@@ -30,7 +30,7 @@
 
 - **E2E Test Suite**: Fully implemented and active at `tests/e2e/` with master runner `tests/run_e2e_tests.php`. 40 test cases across 5 tiers (171 assertions) passing with 100% success.
 - **Reference Source**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`
-- **Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- **Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - **Integrity Baseline**: Zero tolerance for mocks, hardcoded test results, or bypasses. All tests execute against real production files.
 
 ---
@@ -64,10 +64,10 @@
 
 ## 5. Key Artifacts Index
 
-- `PROJECT.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
-- `ORIGINAL_REQUEST.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md`
-- `TEST_INFRA.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_INFRA.md`
-- `TEST_READY.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_READY.md`
-- `GATE_STATUS.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/GATE_STATUS.md`
-- `progress.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/progress.md`
-- `BRIEFING.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/BRIEFING.md`
+- `PROJECT.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
+- `ORIGINAL_REQUEST.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md`
+- `TEST_INFRA.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_INFRA.md`
+- `TEST_READY.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_READY.md`
+- `GATE_STATUS.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/GATE_STATUS.md`
+- `progress.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/progress.md`
+- `BRIEFING.md`: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/BRIEFING.md`

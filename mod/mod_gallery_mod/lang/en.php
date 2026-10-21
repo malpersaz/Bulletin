@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - English Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -165,7 +165,6 @@ $lang['mod_gallery_mod'] = [
         'image_gallery' => 'Image Gallery',
         'photo_album' => 'Photo Album',
         'portfolio' => 'Portfolio',
-        'product_gallery' => 'Product Gallery',
         'showcase' => 'Showcase',
         'slider_gallery' => 'Slider Gallery',
         'masonry' => 'Masonry Layout',

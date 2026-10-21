@@ -108,7 +108,7 @@ function clear_directory(string $dir, array &$lang): array
 }
 
 /**
- * Backwards compatibility alias matching AF/Business.
+ * Backwards compatibility alias matching Amed Framework standard.
  *
  * @param string $dir
  * @param array $lang
@@ -182,7 +182,7 @@ $pageTitle = $lang['index']['cache']['title'] ?? 'Cache Management';
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- External Custom CSS -->
-    <link href="static/css/clear_cache.css" rel="stylesheet">
+    <link href="templates/base_static/css/cache-clear.css" rel="stylesheet">
 </head>
 <body>
     <div class="container py-5">

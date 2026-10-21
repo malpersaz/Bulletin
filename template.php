@@ -28,13 +28,7 @@ if(isset($_GET['template']) && in_array($_GET['template'], $valid_templates)){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        body { background-color: #f8f9fa; padding: 2rem 0; font-family: system-ui, -apple-system, sans-serif; }
-        .theme-card { transition: transform 0.2s, box-shadow 0.2s; border: none; border-radius: 12px; overflow: hidden; height: 100%; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .theme-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .theme-title { text-transform: capitalize; font-weight: 600; }
-        .card-body { display: flex; flex-direction: column; justify-content: space-between; }
-    </style>
+    <link rel="stylesheet" href="templates/base_static/css/template-gallery.css">
 </head>
 <body>
     <div class="container py-4">
@@ -54,11 +48,7 @@ if(isset($_GET['template']) && in_array($_GET['template'], $valid_templates)){
                 <i class="bi bi-check-circle fs-4 me-3"></i> 
                 <div><?php echo $message; ?></div>
             </div>
-            <script>
-                setTimeout(function() {
-                    window.location.href = '/';
-                }, 1500);
-            </script>
+            <script src="templates/base_static/js/template-gallery.js" defer></script>
         <?php endif; ?>
 
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">

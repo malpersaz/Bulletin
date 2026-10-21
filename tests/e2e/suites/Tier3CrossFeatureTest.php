@@ -109,11 +109,11 @@ class Tier3CrossFeatureTest extends TestCase
         $urls = [];
         $rows = $this->db->query("SELECT slug, updated_at FROM mod_content WHERE status = 'published'")->fetchAll();
         foreach ($rows as $row) {
-            $urls[] = 'https://rojname.org/news/' . $row['slug'];
+            $urls[] = 'https://bulletin.org/news/' . $row['slug'];
         }
 
         $this->assertCount(1, $urls);
-        $this->assertEquals('https://rojname.org/news/Breaking_News_A', $urls[0]);
+        $this->assertEquals('https://bulletin.org/news/Breaking_News_A', $urls[0]);
     }
 
     public function testSettingsLegalInfoAndFooterData(): void
@@ -128,7 +128,7 @@ class Tier3CrossFeatureTest extends TestCase
         $company = $this->db->query("SELECT setting_value FROM mod_settings WHERE setting_key = 'legal_company_name'")->fetchColumn();
         $director = $this->db->query("SELECT setting_value FROM mod_settings WHERE setting_key = 'legal_managing_director'")->fetchColumn();
 
-        $this->assertEquals('Rojname Media Publishing Ltd.', $company);
+        $this->assertEquals('Bulletin Media Publishing Ltd.', $company);
         $this->assertEquals('Rezan Azad', $director);
     }
 

@@ -2,7 +2,7 @@
 
 /**
  * Newsletter Module Installer Class
- * Business CMS Framework
+ * Amed Framework (AKM Bulletin CMS)
  */
 class mod_newsletter extends installerbase implements installerbaseinterface
 {

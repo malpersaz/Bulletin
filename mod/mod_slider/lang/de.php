@@ -143,7 +143,6 @@ $lang['mod_slider']= [
     'news' => 'News',
     'publication' => 'Publication',
     'content' => 'Content',
-    'product' => 'Product',
     'video' => 'Video',
   ],
 ];

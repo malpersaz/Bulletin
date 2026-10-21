@@ -1,6 +1,6 @@
 /**
  * Publications - Editorial Broadsheet Styling
- * Amida Theme for Rojname
+ * Amida Theme for AKM Bulletin CMS
  */
 
 .publications-page {
@@ -63,7 +63,8 @@ html[data-bs-theme="dark"] .publications-page {
 
 .publications-page-title {
     margin: 0;
-    font-family: 'Pirata One', cursive;
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 800;
     font-size: 2.15rem;
     line-height: 1.15;
     color: var(--pub-ink);

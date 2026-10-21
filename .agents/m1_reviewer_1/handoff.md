@@ -1,7 +1,7 @@
 # Milestone 1: Core Foundation, Registry & Assets — Reviewer 1 Report
 
 **Agent**: `m1_reviewer_1` (Reviewer & Adversarial Critic)  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1`  
 **Date**: 2026-08-23T22:40:00+03:00  
 **Status**: Hard Handoff (Complete)  
 **Verdict**: **REQUEST_CHANGES**
@@ -22,8 +22,8 @@ Direct observations from independent verification, code inspection, and adversar
      ```
    - Executing `php -r "require_once 'lib/Registry.class.php'; Registry::all();"` results in a fatal error:
      ```
-     PHP Warning: require_once(/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/dBug.php): Failed to open stream: No such file or directory in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php on line 44
-     PHP Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/dBug.php' (include_path='.:/usr/share/php') in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php:44
+     PHP Warning: require_once(/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/dBug.php): Failed to open stream: No such file or directory in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php on line 44
+     PHP Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/dBug.php' (include_path='.:/usr/share/php') in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php:44
      ```
    - `PROJECT.md:64` specifies the interface contract: `public static function all(): array;`. The current implementation fails to return `self::$data`.
 
@@ -53,7 +53,7 @@ Direct observations from independent verification, code inspection, and adversar
      - `mod/index/helper/mod_menu.helper.php:208,209`: `Registry::getir(...)`
    - Instantiating `indexMain` (`php -d display_errors=1 -r "require_once 'init.php'; require_once 'mod/index/indexMain.php'; new indexMain();"`) throws a fatal error:
      ```
-     Fatal error: Uncaught Error: Call to undefined method Registry::getir() in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod/index/indexMain.php:23
+     Fatal error: Uncaught Error: Call to undefined method Registry::getir() in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod/index/indexMain.php:23
      ```
 
 5. **Test Suite Integrity / Dummy Fallback Masking**:

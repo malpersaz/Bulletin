@@ -39,7 +39,7 @@ class McpServer
 {
     private const SUPPORTED_PROTOCOL_VERSIONS = ['2024-11-05', '2025-03-26', '2025-06-18'];
     private const DEFAULT_PROTOCOL_VERSION = '2025-03-26';
-    private const SERVER_NAME = 'amed-rojname-mcp';
+    private const SERVER_NAME = 'amed-bulletin-mcp';
     private const SERVER_VERSION = '1.0.0';
     private const API_KEY_PREFIX = 'amcp_';
 
@@ -49,7 +49,7 @@ class McpServer
     private const JSON_RPC_INVALID_PARAMS = -32602;
     private const JSON_RPC_INTERNAL_ERROR = -32603;
 
-    private const SERVER_INSTRUCTIONS = 'This server manages the Rojname CMS content domain. Use tools to create, read, update, and delete news articles, publications, contents, pages, galleries, videos, and settings. Content and news summaries must be between 90 and 120 characters. Categories must match the language of their parent categories. All operations are permission-checked against the API key\'s group.';
+    private const SERVER_INSTRUCTIONS = 'This server manages the AKM Bulletin CMS content domain. Use tools to create, read, update, and delete news articles, publications, contents, pages, galleries, videos, and settings. Content and news summaries must be between 90 and 120 characters. Categories must match the language of their parent categories. All operations are permission-checked against the API key\'s group.';
 
     /**
      * @var array<string, array{module: string, role: string, handler: string}> Tool registry
@@ -1456,8 +1456,6 @@ class McpServer
                         'established_year' => ['type' => 'string', 'description' => '4-digit founding year, or empty.'],
                         'show_logo' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Show the site logo. Synchronized across all languages.'],
                         'logo_type' => ['type' => 'string', 'enum' => ['square', 'rectangle', 'square_name', 'rectangle_name', 'name_only'], 'description' => 'Logo layout type. Synchronized across all languages.'],
-                        'stat_completed_projects' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Completed projects counter.'],
-                        'stat_ongoing_projects' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Ongoing projects counter.'],
                         'stat_workforce' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Workforce counter.'],
                         'stat_offices' => ['type' => 'integer', 'minimum' => 0, 'description' => 'Offices counter.'],
                         'site_status' => ['type' => 'string', 'enum' => ['open', 'closed'], 'description' => 'Site availability. Synchronized across all languages.'],

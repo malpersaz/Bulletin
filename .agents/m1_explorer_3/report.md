@@ -2,7 +2,7 @@
 
 **Explorer**: Explorer 3 (Milestone 1 — Layout Separation & Boot Strategy)  
 **Date**: 2026-08-23  
-**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 **Reference Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`
 
 ---
@@ -20,7 +20,7 @@ This investigation analyzed three critical components for Milestone 1 (Core Foun
 
 ### 1.1 Observations & Baseline State
 
-In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/layout.twig` (lines 15–27):
+In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/layout.twig` (lines 15–27):
 ```twig
     <!-- CSS Assets (Absolute Path) -->
 <link rel="stylesheet" href="/templates/admin/assets/css/style.css?v=4.11">
@@ -40,7 +40,7 @@ In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/layout.tw
     {% block styles %}{% endblock %}
 ```
 
-In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/assets/css/style.css` (lines 362–382):
+In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/assets/css/style.css` (lines 362–382):
 The `:root` block contains primary and secondary Material Design 3 variables, elevation, and navbar height, but is missing the `--af-radius-*` and `--md-sys-color-error*` custom properties:
 ```css
 :root {
@@ -104,7 +104,7 @@ All radius and error color variables are unified directly inside `:root` in `sty
 ### 1.2 Proposed Migration for Layout Separation
 
 1. **`templates/admin/assets/css/style.css`**:
-   - Insert lines 380–388 from `AF/Business` into `:root` in `AF/Rojname/templates/admin/assets/css/style.css`.
+   - Insert lines 380–388 from `AF/Business` into `:root` in `AF/Bulletin/templates/admin/assets/css/style.css`.
 2. **`templates/admin/layout.twig`**:
    - Delete lines 15–27 (the entire inline `<style>` block).
    - Add references to modal engine and module CSS files in `<head>`:
@@ -113,13 +113,13 @@ All radius and error color variables are unified directly inside `:root` in `sty
      <link rel="stylesheet" href="/templates/admin/assets/css/modals/core_modals.css?v=1.8">
      <link rel="stylesheet" href="/templates/admin/assets/css/mod_faq.css?v=1.2">
      ```
-   - Remove legacy navbar include (lines 63–65 in Rojname `layout.twig`):
+   - Remove legacy navbar include (lines 63–65 in Bulletin `layout.twig`):
      ```twig
      {% if (show_navbar is not defined or show_navbar) and active_module_lang_key is not null %}
          {% include 'admin/partials/navbar.twig' %}
      {% endif %}
      ```
-   - Update active module language fallback (lines 31–35 in Rojname `layout.twig`) from deliberate division-by-zero assertion to safe conditional attribute checking:
+   - Update active module language fallback (lines 31–35 in Bulletin `layout.twig`) from deliberate division-by-zero assertion to safe conditional attribute checking:
      ```twig
      {% set active_module_lang_key = module_lang_key is defined ? module_lang_key : (wizard_module is defined ? wizard_module : null) %}
      {% set active_module_lang = active_module_lang_key is not null and lang[active_module_lang_key] is defined ? attribute(lang, active_module_lang_key) : null %}
@@ -131,7 +131,7 @@ All radius and error color variables are unified directly inside `:root` in `sty
 
 ### 2.1 Observations & Baseline State
 
-In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/admin/layout.twig` (lines 262–286):
+In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/admin/layout.twig` (lines 262–286):
 ```twig
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.5.1/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="/templates/admin/assets/js/script.js?v=1.71"></script>
@@ -180,7 +180,7 @@ The modern admin panel uses an asynchronous, lightweight SPA modal navigation st
   - `modal_theme_logo.js`: Live theme logo and icon switcher modal.
   - `modal_user_profile.js`: Dynamic profile dialog.
 
-### 2.3 Asset Files to Port from `AF/Business` to `AF/Rojname` in M1
+### 2.3 Asset Files to Port from `AF/Business` to `AF/Bulletin` in M1
 
 | Asset Category | File Path in `templates/admin/assets/` | Description |
 |---|---|---|
@@ -220,11 +220,11 @@ In `templates/admin/layout.twig`:
 
 When running `php -d display_errors=1 -r "require_once 'init.php';"`:
 ```
-Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/init.php:65
+Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/init.php:65
 ```
 **Cause**:
 - `init.php` line 65 requires `lib/Registry.class.php`.
-- In `AF/Rojname`, the file was not created yet; only legacy files `lib/Kayit.class.php` and `lib/Register.class.php` existed.
+- In `AF/Bulletin`, the file was not created yet; only legacy files `lib/Kayit.class.php` and `lib/Register.class.php` existed.
 - Configuration files (`config/autoload.config.php`, `config/db.config.php`, `config/site.config.php`, etc.) currently call `Registry::ekle(...)`.
 - `lib/Load.class.php`, `lib/InstallationState.php`, and `lib/Database/Adapter/*.php` call `Registry::getir(...)` and `Registry::varmi(...)`.
 

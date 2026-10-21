@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T20:41:00Z
 
 ## Mission
-Independently audit and forensically verify all Milestone 2 (M2) implementations (Admin User ACL Modernization & Strict Code Separation) in AF/Rojname.
+Independently audit and forensically verify all Milestone 2 (M2) implementations (Admin User ACL Modernization & Strict Code Separation) in AF/Bulletin.
 
 ## 🔒 My Identity
 - Archetype: forensic_auditor
 - Roles: critic, specialist, auditor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/auditor_m2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/auditor_m2
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Target: Milestone 2 (M2) Admin User ACL Modernization & Strict Code Separation
 

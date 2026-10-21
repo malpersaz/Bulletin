@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - French Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Rojname Custom CSS - Bootstrap 5.3 Uyumlu
+   AKM Bulletin CMS Custom CSS - Bootstrap 5.3 Uyumlu
    Faz 3: Özel CSS/SCSS Yazma (CDN ile)
    ========================================================================== */
 
@@ -28,8 +28,8 @@
   --bs-dark: #343a40;
 
   /* Font Sistemi */
-  --bs-font-sans-serif: "PT Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --bs-font-serif: "Literata", Georgia, "Times New Roman", serif;
+  --bs-font-sans-serif: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --bs-font-serif: "Newsreader", Georgia, "Times New Roman", serif;
   --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* AKM Özel Renk Paleti */
@@ -357,82 +357,6 @@ body {
 }
 
 /* -------------------------------------------------------------------------
-   Products Section
-   ------------------------------------------------------------------------- */
-.products-section {
-  padding: 4rem 0;
-  background-color: var(--akm-light-gray);
-}
-
-.product-card {
-  border: none;
-  border-radius: var(--bs-border-radius-lg);
-  overflow: hidden;
-  transition: all 0.15s ease-in-out;
-  background: white;
-  box-shadow: var(--bs-box-shadow);
-}
-
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--bs-box-shadow-lg);
-}
-
-.product-card .product-image-container {
-  overflow: hidden;
-  height: 200px;
-  position: relative;
-}
-
-.product-card .product-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.15s ease-in-out;
-}
-
-.product-card:hover .product-image {
-  transform: scale(1.05);
-}
-
-.product-card .product-badge {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: var(--akm-red);
-  color: white;
-  padding: 0.25rem 0.75rem;
-  border-radius: 50px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.product-card .product-info {
-  padding: 1.5rem;
-}
-
-.product-card .product-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--akm-primary);
-  margin-bottom: 0.5rem;
-}
-
-.product-card .product-price {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--akm-green);
-  margin-bottom: 0.75rem;
-}
-
-.product-card .product-description {
-  font-size: 0.875rem;
-  color: var(--akm-gray);
-  line-height: 1.5;
-}
-
-/* -------------------------------------------------------------------------
    Features Section
    ------------------------------------------------------------------------- */
 .features-section {
@@ -672,10 +596,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.product-carousel .swiper-slide {
-  padding: 1rem;
 }
 
 /* -------------------------------------------------------------------------
@@ -1023,8 +943,7 @@ body {
   }
 
   .feature-item,
-  .testimonial-card,
-  .product-card {
+  .testimonial-card {
     margin-bottom: 2rem;
   }
 
@@ -1114,7 +1033,7 @@ body {
 
 /* Section / Category Labels - Subtle & Modern */
 .nyt-news-heading {
-    font-family: 'Roboto', var(--bs-font-sans-serif), sans-serif;
+    font-family: 'Plus Jakarta Sans', var(--bs-font-sans-serif), sans-serif;
     font-size: 0.78rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -1179,7 +1098,7 @@ body {
 
 /* Article Headlines & Content - Premium Typography */
 .nyt-article-title {
-    font-family: 'Literata', Georgia, serif;
+    font-family: 'Newsreader', Georgia, serif;
     font-size: 1.22rem;
     line-height: 1.32;
     font-weight: 700;

@@ -1,7 +1,7 @@
 # Milestone 1: Purge & Code Separation Verification — Challenger 2 Report
 
 **Agent**: `m1_challenger_2` (Empirical Challenger / Critic / Specialist)  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_challenger_2`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_challenger_2`  
 **Date**: 2026-08-23T22:38:15+03:00  
 **Verdict**: **CONFIRM (PASS)**  
 

@@ -54,7 +54,7 @@ class Swift_Plugins_AntiFloodPlugin
    * @param Swift_Plugins_Sleeper $sleeper (not needed really)
    */
   public function __construct($threshold = 99, $sleep = 0,
-    Swift_Plugins_Sleeper $sleeper = null)
+    ?Swift_Plugins_Sleeper $sleeper = null)
   {
     $this->setThreshold($threshold);
     $this->setSleepTime($sleep);

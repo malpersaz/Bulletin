@@ -1,4 +1,4 @@
-# Victory Audit Report: AF/Rojname Modernization & Integrity Verification
+# Victory Audit Report: AF/Bulletin Modernization & Integrity Verification
 
 ```
 === VICTORY AUDIT REPORT ===
@@ -94,7 +94,7 @@ EVIDENCE (if REJECTED):
 
 ### 2. Logic Chain
 - Step 1: User requirements in `ORIGINAL_REQUEST.md` under R3 and Boundaries explicitly state:
-  *"The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Rojname: 1. mod_client, 2. mod_service & mod_service_category, 3. mod_product & mod_product_category, 4. mod_reference & mod_reference_category."*
+  *"The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Bulletin: 1. mod_client, 2. mod_service & mod_service_category, 3. mod_product & mod_product_category, 4. mod_reference & mod_reference_category."*
   *"Acceptance criteria: Grep searches for mod_client, mod_service, mod_product, and mod_reference return zero active references in mod/, installer/, lib/, templates/admin/, and helper scripts."*
 - Step 2: Observations confirm that while the module directories themselves were removed from disk, 30 active references, routes, sitemaps, helper calls, and admin action definitions remain inside `mod/index/index.php`, `mod/mod_user/index.php`, `mod/mod_seo/index.php`, `mod/mod_slider/index.php`, `mod/index/helper/mod_hero_slider.helper.php`, and `mod/management/index.php`.
 - Step 3: Accessing any of these routes at runtime triggers fatal helper missing errors (`Pel nehat dîtin`).

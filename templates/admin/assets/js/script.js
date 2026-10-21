@@ -31,7 +31,7 @@ function getCurrentLocale(context) {
 
     if (typeof wizardData !== 'undefined' && wizardData.lang) return String(wizardData.lang).toLowerCase().trim();
 
-    const langSelects = document.querySelectorAll('select[name="lang"], input[name="lang"], #lang, #langSelect, #editLangSelect, #image-category-lang, #product-category-lang, #project-category-lang, #service-category-lang, #video-category-lang');
+    const langSelects = document.querySelectorAll('select[name="lang"], input[name="lang"], #lang, #langSelect, #editLangSelect, #image-category-lang, #video-category-lang');
     for (let i = 0; i < langSelects.length; i++) {
         if (langSelects[i] && langSelects[i].value) {
             return String(langSelects[i].value).toLowerCase().trim();
@@ -4142,10 +4142,6 @@ window.initRichEditor = function (selector, height = 400) {
         }
 
         const candidateManagers = [
-            window.contentManager,
-            window.productListManager,
-            window.serviceManager,
-            window.projectManager,
             window.newsManager,
             window.videoManager,
             window.publicationManager,

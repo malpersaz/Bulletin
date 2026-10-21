@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AKM Business Content Management System
+ * Amed Framework
  * Class: Paginate
  * File: Paginate.class.php
  * Description: HTML Pagination Helper

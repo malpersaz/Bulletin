@@ -6,7 +6,7 @@
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
-{% set page_meta_title = lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' %}
+{% set page_meta_title = lang.index.legal_info %}
 {% set page_meta_description = lang.index.legal_info_pending is defined and lang.index.legal_info_pending is not empty ? lang.index.legal_info_pending : site.description %}
 {% set site_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
 {% set page_logo_asset = site.iaddress ~ 'mod_settings/' ~ site_fallback_icon %}
@@ -68,7 +68,7 @@
 		          {
 		            "@type": "ListItem",
 		            "position": 1,
-		            "name": {{ lang.index.home|default('Home')|json_encode|raw }},
+		            "name": {{ lang.index.home|json_encode|raw }},
 		            "item": {{ site.saddress|json_encode|raw }}
 		          },
 		          {
@@ -105,11 +105,11 @@
 			<div class="detail-page-content w-100">
 				<article class="detail-card">
 					<div class="detail-breadcrumb-wrap mb-4">
-						<nav aria-label="{{ lang.index.home|default('Home') }}">
+						<nav aria-label="{{ lang.index.home }}">
 							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 									<a itemprop="item" href="{{ site.saddress }}">
-										<span itemprop="name">{{ lang.index.home|default('Home') }}</span>
+										<span itemprop="name">{{ lang.index.home }}</span>
 									</a>
 									<meta itemprop="position" content="1"/>
 								</li>

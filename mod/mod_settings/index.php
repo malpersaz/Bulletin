@@ -49,8 +49,6 @@ class mod_settings_mod extends indexMain
         }
 
         $columns = [
-            'stat_completed_projects' => 'INT DEFAULT 250',
-            'stat_ongoing_projects' => 'INT DEFAULT 45',
             'stat_workforce' => 'INT DEFAULT 1200',
             'stat_offices' => 'INT DEFAULT 18',
         ];
@@ -1753,14 +1751,10 @@ class mod_settings_mod extends indexMain
             return;
         }
 
-        $completed = intval(Req::post('stat_completed_projects'));
-        $ongoing = intval(Req::post('stat_ongoing_projects'));
         $workforce = intval(Req::post('stat_workforce'));
         $offices = intval(Req::post('stat_offices'));
 
         $sql = "UPDATE mod_settings SET
-            stat_completed_projects = {$completed},
-            stat_ongoing_projects = {$ongoing},
             stat_workforce = {$workforce},
             stat_offices = {$offices}";
 
@@ -1771,8 +1765,6 @@ class mod_settings_mod extends indexMain
                 'status' => 'success',
                 'message' => $this->lang['mod_settings']['messages']['success']['updated'] ?? 'Settings updated successfully.',
                 'stats' => [
-                    'stat_completed_projects' => $completed,
-                    'stat_ongoing_projects' => $ongoing,
                     'stat_workforce' => $workforce,
                     'stat_offices' => $offices,
                 ]
@@ -1899,8 +1891,6 @@ class mod_settings_mod extends indexMain
             'meta_tags' => trim(Req::Post('meta_tags')),
             'show_logo' => Req::Post('show_logo'),
             'logo_type' => Req::Post('logo_type'),
-            'stat_completed_projects' => intval(Req::Post('stat_completed_projects')),
-            'stat_ongoing_projects' => intval(Req::Post('stat_ongoing_projects')),
             'stat_workforce' => intval(Req::Post('stat_workforce')),
             'stat_offices' => intval(Req::Post('stat_offices')),
             'cookie_policy_content' => Req::Post('cookie_policy_content'),
@@ -1924,8 +1914,6 @@ class mod_settings_mod extends indexMain
             'google_search_console' => trim((string) ($values['google_search_console'] ?? '')),
             'google_analytics' => trim((string) ($values['google_analytics'] ?? '')),
             'meta_tags' => trim((string) ($values['meta_tags'] ?? '')),
-            'stat_completed_projects' => intval($values['stat_completed_projects'] ?? 250),
-            'stat_ongoing_projects' => intval($values['stat_ongoing_projects'] ?? 45),
             'stat_workforce' => intval($values['stat_workforce'] ?? 1200),
             'stat_offices' => intval($values['stat_offices'] ?? 18),
             'cookie_policy_content' => trim((string) ($values['cookie_policy_content'] ?? '')),
@@ -2411,8 +2399,7 @@ class mod_settings_mod extends indexMain
         } else if (function_exists('imagepng')) {
             @imagepng($newImg, $target_path, 9);
         }
-        @imagedestroy($img);
-        @imagedestroy($newImg);
+        unset($img, $newImg);
     }
 
     public function ajax_save_animated_logo_settings()

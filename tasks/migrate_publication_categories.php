@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - mod_makalekat tabloya kevn ji DB'ya kevn bikişîne tabloya nû
+ * Bulletin - mod_makalekat tabloya kevn ji DB'ya kevn bikişîne tabloya nû
  * mod_publication_category.
  *
  * Vê pelê li hostingê bar bike û di browser de bixebitîne.

@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T20:04:30Z
 
 ## Mission
-Independently audit and verify the completion claim of the Rojname project refactoring and modernization.
+Independently audit and verify the completion claim of the Bulletin project refactoring and modernization.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1
 - Original parent: 0e5c10bf-4949-4641-8aa3-2d95a1d5bab0
 - Target: full project
 
@@ -21,7 +21,7 @@ Independently audit and verify the completion claim of the Rojname project refac
 - Updated: 2026-08-23T20:04:30Z
 
 ## Audit Scope
-- **Work product**: Full repository /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+- **Work product**: Full repository /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit
 
@@ -50,7 +50,7 @@ Independently audit and verify the completion claim of the Rojname project refac
 - Confirmed full compliance with requirements R1, R2, R3, and R4.
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1/DISPATCH.md — Dispatch log
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1/BRIEFING.md — Auditor memory
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1/progress.md — Liveness & progress log
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1/handoff.md — Final handoff report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1/DISPATCH.md — Dispatch log
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1/BRIEFING.md — Auditor memory
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1/progress.md — Liveness & progress log
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1/handoff.md — Final handoff report

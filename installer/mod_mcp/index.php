@@ -2,7 +2,7 @@
 
 /**
  * MCP Module Installer Class
- * Business CMS Framework
+ * Amed Framework (AKM Bulletin CMS)
  */
 class mod_mcp extends installerbase implements installerbaseinterface
 {

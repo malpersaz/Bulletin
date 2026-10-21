@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PreToolUse Hook for AF CMS Synchronizer (AF/Rojname)
+PreToolUse Hook for AF CMS Synchronizer (AF/Bulletin)
 Intercepts tool execution before it happens to deterministically prevent:
 1. Writing to or creating files in forbidden modules (commercial, assessment, or foreign modules).
 2. Violations of AGENTS.md Rule 2 (Strict Code Separation: inline CSS/JS).
@@ -61,9 +61,9 @@ def check_file_path(file_path):
     # Check against forbidden modules
     for mod in FORBIDDEN_MODULES:
         if mod in parts:
-            return f"Target file '{file_path}' belongs to forbidden module '{mod}' in AF/Rojname."
+            return f"Target file '{file_path}' belongs to forbidden module '{mod}' in AF/Bulletin."
         if mod in base and not base.endswith(('.md', '.py', '.json')):
-            return f"Target file '{file_path}' carries forbidden module token '{mod}' in AF/Rojname."
+            return f"Target file '{file_path}' carries forbidden module token '{mod}' in AF/Bulletin."
     return None
 
 def check_code_content(file_path, content):

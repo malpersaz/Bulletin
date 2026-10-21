@@ -1,0 +1,32 @@
+/* Theme gallery page (template.php) */
+
+body {
+    background-color: #f8f9fa;
+    padding: 2rem 0;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+.theme-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.theme-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.theme-title {
+    text-transform: capitalize;
+    font-weight: 600;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

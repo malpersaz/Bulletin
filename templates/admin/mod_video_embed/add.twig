@@ -10,255 +10,7 @@
 
 {% block styles %}
     {{ parent() }}
-    <style>
-        :root {
-            /* FAB & Tooltip Colors */
-            --color-fab-bg: var(--md-sys-color-blue, #0B57D0);
-            --color-fab-active-bg: var(--md-sys-color-blue, #0B57D0);
-            --color-tooltip-bg: #1E2022;
-        }
-
-        /* Floating Action Button (FAB) - Positioned HIGHER than Toolbar */
-        .main-fab {
-            position: fixed;
-            bottom: 84px;
-            bottom: calc(84px + env(safe-area-inset-bottom));
-            right: 18px;
-            width: 58px;
-            height: 58px;
-            border-radius: 20px;
-            background-color: var(--color-fab-bg);
-            color: #FFFFFF;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(11, 87, 208, 0.3);
-            z-index: 1050;
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .main-fab:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(11, 87, 208, 0.4);
-        }
-
-        .main-fab:active {
-            transform: translateY(0) scale(0.95);
-        }
-
-        .main-fab.active {
-            background-color: var(--color-fab-active-bg);
-            transform: rotate(135deg);
-            box-shadow: 0 8px 24px rgba(11, 87, 208, 0.25);
-        }
-
-        /* Blur Screen Overlay */
-        .overlay-panel {
-            position: fixed;
-            inset: 0;
-            background: rgba(248, 246, 250, 0.45);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            z-index: 1040;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.35s ease;
-        }
-
-        [data-theme="dark"] .overlay-panel {
-            background: rgba(15, 23, 42, 0.45);
-        }
-
-        .overlay-panel.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        /* FAB Menu Items Container - Positioned HIGHER than FAB */
-        .fab-menu-container {
-            position: fixed;
-            bottom: 158px;
-            bottom: calc(158px + env(safe-area-inset-bottom));
-            right: 18px;
-            z-index: 1055;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 16px;
-            pointer-events: none;
-        }
-
-        .fab-menu-container.active {
-            pointer-events: auto;
-        }
-
-        /* Individual FAB Menu Row */
-        .fab-menu-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            opacity: 0;
-            transform: translate3d(0, 20px, 0) scale(0.9);
-            will-change: transform, opacity;
-            backface-visibility: hidden;
-            transition: transform 0.2s cubic-bezier(0, 0, 0.2, 1), opacity 0.18s ease;
-            cursor: pointer;
-        }
-
-        /* Sequential delay logic for animation (Fast snappy staggers) */
-        .fab-menu-container.active .fab-menu-row:nth-child(1) {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-            transition-delay: 0.08s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(2) {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-            transition-delay: 0.06s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(3) {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-            transition-delay: 0.04s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(4) {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-            transition-delay: 0.02s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(5),
-        .fab-menu-container.active .fab-menu-row:nth-child(6),
-        .fab-menu-container.active .fab-menu-row:nth-child(7) {
-            opacity: 1;
-            transform: translate3d(0, 0, 0) scale(1);
-            transition-delay: 0s;
-        }
-
-        /* Dark Tooltip Label */
-        .fab-label {
-            background-color: var(--color-tooltip-bg);
-            color: #FFFFFF;
-            font-size: 13px;
-            font-weight: 500;
-            padding: 8px 14px;
-            border-radius: 10px;
-            white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            opacity: 0;
-            transform: translate3d(8px, 0, 0);
-            will-change: transform, opacity;
-            backface-visibility: hidden;
-            transition: transform 0.18s cubic-bezier(0, 0, 0.2, 1), opacity 0.15s ease;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(1) .fab-label {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition-delay: 0.09s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(2) .fab-label {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition-delay: 0.07s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(3) .fab-label {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition-delay: 0.05s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(4) .fab-label {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition-delay: 0.03s;
-        }
-
-        .fab-menu-container.active .fab-menu-row:nth-child(5) .fab-label,
-        .fab-menu-container.active .fab-menu-row:nth-child(6) .fab-label,
-        .fab-menu-container.active .fab-menu-row:nth-child(7) .fab-label {
-            opacity: 1;
-            transform: translate3d(0, 0, 0);
-            transition-delay: 0.01s;
-        }
-
-        /* Mini FAB Circle Button */
-        .mini-fab {
-            width: 48px;
-            height: 48px;
-            border-radius: 16px;
-            border: 1px solid transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 2px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            transition: all 0.2s;
-        }
-
-        .mini-fab i:first-child {
-            font-size: 18px;
-        }
-
-        .mini-fab i.bi-plus-lg {
-            font-size: 14px;
-            font-weight: 900;
-        }
-
-        .mini-fab:hover {
-            transform: scale(1.08);
-        }
-
-        .mini-fab:active {
-            transform: scale(0.95);
-        }
-
-        /* Themes for Mini FABs */
-        .fab-row-product .mini-fab {
-            background-color: #E3F2FD;
-            color: #0D47A1;
-            border-color: #BBDEFB;
-        }
-        .fab-row-project .mini-fab {
-            background-color: #E0F2FE;
-            color: #0369A1;
-            border-color: #BAE6FD;
-        }
-        .fab-row-service .mini-fab {
-            background-color: #F3E5F5;
-            color: #4A148C;
-            border-color: #E1BEE7;
-        }
-        .fab-row-page .mini-fab {
-            background-color: #E0F7FA;
-            color: #006064;
-            border-color: #B2EBF2;
-        }
-        .fab-row-video .mini-fab {
-            background-color: #E8EAF6;
-            color: #1A237E;
-            border-color: #C5CAE9;
-        }
-        .fab-row-announcement .mini-fab {
-            background-color: #FBE9E7;
-            color: #D84315;
-            border-color: #FFCCBC;
-        }
-        .fab-row-content .mini-fab {
-            background-color: #ECEFF1;
-            color: #37474F;
-            border-color: #CFD8DC;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.0">
 {% endblock %}
 
 {% macro select_nested_category_id_function(parent_id, level, allowed_langs) %}
@@ -298,127 +50,136 @@
     {% endif %}
 {% endfor %}
 <div class="form-container">
-    {% if error is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'warning',
-                    html: '<b><i class="bi bi-exclamation-triangle-fill"></i> {{ message }}</b>',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.ok }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            });
-        </script>
-    {% endif %}
     {% if success is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    html: '<b><i class="bi bi-check-circle-fill"></i> {{ message }}</b>',
-                    showCancelButton: true,
-                    confirmButtonText: '{{ lang.mod_video_embed.list }}',
-                    cancelButtonText: '{{ lang.mod_video_embed.button.add }}',
-                    confirmButtonColor: '#2e7d32',
-                    cancelButtonColor: '#6750a4'
-                }).then(function(result) {
-                    if (result.isConfirmed) {
-                        window.location.href = '{{ site.saddress }}mod_video_embed/list';
-                    } else {
-                        window.location.href = '{{ site.saddress }}mod_video_embed/add';
-                    }
-                });
-            });
-        </script>
+        <div class="banner-m3 banner-success-soft">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ message|default(lang.mod_video_embed.message.success.add) }}</span>
+        </div>
     {% endif %}
-    {% if errors is defined %}
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                let errorHtml = '<div style="text-align: left;">';
-                {% for error in errors %}
-                    errorHtml += '<div style="margin-bottom: 8px;"><i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b>{{ error }}</b></div>';
+    {% if error is defined and errors is not defined %}
+        <div class="banner-m3 banner-error-soft">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ message|default(lang.mod_video_embed.error) }}</span>
+        </div>
+    {% endif %}
+    {% if errors is defined and errors is not empty %}
+        <div class="banner-m3 banner-error-soft">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <div>
+                {% for err in errors %}
+                    <div>{{ err }}</div>
                 {% endfor %}
-                errorHtml += '</div>';
-                Swal.fire({
-                    icon: 'warning',
-                    html: errorHtml,
-                    confirmButtonText: '{{ lang.mod_video_embed.button.ok }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            });
-        </script>
+            </div>
+        </div>
     {% endif %}
 
-    <form method="POST" action="" id="videoAddForm" enctype="multipart/form-data">
+    <form
+        method="POST"
+        action=""
+        id="videoAddForm"
+        enctype="multipart/form-data"
+        data-id="{id}"
+        data-site-address="{{ site.saddress }}"
+        data-i18n-ok="{{ lang.mod_video_embed.button.ok|e('html_attr') }}"
+        data-i18n-yes="{{ lang.mod_video_embed.button.yes|e('html_attr') }}"
+        data-i18n-no="{{ lang.mod_video_embed.button.no|e('html_attr') }}"
+        data-i18n-cancel="{{ lang.mod_video_embed.button.cancel|e('html_attr') }}"
+        data-i18n-save="{{ lang.mod_video_embed.button.save|e('html_attr') }}"
+        data-i18n-info="{{ lang.mod_video_embed.information|e('html_attr') }}"
+        data-i18n-error="{{ lang.mod_video_embed.error|e('html_attr') }}"
+        data-i18n-success="{{ lang.mod_video_embed.success|e('html_attr') }}"
+        data-i18n-image-update-confirm="{{ lang.mod_video_embed.image_update_confirm|e('html_attr') }}"
+        data-i18n-remove-image-title="{{ lang.mod_video_embed.remove_image|e('html_attr') }}"
+        data-i18n-remove-image-confirm="{{ lang.mod_video_embed.delete_confirm|e('html_attr') }}"
+        data-i18n-remove-image-success="{{ lang.mod_video_embed.remove_image_success|e('html_attr') }}"
+        data-i18n-unsupported-emoji="{{ lang.mod_video_embed.validator.unsupported_emoji|replace({'%s': lang.mod_video_embed.admin.columns.content})|e('html_attr') }}"
+        data-i18n-autofill-missing="{{ lang.mod_video_embed.autofill.missing_source|e('html_attr') }}"
+        data-i18n-autofill-loading="{{ lang.mod_video_embed.autofill.loading|e('html_attr') }}"
+        data-i18n-autofill-success="{{ lang.mod_video_embed.autofill.success|e('html_attr') }}"
+        data-i18n-autofill-error="{{ lang.mod_video_embed.autofill.error|e('html_attr') }}"
+        data-i18n-upload-text="{{ lang.mod_video_embed.wizard.label.upload_text|e('html_attr') }}"
+        data-i18n-preview-text="{{ lang.mod_video_embed.admin.columns.preview|e('html_attr') }}"
+        data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|e('html_attr') }}"
+    >
+        <input type="hidden" name="add" value="{{ lang.mod_video_embed.button.add }}">
 
+        {# Card 1: Embed Code + Live Preview + YouTube Autofill #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.embed }}</label>
-                <textarea name="embed" id="embedInput" rows="3" class="form-input" style="resize:vertical; font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 13px;" required>{{ embed|default('') }}</textarea>
+                <label class="form-label" for="embedInput">{{ lang.mod_video_embed.admin.columns.embed }}</label>
+                <textarea name="embed" id="embedInput" rows="3" class="form-input embed-code-input" required>{{ embed|default('') }}</textarea>
             </div>
-            <div class="form-group" style="display: flex; gap: 12px; align-items: center; margin-top: -8px;">
-                <button type="button" id="autofillButton" class="toolbar-item active" style="width: auto; padding-inline: 16px;">
+            <div class="autofill-row">
+                <button type="button" id="autofillButton" class="autofill-btn">
                     <i class="bi bi-magic"></i>
                     <span>{{ lang.mod_video_embed.autofill.button }}</span>
                 </button>
-                <span id="autofillStatus" style="font-size: 13px; opacity: 0.72;">{{ lang.mod_video_embed.autofill.hint }}</span>
+                <span id="autofillStatus" class="autofill-status">{{ lang.mod_video_embed.autofill.hint }}</span>
             </div>
-            <div id="embedPreview" class="embed-preview">
-                <div class="embed-placeholder">
-                    <i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i>
-                    <span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.preview }}</span>
-                </div>
+            <div id="embedPreview" class="embed-preview{% if embed is defined and embed != '' %} has-content{% endif %}">
+                {% if embed is defined and embed != '' %}
+                    {{ embed|raw }}
+                {% else %}
+                    <div class="embed-placeholder">
+                        <i class="bi bi-play-circle embed-placeholder-icon"></i>
+                        <span class="embed-placeholder-text">{{ lang.mod_video_embed.admin.columns.preview }}</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
 
+        {# Card 2: Basic Info #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.name }}</label>
+                <label class="form-label" for="nameInput">{{ lang.mod_video_embed.admin.columns.name }}</label>
                 <input type="text" name="name" id="nameInput" value="{{ name|default('') }}" class="form-input" autocomplete="off" required>
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.original }}</label>
-                <input type="text" name="original" value="{{ original|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.original }}">
+                <label class="form-label" for="originalInput">{{ lang.mod_video_embed.admin.columns.original }}</label>
+                <input type="text" name="original" id="originalInput" value="{{ original|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.original }}">
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.duration }}</label>
-                <input type="text" name="sure" value="{{ sure|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.sure }}" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.date }}</label>
-                <input type="datetime-local" name="created_at" id="tarihInput" value="{{ created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
+            <div class="form-row-2col">
+                <div class="form-col form-group">
+                    <label class="form-label" for="durationInput">{{ lang.mod_video_embed.admin.columns.duration }}</label>
+                    <input type="text" name="sure" id="durationInput" value="{{ sure|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.duration }}" required>
+                </div>
+                <div class="form-col form-group">
+                    <label class="form-label" for="dateInput">{{ lang.mod_video_embed.admin.columns.date }}</label>
+                    <input type="datetime-local" name="created_at" id="dateInput" value="{{ created_at|default('')|replace({' ': 'T'}) }}" class="form-input" required>
+                </div>
             </div>
         </div>
 
+        {# Card 3: Settings #}
         <div class="m3-card">
-            <div class="form-group" style="display:flex; gap: 16px;">
-                <div style="flex: 1;">
-                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.language }}</label>
+            <div class="form-row-2col">
+                <div class="form-col form-group">
+                    <label class="form-label" for="langSelect">{{ lang.mod_video_embed.admin.columns.language }}</label>
                     <div class="select-wrapper">
                         <select name="lang" id="langSelect" class="form-select" required>
                             {% for item in lang_lang %}
                                 {% if item.status == 'y' or item.seo == selected_lang %}
-                                    <option value="{{ item.seo }}" {% if selected_lang == item.seo %} selected {% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
+                                    <option value="{{ item.seo }}"{% if selected_lang == item.seo %} selected{% endif %}>{{ item.name }} ({{ item.seo|upper }})</option>
                                 {% endif %}
                             {% endfor %}
                         </select>
                     </div>
                 </div>
-                <div style="flex: 1;">
-                    <label class="form-label">{{ lang.mod_video_embed.admin.columns.status }}</label>
+                <div class="form-col form-group">
+                    <label class="form-label" for="statusSelect">{{ lang.mod_video_embed.admin.columns.status }}</label>
                     <div class="select-wrapper">
-                        <select name="status" class="form-select">
-                            <option value="y" {% if status is not defined or status == 'y' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_yes }}</option>
-                            <option value="n" {% if status is defined and status == 'n' %} selected {% endif %}>{{ lang.mod_video_embed.admin.radio.publish_no }}</option>
+                        <select name="status" id="statusSelect" class="form-select">
+                            <option value="y"{% if status is not defined or status == 'y' %} selected{% endif %}>{{ lang.mod_video_embed.admin.radio.publish_yes }}</option>
+                            <option value="n"{% if status is defined and status == 'n' %} selected{% endif %}>{{ lang.mod_video_embed.admin.radio.publish_no }}</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
+                <label class="form-label" for="categorySelect">{{ lang.mod_video_embed.admin.columns.category_id }}</label>
                 <div class="select-wrapper">
                     <select
                         name="category_id"
@@ -439,61 +200,72 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <div class="select-wrapper" style="flex: 1;">
+            <div class="form-group mb-0">
+                <label class="form-label" for="aclSelect">{{ lang.mod_video_embed.admin.columns.acl_id }}</label>
+                <div class="acl-row">
+                    <div class="select-wrapper acl-select-wrap">
                         <select name="acl_id" id="aclSelect" class="form-select">
                             <option value="0">{{ lang.mod_video_embed.choose_wish }}</option>
                             {% for item in mod_acl_acl_id %}
-                                <option value="{{ item.id }}" {% if acl_id is defined and acl_id == item.id %} selected {% endif %}>{{ item.name }}</option>
+                                <option value="{{ item.id }}"{% if acl_id is defined and acl_id == item.id %} selected{% endif %}>{{ item.name }}</option>
                             {% endfor %}
                         </select>
                     </div>
                     <a href="{{ site.saddress }}mod_acl/list" class="acl-settings-btn" title="{{ lang.management.acl }}">
-                        <i class="bi bi-gear" style="font-size: 20px;"></i>
+                        <i class="bi bi-gear acl-icon"></i>
                     </a>
                 </div>
             </div>
         </div>
 
+        {# Card 4: Content + Image #}
         <div class="m3-card">
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.content }}</label>
-                <textarea name="content" id="videoContent" rows="5" class="form-input" style="min-height: 120px;">{{ content|default('') }}</textarea>
+                <label class="form-label" for="videoContent">{{ lang.mod_video_embed.admin.columns.content }}</label>
+                <textarea name="content" id="videoContent" rows="5" class="form-input content-textarea">{{ content|default('') }}</textarea>
             </div>
 
-            <div class="form-group" style="margin-bottom: 0;">
+            <div class="form-group mb-0">
                 <label class="form-label">{{ lang.mod_video_embed.admin.columns.image }}</label>
-                <label for="resimInput" class="image-upload-area" id="imageUploadArea">
-                    <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-                    <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
-                </label>
-                <input type="file" name="image" id="resimInput" accept="image/*" style="display: none;" onchange="previewEditImage(this)">
+                <div class="image-upload-area" id="imageUploadArea">
+                    {% if autofill_image is defined and autofill_image != '' %}
+                        <div class="current-image-wrapper">
+                            <img id="editImgPreview" src="{{ site.iaddress }}mod_video_embed/thumb/{{ autofill_image }}" class="current-image" alt="{{ name|default('Video Image') }}">
+                            <button type="button" class="remove-img-btn" id="btnRemoveExistingImage" aria-label="{{ lang.mod_video_embed.remove_image }}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    {% else %}
+                        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
+                    {% endif %}
+                </div>
+                <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
                 <input type="hidden" name="autofill_image" id="autofillImageInput" value="{{ autofill_image|default('') }}">
             </div>
         </div>
 
+        {# Card 5: SEO #}
         <div class="m3-card">
             <div class="card-title">
                 <i class="bi bi-search"></i> {{ lang.mod_video_embed.seo_title }}
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
+                <label class="form-label" for="seoPreviewInput">{{ lang.mod_video_embed.admin.columns.seo_preview }}</label>
                 <input type="text" id="seoPreviewInput" class="form-input" value="" readonly>
-                <small style="display:block; margin-top:8px; opacity:0.68;">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
+                <small class="seo-preview-help">{{ lang.mod_video_embed.admin.help.seo_preview }}</small>
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.title }}</label>
+                <label class="form-label" for="titleInput">{{ lang.mod_video_embed.admin.columns.title }}</label>
                 <input type="text" name="title" id="titleInput" value="{{ title|default('') }}" class="form-input" required>
             </div>
             <div class="form-group">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
+                <label class="form-label" for="keywordsInput">{{ lang.mod_video_embed.admin.columns.keywords }}</label>
                 <input type="text" name="keywords" id="keywordsInput" value="{{ keywords|default('') }}" class="form-input" required>
             </div>
-            <div class="form-group" style="margin-bottom: 0;">
-                <label class="form-label">{{ lang.mod_video_embed.admin.columns.description }}</label>
-                <input type="text" name="description" id="aciklamaInput" value="{{ description|default('') }}" class="form-input" required>
+            <div class="form-group mb-0">
+                <label class="form-label" for="descriptionInput">{{ lang.mod_video_embed.admin.columns.description }}</label>
+                <input type="text" name="description" id="descriptionInput" value="{{ description|default('') }}" class="form-input" required>
             </div>
         </div>
 
@@ -502,412 +274,23 @@
 {% endblock %}
 
 {% block fixed_bottom %}
+    <div class="standard-toolbar">
+        <button type="button" class="toolbar-item active" id="btnCancelEdit" data-href="{{ site.saddress }}mod_video_embed/list">
+            <i class="bi bi-x-lg"></i>
+            <span>{{ lang.mod_video_embed.button.cancel }}</span>
+        </button>
 
-<!-- Main FAB (Save Button) -->
-<button type="button" class="main-fab" style="background-color: #198754; color: #fff;" onclick="submitVideoFormViaAjax()" title="{{ lang.mod_video_embed.button.save }}">
-    <i class="bi bi-check-lg"></i>
-</button>
+        <div class="toolbar-fab" id="fabSaveEdit" role="button" aria-label="{{ lang.mod_video_embed.button.save }}">
+            <i class="bi bi-check-lg"></i>
+        </div>
+
+        <button type="button" class="toolbar-item active" id="btnSaveEdit">
+            <i class="bi bi-floppy-fill"></i>
+            <span>{{ lang.mod_video_embed.button.save }}</span>
+        </button>
+    </div>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const STORAGE_KEY = 'videoEmbedAddForm_v2';
-    const form = document.getElementById('videoAddForm');
-    const siteBase = '{{ site.saddress }}';
-    const embedInput = document.getElementById('embedInput');
-    const embedPreview = document.getElementById('embedPreview');
-    const originalInput = form?.querySelector('[name="original"]');
-    const nameInput = document.getElementById('nameInput');
-    const titleInput = document.getElementById('titleInput');
-    const keywordsInput = document.getElementById('keywordsInput');
-    const descriptionInput = document.getElementById('aciklamaInput');
-    const contentInput = document.getElementById('videoContent');
-    const durationInput = form?.querySelector('[name="sure"]');
-    const dateInput = document.getElementById('tarihInput');
-    const autofillButton = document.getElementById('autofillButton');
-    const autofillStatus = document.getElementById('autofillStatus');
-    const autofillImageInput = document.getElementById('autofillImageInput');
-    let autofillTimer = null;
-    let lastAutofillSignature = '';
-    let autofillInFlight = false;
-
-    function cleanMetaText(value) {
-        let cleaned = (value || '').toString();
-        cleaned = cleaned.replace(/[^a-zA-Z\u0131\u011f\u00fc\u015f\u00f6\u00e7\u0130\u011e\u00dc\u015e\u00d6\u00c7\u00ee\u00ea\u00fb\u00ce\u00ca\u00db1234567890"' ]+/g, ' ');
-        cleaned = cleaned.trim();
-
-        for (let i = 0; i <= 15; i += 1) {
-            cleaned = cleaned.replace(/  /g, ' ');
-        }
-
-        return cleaned;
-    }
-
-    function saveFormData() {
-        // Disabled form auto-saving
-    }
-
-    function restoreFormData() {
-        // Disabled form auto-restoring
-    }
-
-    {% if success is defined %}
-        localStorage.removeItem(STORAGE_KEY);
-    {% endif %}
-
-    if (form) {
-        form.addEventListener('input', saveFormData);
-        form.addEventListener('change', saveFormData);
-    }
-
-    function updateEmbedPreview() {
-        if (!embedInput || !embedPreview) return;
-        if (embedInput.value.trim()) {
-            embedPreview.innerHTML = embedInput.value;
-            embedPreview.classList.add('has-content');
-        } else {
-            embedPreview.innerHTML = '<div class="embed-placeholder"><i class="bi bi-play-circle" style="font-size: 56px; opacity: 0.6;"></i><span style="font-size: 13px; opacity: 0.5; margin-top: 8px;">{{ lang.mod_video_embed.admin.columns.preview }}</span></div>';
-            embedPreview.classList.remove('has-content');
-        }
-    }
-
-    function setAutofillStatus(message, isError = false) {
-        if (!autofillStatus) return;
-        autofillStatus.textContent = message;
-        autofillStatus.style.color = isError ? '#ba1a1a' : '';
-    }
-
-    function makeKeywordFallback(value) {
-        return cleanMetaText(value)
-            .replace(/\s+/g, ',')
-            .toLowerCase()
-            .replace(/\u0130/g, 'i');
-    }
-
-    function setFieldValue(input, value) {
-        if (!input || !value) return;
-        if (input.value && input.dataset.autofilled !== 'true') return;
-        input.value = value;
-        input.dataset.autofilled = 'true';
-    }
-
-    function setTextAreaValue(input, value) {
-        if (!input || !value) return;
-        if (input.value && input.dataset.autofilled !== 'true') return;
-        input.value = value;
-        input.dataset.autofilled = 'true';
-    }
-
-    function renderStoredImage(url) {
-        const area = document.getElementById('imageUploadArea');
-        if (!area || !url) return;
-        area.innerHTML = `
-            <img id="editImgPreview" src="${url}" class="current-image">
-            <button type="button" class="remove-img-btn" onclick="clearSelectedImage()"><i class="bi bi-x-lg"></i></button>
-        `;
-    }
-
-    function slugifyVideoName(value) {
-        let slug = cleanMetaText(value);
-        slug = slug.replace(/\s+/g, '_');
-        slug = slug.replace(/\u0130/g, 'i');
-
-        for (let i = 0; i <= 5; i += 1) {
-            slug = slug.replace(/__/g, '_');
-        }
-
-        return slug || '{{ lang.mod_video_embed.js_fallback.video|e('js') }}';
-    }
-
-    function ensureSeoFields() {
-        const sourceValue = (nameInput?.value || titleInput?.value || '').trim();
-        if (!sourceValue) return;
-
-        const cleanedValue = cleanMetaText(sourceValue);
-
-        if (titleInput && !titleInput.value.trim()) {
-            titleInput.value = cleanedValue;
-            titleInput.dataset.autofilled = 'true';
-        }
-
-        if (keywordsInput && !keywordsInput.value.trim()) {
-            keywordsInput.value = makeKeywordFallback(sourceValue);
-            keywordsInput.dataset.autofilled = 'true';
-        }
-
-        if (descriptionInput && !descriptionInput.value.trim()) {
-            descriptionInput.value = cleanedValue;
-            descriptionInput.dataset.autofilled = 'true';
-        }
-    }
-
-    function updateSeoPreview() {
-        const seoPreviewInput = document.getElementById('seoPreviewInput');
-        if (!seoPreviewInput) return;
-        const slug = slugifyVideoName(nameInput?.value || titleInput?.value || '');
-        seoPreviewInput.value = `${siteBase}video/{id}-${slug}`;
-    }
-
-    async function runAutofill(force = false) {
-        if (!embedInput || autofillInFlight) return;
-
-        const signature = `${embedInput.value.trim()}|${originalInput?.value.trim() || ''}`;
-        if (!signature.trim()) return;
-        if (!force && signature === lastAutofillSignature) return;
-
-        autofillInFlight = true;
-        if (autofillButton) {
-            autofillButton.disabled = true;
-        }
-        setAutofillStatus('{{ lang.mod_video_embed.autofill.loading }}');
-
-        try {
-            const response = await fetch(`${siteBase}mod_video_embed/autofill_metadata`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: new URLSearchParams({
-                    embed: embedInput.value,
-                    original: originalInput?.value || '',
-                    ajax_request: '1'
-                }).toString()
-            });
-
-            const result = await response.json();
-            if (!response.ok || result.status !== 'success' || !result.data) {
-                throw new Error(result.message || '{{ lang.mod_video_embed.autofill.error }}');
-            }
-
-            const data = result.data;
-            setFieldValue(nameInput, data.name || '');
-            setFieldValue(titleInput, data.title || '');
-            setFieldValue(keywordsInput, data.keywords || '');
-            setFieldValue(descriptionInput, data.description || '');
-            setTextAreaValue(contentInput, data.content || '');
-            if (durationInput && data.duration) {
-                setFieldValue(durationInput, data.duration);
-            }
-            if (originalInput && (!originalInput.value || originalInput.dataset.autofilled === 'true')) {
-                originalInput.value = data.original || originalInput.value;
-                originalInput.dataset.autofilled = 'true';
-            }
-            if (embedInput && data.embed) {
-                embedInput.value = data.embed;
-                embedInput.dataset.autofilled = 'true';
-            }
-            if (autofillImageInput && data.image) {
-                autofillImageInput.value = data.image;
-            }
-            if (data.image_url) {
-                renderStoredImage(data.image_url);
-                const fileInput = document.getElementById('resimInput');
-                if (fileInput) {
-                    fileInput.value = '';
-                }
-            }
-
-            ensureSeoFields();
-            updateEmbedPreview();
-            updateSeoPreview();
-            saveFormData();
-            lastAutofillSignature = signature;
-            if (data.duration_available) {
-                setAutofillStatus(result.message || '{{ lang.mod_video_embed.autofill.success }}');
-            } else {
-                setAutofillStatus('{{ lang.mod_video_embed.autofill.partial }}');
-            }
-        } catch (error) {
-            setAutofillStatus(error.message || '{{ lang.mod_video_embed.autofill.error }}', true);
-        } finally {
-            autofillInFlight = false;
-            if (autofillButton) {
-                autofillButton.disabled = false;
-            }
-        }
-    }
-
-    if (embedInput) {
-        embedInput.addEventListener('input', function() {
-            updateEmbedPreview();
-            window.clearTimeout(autofillTimer);
-            autofillTimer = window.setTimeout(() => runAutofill(false), 900);
-        });
-    }
-
-    if (originalInput) {
-        originalInput.addEventListener('input', function() {
-            window.clearTimeout(autofillTimer);
-            autofillTimer = window.setTimeout(() => runAutofill(false), 900);
-        });
-    }
-
-    if (nameInput) {
-        nameInput.addEventListener('input', function() {
-            const value = this.value;
-            const cleanedValue = cleanMetaText(value);
-            if (titleInput && (!titleInput.value || titleInput.dataset.autofilled !== 'false')) {
-                titleInput.value = cleanedValue;
-                titleInput.dataset.autofilled = 'true';
-            }
-            if (keywordsInput && (!keywordsInput.value || keywordsInput.dataset.autofilled !== 'false')) {
-                keywordsInput.value = makeKeywordFallback(value);
-                keywordsInput.dataset.autofilled = 'true';
-            }
-            if (descriptionInput && (!descriptionInput.value || descriptionInput.dataset.autofilled !== 'false')) {
-                descriptionInput.value = cleanedValue;
-                descriptionInput.dataset.autofilled = 'true';
-            }
-            saveFormData();
-            updateSeoPreview();
-        });
-    }
-
-    ['titleInput', 'keywordsInput', 'aciklamaInput', 'videoContent'].forEach(function(id) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.addEventListener('input', function() {
-            el.dataset.autofilled = 'false';
-            saveFormData();
-        });
-    });
-
-    if (dateInput && !dateInput.value) {
-        const now = new Date();
-        const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
-        dateInput.value = local.toISOString().slice(0, 16);
-        saveFormData();
-    }
-
-    if (form) {
-        const hiddenBtn = document.createElement('input');
-        hiddenBtn.type = 'hidden';
-        hiddenBtn.name = 'add';
-        hiddenBtn.value = '{{ lang.mod_video_embed.button.add }}';
-        form.appendChild(hiddenBtn);
-
-        form.addEventListener('submit', function(event) {
-            const restrictedFields = [nameInput, titleInput, keywordsInput, descriptionInput, contentInput];
-            const hasUnsupportedCharacter = restrictedFields.some(function(field) {
-                return field && /[\u{10000}-\u{10FFFF}]/u.test(field.value || '');
-            });
-
-            if (hasUnsupportedCharacter) {
-                event.preventDefault();
-                Swal.fire({
-                    icon: 'warning',
-                    text: '{{ lang.mod_video_embed.validator.unsupported_emoji|e('js')|replace({'%s': lang.mod_video_embed.admin.columns.content|e('js')}) }}',
-                    confirmButtonText: '{{ lang.mod_video_embed.button.ok|e('js') }}',
-                    confirmButtonColor: '#ba1a1a'
-                });
-            }
-        });
-    }
-
-    if (typeof initSelectPickerSheets === 'function') {
-        initSelectPickerSheets();
-    }
-
-    if (autofillButton) {
-        autofillButton.addEventListener('click', function() {
-            runAutofill(true);
-        });
-    }
-
-    {% if autofill_image is defined and autofill_image %}
-        renderStoredImage('{{ site.iaddress }}mod_video_embed/thumb/{{ autofill_image }}?v={{ "now"|date("U") }}');
-    {% endif %}
-
-    ensureSeoFields();
-    updateEmbedPreview();
-    updateSeoPreview();
-});
-</script>
-
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_video_embed.css">
-<script>
-function previewEditImage(input) {
-    if (input.files && input.files[0]) {
-        const autofillImageInput = document.getElementById('autofillImageInput');
-        if (autofillImageInput) {
-            autofillImageInput.value = '';
-        }
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const area = document.getElementById('imageUploadArea');
-            area.innerHTML = `
-                <img id="editImgPreview" src="${e.target.result}" class="current-image">
-                <button type="button" class="remove-img-btn" onclick="clearSelectedImage()"><i class="bi bi-x-lg"></i></button>
-            `;
-        }
-        reader.readAsDataURL(input.files[0]);
-    }
-}
-
-function clearSelectedImage() {
-    const input = document.getElementById('resimInput');
-    const autofillImageInput = document.getElementById('autofillImageInput');
-    input.value = '';
-    if (autofillImageInput) {
-        autofillImageInput.value = '';
-    }
-    const area = document.getElementById('imageUploadArea');
-    area.innerHTML = `
-        <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-        <p class="upload-text">{{ lang.mod_video_embed.wizard.label.upload_text }}</p>
-    `;
-}
-
-function submitVideoFormViaAjax() {
-    const form = document.getElementById('videoAddForm');
-    const formData = new FormData(form);
-    
-    // Add ajax parameter
-    formData.append('ajax_submit', '1');
-
-    Swal.fire({
-        title: '{{ lang.mod_video_embed.ajax.saving|e('js') }}',
-        text: '{{ lang.mod_video_embed.ajax.please_wait|e('js') }}',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-    fetch(form.action || window.location.href, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.text())
-    .then(html => {
-        if (html.includes("icon: 'success'") || html.includes("bi-check-circle-fill")) {
-            Swal.fire({
-                icon: 'success',
-                title: '{{ lang.mod_video_embed.success|e('js') }}',
-                text: '{{ lang.mod_video_embed.ajax.save_success|e('js') }}',
-                timer: 2000,
-                showConfirmButton: false
-            }).then(() => {
-                if (document.referrer && !document.referrer.includes('mod_video_embed/add')) {
-                    window.location.href = document.referrer;
-                } else {
-                    window.history.back();
-                }
-            });
-        } else {
-            document.open();
-            document.write(html);
-            document.close();
-        }
-    })
-    .catch(error => {
-        Swal.fire('{{ lang.mod_video_embed.error|e('js') }}', '{{ lang.mod_video_embed.message.error.add|e('js') }}', 'error');
-    });
-}
-</script>
-<!-- selection-card wizard_content wizard_page -->
+    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.0"></script>
 {% endblock %}

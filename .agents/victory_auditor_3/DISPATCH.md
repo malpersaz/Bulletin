@@ -1,10 +1,10 @@
 ## 2026-08-23T21:38:52Z
-You are the Independent Post-Victory Auditor for AF/Rojname.
+You are the Independent Post-Victory Auditor for AF/Bulletin.
 
-Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_3
-Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-Orchestrator Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/handoff.md
+Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_3
+Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+Orchestrator Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/handoff.md
 
 Conduct a complete 3-phase independent victory audit:
 Phase 1: Timeline and Scope Audit against the latest request in ORIGINAL_REQUEST.md (Run::execute modernization, Validator modernization, complete purge of legacy Kayit calls to Registry methods across all modules, strict boundary isolation forbidding mod_client, mod_service, mod_product, mod_reference).

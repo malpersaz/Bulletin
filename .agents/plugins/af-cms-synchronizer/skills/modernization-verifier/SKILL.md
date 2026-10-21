@@ -5,7 +5,7 @@ description: Audit and verify compliance with Amed Framework architectural stand
 
 # Modernization Verifier Skill
 
-Use this skill to systematically audit and verify that code in `AF/Rojname` complies with all modern Amed Framework standards.
+Use this skill to systematically audit and verify that code in `AF/Bulletin` complies with all modern Amed Framework standards.
 
 ## 1. Architectural Checklist
 

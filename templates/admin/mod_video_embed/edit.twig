@@ -100,7 +100,7 @@
         data-i18n-autofill-error="{{ lang.mod_video_embed.autofill.error|e('html_attr') }}"
         data-i18n-upload-text="{{ lang.mod_video_embed.wizard.label.upload_text|e('html_attr') }}"
         data-i18n-preview-text="{{ lang.mod_video_embed.admin.columns.preview|e('html_attr') }}"
-        data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|default('video')|e('html_attr') }}"
+        data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|e('html_attr') }}"
     >
         <input type="hidden" name="edit" value="{{ lang.mod_video_embed.button.edit }}">
 
@@ -144,7 +144,7 @@
             <div class="form-row-2col">
                 <div class="form-col form-group">
                     <label class="form-label" for="durationInput">{{ lang.mod_video_embed.admin.columns.duration }}</label>
-                    <input type="text" name="sure" id="durationInput" value="{{ d.duration|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.duration|default('05:30') }}" required>
+                    <input type="text" name="sure" id="durationInput" value="{{ d.duration|default('') }}" class="form-input" placeholder="{{ lang.mod_video_embed.placeholder.duration }}" required>
                 </div>
                 <div class="form-col form-group">
                     <label class="form-label" for="dateInput">{{ lang.mod_video_embed.admin.columns.date }}</label>

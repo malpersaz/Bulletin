@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 Kevrast Fact-Checking & Live Link Auditor
-Audits URLs, citations, numbers, dates, and named entities in news drafts
+Audits URLs, citations, numbers, dates, and named entities in Turkish news drafts
 to enforce zero-hallucination, live link integrity, and anti-citation drift.
 """
 
@@ -14,7 +14,7 @@ import urllib.request
 import urllib.error
 import ssl
 import argparse
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any
 
 DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
@@ -98,13 +98,14 @@ class KevrastAuditor:
     def extract_numbers_and_dates(self, text: str) -> List[str]:
         # Clean HTML
         clean = re.sub(r'<[^>]+>', ' ', text)
-        # Match dates, numbers with units, ordinals, percentages
+        # Match Turkish dates, numbers with units, ordinals, percentages
         patterns = [
-            r"\b\d+'[eêa-z]+\b",                             # ordinals: 14'emîn, 28'ê
-            r"\b\d+\s*(?:kîlometre|km|saet|saetan|car|caran|Tbps|Gbps|mîlyon|mîlyar|kes|satelît)\b", # numbers + units
-            r"\b\d{1,2}(?::\d{2})?\b",                       # time or small integers
-            r"\b(?:19|20)\d{2}(?:'an)?\b",                   # years
-            r"\bji sedî\s*\d+\b"                             # percentage
+            r"\b\d+\.(?:\s*[a-zA-ZçğıöşüÇĞİÖŞÜ]+)?\b",
+            r"\b\d+'(?:inci|üncü|uncu|üncü|da|de|ta|te|dan|den|tan|ten|a|e|ya|ye)\b",
+            r"\b\d+\s*(?:kilometre|km|saat|kez|milyon|milyar|bin|kişi|TL|dolar|avro|euro|ton|metre|metrekare)\b",
+            r"\b\d{1,2}:\d{2}\b",
+            r"\b(?:19|20)\d{2}\b",
+            r"(?:yüzde\s*\d+|%\s*\d+)"
         ]
         matches = []
         for p in patterns:
@@ -131,9 +132,13 @@ class KevrastAuditor:
         return quotes
 
     def extract_citations(self, text: str) -> List[str]:
-        # Extract "li gor / li gorî [çavkaniya] ... weşandiye / ragihandiye"
+        # Extract Turkish citation phrases
         clean = re.sub(r'<[^>]+>', ' ', text)
-        matches = re.findall(r'(?:li gorî?|li gora)\s+[^.,;]+\s+(?:weşandiye|ragihandiye|hatiye diyarkirin|diyar kiriye|hatiye parvekirin)', clean, re.IGNORECASE)
+        matches = re.findall(
+            r'[^.,;]+(?:\s+haberine göre|\s+tarafından\s+(?:aktarılan|paylaşılan|yapılan)\s+[^.,;]+|\s+açıklamasına göre|\s+verilerine göre)',
+            clean,
+            re.IGNORECASE
+        )
         return [m.strip() for m in matches]
 
     def audit(self, text: str, skip_network: bool = False) -> Dict[str, Any]:

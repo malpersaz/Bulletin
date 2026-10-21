@@ -9,9 +9,12 @@
         </button>
 
         <div class="collapse navbar-collapse" id="amidaBottomMenu">
-            {% if menu is defined and menu is not empty %}
+            {% set footer_menu = ctx_get('menu_footer') %}
+            {% set active_footer_menu = footer_menu is defined and footer_menu is not empty ? footer_menu : menu %}
+            {% set active_footer_root = (footer_menu is defined and footer_menu is not empty) ? ctx_get('menu_footer_root_id') : 6 %}
+            {% if active_footer_menu is defined and active_footer_menu is not empty %}
                 <ul class="navbar-nav me-auto">
-                    {{ renderMenu(menu, 6, 0) }}
+                    {{ renderMenu(active_footer_menu, active_footer_root|default(0), 0) }}
                 </ul>
             {% endif %}
         </div>

@@ -1,7 +1,7 @@
 # DISPATCH — 2026-08-23T22:52:00Z
 
-Resume work as Project Orchestrator (Generation 2) at /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_2.
-Read /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/handoff.md, BRIEFING.md, ORIGINAL_REQUEST.md, DISPATCH.md, PROJECT.md, TEST_READY.md, and progress.md for current state.
+Resume work as Project Orchestrator (Generation 2) at /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_2.
+Read /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/handoff.md, BRIEFING.md, ORIGINAL_REQUEST.md, DISPATCH.md, PROJECT.md, TEST_READY.md, and progress.md for current state.
 Your parent is 0e5c10bf-4949-4641-8aa3-2d95a1d5bab0 — use this ID for all escalation and status reporting (send_message).
 
 Tasks for Generation 2:

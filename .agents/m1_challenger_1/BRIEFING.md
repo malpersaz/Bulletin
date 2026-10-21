@@ -6,7 +6,7 @@ Adversarially stress-test Milestone 1: Registry class implementation and init.ph
 ## 🔒 My Identity
 - Archetype: critic, specialist
 - Roles: [critic, specialist]
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_challenger_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_challenger_1
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1
 - Instance: 1 of 1
@@ -22,7 +22,7 @@ Adversarially stress-test Milestone 1: Registry class implementation and init.ph
 
 ## Review Scope
 - **Files to review**: `lib/Registry.class.php`, `init.php`, `.agents/worker_m1/handoff.md`
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
 - **Review criteria**: Empirical correctness, edge cases, null keys, deep arrays, object instances, key overwrites, removal of non-existent keys, concurrent keys, clean subshell init.php bootstrap.
 
 ## Attack Surface

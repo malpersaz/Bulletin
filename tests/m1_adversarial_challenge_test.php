@@ -197,8 +197,8 @@ class M1AdversarialChallenge
         $this->assert($actual === $expected, "Apostrophe preserved: '{$actual}'");
 
         // Slashes and Math operators
-        $input = "Rojname / 2026 + 10% = 100 * & ^ # @ !";
-        $expected = "Rojname_2026_10_100";
+        $input = "Bulletin / 2026 + 10% = 100 * & ^ # @ !";
+        $expected = "Bulletin_2026_10_100";
         $actual = $twig->legacySeoFilter($input);
         $this->assert($actual === $expected, "Slashes, math operators and symbols stripped cleanly: '{$actual}'");
 
@@ -614,13 +614,13 @@ class M1AdversarialChallenge
         $this->assert(str_contains($res, "دەست") && str_contains($res, "کۆنگرە"), "Soranî text with ZWNJ processes safely into slug: '{$res}'");
 
         // 3. Mixed RTL Soranî + LTR English + Numbers
-        $input = "Rojname News 2026: هه‌واڵ و زانیاری لە کوردستان!";
+        $input = "Bulletin News 2026: هه‌واڵ و زانیاری لە کوردستان!";
         $res = $twig->legacySeoFilter($input);
-        $this->assert(str_starts_with($res, "Rojname_News_2026") && str_contains($res, "کوردستان"), "Mixed RTL/LTR/Numeric string produces correct composite slug: '{$res}'");
+        $this->assert(str_starts_with($res, "Bulletin_News_2026") && str_contains($res, "کوردستان"), "Mixed RTL/LTR/Numeric string produces correct composite slug: '{$res}'");
 
         // 4. Emojis and Symbols stripping
-        $input = "☀️ Rojname ✌️ Amed 2026 🔥 Kurdistan 📌";
-        $expected = "Rojname_Amed_2026_Kurdistan";
+        $input = "☀️ Bulletin ✌️ Amed 2026 🔥 Kurdistan 📌";
+        $expected = "Bulletin_Amed_2026_Kurdistan";
         $this->assert($twig->legacySeoFilter($input) === $expected, "Emojis & unicode symbols stripped cleanly without breaking letters: '{$expected}'");
 
         // 5. Extreme quote and underscore padding

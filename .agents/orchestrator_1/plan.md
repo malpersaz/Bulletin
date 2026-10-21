@@ -1,4 +1,4 @@
-# Orchestration Plan — AF/Rojname Modernization & Synchronization
+# Orchestration Plan — AF/Bulletin Modernization & Synchronization
 
 ## Objectives
 1. Align mod_content and mod_category naming with latest AF/Business standard (mod_content and mod_content_category).

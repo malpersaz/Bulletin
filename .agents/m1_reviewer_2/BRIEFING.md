@@ -6,7 +6,7 @@ Adversarial quality review and verification for Milestone 1 (Phone-Only Admin & 
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_2
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1
 - Instance: 2 of 2
@@ -24,7 +24,7 @@ Adversarial quality review and verification for Milestone 1 (Phone-Only Admin & 
 
 ## Review Scope
 - **Files to review**: `lib/Registry.class.php`, `config/*.php`, `templates/admin/layout.twig`, `templates/admin/partials/sheets_extra.twig`, `templates/admin/assets/css/`, `templates/admin/assets/js/`, `tests/run_e2e_tests.php`, `tests/e2e/`.
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`, `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`, `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md`
 - **Review criteria**: correctness, strict code separation, mobile phone-only compliance, English code/comments standard, tier-0/tier-1 test execution.
 
 ## Review Checklist

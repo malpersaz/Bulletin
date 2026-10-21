@@ -156,7 +156,6 @@ $lang['mod_gallery_mod'] = [
         'image_gallery' => 'Image Gallery',
         'photo_album' => 'Photo Album',
         'portfolio' => 'Portfolio',
-        'product_gallery' => 'Product Gallery',
         'showcase' => 'Showcase',
         'slider_gallery' => 'Slider Gallery',
         'masonry' => 'Masonry Layout',

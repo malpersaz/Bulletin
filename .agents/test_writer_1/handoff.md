@@ -3,14 +3,14 @@
 **Agent**: `test_writer_1`  
 **Role**: Test Writer (specialist, qa)  
 **Parent**: `a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca`  
-**Task**: Build E2E Test Suite for AF/Rojname Modernization & Synchronization  
+**Task**: Build E2E Test Suite for AF/Bulletin Modernization & Synchronization  
 **Date**: 2026-08-23T19:31:00Z  
 
 ---
 
 ## 1. Observation
 
-- **Task Specification**: Inspected `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md` (lines 1–63) and `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md` (lines 1–195).
+- **Task Specification**: Inspected `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md` (lines 1–63) and `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md` (lines 1–195).
 - **Environment Analysis**: Executed `php -r "var_dump(PDO::getAvailableDrivers());"` and `php -m`. Observed that CLI PHP has `PDO` but no external SQLite/MySQL drivers compiled in.
 - **Reference Standard**: Inspected `/home/malpersaz/Desktop/projects/htdocs/AF/Business/TEST_INFRA.md` and `/home/malpersaz/Desktop/projects/htdocs/AF/Business/TEST_READY.md`.
 - **Created Test Infrastructure**:
@@ -22,7 +22,7 @@
   - `tests/e2e/fixtures/`: 6 canonical fixture files (`ModuleFixtures.php`, `ContentFixtures.php`, `FaqFixtures.php`, `SeoFixtures.php`, `NewsletterFixtures.php`, `SettingsFixtures.php`).
   - `tests/e2e/suites/`: 5 test suite files across Tiers 0–4 (`Tier0QualityContractsTest.php`, `Tier1FeatureCoverageTest.php`, `Tier2BoundariesCornersTest.php`, `Tier3CrossFeatureTest.php`, `Tier4RealWorldScenariosTest.php`).
 - **Test Execution Result**:
-  - Command: `php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.php`
+  - Command: `php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.php`
   - Output verbatim:
     ```
     E2E TEST RUN SUMMARY
@@ -33,7 +33,7 @@
       Total Assertions: 144
       Total Time:       12.63 ms
     ```
-  - Existing test check: `php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/module_management_runtime_test.php` passed with exit code 0 (`All module management runtime tests passed.`).
+  - Existing test check: `php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/module_management_runtime_test.php` passed with exit code 0 (`All module management runtime tests passed.`).
 
 ---
 
@@ -56,7 +56,7 @@
 
 ## 4. Conclusion
 
-The E2E test infrastructure for AF/Rojname Modernization & Synchronization is **fully implemented, verified, and published**. `TEST_INFRA.md` and `TEST_READY.md` are established, and all 40 test cases (144 assertions) pass cleanly with 100% success rate. The test suite is ready to serve as the definitive verification yardstick for implementation milestones.
+The E2E test infrastructure for AF/Bulletin Modernization & Synchronization is **fully implemented, verified, and published**. `TEST_INFRA.md` and `TEST_READY.md` are established, and all 40 test cases (144 assertions) pass cleanly with 100% success rate. The test suite is ready to serve as the definitive verification yardstick for implementation milestones.
 
 ---
 
@@ -66,17 +66,17 @@ To independently verify the complete test suite:
 
 ```bash
 # Execute master test runner
-php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.php
+php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.php
 
 # Execute via shell wrapper
-bash /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.sh
+bash /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.sh
 
 # Verify Tier 1 feature coverage specifically
-php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.php --tier=1
+php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.php --tier=1
 
 # Verify JSON structured output for CI/CD pipelines
-php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.php --json
+php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.php --json
 
 # Verify existing module management runtime test
-php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/module_management_runtime_test.php
+php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/module_management_runtime_test.php
 ```

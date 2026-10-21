@@ -39,7 +39,7 @@ $lang['mod_settings'] = [
 
 
     // Errors
-    'perm_edit' => 'Genel ayarları düzenleme permissionniz bulunmuyor.',
+    'perm_edit' => 'Genel ayarları düzenleme yetkiniz bulunmuyor.',
     'error' => 'Hata',
 
     // === Access Control (ACL) ===
@@ -53,8 +53,8 @@ $lang['mod_settings'] = [
 
     // === Permission Error Messages ===
     'permission_errors' => [
-        'settings_edit' => 'Site ayarlarını düzenleme permissionniz bulunmuyor.',
-        'settings_view' => 'Site ayarlarını görüntüleme permissionniz bulunmuyor.',
+        'settings_edit' => 'Site ayarlarını düzenleme yetkiniz bulunmuyor.',
+        'settings_view' => 'Site ayarlarını görüntüleme yetkiniz bulunmuyor.',
     ],
 
     // === Settings Page ===
@@ -154,8 +154,6 @@ $lang['mod_settings'] = [
     'logo_symbol_title' => 'Favicon (1:1)',
     'logo_symbol_help_text' => 'Sadece ikon veya amblem içeren 1:1 oranındaki sembol. Favicon ve ikonların üretimi için öncelikli kullanılır.',
     'stats_title' => 'İstatistikler',
-    'stat_completed_projects' => 'Tamamlanan Projeler',
-    'stat_ongoing_projects' => 'Devam Eden Projeler',
     'stat_workforce' => 'Küresel İş Gücü',
     'stat_offices' => 'Küresel Lokasyonlar',
     'site_settings_menu_title' => 'Site Ayarları',
@@ -230,7 +228,7 @@ $lang['mod_settings'] = [
     'business_type_title' => 'Faaliyet Şekli ve İş Modeli',
     'business_type_hint' => 'İşletmenizin çalışma şeklini seçin (birden fazla seçilebilir)',
     'is_online_retail' => 'Online Satış',
-    'is_online_retail_desc' => 'Müşteriler web sitenizden ürün satın alabilir',
+    'is_online_retail_desc' => 'Müşteriler web sitenizden abonelik satın alabilir',
     'is_local_store' => 'Yerel Mağaza',
     'is_local_store_desc' => 'Müşteriler işletmenize bizzat gelebilir',
     'is_service_business' => 'Hizmet İşletmesi',
@@ -259,7 +257,7 @@ $lang['mod_settings'] = [
     'registered_email_placeholder' => 'Kayıtlı elektronik posta (KEP) adresi',
     'legal_contact_phone' => 'Resmi İletişim Telefonu',
     'legal_contact_phone_placeholder' => 'Resmi kurumsal telefon numarası',
-    'section_warranty_policies' => 'Ürün Garanti ve İade Politikaları',
+    'section_warranty_policies' => 'Garanti ve İade Politikaları',
     'default_warranty_duration' => 'Varsayılan Garanti Süresi (Ay)',
     'default_warranty_duration_placeholder' => 'Örn: 24',
     'warranty_type' => 'Garanti Türü',
@@ -309,7 +307,7 @@ $lang['mod_settings'] = [
     'mcp_link_desc' => 'AI istemcilerinin (ChatGPT, Cursor, Claude) MCP ucu üzerinden siteyi yönetmesi için API anahtarları ve OAuth istemcilerini oluşturun ve yönetin.',
     'mcp_link_button' => 'MCP Yönetimini Aç',
 
-    // === Çalışma Saatleri ve Tatiller ===
+    // === Working Hours and Holidays ===
     'working_hours_title' => 'Çalışma Saatleri ve Tatiller',
     'working_hours_menu_desc' => 'Haftalık çalışma saatlerini ve klinik tatil günlerini yönetin',
     'section_weekly_hours' => 'Haftalık Çalışma Programı',
@@ -359,7 +357,7 @@ $lang['mod_settings'] = [
     'clear_break' => 'Molayı Temizle',
     'closed_summary' => 'Tüm gün kapalı',
 
-    // === Kurumsal Bağlantılar & Akreditasyonlar (Affiliations) ===
+    // === Corporate Affiliations & Accreditations ===
     'affiliations_title' => 'Bağlantılı Kurumlar & İş Birlikleri',
     'affiliations_menu_desc' => 'Barolar, akreditasyonlar, partnerler ve kurumsal iş birliklerini yönetin',
     'affiliations_section_title' => 'Kurum & İş Birliği Listesi',

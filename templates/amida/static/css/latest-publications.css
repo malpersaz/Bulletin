@@ -1,6 +1,6 @@
 /**
  * Latest Publications - Editorial Broadsheet Styling
- * Amida Theme for Rojname
+ * Amida Theme for AKM Bulletin CMS
  */
 
 .latest-publications-section {
@@ -55,10 +55,11 @@ html[data-bs-theme="dark"] .latest-publications-section {
 
 .latest-publications-title {
     margin: 0;
-    font-family: 'Pirata One', cursive;
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 800;
     font-size: 1.65rem;
     line-height: 1.15;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
 }
 
@@ -186,7 +187,7 @@ html[data-bs-theme="dark"] .latest-publications-section {
 
 .latest-pub-title {
     margin: 0 0 0.65rem 0;
-    font-family: 'Literata', Georgia, serif;
+    font-family: 'Newsreader', Georgia, serif;
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.35;

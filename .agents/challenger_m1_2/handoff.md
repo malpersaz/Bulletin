@@ -2,7 +2,7 @@
 
 **Author**: Challenger 2 (Empirical Challenger M1)  
 **Date**: 2026-08-23  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m1_2`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m1_2`  
 **Verdict**: **APPROVE**  
 
 ---
@@ -127,7 +127,7 @@ $context = new TemplateContext();
 $twig = new TwigLibs($context);
 $tests = [
     ["Çand û Huner", "Çand_û_Huner"],
-    ["Şeva Berê & Rojname", "Şeva_Berê_Rojname"],
+    ["Şeva Berê & Bulletin", "Şeva_Berê_Bulletin"],
     ["Êvara Zivistanê li Amedê", "Êvara_Zivistanê_li_Amedê"],
     ["ڕۆژنامەی کورد", "ڕۆژنامەی_کورد"],
     ["سلێمانی و هەولێر", "سلێمانی_و_هەولێر"],

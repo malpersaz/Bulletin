@@ -6,7 +6,7 @@ Objective review and adversarial challenge of Milestone 2 (M2): Admin User ACL M
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m2_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m2_1
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M2
 - Instance: 1 of 1
@@ -39,7 +39,7 @@ Objective review and adversarial challenge of Milestone 2 (M2): Admin User ACL M
   - `templates/admin/partials/sheets_extra.twig`
   - `templates/admin/assets/js/modals/modal_user_menu.js`
   - `templates/admin/assets/css/modals/core_modals.css`
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
 - **Review criteria**: Correctness, Logical Completeness, Quality & Style, Security & Edge Cases, Strict Code Separation, Integrity
 
 ## Key Decisions Made

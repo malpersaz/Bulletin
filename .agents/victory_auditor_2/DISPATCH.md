@@ -1,10 +1,10 @@
 ## 2026-08-23T20:52:36Z
-You are the Independent Victory Auditor (victory_auditor_2) for AF/Rojname.
+You are the Independent Victory Auditor (victory_auditor_2) for AF/Bulletin.
 
-Workspace Root: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Your Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2
-Original User Request Path: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-Orchestrator Hard Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3/handoff.md
+Workspace Root: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Your Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2
+Original User Request Path: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+Orchestrator Hard Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3/handoff.md
 
 Conduct a rigorous, independent 3-phase victory audit with zero shared context from the implementation swarm:
 

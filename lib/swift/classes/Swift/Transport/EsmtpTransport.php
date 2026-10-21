@@ -230,7 +230,7 @@ class Swift_Transport_EsmtpTransport
         return $return;
       }
     }
-    trigger_error('Call to undefined method ' . $method, E_USER_ERROR);
+    throw new BadMethodCallException('Call to undefined method ' . $method);
   }
   
   // -- Protected methods

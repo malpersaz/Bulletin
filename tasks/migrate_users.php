@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - Bikarhêneran ji DB'ya kevin bikişîne DB'ya nû
+ * Bulletin - Bikarhêneran ji DB'ya kevin bikişîne DB'ya nû
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  */
 

@@ -1,4 +1,4 @@
-# Plan — AF/Rojname Commercial Module Purge & StaticAuditor Integration
+# Plan — AF/Bulletin Commercial Module Purge & StaticAuditor Integration
 
 ## Objective
 Purge all remaining references, dead routes, sitemaps, helper calls, and admin actions to `mod_client`, `mod_service`, `mod_product`, and `mod_reference` across `mod/`, integrate `StaticAuditor::checkDeprecatedModuleReferences()` into the E2E test suite, and run SWE Light refinement loop with verification.

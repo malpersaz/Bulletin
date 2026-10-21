@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Turkish Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -158,15 +158,15 @@ $lang['mod_publication'] = [
 
     // === Permission Errors ===
     'role_errors' => [
-        'add' => 'Yayın eklemeye permissionniz yok',
-        'edit' => 'Yayın düzenlemeye permissionniz yok',
-        'list' => 'Yayın yönetimini görüntülemeye permissionniz yok',
-        'delete' => 'Yayın silmeye permissionniz yok',
-        'approval' => 'Yayın approvema permissionniz yok',
+        'add' => 'Yayın eklemeye yetkiniz yok',
+        'edit' => 'Yayın düzenlemeye yetkiniz yok',
+        'list' => 'Yayın yönetimini görüntülemeye yetkiniz yok',
+        'delete' => 'Yayın silmeye yetkiniz yok',
+        'approval' => 'Yayın onaylama yetkiniz yok',
         'moderate_edit' => 'Başkalarına ait yayın kayıtlarını düzenleyemezsiniz',
         'moderate_delete' => 'Başkalarına ait yayın kayıtlarını silemezsiniz',
-        'gallery' => 'Galeri yönetme permissionniz yok',
-        'file' => 'Dosya yönetme permissionniz yok',
+        'gallery' => 'Galeri yönetme yetkiniz yok',
+        'file' => 'Dosya yönetme yetkiniz yok',
     ],
 
     // === Admin Panel Configuration ===
@@ -192,7 +192,7 @@ $lang['mod_publication'] = [
             'acl_id' => 'Erişim Kontrolü',
             'menu' => 'Menüye Ekle',
             'video' => 'Video Seç',
-            'video_help' => 'Yayınte görünmesini istediğiniz videonun adını arayın',
+            'video_help' => 'Yayında görünmesini istediğiniz videonun adını arayın',
         ],
         'radio' => [
             'publish_yes' => 'Yayınla',
@@ -345,6 +345,7 @@ $lang['mod_publication'] = [
         'messages' => [
             'success_sim' => 'Yayın başarıyla oluşturuldu! (Simülasyon)',
             'video_success_sim' => 'Video başarıyla eklendi! (Simülasyon)',
+            'video_embed_error' => 'Lütfen geçerli bir embed kodu giriniz (iframe).',
             'video_title_error' => 'Video başlığı en az 3 karakter olmalıdır.',
             'card_click' => 'Kart tıklandı: %s',
             'no_category_for_lang' => 'Bu dilde kategori bulunamadı. Lütfen önce kategorileri ekleyin.',
@@ -399,7 +400,7 @@ $lang['mod_publication'] = [
             "Haftalık Teknoloji Özeti: Neler Oldu?",
             "Yazarlar Birliği Yeni Yönetimini Seçti",
             "Fotoğrafçılık Atölyesi Kayıtları Başladı",
-            "AKM ARTIST CMS Mobil Uygulaması Güncellendi"
+            "AKM Bulletin CMS Mobil Uygulaması Güncellendi"
         ],
         'categories' => ["Gündem", "Kültür & Sanat", "Teknoloji", "Medya", "Yaşam"],
         'authors' => [],

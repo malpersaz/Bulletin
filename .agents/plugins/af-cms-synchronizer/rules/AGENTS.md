@@ -1,14 +1,14 @@
-# AF CMS Synchronizer Rules (AF/Rojname Adopter Workspace)
+# AF CMS Synchronizer Rules (AF/Bulletin Adopter Workspace)
 
 ## 1. Upstream-Downstream Model & Authority
 - **Canonical Upstream Reference**: `AF/Business` is the authoritative source for shared-core components (`lib/`, shared installer logic, base tools).
-- **Adopting Role**: `AF/Rojname` pulls and mirrors shared-core improvements while strictly preserving local domain autonomy (journalism, newspaper publishing, articles, headlines, press columns).
+- **Adopting Role**: `AF/Bulletin` pulls and mirrors shared-core improvements while strictly preserving local domain autonomy (journalism, newspaper publishing, articles, headlines, press columns).
 - **Zero Autonomous Cross-Repo Write**: The agent must NEVER write to sibling repositories autonomously. All cross-repo reading from `AF/Business` is strictly READ-ONLY.
 
 ## 2. Domain Boundaries & Forbidden Modules
-- **Rojname Domain Ownership**: Specializes in news journalism (`mod_news`, `mod_news_category`), headlines (`mod_headline`), publications (`mod_publication`, `mod_publication_category`), videos, pages, surveys, and press archives.
+- **Bulletin Domain Ownership**: Specializes in news journalism (`mod_news`, `mod_news_category`), headlines (`mod_headline`), publications (`mod_publication`, `mod_publication_category`), videos, pages, surveys, and press archives.
 - **Forbidden Commercial, Content & Assessment Modules**:
-  The following modules belong exclusively to other repositories and MUST NOT be introduced, imported, seeded, or referenced in `AF/Rojname`:
+  The following modules belong exclusively to other repositories and MUST NOT be introduced, imported, seeded, or referenced in `AF/Bulletin`:
   - `mod_content`, `mod_content_category`
   - `mod_product`, `mod_product_category`
   - `mod_service`, `mod_service_category`

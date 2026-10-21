@@ -15,10 +15,10 @@
 2. **`templates/admin/assets/css/style.css`**:
    - Lines 362–382 contain `:root` Material 3 definitions but omit the radius and error color custom properties present in `layout.twig`.
 3. **`templates/admin/assets/` Directory**:
-   - Subdirectories `templates/admin/assets/css/modals/` and `templates/admin/assets/js/modals/` do not exist in `AF/Rojname`.
+   - Subdirectories `templates/admin/assets/css/modals/` and `templates/admin/assets/js/modals/` do not exist in `AF/Bulletin`.
    - In `AF/Business`, these directories contain the centralized SPA modal navigation stack (`af_modal_engine.js`, `modal_user_menu.js`, `modal_newsletter.js`, `modal_redirects.js`, `modal_site_status.js`, `modal_theme_logo.js`, `modal_user_profile.js`, `core_modals.css`).
 4. **Boot Sequence & `lib/Registry.class.php`**:
-   - `init.php:65` attempts to require `lib/Registry.class.php`, but the file is missing in `AF/Rojname` (only legacy `Kayit.class.php` and `Register.class.php` exist).
+   - `init.php:65` attempts to require `lib/Registry.class.php`, but the file is missing in `AF/Bulletin` (only legacy `Kayit.class.php` and `Register.class.php` exist).
    - `config/*.php` files call `Registry::ekle(...)`.
    - Running `php -d display_errors=1 -r "require_once 'init.php';"` fails with a fatal error due to the missing `lib/Registry.class.php`.
    - Running `php tests/module_management_runtime_test.php` passes with 6/6 test cases.
@@ -48,7 +48,7 @@ The plan for Milestone 1 is fully defined:
 2. Update all `config/*.php` files to use `Registry::add`.
 3. Update `lib/Load.class.php` and `lib/InstallationState.php` to use standard `Registry` methods and remove `lib/Kayit.class.php` and `lib/Register.class.php`.
 4. Move inline CSS variables from `templates/admin/layout.twig` into `templates/admin/assets/css/style.css`.
-5. Sync modal engine CSS and JS files from `AF/Business/templates/admin/assets/` into `AF/Rojname/templates/admin/assets/`.
+5. Sync modal engine CSS and JS files from `AF/Business/templates/admin/assets/` into `AF/Bulletin/templates/admin/assets/`.
 6. Update `templates/admin/layout.twig` with modal scripts, clean CSS links, safe JSON escaping, and 0 inline scripts.
 
 ---

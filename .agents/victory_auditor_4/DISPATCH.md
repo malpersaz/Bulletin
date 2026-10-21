@@ -1,10 +1,10 @@
 ## 2026-08-24T01:02:00Z
-You are the Independent Post-Victory Auditor for AF/Rojname.
+You are the Independent Post-Victory Auditor for AF/Bulletin.
 
-Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_4
-Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
-Orchestrator Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/handoff.md
+Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_4
+Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
+Orchestrator Handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/handoff.md
 
 Conduct a complete 3-phase independent victory audit:
 Phase 1: Timeline and Scope Audit against all requests in ORIGINAL_REQUEST.md:

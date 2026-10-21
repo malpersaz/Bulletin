@@ -6,7 +6,7 @@ Adversarial challenge & empirical stress-testing of Milestone 2 (M2: Admin User 
 ## 🔒 My Identity
 - Archetype: empirical-challenger
 - Roles: critic, specialist
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m2_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m2_1
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M2
 - Instance: 1 of 1
@@ -51,11 +51,11 @@ Adversarial challenge & empirical stress-testing of Milestone 2 (M2: Admin User 
 - **Untested angles**: None.
 
 ## Loaded Skills
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/admin-mobile-check/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/admin-mobile-check/SKILL.md
   - **Core methodology**: Audit touch targets (>= 44x44px), CSS flex/grid overflow, phone viewport constraints
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/task-validation/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/task-validation/SKILL.md
   - **Core methodology**: Run code quality guards (code_separation_guard, i18n_guard, comment_guard)
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/i18n-guard/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/i18n-guard/SKILL.md
   - **Core methodology**: Verify completeness and English keys across all 9-language packs
 
 ## Key Decisions Made

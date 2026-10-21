@@ -2,7 +2,7 @@
 /**
  * Poll/Survey Module - Turkish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_survey
  * @version 1.0.0
  * @author  AKM Software

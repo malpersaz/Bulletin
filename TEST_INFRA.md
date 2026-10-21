@@ -1,4 +1,4 @@
-# E2E Test Infra: AF/Rojname Modernization
+# E2E Test Infra: AF/Bulletin Modernization
 
 ## Test Philosophy
 - Opaque-box, requirement-driven. No dependency on implementation internals.

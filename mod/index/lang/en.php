@@ -37,6 +37,9 @@ $lang['index'] = [
     'legal_contact_title' => 'Legal Contact & Representative',
     'warranty_policies_title' => 'Warranty & Return Policies',
     'legal_company_name' => 'Legal Company Name',
+    'legal_trading_name' => 'Trading Name',
+    'company_registration_number' => 'Company Registration Number',
+    'corporate_address' => 'Corporate Address',
     'company_type' => 'Company Type',
     'trade_registry_number' => 'Trade Registry Number',
     'central_registration_number' => 'Central Registration Number (MERSIS / DUNS)',
@@ -105,6 +108,7 @@ $lang['index'] = [
     'category_label' => 'Category',
     'updated_date' => 'Updated Date',
     'min_read' => 'min read',
+    'minute' => 'min',
     'enlarge_image' => 'Enlarge image',
     'add_content'=>'Add Content',
     'add_news'=>'Add News',
@@ -121,6 +125,8 @@ $lang['index']['search'] = [
     'searched_word' => 'Enter search keyword!',
     'search' => 'Search',
     'placeholder' => 'Search news, articles, authors etc.',
+    'shortcut_hint' => 'Press / to search',
+    'clear' => 'Clear search',
     'not_found' => 'No results found!',
     'search_results' => 'Search results for "<strong>%s</strong>"',
     'mod_news' => 'News results for "<strong>%s</strong>"',
@@ -147,6 +153,7 @@ $lang['index']['mod_video'] = [
 
 #   mod_video_embed
 $lang['index']['mod_video_embed'] = [
+    'title' => 'Videos',
     '1' => 'Videos',
     '2' => 'Videos',
     '3' => 'Our Videos',
@@ -158,12 +165,16 @@ $lang['index']['mod_video_embed'] = [
 ];
 
 $lang['index']['mod_video_embed']['latest_videos'] = [
+    'title' => 'Videos',
+    'all_items' => 'All Videos',
+    'no_items_found' => 'No content found in this category!',
     '1' => 'Videos',
     '2' => 'All Videos'
 ];
 
 # mod_pictures
 $lang['index']['mod_pictures'] = [
+    'title' => 'Photo Gallery',
     '1' => 'Photo Gallery',
     '2' => 'No Photo Found in This Category!'
 ];
@@ -184,6 +195,8 @@ $lang['index']['mod_attachment'] = [
 
 #   mod_page
 $lang['index']['mod_page'] = [
+    'subtitle' => 'Content',
+    'description' => 'Sub Pages',
     '1' => 'Files',
     '2' => 'Content',
     '3' => 'Sub Pages'
@@ -201,6 +214,7 @@ $lang['index']['mod_survey'] = [
 
 #   mod_announcements
 $lang['index']['mod_announcements'] = [
+    'title' => 'Announcements and Notices',
     '1' => 'Announcements and Notices',
     '2' => 'Year',
     '3' => 'Month',
@@ -343,7 +357,7 @@ $lang['index']['avatar_modal'] = [
 ];
 
 $lang['index']['copyright'] = '© All Rights Reserved.';
-$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>';
+$lang['index']['developer'] = '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Bulletin CMS v1.0.50</a>';
 # template.php
 $lang['index']['template'] = [
     'title' => 'Theme Gallery',

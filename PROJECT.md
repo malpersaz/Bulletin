@@ -1,8 +1,8 @@
-# Project: AF/Rojname Modernization
+# Project: AF/Bulletin (AKM Bulletin CMS) Modernization
 
 ## Architecture
 - **Framework**: Amed Framework / CMS (PHP 8+, SQLite/MySQL, Twig 3 templates)
-- **Repository Separation**: Strictly isolated news repository (`AF/Rojname`). Zero inclusion of commercial business modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
+- **Repository Separation**: Strictly isolated news repository (`AF/Bulletin`). Zero inclusion of commercial business modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
 - **Admin UI**: Phone-only mobile-first responsive surface (`templates/admin/`), touch targets ≥ 44x44px, zero inline CSS/JS.
 - **Frontend UI**: Default theme (`templates/amida/`), responsive desktop/mobile, brand fallback hierarchy (`Logo -> Symbol -> Radial Gradient Pattern`), zero inline CSS/JS.
 - **Data Flow & Relations**: ORM-backed models, centralized BaseModuleController AJAX relation helpers (`ajax_get_files()`, `ajax_get_images()`, `ajax_get_current_media()`, `ajax_update_relation()`).

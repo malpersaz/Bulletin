@@ -2,7 +2,7 @@
 /**
  * User Module - Russian Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -479,28 +479,20 @@ $lang['mod_user'] = [
         'goto_content' => 'Перейти к контенту',
         'search_placeholder' => 'Поиск по панели...',
         'quick_access' => 'Быстрый доступ',
-        'products_metrics_title' => 'Показатели каталога',
         'metrics_active' => 'Активно',
-        'metrics_products' => 'Товары',
         'metrics_clients' => 'Клиенты',
         'metrics_homepage' => 'Главная',
         'metrics_references' => 'Отзывы',
-        'metrics_product_categories' => 'Категории товаров',
         'family_quick_access' => 'Быстрый доступ к каталогу',
-        'products_spotlight_title' => 'Обзор каталога',
-        'products_spotlight_copy' => 'Управляйте товарами, услугами и проектами в едином интерфейсе.',
         'pinned_modules' => 'Закрепленные модули',
         'recent_workspace' => 'Недавняя активность',
-        'add_product' => 'Добавить товар',
         'add_reference' => 'Добавить отзыв',
         'add_client' => 'Добавить клиента',
         'add_service' => 'Добавить услугу',
-        'manage_product_categories' => 'Категории товаров',
         'manage_service_categories' => 'Категории услуг',
         'workspace_nav_dashboard' => 'Панель',
         'workspace_nav_content' => 'Контент',
         'workspace_nav_media' => 'Медиа',
-        'workspace_nav_products' => 'Каталог',
         'workspace_nav_more' => 'Еще',
         'more_sheet_title' => 'Дополнительные модули',
         'more_sheet_copy' => 'Выберите нужный модуль для управления.',
@@ -511,7 +503,7 @@ $lang['mod_user'] = [
         'link_submissions' => 'Результаты',
         'clear_search' => 'Очистить поиск',
         'home_title' => 'Главная',
-        'admin_brand' => 'AKM Rojname Admin',
+        'admin_brand' => 'AKM Bulletin CMS Admin',
     ],
     'agent' => [
         'title' => 'AI-Ассистент',
@@ -527,13 +519,12 @@ $lang['mod_user'] = [
     ],
     'fab' => [
         'add_announcement' => 'Добавить объявление',
-        'add_project' => 'Добавить проект',
-        'add_product' => 'Добавить товар',
         'add_service' => 'Добавить услугу',
         'add_page' => 'Добавить страницу',
         'add_video_embed' => 'Добавить встроенное видео',
         'add_video' => 'Добавить видео',
         'add_content' => 'Добавить материал',
+        'add_news' => 'Добавить новость',
         'add_publication' => 'Добавить публикацию',
         'add_announcement_alert' => 'Перейти к добавлению объявления',
         'add_video_alert' => 'Перейти к добавлению видео',

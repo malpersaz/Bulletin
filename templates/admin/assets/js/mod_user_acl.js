@@ -1,6 +1,6 @@
 /**
  * Access Control List (ACL) — Reactive State Management & Persistence Engine
- * Production Mobile-First ES6+ Engine for Amed Framework (AF/Business CMS)
+ * Production Mobile-First ES6+ Engine for Amed Framework (AKM Bulletin CMS)
  *
  * Strict Code Separation: 100% English code, identifiers, and comments.
  * Zero inline event handlers or scripts. Pure DOM event delegation.

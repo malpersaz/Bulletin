@@ -135,7 +135,6 @@ function build_runtime(array $tables, array $modsRows)
         ] as $property => $value
     ) {
         $reflectionProperty = $runtimeReflection->getProperty($property);
-        $reflectionProperty->setAccessible(true);
         $reflectionProperty->setValue($runtime, $value);
     }
 

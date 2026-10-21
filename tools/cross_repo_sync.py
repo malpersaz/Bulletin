@@ -33,7 +33,7 @@ import re
 import sys
 
 CANONICAL_REPO = "Business"
-SIBLING_CANDIDATES = ["Association", "Artist", "Property", "Rojname"]
+SIBLING_CANDIDATES = ["Association", "Artist", "Property", "Bulletin"]
 
 # Longest token first: normalized away before comparison so header branding
 # does not count as drift.

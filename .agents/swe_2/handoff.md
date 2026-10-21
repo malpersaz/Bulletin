@@ -1,7 +1,7 @@
 # Handoff Report: Modernization of TwigTemplate & Purging Legacy `->veri()`
 
 ## Summary
-Resolved the fatal error `Call to undefined method TwigTemplate::veri()` across AF/Rojname through full SWE Light sequential refinement:
+Resolved the fatal error `Call to undefined method TwigTemplate::veri()` across AF/Bulletin through full SWE Light sequential refinement:
 - Replaced 592 legacy `->veri(...)` calls across 28 files with canonical `->set(...)`.
 - Updated `lib/TwigTemplate.class.php` with robust `set($key, $value = null)` (scalar + batch array hydration), backward-compatible `veri()`, `assign()`, and magic `__call()` forwarding.
 - Aligned `BaseModuleController` and `indexBase` with `$this->theme` / `$this->view` / `$this->tema` property declarations and dynamic `__get` fallbacks.
@@ -31,8 +31,8 @@ Resolved the fatal error `Call to undefined method TwigTemplate::veri()` across 
 - PHP Syntax Lint (`find mod lib installer tests tasks config -name "*.php" -exec php -l {} +`): 0 syntax errors detected.
 
 ## Key Artifacts
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/BRIEFING.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/progress.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/plan.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_2/DISPATCH.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/teamwork_preview_victory_auditor/handoff.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/BRIEFING.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/progress.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/plan.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_2/DISPATCH.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/teamwork_preview_victory_auditor/handoff.md`

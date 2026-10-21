@@ -60,8 +60,6 @@ class mod_settings_model extends ORM
     public $warranty_description;
     public $cookie_policy_content;
     public $country;
-    public $stat_completed_projects;
-    public $stat_ongoing_projects;
     public $stat_workforce;
     public $stat_offices;
     public $is_online_retail;

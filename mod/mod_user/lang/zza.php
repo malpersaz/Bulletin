@@ -2,7 +2,7 @@
 /**
  * User Module - Zaza Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module mod_user
  * @version 1.0.0
  * @author AKM Software
@@ -381,9 +381,9 @@ $lang['mod_user'] = [
     'security_code' => 'Security Code',
     'activate_button' => 'Activate',
     'lost_code' => 'If you have lost your activation code
-	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation">Click here</a> to request a new activation code.',
     'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login">Click here</a> to log in to your account.',
     'membership_activation' => 'Membership Activation',
     'error' => [
       'invalid_captcha' => 'You entered the security code incorrectly, please check your activation code
@@ -443,28 +443,20 @@ $lang['mod_user'] = [
     'goto_content' => 'Here Rêveberiya Naverokê',
     'search_placeholder' => 'Li Naverokê Bigere...',
     'quick_access' => 'Gihaştina Lezgîn',
-    'products_metrics_title' => 'Kurteya Hilberan',
     'metrics_active' => '%s qeydê aktif',
-    'metrics_products' => '%s qeydê hilberi',
     'metrics_clients' => '%s qeydê mişteriyan',
     'metrics_homepage' => '%s qeydê serpel',
     'metrics_references' => '%s qeydê referansi',
-    'metrics_product_categories' => '%s qeydê kategoriyanê hilberi',
     'family_quick_access' => 'Ravêrdayışê Saha',
-    'products_spotlight_title' => 'Saha Hilberan',
-    'products_spotlight_copy' => 'Hilber, delilê mişteriyan û taksonomiyê piştgiriyayi ra yewca rê vıni.',
     'pinned_modules' => 'Modulê Sabit',
     'recent_workspace' => 'Saha Peyên',
-    'add_product' => 'Hilber Cı Keno',
     'add_reference' => 'Referans Cı Keno',
     'add_client' => 'Mişterî Cı Keno',
     'add_service' => 'Xizmet Cı Keno',
-    'manage_product_categories' => 'Saha Kategoriyan Veke',
     'manage_service_categories' => 'Kategoriyê Xizmetan Veke',
     'workspace_nav_dashboard' => 'Panel',
     'workspace_nav_content' => 'Naverok',
     'workspace_nav_media' => 'Medya',
-    'workspace_nav_products' => 'Hilber',
     'workspace_nav_more' => 'Tayêna',
     'more_sheet_title' => 'Amurê Zêde',
     'more_sheet_copy' => 'Bêy ku xeta sereke ya kar tijî bibo, rûyê idareyiya kem-bıkaranışi veke.',
@@ -475,16 +467,16 @@ $lang['mod_user'] = [
     'link_submissions' => 'Netîcey',
     'clear_search' => 'Pak bike',
     'home_title' => 'Serûpel',
-    'admin_brand' => 'AKM Rojname Admin',
+    'admin_brand' => 'AKM Bulletin CMS Admin',
   ],
   'fab' => [
     'add_announcement' => 'Daxwiyaniyekê Lêke',
-    'add_product' => 'Berhem Lêke',
     'add_service' => 'Xizmet Lêke',
     'add_page' => 'Pelge Lêke',
     'add_video_embed' => 'Vîdeo Embed Lêke',
     'add_video' => 'Vîdeoyek Nû',
     'add_content' => 'Nûçeyekê Lêke',
+        'add_news' => 'Xeberêke Lêke',
     'add_publication' => 'Weşanekê Lêke',
     'add_announcement_alert' => 'Forma Daxwiyaniyê',
     'add_video_alert' => 'Forma Vîdeoyê',

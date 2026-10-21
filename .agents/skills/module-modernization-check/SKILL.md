@@ -7,11 +7,11 @@ description: Internal Synchronization & Modernization Check - Audit modules, plu
 
 ## Purpose
 
-This skill defines the checks and baseline modernization rules for all modules within the Rojname CMS project to track and verify their alignment with the modernization standard.
+This skill defines the checks and baseline modernization rules for all modules within the AKM Bulletin CMS project to track and verify their alignment with the modernization standard.
 
 ## Modernization Checklist & Criteria
 
-When a module is created, modified, or audited, it must be evaluated across the following six key aspects based on the standard defined in [module_modernization_integrated.html](file:///home/malpersaz/Desktop/projects/htdocs/AF/Rojname/docs/module_modernization_integrated.html):
+When a module is created, modified, or audited, it must be evaluated across the following six key aspects based on the standard defined in [module_modernization_integrated.html](file:///home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/docs/module_modernization_integrated.html):
 
 ### 1. Installer Aspect
 * **Check:** Verify that the installation directory `installer/mod_<module_name>/` exists.
@@ -79,6 +79,6 @@ If the audit finds any issues outside the table criteria, it appends those detai
 ## Operating Rule for Agents
 
 1. **Before starting a task:** Read the guidelines inside this skill to identify standard baseline expectations.
-2. **Execution:** Heta bikarhêner fermana rasterast a qontrolkirina senkronîzasyona hindurîn (mînak a vê repoyê) an jî senkronîzasyona repoyên cuda (Business, Artist, Association, Property, Rojname) nede, tu bi serê xwe vê pêvajoyê mede destpêkirin û ji bikarhêner jî daxwaza destûra wê meke!
+2. **Execution:** Heta bikarhêner fermana rasterast a qontrolkirina senkronîzasyona hindurîn (mînak a vê repoyê) an jî senkronîzasyona repoyên cuda (Business, Artist, Association, Property, Bulletin) nede, tu bi serê xwe vê pêvajoyê mede destpêkirin û ji bikarhêner jî daxwaza destûra wê meke!
 
 

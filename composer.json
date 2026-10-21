@@ -1,8 +1,12 @@
 {
   "scripts": {
-    "test:module-management": "php tests/module_management_runtime_test.php"
+    "test:module-management": "php tests/module_management_runtime_test.php",
+    "test:runtime": "php -d error_reporting=E_ALL tests/module_management_runtime_test.php && php -d error_reporting=E_ALL tests/twig_template_adversarial_test.php",
+    "lint:syntax": "find lib mod config tests -name '*.php' -print0 | xargs -0 -n1 -P4 php -d error_reporting=E_ALL -l",
+    "refactor:dry": "vendor/bin/rector process --dry-run"
   },
   "require": {
+    "php": "^8.4 || ^8.5",
     "buggedcom/phpvideotoolkit": "dev-master",
     "intervention/image": "^3.11",
     "twig/twig": "^3.0",

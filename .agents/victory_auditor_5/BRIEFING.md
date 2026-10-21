@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-24T01:19:30Z
 
 ## Mission
-Conduct a complete 3-phase victory audit on AF/Rojname to independently verify all milestones, integrity constraints, and test suites.
+Conduct a complete 3-phase victory audit on AF/Bulletin to independently verify all milestones, integrity constraints, and test suites.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_5
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_5
 - Original parent: 59844731-4ab0-4800-8858-0e251ecc9755
 - Target: full project
 
@@ -22,7 +22,7 @@ Conduct a complete 3-phase victory audit on AF/Rojname to independently verify a
 - Updated: 2026-08-24T01:19:30Z
 
 ## Audit Scope
-- **Work product**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+- **Work product**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit
 

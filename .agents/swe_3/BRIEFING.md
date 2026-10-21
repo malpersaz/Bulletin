@@ -6,13 +6,13 @@ Purge all 30 remaining references to excluded modules (`mod_client`, `mod_servic
 ## 🔒 My Identity
 - Archetype: orchestrator
 - Roles: orchestrator, user_liaison, human_reporter, successor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_3
 - Original parent: parent
 - Original parent conversation ID: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 
 ## 🔒 My Workflow
 - **Pattern**: SWE Light
-- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_3/plan.md
+- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_3/plan.md
 1. **Decompose**: SWE Light does not decompose. Full task propagated to worker.
 2. **Dispatch & Execute**:
    - **Direct (iteration loop)**: Implementer -> Reviewer 1 -> Reviewer 2 -> Reviewer 3 -> Victory Auditor

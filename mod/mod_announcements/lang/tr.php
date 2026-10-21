@@ -106,10 +106,10 @@
   'information' => 'Bilgi!',
   'success' => 'İşlem Başarılı!',
   'error' => 'Ölümcül Hata Oluştu!',
-  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
+  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Emin misiniz?',
   'remove_image_success' => 'Resim Kaldırıldı',
   'choose_wish' => 'Dilerseniz Seçin',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
+  'remove_record' => 'Bu Kaydı Silmek İstediğinize Emin misiniz?',
   'message' => 
    [
     'success' => 
@@ -159,20 +159,20 @@
     'publish' => 
      [
       'key' => 'Yayınla',
-      'value' => 'Bu Duyuruyu Yayınlamak İstediğinize Eminmisiniz?',
+      'value' => 'Bu Duyuruyu Yayınlamak İstediğinize Emin misiniz?',
     ],
     'unpublish' => 
      [
       'key' => 'Yayından Al',
-      'value' => 'Bu Duyuruyu Yayından Kaldırmak İstediğinize Eminmisiniz?',
+      'value' => 'Bu Duyuruyu Yayından Kaldırmak İstediğinize Emin misiniz?',
     ],
   ],
   'validator' => 
    [
     'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
+    'length' => '%s En Kısa %s En Uzun %s Karakterden Oluşabilir',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
+    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı. Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
     'title_length' => 'En az 1 ve en çok 70 karakterden oluşan bir başlık girmelisiniz.',
     'deck_length' => 'Lütfen en az 90, en çok 120 karakterden oluşan bir giriş metni girin.',
@@ -184,8 +184,8 @@
     'edit' => 'Duyuru Düzenleyebilir',
     'delete' => 'Duyuru Silebilir',
     'list' => 'Duyuru Yönetimini Görüntüleyebilir',
-    'gallery' => 'Duyuru\'ya Galeri Ekleyebilirmi?',
-    'file' => 'Duyuru\'ya Dosya Ekleyebilirmi?',
+    'gallery' => 'Duyuru\'ya Galeri Ekleyebilir mi?',
+    'file' => 'Duyuru\'ya Dosya Ekleyebilir mi?',
     'moderate_edit' => 'Kendisine Ait Olmayan Duyuru Kaydını Düzenleyebilir',
     'moderate_delete' => 'Kendisine Ait Olmayan Duyuru Kaydını Silebilir',
   ],
@@ -211,7 +211,6 @@
       'seo' => 'SEO URL',
       'date' => 'Tarih',
       'created_at' => 'Tarih',
-      'date' => 'Tarih',
       'status' => 'Yayınlansın mı?',
       'deck' => 'Giriş Görüntülensin mi?',
       'summary' => 'Giriş',

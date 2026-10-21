@@ -133,6 +133,7 @@ $lang['mod_video_embed'] = [
             'description' => 'Daxuyanî (SEO)',
             'image' => 'Wêne',
             'acl_id' => 'Kî dikare vê vîdyoyê bibîne?',
+            'category_id' => 'Kategorî',
             'preview' => 'Pêşdîtin',
             'seo_preview' => 'Pêşdîtina URL ya SEO',
         ],

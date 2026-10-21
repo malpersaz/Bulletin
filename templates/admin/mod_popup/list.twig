@@ -16,7 +16,7 @@
                     <div class="content-card-title">{{ item.name }}</div>
                     <div class="content-card-meta">
                         <span class="badge {% if item.status == 'y' %}badge-success{% else %}badge-secondary{% endif %}">
-                            {{ item.status == 'y' ? lang.mod_popup.active : lang.mod_popup.passive }}
+                            {{ item.status == 'y' ? lang.mod_popup.admin.radio.publish_yes : lang.mod_popup.admin.radio.publish_no }}
                         </span>
                         <span class="badge badge-info">{{ item.lang|upper }}</span>
                     </div>
@@ -31,7 +31,7 @@
     {% else %}
         <div class="empty-state">
             <i class="bi bi-window-stack"></i>
-            <strong>{{ lang.mod_popup.no_records|default('No popups found') }}</strong>
+            <strong>{{ lang.mod_popup.grid.no_data }}</strong>
         </div>
     {% endif %}
 </div>

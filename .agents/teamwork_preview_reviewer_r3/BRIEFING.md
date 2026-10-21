@@ -2,7 +2,7 @@
 
 ## Role & Mission
 - Role: `teamwork_preview_reviewer` (Round 3)
-- Target Workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- Target Workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - Mission: Modernize `Run` and `Validator` classes, purge all legacy `Kayit::` invocations across all modules (`mod/index`, `mod/lang`, `mod/mod_category`, `mod/mod_settings`, `mod/mod_user`, `mod/mod_attachment`, `mod/mod_gallery`, `mod/mod_video`, `mod/mod_imagecategories`, etc.) replacing them with canonical `Registry` calls (`Registry::get`, `Registry::add`, `Registry::set`), ensure zero Turkish identifiers in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`, `lib/Registry.class.php`), maintain strict module boundary isolation, and achieve 100% test pass rate across all suites.
 
 ## Identified Issues & Required Actions

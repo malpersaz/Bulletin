@@ -37,6 +37,9 @@ $lang['index'] = [
     'legal_contact_title' => 'Temsîlkarê Qanûnî û Têkilî',
     'warranty_policies_title' => 'Mercên Garantî û Vegerandinê',
     'legal_company_name' => 'Navê Fermî yê Karsaziyê',
+    'legal_trading_name' => 'Navê Bazirganiyê',
+    'company_registration_number' => 'Hejmara Qeyda Pargîdaniyê',
+    'corporate_address' => 'Navnîşana Saziyê',
     'company_type' => 'Cureyê Karsaziyê',
     'trade_registry_number' => 'Hejmara Sicîla Bazirganiyê',
     'central_registration_number' => 'Hejmara Qeyda Navendî (MERSÎS / DUNS)',
@@ -105,6 +108,7 @@ $lang['index'] = [
     'category_label' => 'Kategorî',
     'updated_date' => 'Dema Serastkirinê',
     'min_read' => 'deqîqe xwendin',
+    'minute' => 'deqe',
     'enlarge_image' => 'Wêne mezin bike',
     'add_content' => 'Naverokekê Lêke',
     'add_news' => 'Nûçeyekê Lêke',
@@ -129,6 +133,8 @@ $lang['index'] = [
         'searched_word' => 'Peyva lêgerînê binivîse!',
         'search' => 'Bibîne',
         'placeholder' => 'Li nûçe, nivîs, nivîskar û hwd bigere',
+        'shortcut_hint' => 'Ji bo lêgerînê pêl / bike',
+        'clear' => 'Lêgerînê paqij bike',
         'not_found' => 'Tu encam nehat dîtin!',
         'search_results' => 'Encamên lêgerîna "<strong>%s</strong>"',
         'mod_news' => 'Encamên nûçeyan ê "<strong>%s</strong>"',
@@ -151,6 +157,7 @@ $lang['index'] = [
         2 => 'Ji bo vê naverokê pelê vîdyoyê orjînal heye lê ji bo daxistinê destûra te nîne.<br>Eger tu karmendê medyayî ji, ji bo destûrê bi tîmê me re têkilî bike.',
     ],
     'mod_video_embed' => [
+        'title' => 'Vîdyoyên Naverokê',
         1 => 'Vîdyoyên Naverokê',
         2 => 'Vîdyo',
         3 => 'Vîdyoyên Me',
@@ -160,11 +167,15 @@ $lang['index'] = [
         7 => 'Ev vîdyo di roja %s de di kategoriya <a href="%s" title="%s">%s</a> de hate weşandin',
         8 => 'Rûpelkirin',
         'latest_videos' => [
+            'title' => 'Vîdyo',
+            'all_items' => 'Hemû Vîdyo',
+            'no_items_found' => 'Di vê kategoriyê de naverok nehat dîtin!',
             1 => 'Vîdyo',
             2 => 'Hemû Vîdyo',
         ],
     ],
     'mod_pictures' => [
+        'title' => 'Galeriya Wêneyan',
         1 => 'Galeriya Wêneyan',
         2 => 'Ji bo vê kategoriyê wêne nehat dîtin!',
         'latest_pictures' => [
@@ -181,6 +192,8 @@ $lang['index'] = [
         2 => 'Ji bo vê naverokê pel nehatiye lêzêdekirin!',
     ],
     'mod_page' => [
+        'subtitle' => 'Naverok',
+        'description' => 'Binrûpel',
         1 => 'Pel',
         2 => 'Navero',
         3 => 'Binrûpel',
@@ -191,6 +204,7 @@ $lang['index'] = [
         3 => 'Deng Bide',
     ],
     'mod_announcements' => [
+        'title' => 'Daxuyanî',
         1 => 'Daxuyanî',
         2 => 'Sal',
         3 => 'Meh',
@@ -318,7 +332,7 @@ $lang['index'] = [
         'upload_button' => 'Lêbarke',
     ],
     'copyright' => '© Hemû maf parastî ne.',
-    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Business v1.0.50</a>',
+    'developer' => '<a href="http://www.akmsoftware.co.uk" title="AKMsoftware">AKM Bulletin CMS v1.0.50</a>',
     'template' => [
         'title' => 'Pêşangeha Dirban',
         'desc' => 'Pêşangeha Dirban - Lêkirin û Sazkirin',

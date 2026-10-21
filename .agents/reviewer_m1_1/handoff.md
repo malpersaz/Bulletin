@@ -2,7 +2,7 @@
 **Target Milestone**: Core Framework, ORM Resilience & Twig SEO Unicode Parity  
 **Reviewer & Critic**: Reviewer 1 (M1)  
 **Date**: 2026-08-23  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m1_1`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m1_1`  
 **Verdict**: **APPROVE**  
 **Overall Risk Assessment**: **LOW**
 

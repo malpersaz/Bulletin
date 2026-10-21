@@ -1,5 +1,5 @@
 /**
- * AKM ARTIST CMS - Private Messaging (mod_user_pm)
+ * AKM Bulletin CMS - Private Messaging (mod_user_pm)
  * Modernization with M3 Design & Infinite Scroll
  * @date 2026-03-12
  */

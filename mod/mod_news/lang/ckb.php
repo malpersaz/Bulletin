@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package AKM Property
+ * @package AKM Bulletin CMS
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -425,7 +425,7 @@ $lang['mod_news'] = [
             "Kurteya Teknolojiya Heftane: Çi Qewimî?",
             "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
             "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a Rojname hat nûjenkirin"
+            "Serlêdana Mobîl a AKM Bulletin CMS hat nûjenkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],

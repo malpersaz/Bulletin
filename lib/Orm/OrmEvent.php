@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Business Content Management System
+ * Amed Framework
  * Orm Event Handler
  */
 

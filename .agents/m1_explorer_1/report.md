@@ -1,16 +1,16 @@
 # Milestone 1: Core Foundation & Registry Fix — Investigation Report
 
 **Explorer**: Explorer 1  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_1`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_1`  
 **Reference Source**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`  
-**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 **Date**: 2026-08-23  
 
 ---
 
 ## 1. Executive Summary
 
-In `AF/Rojname`, bootstrap initialization (`init.php`) fails with a fatal error because `lib/Registry.class.php` is missing while `init.php:65` explicitly requires it (`require_once(lib_dir . 'Registry.class.php');`). Furthermore, the codebase still contains legacy, deprecated classes with Turkish identifiers (`lib/Kayit.class.php` and `lib/Register.class.php`), and `config/*.php` files call deprecated `Registry::ekle(...)` instead of the canonical `Registry::add(...)`.
+In `AF/Bulletin`, bootstrap initialization (`init.php`) fails with a fatal error because `lib/Registry.class.php` is missing while `init.php:65` explicitly requires it (`require_once(lib_dir . 'Registry.class.php');`). Furthermore, the codebase still contains legacy, deprecated classes with Turkish identifiers (`lib/Kayit.class.php` and `lib/Register.class.php`), and `config/*.php` files call deprecated `Registry::ekle(...)` instead of the canonical `Registry::add(...)`.
 
 This report provides the complete file-by-file investigation, exact code replacements, dependency impact analysis (including `lib/Load.class.php` and core library callers), and an actionable, step-by-step implementation and verification plan for the implementation worker.
 
@@ -20,13 +20,13 @@ This report provides the complete file-by-file investigation, exact code replace
 
 ### 2.1 Missing `lib/Registry.class.php` & Canonical Porting
 
-- **Target Location**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php`
+- **Target Location**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php`
 - **Source Reference**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business/lib/Registry.class.php`
-- **Current State in AF/Rojname**: File does NOT exist.
+- **Current State in AF/Bulletin**: File does NOT exist.
 - **Current Failure Output**:
   ```
-  Warning: require_once(/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php): Failed to open stream: No such file or directory in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/init.php on line 65
-  Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/init.php:65
+  Warning: require_once(/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php): Failed to open stream: No such file or directory in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/init.php on line 65
+  Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/init.php:65
   ```
 - **Canonical Implementation**:
   ```php
@@ -83,7 +83,7 @@ This report provides the complete file-by-file investigation, exact code replace
 
 ### 2.2 Audit of `config/*.php` Files (`Registry::ekle` -> `Registry::add`)
 
-A complete search across all 12 configuration files in `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/` reveals the following exact occurrences to update:
+A complete search across all 12 configuration files in `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/` reveals the following exact occurrences to update:
 
 | # | File Path | Line Number(s) | Current Code (`Registry::ekle`) | Required Code (`Registry::add`) |
 |---|---|---|---|---|
@@ -105,19 +105,19 @@ A complete search across all 12 configuration files in `/home/malpersaz/Desktop/
 ### 2.3 Legacy Class Deletion (`lib/Kayit.class.php` & `lib/Register.class.php`)
 
 1. **`lib/Kayit.class.php`**:
-   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Kayit.class.php` (42 lines)
+   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Kayit.class.php` (42 lines)
    - Contains Turkish methods: `getir`, `ekle`, `add`, `varmi`, `sil`, `yenile`, `hepsi`.
    - Usages in active code: 0. (Not autoloaded by `autoload.config.php`, not required by `init.php`).
    - Action: **Delete file**.
 
 2. **`lib/Register.class.php`**:
-   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Register.class.php` (51 lines)
+   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Register.class.php` (51 lines)
    - Contains methods: `get`, `set`, `exists`, `delete`, `renew`, `all`.
    - Usages in active code: 0. (Not autoloaded by `autoload.config.php`, not required by `init.php`).
    - Action: **Delete file**.
 
 3. **Orphan `lib/AdminTemplate.class copy.php`**:
-   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/AdminTemplate.class copy.php`
+   - Location: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/AdminTemplate.class copy.php`
    - An old Smarty backup file with invalid spaces in filename and legacy Turkish calls (`Registry::getir`).
    - Action: **Delete file**.
 
@@ -126,7 +126,7 @@ A complete search across all 12 configuration files in `/home/malpersaz/Desktop/
 ### 2.4 Critical Dependency Impact: Autoloader & Core Library Parity
 
 During investigation of `init.php`, we traced execution beyond line 65:
-When `init.php` loads `lib/Load.class.php` and executes `Load::libfile($libfile)`, `Load.class.php` in `AF/Rojname` contains legacy calls to Turkish methods (`Registry::varmi`, `Registry::getir`, `Registry::yenile`, `Registry::ekle`).
+When `init.php` loads `lib/Load.class.php` and executes `Load::libfile($libfile)`, `Load.class.php` in `AF/Bulletin` contains legacy calls to Turkish methods (`Registry::varmi`, `Registry::getir`, `Registry::yenile`, `Registry::ekle`).
 
 Because the canonical `Registry` class only implements `get`, `add`, `has`, `set`, `remove`, `all`, calling `init.php` will trigger fatal errors in `lib/Load.class.php` unless `Load.class.php` is synced with `AF/Business/lib/Load.class.php`.
 
@@ -150,44 +150,44 @@ The same applies to other core libraries loaded during bootstrap:
 The implementation worker should execute the following sequence:
 
 ### Phase 1: Core Registry Porting
-1. Copy canonical `Registry.class.php` from `/home/malpersaz/Desktop/projects/htdocs/AF/Business/lib/Registry.class.php` into `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php`.
+1. Copy canonical `Registry.class.php` from `/home/malpersaz/Desktop/projects/htdocs/AF/Business/lib/Registry.class.php` into `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php`.
 
 ### Phase 2: Configuration Standardization (`Registry::ekle` -> `Registry::add`)
-2. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/autoload.config.php`:
+2. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/autoload.config.php`:
    - Replace line 42 `Registry::ekle` with `Registry::add`.
    - Update docblock and section comments to English.
-3. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/db.config.php`:
+3. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/db.config.php`:
    - Replace lines 12-13 `Registry::ekle` with `Registry::add`.
-4. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/db.config.local.php`:
+4. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/db.config.local.php`:
    - Replace lines 24-25 `Registry::ekle` with `Registry::add`.
-5. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/db.config.example.php`:
+5. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/db.config.example.php`:
    - Replace lines 111, 113, 115, 117 `Registry::ekle` with `Registry::add`.
-6. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/db.config.sqlite.php`:
+6. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/db.config.sqlite.php`:
    - Replace lines 88, 90, 92, 94 `Registry::ekle` with `Registry::add`.
-7. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/email.config.php` and `config/email.config.example.php`:
+7. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/email.config.php` and `config/email.config.example.php`:
    - Change `'ad'` to `'name'` on line 19.
    - Replace line 21 `Registry::ekle` with `Registry::add`.
    - Update docblock comments to English.
-8. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/i18n.config.php`:
+8. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/i18n.config.php`:
    - Replace lines 13, 15 `Registry::ekle` with `Registry::add`.
-9. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/session.config.php`:
+9. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/session.config.php`:
    - Replace lines 14, 15, 16, 17, 18, 20, 21, 22, 24 `Registry::ekle` with `Registry::add`.
    - Update comments to English.
-10. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/site.config.example.php`:
+10. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/site.config.example.php`:
     - Replace lines 56, 58, 60, 62, 64, 65, 67 `Registry::ekle` with `Registry::add`.
-11. In `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/url.config.php`:
+11. In `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/url.config.php`:
     - Replace line 145 `Registry::ekle` with `Registry::add`.
 
 ### Phase 3: Core Library Parity Alignment
-12. Sync `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Load.class.php` with `/home/malpersaz/Desktop/projects/htdocs/AF/Business/lib/Load.class.php`.
-13. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Database/Database.php` lines 53-59 to use `Registry::get()` and `Registry::set()`.
-14. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Database/Adapter/*.php` (`PDO_MYSQL.php`, `PDO_SQLITE.php`, `PDO_POSTGRESQL.php`, `Mysqli.php`) to use `Registry::get('db_config')`.
-15. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/BaseModuleValidator.class.php`, `lib/InstallationState.php`, `lib/ImageService.class.php`, `lib/Email.class.php`, `lib/AIService.class.php` to use standard `Registry::get` / `Registry::has`.
+12. Sync `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Load.class.php` with `/home/malpersaz/Desktop/projects/htdocs/AF/Business/lib/Load.class.php`.
+13. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Database/Database.php` lines 53-59 to use `Registry::get()` and `Registry::set()`.
+14. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Database/Adapter/*.php` (`PDO_MYSQL.php`, `PDO_SQLITE.php`, `PDO_POSTGRESQL.php`, `Mysqli.php`) to use `Registry::get('db_config')`.
+15. Update `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/BaseModuleValidator.class.php`, `lib/InstallationState.php`, `lib/ImageService.class.php`, `lib/Email.class.php`, `lib/AIService.class.php` to use standard `Registry::get` / `Registry::has`.
 
 ### Phase 4: Legacy File Deletions
-16. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Kayit.class.php`.
-17. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Register.class.php`.
-18. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/AdminTemplate.class copy.php`.
+16. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Kayit.class.php`.
+17. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Register.class.php`.
+18. Delete `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/AdminTemplate.class copy.php`.
 
 ---
 
@@ -198,21 +198,21 @@ The worker and verifiers must execute the following commands in sequence:
 ### Command 1: Syntax Validation
 ```bash
 # Verify syntax of Registry class and all config files
-php -l /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php
-find /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config -name "*.php" -exec php -l {} \;
+php -l /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php
+find /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config -name "*.php" -exec php -l {} \;
 ```
 **Expected Result**: Every file returns `No syntax errors detected in <file>`.
 
 ### Command 2: Bootstrap Initialization Test
 ```bash
-cd /home/malpersaz/Desktop/projects/htdocs/AF/Rojname && php -d display_errors=1 -r "require_once 'init.php'; echo 'BOOTSTRAP_OK' . PHP_EOL;"
+cd /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin && php -d display_errors=1 -r "require_once 'init.php'; echo 'BOOTSTRAP_OK' . PHP_EOL;"
 ```
 **Expected Result**:
 Output is `BOOTSTRAP_OK` with exit code `0` (zero warnings, zero fatal errors).
 
 ### Command 3: Full Registry Functional Unit Test
 ```bash
-cd /home/malpersaz/Desktop/projects/htdocs/AF/Rojname && php -d display_errors=1 -r "
+cd /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin && php -d display_errors=1 -r "
 require_once 'init.php';
 // Test Add and Get
 Registry::add('m1_test_key', 'm1_value');
@@ -236,10 +236,10 @@ Output is `REGISTRY_UNIT_TESTS_PASSED` with exit code `0`.
 ### Command 4: Purge Verification
 ```bash
 # Ensure no lingering Kayit.class.php or Register.class.php exist in lib/
-ls /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Kayit.class.php 2>&1
-ls /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Register.class.php 2>&1
+ls /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Kayit.class.php 2>&1
+ls /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Register.class.php 2>&1
 # Ensure no active Registry::ekle exists in config/
-grep -rn "Registry::ekle" /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/config/
+grep -rn "Registry::ekle" /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/config/
 ```
 **Expected Result**:
 `ls` commands report `No such file or directory`. `grep` returns 0 matches.

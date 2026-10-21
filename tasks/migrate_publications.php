@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - Weşanên kevn (mod_makale) ji DB'ya kevn bikişîne DB'ya nû (mod_publication)
+ * Bulletin - Weşanên kevn (mod_makale) ji DB'ya kevn bikişîne DB'ya nû (mod_publication)
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  *
  * Nîşe:

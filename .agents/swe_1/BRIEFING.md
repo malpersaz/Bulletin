@@ -1,18 +1,18 @@
 # BRIEFING — 2026-08-24T00:11:34+03:00
 
 ## Mission
-Fix the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code) and verifying via the full e2e test suite (`php tests/e2e/run.php`).
+Fix the fatal error `Call to undefined method Run::execute()` in `AF/Bulletin` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code) and verifying via the full e2e test suite (`php tests/e2e/run.php`).
 
 ## 🔒 My Identity
 - Archetype: swe_orchestrator
 - Roles: orchestrator, user_liaison, human_reporter, successor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1
 - Original parent: parent
 - Original parent conversation ID: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 
 ## 🔒 My Workflow
 - **Pattern**: SWE Light
-- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
+- **Scope document**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
 1. **Decompose**: Single line of work, sequential refinement.
 2. **Dispatch & Execute**:
    - Dispatch `teamwork_preview_implementer` to produce a working diff and verification record.
@@ -69,7 +69,7 @@ Fix the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by
 - Safety timer: none
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/DISPATCH.md` — Inbound dispatch record
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/BRIEFING.md` — State & mission index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/plan.md` — Refinement plan
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/progress.md` — Execution status & heartbeat
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/DISPATCH.md` — Inbound dispatch record
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/BRIEFING.md` — State & mission index
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/plan.md` — Refinement plan
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/progress.md` — Execution status & heartbeat

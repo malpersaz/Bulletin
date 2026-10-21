@@ -1,7 +1,7 @@
 # Milestone 1 Challenger 1: Adversarial Stress & Edge Case Verification Report
 
 **Agent**: `m1_challenger_1` (Critic / Empirical Challenger / Specialist)  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_challenger_1`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_challenger_1`  
 **Verdict**: **CONFIRM (PASS)**  
 **Date**: 2026-08-23T22:38:35+03:00  
 
@@ -19,7 +19,7 @@
    - **Basic CRUD**: Added, read, set updated, and removed key cleanly (`PASS`).
    - **Extreme Input - Null Key**: Key `null` cast by PHP engine to `""`, retrievable and removable without state corruption (`PASS`).
    - **Extreme Input - Empty String Key**: Stored and retrieved successfully (`PASS`).
-   - **Extreme Input - Unicode, Kurdish & Special Character Keys**: Evaluated `kurdî_rojname_serê_sibe`, `🔑_emoji_key_🔥`, `multi\nline\tkey`, `<script>alert('xss')</script>`, `'; DROP TABLE users; --`, and `\0binary_null_byte`. All keys preserved their exact values and round-tripped with 100% integrity (`PASS`).
+   - **Extreme Input - Unicode, Kurdish & Special Character Keys**: Evaluated `kurdî_bulletin_serê_sibe`, `🔑_emoji_key_🔥`, `multi\nline\tkey`, `<script>alert('xss')</script>`, `'; DROP TABLE users; --`, and `\0binary_null_byte`. All keys preserved their exact values and round-tripped with 100% integrity (`PASS`).
    - **Falsy Values**: `false`, `0`, `""`, and `0.0` correctly return their exact typed values and yield `true` on `has()` check (`PASS`).
    - **Complex Objects, Deep Multi-Dimensional Arrays & Streams**: 50-level nested arrays, `stdClass` instances, anonymous classes, closures (`fn($x) => $x * 2`), and open stream resources (`php://memory`) were registered and retrieved intact without data corruption or serialization overhead (`PASS`).
    - **Key Overwriting (add & set)**: Sequential overwriting via `add()` and `set()` on existing/new keys functioned as expected (`PASS`).
@@ -29,7 +29,7 @@
 
 3. **Bootstrap Verification (`init.php`) in Subshell Environments**:
    - **Isolated Clean Subshell**: `env -i PATH="$PATH" php -d display_errors=1 -r "require_once 'init.php'; echo 'BOOTSTRAP_CLEAN_ENV_OK' . PHP_EOL;"` exited with code 0 (`BOOTSTRAP_CLEAN_ENV_OK`).
-   - **Web SCRIPT_NAME Routing**: Simulated `$_SERVER['SCRIPT_NAME'] = '/index.php'` and `$_SERVER['SCRIPT_NAME'] = '/rojname/index.php'`. Correctly calculated `sub_dir` as `/` and `/rojname/` respectively.
+   - **Web SCRIPT_NAME Routing**: Simulated `$_SERVER['SCRIPT_NAME'] = '/index.php'` and `$_SERVER['SCRIPT_NAME'] = '/bulletin/index.php'`. Correctly calculated `sub_dir` as `/` and `/bulletin/` respectively.
    - **Core Configuration Keys**: Verified `Registry` holds `autoload_config`, `database`, `db_config`, `site_config`, `i18n`, `i18n_bootstrap`, `session_name`, `session_db`, and `url_config`.
 
 4. **Regression & Existing Test Suites**:

@@ -18,20 +18,20 @@
 - None. Task is 100% complete.
 
 ## Key Artifacts
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/BRIEFING.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/plan.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/progress.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1/DISPATCH.md`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Run.class.php`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Validator.class.php`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_and_validator_adversarial_test.php`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/e2e/run.php`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/BRIEFING.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/plan.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/progress.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1/DISPATCH.md`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Run.class.php`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Validator.class.php`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_and_validator_adversarial_test.php`
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/e2e/run.php`
 
 ---
 
 ## 1. Observation
-- Fixed the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by modernizing `Run` (`lib/Run.class.php`) to define `public static function execute($a, $b, $ext = NULL)` with support for scalar arguments, associative argument unpacking, object handling, and `RunException` safety.
+- Fixed the fatal error `Call to undefined method Run::execute()` in `AF/Bulletin` by modernizing `Run` (`lib/Run.class.php`) to define `public static function execute($a, $b, $ext = NULL)` with support for scalar arguments, associative argument unpacking, object handling, and `RunException` safety.
 - Modernized `lib/Validator.class.php` and all 64 validator files across `mod/` to English standard signatures (`add($data)`, `execute($class, $method, $data)`, `check()`, `list_errors()`), with property parity (`$errors`) and dynamic backward compatibility.
 - Completely purged all legacy `Kayit::` calls across all 27 module files in `mod/` and modernized to canonical `Registry` methods (`Registry::get`, `Registry::add`, `Registry::set`).
 - Preserved strict repository boundaries with zero files or references to excluded modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).

@@ -2,7 +2,7 @@
 /**
  * Category Module - English Language File
  *
- * @package AKM Association
+ * @package AKM Bulletin CMS
  * @module  mod_news_category
  * @version 1.0.0
  * @author  AKM Software

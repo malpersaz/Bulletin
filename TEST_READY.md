@@ -1,15 +1,15 @@
-# TEST_READY — AF/Rojname Modernization & Synchronization
+# TEST_READY — AF/Bulletin Modernization & Synchronization
 
 **Status**: READY  
-**Test Suite Location**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/e2e/`  
-**Primary Test Runner**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/e2e/run.php`  
-**Shell Wrapper**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.sh`  
+**Test Suite Location**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/e2e/`  
+**Primary Test Runner**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/e2e/run.php`  
+**Shell Wrapper**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.sh`  
 
 ---
 
 ## 1. Test Architecture & Overview
 
-The AF/Rojname E2E test harness is an opaque-box, multi-tiered testing framework built directly in PHP 8+ without external framework dependencies, ensuring zero-configuration execution in CI/CD and CLI environments.
+The AF/Bulletin E2E test harness is an opaque-box, multi-tiered testing framework built directly in PHP 8+ without external framework dependencies, ensuring zero-configuration execution in CI/CD and CLI environments.
 
 ### Test Tier Inventory
 

@@ -31,37 +31,37 @@
 {% set has_any_legal_info = has_company_info or has_publishing_info or has_tax_info or has_contact_info or has_warranty_info %}
 
 {% if not has_any_legal_info %}
-    <div class="legal-empty-card" role="region" aria-label="{{ lang.index.legal_info|default('Legal Information') }}">
+    <div class="legal-empty-card" role="region" aria-label="{{ lang.index.legal_info }}">
         <div class="legal-empty-icon">
             <i class="bi bi-shield-slash" aria-hidden="true"></i>
         </div>
-        <h2 class="legal-empty-title">{{ lang.index.legal_info|default('Legal Information') }}</h2>
+        <h2 class="legal-empty-title">{{ lang.index.legal_info }}</h2>
         <p class="legal-empty-desc">
-            {{ lang.index.legal_info_pending|default('Legal information is currently being updated.') }}
+            {{ lang.index.legal_info_pending }}
         </p>
     </div>
 {% else %}
-    <div class="legal-info-wrapper" role="region" aria-label="{{ lang.index.legal_info|default('Legal Information') }}">
+    <div class="legal-info-wrapper" role="region" aria-label="{{ lang.index.legal_info }}">
         <!-- Official Trust & Actions Header Box -->
         <header class="legal-header-box">
             <div class="legal-header-top">
-                <div class="legal-verified-badge" aria-label="{{ lang.index.verified_company|default('Verified Publication') }}">
+                <div class="legal-verified-badge" aria-label="{{ lang.index.verified_company }}">
                     <span class="legal-verified-pulse" aria-hidden="true"></span>
-                    <span>{{ lang.index.verified_company|default('Verified Official Publication') }}</span>
+                    <span>{{ lang.index.verified_company }}</span>
                 </div>
                 <div class="legal-actions-bar">
-                    <button type="button" class="legal-action-btn legal-print-btn" title="{{ lang.index.print_record|default('Print Record') }}" aria-label="{{ lang.index.print_record|default('Print Record') }}">
+                    <button type="button" class="legal-action-btn legal-print-btn" title="{{ lang.index.print_record }}" aria-label="{{ lang.index.print_record }}">
                         <i class="bi bi-printer" aria-hidden="true"></i>
-                        <span>{{ lang.index.print_record|default('Print') }}</span>
+                        <span>{{ lang.index.print_record }}</span>
                     </button>
-                    <button type="button" class="legal-action-btn legal-share-btn" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.copy_link|default('Copy Link') }}" aria-label="{{ lang.index.copy_link|default('Copy Link') }}">
+                    <button type="button" class="legal-action-btn legal-share-btn" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.copy_link }}" aria-label="{{ lang.index.copy_link }}">
                         <i class="bi bi-share" aria-hidden="true"></i>
-                        <span>{{ lang.index.copy_link|default('Share') }}</span>
+                        <span>{{ lang.index.copy_link }}</span>
                     </button>
                 </div>
             </div>
             <p class="legal-header-desc">
-                {{ lang.index.legal_notice_desc|default('Official statutory and regulatory disclosures according to applicable press and electronic media regulations.') }}
+                {{ lang.index.legal_notice_desc }}
             </p>
         </header>
 
@@ -75,14 +75,14 @@
                             <i class="bi bi-journal-bookmark"></i>
                         </div>
                         <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Editorial & Press Compliance') }}</span>
-                            <h2 id="card-publishing-title" class="legal-card-title">{{ lang.index.publishing_credentials_title|default('Publishing Credentials & Governance') }}</h2>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
+                            <h2 id="card-publishing-title" class="legal-card-title">{{ lang.index.publishing_credentials_title }}</h2>
                         </div>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.managing_director is defined and site.managing_director is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.managing_director|default('Managing Director') }}</span>
+                                <span class="legal-field-label">{{ lang.index.managing_director }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value fw-semibold">{{ site.managing_director }}</span>
                                 </div>
@@ -91,7 +91,7 @@
 
                         {% if site.editor_in_chief is defined and site.editor_in_chief is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.editor_in_chief|default('Editor-in-Chief') }}</span>
+                                <span class="legal-field-label">{{ lang.index.editor_in_chief }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value fw-semibold">{{ site.editor_in_chief }}</span>
                                 </div>
@@ -100,10 +100,10 @@
 
                         {% if site.press_code_license is defined and site.press_code_license is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.press_code_license|default('Press Code / License') }}</span>
+                                <span class="legal-field-label">{{ lang.index.press_code_license }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.press_code_license }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.press_code_license }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.press_code_license|default('Press Code') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.press_code_license }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.press_code_license }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -112,10 +112,10 @@
 
                         {% if site.dpo_email is defined and site.dpo_email is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.dpo_email|default('Data Protection Officer (DPO)') }}</span>
+                                <span class="legal-field-label">{{ lang.index.dpo_email }}</span>
                                 <div class="legal-field-value-wrap">
                                     <a href="mailto:{{ site.dpo_email }}" class="legal-field-value font-monospace">{{ site.dpo_email }}</a>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.dpo_email }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.dpo_email|default('DPO Email') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.dpo_email }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.dpo_email }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -124,7 +124,7 @@
 
                         {% if site.hosting_provider is defined and site.hosting_provider is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.hosting_provider|default('Hosting Provider') }}</span>
+                                <span class="legal-field-label">{{ lang.index.hosting_provider }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.hosting_provider }}</span>
                                 </div>
@@ -133,7 +133,7 @@
 
                         {% if site.compliance_jurisdiction is defined and site.compliance_jurisdiction is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.compliance_jurisdiction|default('Jurisdiction') }}</span>
+                                <span class="legal-field-label">{{ lang.index.compliance_jurisdiction }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.compliance_jurisdiction }}</span>
                                 </div>
@@ -151,17 +151,17 @@
                             <i class="bi bi-building"></i>
                         </div>
                         <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
-                            <h2 id="card-company-title" class="legal-card-title">{{ lang.index.company_registry_title|default('Company & Commercial Registry') }}</h2>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
+                            <h2 id="card-company-title" class="legal-card-title">{{ lang.index.company_registry_title }}</h2>
                         </div>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.legal_company_name is defined and site.legal_company_name is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.legal_company_name|default('Legal Company Name') }}</span>
+                                <span class="legal-field-label">{{ lang.index.legal_company_name }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value legal-company-highlight">{{ site.legal_company_name }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_company_name }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.legal_company_name|default('Company Name') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_company_name }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.legal_company_name }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -170,7 +170,7 @@
 
                         {% if site.legal_trading_name is defined and site.legal_trading_name is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.legal_trading_name|default('Trading Name') }}</span>
+                                <span class="legal-field-label">{{ lang.index.legal_trading_name }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.legal_trading_name }}</span>
                                 </div>
@@ -179,10 +179,10 @@
 
                         {% if site.company_registration_number is defined and site.company_registration_number is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.company_registration_number|default('Company Registration Number') }}</span>
+                                <span class="legal-field-label">{{ lang.index.company_registration_number }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.company_registration_number }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.company_registration_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.company_registration_number|default('Company Registration Number') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.company_registration_number }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.company_registration_number }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -191,10 +191,10 @@
 
                         {% if site.trade_registry_number is defined and site.trade_registry_number is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.trade_registry_number|default('Trade Registry Number') }}</span>
+                                <span class="legal-field-label">{{ lang.index.trade_registry_number }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.trade_registry_number }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.trade_registry_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.trade_registry_number|default('Trade Registry Number') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.trade_registry_number }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.trade_registry_number }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -203,10 +203,10 @@
 
                         {% if site.central_registration_number is defined and site.central_registration_number is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.central_registration_number|default('Central Registration (MERSIS)') }}</span>
+                                <span class="legal-field-label">{{ lang.index.central_registration_number }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.central_registration_number }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.central_registration_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.central_registration_number|default('Central Registration Number') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.central_registration_number }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.central_registration_number }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -215,7 +215,7 @@
 
                         {% if site.chamber_of_commerce is defined and site.chamber_of_commerce is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.chamber_of_commerce|default('Chamber of Commerce') }}</span>
+                                <span class="legal-field-label">{{ lang.index.chamber_of_commerce }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.chamber_of_commerce }}</span>
                                 </div>
@@ -224,7 +224,7 @@
 
                         {% if site.corporate_address is defined and site.corporate_address is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.corporate_address|default('Corporate Address') }}</span>
+                                <span class="legal-field-label">{{ lang.index.corporate_address }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.corporate_address }}</span>
                                 </div>
@@ -233,7 +233,7 @@
 
                         {% if site.country is defined and site.country is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.country|default('Country') }}</span>
+                                <span class="legal-field-label">{{ lang.index.country }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.country }}</span>
                                 </div>
@@ -251,14 +251,14 @@
                             <i class="bi bi-receipt-cutoff"></i>
                         </div>
                         <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
-                            <h2 id="card-tax-title" class="legal-card-title">{{ lang.index.tax_fiscal_title|default('Tax & Fiscal Disclosures') }}</h2>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
+                            <h2 id="card-tax-title" class="legal-card-title">{{ lang.index.tax_fiscal_title }}</h2>
                         </div>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.tax_office is defined and site.tax_office is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.tax_office|default('Tax Office') }}</span>
+                                <span class="legal-field-label">{{ lang.index.tax_office }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.tax_office }}</span>
                                 </div>
@@ -267,10 +267,10 @@
 
                         {% if site.tax_number is defined and site.tax_number is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.tax_number|default('Tax Identification Number') }}</span>
+                                <span class="legal-field-label">{{ lang.index.tax_number }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.tax_number }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.tax_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.tax_number|default('Tax Number') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.tax_number }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.tax_number }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -279,10 +279,10 @@
 
                         {% if site.vat_number is defined and site.vat_number is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.vat_number|default('VAT Identification Number') }}</span>
+                                <span class="legal-field-label">{{ lang.index.vat_number }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value font-monospace">{{ site.vat_number }}</span>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.vat_number }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.vat_number|default('VAT Number') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.vat_number }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.vat_number }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -300,14 +300,14 @@
                             <i class="bi bi-person-badge"></i>
                         </div>
                         <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
-                            <h2 id="card-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title|default('Statutory & Legal Contact') }}</h2>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
+                            <h2 id="card-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title }}</h2>
                         </div>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.authorized_person is defined and site.authorized_person is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.authorized_person|default('Authorized Representative') }}</span>
+                                <span class="legal-field-label">{{ lang.index.authorized_person }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.authorized_person }}</span>
                                 </div>
@@ -316,10 +316,10 @@
 
                         {% if site.registered_email is defined and site.registered_email is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.registered_email|default('Registered Corporate Email') }}</span>
+                                <span class="legal-field-label">{{ lang.index.registered_email }}</span>
                                 <div class="legal-field-value-wrap">
                                     <a href="mailto:{{ site.registered_email }}" class="legal-field-value font-monospace">{{ site.registered_email }}</a>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.registered_email }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.registered_email|default('Registered Email') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.registered_email }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.registered_email }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -328,10 +328,10 @@
 
                         {% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.legal_contact_phone|default('Legal Contact Phone') }}</span>
+                                <span class="legal-field-label">{{ lang.index.legal_contact_phone }}</span>
                                 <div class="legal-field-value-wrap">
                                     <a href="tel:{{ site.legal_contact_phone }}" class="legal-field-value">{{ site.legal_contact_phone }}</a>
-                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_contact_phone }}" data-copied-label="{{ lang.index.copied|default('Copied!') }}" title="{{ lang.index.quick_copy|default('Copy') }}" aria-label="{{ lang.index.copy_value|default('Copy') }} {{ lang.index.legal_contact_phone|default('Legal Phone') }}">
+                                    <button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_contact_phone }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.legal_contact_phone }}">
                                         <i class="bi bi-copy" aria-hidden="true"></i>
                                     </button>
                                 </div>
@@ -340,7 +340,7 @@
 
                         {% if site.contact_address is defined and site.contact_address is not empty %}
                             <li class="legal-field-row">
-                                <span class="legal-field-label">{{ lang.index.registered_address|default('Registered Address') }}</span>
+                                <span class="legal-field-label">{{ lang.index.registered_address }}</span>
                                 <div class="legal-field-value-wrap">
                                     <span class="legal-field-value">{{ site.contact_address }}</span>
                                 </div>
@@ -358,8 +358,8 @@
                             <i class="bi bi-shield-check"></i>
                         </div>
                         <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance|default('Statutory Compliance') }}</span>
-                            <h2 id="card-warranty-title" class="legal-card-title">{{ lang.index.warranty_policies_title|default('Consumer & Warranty Policies') }}</h2>
+                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
+                            <h2 id="card-warranty-title" class="legal-card-title">{{ lang.index.warranty_policies_title }}</h2>
                         </div>
                     </div>
 
@@ -370,8 +370,8 @@
                                     <i class="bi bi-hourglass-split"></i>
                                 </div>
                                 <div class="legal-policy-pill-text">
-                                    <span class="legal-policy-pill-title">{{ lang.index.default_warranty_duration|default('Warranty Duration') }}</span>
-                                    <span class="legal-policy-pill-val">{{ site.default_warranty_duration }} {{ lang.index.months|default('months') }}</span>
+                                    <span class="legal-policy-pill-title">{{ lang.index.default_warranty_duration }}</span>
+                                    <span class="legal-policy-pill-val">{{ site.default_warranty_duration }} {{ lang.index.months }}</span>
                                 </div>
                             </div>
                         {% endif %}
@@ -382,7 +382,7 @@
                                     <i class="bi bi-patch-check"></i>
                                 </div>
                                 <div class="legal-policy-pill-text">
-                                    <span class="legal-policy-pill-title">{{ lang.index.warranty_type|default('Warranty Type') }}</span>
+                                    <span class="legal-policy-pill-title">{{ lang.index.warranty_type }}</span>
                                     <span class="legal-policy-pill-val">{{ site.warranty_type }}</span>
                                 </div>
                             </div>
@@ -394,8 +394,8 @@
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </div>
                                 <div class="legal-policy-pill-text">
-                                    <span class="legal-policy-pill-title">{{ lang.index.return_policy_days|default('Return Policy') }}</span>
-                                    <span class="legal-policy-pill-val">{{ site.return_policy_days }} {{ lang.index.days|default('days') }}</span>
+                                    <span class="legal-policy-pill-title">{{ lang.index.return_policy_days }}</span>
+                                    <span class="legal-policy-pill-val">{{ site.return_policy_days }} {{ lang.index.days }}</span>
                                 </div>
                             </div>
                         {% endif %}

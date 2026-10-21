@@ -1,11 +1,11 @@
 ## 2026-08-23T20:02:05Z
 You are the Independent Victory Auditor.
-Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_1.
-Authoritative User Request is located at: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md.
-Project scope and architecture: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md.
+Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_1.
+Authoritative User Request is located at: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md.
+Project scope and architecture: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md.
 Orchestrator handoffs:
-- Generation 1: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_1/handoff.md
-- Generation 2: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_2/handoff.md
+- Generation 1: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_1/handoff.md
+- Generation 2: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_2/handoff.md
 
 Conduct a complete 3-phase independent victory audit:
 1. Timeline & Provenance Audit

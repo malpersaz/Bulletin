@@ -4,7 +4,7 @@
 **Milestone**: M1 (Core Framework, ORM Resilience & Twig SEO Unicode Parity)  
 **Verdict**: **APPROVE**  
 **Date**: 2026-08-23  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m1_2`
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m1_2`
 
 ---
 

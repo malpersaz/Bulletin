@@ -1,10 +1,10 @@
 ## 2026-08-23T19:36:35Z
 
 You are Reviewer 2 for Milestone 1 (Phone-Only Admin & Repository Policy Compliance).
-Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_2.
-Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md.
-Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md.
-Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md.
+Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_2.
+Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md.
+Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md.
+Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md.
 
 Examine the Milestone 1 changes:
 1. Strict Code Separation in `templates/admin/layout.twig` and `sheets_extra.twig` (no inline styles or scripts).
@@ -14,4 +14,4 @@ Examine the Milestone 1 changes:
    - `php tests/run_e2e_tests.php --tier=0`
    - `php tests/run_e2e_tests.php --tier=1`
 
-Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_2/handoff.md with your explicit verdict: APPROVE or REQUEST_CHANGES.
+Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_2/handoff.md with your explicit verdict: APPROVE or REQUEST_CHANGES.

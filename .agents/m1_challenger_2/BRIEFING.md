@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T19:38:15Z
 
 ## Mission
-Adversarially verify Milestone 1 (Purge & Code Separation Verification) in Rojname repository.
+Adversarially verify Milestone 1 (Purge & Code Separation Verification) in Bulletin repository.
 
 ## 🔒 My Identity
 - Archetype: EMPIRICAL CHALLENGER
 - Roles: critic, specialist
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_challenger_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_challenger_2
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1
 - Instance: 2 of 2

@@ -1,7 +1,7 @@
 # Plan: TwigTemplate::veri Modernization & Refactoring
 
 ## Objectives
-1. Modernize and replace all legacy `->veri(...)` calls with `->set(...)` across all modules in AF/Rojname.
+1. Modernize and replace all legacy `->veri(...)` calls with `->set(...)` across all modules in AF/Bulletin.
 2. Update `lib/TwigTemplate.class.php` to include backward compatibility forwarding (`veri` -> `set`).
 3. Eliminate non-English identifiers matching AF/Business standard.
 4. Ensure out-of-scope modules remain absent.

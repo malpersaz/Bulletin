@@ -1,6 +1,6 @@
 /**
  * Latest News - Editorial Broadsheet Styling
- * Amida Theme for Rojname
+ * Amida Theme for AKM Bulletin CMS
  */
 
 :root {
@@ -65,10 +65,11 @@ html[data-bs-theme="dark"] {
 
 .latest-news-title {
     margin: 0;
-    font-family: 'Pirata One', cursive;
+    font-family: 'Newsreader', Georgia, serif;
+    font-weight: 800;
     font-size: 1.65rem;
     line-height: 1.15;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     text-transform: uppercase;
 }
 
@@ -270,7 +271,7 @@ html[data-bs-theme="dark"] {
 /* Title */
 .latest-news-article-title {
     margin: 0 0 0.6rem 0;
-    font-family: 'Literata', 'Georgia', serif;
+    font-family: 'Newsreader', 'Georgia', serif;
     font-weight: 700;
     font-size: 1.15rem;
     line-height: 1.35;
@@ -584,7 +585,7 @@ html[data-bs-theme="dark"] {
 
 /* Article Title */
 .nyt-article-title {
-    font-family: 'Literata', Georgia, serif;
+    font-family: 'Newsreader', Georgia, serif;
     font-weight: 700;
     font-size: 1.22rem;
     line-height: 1.32;

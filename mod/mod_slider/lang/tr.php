@@ -6,10 +6,10 @@ $lang['mod_slider'] = [
   'information' => 'Bilgi!',
   'success' => 'İşlem Başarılı!',
   'error' => 'Hata Oluştu!',
-  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Eminmisiniz?',
+  'remove_image' => 'Bu Resmi Kaldırmak İstediğinize Emin misiniz?',
   'remove_image_success' => 'Resim Kaldırıldı',
   'choose_wish' => 'Dilerseniz Seçin',
-  'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
+  'remove_record' => 'Bu Kaydı Silmek İstediğinize Emin misiniz?',
   'messages' => [
     'confirm_delete' => 'Bunu silmek istediğinize emin misiniz?',
     'success_delete' => 'Kayıt başarıyla silindi!',
@@ -42,6 +42,7 @@ $lang['mod_slider'] = [
     'refresh' => 'Yenile',
     'delete' => 'Sil',
     'gallery' => 'Resim Galerisi',
+    'files' => 'Dosyalar',
     'remove' => 'Kaldır',
   ],
   'grid' => [
@@ -56,18 +57,18 @@ $lang['mod_slider'] = [
     'select_only_one' => 'Lütfen Sadece Bir Satır Seçin',
     'publish' => [
       'key' => 'Yayınla',
-      'value' => 'Bu Slideri Yayınlamak İstediğinize Eminmisiniz?',
+      'value' => 'Bu Slideri Yayınlamak İstediğinize Emin misiniz?',
     ],
     'unpublish' => [
       'key' => 'Yayından Al',
-      'value' => 'Bu Slideri Yayından Kaldırmak İstediğinize Eminmisiniz?',
+      'value' => 'Bu Slideri Yayından Kaldırmak İstediğinize Emin misiniz?',
     ],
   ],
   'validator' => [
     'required' => 'Lütfen %s Alanını Boş Bırakmayın',
-    'length' => '%s En Kısa %s En Uzun %s Karekterden Oluşabilir',
+    'length' => '%s En Kısa %s En Uzun %s Karakterden Oluşabilir',
     'email' => '%s Alanına Lütfen Geçerli Bir E-Posta Adresi Yazın.',
-    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı.Lütfen Başka Bir %s Belirleyin!',
+    'unique' => 'Yazmış Olduğunuz %s Sistemde Kayıtlı. Lütfen Başka Bir %s Belirleyin!',
     'inarray' => '%s Alanı Sadece \' %s \' değerleri alabilir',
   ],
   'role' => [
@@ -79,17 +80,17 @@ $lang['mod_slider'] = [
     'change_status' => 'Eklediği Slider Hemen Yayınlansın?',
     'edit_status' => 'Düzenlediği Slider Hemen Yayınlansın?',
     'approval' => 'Onay Bekleyen Sliderleri Onaylayabilir?',
-    'gallery' => 'İçeğe Galeri Ekleyebilirmi?',
+    'gallery' => 'İçeriğe Galeri Ekleyebilir mi?',
     'moderate_edit' => 'Kendisine Ait Olmayan Slider Kaydını Düzenleyebilir',
-    'moderate_delete' => 'Kendisine Ait Olmayan Slider Kaydını Düzenleyebilir',
+    'moderate_delete' => 'Kendisine Ait Olmayan Slider Kaydını Silebilir',
   ],
   'role_errors' => [
     'moderate_edit' => 'Size Ait Olmayan Slider Kaydını Düzenleyemezsiniz',
     'moderate_delete' => 'Size Ait Olmayan Slider Kaydını Silemezsiniz',
-    'add' => 'Slider Eklemeye Permissionniz Yok',
-    'edit' => 'Slider Düzenlemeye Permissionniz Yok',
-    'list' => 'Slider Yönetimini Görüntülemeye Permissionniz Yok',
-    'delete' => 'Slider Silmeye Permissionniz Yok',
+    'add' => 'Slider Eklemeye Yetkiniz Yok',
+    'edit' => 'Slider Düzenlemeye Yetkiniz Yok',
+    'list' => 'Slider Yönetimini Görüntülemeye Yetkiniz Yok',
+    'delete' => 'Slider Silmeye Yetkiniz Yok',
   ],
   'admin' => [
     'columns' => [
@@ -141,7 +142,6 @@ $lang['mod_slider'] = [
     'news' => 'Haber',
     'publication' => 'Yayın',
     'content' => 'İçerik',
-    'product' => 'Ürün',
     'video' => 'Video',
   ],
 ];

@@ -4,13 +4,13 @@
 **Date**: 2026-08-23  
 **Status**: Complete  
 **Reference Source**: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`  
-**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 
 ---
 
 ## Executive Summary
 
-This report delivers an exhaustive audit and synchronization specification for admin assets (CSS, JS, Modal Engine) between `AF/Business` (reference implementation) and `AF/Rojname` (target repository).
+This report delivers an exhaustive audit and synchronization specification for admin assets (CSS, JS, Modal Engine) between `AF/Business` (reference implementation) and `AF/Bulletin` (target repository).
 
 Key findings:
 1. **8 Missing CSS Assets**: 7 module/utility stylesheets (`mod_faq.css`, `mod_seo.css`, `legal_info.css`, `mod_acl.css`, `mod_announcements.css`, `mod_user_acl.css`, `unauthorized.css`) and 1 centralized modal stylesheet (`modals/core_modals.css`).
@@ -26,7 +26,7 @@ Key findings:
 
 ### Status Matrix
 
-| File Path | Status in Rojname | Source in Business | Lines | Size | Purpose & Scope |
+| File Path | Status in Bulletin | Source in Business | Lines | Size | Purpose & Scope |
 |---|---|---|---|---|---|
 | `mod_faq.css` | **MISSING** | `AF/Business` | 717 | 16.3 KB | MD3 phone-first styling for polymorphic FAQ manager (context cards, drag handles, accordion body, bottom action bar, limit pills, RTL support). |
 | `mod_seo.css` | **MISSING** | `AF/Business` | 287 | 5.3 KB | Phone-first styling for SEO management, Google Search Console onboarding, stat cards, metric grids, and credentials alerts. |
@@ -64,7 +64,7 @@ Key findings:
 
 ### Status Matrix
 
-| File Path | Status in Rojname | Source in Business | Lines | Size | Purpose & Scope |
+| File Path | Status in Bulletin | Source in Business | Lines | Size | Purpose & Scope |
 |---|---|---|---|---|---|
 | `mod_faq.js` | **MISSING** | `AF/Business` | 669 | 29.5 KB | `FaqManager` ES6 class: dynamic question additions, auto-focus, live 255/5000 character counters, 25-question limit, SortableJS reordering, single/batch AJAX persistence, status toggle. |
 | `mod_seo.js` | **MISSING** | `AF/Business` | 83 | 3.0 KB | Search filtering for URL cards, declarative `[data-url]` navigation, Google Search Console settings change tracking. |
@@ -78,7 +78,7 @@ Key findings:
 
 ## 3. Modal Engine Sub-Module JS Inventory (`templates/admin/assets/js/modals/`)
 
-The directory `templates/admin/assets/js/modals/` does not exist in `AF/Rojname`. All 7 sub-modules must be created:
+The directory `templates/admin/assets/js/modals/` does not exist in `AF/Bulletin`. All 7 sub-modules must be created:
 
 | File Path | Lines | Size | Key Functions & Responsibilities |
 |---|---|---|---|
@@ -195,7 +195,7 @@ In `AF/Business`, `templates/admin/mod_newsletter/list.twig` contained inline `<
 ## 5. Deletion Plan for `templates/admin/assets/js/mod_product.js`
 
 - **File**: `templates/admin/assets/js/mod_product.js` (969 lines, 39,008 bytes).
-- **Reason**: The `mod_product` module is completely deprecated and removed from Rojname (news portal focus).
+- **Reason**: The `mod_product` module is completely deprecated and removed from Bulletin (news portal focus).
 - **Impact Assessment**:
   - `templates/admin/mod_product/` will be deleted in M2.
   - Sibling references in `templates/admin/partials/sidebar.twig` and `templates/admin/mod_user/panel.twig` will be cleaned up in M2.
@@ -228,21 +228,21 @@ To ensure the synchronized assets function correctly across all admin views, the
 ## 7. Implementation Checklist for Milestone 1 Implementers
 
 - [ ] **CSS Copy**:
-  - `AF/Business/templates/admin/assets/css/mod_faq.css` -> `AF/Rojname/templates/admin/assets/css/mod_faq.css`
-  - `AF/Business/templates/admin/assets/css/mod_seo.css` -> `AF/Rojname/templates/admin/assets/css/mod_seo.css`
-  - `AF/Business/templates/admin/assets/css/legal_info.css` -> `AF/Rojname/templates/admin/assets/css/legal_info.css`
-  - `AF/Business/templates/admin/assets/css/mod_acl.css` -> `AF/Rojname/templates/admin/assets/css/mod_acl.css`
-  - `AF/Business/templates/admin/assets/css/mod_announcements.css` -> `AF/Rojname/templates/admin/assets/css/mod_announcements.css`
-  - `AF/Business/templates/admin/assets/css/mod_user_acl.css` -> `AF/Rojname/templates/admin/assets/css/mod_user_acl.css`
-  - `AF/Business/templates/admin/assets/css/unauthorized.css` -> `AF/Rojname/templates/admin/assets/css/unauthorized.css`
-  - `AF/Business/templates/admin/assets/css/modals/core_modals.css` -> `AF/Rojname/templates/admin/assets/css/modals/core_modals.css`
+  - `AF/Business/templates/admin/assets/css/mod_faq.css` -> `AF/Bulletin/templates/admin/assets/css/mod_faq.css`
+  - `AF/Business/templates/admin/assets/css/mod_seo.css` -> `AF/Bulletin/templates/admin/assets/css/mod_seo.css`
+  - `AF/Business/templates/admin/assets/css/legal_info.css` -> `AF/Bulletin/templates/admin/assets/css/legal_info.css`
+  - `AF/Business/templates/admin/assets/css/mod_acl.css` -> `AF/Bulletin/templates/admin/assets/css/mod_acl.css`
+  - `AF/Business/templates/admin/assets/css/mod_announcements.css` -> `AF/Bulletin/templates/admin/assets/css/mod_announcements.css`
+  - `AF/Business/templates/admin/assets/css/mod_user_acl.css` -> `AF/Bulletin/templates/admin/assets/css/mod_user_acl.css`
+  - `AF/Business/templates/admin/assets/css/unauthorized.css` -> `AF/Bulletin/templates/admin/assets/css/unauthorized.css`
+  - `AF/Business/templates/admin/assets/css/modals/core_modals.css` -> `AF/Bulletin/templates/admin/assets/css/modals/core_modals.css`
 - [ ] **JS Copy**:
-  - `AF/Business/templates/admin/assets/js/mod_faq.js` -> `AF/Rojname/templates/admin/assets/js/mod_faq.js`
-  - `AF/Business/templates/admin/assets/js/mod_seo.js` -> `AF/Rojname/templates/admin/assets/js/mod_seo.js`
-  - `AF/Business/templates/admin/assets/js/legal_info.js` -> `AF/Rojname/templates/admin/assets/js/legal_info.js`
-  - `AF/Business/templates/admin/assets/js/mod_acl.js` -> `AF/Rojname/templates/admin/assets/js/mod_acl.js`
-  - `AF/Business/templates/admin/assets/js/mod_user_acl.js` -> `AF/Rojname/templates/admin/assets/js/mod_user_acl.js`
-  - `AF/Business/templates/admin/assets/js/modals/*` (7 files) -> `AF/Rojname/templates/admin/assets/js/modals/*`
+  - `AF/Business/templates/admin/assets/js/mod_faq.js` -> `AF/Bulletin/templates/admin/assets/js/mod_faq.js`
+  - `AF/Business/templates/admin/assets/js/mod_seo.js` -> `AF/Bulletin/templates/admin/assets/js/mod_seo.js`
+  - `AF/Business/templates/admin/assets/js/legal_info.js` -> `AF/Bulletin/templates/admin/assets/js/legal_info.js`
+  - `AF/Business/templates/admin/assets/js/mod_acl.js` -> `AF/Bulletin/templates/admin/assets/js/mod_acl.js`
+  - `AF/Business/templates/admin/assets/js/mod_user_acl.js` -> `AF/Bulletin/templates/admin/assets/js/mod_user_acl.js`
+  - `AF/Business/templates/admin/assets/js/modals/*` (7 files) -> `AF/Bulletin/templates/admin/assets/js/modals/*`
 - [ ] **New Newsletter Assets**:
   - Create `templates/admin/assets/css/mod_newsletter.css`
   - Create `templates/admin/assets/js/mod_newsletter.js`

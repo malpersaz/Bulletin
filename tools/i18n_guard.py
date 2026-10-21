@@ -67,7 +67,7 @@ DEV_TERMS = {
     "ttl", "proj", "vars", "reqs", "accs", "dbrefs", "rownum",
     "kb", "mb", "gb", "tb", "fps", "hd", "sd",
     "oauth", "chatgpt", "gpt", "pkce", "mcpo", "instantiates", "gemini",
-    "modality", "modalities", "vimeo", "mailto", "telehealth", "og",
+    "modality", "modalities", "vimeo", "mailto", "telehealth", "og", "tiktok", "tik", "tok",
     "unhtmlentities", "temizle", "hsc", "cdata", "aylar", "kontrol",
     "tema", "secenek", "resimgetir", "ust", "arsiv", "yil", "fullmanset", "anket", "oyver", "kat"
 }
@@ -83,11 +83,11 @@ RE_INLINE_EVENT_HANDLER = re.compile(r'\bon[a-zA-Z]+\s*=\s*["\'][^"\']*["\']', r
 # Regex pattern for SQL alias
 RE_SQL_ALIAS = re.compile(r'\b(?:SELECT|FROM|JOIN)\b[\s\S]*?\bAS\s+([a-zA-Z0-9_]+)', re.IGNORECASE)
 
-# Regex pattern for forbidden default filter on lang keys: lang.*|default(...)
-RE_FORBIDDEN_DEFAULT = re.compile(r"\blang(?:\.[a-zA-Z0-9_]+)+\s*\|\s*default\s*\(", re.IGNORECASE)
+# Regex pattern for forbidden default filter or null-coalescing operator on lang keys: lang.*|default(...) or lang.* ?? '...'
+RE_FORBIDDEN_DEFAULT = re.compile(r"\blang(?:\.[a-zA-Z0-9_]+|\[[^\]]+\])+\s*(?:\|\s*default\s*\(|\?\?)", re.IGNORECASE)
 
-# Regex pattern for Twig lang variable access: lang.domain.key or lang.key
-RE_TWIG_LANG_KEY = re.compile(r"\blang(?:\.([a-zA-Z0-9_]+))?(?:\.([a-zA-Z0-9_]+))")
+# Regex pattern for Twig lang variable access: lang.domain.key... (supports nested keys)
+RE_TWIG_LANG_KEY = re.compile(r"\blang\.([a-zA-Z0-9_]+)\.([a-zA-Z0-9_.]+)")
 
 # Non-ASCII character detection pattern
 RE_NON_ASCII = re.compile(r"[^\x00-\x7F]")
@@ -197,7 +197,47 @@ class I18nGuard:
         self.load_all_language_packs()
 
     def load_all_language_packs(self):
-        """Indexes translation keys from all **/lang/*.php across the entire repository."""
+        """Indexes translation keys (including nested dot-paths) from all **/lang/*.php across the entire repository."""
+        php_code = r'''
+        define("AKM_LOADED", true);
+        define("AFM_SECURE", true);
+        $files = glob("mod/*/lang/*.php");
+        $result = [];
+        foreach ($files as $f) {
+            $parts = explode("/", $f);
+            $domain = $parts[1];
+            $lang_code = basename($f, ".php");
+            $lang = [];
+            @include $f;
+            $arr = $lang[$domain] ?? [];
+            $paths = [];
+            $flatten = function($a, $prefix = "") use (&$flatten, &$paths) {
+                if (!is_array($a)) return;
+                foreach ($a as $k => $v) {
+                    $p = $prefix === "" ? (string)$k : "$prefix.$k";
+                    $paths[] = $p;
+                    if (is_array($v)) {
+                        $flatten($v, $p);
+                    }
+                }
+            };
+            $flatten($arr);
+            $result[$lang_code][$domain] = $paths;
+        }
+        echo json_encode($result);
+        '''
+        try:
+            res = subprocess.run(["php", "-r", php_code], cwd=self.root_dir, capture_output=True, text=True)
+            if res.returncode == 0 and res.stdout.strip():
+                data = json.loads(res.stdout)
+                for lcode, domains in data.items():
+                    self.lang_keys_map[lcode] = {}
+                    for domain, klist in domains.items():
+                        self.lang_keys_map[lcode][domain] = set(klist)
+                return
+        except Exception:
+            pass
+
         lang_files = glob.glob(os.path.join(self.root_dir, "**", "lang", "*.php"), recursive=True)
         for file_path in lang_files:
             rel = os.path.relpath(file_path, self.root_dir)
@@ -365,53 +405,40 @@ class I18nGuard:
                         "snippet": stripped
                     })
 
-        # 3. Check for Forbidden |default(...) filter on lang keys in Twig
+        # 3. Check for Forbidden |default(...) filter or ?? fallback on lang keys in Twig
         if ext == ".twig":
             for idx, line in enumerate(lines, 1):
                 if RE_FORBIDDEN_DEFAULT.search(line):
-                    if not re.search(r"set\s+[a-zA-Z0-9_]+\s*=", line):
-                        issues.append({
-                            "file": rel_path,
-                            "line": idx,
-                            "severity": "ERROR",
-                            "code": "FORBIDDEN_FALLBACK",
-                            "message": "Forbidden inline |default(...) used on localization key.",
-                            "snippet": line.strip()
-                        })
+                    issues.append({
+                        "file": rel_path,
+                        "line": idx,
+                        "severity": "ERROR",
+                        "code": "FORBIDDEN_FALLBACK",
+                        "message": "Forbidden fallback (|default(...) or ??) used on localization key.",
+                        "snippet": line.strip()
+                    })
 
-        # 4. Check for Missing Language Keys in Twig
+        # 4. Check for Missing Language Keys in Twig (including nested paths across all core languages)
         if ext == ".twig":
             for idx, line in enumerate(lines, 1):
-                matches = re.finditer(r"\blang(?:\.([a-zA-Z0-9_]+))?(?:\.([a-zA-Z0-9_]+))", line)
-                for match in matches:
-                    g1, g2 = match.group(1), match.group(2)
-                    if g1 and g2:
-                        domain, key = g1, g2
-                    elif g1:
-                        domain, key = "index", g1
-                    else:
+                for match in RE_TWIG_LANG_KEY.finditer(line):
+                    domain, key = match.group(1), match.group(2).rstrip(".")
+                    if domain in ("code", "dir", "name") or not key:
                         continue
-
-                    if domain in ("index", "mod_") or key in ("code", "dir", "name"):
-                        pass
 
                     missing_in = []
                     for lcode in ["en", "ku", "tr"]:
                         keys_set = self.lang_keys_map.get(lcode, {}).get(domain, set())
-                        if not keys_set:
-                            keys_set = self.lang_keys_map.get(lcode, {}).get("index", set())
-                            keys_set.update(self.lang_keys_map.get(lcode, {}).get("management", set()))
-
-                        if key not in keys_set and not key.startswith("mod_"):
+                        if key not in keys_set:
                             missing_in.append(lcode)
 
-                    if len(missing_in) == 3:
+                    if missing_in:
                         issues.append({
                             "file": rel_path,
                             "line": idx,
                             "severity": "WARNING",
                             "code": "MISSING_KEY",
-                            "message": f"Translation key `lang.{domain}.{key}` is undefined in language packs.",
+                            "message": f"Translation key `lang.{domain}.{key}` is missing in language pack(s): {', '.join(missing_in)}.",
                             "snippet": line.strip()
                         })
 

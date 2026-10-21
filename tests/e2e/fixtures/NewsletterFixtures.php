@@ -9,7 +9,7 @@ class NewsletterFixtures
         return [
             [
                 'id' => 1,
-                'email' => 'editor@rojname.org',
+                'email' => 'editor@bulletin.org',
                 'name' => 'Editorial Staff',
                 'status' => 'active',
                 'unsubscribe_token' => 'a1b2c3d4e5f60718293a4b5c6d7e8f90',

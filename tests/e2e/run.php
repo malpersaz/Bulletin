@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * AF/Rojname Modernization & Synchronization
+ * AF/Bulletin Modernization & Synchronization
  * Opaque-Box Comprehensive Multi-Tier E2E Test Suite Runner
  *
  * Usage:

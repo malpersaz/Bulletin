@@ -2,7 +2,7 @@
 /**
  * User Module - French Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -381,9 +381,9 @@ $lang['mod_user'] = [
         'security_code' => 'Security Code',
         'activate_button' => 'Activate',
         'lost_code' => 'If you have lost your activation code
-	<a href="resend-activation" style="color:#000">Click here</a> to request a new activation code.',
+	<a href="resend-activation">Click here</a> to request a new activation code.',
         'success_activated' => 'Your account has been successfully activated. If you wish
-	<a href="login" style="color:#000">Click here</a> to log in to your account.',
+	<a href="login">Click here</a> to log in to your account.',
         'membership_activation' => 'Membership Activation',
         'error' => [
             'invalid_captcha' => 'You entered the security code incorrectly, please check your activation code
@@ -449,10 +449,9 @@ $lang['mod_user'] = [
     'link_submissions' => 'Soumissions',
     'clear_search' => 'Effacer',
         'home_title' => 'Page d\'accueil',
-        'admin_brand' => 'AKM Rojname Admin',
+        'admin_brand' => 'AKM Bulletin CMS Admin',
         'recent_workspace' => 'Espace de travail récent',
         'workspace_nav_media' => 'Média',
-        'workspace_nav_products' => 'Produits',
         'workspace_nav_more' => 'Plus',
         'more_sheet_title' => 'Plus d\'outils',
         'more_sheet_copy' => 'Ouvrir les interfaces système et d\'administration moins utilisées sans encombrer la barre principale de l\'espace de travail.',
@@ -460,12 +459,12 @@ $lang['mod_user'] = [
     ],
     'fab' => [
         'add_announcement' => 'Add Announcement',
-        'add_product' => 'Ajouter un produit',
         'add_service' => 'Ajouter un service',
         'add_page' => 'Ajouter une page',
         'add_video_embed' => 'Ajouter une intégration vidéo',
         'add_video' => 'Add Video',
         'add_content' => 'Add Content',
+        'add_news' => 'Ajouter une actualité',
         'add_publication' => 'Add Publication',
         'add_announcement_alert' => 'Add Announcement Form',
         'add_video_alert' => 'Add Video Form',

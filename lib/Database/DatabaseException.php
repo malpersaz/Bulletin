@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Business Content Management System
+ * Amed Framework
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
  * User: AKM
@@ -66,36 +66,7 @@ class DatabaseException extends Exception
         $f = $this->getTrace();
         $last = end($f);
         unset($f);
-        $error = "
-          <style>
-            .dexception {
-                background: #FFFFCC;
-                font-size: 14px;
-                color: #000000;
-            }
-
-            .dexception h4 {
-                padding: 8px;
-                background: #eee;
-                font: 'Courier New', Courier, mono;
-                font-weight: bold;
-            }
-            .dexception h3{
-                margin-bottom:2px;
-            }
-            .e {
-                font-size: 12px;
-                padding: 2px 8px;
-
-                font: 'Courier New', Courier, mono;
-            }
-
-            .e_red {
-                color: red;
-                font-weight: bold;
-            }
-        </style>";
-        $error .= "<div class='dexception'>";
+        $error = "<div class='dexception'>";
         $error .= '<div class="e"><pre>';
         $error .= "<h1>DatabaseException</h1>";
         $error .= "<h4>" . $this->message . "</h4>";

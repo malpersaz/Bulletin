@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-24T00:38:15Z
 
 ## Mission
-Independent Victory Audit of Run::execute() modernization, Validator/Registry refactoring, and zero Turkish identifier compliance in AF/Rojname.
+Independent Victory Audit of Run::execute() modernization, Validator/Registry refactoring, and zero Turkish identifier compliance in AF/Bulletin.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: [critic, specialist, auditor, victory_verifier]
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_swe_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_swe_1
 - Original parent: 007eb067-393e-40a1-9437-c80f925c7bdf
 - Target: full project
 
@@ -22,7 +22,7 @@ Independent Victory Audit of Run::execute() modernization, Validator/Registry re
 - Updated: 2026-08-24T00:38:15Z
 
 ## Audit Scope
-- **Work product**: Full AF/Rojname repository modernization (Run::execute, Validator methods, Registry migration, e2e and stress tests)
+- **Work product**: Full AF/Bulletin repository modernization (Run::execute, Validator methods, Registry migration, e2e and stress tests)
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit (Phases A, B, C)
 

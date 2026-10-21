@@ -352,8 +352,8 @@ class Tier2BoundariesCornersTest extends TestCase
     public function testF8_ShareToolbarEmptyShareUrl(): void
     {
         $url = null;
-        $fallbackUrl = $url ?: 'https://rojname.org';
-        $this->assertEquals('https://rojname.org', $fallbackUrl);
+        $fallbackUrl = $url ?: 'https://bulletin.org';
+        $this->assertEquals('https://bulletin.org', $fallbackUrl);
     }
 
     public function testF8_ShareToolbarUnicodeTitleInSocialShare(): void
@@ -404,7 +404,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF9_CompactShareExtremeUrlLength(): void
     {
-        $longUrl = 'https://rojname.org/article/' . str_repeat('kurdish_history_', 50);
+        $longUrl = 'https://bulletin.org/article/' . str_repeat('kurdish_history_', 50);
         $this->assertTrue(strlen($longUrl) > 500);
     }
 
@@ -551,7 +551,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF12_SettingsPayloadValidation(): void
     {
-        $email = 'dpo@rojname.org';
+        $email = 'dpo@bulletin.org';
         $isValid = filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
         $this->assertTrue($isValid);
     }
@@ -614,9 +614,9 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF14_LegalInfoWithMissingOptionalFields(): void
     {
-        $data = ['company_name' => 'Rojname Media'];
+        $data = ['company_name' => 'Bulletin Media'];
         $rendered = $data['company_name'] . ($data['tax_office'] ?? '');
-        $this->assertEquals('Rojname Media', $rendered);
+        $this->assertEquals('Bulletin Media', $rendered);
     }
 
     public function testF14_CookieConsentLanguageSwitch(): void

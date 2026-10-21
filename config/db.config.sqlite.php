@@ -21,7 +21,7 @@ $db = array(
     'localhost' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/sqlite/NetcomBi.sqlite',
+            'database_path' => root_dir . 'data/sqlite/bulletin.sqlite',
             // SQLite doesn't need host, user, pass
         )
     ),
@@ -31,9 +31,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'AKMlearnly_user',
-            'pass' => 'AKMlearnly_password',
-            'database' => 'AKMlearnly_db',
+            'user' => 'bulletin_user',
+            'pass' => 'bulletin_password',
+            'database' => 'bulletin_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional

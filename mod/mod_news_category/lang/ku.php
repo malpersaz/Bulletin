@@ -2,7 +2,7 @@
 /**
  * Category Module - Kurdish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_news_category
  * @version 1.0.0
  * @author  AKM Software

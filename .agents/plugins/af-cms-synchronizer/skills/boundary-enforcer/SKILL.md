@@ -1,20 +1,21 @@
 ---
 name: boundary-enforcer
-description: Enforce domain boundaries, prevent foreign commercial, assessment, and property modules from leaking into AF/Rojname, and maintain domain isolation.
+description: Enforce domain boundaries, prevent foreign commercial, assessment, and property modules from leaking into AF/Bulletin, and maintain domain isolation.
 ---
 
 # Boundary Enforcer Skill
 
-Use this skill to audit, protect, and enforce strict module boundaries in `AF/Rojname`.
+Use this skill to audit, protect, and enforce strict module boundaries in `AF/Bulletin`.
 
 ## 1. Domain Ownership Rules
 
-- **Rojname Domain Modules**:
+- **Bulletin Domain Modules**:
   - `mod_news`, `mod_news_category`, `mod_headline`, `mod_author`
   - `mod_publication`, `mod_publication_category`
   - `mod_video`, `mod_video_embed`, `mod_video_embed_category`
-  - `mod_content`, `mod_content_category`, `mod_page`, `mod_slider`, `mod_survey`, `mod_faq`, `mod_announcements`, `mod_gallery`
+  - `mod_page`, `mod_slider`, `mod_survey`, `mod_faq`, `mod_announcements`, `mod_gallery`
 - **Forbidden Foreign Modules**:
+  - `mod_content`, `mod_content_category`
   - `mod_product`, `mod_product_category`
   - `mod_service`, `mod_service_category`
   - `mod_client`, `mod_reference`
@@ -42,4 +43,4 @@ python3 tools/module_boundary_guard.py
 2. **Dynamic Discovery**:
    Modules must be registered and discovered via `lib/ModuleRegistry.class.php`.
 3. **No Domain Schema in Shared Migrations**:
-   Tables for forbidden commercial or assessment modules must never appear in `AF/Rojname` installer schemas.
+   Tables for forbidden commercial or assessment modules must never appear in `AF/Bulletin` installer schemas.

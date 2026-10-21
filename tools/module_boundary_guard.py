@@ -13,7 +13,7 @@ import subprocess
 import re
 
 FORBIDDEN_MODULES = [
-    # General CMS content modules (owned by AF/Business, forbidden in AF/Rojname)
+    # General CMS content modules (owned by AF/Business, forbidden in AF/Bulletin)
     'mod_content',
     'mod_content_category',
     # Commercial & E-commerce modules (owned by AF/Business)

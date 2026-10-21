@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T20:26:45Z
 
 ## Mission
-Build and verify comprehensive, opaque-box E2E test suite runner (`tests/e2e/run.php`) and test cases for AF/Rojname Modernization, adhering to all quality guards and requirements.
+Build and verify comprehensive, opaque-box E2E test suite runner (`tests/e2e/run.php`) and test cases for AF/Bulletin Modernization, adhering to all quality guards and requirements.
 
 ## 🔒 My Identity
 - Archetype: Test Writer / E2E Specialist
 - Roles: specialist, qa
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/test_writer_e2e
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/test_writer_e2e
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: E2E Test Suite Creation & Verification
 
@@ -33,7 +33,7 @@ Build and verify comprehensive, opaque-box E2E test suite runner (`tests/e2e/run
 ## Task Summary
 - **What to build**: Comprehensive E2E test runner and test suite exercising all 21 features across 6 tiers (Tier 0 - Tier 5, 236 test cases) + automated quality guards.
 - **Success criteria**: Runner executes cleanly, genuine assertions, verified test coverage across all features, quality guards integrated.
-- **Interface contracts**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md and /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_INFRA.md
+- **Interface contracts**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md and /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_INFRA.md
 - **Code layout**: tests under `tests/e2e/`
 
 ## Loaded Skills

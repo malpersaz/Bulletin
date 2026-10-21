@@ -1,7 +1,7 @@
 # Handoff Report — Explorer Survey 3 (R4, R6 & Code Cleanliness)
 
 ## Executive Summary
-This survey provides a comprehensive architectural and code audit of **AF/Rojname** focusing on:
+This survey provides a comprehensive architectural and code audit of **AF/Bulletin** focusing on:
 1. **Requirement R4**: Corporate Legal & Tax Info (E-E-A-T), Cookie Policy integration, and Sorani Kurdish normalization.
 2. **Requirement R6**: Multilingual 9-Language Parity, dictionary standardization, and Kurdish action verb alignment (`add => 'Lêke'`, `nûve` -> `nûjenkirin`).
 3. **Cleanliness & Excluded Modules**: Forensic verification of the complete removal of `mod_client`, `mod_service`, `mod_product`, and `mod_reference`, identifying one lingering fixture registration in `installer/mod_faq_mod/index.php`.
@@ -13,7 +13,7 @@ This survey provides a comprehensive architectural and code audit of **AF/Rojnam
 ### 1.1 R4: Corporate Legal & Tax Info (E-E-A-T) and Cookie Policy
 
 #### A. Database Schemas vs ORM Model (`mod_settings`)
-- **ORM Model** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod/mod_settings/model/mod_settings.model.php`, lines 46–61):
+- **ORM Model** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod/mod_settings/model/mod_settings.model.php`, lines 46–61):
   Defines 16 corporate and fiscal fields:
   ```php
   public $legal_company_name;
@@ -33,13 +33,13 @@ This survey provides a comprehensive architectural and code audit of **AF/Rojnam
   public $warranty_description;
   public $country;
   ```
-- **Installer Schema** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/mod_settings/mod_settings.sql`):
+- **Installer Schema** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/mod_settings/mod_settings.sql`):
   **Deficiency**: Missing all 16 corporate/fiscal fields listed above.
-- **Module Schema** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod/mod_settings/mod_settings.sql`):
+- **Module Schema** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod/mod_settings/mod_settings.sql`):
   **Deficiency**: Missing all 16 corporate/fiscal fields and contains obsolete statistics columns (`stat_completed_projects`, `stat_ongoing_projects`, `stat_workforce`, `stat_offices`).
 
 #### B. Missing Multilingual Fixtures in `installer/mod_page/index.php`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/mod_page/index.php`:
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/mod_page/index.php`:
   Currently only seeds Root Categories and "About Us" pages across 9 languages (lines 43–409).
   **Deficiency**: Completely missing the 9-language **Legal Information** page fixtures and 9-language **Cookie Policy** page fixtures present in `AF/Business/installer/mod_page/index.php` (lines 410–714):
   - **Legal Information Pages** (Slugs):
@@ -64,21 +64,21 @@ This survey provides a comprehensive architectural and code audit of **AF/Rojnam
     9. Zazaki (`zza`): `Politîkaya_Çerezan`
 
 #### C. Frontend Templates & Partials
-1. **Missing Partial**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/default/partials/_legal_info.twig` does not exist. (Required to conditionally render corporate/fiscal information from `site.*`).
-2. **Cookie Consent Banner** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/default/partials/_cookie_consent.twig`, line 6):
+1. **Missing Partial**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/default/partials/_legal_info.twig` does not exist. (Required to conditionally render corporate/fiscal information from `site.*`).
+2. **Cookie Consent Banner** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/default/partials/_cookie_consent.twig`, line 6):
    - Currently hardcoded: `<a href="{{ site.saddress }}cookie-policy" ...>`
    - Must be updated to dynamic slug:
      ```twig
      <a href="{{ site.saddress }}page/{{ lang.index.cookie_policy_slug is defined and lang.index.cookie_policy_slug is not empty ? lang.index.cookie_policy_slug : 'Cookie_Policy' }}" class="btn btn-outline-light btn-sm cookie-policy-btn">{{ lang.index.cookie_consent.policy_link }}</a>
      ```
-3. **Footer Partial** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/default/index/footer.twig`, lines 142–157):
+3. **Footer Partial** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/default/index/footer.twig`, lines 142–157):
    - Copyright section lacks links to `Legal Information` and `Cookie Policy`.
    - Needs footer links with fallback slugs matching `AF/Business/templates/default/index/footer.twig` (lines 214–221).
-4. **Page Detail View** (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/default/index/mod_page/page.twig`):
+4. **Page Detail View** (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/default/index/mod_page/page.twig`):
    - Lacks the `is_legal_page` condition to include `partials/_legal_info.twig`.
 
 #### D. Index Language Dictionary Keys (`mod/index/lang/*.php`)
-- In `AF/Rojname/mod/index/lang/*.php`, the following legal and cookie translation keys are missing across all 9 languages:
+- In `AF/Bulletin/mod/index/lang/*.php`, the following legal and cookie translation keys are missing across all 9 languages:
   - `legal_info`, `legal_info_slug`
   - `cookie_policy`, `cookie_policy_slug`
   - `legal_info_pending`
@@ -86,13 +86,13 @@ This survey provides a comprehensive architectural and code audit of **AF/Rojnam
   - `legal_company_name`, `company_type`, `trade_registry_number`, `central_registration_number`, `chamber_of_commerce`, `country`, `tax_office`, `tax_number`, `vat_number`, `authorized_person`, `registered_email`, `legal_contact_phone`, `default_warranty_duration`, `warranty_type`, `return_policy_days`, `months`, `days`.
 
 #### E. Sorani Kurdish Display Name Normalization
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/lang/index.php` (line 95):
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/lang/index.php` (line 95):
   - Current: `['name' => 'Soranî', 'seo' => 'ckb']`
   - Standard Target: `['name' => 'سۆرانی', 'seo' => 'ckb']`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/app/InstallerLang.php` (line 64):
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/app/InstallerLang.php` (line 64):
   - Current: `'ckb' => array('label' => 'کوردی', 'code' => 'CKB')`
   - Standard Target: `'ckb' => array('label' => 'سۆرانی', 'code' => 'CKB')`
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/lang/*.php` (`ar.php`, `ckb.php`, `de.php`, `en.php`, `fa.php`, `fr.php`, `ku.php`, `sv.php`, `tr.php`, `zza.php`):
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/lang/*.php` (`ar.php`, `ckb.php`, `de.php`, `en.php`, `fa.php`, `fr.php`, `ku.php`, `sv.php`, `tr.php`, `zza.php`):
   - Current label: `'label' => 'کوردی'`
   - Standard Target: `'label' => 'سۆرانی'`
 
@@ -156,7 +156,7 @@ Inline JavaScript event attributes calling Turkish functions exist in several le
   - `templates/admin/assets/js/mod_product.js` — **DELETED**.
 
 #### B. Lingering Fixture Violation Found
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/mod_faq_mod/index.php` (lines 45–79):
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/mod_faq_mod/index.php` (lines 45–79):
   Still attempts to seed polymorphic FAQ mappings for excluded modules:
   ```php
   array('name' => 'Product FAQs', 'mod_name' => 'mod_product', ...),
@@ -185,14 +185,14 @@ Inline JavaScript event attributes calling Turkish functions exist in several le
    - Kurdish grammar requires `Lêke` for addition actions and `nûjenkirin` for updating.
 
 4. **Cleanliness & Excluded Modules**:
-   - `AF/Rojname` is an editorial/news platform, strictly excluding commercial business modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
+   - `AF/Bulletin` is an editorial/news platform, strictly excluding commercial business modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`).
    - While physical controllers and helpers were deleted, `installer/mod_faq_mod/index.php` still registers `mod_product`, `mod_service`, and `mod_project` FAQ records during setup, which would pollute the database with orphaned records.
 
 ---
 
 ## 3. Caveats
 - No code was modified during this survey (strictly read-only investigation).
-- All identified dictionary files to be ported (`ar.php`, `ckb.php`, `fr.php`, `sv.php`) have direct reference implementations available in `/home/malpersaz/Desktop/projects/htdocs/AF/Business` that can be cleanly adapted for Rojname.
+- All identified dictionary files to be ported (`ar.php`, `ckb.php`, `fr.php`, `sv.php`) have direct reference implementations available in `/home/malpersaz/Desktop/projects/htdocs/AF/Business` that can be cleanly adapted for Bulletin.
 - When updating `mod_faq_mod` installer records, verify that existing active databases do not retain orphaned `mod_product` or `mod_service` rows in `mod_faq_mod`.
 
 ---
@@ -206,7 +206,7 @@ Inline JavaScript event attributes calling Turkish functions exist in several le
    - Add the 16 corporate/fiscal fields to `installer/mod_settings/mod_settings.sql` and `mod/mod_settings/mod_settings.sql`.
    - Remove obsolete stats columns (`stat_completed_projects`, etc.) from `mod/mod_settings/mod_settings.sql`.
 2. **Seed Legal & Cookie Pages in Installer**:
-   - Port the 9 Legal Information page fixtures and 9 Cookie Policy page fixtures from `AF/Business/installer/mod_page/index.php` into `AF/Rojname/installer/mod_page/index.php`.
+   - Port the 9 Legal Information page fixtures and 9 Cookie Policy page fixtures from `AF/Business/installer/mod_page/index.php` into `AF/Bulletin/installer/mod_page/index.php`.
 3. **Frontend Legal & Cookie Components**:
    - Create `templates/default/partials/_legal_info.twig`.
    - Update `templates/default/partials/_cookie_consent.twig` to use dynamic localized slug link.
@@ -241,25 +241,25 @@ To independently verify after implementation:
 ```bash
 # 1. Verify absence of deprecated module references in active code
 grep -rn "mod_client\|mod_service\|mod_product\|mod_reference" \
-  /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod/ \
-  /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer/ \
-  /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/ \
-  /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/templates/
+  /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod/ \
+  /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer/ \
+  /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/ \
+  /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/templates/
 
 # 2. Verify all 9 languages exist for every active module
 python3 -c "
 import os
 for mod in ['mod_user_pm', 'mod_video_embed', 'mod_acl', 'mod_seo', 'mod_settings']:
-    p = f'/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod/{mod}/lang'
+    p = f'/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod/{mod}/lang'
     langs = sorted([f[:-4] for f in os.listdir(p) if f.endswith('.php')])
     print(f'{mod}: {len(langs)} languages -> {langs}')
 "
 
 # 3. Verify PHP syntax on all touched files
-find /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/mod \
-     /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/installer \
+find /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/mod \
+     /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/installer \
      -name "*.php" -exec php -l {} +
 
 # 4. Run E2E test suites
-php /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/e2e/run.php
+php /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/e2e/run.php
 ```

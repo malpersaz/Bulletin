@@ -38,7 +38,7 @@ class TestRunner
 
         if (!$this->isJson) {
             echo "\033[1;36m========================================================================\033[0m\n";
-            echo "\033[1;37m   AF/Rojname Modernization & Synchronization — E2E Test Suite          \033[0m\n";
+            echo "\033[1;37m   AF/Bulletin Modernization & Synchronization — E2E Test Suite         \033[0m\n";
             echo "\033[1;36m========================================================================\033[0m\n\n";
             if ($this->targetTier !== null) {
                 echo "\033[33mFiltering by Tier: " . $this->targetTier . "\033[0m\n";

@@ -1,0 +1,692 @@
+/* ==========================================================================
+   Stacked Top Menu — Prototype 4: Modern Press (Amed Bülten Live Parity)
+   Taste Skill & Impeccable Super Polish:
+   - Editorial Search Box: Tactile nested-radius container (10px outer / 7px inner),
+     WCAG 4.5:1 tinted placeholder, custom caret & selection, keyboard shortcut
+     hint (/), clear button state, and flush action button with directional shadow.
+   - Brighter Vibrant Editorial Blue (#0284C7 / #0369A1) + <=20% Green (#16A34A)
+   ========================================================================== */
+
+:root {
+  /* Core Surfaces */
+  --mp-white: #ffffff;
+  --mp-page-canvas: #f1f5f9;
+  --mp-surface-subtle: #f8fafc;
+  --mp-border-subtle: #e2e8f0;
+  --mp-border-strong: #cbd5e1;
+
+  /* Brighter, Vibrant Editorial Blue Palette */
+  --mp-blue-800: #075985;
+  --mp-blue-700: #0369a1;
+  --mp-blue-600: #0284c7;
+  --mp-blue-500: #0ea5e9;
+  --mp-blue-300: #7dd3fc;
+  --mp-blue-200: #bae6fd;
+  --mp-blue-100: #e0f2fe;
+  --mp-blue-50: #f0f9ff;
+
+  /* Editorial Green Accent Palette (<= 20%) */
+  --mp-green-800: #166534;
+  --mp-green-700: #15803d;
+  --mp-green-600: #16a34a;
+
+  /* Typography Ink (WCAG >= 4.5:1 verified) */
+  --mp-ink-main: #0f172a;
+  --mp-ink-muted: #334155;
+  --mp-ink-placeholder: #475569;
+
+  /* Dimensions & Elevation */
+  --mp-masthead-height: 70px;
+  --mp-nav-height: 44px;
+  --mp-radius-outer: 8px;
+  --mp-radius-inner: 6px;
+  --mp-shadow-resting: 0 6px 22px -4px rgba(2, 132, 199, 0.12);
+  --mp-shadow-scrolled: 0 12px 28px -6px rgba(3, 105, 161, 0.22);
+}
+
+/* Dark Theme Overrides */
+[data-bs-theme="dark"] {
+  --mp-white: #0b1526;
+  --mp-page-canvas: #060c17;
+  --mp-surface-subtle: #112038;
+  --mp-border-subtle: #1e293b;
+  --mp-border-strong: #334155;
+  --mp-ink-main: #f8fafc;
+  --mp-ink-muted: #cbd5e1;
+  --mp-ink-placeholder: #94a3b8;
+  --mp-blue-50: rgba(14, 165, 233, 0.14);
+  --mp-blue-100: rgba(14, 165, 233, 0.26);
+  --mp-blue-200: rgba(56, 189, 248, 0.35);
+}
+
+/* Browser Surface Theming (Impeccable Craft Floor) */
+::selection {
+  background-color: var(--mp-blue-100);
+  color: var(--mp-blue-800);
+}
+
+body {
+  background-color: var(--mp-page-canvas);
+  color: var(--mp-ink-main);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ==========================================================================
+   Base Sticky Header Wrapper
+   ========================================================================== */
+header.stacked-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  width: 100%;
+  background-color: var(--mp-white);
+  border-top: 3px solid var(--mp-blue-600);
+  box-shadow: var(--mp-shadow-resting);
+  transform: translateY(0);
+  transition: transform 0.34s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease;
+}
+
+header.stacked-header.navbar-hidden {
+  transform: translateY(-105%);
+}
+
+header.stacked-header.is-scrolled {
+  box-shadow: var(--mp-shadow-scrolled);
+}
+
+header.stacked-header > .container {
+  max-width: 100%;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+header.stacked-header .stacked-header-card {
+  background-color: var(--mp-white);
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* ==========================================================================
+   ROW 1: White Masthead Row (.stacked-header-top)
+   ========================================================================== */
+header.stacked-header .stacked-header-top {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0.7rem 1.5rem;
+  min-height: var(--mp-masthead-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background-color: var(--mp-white);
+}
+
+header.stacked-header.is-scrolled .stacked-header-top {
+  min-height: 58px;
+  padding: 0.45rem 1.5rem;
+}
+
+/* Brand Masthead (Real Amed Bülten SVG Logo tinted in Bright Editorial Blue) */
+header.stacked-header .stacked-brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+  padding: 0.15rem 0;
+  transition: opacity 0.18s ease;
+}
+
+header.stacked-header .stacked-brand:hover {
+  opacity: 0.88;
+}
+
+header.stacked-header .stacked-brand .stacked-logo-svg {
+  height: 42px;
+  width: auto;
+  max-width: 195px;
+  object-fit: contain;
+  display: inline-block;
+  filter: invert(34%) sepia(93%) saturate(1760%) hue-rotate(179deg) brightness(93%) contrast(98%);
+  transition: height 0.2s ease, filter 0.2s ease;
+}
+
+[data-bs-theme="dark"] header.stacked-header .stacked-brand .stacked-logo-svg {
+  filter: brightness(0) invert(1);
+}
+
+header.stacked-header.is-scrolled .stacked-brand .stacked-logo-svg {
+  height: 34px;
+}
+
+/* ==========================================================================
+   DISTILLED & POLISHED EDITORIAL SEARCH BOX
+   - Exact 40px height alignment with right-side utility & auth buttons
+   - Concentric geometry: 8px outer radius, 3px inset, 6px inner icon button
+   - Quiet resting state that activates into vibrant editorial blue on focus
+   ========================================================================== */
+header.stacked-header .stacked-search-slot {
+  flex: 1 1 auto;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+header.stacked-header .stacked-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 40px;
+  background-color: var(--mp-surface-subtle);
+  border: 1px solid var(--mp-border-strong);
+  border-radius: var(--mp-radius-outer);
+  padding: 3px 3px 3px 14px;
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: border-color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+header.stacked-header.is-scrolled .stacked-search-wrapper {
+  height: 36px;
+}
+
+header.stacked-header .stacked-search-wrapper:hover {
+  background-color: var(--mp-white);
+  border-color: var(--mp-blue-300);
+}
+
+header.stacked-header .stacked-search-wrapper:focus-within {
+  background-color: var(--mp-white);
+  border-color: var(--mp-blue-600);
+  box-shadow: 0 4px 14px -3px rgba(2, 132, 199, 0.14), 0 0 0 3px rgba(2, 132, 199, 0.12);
+}
+
+header.stacked-header .stacked-search-input {
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--mp-ink-main);
+  caret-color: var(--mp-blue-600);
+  padding: 0 0.5rem 0 0;
+  box-shadow: none;
+  outline: none;
+  width: 100%;
+  height: 100%;
+}
+
+header.stacked-header .stacked-search-input::placeholder {
+  color: #64748b;
+  font-weight: 400;
+  opacity: 1;
+}
+
+[data-bs-theme="dark"] header.stacked-header .stacked-search-input::placeholder {
+  color: #94a3b8;
+}
+
+header.stacked-header .stacked-search-btn {
+  border: none;
+  background-color: var(--mp-blue-50);
+  color: var(--mp-blue-600);
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: var(--mp-radius-inner);
+  font-size: 0.92rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.15s ease;
+}
+
+header.stacked-header.is-scrolled .stacked-search-btn {
+  width: 28px;
+  height: 28px;
+}
+
+header.stacked-header .stacked-search-wrapper:focus-within .stacked-search-btn,
+header.stacked-header .stacked-search-btn:hover {
+  background-color: var(--mp-blue-600);
+  color: #ffffff;
+}
+
+header.stacked-header .stacked-search-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   Right Utility Zone — Harmonious Blue Utility & Single Login Action
+   ========================================================================== */
+header.stacked-header .stacked-utility-zone {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+header.stacked-header .auth-buttons {
+  padding-left: 0;
+  border-left: none;
+}
+
+header.stacked-header .btn-header-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: var(--mp-radius-outer);
+  border: 1.5px solid var(--mp-blue-200);
+  background-color: var(--mp-blue-50);
+  color: var(--mp-blue-600);
+  font-size: 0.84rem;
+  font-weight: 700;
+  transition: all 0.15s ease;
+}
+
+[data-bs-theme="dark"] header.stacked-header .btn-header-action {
+  color: #38bdf8;
+}
+
+header.stacked-header .btn-header-action:hover {
+  background-color: var(--mp-blue-600);
+  border-color: var(--mp-blue-600);
+  color: #ffffff;
+}
+
+header.stacked-header .btn-header-action.btn-icon {
+  width: 40px;
+  padding: 0;
+  font-size: 0.95rem;
+}
+
+/* Single Refined Giriş Button (Vibrant Editorial Blue) */
+header.stacked-header .btn-header-login {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 40px;
+  padding: 0 1.05rem;
+  border-radius: var(--mp-radius-outer);
+  border: 1px solid var(--mp-blue-600);
+  background-color: var(--mp-blue-600);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  box-shadow: 0 1px 3px rgba(2, 132, 199, 0.22);
+  transition: background-color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.15s ease;
+}
+
+header.stacked-header .btn-header-login:hover {
+  background-color: var(--mp-blue-700);
+  border-color: var(--mp-blue-700);
+  color: #ffffff;
+  box-shadow: 0 3px 8px -2px rgba(3, 105, 161, 0.32);
+}
+
+header.stacked-header .btn-header-login:active {
+  transform: scale(0.97);
+}
+
+/* Mobile Drawer Register Button */
+header.stacked-header .btn-header-register {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 1.05rem;
+  border-radius: var(--mp-radius-outer);
+  border: 1px solid var(--mp-blue-700);
+  background-color: var(--mp-blue-700);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+header.stacked-header .btn-header-register:hover {
+  background-color: var(--mp-blue-800);
+  color: #ffffff;
+}
+
+/* Logged-in User Profile Button */
+header.stacked-header .user-profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 0.75rem 0 0.35rem;
+  border-radius: var(--mp-radius-outer);
+  border: 1px solid var(--mp-blue-200);
+  background-color: var(--mp-blue-50);
+  color: var(--mp-blue-800);
+  font-weight: 600;
+  font-size: 0.84rem;
+}
+
+header.stacked-header .user-avatar-container {
+  position: relative;
+  display: inline-flex;
+}
+
+header.stacked-header .user-avatar-placeholder {
+  width: 28px;
+  height: 28px;
+  background-color: var(--mp-blue-600);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+
+header.stacked-header .avatar-status-indicator {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--mp-green-600);
+  border: 1.5px solid var(--mp-white);
+}
+
+/* ==========================================================================
+   ROW 2: Bright Editorial Blue Category Bar (.stacked-header-nav)
+   - Cohesive Blue Editorial Bar (no clashing green boxes)
+   - Crisp optical alignment with the masthead logo on the left
+   - Subtle translucent active pill + clean bottom indicator
+   ========================================================================== */
+header.stacked-header .stacked-header-nav {
+  width: 100%;
+  background: linear-gradient(90deg, var(--mp-blue-600) 0%, var(--mp-blue-700) 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(7, 89, 133, 0.35);
+  padding: 0;
+}
+
+header.stacked-header .stacked-nav-bar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+header.stacked-header.is-scrolled .stacked-nav-bar {
+  min-height: 38px;
+}
+
+header.stacked-header .stacked-nav-list {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.35rem;
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+header.stacked-header .stacked-nav-list::-webkit-scrollbar {
+  display: none;
+}
+
+header.stacked-header .stacked-nav-list .nav-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+header.stacked-header .stacked-nav-list .nav-link {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 1.05rem;
+  border-radius: var(--mp-radius-inner);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.005em;
+  color: rgba(255, 255, 255, 0.9);
+  position: relative;
+  transition: color 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+              background-color 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+header.stacked-header.is-scrolled .stacked-nav-list .nav-link {
+  height: 28px;
+  font-size: 0.86rem;
+  padding: 0 0.9rem;
+}
+
+header.stacked-header .stacked-nav-list .nav-link:hover,
+header.stacked-header .stacked-nav-list .nav-link:focus {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+header.stacked-header .stacked-nav-list .nav-item.active > .nav-link {
+  color: #ffffff;
+  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Dropdown Menu Styling */
+header.stacked-header .dropdown-menu {
+  border: 1px solid var(--mp-border-strong);
+  border-top: 3px solid var(--mp-blue-600);
+  border-radius: var(--mp-radius-outer);
+  box-shadow: var(--mp-shadow-scrolled);
+  padding: 0.45rem;
+  font-size: 0.85rem;
+  background-color: var(--mp-white);
+}
+
+header.stacked-header .dropdown-item {
+  border-radius: 4px;
+  padding: 0.48rem 0.75rem;
+  font-weight: 600;
+  color: var(--mp-ink-main);
+}
+
+header.stacked-header .dropdown-item:hover,
+header.stacked-header .dropdown-item.active {
+  background-color: var(--mp-blue-50);
+  color: var(--mp-blue-600);
+}
+
+/* ==========================================================================
+   Mobile Responsive & Offcanvas Drawer (< 992px)
+   ========================================================================== */
+@media (max-width: 991.98px) {
+  header.stacked-header .stacked-header-top {
+    min-height: 54px;
+    padding: 0.4rem 0.9rem;
+  }
+
+  header.stacked-header .stacked-brand .stacked-logo-svg {
+    height: 32px;
+    max-width: 145px;
+  }
+
+  header.stacked-header .stacked-nav-bar {
+    padding: 0 0.65rem;
+    min-height: 40px;
+  }
+
+  header.stacked-header .stacked-nav-list .nav-link {
+    font-size: 0.76rem;
+    padding: 0 0.8rem;
+  }
+
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1045;
+  }
+
+  .mobile-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  #amidaMobileMenu {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 86%;
+    max-width: 320px;
+    height: 100dvh;
+    background-color: var(--mp-white);
+    border-left: 2px solid var(--mp-blue-600);
+    box-shadow: -10px 0 35px rgba(2, 132, 199, 0.22);
+    transform: translateX(105%);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 1055;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  #amidaMobileMenu.show,
+  #amidaMobileMenu.is-open {
+    transform: translateX(0);
+  }
+
+  #amidaMobileMenu .mobile-menu-header {
+    padding: 0.9rem 1.15rem;
+    background-color: var(--mp-blue-600);
+    border-bottom: 3px solid var(--mp-green-600);
+  }
+
+  #amidaMobileMenu .mobile-menu-header .stacked-logo-svg {
+    height: 30px;
+    filter: brightness(0) invert(1);
+  }
+
+  #amidaMobileMenu .mobile-menu-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+
+  #amidaMobileMenu .mobile-menu-search {
+    padding: 0.9rem 1.15rem 0.4rem 1.15rem;
+  }
+
+  #amidaMobileMenu .mobile-menu-search .search-input {
+    height: 40px;
+    padding-left: 2.35rem;
+    border-radius: var(--mp-radius-outer);
+    border: 1.5px solid var(--mp-blue-200);
+    background-color: var(--mp-blue-50);
+    font-size: 0.86rem;
+  }
+
+  #amidaMobileMenu .mobile-menu-search .search-btn {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    color: var(--mp-blue-600);
+  }
+
+  #amidaMobileMenu .mobile-nav-list {
+    padding: 0.5rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  #amidaMobileMenu .mobile-nav-list .nav-link {
+    padding: 0.65rem 0.85rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: var(--mp-ink-main);
+    border-radius: 4px;
+    border-left: 3px solid transparent;
+  }
+
+  #amidaMobileMenu .mobile-nav-list .nav-link:hover,
+  #amidaMobileMenu .mobile-nav-list .nav-item.active > .nav-link {
+    background-color: var(--mp-blue-50);
+    color: var(--mp-blue-600);
+    border-left-color: var(--mp-green-600);
+  }
+
+  #amidaMobileMenu .mobile-controls-row {
+    margin-top: auto;
+    padding: 1rem 1.15rem;
+    border-top: 1px solid var(--mp-border-subtle);
+    background-color: var(--mp-surface-subtle);
+  }
+}
+
+@media (min-width: 992px) {
+  #amidaMobileMenu,
+  .mobile-overlay {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   Demo Specification Banner Below Header
+   ========================================================================== */
+.mp-editorial-preview {
+  max-width: 1280px;
+  margin: 1.5rem auto;
+  padding: 0 1.5rem;
+}
+
+.mp-spec-card {
+  background-color: var(--mp-white);
+  border: 1px solid var(--mp-border-subtle);
+  border-radius: var(--mp-radius-outer);
+  box-shadow: var(--mp-shadow-resting);
+  padding: 1rem 1.25rem;
+}
+
+.mp-swatch-white {
+  background-color: #ffffff;
+  color: var(--mp-ink-main);
+  border: 1px solid var(--mp-border-strong);
+}
+
+.mp-swatch-blue {
+  background-color: var(--mp-blue-600);
+  color: #ffffff;
+}
+
+.mp-swatch-green {
+  background-color: var(--mp-green-600);
+  color: #ffffff;
+}

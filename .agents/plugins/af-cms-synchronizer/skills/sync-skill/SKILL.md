@@ -5,7 +5,7 @@ description: Automated end-to-end synchronization orchestra for Amed Framework. 
 
 # Master Synchronization Orchestra (`Sync Skill`)
 
-This is the **single master entrypoint** for synchronizing `AF/Rojname` from canonical `AF/Business`.
+This is the **single master entrypoint** for synchronizing `AF/Bulletin` from canonical `AF/Business`.
 It is invoked strictly when the user requests **"Sync Skill"**.
 
 ---
@@ -39,7 +39,7 @@ If any candidate file touches a forbidden module, immediately reject that file a
 ### Movement 3: Deterministic Core Porting
 For each confirmed shared-core drift:
 1. Read the canonical file from `/home/malpersaz/Desktop/projects/htdocs/AF/Business/<path>`.
-2. Port changes directly to `AF/Rojname/<path>`.
+2. Port changes directly to `AF/Bulletin/<path>`.
 *(Note: PreToolUse hook automatically blocks any accidental forbidden modules or inline styles).*
 
 ### Movement 4: Automatic Linter & AST Validation

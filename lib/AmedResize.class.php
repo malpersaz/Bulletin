@@ -214,7 +214,7 @@ class AmedResize
                 break;
         }
 
-        imagedestroy($this->image_resized);
+        $this->image_resized = null;
         return TRUE;
     }
 

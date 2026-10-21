@@ -162,87 +162,53 @@ class mod_menu extends installerbase implements installerbaseinterface
                                 'zza' => 'Heqê ma de',
                                 'ru' => 'О нас',
                             ],
-                            'children' => [
-                                [
-                                    'url_suffix' => 'services',
-                                    'names' => [
-                                        'ar' => 'الخدمات',
-                                        'ckb' => 'خزمەتگوزارییەکان',
-                                        'de' => 'Dienstleistungen',
-                                        'en' => 'Services',
-                                        'fa' => 'خدمات',
-                                        'fr' => 'Services',
-                                        'ku' => 'Xizmet',
-                                        'sv' => 'Tjänster',
-                                        'tr' => 'Hizmetler',
-                                        'zza' => 'Xizmeti',
-                                        'ru' => 'Услуги',
-                                    ]
-                                ],
-                                [
-                                    'url_suffix' => 'newses',
-                                    'names' => [
-                                        'ar' => 'الأخبار',
-                                        'ckb' => 'هەواڵەکان',
-                                        'de' => 'Nachrichten',
-                                        'en' => 'News',
-                                        'fa' => 'اخبار',
-                                        'fr' => 'Actualités',
-                                        'ku' => 'Nûçe',
-                                        'sv' => 'Nyheter',
-                                        'tr' => 'Haberler',
-                                        'zza' => 'Nûçey',
-                                        'ru' => 'Новости',
-                                    ]
-                                ],
-                                [
-                                    'url_suffix' => 'contents',
-                                    'names' => [
-                                        'ar' => 'النشرة',
-                                        'ckb' => 'بڵاوکراوە',
-                                        'de' => 'Bulletin',
-                                        'en' => 'Bulletin',
-                                        'fa' => 'بولتن',
-                                        'fr' => 'Bulletin',
-                                        'ku' => 'Bûlten',
-                                        'sv' => 'Bulletin',
-                                        'tr' => 'Bülten',
-                                        'zza' => 'Bulten',
-                                        'ru' => 'Бюллетень',
-                                    ]
-                                ],
+                        ],
+                        [
+                            'url_suffix' => 'newses',
+                            'names' => [
+                                'ar' => 'الأخبار',
+                                'ckb' => 'هەواڵەکان',
+                                'de' => 'Nachrichten',
+                                'en' => 'News',
+                                'fa' => 'اخبار',
+                                'fr' => 'Actualités',
+                                'ku' => 'Nûçe',
+                                'sv' => 'Nyheter',
+                                'tr' => 'Haberler',
+                                'zza' => 'Nûçey',
+                                'ru' => 'Новости',
                             ]
                         ],
                         [
-                            'url_suffix' => 'products',
+                            'url_suffix' => 'publications',
                             'names' => [
-                                'ar' => 'المنتجات',
-                                'ckb' => 'بەرهەمەکان',
-                                'de' => 'Produkte',
-                                'en' => 'Products',
-                                'fa' => 'محصولات',
-                                'fr' => 'Produits',
-                                'ku' => 'Berhem',
-                                'sv' => 'Produkter',
-                                'tr' => 'Ürünler',
-                                'zza' => 'Berhemi',
-                                'ru' => 'Продукция',
+                                'ar' => 'المقالات',
+                                'ckb' => 'وتارەکان',
+                                'de' => 'Artikel',
+                                'en' => 'Articles',
+                                'fa' => 'مقالات',
+                                'fr' => 'Articles',
+                                'ku' => 'Gotar',
+                                'sv' => 'Artiklar',
+                                'tr' => 'Makaleler',
+                                'zza' => 'Meqaley',
+                                'ru' => 'Статьи',
                             ]
                         ],
                         [
-                            'url_suffix' => 'projects',
+                            'url_suffix' => 'authors',
                             'names' => [
-                                'ar' => 'المشاريع',
-                                'ckb' => 'پرۆژە',
-                                'de' => 'Projekte',
-                                'en' => 'Projects',
-                                'fa' => 'پروژه‌ها',
-                                'fr' => 'Projets',
-                                'ku' => 'Proje',
-                                'sv' => 'Projekt',
-                                'tr' => 'Projeler',
-                                'zza' => 'Proje',
-                                'ru' => 'Проекты',
+                                'ar' => 'الكتاب',
+                                'ckb' => 'نووسەران',
+                                'de' => 'Autoren',
+                                'en' => 'Authors',
+                                'fa' => 'نویسندگان',
+                                'fr' => 'Auteurs',
+                                'ku' => 'Nivîskar',
+                                'sv' => 'Författare',
+                                'tr' => 'Yazarlar',
+                                'zza' => 'Nuştekarî',
+                                'ru' => 'Авторы',
                             ]
                         ],
                         [
@@ -295,6 +261,9 @@ class mod_menu extends installerbase implements installerbaseinterface
                     ];
 
                     foreach ($sampleItems as $item) {
+                        if ($item['url_suffix'] === 'about' && $slotName === '##Header_Menu') {
+                            continue;
+                        }
                         $displayName = isset($item['names'][$langCode]) ? $item['names'][$langCode] : $item['names']['en'];
                         if ($item['url_suffix'] === 'about') {
                             $seoName = isset($aboutSeoMap[$langCode]) ? $aboutSeoMap[$langCode] : 'About_Us';

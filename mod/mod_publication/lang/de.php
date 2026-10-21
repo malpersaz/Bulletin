@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - English Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -388,7 +388,7 @@ $lang['mod_publication'] = [
             "Weekly Tech Summary: What Happened?",
             "Writers Union Elects New Board",
             "Photography Workshop Registrations Started",
-            "AKM ARTIST CMS Mobile App Updated"
+            "AKM Bulletin CMS Mobile App Updated"
         ],
         'categories' => ["Agenda", "Culture & Arts", "Technology", "Media", "Life"],
         'authors' => [],

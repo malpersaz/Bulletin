@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T22:52:00Z
 
 ## Mission
-Forensic integrity audit of Milestone 2 (Deprecated Modules Complete Cleanup) in AF/Rojname.
+Forensic integrity audit of Milestone 2 (Deprecated Modules Complete Cleanup) in AF/Bulletin.
 
 ## 🔒 My Identity
 - Archetype: forensic_auditor
 - Roles: critic, specialist, auditor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m2_auditor
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m2_auditor
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Target: Milestone 2
 

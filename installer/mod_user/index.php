@@ -100,7 +100,7 @@ class mod_user extends installerbase implements installerbaseinterface
         $model = Load::model('mod_user');
         $model->id = 1;
         $model->name = "AKM";
-        $model->last_name = "Business";
+        $model->last_name = "Bulletin";
         $model->group_id = 1;
         $model->username = "admin";
         $model->password = md5("admin123");

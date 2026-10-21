@@ -181,7 +181,7 @@ $result = runRpc([
 ], $plaintextKey);
 
 check('Handshake: protocolVersion returned', ($result['result']['protocolVersion'] ?? '') === '2025-03-26', json_encode($result));
-check('Handshake: serverInfo name is amed-rojname-mcp', ($result['result']['serverInfo']['name'] ?? '') === 'amed-rojname-mcp', json_encode($result));
+check('Handshake: serverInfo name is amed-bulletin-mcp', ($result['result']['serverInfo']['name'] ?? '') === 'amed-bulletin-mcp', json_encode($result));
 
 $result = runRpc(['jsonrpc' => '2.0', 'id' => 2, 'method' => 'ping'], $plaintextKey);
 check('Handshake: ping returns empty result', isset($result['result']) && $result['result'] === [], json_encode($result));
@@ -204,9 +204,9 @@ check('Discovery: list_videos registered', in_array('list_videos', $toolNames, t
 check('Discovery: list_site_settings registered', in_array('list_site_settings', $toolNames, true));
 
 // Ensure omitted Business modules are NOT present
-check('Parity: list_services NOT in Rojname', !in_array('list_services', $toolNames, true));
-check('Parity: list_products NOT in Rojname', !in_array('list_products', $toolNames, true));
-check('Parity: list_appointments NOT in Rojname', !in_array('list_appointments', $toolNames, true));
+check('Parity: list_services NOT in Bulletin', !in_array('list_services', $toolNames, true));
+check('Parity: list_products NOT in Bulletin', !in_array('list_products', $toolNames, true));
+check('Parity: list_appointments NOT in Bulletin', !in_array('list_appointments', $toolNames, true));
 
 // =========================================================================
 // 6. News CRUD Tool execution

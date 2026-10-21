@@ -2,7 +2,7 @@
 /**
  * Menu Module - Kurdish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software

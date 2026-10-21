@@ -1,4 +1,4 @@
-FROM php:8.4-fpm
+FROM php:8.5-fpm
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y \
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath intl zip opcache \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath intl zip \
     && pecl install imagick \
     && docker-php-ext-enable imagick
 

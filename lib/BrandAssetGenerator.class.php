@@ -396,8 +396,7 @@ class BrandAssetGenerator
         imagecopyresampled($dst, $src, $dstX, $dstY, 0, 0, $newW, $newH, $originalWidth, $originalHeight);
         imagepng($dst, $targetPath, 9);
 
-        imagedestroy($dst);
-        imagedestroy($src);
+        unset($dst, $src);
         return true;
     }
 
@@ -433,8 +432,7 @@ class BrandAssetGenerator
         imagecopyresampled($dst, $src, $dstX, $dstY, 0, 0, $newW, $newH, $originalWidth, $originalHeight);
         imagepng($dst, $targetPath, 9);
 
-        imagedestroy($dst);
-        imagedestroy($src);
+        unset($dst, $src);
         return true;
     }
 

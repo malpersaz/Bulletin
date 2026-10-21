@@ -1,14 +1,14 @@
-# Sentinel Handoff Report — AF/Rojname Modernization
+# Sentinel Handoff Report — AF/Bulletin Modernization
 
 **Author**: Project Sentinel  
-**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Workspace**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 **Date**: 2026-08-23T20:56:00Z  
 **Verdict**: **VICTORY CONFIRMED**
 
 ---
 
 ## 1. Observation
-The user requested a full architectural, security, and code quality modernization and synchronization of the AF/Rojname codebase with AF/Business standards across 6 requirement areas (R1 to R6) while strictly ensuring excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) remain completely absent.
+The user requested a full architectural, security, and code quality modernization and synchronization of the AF/Bulletin codebase with AF/Business standards across 6 requirement areas (R1 to R6) while strictly ensuring excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) remain completely absent.
 
 The Sentinel routed the task to `teamwork_preview_orchestrator` (`orchestrator_3`), maintained sentinel monitoring crons, and when completion was claimed, spawned the independent `teamwork_preview_victory_auditor` (`victory_auditor_2`).
 
@@ -43,7 +43,7 @@ The Victory Auditor performed a comprehensive 3-phase audit:
    - Purged legacy Turkish keys and standardized Kurdish UI action verbs (`add => 'Lêke'`, `update => 'Nûjenkirin'`).
 
 ## 3. Caveats
-- Excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) must remain excluded in all future iterations of the AF/Rojname repository.
+- Excluded commercial modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) must remain excluded in all future iterations of the AF/Bulletin repository.
 - Admin panel layout changes must continue adhering to the Phone-Only Mobile-First surface contract.
 
 ## 4. Conclusion

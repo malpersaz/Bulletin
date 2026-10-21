@@ -2,7 +2,7 @@
 /**
  * User Module - English Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -487,28 +487,20 @@ $lang['mod_user']['panel'] = [
     'goto_content' => 'Go to Content',
     'search_placeholder' => 'Search...',
     'quick_access' => 'Quick Access',
-    'products_metrics_title' => 'Products Snapshot',
     'metrics_active' => '%s active records',
-    'metrics_products' => '%s product records',
     'metrics_clients' => '%s client records',
     'metrics_homepage' => '%s homepage records',
     'metrics_references' => '%s reference records',
-    'metrics_product_categories' => '%s product category records',
     'family_quick_access' => 'Workspace Access',
-    'products_spotlight_title' => 'Products Workspace',
-    'products_spotlight_copy' => 'Manage products, client proof, and the supporting taxonomy from one family surface.',
     'pinned_modules' => 'Pinned Modules',
     'recent_workspace' => 'Recent Workspace',
-    'add_product' => 'Add Product',
     'add_reference' => 'Add Reference',
     'add_client' => 'Add Client',
     'add_service' => 'Add Service',
-    'manage_product_categories' => 'Open Category Workspace',
     'manage_service_categories' => 'Open Service Categories',
     'workspace_nav_dashboard' => 'Dashboard',
     'workspace_nav_content' => 'Content',
     'workspace_nav_media' => 'Media',
-    'workspace_nav_products' => 'Products',
     'workspace_nav_more' => 'More',
     'more_sheet_title' => 'More Tools',
     'more_sheet_copy' => 'Open lower-frequency system and administration surfaces without crowding the main workspace bar.',
@@ -519,17 +511,17 @@ $lang['mod_user']['panel'] = [
     'link_submissions' => 'Submissions',
     'clear_search' => 'Clear',
     'home_title' => 'Home',
-    'admin_brand' => 'AKM Rojname Admin'
+    'admin_brand' => 'AKM Bulletin CMS Admin'
 ];
 
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Add Announcement',
-    'add_product' => 'Add Product',
     'add_service' => 'Add Service',
     'add_page' => 'Add Page',
     'add_video_embed' => 'Add Video Embed',
     'add_video' => 'Add Video',
     'add_content' => 'Add News',
+        'add_news' => 'Add News',
     'add_publication' => 'Add Publication',
     'add_announcement_alert' => 'Announcement Form',
     'add_video_alert' => 'Video Form',

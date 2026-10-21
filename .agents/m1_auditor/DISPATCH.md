@@ -1,9 +1,9 @@
 ## 2026-08-23T19:36:35Z
 You are the Forensic Integrity Auditor for Milestone 1.
-Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_auditor.
-Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md.
-Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md.
-Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md.
+Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_auditor.
+Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md.
+Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md.
+Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md.
 
 Perform a strict forensic integrity audit on all Milestone 1 deliverables:
 1. Verify that `lib/Registry.class.php` contains real, genuine implementation and is not a mock or facade.
@@ -12,4 +12,4 @@ Perform a strict forensic integrity audit on all Milestone 1 deliverables:
 4. Verify that admin assets are genuine ports from AF/Business and not stub files.
 5. Check for any hardcoded test outputs or cheating mechanisms.
 
-Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_auditor/handoff.md with your binary verdict: CLEAN or INTEGRITY VIOLATION.
+Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_auditor/handoff.md with your binary verdict: CLEAN or INTEGRITY VIOLATION.

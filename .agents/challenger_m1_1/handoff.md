@@ -2,7 +2,7 @@
 
 **Author**: Challenger 1 (Adversarial Empirical Challenger M1)  
 **Date**: 2026-08-23  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m1_1`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m1_1`  
 **Verdict**: **APPROVE**  
 
 ---
@@ -40,7 +40,7 @@ Direct empirical observations from source inspection and execution of the dedica
   - `legacySeoFilter(null)` throws `InvalidArgumentException` as expected.
   - Kurdish Latin diacritics (`Ç`, `Ê`, `Î`, `Ş`, `Û`, `ç`, `ê`, `î`, `ş`, `û`, `ḧ`, `ẍ`) are 100% preserved. Example: `"Çand û Huner li Amedê"` -> `"Çand_û_Huner_li_Amedê"`.
   - Kurdish Soranî (Arabic script) strings are 100% preserved. Example: `"دەنگی ئەمریکا بەشی کوردی"` -> `"دەنگی_ئەمریکا_بەشی_کوردی"`.
-  - Zero Width Non-Joiner (`\u{200C}`) and mixed RTL/LTR/numeric tokens process into valid slugs without PCRE UTF-8 errors. Example: `"Rojname News 2026: هه‌واڵ و زانیاری لە کوردستان!"` -> `"Rojname_News_2026_هه_واڵ_و_زانیاری_لە_کوردستان"`.
+  - Zero Width Non-Joiner (`\u{200C}`) and mixed RTL/LTR/numeric tokens process into valid slugs without PCRE UTF-8 errors. Example: `"Bulletin News 2026: هه‌واڵ و زانیاری لە کوردستان!"` -> `"Bulletin_News_2026_هه_واڵ_و_زانیاری_لە_کوردستان"`.
   - Wikipedia-style casing preservation (AGENTS.md Rule 10) confirmed: `"Albert_Einstein and Marie_Curie"` preserves CamelCase without lowercase conversion.
   - Stress testing with 10,400-character Unicode strings executed in 0.39 ms with zero memory exhaustion or timeout.
 

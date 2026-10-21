@@ -14,6 +14,14 @@ class Cache {
     public static $ttl = NULL;
     private static $current_key = '';
 
+    public static function getCacheDir(): string {
+        return self::$cachedir;
+    }
+
+    public static function setCacheDir(string $dir): void {
+        self::$cachedir = $dir;
+    }
+
     public static function set($data, $key, $ttl = null) {
         $effective_ttl = $ttl ?? self::$ttl;
         self::$current_key = $key;
@@ -34,7 +42,7 @@ class Cache {
             return RedisCache::get(self::$current_key);
         }
         if (self::open_cache()) {
-            return unserialize(self::$source);
+            return unserialize(self::$source, ['allowed_classes' => false]);
         }
         return false;
     }

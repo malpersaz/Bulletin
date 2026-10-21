@@ -1,10 +1,10 @@
 ## 2026-08-23T19:49:31Z
 
 You are the Forensic Integrity Auditor for Milestone 2 (Deprecated Modules Complete Cleanup).
-Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m2_auditor.
-Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md.
-Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md.
-Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m2/handoff.md.
+Your working directory is /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m2_auditor.
+Task specification: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md.
+Project blueprint: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md.
+Worker handoff: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m2/handoff.md.
 
 Perform a forensic integrity audit on Milestone 2 deliverables:
 1. Verify that all 6 deprecated installer directories (`installer/mod_client`, `installer/mod_service`, `installer/mod_service_category`, `installer/mod_product`, `installer/mod_product_category`, `installer/mod_reference`) and 4 helpers (`mod/index/helper/mod_{client,service,product,reference}.helper.php`) are genuinely deleted from the filesystem.
@@ -12,4 +12,4 @@ Perform a forensic integrity audit on Milestone 2 deliverables:
 3. Run `php tests/run_e2e_tests.php` and `php tests/module_management_runtime_test.php`.
 4. Verify there are no fake test mocks or bypasses.
 
-Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m2_auditor/handoff.md with your binary verdict: CLEAN or INTEGRITY VIOLATION.
+Deliver a structured handoff report to /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m2_auditor/handoff.md with your binary verdict: CLEAN or INTEGRITY VIOLATION.

@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-24T01:22:00Z
 
 ## Mission
-Conduct independent 3-phase post-victory audit for AF/Rojname against ORIGINAL_REQUEST.md.
+Conduct independent 3-phase post-victory audit for AF/Bulletin against ORIGINAL_REQUEST.md.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: [critic, specialist, auditor, victory_verifier]
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_6
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_6
 - Original parent: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 - Target: full project
 
@@ -21,7 +21,7 @@ Conduct independent 3-phase post-victory audit for AF/Rojname against ORIGINAL_R
 - Updated: 2026-08-24T01:22:00Z
 
 ## Audit Scope
-- **Work product**: AF/Rojname repository codebase and test suites
+- **Work product**: AF/Bulletin repository codebase and test suites
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit
 

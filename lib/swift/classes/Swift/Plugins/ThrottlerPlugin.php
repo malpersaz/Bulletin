@@ -77,7 +77,7 @@ class Swift_Plugins_ThrottlerPlugin
    * @param Swift_Plugins_Timer $timer (only needed in testing)
    */
   public function __construct($rate, $mode = self::BYTES_PER_MINUTE,
-    Swift_Plugins_Sleeper $sleeper = null, Swift_Plugins_Timer $timer = null)
+    ?Swift_Plugins_Sleeper $sleeper = null, ?Swift_Plugins_Timer $timer = null)
   {
     $this->_rate = $rate;
     $this->_mode = $mode;

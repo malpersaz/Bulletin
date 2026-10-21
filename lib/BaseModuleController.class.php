@@ -18,6 +18,7 @@
  * @author Refactored for better maintainability
  */
 
+#[\AllowDynamicProperties]
 abstract class BaseModuleController
 {
     protected $module_name;

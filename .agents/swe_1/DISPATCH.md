@@ -2,15 +2,15 @@
 
 You are the SWE Orchestrator for this task.
 
-Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/swe_1
-Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
-Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/ORIGINAL_REQUEST.md
+Working Directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/swe_1
+Target Workspace: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
+Authoritative Request: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/ORIGINAL_REQUEST.md
 
 Task Summary:
-Fix the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code).
+Fix the fatal error `Call to undefined method Run::execute()` in `AF/Bulletin` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code).
 
 Requirements:
-1. Update `lib/Run.class.php` in `AF/Rojname` to define `public static function execute($a, $b, $ext = NULL)` instead of legacy Turkish `calistir`.
+1. Update `lib/Run.class.php` in `AF/Bulletin` to define `public static function execute($a, $b, $ext = NULL)` instead of legacy Turkish `calistir`.
 2. Ensure all calls across the codebase use `Run::execute()` cleanly without errors.
 3. Modernize any remaining Turkish method names in related touched validator/core helpers (e.g. `Validator::execute` vs `calistir`, `ekle` vs `add`) ensuring full backward/forward compatibility and English standard compliance.
 4. Strict boundary isolation: Zero presence or referencing of `mod_client`, `mod_service`, `mod_product`, `mod_reference`.

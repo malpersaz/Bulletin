@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeAKM() {
     if (AKM.initialized) return;
 
-    console.log('Rojname initializing...');
+    console.log('AKM Bulletin CMS initializing...');
 
     // Custom sliders
     initializeCustomSliders();
@@ -33,7 +33,7 @@ function initializeAKM() {
     initializeOtherFeatures();
 
     AKM.initialized = true;
-    console.log('Rojname initialized successfully!');
+    console.log('AKM Bulletin CMS initialized successfully!');
 }
 
 /**
@@ -64,32 +64,6 @@ function initializeCustomSliders() {
         });
 
         AKM.swiperInstances['akmslider_' + index] = swiperInstance;
-    });
-
-    // Product Carousel
-    const productCarousels = document.querySelectorAll('.product-carousel');
-    productCarousels.forEach(function(carousel, index) {
-        const swiperInstance = new Swiper(carousel, {
-            slidesPerView: 4,
-            spaceBetween: 20,
-            loop: true,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            breakpoints: {
-                1000: { slidesPerView: 4 },
-                900: { slidesPerView: 3 },
-                600: { slidesPerView: 2 },
-                400: { slidesPerView: 1 }
-            }
-        });
-
-        AKM.swiperInstances['product_' + index] = swiperInstance;
     });
 }
 
@@ -313,7 +287,7 @@ function initializeGoogleMaps() {
         const marker = new google.maps.Marker({
             position: { lat: 37.9144, lng: 40.2306 },
             map: map,
-            title: 'Rojname'
+            title: 'AKM Bulletin CMS'
         });
 
         return map;

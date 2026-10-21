@@ -1,6 +1,6 @@
 /**
  * Latest Videos - Editorial Broadsheet Video Grid Styling
- * Amida Theme for Rojname
+ * Amida Theme for AKM Bulletin CMS
  */
 
 .latest-videos-section {
@@ -58,7 +58,7 @@ body.dark-mode .latest-videos-section {
 
 .latest-videos-title {
     margin: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -95,7 +95,7 @@ body.dark-mode .latest-videos-section {
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.68rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -270,7 +270,7 @@ body.dark-mode .latest-videos-section {
 
 .latest-video-card-title {
     margin: 0;
-    font-family: 'Literata', serif;
+    font-family: 'Newsreader', serif;
     font-size: 0.84rem;
     font-weight: 700;
     line-height: 1.3;

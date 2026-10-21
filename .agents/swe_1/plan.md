@@ -1,12 +1,12 @@
 # Implementation & Refinement Plan
 
 ## Task Objective
-Fix the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code) and validating with full e2e test suite passing 100%.
+Fix the fatal error `Call to undefined method Run::execute()` in `AF/Bulletin` by modernizing the `Run` class (`lib/Run.class.php`) and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files (`lib/Run.class.php`, `lib/Validator.class.php`) while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code) and validating with full e2e test suite passing 100%.
 
 ## SWE Light Sequential Execution Plan
 1. **Round 0: Primary Implementation**
    - Agent: `teamwork_preview_implementer`
-   - Goal: Investigate `lib/Run.class.php`, `lib/Validator.class.php`, and references across `AF/Rojname` (comparing with `AF/Business` as needed). Implement `Run::execute()`, modernize methods in touched files, ensure repository boundaries, and run `php tests/e2e/run.php`.
+   - Goal: Investigate `lib/Run.class.php`, `lib/Validator.class.php`, and references across `AF/Bulletin` (comparing with `AF/Business` as needed). Implement `Run::execute()`, modernize methods in touched files, ensure repository boundaries, and run `php tests/e2e/run.php`.
 2. **Round 1: Reviewer 1 (Adversarial Stress-Test & Fix)**
    - Agent: `teamwork_preview_reviewer`
    - Goal: Verify implementation, inspect diff, test edge cases, fix any issues, and re-run test suite.

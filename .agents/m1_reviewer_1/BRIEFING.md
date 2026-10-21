@@ -6,7 +6,7 @@ Conduct thorough quality and adversarial review of Milestone 1 (Core Foundation,
 ## 🔒 My Identity
 - Archetype: reviewer / critic
 - Roles: reviewer, critic
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1 (Core Foundation, Registry & Assets)
 - Instance: 1 of 1
@@ -46,7 +46,7 @@ Conduct thorough quality and adversarial review of Milestone 1 (Core Foundation,
 - Issue verdict REQUEST_CHANGES due to broken `Registry::all()`, missing `$default` handling in `Registry::get()`, `isset` bug in `Registry::has()`, breaking calls in `mod/index/indexMain.php`, and dummy fallback branch evasion in `tests/e2e/suites/Tier1FeatureCoverageTest.php` and `Tier2BoundariesCornersTest.php`.
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1/DISPATCH.md` — Initial dispatch message
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1/BRIEFING.md` — Agent briefing & memory
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1/progress.md` — Progress heartbeat
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_reviewer_1/handoff.md` — Final review and handoff report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1/DISPATCH.md` — Initial dispatch message
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1/BRIEFING.md` — Agent briefing & memory
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1/progress.md` — Progress heartbeat
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_reviewer_1/handoff.md` — Final review and handoff report

@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T23:55:40+03:00
 
 ## Mission
-Conduct an independent, adversarial 3-phase Victory Audit for AF/Rojname with zero shared context, verifying R1-R6 deliverables, anti-cheating/forensics, code separation, exclusion boundaries, Kurdish SEO Unicode, ORM case-insensitivity, 9-language i18n, corporate fields, and running all independent tests/guards.
+Conduct an independent, adversarial 3-phase Victory Audit for AF/Bulletin with zero shared context, verifying R1-R6 deliverables, anti-cheating/forensics, code separation, exclusion boundaries, Kurdish SEO Unicode, ORM case-insensitivity, 9-language i18n, corporate fields, and running all independent tests/guards.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2
 - Original parent: 766de567-ae77-402e-97e3-790d1974e31d
 - Target: full project
 
@@ -22,7 +22,7 @@ Conduct an independent, adversarial 3-phase Victory Audit for AF/Rojname with ze
 - Updated: 2026-08-23T23:55:40+03:00
 
 ## Audit Scope
-- **Work product**: Full repository / implementation in AF/Rojname
+- **Work product**: Full repository / implementation in AF/Bulletin
 - **Profile loaded**: General Project / Victory Audit
 - **Audit type**: victory audit
 
@@ -39,10 +39,10 @@ Conduct an independent, adversarial 3-phase Victory Audit for AF/Rojname with ze
 - Confirmed full compliance with all user requirements R1 to R6 and acceptance criteria.
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2/DISPATCH.md` — Initial dispatch instructions
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2/BRIEFING.md` — Persistent agent briefing
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2/progress.md` — Liveness and progress tracking
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_2/handoff.md` — Structured Victory Audit Report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2/DISPATCH.md` — Initial dispatch instructions
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2/BRIEFING.md` — Persistent agent briefing
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2/progress.md` — Liveness and progress tracking
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_2/handoff.md` — Structured Victory Audit Report
 
 ## Attack Surface
 - **Hypotheses tested**:
@@ -55,15 +55,15 @@ Conduct an independent, adversarial 3-phase Victory Audit for AF/Rojname with ze
 - **Untested angles**: All major surfaces audited and stress-tested.
 
 ## Loaded Skills
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/task-validation/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/task-validation/SKILL.md
   - **Local copy**: N/A
   - **Core methodology**: Enforce project quality guards (comment-guard, i18n-guard, policy-gate) before completing a task.
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/i18n-guard/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/i18n-guard/SKILL.md
   - **Local copy**: N/A
   - **Core methodology**: Automated quality guard to audit localization completeness, code language standards, forbidden aliases, and missing keys.
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/module-modernization-check/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/module-modernization-check/SKILL.md
   - **Local copy**: N/A
   - **Core methodology**: Audit modules for compliance with modernization standards.
-- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/admin-mobile-check/SKILL.md
+- **Source**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/admin-mobile-check/SKILL.md
   - **Local copy**: N/A
   - **Core methodology**: Audit and validate admin templates for mobile phone-only viewport compliance.

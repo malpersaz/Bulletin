@@ -39,11 +39,11 @@ Agent workflows must also respect the repository version log in `/docs/VERSION.m
 
 Agent workflows must also respect repository boundaries.
 
-- These modules are `Rojname`-specific and must not be treated as shared modules for sibling projects:
+- These modules are `Bulletin`-specific and must not be treated as shared modules for sibling projects:
   - `mod_news`
   - `mod_news_category`
   - `mod_publication`
   - `mod_publication_category`
-- `Rojname`-specific installer branding, language-selection, and seed-content decisions must also stay local.
+- `Bulletin`-specific installer branding, language-selection, and seed-content decisions must also stay local.
 - Other refactoring work should be assumed shareable unless the user marks it as project-specific.
 

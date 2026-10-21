@@ -2,14 +2,14 @@
 
 ## 2026-08-23T19:19:17Z
 
-Synchronize AF/Rojname with the latest modernization standards and module state from AF/Business by renaming/modernizing mod_content and mod_content_category, porting and syncing mod_seo, mod_faq, mod_newsletter, and mod_settings, and completely removing all remnants of mod_client, mod_service, mod_product, and mod_reference modules across the repository.
+Synchronize AF/Bulletin with the latest modernization standards and module state from AF/Business by renaming/modernizing mod_content and mod_content_category, porting and syncing mod_seo, mod_faq, mod_newsletter, and mod_settings, and completely removing all remnants of mod_client, mod_service, mod_product, and mod_reference modules across the repository.
 
-Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 Integrity mode: development
 
 ## Reference Repositories & Paths
 - Source / Reference: `/home/malpersaz/Desktop/projects/htdocs/AF/Business`
-- Target Workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- Target Workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 
 ## Requirements
 
@@ -19,12 +19,12 @@ Integrity mode: development
 - Update routes, database queries, and permission keys from deprecated names to the unified structure.
 
 ### R2. Port and Sync Core Modules from AF/Business
-- **mod_seo**: Port/sync `mod_seo` controllers, models, validators, language files, and templates from `AF/Business` into `AF/Rojname`.
-- **mod_faq & mod_faq_mod**: Port/sync `mod_faq` and `mod_faq_mod` from `AF/Business` into `AF/Rojname` (including models, sql schemas, installer configs, admin templates, and frontend helpers).
-- **mod_newsletter**: Port/sync `mod_newsletter` from `AF/Business` into `AF/Rojname` with full mobile-first admin panel UI, models, and language files.
+- **mod_seo**: Port/sync `mod_seo` controllers, models, validators, language files, and templates from `AF/Business` into `AF/Bulletin`.
+- **mod_faq & mod_faq_mod**: Port/sync `mod_faq` and `mod_faq_mod` from `AF/Business` into `AF/Bulletin` (including models, sql schemas, installer configs, admin templates, and frontend helpers).
+- **mod_newsletter**: Port/sync `mod_newsletter` from `AF/Business` into `AF/Bulletin` with full mobile-first admin panel UI, models, and language files.
 - **mod_settings**: Sync and modernize `mod_settings` from `AF/Business` to ensure complete configuration support, proper language definitions, and clean separation of concerns.
 
-### R3. Thorough Cleanup of Deprecated Business Modules in AF/Rojname
+### R3. Thorough Cleanup of Deprecated Business Modules in AF/Bulletin
 - Completely remove all code, files, templates, assets, installer scripts, helper functions, and database schemas associated with:
   1. `mod_client`
   2. `mod_service` & `mod_service_category`
@@ -63,13 +63,13 @@ Integrity mode: development
 
 ## 2026-08-23T20:14:39Z
 
-Modernize and synchronize the AF/Rojname codebase with the latest architectural, code quality, and security standards from AF/Business (such as AJAX permission management, strict code separation, universal share toolbar, Unicode SEO filtering, base controller relation endpoints, ORM resilience, and 9-language parity) while strictly ensuring excluded commercial modules remain completely absent from the news repository.
+Modernize and synchronize the AF/Bulletin codebase with the latest architectural, code quality, and security standards from AF/Business (such as AJAX permission management, strict code separation, universal share toolbar, Unicode SEO filtering, base controller relation endpoints, ORM resilience, and 9-language parity) while strictly ensuring excluded commercial modules remain completely absent from the news repository.
 
-Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 Integrity mode: development
 
 ## Boundaries & Strict Exclusions
-The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Rojname:
+The following modules and ANY references, templates, routes, or installer fixtures related to them MUST NOT exist or be introduced into AF/Bulletin:
 1. `mod_client`
 2. `mod_service` & `mod_service_category`
 3. `mod_product` & `mod_product_category`
@@ -123,21 +123,21 @@ The following modules and ANY references, templates, routes, or installer fixtur
 
 This is a single self-contained fix; keep it small and focused.
 
-Fix the fatal error `Call to undefined method Run::execute()` in `AF/Rojname` by modernizing the `Run` class and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code).
+Fix the fatal error `Call to undefined method Run::execute()` in `AF/Bulletin` by modernizing the `Run` class and aligning core execution patterns with `AF/Business`, ensuring zero Turkish identifiers/methods remain in touched core files while respecting strict repository boundaries (no `mod_client`, `mod_service`, `mod_product`, `mod_reference` or related code).
 
-Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname
+Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin
 Integrity mode: development
 
 ## Requirements
 
 ### R1. Fix Run Class & Execution Dispatch
-- Update `lib/Run.class.php` in `AF/Rojname` to define `public static function execute($a, $b, $ext = NULL)` instead of legacy Turkish `calistir`.
+- Update `lib/Run.class.php` in `AF/Bulletin` to define `public static function execute($a, $b, $ext = NULL)` instead of legacy Turkish `calistir`.
 - Ensure all calls across the codebase use `Run::execute()` cleanly without errors.
 - Modernize any remaining Turkish method names in related touched validator/core helpers (e.g. `Validator::execute` vs `calistir`, `ekle` vs `add`) ensuring full backward/forward compatibility and English standard compliance.
 
 ### R2. Strict Repository Boundary Isolation
 - Do NOT import, migrate, or reference any out-of-scope modules from `AF/Business`: specifically `mod_client`, `mod_service`, `mod_service_category`, `mod_product`, `mod_product_category`, `mod_reference`, `mod_reference_category`.
-- Keep `AF/Rojname` cleanly isolated as a news/publishing CMS.
+- Keep `AF/Bulletin` cleanly isolated as a news/publishing CMS.
 
 ### R3. Quality and Test Suite Verification
 - Verify that running `php tests/e2e/run.php` passes with 100% success rate (236+ tests).
@@ -151,7 +151,7 @@ Integrity mode: development
 - [ ] No Turkish identifiers (`calistir`, `ekle`, etc.) in touched core library files (`lib/Run.class.php`, `lib/Validator.class.php`).
 
 ### Boundaries & Guardrails
-- [ ] Zero presence or referencing of `mod_client`, `mod_service`, `mod_product`, `mod_reference` in `AF/Rojname`.
+- [ ] Zero presence or referencing of `mod_client`, `mod_service`, `mod_product`, `mod_reference` in `AF/Bulletin`.
 - [ ] Full e2e test suite (`php tests/e2e/run.php`) passes with 0 failures.
 
 ## 2026-08-23T21:24:32Z
@@ -174,5 +174,5 @@ Requirements:
 1. Modernize and purge all legacy `->veri()` method calls across all modules (including `mod/mod_user/index.php`, `mod/index/helper/search.helper.php`, `mod/mod_acl/index.php`, `mod/lang/index.php`, `mod/mod_attachment/index.php`, etc.) replacing them with the canonical English `->set(...)` method on `TwigTemplate` / `AdminTemplate`.
 2. Update `lib/TwigTemplate.class.php` to include backward-compatibility forwarding (`veri` -> `set`) via `public function veri($key, $value) { return $this->set($key, $value); }` or `__call` so any edge cases never crash.
 3. Eliminate non-English identifiers (`veri`, `tema` properties where applicable) matching AF/Business standard (which purged `veri` completely).
-4. Strictly respect repository boundaries: keep out-of-scope modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) absent from AF/Rojname.
+4. Strictly respect repository boundaries: keep out-of-scope modules (`mod_client`, `mod_service`, `mod_product`, `mod_reference`) absent from AF/Bulletin.
 5. Re-run all E2E test suites and verification checks to ensure 100% pass rate.

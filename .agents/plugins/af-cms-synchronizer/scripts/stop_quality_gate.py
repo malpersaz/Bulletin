@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Stop Hook for AF CMS Synchronizer (AF/Rojname)
+Stop Hook for AF CMS Synchronizer (AF/Bulletin)
 Runs before the agent terminates its loop to ensure zero unresolved quality or boundary violations.
 If violations exist, it forces the agent to continue and resolve them.
 """

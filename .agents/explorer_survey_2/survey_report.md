@@ -1,7 +1,7 @@
 # Deprecated Modules Cleanup Inventory (Requirement R3)
 
 **Date**: 2026-08-23  
-**Target Repository**: `AF/Rojname` (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`)  
+**Target Repository**: `AF/Bulletin` (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`)  
 **Scope**: Complete inventory of files, directories, SQL schemas, route definitions, catalog entries, controllers, helpers, admin templates, assets, and language definitions for:
 1. `mod_client`
 2. `mod_service` & `mod_service_category`

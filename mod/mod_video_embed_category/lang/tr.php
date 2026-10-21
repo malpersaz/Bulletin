@@ -46,6 +46,8 @@ $lang['mod_video_embed_category'] = [
         'cancel' => 'Vazgeç',
         'save' => 'Kaydet',
         'remove' => 'Kaldır',
+        'yes' => 'Evet',
+        'no' => 'Hayır',
     ],
     'validator' => [
         'required' => 'Lütfen %s alanını boş bırakmayın.',

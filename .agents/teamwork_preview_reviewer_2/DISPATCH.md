@@ -2,8 +2,8 @@
 
 ## Role & Objectives
 - **Role:** Adversarial Reviewer & Quality Assurance (Round 2)
-- **Target Workspace:** `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
-- **Working Directory:** `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/teamwork_preview_reviewer_2`
+- **Target Workspace:** `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
+- **Working Directory:** `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/teamwork_preview_reviewer_2`
 - **Goal:** Independently audit, stress test, break, verify, and harden the codebase against lingering deprecated commercial module references (`mod_client`, `mod_service`, `mod_product`, `mod_reference`), verify comprehensive test suite coverage and 100% pass rate.
 
 ## Review Protocol

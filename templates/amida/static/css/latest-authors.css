@@ -32,7 +32,7 @@
 }
 
 #latest-publication-authors .latest-authors-title {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-size: 0.75rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -109,7 +109,7 @@
 
 #latest-publication-authors .latest-authors-publication {
     color: var(--authors-ink);
-    font-family: 'Literata', serif;
+    font-family: 'Newsreader', serif;
     font-size: 0.98rem;
     font-weight: 700;
     line-height: 1.35;

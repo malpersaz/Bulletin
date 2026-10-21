@@ -76,7 +76,16 @@ Use it to quickly locate:
   - Impeccable Design: design vocabulary and refinement protocol (/polish, /distill, /clarify, /audit, /critique)
 
 - `/.agents/skills/kevanger/SKILL.md`
-  - Kevanger: curate, cross-reference, and stage drafted news in mod_news via MCP with orthography validation
+  - Kevanger: curate, cross-reference, and stage Turkish-language news drafts in mod_news via MCP
+
+- `/.agents/skills/kevkolin/SKILL.md`
+  - Kevkolin: multi-source news research engine and Diyarbakır/international source catalog
+
+- `/.agents/skills/kevrast/SKILL.md`
+  - Kevrast: automated fact-checking and HTTP 200 live link verification gate
+
+- `/.agents/skills/kevseo/SKILL.md`
+  - Kevseo: Google News, Discover, and semantic HTML SEO auditor for Turkish news drafts
 
 - `/.agents/skills/lang-refactor/SKILL.md`
   - language-key refactoring helper for descriptive English key migrations
@@ -168,14 +177,14 @@ When quality-agent policy changes, update these files together:
 
 ## Repository Boundary Rule
 
-- The following modules are `Rojname`-only:
+- The following modules are `Bulletin`-only:
   - `mod_news`
   - `mod_news_category`
   - `mod_publication`
   - `mod_publication_category`
 - Agents must preserve them as project-specific modules and must not treat them as shared-core candidates for sibling projects.
-- The following installer decisions are also `Rojname`-specific:
-  - `Rojname` branding/default project name
+- The following installer decisions are also `Bulletin`-specific:
+  - `Bulletin` branding/default project name
   - removing default sample menu/category/content seeds
 - Other refactoring work should be treated as shared-core candidate work and compared for sibling-repository synchronization.
 

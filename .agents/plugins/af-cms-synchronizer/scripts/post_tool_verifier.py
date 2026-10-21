@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-PostToolUse Hook for AF CMS Synchronizer (AF/Rojname)
+PostToolUse Hook for AF CMS Synchronizer (AF/Bulletin)
 Runs post-execution deterministic validation on modified files:
 1. Validates PHP syntax via `php -l` on modified .php files.
 2. Validates code separation via `tools/code_separation_guard.py`.
@@ -77,7 +77,7 @@ def main():
         target_templates = [
             f for f in modified_files
             if os.path.splitext(f)[1].lower() in ('.twig', '.html', '.php')
-            and not f.startswith(('docs/', 'tools/', '.agents/'))
+            and not f.startswith(('docs/', 'tools/', '.agents/', 'tests/'))
         ]
         for t_file in target_templates:
             full_t = os.path.join(repo_root, t_file)

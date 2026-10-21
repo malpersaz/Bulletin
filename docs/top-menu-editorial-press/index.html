@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Bulletin — Stacked Top Menu Prototype: Editorial Press</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body class="stm-demo-page">
+
+	<!-- Editorial Top Strip: Navy Blue Highlight + 20% Forest Green Live Pill -->
+	<div class="stm-utility-strip">
+		<div class="container d-flex align-items-center justify-content-between">
+			<div class="d-flex align-items-center gap-2 text-truncate">
+				<span class="stm-live-badge">
+					<span class="stm-live-dot" aria-hidden="true"></span>
+					LIVE
+				</span>
+				<a href="#breaking-news" class="stm-ticker-link text-truncate">
+					Special Report: Regional economic summit opens with new cultural and press initiatives...
+				</a>
+			</div>
+			<div class="stm-meta-info d-none d-md-flex align-items-center gap-3">
+				<span><i class="bi bi-calendar3 me-1" aria-hidden="true"></i>Tuesday, Oct 19, 2026</span>
+				<span><i class="bi bi-cloud-sun me-1" aria-hidden="true"></i>22°C</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Stacked Header (Modeled on templates/amida/index/mod_menu/stacked_top_menu.twig) -->
+	<header class="stacked-header sticky-top" id="amidaStackedHeader" aria-label="Bulletin - Main Navigation">
+		<div class="container">
+			<div class="stacked-header-card">
+				<!-- TOP ROW: Brand, Centered Search, Utilities -->
+				<div class="stacked-header-top">
+					<!-- Brand/Logo -->
+					<a class="stacked-brand d-inline-flex align-items-center" href="#home" title="Bulletin Independent Press" aria-label="Bulletin">
+						<span class="stacked-brand-mark" aria-hidden="true">B</span>
+						<span>
+							<span class="stacked-brand-title">BULLETIN</span>
+							<span class="stacked-brand-subtitle">Independent Press</span>
+						</span>
+					</a>
+
+					<!-- Centered Search Field (Desktop) -->
+					<div class="stacked-search-slot d-none d-lg-block">
+						<form class="search-form" role="search" method="get" action="#search">
+							<div class="stacked-search-wrapper">
+								<label for="stackedSearchInput" class="visually-hidden">Search news, articles, and archives...</label>
+								<input type="search" id="stackedSearchInput" name="query" class="form-control stacked-search-input" placeholder="Search headlines, articles, and columns..." aria-label="Search headlines, articles, and columns..." autocomplete="off">
+								<button class="stacked-search-btn" type="submit" aria-label="Search" title="Search">
+									<i class="bi bi-search" aria-hidden="true"></i>
+								</button>
+							</div>
+						</form>
+					</div>
+
+					<!-- Right Utility & Account Actions -->
+					<div class="stacked-utility-zone d-flex align-items-center gap-1 gap-md-2">
+						<!-- Language Selector -->
+						<div class="dropdown">
+							<button class="btn btn-header-action btn-header-lang dropdown-toggle" type="button" id="stackedLanguageDropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Language">
+								<i class="bi bi-globe2 me-1" aria-hidden="true"></i>
+								<span class="lang-text">EN</span>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="stackedLanguageDropdown">
+								<li>
+									<h6 class="dropdown-header">
+										<i class="bi bi-translate me-2" aria-hidden="true"></i>Select Language
+									</h6>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between active" href="#en">
+										<span>English</span>
+										<i class="bi bi-check2 text-success ms-2" aria-hidden="true"></i>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#ku">
+										<span>Kurdish (Kurmanji)</span>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#zza">
+										<span>Zazaki</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Dark Mode Toggle -->
+						<button class="btn btn-header-action btn-icon" id="darkModeToggle" type="button" aria-label="Dark Mode" title="Dark Mode">
+							<i class="bi bi-moon-stars js-theme-icon" aria-hidden="true"></i>
+						</button>
+
+						<!-- Guest User Buttons (Desktop Only in Top Bar, in Drawer for Mobile) -->
+						<div class="auth-buttons d-none d-lg-flex align-items-center gap-2" id="guestAuthDesktop">
+							<button class="btn btn-header-login" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
+								<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
+								<span>Sign In</span>
+							</button>
+							<a href="#register" class="btn btn-header-register">
+								<i class="bi bi-person-plus me-1" aria-hidden="true"></i>
+								<span>Subscribe</span>
+							</a>
+						</div>
+
+						<!-- Logged in User Menu (Toggled via demo switcher) -->
+						<div class="dropdown d-none" id="userProfileDesktop">
+							<button class="btn user-profile-btn d-flex align-items-center" type="button" id="stackedUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="My Account" title="My Account">
+								<div class="user-avatar-container">
+									<div class="user-avatar user-avatar-placeholder rounded-circle">
+										A
+									</div>
+									<div class="avatar-status-indicator online"></div>
+								</div>
+								<span class="user-name d-none d-lg-inline ms-2 me-1">Alanaylor</span>
+								<i class="bi bi-chevron-down user-dropdown-arrow d-none d-lg-inline" aria-hidden="true"></i>
+							</button>
+
+							<ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="stackedUserDropdown">
+								<li class="dropdown-header">
+									<div class="d-flex align-items-center">
+										<div class="user-avatar-placeholder rounded-circle me-2">
+											A
+										</div>
+										<div class="user-info-text text-truncate">
+											<div class="fw-bold text-truncate">Alan Naylor</div>
+											<small class="text-muted">@alannaylor</small>
+										</div>
+									</div>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item d-flex align-items-center justify-content-between" href="#inbox">
+										<div>
+											<i class="bi bi-envelope me-2 text-primary" aria-hidden="true"></i>
+											<span>Messages</span>
+										</div>
+										<span class="badge bg-success rounded-pill">3</span>
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#panel">
+										<i class="bi bi-person-circle me-2 text-primary" aria-hidden="true"></i>
+										My Account
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#add-news">
+										<i class="bi bi-newspaper me-2 text-primary" aria-hidden="true"></i>
+										Submit News
+									</a>
+								</li>
+								<li>
+									<a class="dropdown-item" href="#add-publication">
+										<i class="bi bi-journal-richtext me-2 text-primary" aria-hidden="true"></i>
+										Write Column
+									</a>
+								</li>
+								<li><hr class="dropdown-divider"></li>
+								<li>
+									<a class="dropdown-item text-danger" href="#logout">
+										<i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+										Sign Out
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Mobile Menu Toggler (d-lg-none) -->
+						<button class="btn btn-header-action btn-icon btn-header-toggler d-lg-none navbar-toggler" type="button" id="mobileDrawerOpenBtn" aria-controls="amidaMobileMenu" aria-expanded="false" aria-label="Toggle Menu" title="Toggle Menu">
+							<i class="bi bi-list fs-5" aria-hidden="true"></i>
+						</button>
+					</div>
+				</div>
+
+				<!-- BOTTOM ROW: Editorial Category Navigation -->
+				<div class="stacked-header-nav">
+					<nav class="stacked-nav-bar" aria-label="Editorial Categories">
+						<ul class="navbar-nav stacked-nav-list mb-0" data-menu-root>
+							<li class="nav-item">
+								<a class="nav-link active" href="#headlines" title="Headlines">
+									<i class="bi bi-house-door" aria-hidden="true"></i>
+									Headlines
+								</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#current-affairs" title="Current Affairs">Current Affairs</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#politics" title="Politics">Politics</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#economy" title="Economy">Economy</a>
+							</li>
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" href="#culture" data-bs-toggle="dropdown" role="button" aria-expanded="false" title="Culture and Arts">
+									Culture &amp; Arts
+								</a>
+								<ul class="dropdown-menu">
+									<li><a class="dropdown-item" href="#literature">Literature &amp; Criticism</a></li>
+									<li><a class="dropdown-item" href="#cinema">Cinema &amp; Theater</a></li>
+									<li><a class="dropdown-item" href="#music">Music</a></li>
+									<li><a class="dropdown-item" href="#history">History &amp; Archive</a></li>
+								</ul>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#world" title="World">World</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#opinion" title="Opinion and Columns">Opinion &amp; Columns</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" href="#sports" title="Sports">Sports</a>
+							</li>
+							<li class="nav-item ms-lg-auto">
+								<a class="nav-link nav-link-green-special" href="#special-dossiers" title="Special Dossiers">
+									<i class="bi bi-stars" aria-hidden="true"></i>
+									Special Dossier
+								</a>
+							</li>
+						</ul>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<!-- Mobile Menu Drawer (Offcanvas Drawer) -->
+	<div class="amida-mobile-drawer" id="amidaMobileMenu" aria-hidden="true">
+		<div class="mobile-menu-header d-flex align-items-center justify-content-between">
+			<a class="stacked-brand d-inline-flex align-items-center" href="#home" title="Bulletin">
+				<span class="stacked-brand-mark" aria-hidden="true">B</span>
+				<span>
+					<span class="stacked-brand-title">BULLETIN</span>
+					<span class="stacked-brand-subtitle">Independent Press</span>
+				</span>
+			</a>
+			<button type="button" class="btn-close mobile-menu-close" id="mobileDrawerCloseBtn" aria-label="Close"></button>
+		</div>
+
+		<!-- Mobile Search Form -->
+		<div class="mobile-menu-search">
+			<form class="search-form" role="search" method="get" action="#search">
+				<div class="search-wrapper w-100 position-relative">
+					<button class="search-btn" type="submit" aria-label="Search" title="Search">
+						<i class="bi bi-search" aria-hidden="true"></i>
+					</button>
+					<input type="search" name="query" class="form-control search-input" placeholder="Search news..." aria-label="Search news..." autocomplete="off">
+				</div>
+			</form>
+		</div>
+
+		<!-- Mobile Navigation Links -->
+		<ul class="navbar-nav mobile-nav-list mb-0">
+			<li class="nav-item"><a class="nav-link active" href="#headlines">Headlines</a></li>
+			<li class="nav-item"><a class="nav-link" href="#current-affairs">Current Affairs</a></li>
+			<li class="nav-item"><a class="nav-link" href="#politics">Politics</a></li>
+			<li class="nav-item"><a class="nav-link" href="#economy">Economy</a></li>
+			<li class="nav-item"><a class="nav-link" href="#culture">Culture &amp; Arts</a></li>
+			<li class="nav-item"><a class="nav-link" href="#world">World</a></li>
+			<li class="nav-item"><a class="nav-link" href="#opinion">Opinion &amp; Columns</a></li>
+			<li class="nav-item"><a class="nav-link" href="#special-dossiers">Special Dossier</a></li>
+		</ul>
+
+		<!-- Mobile Controls Row -->
+		<div class="mobile-controls-row w-100 mt-auto">
+			<div class="d-flex align-items-center gap-2">
+				<div class="language-selector flex-grow-1">
+					<div class="dropdown">
+						<button class="btn btn-header-action mobile-lang-btn w-100 d-flex align-items-center justify-content-between p-2" type="button" id="stackedLanguageDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false">
+							<div class="d-flex align-items-center">
+								<i class="bi bi-globe2 me-2 text-muted" aria-hidden="true"></i>
+								<span class="fw-semibold">EN — English</span>
+							</div>
+							<i class="bi bi-chevron-down small text-muted" aria-hidden="true"></i>
+						</button>
+						<ul class="dropdown-menu shadow-sm w-100" aria-labelledby="stackedLanguageDropdownMobile">
+							<li><a class="dropdown-item active" href="#en">English</a></li>
+							<li><a class="dropdown-item" href="#ku">Kurdish (Kurmanji)</a></li>
+							<li><a class="dropdown-item" href="#zza">Zazaki</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="mobile-dark-mode">
+					<button class="btn btn-header-action btn-icon mobile-dark-mode-btn" id="darkModeToggleMobile" type="button" aria-label="Dark Mode">
+						<i class="bi bi-moon-stars js-theme-icon" aria-hidden="true"></i>
+					</button>
+				</div>
+			</div>
+
+			<!-- Mobile Guest Auth -->
+			<div class="mobile-auth-group d-flex gap-2 mt-3 pt-3 border-top" id="guestAuthMobile">
+				<button class="btn btn-header-login flex-fill" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
+					<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
+					<span>Sign In</span>
+				</button>
+				<a href="#register" class="btn btn-header-register flex-fill text-center">
+					<i class="bi bi-person-plus me-1" aria-hidden="true"></i>
+					<span>Subscribe</span>
+				</a>
+			</div>
+
+			<!-- Mobile Logged-in Auth -->
+			<div class="mobile-auth-group mt-3 pt-3 border-top d-none" id="userProfileMobile">
+				<div class="mobile-user-card d-flex align-items-center gap-2 mb-3 p-2 rounded">
+					<div class="user-avatar-placeholder rounded-circle">A</div>
+					<div class="mobile-user-info text-truncate flex-grow-1">
+						<div class="fw-bold text-truncate">Alan Naylor</div>
+						<small class="text-muted">@alannaylor</small>
+					</div>
+				</div>
+				<a class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center" href="#logout">
+					<i class="bi bi-box-arrow-right me-2" aria-hidden="true"></i>
+					<span>Sign Out</span>
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- Mobile Menu Overlay -->
+	<div class="mobile-overlay" id="mobileOverlay"></div>
+
+	<!-- Login Modal -->
+	<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header border-0">
+					<h5 class="modal-title fw-bold" id="loginModalLabel">
+						<i class="bi bi-box-arrow-in-right me-2"></i>
+						Sign In to Your Account
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form action="#login" method="post" id="loginForm">
+						<!-- Step 1: Username -->
+						<div id="loginStep1" class="login-step">
+							<div class="mb-3">
+								<label for="loginUsername" class="form-label fw-semibold">Username or Email</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-person"></i></span>
+									<input type="text" class="form-control" id="loginUsername" name="username" placeholder="e.g. alannaylor" required autocomplete="username">
+								</div>
+							</div>
+							<button type="button" class="btn btn-header-login w-100 py-2" id="btnNextStep">
+								Continue
+								<i class="bi bi-arrow-right ms-2"></i>
+							</button>
+						</div>
+
+						<!-- Step 2: Password -->
+						<div id="loginStep2" class="login-step d-none">
+							<div class="d-flex align-items-center mb-3">
+								<button type="button" class="btn btn-link p-0 text-decoration-none me-2" id="btnBackToStep1" aria-label="Back">
+									<i class="bi bi-arrow-left" aria-hidden="true"></i>
+								</button>
+								<span id="displayUsername" class="fw-bold text-primary"></span>
+							</div>
+
+							<div class="mb-3">
+								<label for="loginPassword" class="form-label fw-semibold">Password</label>
+								<div class="input-group">
+									<span class="input-group-text"><i class="bi bi-lock"></i></span>
+									<input type="password" class="form-control" id="loginPassword" name="password" required autocomplete="current-password">
+									<button class="btn btn-outline-secondary" type="button" id="togglePassword" aria-label="Show Password">
+										<i class="bi bi-eye" id="togglePasswordIcon" aria-hidden="true"></i>
+									</button>
+								</div>
+							</div>
+							<div class="d-flex justify-content-between align-items-center mb-3">
+								<div class="form-check">
+									<input class="form-check-input" type="checkbox" id="rememberMe" name="remember">
+									<label class="form-check-label" for="rememberMe">Remember me</label>
+								</div>
+								<a href="#forgot-password" class="text-decoration-none small">Forgot password?</a>
+							</div>
+							<button type="submit" class="btn btn-header-register w-100 py-2" name="login">
+								<i class="bi bi-box-arrow-in-right me-2"></i>
+								Sign In
+							</button>
+						</div>
+					</form>
+					<div class="text-center mt-3 small">
+						<span class="text-muted">Don't have an account?</span>
+						<a href="#register" class="fw-bold text-decoration-none">Subscribe Now</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Demo Specification Card Below Header -->
+	<main class="container">
+		<section class="stm-showcase-banner" aria-label="Design Specifications">
+			<div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+				<div>
+					<h1 class="h5 fw-bold mb-1">Prototype 1: "Editorial Press" Stacked Top Menu</h1>
+					<p class="text-muted small mb-0">
+						Modeled on <code>stacked_top_menu.twig</code> using Option 2 palette: White primary surface, Deep Navy Blue highlight/accent, and strictly 20% Green.
+					</p>
+				</div>
+				<div class="d-flex flex-wrap align-items-center gap-2">
+					<span class="badge stm-ratio-pill-white px-3 py-2">Surface: White</span>
+					<span class="badge stm-ratio-pill-blue px-3 py-2">Highlight: Deep Navy Blue</span>
+					<span class="badge stm-ratio-pill-green px-3 py-2">20% Ratio: Green</span>
+					<button type="button" class="btn btn-sm btn-header-action ms-md-2" id="toggleAuthStateDemo" data-label-guest="Guest View (Click for Member)" data-label-member="Member View (Click for Guest)">
+						Guest View (Click for Member)
+					</button>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>

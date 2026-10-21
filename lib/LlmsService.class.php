@@ -65,7 +65,7 @@ class LlmsService
     private function generateMarkdown(string $lang, bool $full): string
     {
         $settings = $this->getSettings($lang);
-        $siteTitle = !empty($settings['site_name']) ? $settings['site_name'] : (!empty($settings['title']) ? $settings['title'] : 'Rojname');
+        $siteTitle = !empty($settings['site_name']) ? $settings['site_name'] : (!empty($settings['title']) ? $settings['title'] : 'AKM Bulletin CMS');
         $siteDesc = !empty($settings['description']) ? trim($settings['description']) : 'Digital broadsheet journalism, independent reporting, and cultural publishing platform.';
 
         $md = [];

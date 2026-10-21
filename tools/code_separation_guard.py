@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-code_separation_guard.py - Automated Code Separation Guard for Amed Framework (AF/Business)
+code_separation_guard.py - Automated Code Separation Guard for Amed Framework (AF/Bulletin)
 
 Purpose:
   Enforces AGENTS.md Rule 2 (Strict Code Separation Mandate):

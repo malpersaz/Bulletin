@@ -2,7 +2,7 @@
 /**
  * Gallery Module Integration - Turkish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_gallery_mod
  * @version 1.0.0
  * @author  AKM Software
@@ -20,23 +20,23 @@ if (!defined('AKM_LOADED')) {
 $lang['mod_gallery_mod'] = [
 
     // === Basic Navigation ===
-    'list' => 'Gallery Modü Listesi',
-    'add' => 'Gallery Modu Ekle',
-    'edit' => 'Gallery Modunu Düzenle',
+    'list' => 'Galeri Modülü Listesi',
+    'add' => 'Galeri Modülü Ekle',
+    'edit' => 'Galeri Modülünü Düzenle',
     'information' => 'Bilgi!',
     'success' => 'İşlem Başarılı!',
     'error' => 'Hata Oluştu!',
-    'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
+    'remove_record' => 'Bu Kaydı Silmek İstediğinize Emin misiniz?',
 
     // === Message Structure ===
     'message' => [
         'success' => [
-            'add' => 'Gallery Modu Başarıyla Eklendi!',
-            'edit' => 'Gallery Modu Başarıyla Güncellendi!',
+            'add' => 'Galeri Modülü Başarıyla Eklendi!',
+            'edit' => 'Galeri Modülü Başarıyla Güncellendi!',
         ],
         'error' => [
-            'add' => 'Gallery Modu Eklenemedi!',
-            'edit' => 'Gallery Modu Güncellenemedi!',
+            'add' => 'Galeri Modülü Eklenemedi!',
+            'edit' => 'Galeri Modülü Güncellenemedi!',
         ],
     ],
 
@@ -59,6 +59,7 @@ $lang['mod_gallery_mod'] = [
 
     'grid' => [
         'showing_results' => 'Toplam {total} Sonuçtan {from} den {to}\'a Kadar Olanlar Görüntüleniyor.',
+        'pagination' => '{total} sonuçtan {from} ile {to} arası gösteriliyor',
         'page' => 'Sayfa',
         'page_count' => 'Sayfa Sayısı',
         'loading' => 'Veriler Yükleniyor, Lütfen Bekleyin...',
@@ -78,40 +79,46 @@ $lang['mod_gallery_mod'] = [
     ],
 
     'role' => [
-        'name' => 'Gallery Modülü Yönetim Rolleri',
-        'add' => 'Gallery Modülü Ekleyebilir',
-        'edit' => 'Gallery Modülünü Düzenleyebilir',
-        'delete' => 'Gallery Modülünü Silebilir',
-        'list' => 'Gallery Modülü Yönetimini Görüntüleyebilir',
-        'moderate_edit' => 'Kendisine Ait Olmayan Gallery Modülü Kaydını Düzenleyebilir',
-        'moderate_delete' => 'Kendisine Ait Olmayan Gallery Modülü Kaydını Silebilir',
+        'name' => 'Galeri Modülü Yönetim Rolleri',
+        'add' => 'Galeri Modülü Ekleyebilir',
+        'edit' => 'Galeri Modülünü Düzenleyebilir',
+        'delete' => 'Galeri Modülünü Silebilir',
+        'list' => 'Galeri Modülü Yönetimini Görüntüleyebilir',
+        'moderate_edit' => 'Kendisine Ait Olmayan Galeri Modülü Kaydını Düzenleyebilir',
+        'moderate_delete' => 'Kendisine Ait Olmayan Galeri Modülü Kaydını Silebilir',
     ],
 
     'role_errors' => [
-        'moderate_edit' => 'Size Ait Olmayan Gallery Modülü Kaydını Düzenleyemezsiniz',
-        'moderate_delete' => 'Size Ait Olmayan Gallery Modülü Kaydını Silemezsiniz',
-        'add' => 'Gallery Modülü Eklemeye Permissionniz Yok',
-        'edit' => 'Gallery Modülünü Düzenlemeye Permissionniz Yok',
-        'list' => 'Gallery Modülü Yönetimini Görüntülemeye Permissionniz Yok',
-        'delete' => 'Gallery Modülünü Silmeye Permissionniz Yok',
+        'moderate_edit' => 'Size Ait Olmayan Galeri Modülü Kaydını Düzenleyemezsiniz',
+        'moderate_delete' => 'Size Ait Olmayan Galeri Modülü Kaydını Silemezsiniz',
+        'add' => 'Galeri Modülü Eklemeye Yetkiniz Yok',
+        'edit' => 'Galeri Modülünü Düzenlemeye Yetkiniz Yok',
+        'list' => 'Galeri Modülü Yönetimini Görüntülemeye Yetkiniz Yok',
+        'delete' => 'Galeri Modülünü Silmeye Yetkiniz Yok',
     ],
 
     'admin' => [
         'columns' => [
             'id' => 'ID',
-            'name' => 'Gallery Modülü Adı',
+            'name' => 'Galeri Modülü Adı',
             'mod_name' => 'Modül Adı',
             'mod_key' => 'Modül Anahtarı (ID)',
             'mod_value' => 'Modül Değeri (Ad)',
+            'gallery_type' => 'Galeri Türü',
+            'display_mode' => 'Görüntü Modu',
+            'status' => 'Durum',
+            'created_date' => 'Oluşturulma Tarihi',
+            'modified_date' => 'Değiştirilme Tarihi',
+            'actions' => 'İşlemler',
         ],
     ],
 
     // === Navigation & Actions ===
     'actions' => [
-        'add' => 'Gallery Modülü Ekle',
-        'edit' => 'Gallery Modülünü Düzenle',
-        'list' => 'Gallery Modülü Listesi',
-        'delete' => 'Gallery Modülünü Sil',
+        'add' => 'Galeri Modülü Ekle',
+        'edit' => 'Galeri Modülünü Düzenle',
+        'list' => 'Galeri Modülü Listesi',
+        'delete' => 'Galeri Modülünü Sil',
         'cancel' => 'İptal',
         'save' => 'Kaydet',
         'update' => 'Güncelle',
@@ -121,21 +128,21 @@ $lang['mod_gallery_mod'] = [
     // === System Messages ===
     'messages' => [
         'success' => [
-            'added' => 'Gallery Modülü Başarıyla Eklendi!',
-            'updated' => 'Gallery Modülü Başarıyla Güncellendi!',
-            'deleted' => 'Gallery Modülü Başarıyla Silindi!',
-            'configured' => 'Gallery Modülü Başarıyla Yapılandırıldı!',
+            'added' => 'Galeri Modülü Başarıyla Eklendi!',
+            'updated' => 'Galeri Modülü Başarıyla Güncellendi!',
+            'deleted' => 'Galeri Modülü Başarıyla Silindi!',
+            'configured' => 'Galeri Modülü Başarıyla Yapılandırıldı!',
         ],
         'error' => [
-            'not_added' => 'Gallery Modülü Eklenemedi!',
-            'not_updated' => 'Gallery Modülü Güncellenemedi!',
-            'not_deleted' => 'Gallery Modülü Silinemedi!',
-            'not_found' => 'Belirtilen Gallery Modülü Kaydı Bulunamadı!',
-            'configuration_failed' => 'Gallery Modülü Yapılandırması Başarısız!',
+            'not_added' => 'Galeri Modülü Eklenemedi!',
+            'not_updated' => 'Galeri Modülü Güncellenemedi!',
+            'not_deleted' => 'Galeri Modülü Silinemedi!',
+            'not_found' => 'Belirtilen Galeri Modülü Kaydı Bulunamadı!',
+            'configuration_failed' => 'Galeri Modülü Yapılandırması Başarısız!',
         ],
         'info' => [
-            'module_intro' => 'Gallery modülleri diğer sistem bileşenlerine resim galerisi yetenekleri sağlar',
-            'configuration_info' => 'Resim işlemlerini belirli modüllerde etkinleştirmek için gallery modülü ayarlarını yapılandırın',
+            'module_intro' => 'Galeri modülleri diğer sistem bileşenlerine resim galerisi yetenekleri sağlar',
+            'configuration_info' => 'Resim işlemlerini belirli modüllerde etkinleştirmek için galeri modülü ayarlarını yapılandırın',
         ],
     ],
 
@@ -166,7 +173,6 @@ $lang['mod_gallery_mod'] = [
         'image_gallery' => 'Resim Galerisi',
         'photo_album' => 'Fotoğraf Albümü',
         'portfolio' => 'Portfolyo',
-        'product_gallery' => 'Ürün Galerisi',
         'showcase' => 'Vitrin',
         'slider_gallery' => 'Slayt Galerisi',
         'masonry' => 'Mozaik Düzen',
@@ -187,11 +193,11 @@ $lang['mod_gallery_mod'] = [
 
     // === Confirmation Messages ===
     'confirmations' => [
-        'remove_record' => 'Bu Kaydı Silmek İstediğinize Eminmisiniz?',
-        'delete_single' => 'Bu Gallery Modülünü Silmek İstediğinize Eminmisiniz?',
-        'delete_multiple' => 'Seçilen :count Gallery Modülünü Silmek İstediğinize Eminmisiniz?',
-        'reset_configuration' => 'Modül Yapılandırmasını Sıfırlamak İstediğinize Eminmisiniz?',
-        'clear_gallery' => 'Bu Galeriden Tüm Resimleri Temizlemek İstediğinize Eminmisiniz?',
+        'remove_record' => 'Bu Kaydı Silmek İstediğinize Emin misiniz?',
+        'delete_single' => 'Bu Galeri Modülünü Silmek İstediğinize Emin misiniz?',
+        'delete_multiple' => 'Seçilen :count Galeri Modülünü Silmek İstediğinize Emin misiniz?',
+        'reset_configuration' => 'Modül Yapılandırmasını Sıfırlamak İstediğinize Emin misiniz?',
+        'clear_gallery' => 'Bu Galeriden Tüm Resimleri Temizlemek İstediğinize Emin misiniz?',
     ],
 
     // === Buttons ===
@@ -238,35 +244,35 @@ $lang['mod_gallery_mod'] = [
 
     // === Access Control (ACL) ===
     'permissions' => [
-        'title' => 'Gallery Modülü Yönetim İzinleri',
-        'add' => 'Gallery Modülü Ekleyebilir',
-        'edit' => 'Gallery Modülünü Düzenleyebilir',
-        'delete' => 'Gallery Modülünü Silebilir',
-        'list' => 'Gallery Modülü Yönetimini Görüntüleyebilir',
-        'configure' => 'Gallery Modüllerini Yapılandırabilir',
-        'preview' => 'Gallery Modüllerini Önizleyebilir',
-        'test' => 'Gallery Modüllerini Test Edebilir',
-        'edit_others' => 'Başkasına ait Gallery Modülü kayıtlarını düzenleyebilir',
-        'delete_others' => 'Başkasına ait Gallery Modülü kayıtlarını silebilir',
+        'title' => 'Galeri Modülü Yönetim İzinleri',
+        'add' => 'Galeri Modülü Ekleyebilir',
+        'edit' => 'Galeri Modülünü Düzenleyebilir',
+        'delete' => 'Galeri Modülünü Silebilir',
+        'list' => 'Galeri Modülü Yönetimini Görüntüleyebilir',
+        'configure' => 'Galeri Modüllerini Yapılandırabilir',
+        'preview' => 'Galeri Modüllerini Önizleyebilir',
+        'test' => 'Galeri Modüllerini Test Edebilir',
+        'edit_others' => 'Başkasına ait Galeri Modülü kayıtlarını düzenleyebilir',
+        'delete_others' => 'Başkasına ait Galeri Modülü kayıtlarını silebilir',
     ],
 
     // === Permission Errors ===
     'permission_errors' => [
-        'edit_others' => 'Başkasına ait Gallery Modülü kayıtlarını düzenleyemezsiniz',
-        'delete_others' => 'Başkasına ait Gallery Modülü kayıtlarını silemezsiniz',
-        'add' => 'Gallery Modülleri ekleme izniniz yok',
-        'edit' => 'Gallery Modülleri düzenleme izniniz yok',
-        'list' => 'Gallery Modülü Yönetimini görüntüleme izniniz yok',
-        'delete' => 'Gallery Modülleri silme izniniz yok',
-        'configure' => 'Gallery Modüllerini yapılandırma izniniz yok',
-        'preview' => 'Gallery Modüllerini önizleme izniniz yok',
-        'test' => 'Gallery Modüllerini test etme izniniz yok',
+        'edit_others' => 'Başkasına ait Galeri Modülü kayıtlarını düzenleyemezsiniz',
+        'delete_others' => 'Başkasına ait Galeri Modülü kayıtlarını silemezsiniz',
+        'add' => 'Galeri Modülleri ekleme izniniz yok',
+        'edit' => 'Galeri Modülleri düzenleme izniniz yok',
+        'list' => 'Galeri Modülü Yönetimini görüntüleme izniniz yok',
+        'delete' => 'Galeri Modülleri silme izniniz yok',
+        'configure' => 'Galeri Modüllerini yapılandırma izniniz yok',
+        'preview' => 'Galeri Modüllerini önizleme izniniz yok',
+        'test' => 'Galeri Modüllerini test etme izniniz yok',
     ],
 
     // === Admin Panel Configuration ===
     'admin_columns' => [
         'id' => 'ID',
-        'name' => 'Gallery Modülü Adı',
+        'name' => 'Galeri Modülü Adı',
         'mod_name' => 'Modül Adı',
         'mod_key' => 'Modül Anahtarı (ID)',
         'mod_value' => 'Modül Değeri (Ad)',
@@ -339,13 +345,13 @@ $lang['mod_gallery_mod'] = [
         'upload_failed' => 'Resim yüklenemedi',
         'configuration_error' => 'Yapılandırma hatası oluştu',
         'test_failed' => 'Galeri testi başarısız',
-        'module_not_found' => 'Gallery Modülü bulunamadı',
+        'module_not_found' => 'Galeri Modülü bulunamadı',
         'invalid_configuration' => 'Geçersiz yapılandırma',
     ],
 
     // === Helper Text ===
     'help' => [
-        'module_intro' => 'Gallery modülleri diğer sistem bileşenlerine resim galerisi yetenekleri sağlar',
+        'module_intro' => 'Galeri modülleri diğer sistem bileşenlerine resim galerisi yetenekleri sağlar',
         'configuration_help' => 'Uygun resim galerisi entegrasyonu için modül ayarlarını yapılandırın',
         'upload_help' => 'Galerinizi oluşturmak için resimler yükleyin',
         'display_help' => 'Galerinizin kullanıcılara nasıl görüneceğini özelleştirin',
@@ -354,10 +360,10 @@ $lang['mod_gallery_mod'] = [
 
     // === Empty States ===
     'empty_states' => [
-        'no_modules' => 'Henüz yapılandırılmış Gallery Modülü yok',
+        'no_modules' => 'Henüz yapılandırılmış Galeri Modülü yok',
         'no_results' => 'Arama kriterlerinize uyan modül bulunamadı',
         'no_images' => 'Bu galeride henüz resim yok',
-        'add_first_module' => 'Başlamak için ilk Gallery Modülünüzü ekleyin',
+        'add_first_module' => 'Başlamak için ilk Galeri Modülünüzü ekleyin',
         'upload_first_image' => 'Galeri oluşturmak için ilk resminizi yükleyin',
     ],
 

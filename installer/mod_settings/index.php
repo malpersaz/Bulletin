@@ -145,43 +145,43 @@ class mod_settings extends installerbase implements installerbaseinterface
         $platforms = array(
             array(
                 'platform' => 'twitter',
-                'url' => 'https://twitter.com/akmbusiness',
+                'url' => 'https://twitter.com/akmbulletin',
                 'icon_class' => 'bi bi-twitter-x',
                 'display_order' => 1
             ),
             array(
                 'platform' => 'facebook',
-                'url' => 'https://facebook.com/akmbusiness',
+                'url' => 'https://facebook.com/akmbulletin',
                 'icon_class' => 'bi bi-facebook',
                 'display_order' => 2
             ),
             array(
                 'platform' => 'instagram',
-                'url' => 'https://instagram.com/akmbusiness',
+                'url' => 'https://instagram.com/akmbulletin',
                 'icon_class' => 'bi bi-instagram',
                 'display_order' => 3
             ),
             array(
                 'platform' => 'linkedin',
-                'url' => 'https://linkedin.com/company/akmbusiness',
+                'url' => 'https://linkedin.com/company/akmbulletin',
                 'icon_class' => 'bi bi-linkedin',
                 'display_order' => 4
             ),
             array(
                 'platform' => 'youtube',
-                'url' => 'https://youtube.com/@akmbusiness',
+                'url' => 'https://youtube.com/@akmbulletin',
                 'icon_class' => 'bi bi-youtube',
                 'display_order' => 5
             ),
             array(
                 'platform' => 'spotify',
-                'url' => 'https://open.spotify.com/artist/akmbusiness',
+                'url' => 'https://open.spotify.com/artist/akmbulletin',
                 'icon_class' => 'bi bi-spotify',
                 'display_order' => 6
             ),
             array(
                 'platform' => 'tiktok',
-                'url' => 'https://tiktok.com/@akmbusiness',
+                'url' => 'https://tiktok.com/@akmbulletin',
                 'icon_class' => 'bi bi-tiktok',
                 'display_order' => 7
             )

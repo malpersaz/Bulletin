@@ -1,5 +1,5 @@
 # Survey Report: Requirement R4 & Quality / Test Infrastructure
-**Target Workspace:** `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`  
+**Target Workspace:** `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`  
 **Reference Source:** `/home/malpersaz/Desktop/projects/htdocs/AF/Business`  
 **Explorer Agent:** `explorer_survey_3`  
 **Date:** 2026-08-23  
@@ -8,7 +8,7 @@
 
 ## 1. Executive Summary & Scope Overview
 
-This survey report provides a comprehensive investigation of **Requirement R4 (Architectural & Repository Policy Compliance)** and the **Quality & Test Infrastructure** for the synchronization and modernization of `AF/Rojname` against the reference standard in `AF/Business`.
+This survey report provides a comprehensive investigation of **Requirement R4 (Architectural & Repository Policy Compliance)** and the **Quality & Test Infrastructure** for the synchronization and modernization of `AF/Bulletin` against the reference standard in `AF/Business`.
 
 ### Core Scope Investigated:
 1. **Strict Code Separation:** Elimination of inline `<style>`, `style="..."` attributes, `<script>` blocks, and inline event handlers (`onclick`, `onchange`) in favor of centralized CSS and JS asset files.
@@ -20,8 +20,8 @@ This survey report provides a comprehensive investigation of **Requirement R4 (A
 
 ## 2. Investigation Area 1: Strict Code Separation Analysis
 
-### 2.1 Current State in `AF/Rojname`
-`AF/Rojname` contains several legacy templates with inline CSS styles, inline `<style>` tags, and inline event handlers that directly violate **AGENTS.md Rule 2 (Strict Code Separation Mandate)**:
+### 2.1 Current State in `AF/Bulletin`
+`AF/Bulletin` contains several legacy templates with inline CSS styles, inline `<style>` tags, and inline event handlers that directly violate **AGENTS.md Rule 2 (Strict Code Separation Mandate)**:
 
 | File Path | Violations Identified | Details |
 |---|---|---|
@@ -58,10 +58,10 @@ In `AF/Business`, templates maintain clean separation:
     {% endblock %}
     ```
 
-### 2.3 Asset Porting Requirements for `AF/Rojname`
-1. Copy missing CSS files from `AF/Business/templates/admin/assets/css/` to `AF/Rojname`:
+### 2.3 Asset Porting Requirements for `AF/Bulletin`
+1. Copy missing CSS files from `AF/Business/templates/admin/assets/css/` to `AF/Bulletin`:
    - `mod_faq.css`, `mod_seo.css`, `legal_info.css`, `mod_acl.css`, `mod_announcements.css`, `mod_user_acl.css`, `unauthorized.css`.
-2. Copy missing/updated JS files from `AF/Business/templates/admin/assets/js/` to `AF/Rojname`:
+2. Copy missing/updated JS files from `AF/Business/templates/admin/assets/js/` to `AF/Bulletin`:
    - `mod_faq.js`, `mod_seo.js`, `legal_info.js`, `mod_acl.js`, `mod_user_acl.js`.
 3. Create `mod_newsletter.css` and `mod_newsletter.js` when porting `mod_newsletter` to ensure 0 inline styles/scripts.
 4. Remove legacy `templates/admin/assets/js/mod_product.js` (part of R3 cleanup).
@@ -76,13 +76,13 @@ In `AF/Business`, templates maintain clean separation:
   ```php
   require_once(lib_dir . 'Registry.class.php');
   ```
-  However, `lib/Registry.class.php` **does not exist** in `AF/Rojname`. Executing `php -r "require_once 'init.php';"` immediately fails with:
+  However, `lib/Registry.class.php` **does not exist** in `AF/Bulletin`. Executing `php -r "require_once 'init.php';"` immediately fails with:
   ```
-  Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/init.php:65
+  Fatal error: Uncaught Error: Failed opening required '/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/lib/Registry.class.php' in /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/init.php:65
   ```
-- **Root Cause:** `AF/Rojname/lib/` still contains the deprecated legacy class `lib/Kayit.class.php` (with Turkish methods `getir`, `ekle`, `varmi`, `sil`, `yenile`, `hepsi`) and a legacy `lib/Register.class.php`.
+- **Root Cause:** `AF/Bulletin/lib/` still contains the deprecated legacy class `lib/Kayit.class.php` (with Turkish methods `getir`, `ekle`, `varmi`, `sil`, `yenile`, `hepsi`) and a legacy `lib/Register.class.php`.
 - **Solution:** 
-  1. Port the canonical `lib/Registry.class.php` from `AF/Business` into `AF/Rojname/lib/Registry.class.php`.
+  1. Port the canonical `lib/Registry.class.php` from `AF/Business` into `AF/Bulletin/lib/Registry.class.php`.
   2. The canonical `Registry` class provides standard English methods:
      - `Registry::get($key)`
      - `Registry::add($key, $value)`
@@ -93,7 +93,7 @@ In `AF/Business`, templates maintain clean separation:
   3. Delete `lib/Kayit.class.php` and `lib/Register.class.php`.
 
 ### 3.2 Configuration Files Audit (`Registry::ekle` vs `Registry::add`)
-In `AF/Rojname`, several configuration files still call the deprecated Turkish method `Registry::ekle(...)`:
+In `AF/Bulletin`, several configuration files still call the deprecated Turkish method `Registry::ekle(...)`:
 - `config/autoload.config.php` (line 42: `Registry::ekle('autoload_config', $autoload)`)
 - `config/db.config.php` (lines 12–13: `Registry::ekle('database', ...); Registry::ekle('db_config', ...);`)
 - `config/db.config.example.php` (lines 111–117)
@@ -177,7 +177,7 @@ In `AF/Rojname`, several configuration files still call the deprecated Turkish m
 ## 6. Actionable Implementation Plan for Orchestrator & Implementers
 
 ### Phase 1: Core Foundation & Registry Fix (Prerequisite)
-1. Port `lib/Registry.class.php` from `AF/Business/lib/Registry.class.php` to `AF/Rojname/lib/Registry.class.php`.
+1. Port `lib/Registry.class.php` from `AF/Business/lib/Registry.class.php` to `AF/Bulletin/lib/Registry.class.php`.
 2. Update all calls to `Registry::ekle(...)` -> `Registry::add(...)` in `config/*.php`.
 3. Remove `lib/Kayit.class.php` and `lib/Register.class.php`.
 4. Verify `php -r "require_once 'init.php';"` boots cleanly with zero errors.

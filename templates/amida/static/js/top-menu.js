@@ -7,6 +7,47 @@ document.addEventListener('DOMContentLoaded', function () {
         overlay.style.pointerEvents = 'none';
     }
 
+    // --- Search Box Controller (Modern Press: / shortcut & clear button) ---
+    const searchWrapper = document.getElementById('stackedSearchWrapper');
+    const searchInput = document.getElementById('stackedSearchInput');
+    const searchClearBtn = document.getElementById('stackedSearchClear');
+
+    function syncSearchValueState() {
+        if (!searchWrapper || !searchInput) return;
+        if (searchInput.value.trim().length > 0) {
+            searchWrapper.classList.add('has-value');
+        } else {
+            searchWrapper.classList.remove('has-value');
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', syncSearchValueState);
+        syncSearchValueState();
+    }
+
+    if (searchClearBtn && searchInput) {
+        searchClearBtn.addEventListener('click', function () {
+            searchInput.value = '';
+            syncSearchValueState();
+            searchInput.focus();
+        });
+    }
+
+    // Global "/" keyboard shortcut to focus search (unless typing in an input/textarea)
+    document.addEventListener('keydown', function (e) {
+        if (e.key === '/' && searchInput) {
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            if (activeTag !== 'input' && activeTag !== 'textarea' && !document.activeElement?.isContentEditable) {
+                e.preventDefault();
+                searchInput.focus();
+                searchInput.select();
+            }
+        } else if (e.key === 'Escape' && document.activeElement === searchInput) {
+            searchInput.blur();
+        }
+    });
+
     // --- Dark Mode Controller ---
     const darkModeToggle = document.getElementById('darkModeToggle');
     const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');

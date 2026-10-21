@@ -2,7 +2,7 @@
 /**
  * Menu Module - Turkish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_menu
  * @version 1.0.0
  * @author  AKM Software
@@ -194,7 +194,7 @@ $lang['mod_menu'] = [
     // === Access Control (ACL) ===
     'choose_wish' => 'Seçiniz',
     'permissions' => [
-        'title' => 'Menü Yönetim Permissionleri',
+        'title' => 'Menü Yönetim İzinleri',
         'view' => 'Menüleri Görüntüle',
         'add' => 'Menü Ekle',
         'edit_own' => 'Kendi Menüsünü Düzenle',
@@ -206,11 +206,11 @@ $lang['mod_menu'] = [
 
     // === Permission Errors ===
     'permission_errors' => [
-        'view_denied' => 'Menü yönetimini görüntüleme permissionniz yok',
-        'add_denied' => 'Menü ekleme permissionniz yok',
-        'edit_denied' => 'Menü düzenleme permissionniz yok',
-        'delete_denied' => 'Menü silme permissionniz yok',
-        'access_denied' => 'Bu menüyü düzenleme/silme permissionniz yok (size ait değil)',
+        'view_denied' => 'Menü yönetimini görüntüleme yetkiniz yok',
+        'add_denied' => 'Menü ekleme yetkiniz yok',
+        'edit_denied' => 'Menü düzenleme yetkiniz yok',
+        'delete_denied' => 'Menü silme yetkiniz yok',
+        'access_denied' => 'Bu menüyü düzenleme/silme yetkiniz yok (size ait değil)',
     ],
 
     // === Confirmation Messages ===
@@ -282,18 +282,21 @@ $lang['mod_menu'] = [
         'edit' => 'Menü Düzenleyebilir',
         'delete' => 'Menü Silebilir',
         'list' => 'Menü Yönetimini Görüntüleyebilir',
+        'acl' => 'Menü İzinlerini Düzenleyebilir',
+        'setting' => 'Menü Ayarlarını Değiştirebilir',
+        'link' => 'Menü Bağlantılarını Görüntüleyebilir',
         'moderate_edit' => 'Başkasına Ait Menüleri Düzenleyebilir',
         'moderate_delete' => 'Başkasına Ait Menüleri Silebilir',
     ],
 
     // === ACL Error Messages ===
     'role_errors' => [
-        'add' => 'Menü Ekleme Permissionniz Yok',
-        'edit' => 'Menü Düzenleme Permissionniz Yok',
-        'delete' => 'Menü Silme Permissionniz Yok',
-        'list' => 'Menü Yönetimini Görüntüleme Permissionniz Yok',
-        'moderate_edit' => 'Başkasına Ait Menüleri Düzenleme Permissionniz Yok',
-        'moderate_delete' => 'Başkasına Ait Menüleri Silme Permissionniz Yok',
+        'add' => 'Menü Ekleme Yetkiniz Yok',
+        'edit' => 'Menü Düzenleme Yetkiniz Yok',
+        'delete' => 'Menü Silme Yetkiniz Yok',
+        'list' => 'Menü Yönetimini Görüntüleme Yetkiniz Yok',
+        'moderate_edit' => 'Başkasına Ait Menüleri Düzenleme Yetkiniz Yok',
+        'moderate_delete' => 'Başkasına Ait Menüleri Silme Yetkiniz Yok',
     ],
 
     // === Mobile Wizard ===
@@ -377,4 +380,8 @@ $lang['mod_menu']['parent_labels'] = [
     'select_parent' => 'Üst menüyü seçin',
     'language_root' => ':language altında üst seviye',
     'system_root' => 'Sistem kökü',
+];
+$lang['mod_menu']['ajax'] = [
+    'success' => 'Başarılı',
+    'error' => 'Hata',
 ];

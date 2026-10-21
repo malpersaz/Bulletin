@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T23:21:00Z
 
 ## Mission
-Survey AF/Rojname codebase for R4 (Corporate Legal & Tax Info, Cookie Policy, Sorani Kurdish), R6 (Multilingual 9-Language Parity, Code Standards, Kurdish Verbs), and Cleanliness (Strict Exclusion of mod_client, mod_service, mod_product, mod_reference).
+Survey AF/Bulletin codebase for R4 (Corporate Legal & Tax Info, Cookie Policy, Sorani Kurdish), R6 (Multilingual 9-Language Parity, Code Standards, Kurdish Verbs), and Cleanliness (Strict Exclusion of mod_client, mod_service, mod_product, mod_reference).
 
 ## 🔒 My Identity
 - Archetype: explorer
 - Roles: Codebase & Architecture Explorer (R4, R6 & Cleanliness Focus)
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_3
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: Explorer Survey
 

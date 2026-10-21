@@ -251,25 +251,19 @@ class mod_seo_mod extends indexMain
 
         $jwt = $signature_input . '.' . $base64_signature;
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, 'https://oauth2.googleapis.com/token');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+        if (!class_exists('HttpClient')) {
+            require_once lib_dir . 'HttpClient.class.php';
+        }
+        $httpResult = HttpClient::postForm('https://oauth2.googleapis.com/token', [
             'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
             'assertion' => $jwt
-        ]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
+        ], [], 10);
 
-        if ($httpCode !== 200) {
+        if ($httpResult['status'] !== 200 || !is_array($httpResult['json'])) {
             return null;
         }
 
-        $token_data = json_decode($response, true);
-        return $token_data['access_token'] ?? null;
+        return $httpResult['json']['access_token'] ?? null;
     }
 
     private function getSearchConsoleData($propertyUrl)
@@ -281,39 +275,31 @@ class mod_seo_mod extends indexMain
 
         $url = 'https://www.googleapis.com/webmasters/v3/sites/' . urlencode($propertyUrl) . '/searchAnalytics/query';
 
-        $payload = json_encode([
+        $payload = [
             'startDate' => date('Y-m-d', strtotime('-30 days')),
             'endDate' => date('Y-m-d', strtotime('-1 day')),
             'dimensions' => ['page'],
             'rowLimit' => 5000
-        ]);
+        ];
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        if (!class_exists('HttpClient')) {
+            require_once lib_dir . 'HttpClient.class.php';
+        }
+        $httpResult = HttpClient::postJson($url, $payload, [
             'Authorization: Bearer ' . $token,
-            'Content-Type: application/json'
-        ]);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $curlErr = curl_error($ch);
-        curl_close($ch);
+        ], 15);
 
-        if ($curlErr) {
-            return ['error' => 'cURL Error: ' . $curlErr];
+        if ($httpResult['error'] !== '') {
+            return ['error' => 'cURL Error: ' . $httpResult['error']];
         }
 
-        if ($httpCode !== 200) {
-            $errData = json_decode($response, true);
-            $errMsg = $errData['error']['message'] ?? ('Google API Error (HTTP ' . $httpCode . ')');
+        if ($httpResult['status'] !== 200) {
+            $errData = $httpResult['json'] ?? [];
+            $errMsg = $errData['error']['message'] ?? ('Google API Error (HTTP ' . $httpResult['status'] . ')');
             return ['error' => $errMsg];
         }
 
-        $data = json_decode($response, true);
+        $data = $httpResult['json'] ?? [];
         $rows = $data['rows'] ?? [];
 
         $results = [];

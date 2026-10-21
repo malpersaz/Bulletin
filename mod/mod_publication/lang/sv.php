@@ -2,7 +2,7 @@
 /**
  * Publication Management Module - Swedish Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication
  * @version 1.0.0
  * @author  AKM Software
@@ -388,7 +388,7 @@ $lang['mod_publication'] = [
             "Veckans tekniska sammanfattning: Vad hände?",
             "Författarförbundet väljer ny styrelse",
             "Anmälningar till fotoworkshop har börjat",
-            "AKM ARTIST CMS mobilapp uppdaterad"
+            "AKM Bulletin CMS mobilapp uppdaterad"
         ],
         'categories' => ["Agenda", "Kultur & Konst", "Teknik", "Media", "Livet"],
         'authors' => [],

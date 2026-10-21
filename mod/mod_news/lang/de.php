@@ -2,7 +2,7 @@
 /**
  * News Management Module - English Language File
  *
- * @package AKM Association
+ * @package AKM Bulletin CMS
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software

@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Business Content Management System
+ * Amed Framework
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
  * User: AKM

@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T23:55:00Z
 
 ## Mission
-Modernization of AF/Rojname (R1 to R6) complying with architectural standards, strict code separation, and zero excluded module remnants — FULLY COMPLETED.
+Modernization of AF/Bulletin (R1 to R6) complying with architectural standards, strict code separation, and zero excluded module remnants — FULLY COMPLETED.
 
 ## 🔒 My Identity
 - Archetype: orchestrator
 - Roles: orchestrator, implementer, qa, specialist, successor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3
 - Original parent: parent
 - Original parent conversation ID: 766de567-ae77-402e-97e3-790d1974e31d
 
@@ -33,7 +33,7 @@ Modernization of AF/Rojname (R1 to R6) complying with architectural standards, s
 - **E2E Suite**: 236/236 Tests Passed (100%), 506 assertions.
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md — Master project architecture
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_READY.md — E2E test specifications
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3/handoff.md — Hard handoff report
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/orchestrator_3/progress.md — Final progress tracker
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md — Master project architecture
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_READY.md — E2E test specifications
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3/handoff.md — Hard handoff report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/orchestrator_3/progress.md — Final progress tracker

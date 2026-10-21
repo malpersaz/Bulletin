@@ -1,7 +1,7 @@
 # Milestone 2 (M2) Reviewer 1 Handoff Report
 
 ## 1. Observation
-- Target Codebase: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- Target Codebase: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - Worker Handoff: `.agents/worker_m2/handoff.md`
 - Audited Files:
   1. `templates/admin/mod_user/acl.twig` (Zero inline styles/scripts, MD3 switch controls, dataset hydration).

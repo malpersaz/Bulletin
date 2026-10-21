@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - Kategoriyan (mod_categori) ji DB'ya kevin bikişîne DB'ya nû (mod_category)
+ * Bulletin - Kategoriyan (mod_categori) ji DB'ya kevin bikişîne DB'ya nû (mod_category)
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  */
 

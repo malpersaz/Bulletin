@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-24T01:01:20+03:00
 
 ## Mission
-Independently audit and verify the completion of legacy `->veri()` replacement with canonical `->set(...)`, backward-compatibility handling, non-English identifier purge, repository boundary compliance, and test suite execution in AF/Rojname.
+Independently audit and verify the completion of legacy `->veri()` replacement with canonical `->set(...)`, backward-compatibility handling, non-English identifier purge, repository boundary compliance, and test suite execution in AF/Bulletin.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/teamwork_preview_victory_auditor
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/teamwork_preview_victory_auditor
 - Original parent: f19186d3-89d9-43de-bda8-1f908a93de68
 - Target: full project
 

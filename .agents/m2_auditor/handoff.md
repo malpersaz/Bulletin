@@ -2,7 +2,7 @@
 
 **Auditor Role**: Forensic Auditor (critic, specialist, auditor)  
 **Milestone**: Milestone 2 (Deprecated Modules Complete Cleanup)  
-**Target Repository**: `AF/Rojname` (`/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`)  
+**Target Repository**: `AF/Bulletin` (`/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`)  
 **Timestamp**: 2026-08-23T22:52:00Z  
 **Integrity Mode**: Development (from `ORIGINAL_REQUEST.md`)  
 **Verdict**: **CLEAN**
@@ -85,7 +85,7 @@ Executed `php -l` on all 38 modified PHP files. Result: **0 syntax errors detect
 ## 3. Caveats
 
 - `templates/admin/mod_user/panel.twig` still retains unused CSS classes (`.card-product`, `.card-service`, `.card-reference`, `.card-client`, `.fab-row-product`, `.fab-row-service`) within its `<style>` block. These are harmless, unreferenced CSS rules that do not trigger any runtime or markup issues, but will be cleanly addressed during M5 code separation.
-- `mod_service_guide` is a separate, active core module in AF/Rojname and was correctly preserved in `sidebar.twig`.
+- `mod_service_guide` is a separate, active core module in AF/Bulletin and was correctly preserved in `sidebar.twig`.
 
 ---
 

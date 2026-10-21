@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T19:31:00Z
 
 ## Mission
-Design and implement the complete, opaque-box, requirement-driven E2E test suite in `tests/e2e/` with automated master runner `tests/run_e2e_tests.php`, publish `TEST_INFRA.md` and `TEST_READY.md` for AF/Rojname Modernization & Synchronization.
+Design and implement the complete, opaque-box, requirement-driven E2E test suite in `tests/e2e/` with automated master runner `tests/run_e2e_tests.php`, publish `TEST_INFRA.md` and `TEST_READY.md` for AF/Bulletin Modernization & Synchronization.
 
 ## 🔒 My Identity
 - Archetype: Test Writer
 - Roles: specialist, qa
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/test_writer_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/test_writer_1
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: E2E Test Suite Creation
 
@@ -55,9 +55,9 @@ Design and implement the complete, opaque-box, requirement-driven E2E test suite
 - Added comprehensive CLI support with `--tier`, `--filter`, `--json` flags.
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_INFRA.md` — Test architecture and harness specification
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/TEST_READY.md` — Verification entrypoint and test readiness report
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.php` — Master test runner
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/run_e2e_tests.sh` — Shell execution helper
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/tests/e2e/` — Complete test suite
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/test_writer_1/handoff.md` — 5-component handoff report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_INFRA.md` — Test architecture and harness specification
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/TEST_READY.md` — Verification entrypoint and test readiness report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.php` — Master test runner
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/run_e2e_tests.sh` — Shell execution helper
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/tests/e2e/` — Complete test suite
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/test_writer_1/handoff.md` — 5-component handoff report

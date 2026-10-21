@@ -1,6 +1,6 @@
 <?php
 /**
- * AKM Software Business CMS Framework
+ * Amed Framework (AKM Bulletin CMS)
  * Newsletter Module Controller
  * mod/mod_newsletter/index.php
  */
@@ -401,7 +401,7 @@ class mod_newsletter_mod extends BaseModuleController
             $output = fopen('php://output', 'w');
             // Write UTF-8 BOM for Excel compatibility
             fprintf($output, "\xEF\xBB\xBF");
-            fputcsv($output, ['ID', 'E-Mail', 'Language', 'Source', 'Status', 'Subscribed At']);
+            fputcsv($output, ['ID', 'E-Mail', 'Language', 'Source', 'Status', 'Subscribed At'], ',', '"', '');
 
             foreach ($rows as $row) {
                 fputcsv($output, [
@@ -411,7 +411,7 @@ class mod_newsletter_mod extends BaseModuleController
                     $row['source'],
                     $row['status'],
                     $row['created_at']
-                ]);
+                ], ',', '"', '');
             }
 
             fclose($output);

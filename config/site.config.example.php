@@ -51,14 +51,14 @@ if ($isLocal) {
     $site['taddress'] = 'https://assets.' . $baseDomain . '/';
 }
 $site['js'] = 'templates/base_static/js/';
-$site['lang'] = 'ku';
+$site['lang'] = 'tr';
 $site['default_lang'] = $site['lang'];
 $site['author'] = 'AKMSoftware';
 $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.1.35';
+$site['version'] = '1.0.1';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');
@@ -73,7 +73,7 @@ if (is_readable($versionFile)) {
     }
 }
 
-$site['build'] = 'Rojname CMS';
+$site['build'] = 'Bulletin CMS';
 $site['app_template'] = $site['app_template'] ?? 'amida';
 
 $cookieTheme = $_COOKIE['theme'] ?? $_COOKIE['tema'] ?? null;

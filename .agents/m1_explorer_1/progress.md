@@ -5,9 +5,9 @@ Status: Completed investigation.
 
 - [x] Initialized DISPATCH.md and BRIEFING.md
 - [x] Read task specification and project blueprint
-- [x] Inspect AF/Business `lib/Registry.class.php` and AF/Rojname `lib/Registry.class.php`
-- [x] Inspect AF/Rojname `lib/Kayit.class.php` and `lib/Register.class.php`
-- [x] Search all references to `Kayit`, `Register`, `Registry::ekle` and related calls in AF/Rojname
+- [x] Inspect AF/Business `lib/Registry.class.php` and AF/Bulletin `lib/Registry.class.php`
+- [x] Inspect AF/Bulletin `lib/Kayit.class.php` and `lib/Register.class.php`
+- [x] Search all references to `Kayit`, `Register`, `Registry::ekle` and related calls in AF/Bulletin
 - [x] Check `config/*.php`, `init.php`, and `lib/` files
 - [x] Compile comprehensive findings into `report.md`
 - [x] Compile 5-component handoff into `handoff.md`

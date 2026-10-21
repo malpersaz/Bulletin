@@ -6,7 +6,7 @@ Stress-test Milestone 2 (M2: Admin User ACL Modernization & Strict Code Separati
 ## 🔒 My Identity
 - Archetype: empirical_challenger
 - Roles: critic, specialist
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m2_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m2_2
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M2 - Admin User ACL Modernization & Strict Code Separation
 - Instance: 2 of 2
@@ -47,11 +47,11 @@ Stress-test Milestone 2 (M2: Admin User ACL Modernization & Strict Code Separati
 - **Untested angles**: Full production database with 10k users tested via unit/simulation harness.
 
 ## Loaded Skills
-- **Source**: admin-mobile-check (/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/admin-mobile-check/SKILL.md)
-  **Local copy**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m2_2/skills/admin-mobile-check/SKILL.md
+- **Source**: admin-mobile-check (/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/admin-mobile-check/SKILL.md)
+  **Local copy**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m2_2/skills/admin-mobile-check/SKILL.md
   **Core methodology**: Audit and validate admin templates and assets to ensure they conform to the phone-only mobile layout contract.
-- **Source**: task-validation (/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/task-validation/SKILL.md)
-  **Local copy**: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m2_2/skills/task-validation/SKILL.md
+- **Source**: task-validation (/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/task-validation/SKILL.md)
+  **Local copy**: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m2_2/skills/task-validation/SKILL.md
   **Core methodology**: Enforce project quality guards (comment-guard, i18n-guard, code separation) before completing a task.
 
 ## Key Decisions Made

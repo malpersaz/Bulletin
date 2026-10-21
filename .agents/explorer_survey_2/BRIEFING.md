@@ -1,18 +1,18 @@
 # BRIEFING — 2026-08-23T23:20:00+03:00
 
 ## Mission
-Investigate and produce a comprehensive modernization survey report for R3 (Universal Social Share & Document Export Toolbar) and R5 (Brand Placeholder Fallback & Disk Asset Verification) in AF/Rojname compared against AF/Business reference patterns.
+Investigate and produce a comprehensive modernization survey report for R3 (Universal Social Share & Document Export Toolbar) and R5 (Brand Placeholder Fallback & Disk Asset Verification) in AF/Bulletin compared against AF/Business reference patterns.
 
 ## 🔒 My Identity
 - Archetype: explorer
 - Roles: read-only investigator, codebase scanner, architecture analyzer, synthesizer
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Modernization & Synchronization R3 & R5
 
 ## 🔒 Key Constraints
 - Read-only investigation — do NOT implement / modify source code
-- Produce survey report at /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2/handoff.md
+- Produce survey report at /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2/handoff.md
 - Communicate results back to parent via send_message (Parent ID: 252c7225-77db-4c3e-bc1d-f37695c6498d)
 
 ## Current Parent
@@ -38,6 +38,6 @@ Investigate and produce a comprehensive modernization survey report for R3 (Univ
 - Documented full file inventory, line numbers, missing assets, template snippets, and actionable implementation roadmap in handoff report.
 
 ## Artifact Index
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2/handoff.md — Complete Handoff & Survey Report
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2/progress.md — Progress Tracker
-- /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/explorer_survey_2/DISPATCH.md — Dispatch Log
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2/handoff.md — Complete Handoff & Survey Report
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2/progress.md — Progress Tracker
+- /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/explorer_survey_2/DISPATCH.md — Dispatch Log

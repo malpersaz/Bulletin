@@ -44,7 +44,7 @@ $db = array(
     'sqlite_local' => array(
         'adapter' => 'PDO_SQLITE',
         'conf' => array(
-            'database_path' => root_dir . 'data/sqlite/NetcomBi.sqlite',
+            'database_path' => root_dir . 'data/sqlite/bulletin.sqlite',
             // SQLite does not require host, user, password
         )
     ),
@@ -54,9 +54,9 @@ $db = array(
         'adapter' => 'PDO_POSTGRESQL',
         'conf' => array(
             'host' => 'localhost',
-            'user' => 'rojname_user',
-            'pass' => 'rojname_password',
-            'database' => 'rojname_db',
+            'user' => 'bulletin_user',
+            'pass' => 'bulletin_password',
+            'database' => 'bulletin_db',
             'port' => 5432,
             'encoding' => 'utf8',
             'sslmode' => 'require' // optional

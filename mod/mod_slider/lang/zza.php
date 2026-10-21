@@ -144,7 +144,6 @@ $lang['mod_slider'] = [
     'news' => 'Xabere',
     'publication' => 'Weşan',
     'content' => 'Zerey',
-    'product' => 'Hilber',
     'video' => 'Videyo',
   ],
 ];

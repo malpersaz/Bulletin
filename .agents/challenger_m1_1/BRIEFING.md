@@ -6,7 +6,7 @@ Adversarially challenge and empirically stress-test Milestone 1 (M1) changes: Co
 ## 🔒 My Identity
 - Archetype: challenger
 - Roles: critic, specialist
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/challenger_m1_1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/challenger_m1_1
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M1
 - Instance: 1 of 1
@@ -26,8 +26,8 @@ Adversarially challenge and empirically stress-test Milestone 1 (M1) changes: Co
   - `lib/Orm/Orm.php` (column mapping, mixed-case normalization, data hydration/setting)
   - `lib/Orm/Obuilder.php` (column normalization in query building, English exceptions)
   - `lib/BaseModuleController.class.php` (relation methods reflection and argument handling)
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`
-- **Worker handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/worker_m1/handoff.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`
+- **Worker handoff**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/worker_m1/handoff.md`
 - **Review criteria**: correctness, regression resilience, Unicode conformance, security/edge case safety
 
 ## Attack Surface

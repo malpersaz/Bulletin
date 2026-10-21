@@ -62,7 +62,7 @@
 		      {
 		        "@type": "ListItem",
 		        "position": 1,
-		        "name": {{ lang.index.home|default('Home')|json_encode|raw }},
+		        "name": {{ lang.index.home|json_encode|raw }},
 		        "item": {{ site.saddress|json_encode|raw }}
 		      },
 		      {
@@ -83,11 +83,11 @@
 		<article class="cookie-card-main">
 			<!-- Breadcrumbs -->
 			<div class="detail-breadcrumb-wrap mb-4">
-				<nav aria-label="{{ lang.index.home|default('Home') }}">
+				<nav aria-label="{{ lang.index.home }}">
 					<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
 						<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
 							<a itemprop="item" href="{{ site.saddress }}">
-								<span itemprop="name">{{ lang.index.home|default('Home') }}</span>
+								<span itemprop="name">{{ lang.index.home }}</span>
 							</a>
 							<meta itemprop="position" content="1"/>
 						</li>
@@ -106,7 +106,7 @@
 					<span>{{ page_meta_title }}</span>
 				</div>
 				<h1 class="h2 fw-bold text-body mb-3">{{ page_meta_title }}</h1>
-				<p class="cookie-lead-text">{{ lang.index.cookie_policy_subtitle|default('Learn about how cookies and tracking technologies are used across our website.') }}</p>
+				<p class="cookie-lead-text">{{ lang.index.cookie_policy_subtitle }}</p>
 				{% if site.cookie_policy_content is defined and site.cookie_policy_content is not empty %}
 					<div class="cookie-custom-notice-box">
 						<div class="cookie-custom-notice-text">{{ site.cookie_policy_content|nl2br }}</div>
@@ -119,17 +119,17 @@
 				<div class="cookie-pref-header">
 					<h2 id="pref-center-heading" class="h4 fw-bold mb-1 text-body d-flex align-items-center gap-2">
 						<i class="bi bi-sliders text-primary" aria-hidden="true"></i>
-						<span>{{ lang.index.cookie_preferences_title|default('Cookie Preferences') }}</span>
+						<span>{{ lang.index.cookie_preferences_title }}</span>
 					</h2>
-					<p class="small text-muted mb-0">{{ lang.index.cookie_preferences_desc|default('Manage your privacy preferences and consent for different categories of cookies.') }}</p>
+					<p class="small text-muted mb-0">{{ lang.index.cookie_preferences_desc }}</p>
 				</div>
 
 				<div class="cookie-pref-actions-top">
 					<button type="button" class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm" id="btn-cookie-accept-all-top">
-						<i class="bi bi-check2-all me-1" aria-hidden="true"></i>{{ lang.index.cookie_accept_all|default('Accept All') }}
+						<i class="bi bi-check2-all me-1" aria-hidden="true"></i>{{ lang.index.cookie_accept_all }}
 					</button>
 					<button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3" id="btn-cookie-reject-opt-top">
-						<i class="bi bi-x-circle me-1" aria-hidden="true"></i>{{ lang.index.cookie_reject_optional|default('Reject Optional') }}
+						<i class="bi bi-x-circle me-1" aria-hidden="true"></i>{{ lang.index.cookie_reject_optional }}
 					</button>
 				</div>
 
@@ -137,55 +137,55 @@
 				<div class="cookie-cat-card">
 					<div class="cookie-cat-header">
 						<div class="cookie-cat-header-top">
-							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_necessary|default('Strictly Necessary') }}</h3>
+							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_necessary }}</h3>
 							<div class="cookie-switch-wrapper">
 								<span class="cookie-badge-locked">
 									<i class="bi bi-lock-fill" aria-hidden="true"></i>
-									<span>{{ lang.index.cookie_always_active|default('Always Active') }}</span>
+									<span>{{ lang.index.cookie_always_active }}</span>
 								</span>
 							</div>
 						</div>
-						<p class="cookie-cat-desc">{{ lang.index.cookie_category_necessary_desc|default('These cookies are essential for the website to function properly.') }}</p>
+						<p class="cookie-cat-desc">{{ lang.index.cookie_category_necessary_desc }}</p>
 					</div>
 
 					<div class="table-responsive cookie-table-responsive">
 						<table class="table cookie-table">
 							<thead>
 								<tr>
-									<th>{{ lang.index.cookie_name|default('Cookie Name') }}</th>
-									<th>{{ lang.index.cookie_provider|default('Provider') }}</th>
-									<th>{{ lang.index.cookie_purpose|default('Purpose') }}</th>
-									<th>{{ lang.index.cookie_duration|default('Duration') }}</th>
+									<th>{{ lang.index.cookie_name }}</th>
+									<th>{{ lang.index.cookie_provider }}</th>
+									<th>{{ lang.index.cookie_purpose }}</th>
+									<th>{{ lang.index.cookie_duration }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% if cookies_by_category.necessary is defined and cookies_by_category.necessary is not empty %}
 									{% for cookie_item in cookies_by_category.necessary %}
 										<tr>
-											<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
-											<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ cookie_item.provider }}</td>
-											<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">{{ cookie_item.purpose }}</td>
-											<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ cookie_item.duration }}</td>
+											<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
+											<td data-label="{{ lang.index.cookie_provider }}">{{ cookie_item.provider }}</td>
+											<td data-label="{{ lang.index.cookie_purpose }}">{{ cookie_item.purpose }}</td>
+											<td data-label="{{ lang.index.cookie_duration }}">{{ cookie_item.duration }}</td>
 										</tr>
 									{% endfor %}
 								{% else %}
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">PHPSESSID</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Preserves user session state across page requests.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_session|default('Session') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">PHPSESSID</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Preserves user session state across page requests.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_session }}</td>
 									</tr>
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">csrf_token</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Security protection against cross-site request forgery.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_session|default('Session') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">csrf_token</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Security protection against cross-site request forgery.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_session }}</td>
 									</tr>
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">cookie_consent</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Stores user cookie consent and category choices.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_6_months|default('6 Months') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">cookie_consent</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Stores user cookie consent and category choices.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_6_months }}</td>
 									</tr>
 								{% endif %}
 							</tbody>
@@ -197,49 +197,49 @@
 				<div class="cookie-cat-card">
 					<div class="cookie-cat-header">
 						<div class="cookie-cat-header-top">
-							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_functional|default('Functional & Preferences') }}</h3>
+							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_functional }}</h3>
 							<div class="cookie-switch-wrapper">
 								<label class="cookie-switch" for="cookie-toggle-functional">
-									<input type="checkbox" id="cookie-toggle-functional" checked aria-label="{{ lang.index.cookie_category_functional|default('Functional Cookies') }}">
+									<input type="checkbox" id="cookie-toggle-functional" checked aria-label="{{ lang.index.cookie_category_functional }}">
 									<span class="cookie-slider"></span>
 								</label>
 							</div>
 						</div>
-						<p class="cookie-cat-desc">{{ lang.index.cookie_category_functional_desc|default('Enable helpful functionality such as remembering your language and display mode.') }}</p>
+						<p class="cookie-cat-desc">{{ lang.index.cookie_category_functional_desc }}</p>
 					</div>
 
 					<div class="table-responsive cookie-table-responsive">
 						<table class="table cookie-table">
 							<thead>
 								<tr>
-									<th>{{ lang.index.cookie_name|default('Cookie Name') }}</th>
-									<th>{{ lang.index.cookie_provider|default('Provider') }}</th>
-									<th>{{ lang.index.cookie_purpose|default('Purpose') }}</th>
-									<th>{{ lang.index.cookie_duration|default('Duration') }}</th>
+									<th>{{ lang.index.cookie_name }}</th>
+									<th>{{ lang.index.cookie_provider }}</th>
+									<th>{{ lang.index.cookie_purpose }}</th>
+									<th>{{ lang.index.cookie_duration }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% if cookies_by_category.functional is defined and cookies_by_category.functional is not empty %}
 									{% for cookie_item in cookies_by_category.functional %}
 										<tr>
-											<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
-											<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ cookie_item.provider }}</td>
-											<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">{{ cookie_item.purpose }}</td>
-											<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ cookie_item.duration }}</td>
+											<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
+											<td data-label="{{ lang.index.cookie_provider }}">{{ cookie_item.provider }}</td>
+											<td data-label="{{ lang.index.cookie_purpose }}">{{ cookie_item.purpose }}</td>
+											<td data-label="{{ lang.index.cookie_duration }}">{{ cookie_item.duration }}</td>
 										</tr>
 									{% endfor %}
 								{% else %}
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">theme</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Remembers light/dark and template theme preferences.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_1_year|default('1 Year') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">theme</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Remembers light/dark and template theme preferences.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">lang</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Stores the visitor selected browsing language.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_1_year|default('1 Year') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">lang</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Stores the visitor selected browsing language.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 								{% endif %}
 							</tbody>
@@ -251,43 +251,43 @@
 				<div class="cookie-cat-card">
 					<div class="cookie-cat-header">
 						<div class="cookie-cat-header-top">
-							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_analytics|default('Analytics & Performance') }}</h3>
+							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_analytics }}</h3>
 							<div class="cookie-switch-wrapper">
 								<label class="cookie-switch" for="cookie-toggle-analytics">
-									<input type="checkbox" id="cookie-toggle-analytics" aria-label="{{ lang.index.cookie_category_analytics|default('Analytics Cookies') }}">
+									<input type="checkbox" id="cookie-toggle-analytics" aria-label="{{ lang.index.cookie_category_analytics }}">
 									<span class="cookie-slider"></span>
 								</label>
 							</div>
 						</div>
-						<p class="cookie-cat-desc">{{ lang.index.cookie_category_analytics_desc|default('Help us understand how visitors interact with our content anonymously.') }}</p>
+						<p class="cookie-cat-desc">{{ lang.index.cookie_category_analytics_desc }}</p>
 					</div>
 
 					<div class="table-responsive cookie-table-responsive">
 						<table class="table cookie-table">
 							<thead>
 								<tr>
-									<th>{{ lang.index.cookie_name|default('Cookie Name') }}</th>
-									<th>{{ lang.index.cookie_provider|default('Provider') }}</th>
-									<th>{{ lang.index.cookie_purpose|default('Purpose') }}</th>
-									<th>{{ lang.index.cookie_duration|default('Duration') }}</th>
+									<th>{{ lang.index.cookie_name }}</th>
+									<th>{{ lang.index.cookie_provider }}</th>
+									<th>{{ lang.index.cookie_purpose }}</th>
+									<th>{{ lang.index.cookie_duration }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% if cookies_by_category.analytics is defined and cookies_by_category.analytics is not empty %}
 									{% for cookie_item in cookies_by_category.analytics %}
 										<tr>
-											<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
-											<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ cookie_item.provider }}</td>
-											<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">{{ cookie_item.purpose }}</td>
-											<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ cookie_item.duration }}</td>
+											<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
+											<td data-label="{{ lang.index.cookie_provider }}">{{ cookie_item.provider }}</td>
+											<td data-label="{{ lang.index.cookie_purpose }}">{{ cookie_item.purpose }}</td>
+											<td data-label="{{ lang.index.cookie_duration }}">{{ cookie_item.duration }}</td>
 										</tr>
 									{% endfor %}
 								{% else %}
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">_ga, _gid</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">Analytics Provider</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Aggregated, anonymized visitor statistics and speed metrics.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_1_year|default('1 Year') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">_ga, _gid</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">Analytics Provider</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Aggregated, anonymized visitor statistics and speed metrics.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 								{% endif %}
 							</tbody>
@@ -299,43 +299,43 @@
 				<div class="cookie-cat-card">
 					<div class="cookie-cat-header">
 						<div class="cookie-cat-header-top">
-							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_marketing|default('Marketing & Advertising') }}</h3>
+							<h3 class="cookie-cat-title">{{ lang.index.cookie_category_marketing }}</h3>
 							<div class="cookie-switch-wrapper">
 								<label class="cookie-switch" for="cookie-toggle-marketing">
-									<input type="checkbox" id="cookie-toggle-marketing" aria-label="{{ lang.index.cookie_category_marketing|default('Marketing Cookies') }}">
+									<input type="checkbox" id="cookie-toggle-marketing" aria-label="{{ lang.index.cookie_category_marketing }}">
 									<span class="cookie-slider"></span>
 								</label>
 							</div>
 						</div>
-						<p class="cookie-cat-desc">{{ lang.index.cookie_category_marketing_desc|default('Used to measure reach and delivery of announcements and advertisements.') }}</p>
+						<p class="cookie-cat-desc">{{ lang.index.cookie_category_marketing_desc }}</p>
 					</div>
 
 					<div class="table-responsive cookie-table-responsive">
 						<table class="table cookie-table">
 							<thead>
 								<tr>
-									<th>{{ lang.index.cookie_name|default('Cookie Name') }}</th>
-									<th>{{ lang.index.cookie_provider|default('Provider') }}</th>
-									<th>{{ lang.index.cookie_purpose|default('Purpose') }}</th>
-									<th>{{ lang.index.cookie_duration|default('Duration') }}</th>
+									<th>{{ lang.index.cookie_name }}</th>
+									<th>{{ lang.index.cookie_provider }}</th>
+									<th>{{ lang.index.cookie_purpose }}</th>
+									<th>{{ lang.index.cookie_duration }}</th>
 								</tr>
 							</thead>
 							<tbody>
 								{% if cookies_by_category.marketing is defined and cookies_by_category.marketing is not empty %}
 									{% for cookie_item in cookies_by_category.marketing %}
 										<tr>
-											<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
-											<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">{{ cookie_item.provider }}</td>
-											<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">{{ cookie_item.purpose }}</td>
-											<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ cookie_item.duration }}</td>
+											<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">{{ cookie_item.cookie_name }}</span></td>
+											<td data-label="{{ lang.index.cookie_provider }}">{{ cookie_item.provider }}</td>
+											<td data-label="{{ lang.index.cookie_purpose }}">{{ cookie_item.purpose }}</td>
+											<td data-label="{{ lang.index.cookie_duration }}">{{ cookie_item.duration }}</td>
 										</tr>
 									{% endfor %}
 								{% else %}
 									<tr>
-										<td data-label="{{ lang.index.cookie_name|default('Cookie Name') }}"><span class="cookie-code-tag">_camp_id</span></td>
-										<td data-label="{{ lang.index.cookie_provider|default('Provider') }}">Media & News Portal</td>
-										<td data-label="{{ lang.index.cookie_purpose|default('Purpose') }}">Measures outreach campaign effectiveness and interactions.</td>
-										<td data-label="{{ lang.index.cookie_duration|default('Duration') }}">{{ lang.index.cookie_6_months|default('6 Months') }}</td>
+										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">_camp_id</span></td>
+										<td data-label="{{ lang.index.cookie_provider }}">Media & News Portal</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">Measures outreach campaign effectiveness and interactions.</td>
+										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_6_months }}</td>
 									</tr>
 								{% endif %}
 							</tbody>
@@ -347,14 +347,14 @@
 				<div class="cookie-save-bar">
 					<div class="d-flex gap-2 flex-wrap">
 						<button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="btn-cookie-reject-opt">
-							{{ lang.index.cookie_reject_optional|default('Reject Optional') }}
+							{{ lang.index.cookie_reject_optional }}
 						</button>
 						<button type="button" class="btn btn-outline-primary rounded-pill px-4" id="btn-cookie-accept-all">
-							{{ lang.index.cookie_accept_all|default('Accept All') }}
+							{{ lang.index.cookie_accept_all }}
 						</button>
 					</div>
 					<button type="button" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold shadow-sm" id="btn-save-cookie-pref">
-						<i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ lang.index.cookie_save_preferences|default('Save Preferences') }}
+						<i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ lang.index.cookie_save_preferences }}
 					</button>
 				</div>
 			</section>
@@ -365,16 +365,16 @@
 					<div class="col-md-6">
 						<h3 class="h5 fw-bold text-body mb-2 d-flex align-items-center gap-2">
 							<i class="bi bi-question-circle text-primary" aria-hidden="true"></i>
-							<span>{{ lang.index.cookie_what_are_cookies|default('What Are Cookies?') }}</span>
+							<span>{{ lang.index.cookie_what_are_cookies }}</span>
 						</h3>
-						<p class="text-muted small leading-relaxed">{{ lang.index.cookie_what_are_cookies_desc|default('Cookies are small text files placed on your device to improve your experience and store basic preferences.') }}</p>
+						<p class="text-muted small leading-relaxed">{{ lang.index.cookie_what_are_cookies_desc }}</p>
 					</div>
 					<div class="col-md-6">
 						<h3 class="h5 fw-bold text-body mb-2 d-flex align-items-center gap-2">
 							<i class="bi bi-browser-chrome text-primary" aria-hidden="true"></i>
-							<span>{{ lang.index.cookie_how_to_manage|default('How to Manage Cookies') }}</span>
+							<span>{{ lang.index.cookie_how_to_manage }}</span>
 						</h3>
-						<p class="text-muted small leading-relaxed">{{ lang.index.cookie_how_to_manage_desc|default('You can control and manage cookies using your browser settings or our preferences center above.') }}</p>
+						<p class="text-muted small leading-relaxed">{{ lang.index.cookie_how_to_manage_desc }}</p>
 					</div>
 				</div>
 			</section>
@@ -385,7 +385,7 @@
 <!-- Floating Save Toast Notification -->
 <div id="cookie-save-toast" class="cookie-toast" role="status" aria-live="polite">
 	<i class="bi bi-check-circle-fill text-success fs-5" aria-hidden="true"></i>
-	<span class="cookie-toast-text">{{ lang.index.cookie_preferences_saved|default('Preferences saved successfully!') }}</span>
+	<span class="cookie-toast-text">{{ lang.index.cookie_preferences_saved }}</span>
 </div>
 {% endblock %}
 

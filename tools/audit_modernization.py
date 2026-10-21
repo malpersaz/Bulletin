@@ -12,7 +12,7 @@ MODULES = [
     'mod_video_embed'
 ]
 
-BASE_DIR = '/home/malpersaz/Desktop/projects/htdocs/AF/Rojname'
+BASE_DIR = '/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin'
 
 # Table 1 columns map to check in schema and templates
 T1_COLUMNS = [

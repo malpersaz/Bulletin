@@ -60,7 +60,7 @@ class legal_helper extends indexBase
             }
 
             if (empty($cookieRows)) {
-                $siteName = !empty($this->site['title']) ? $this->site['title'] : 'Rojname';
+                $siteName = !empty($this->site['title']) ? $this->site['title'] : 'AKM Bulletin CMS';
                 $cookieRows = $this->getDefaultCookieSamples($langCode, $siteName);
             }
 
@@ -167,7 +167,7 @@ class legal_helper extends indexBase
             // Check if seeding is needed
             $this->db->fetch_array("SELECT id FROM `mod_settings_cookies` LIMIT 1");
             if ($this->db->getSize() === 0) {
-                $siteName = !empty($this->site['title']) ? $this->site['title'] : 'Rojname';
+                $siteName = !empty($this->site['title']) ? $this->site['title'] : 'AKM Bulletin CMS';
                 $langs = ['en', 'ku', 'tr', 'de', 'fr', 'ar', 'ckb', 'sv', 'zza', 'ru'];
                 foreach ($langs as $langCode) {
                     $samples = $this->getDefaultCookieSamples($langCode, $siteName);

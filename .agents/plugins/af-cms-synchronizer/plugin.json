@@ -2,7 +2,7 @@
   "name": "af-cms-synchronizer",
   "displayName": "AF CMS Cross-Repo Synchronizer & Boundary Guard",
   "version": "1.0.0",
-  "description": "Deterministic cross-repository synchronization, module boundary guard, and architectural standards verifier for Amed Framework (Rojname CMS adopting from Business canonical).",
+  "description": "Deterministic cross-repository synchronization, module boundary guard, and architectural standards verifier for Amed Framework (Bulletin News CMS adopting from Business canonical).",
   "suggestedPrompts": [
     "Sync Skill"
   ],

@@ -2,7 +2,7 @@
 /**
  * Category Module - English Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication_category
  * @version 1.0.0
  * @author  AKM Software

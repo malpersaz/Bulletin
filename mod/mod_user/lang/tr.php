@@ -2,7 +2,7 @@
 /**
  * User Module - Turkish Language File
  *
- * @package AKM Business
+ * @package AKM Bulletin CMS
  * @module  mod_user
  * @version 1.0.0
  * @author  AKM Software
@@ -17,6 +17,14 @@ if (!defined('AKM_LOADED')) {
 $lang['mod_user'] = [
     'add' => 'Üye Ekle',
     'edit' => 'Üyeyi Düzenle',
+    'total_users' => 'Toplam Üye',
+    'active_users' => 'Aktif',
+    'pending_users' => 'Bekleyen',
+    'empty_state' => [
+        'title' => 'Üye Bulunamadı',
+        'desc' => 'Kayıtlı veya arama filtrenizle eşleşen kullanıcı hesabı bulunamadı.',
+        'clear_search' => 'Filtreyi Temizle',
+    ],
     'list' => [
         'management' => 'Kayıt Yönetimi',
         'action' => 'İşlem...',
@@ -27,7 +35,7 @@ $lang['mod_user'] = [
         'reset' => 'Sıfırla',
     ],
     'information' => 'Bilgi!',
- 'Tamam!',
+    'success' => 'Başarılı!',
     'last_step' => 'Son Adım',
     'error_title' => 'Hata Oluştu!',
     'error_label' => 'Hata!',
@@ -456,28 +464,20 @@ $lang['mod_user'] = [
         'goto_content' => 'İçerik Yönetimine Git',
         'search_placeholder' => 'Ara...',
         'quick_access' => 'Hızlı Erişim',
-        'products_metrics_title' => 'Ürünler Özeti',
         'metrics_active' => '%s aktif kayıt',
-        'metrics_products' => '%s ürün kaydı',
         'metrics_clients' => '%s müşteri kaydı',
         'metrics_homepage' => '%s ana sayfa kaydı',
         'metrics_references' => '%s referans kaydı',
-        'metrics_product_categories' => '%s ürün kategorisi kaydı',
         'family_quick_access' => 'Alan Erişimi',
-        'products_spotlight_title' => 'Ürünler Alanı',
-        'products_spotlight_copy' => 'Ürünleri, müşteri kanıtlarını ve destekleyen taksonomiyi tek bir aile yüzeyinden yönetin.',
         'pinned_modules' => 'Sabitlenen Modüller',
         'recent_workspace' => 'Son Kullanılan Alan',
-        'add_product' => 'Ürün Ekle',
         'add_reference' => 'Referans Ekle',
         'add_client' => 'Müşteri Ekle',
         'add_service' => 'Hizmet Ekle',
-        'manage_product_categories' => 'Kategori Alanını Aç',
         'manage_service_categories' => 'Hizmet Kategorilerini Aç',
         'workspace_nav_dashboard' => 'Panel',
         'workspace_nav_content' => 'İçerik',
         'workspace_nav_media' => 'Medya',
-        'workspace_nav_products' => 'Ürünler',
         'workspace_nav_more' => 'Diğer',
         'more_sheet_title' => 'Diğer Araçlar',
         'more_sheet_copy' => 'Ana çalışma çubuğunu kalabalıklaştırmadan daha düşük frekanslı yönetim yüzeylerini açın.',
@@ -488,16 +488,16 @@ $lang['mod_user'] = [
     'link_submissions' => 'Başvurular',
     'clear_search' => 'Temizle',
         'home_title' => 'Ana Sayfa',
-        'admin_brand' => 'AKM Rojname Yönetim',
+        'admin_brand' => 'AKM Bulletin CMS Yönetim',
     ],
     'fab' => [
         'add_announcement' => 'Duyuru Ekle',
-        'add_product' => 'Ürün Ekle',
         'add_service' => 'Hizmet Ekle',
         'add_page' => 'Sayfa Ekle',
         'add_video_embed' => 'Video Embed Ekle',
         'add_video' => 'Video Ekle',
         'add_content' => 'Haber Ekle',
+        'add_news' => 'Haber Ekle',
         'add_publication' => 'Yayın Ekle',
         'add_announcement_alert' => 'Duyuru Formu',
         'add_video_alert' => 'Video Formu',

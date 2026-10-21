@@ -1,6 +1,6 @@
 <?php
 /**
- * Rojname - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_news)
+ * Bulletin - Nûçeyan (mod_haber) ji DB'ya kevin bikişîne DB'ya nû (mod_news)
  * Vê pelê li hostingê bar bike û di gerokê (browser) de veke.
  */
 

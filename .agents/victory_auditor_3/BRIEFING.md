@@ -1,19 +1,19 @@
 # BRIEFING — 2026-08-24T00:41:00+03:00
 
 ## Mission
-Independent Post-Victory Audit of AF/Rojname following Run/Validator/Registry modernization, Kayit purge, and strict module boundary enforcement.
+Independent Post-Victory Audit of AF/Bulletin following Run/Validator/Registry modernization, Kayit purge, and strict module boundary enforcement.
 
 ## 🔒 My Identity
 - Archetype: victory_auditor
 - Roles: critic, specialist, auditor, victory_verifier
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/victory_auditor_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/victory_auditor_3
 - Original parent: 606d0c7f-1d4d-4590-97c8-6ccdf92a3571
 - Target: full project
 
 ## 🔒 Key Constraints
 - Audit-only — do NOT modify implementation code
 - Trust NOTHING — verify everything independently
-- Strict repository boundary: no mod_client, mod_service, mod_product, mod_reference in AF/Rojname
+- Strict repository boundary: no mod_client, mod_service, mod_product, mod_reference in AF/Bulletin
 - Purge of legacy Kayit calls across all modules
 - Run::execute and Validator modernization
 - Zero inline CSS/JS and English code standards
@@ -23,7 +23,7 @@ Independent Post-Victory Audit of AF/Rojname following Run/Validator/Registry mo
 - Updated: 2026-08-24T00:41:00+03:00
 
 ## Audit Scope
-- **Work product**: AF/Rojname codebase (Run, Validator, Registry modernization, Kayit purge, module boundary isolation)
+- **Work product**: AF/Bulletin codebase (Run, Validator, Registry modernization, Kayit purge, module boundary isolation)
 - **Profile loaded**: General Project (Victory Audit)
 - **Audit type**: victory audit
 
@@ -46,7 +46,7 @@ Independent Post-Victory Audit of AF/Rojname following Run/Validator/Registry mo
 - **Untested angles**: All major runtime execution paths tested in isolated processes and E2E harness.
 
 ## Loaded Skills
-- task-validation (/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/skills/task-validation/SKILL.md)
+- task-validation (/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/skills/task-validation/SKILL.md)
 
 ## Key Decisions Made
 - All audit checks passed independently. Issued VICTORY CONFIRMED verdict.

@@ -2,7 +2,7 @@
 /**
  * Publication Category Module - Turkish Language File
  *
- * @package AKM ARTIST CMS
+ * @package AKM Bulletin CMS
  * @module  mod_publication_category
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_publication_category'] = [
     'success' => 'İşlem Başarılı',
     'error' => 'Hata Oluştu',
     'remove_record' => 'Bu kaydı silmek istediğinizden emin misiniz?',
+    'remove_image' => 'Bu görseli kaldırmak istediğinizden emin misiniz?',
     'choose_wish' => 'Seçiniz',
 
     // === Message Structure ===
@@ -59,6 +60,8 @@ $lang['mod_publication_category'] = [
         'yes' => 'Evet',
         'no' => 'Hayır',
         'save' => 'Kaydet',
+        'gallery' => 'Galeri',
+        'file' => 'Dosya',
     ],
 
     'grid' => [
@@ -94,10 +97,10 @@ $lang['mod_publication_category'] = [
     'role_errors' => [
         'moderate_edit' => 'Başkasına ait kategori kayıtlarını düzenleyemezsiniz',
         'moderate_delete' => 'Başkasına ait kategori kayıtlarını silemezsiniz',
-        'add' => 'Kategori ekleme permissionniz bulunmuyor',
-        'edit' => 'Kategori düzenleme permissionniz bulunmuyor',
-        'list' => 'Kategori Yönetimini görüntüleme permissionniz bulunmuyor',
-        'delete' => 'Kategori silme permissionniz bulunmuyor',
+        'add' => 'Kategori ekleme yetkiniz bulunmuyor',
+        'edit' => 'Kategori düzenleme yetkiniz bulunmuyor',
+        'list' => 'Kategori Yönetimini görüntüleme yetkiniz bulunmuyor',
+        'delete' => 'Kategori silme yetkiniz bulunmuyor',
     ],
 
     // === Navigation & Actions ===
@@ -225,10 +228,10 @@ $lang['mod_publication_category'] = [
     'permission_errors' => [
         'edit_others' => 'Başkasına ait kategori kayıtlarını düzenleyemezsiniz',
         'delete_others' => 'Başkasına ait kategori kayıtlarını silemezsiniz',
-        'add' => 'Kategori ekleme permissionniz bulunmuyor',
-        'edit' => 'Kategori düzenleme permissionniz bulunmuyor',
-        'list' => 'Kategori yönetimini görüntüleme permissionniz bulunmuyor',
-        'delete' => 'Kategori silme permissionniz bulunmuyor',
+        'add' => 'Kategori ekleme yetkiniz bulunmuyor',
+        'edit' => 'Kategori düzenleme yetkiniz bulunmuyor',
+        'list' => 'Kategori yönetimini görüntüleme yetkiniz bulunmuyor',
+        'delete' => 'Kategori silme yetkiniz bulunmuyor',
     ],
 
     // === Admin Panel Configuration ===
@@ -246,11 +249,15 @@ $lang['mod_publication_category'] = [
             'description' => 'SEO ayarları için açıklama (Description)',
             'menu' => 'Kategoriyi Menüye Gönder',
             'image' => 'Görsel',
-            'acl_id' => 'Erişim Permissionsi',
+            'acl_id' => 'Erişim İzni',
         ],
         'select_values' => [
             'root_yes' => 'Evet',
             'root_no' => 'Hayır',
+        ],
+        'select_value' => [
+            'root_e' => 'Evet',
+            'root_h' => 'Hayır',
         ],
     ],
 
@@ -362,4 +369,9 @@ $lang['mod_publication_category'] = [
         'fatal_error' => 'ERROR',  // Keep 'ERROR' as it's used in JavaScript comparisons
     ],
 
+];
+
+$lang['mod_publication_category']['ajax'] = [
+    'success' => 'Başarılı',
+    'error' => 'Hata',
 ];

@@ -26,7 +26,7 @@ class Swift_Mime_ContentEncoder_QpContentEncoder extends Swift_Encoder_QpEncoder
    * @param boolean $dotEscape if dot stuffing workaround must be enabled
    */
   public function __construct(Swift_CharacterStream $charStream,
-    Swift_StreamFilter $filter = null, $dotEscape=false)
+    ?Swift_StreamFilter $filter = null, $dotEscape=false)
   {
     parent::__construct($charStream, $filter);
     if ($dotEscape) {

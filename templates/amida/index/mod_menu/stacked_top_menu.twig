@@ -11,9 +11,7 @@
 {% set session_logout_sid = session.sid is defined and session.sid is not empty ? session.sid : null %}
 {% set unread_messages_count = session.unread_messages is defined and session.unread_messages > 0
 	? session.unread_messages
-	: (session.unread_count is defined and session.unread_count > 0
-		? session.unread_count
-		: (session.okunmamis is defined and session.okunmamis > 0 ? session.okunmamis : 0)) %}
+	: (session.unread_count is defined and session.unread_count > 0 ? session.unread_count : 0) %}
 
 
 <header class="stacked-header sticky-top" id="amidaStackedHeader" aria-label="{{ site.title }} - {{ lang.index.navigation }}">
@@ -22,17 +20,21 @@
 			<!-- TOP ROW: Brand, Centered Search, Utilities -->
 			<div class="stacked-header-top">
 				<!-- Brand/Logo (Vector SVG Masthead) -->
-				{% set header_svg_logo = 'static/mod_settings/amida_kurd_logo.svg' %}
+				{% set header_svg_logo = 'static/mod_settings/logo.svg' %}
 				<a class="stacked-brand d-inline-flex align-items-center" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }}">
-					<img src="{{ site.address }}{{ header_svg_logo }}" alt="{{ site.title }}" width="175" height="42" class="stacked-logo-svg d-inline-block">
+					<img src="{{ site.address }}{{ header_svg_logo }}" alt="{{ site.title }}" width="160" height="42" class="stacked-logo-svg d-inline-block">
 				</a>
 
 				<!-- Centered Search Field (Desktop) -->
 				<div class="stacked-search-slot d-none d-lg-block">
 					<form class="search-form" role="search" method="get" action="{{ site.saddress }}index/search/">
-						<div class="stacked-search-wrapper">
+						<div class="stacked-search-wrapper" id="stackedSearchWrapper">
 							<label for="stackedSearchInput" class="visually-hidden">{{ lang.index.search.placeholder }}</label>
 							<input type="search" id="stackedSearchInput" name="query" class="form-control stacked-search-input" placeholder="{{ lang.index.search.placeholder }}" aria-label="{{ lang.index.search.placeholder }}" autocomplete="off">
+							<kbd class="stacked-search-kbd" aria-hidden="true" title="{{ lang.index.search.shortcut_hint }}">/</kbd>
+							<button class="stacked-search-clear" id="stackedSearchClear" type="button" aria-label="{{ lang.index.search.clear }}" title="{{ lang.index.search.clear }}">
+								<i class="bi bi-x-lg" aria-hidden="true"></i>
+							</button>
 							<button class="stacked-search-btn" type="submit" aria-label="{{ lang.index.search.search }}" title="{{ lang.index.search.search }}">
 								<i class="bi bi-search" aria-hidden="true"></i>
 							</button>
@@ -80,9 +82,9 @@
 							<button class="btn user-profile-btn d-flex align-items-center" type="button" id="stackedUserDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="{{ lang.index.my_account }}" title="{{ lang.index.my_account }}">
 								<div class="user-avatar-container">
 									{% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
-										<img src="{{ site.address }}static/mod_user/{{ session.image }}" alt="{{ session_display_name }}" class="user-avatar rounded-circle" width="32" height="32">
+										<img src="{{ site.address }}static/mod_user/{{ session.image }}" alt="{{ session_display_name }}" class="user-avatar rounded-circle" width="28" height="28">
 									{% else %}
-										<div class="user-avatar user-avatar-placeholder rounded-circle bg-primary text-white">
+										<div class="user-avatar user-avatar-placeholder rounded-circle">
 											{{ session_display_name|slice(0, 1)|upper }}
 										</div>
 									{% endif %}
@@ -98,7 +100,7 @@
 										{% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
 											<img src="{{ site.address }}static/mod_user/{{ session.image }}" alt="{{ session_username }}" class="user-avatar-sm rounded-circle me-2" width="28" height="28">
 										{% else %}
-											<div class="user-avatar-sm user-avatar-sm-placeholder rounded-circle me-2 bg-primary text-white">
+											<div class="user-avatar-sm user-avatar-sm-placeholder rounded-circle me-2">
 												{{ session_display_name|slice(0, 1)|upper }}
 											</div>
 										{% endif %}
@@ -152,16 +154,12 @@
 							</ul>
 						</div>
 					{% else %}
-						<!-- Guest User Buttons (Desktop Only in Top Bar, in Drawer for Mobile) -->
-						<div class="auth-buttons d-none d-lg-flex align-items-center gap-2">
-							<button class="btn btn-header-login" data-bs-toggle="modal" data-bs-target="#loginModal">
+						<!-- Guest User Action (Desktop Only in Top Bar — Single Refined Login CTA) -->
+						<div class="auth-buttons d-none d-lg-flex align-items-center">
+							<button class="btn btn-header-login" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
 								<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
 								<span>{{ lang.index.login }}</span>
 							</button>
-							<a href="{{ site.saddress }}register" class="btn btn-header-register">
-								<i class="bi bi-person-plus me-1" aria-hidden="true"></i>
-								<span>{{ lang.index.register }}</span>
-							</a>
 						</div>
 					{% endif %}
 
@@ -173,8 +171,9 @@
 			</div>
 
 			<!-- BOTTOM ROW: Editorial Category Navigation -->
-			{% set active_menu = menu is defined and menu is not empty ? menu : ctx_get('menu_header') %}
-			{% set active_menu_root = (menu is defined and menu is not empty) ? 0 : ctx_get('menu_header_root_id') %}
+			{% set header_menu = ctx_get('menu_header') %}
+			{% set active_menu = header_menu is defined and header_menu is not empty ? header_menu : menu %}
+			{% set active_menu_root = (header_menu is defined and header_menu is not empty) ? ctx_get('menu_header_root_id') : 0 %}
 			<div class="stacked-header-nav">
 				<nav class="stacked-nav-bar" aria-label="{{ lang.index.navigation }}">
 					<ul class="navbar-nav stacked-nav-list mb-0" data-menu-root>
@@ -263,11 +262,11 @@
 		<!-- Mobile Auth Buttons -->
 		{% if not is_logged_in %}
 			<div class="mobile-auth-group d-flex gap-2 mt-3 pt-3 border-top">
-				<button class="btn btn-header-login flex-fill" data-bs-toggle="modal" data-bs-target="#loginModal">
+				<button class="btn btn-header-login flex-fill justify-content-center" type="button" data-bs-toggle="modal" data-bs-target="#loginModal">
 					<i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i>
 					<span>{{ lang.index.login }}</span>
 				</button>
-				<a href="{{ site.saddress }}register" class="btn btn-header-register flex-fill text-center">
+				<a href="{{ site.saddress }}register" class="btn btn-header-register flex-fill justify-content-center text-center">
 					<i class="bi bi-person-plus me-1" aria-hidden="true"></i>
 					<span>{{ lang.index.register }}</span>
 				</a>
@@ -277,9 +276,9 @@
 				<div class="mobile-user-card d-flex align-items-center gap-2 mb-3 p-2 rounded">
 					<div class="user-avatar-container">
 						{% if session.image is defined and session.image is not empty and session.image != 'avatar.png' %}
-							<img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="{{ session_display_name }}" class="user-avatar rounded-circle" width="36" height="36">
+							<img src="{{ site.iaddress }}mod_user/{{ session.image }}" alt="{{ session_display_name }}" class="user-avatar rounded-circle" width="28" height="28">
 						{% else %}
-							<div class="user-avatar user-avatar-placeholder rounded-circle bg-primary text-white">
+							<div class="user-avatar user-avatar-placeholder rounded-circle">
 								{{ session_display_name|slice(0, 1)|upper }}
 							</div>
 						{% endif %}

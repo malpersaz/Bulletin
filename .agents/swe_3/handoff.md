@@ -1,4 +1,4 @@
-# Orchestrator Handoff Report — AF/Rojname Commercial Module Purge & StaticAuditor Integration
+# Orchestrator Handoff Report — AF/Bulletin Commercial Module Purge & StaticAuditor Integration
 
 ## 1. Observation
 1. **Purged Commercial Module Remnants in `mod/`**:

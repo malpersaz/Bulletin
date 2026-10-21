@@ -394,7 +394,7 @@
 
 /* Title */
 .hero-slide__title {
-    font-family: var(--bs-font-serif, 'Literata', Georgia, serif);
+    font-family: var(--bs-font-serif, 'Newsreader', Georgia, serif);
     font-size: clamp(1.22rem, 1.8vw + 0.55rem, 1.72rem);
     font-weight: 800;
     line-height: 1.25;

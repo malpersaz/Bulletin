@@ -22,7 +22,7 @@
 {% set faq_lang = ctx_get('faq_lang') %}
 {% set news_24h = ctx_get('news_24h') %}
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
-{% set news_all_label = lang.index.mod_news[2] ?? 'Hemû Nûçe' %}
+{% set news_all_label = lang.index.mod_news[2] %}
 
 {% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
@@ -439,7 +439,7 @@
 							<span class="news-24h-pulse-dot" aria-hidden="true"></span>
 							<h3 class="news-24h-title">
 								<i class="bi bi-clock-history" aria-hidden="true"></i>
-								<span>{{ lang.index.latest_news.last_24_hours ?? '24 Saetên Dawî' }}</span>
+								<span>{{ lang.index.mod_news.latest_news.last_24_hours }}</span>
 							</h3>
 						</div>
 						<span class="news-24h-badge">{{ news_24h|length }}</span>

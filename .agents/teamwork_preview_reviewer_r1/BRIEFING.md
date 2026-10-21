@@ -1,8 +1,8 @@
 # Teamwork Preview Reviewer Briefing (Round 1)
 
 ## Context & Objectives
-- **Target Repository**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
-- **Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/teamwork_preview_reviewer_r1`
+- **Target Repository**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
+- **Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/teamwork_preview_reviewer_r1`
 - **Core Mission**: Adversarial review and verification of Round 0 implementer attempt.
   - Review `lib/Run.class.php` and `lib/Validator.class.php` modernization (`Run::execute()`, `Validator::execute()`, `Validator::add()`).
   - Probe edge cases in argument parsing, types, missing methods, string classes, associative parameter unpacking.

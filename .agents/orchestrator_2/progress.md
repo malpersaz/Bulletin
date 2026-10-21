@@ -1,4 +1,4 @@
-# PROGRESS — AF/Rojname Orchestration (Generation 2)
+# PROGRESS — AF/Bulletin Orchestration (Generation 2)
 Last visited: 2026-08-23T23:02:00Z
 
 ## Milestone Status Overview

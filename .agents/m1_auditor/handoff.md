@@ -1,7 +1,7 @@
 # Milestone 1: Forensic Integrity Audit Report
 
 **Auditor**: `m1_auditor` (Forensic Auditor / Critic / Specialist)  
-**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_auditor`  
+**Working Directory**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_auditor`  
 **Date**: 2026-08-23T22:38:35+03:00  
 **Status**: Hard Handoff (Audit Complete)  
 **Verdict**: **CLEAN**
@@ -48,7 +48,7 @@
 4. **Admin Asset Parity**:
    - Directory diff of `templates/admin/assets/js/modals/` vs `AF/Business/templates/admin/assets/js/modals/`: exit code 0 (100% exact parity across all 7 modal controllers).
    - Directory diff of `templates/admin/assets/css/modals/` vs `AF/Business/templates/admin/assets/css/modals/`: exit code 0 (100% exact parity).
-   - Deprecated business assets (`mod_product.js`, `mod_service.js`, `mod_project.js`) are absent from `AF/Rojname/templates/admin/assets/js/`, and required `mod_newsletter.js` / `mod_newsletter.css` are present.
+   - Deprecated business assets (`mod_product.js`, `mod_service.js`, `mod_project.js`) are absent from `AF/Bulletin/templates/admin/assets/js/`, and required `mod_newsletter.js` / `mod_newsletter.css` are present.
 5. **Code Separation**:
    - `templates/admin/layout.twig` contains 0 `<style>` tags and 0 inline style attributes.
    - `templates/admin/partials/sheets_extra.twig` contains 0 `<style>` tags and 0 `<script>` blocks.

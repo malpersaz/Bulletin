@@ -6,7 +6,7 @@ Independently audit and forensically verify the authenticity, integrity, and cor
 ## 🔒 My Identity
 - Archetype: forensic_auditor
 - Roles: critic, specialist, auditor
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/auditor_m1
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/auditor_m1
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Target: Milestone 1 (M1)
 

@@ -1,7 +1,7 @@
 # Milestone 2 (M2) Review Handoff Report — Reviewer 2
 
 ## 1. Observation
-- Target workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`
+- Target workspace: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`
 - Reviewed deliverables for Milestone 2: Admin User ACL Modernization & Strict Code Separation:
   1. `templates/admin/mod_user/acl.twig` & `templates/admin/assets/css/mod_user_acl.css`, `templates/admin/assets/js/mod_user_acl.js`
   2. `mod/mod_user/index.php` (`toggle_permission()` AJAX action with DB transactions and session synchronization)

@@ -6,7 +6,7 @@ Conduct thorough code review and adversarial stress-testing for Milestone 1 (Cor
 ## 🔒 My Identity
 - Archetype: reviewer_critic
 - Roles: reviewer, critic
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/reviewer_m1_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/reviewer_m1_2
 - Original parent: 252c7225-77db-4c3e-bc1d-f37695c6498d
 - Milestone: M1 (Core Framework, ORM Resilience & Twig SEO Unicode Parity)
 - Instance: 2 of 2
@@ -29,7 +29,7 @@ Conduct thorough code review and adversarial stress-testing for Milestone 1 (Cor
   - `lib/Orm/Orm.php`
   - `lib/Orm/Obuilder.php`
   - `lib/BaseModuleController.class.php`
-- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/PROJECT.md`, `AGENTS.md`
+- **Interface contracts**: `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/PROJECT.md`, `AGENTS.md`
 - **Review criteria**: Correctness, integrity, security, edge cases, Turkish comment elimination, Unicode preservation, syntax & test execution.
 
 ## Review Checklist

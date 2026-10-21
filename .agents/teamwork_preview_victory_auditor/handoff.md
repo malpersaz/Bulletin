@@ -38,7 +38,7 @@
 The implementation fully satisfies all requirements without regression, cheats, or shortcuts. VICTORY CONFIRMED.
 
 ## 5. Verification Method
-Run the following verification commands in `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname`:
+Run the following verification commands in `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin`:
 ```bash
 php tests/e2e/run.php
 php tests/twig_template_adversarial_test.php

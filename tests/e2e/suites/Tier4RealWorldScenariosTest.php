@@ -56,7 +56,7 @@ class Tier4RealWorldScenariosTest extends TestCase
         // Step 4: Admin configures SEO metadata
         $this->db->exec("
             INSERT INTO mod_seo (route_path, title, meta_description, canonical_url, og_title, robots)
-            VALUES ('/article/Sur_Heritage_Preservation_and_Restoration_Audit', 'Sur Heritage Preservation Audit | Rojname', 'Comprehensive investigative report on Diyarbakir historical walls restoration.', 'https://rojname.org/article/Sur_Heritage_Preservation_and_Restoration_Audit', 'Sur Heritage Preservation Audit', 'index, follow')
+            VALUES ('/article/Sur_Heritage_Preservation_and_Restoration_Audit', 'Sur Heritage Preservation Audit | Bulletin', 'Comprehensive investigative report on Diyarbakir historical walls restoration.', 'https://bulletin.org/article/Sur_Heritage_Preservation_and_Restoration_Audit', 'Sur Heritage Preservation Audit', 'index, follow')
         ");
 
         // Step 5: Admin publishes article

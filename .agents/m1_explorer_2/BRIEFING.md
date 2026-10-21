@@ -1,12 +1,12 @@
 # BRIEFING — 2026-08-23T19:29:40Z
 
 ## Mission
-Investigate Admin Assets & Modal Engine Synchronization between reference repo (Business) and target repo (Rojname).
+Investigate Admin Assets & Modal Engine Synchronization between reference repo (Business) and target repo (Bulletin).
 
 ## 🔒 My Identity
 - Archetype: explorer
 - Roles: read-only investigation, codebase comparison, asset synthesis
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_2
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_2
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1 (Admin Assets & Modal Engine Sync)
 

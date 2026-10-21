@@ -318,6 +318,7 @@ class installerbase
 {
     public $mod;
     public $mod_id;
+    public $roles = [];
     public $rolls;
     public $db;
     public $moduleRegistry;
@@ -618,7 +619,7 @@ class installerbase
 
     public function system_message($message)
     {
-        echo "<font style='color:green;font-size:20px;'>" . $message . "</font>";
+        echo "<font color='green'>" . $message . "</font>";
         echo "<br>";
     }
 
@@ -682,13 +683,18 @@ class installerbase
     /**
      * Inserts roles into 'mod_user_role' table
      */
+    protected function insert_roles()
+    {
+        return $this->insert_roll();
+    }
+
     protected function insert_roll()
     {
         if ($this->ensure_permission_infrastructure() === FALSE) {
             return FALSE;
         }
 
-        $roles = $this->roles ?? $this->rolls ?? [];
+        $roles = !empty($this->roles) ? $this->roles : ($this->rolls ?? []);
         if (is_array($roles) && !empty($roles)) {
             foreach ($roles as $role) {
                 $model = Load::model('mod_user.mod_user_role');
@@ -827,6 +833,11 @@ class installerbase
         return TRUE;
     }
 
+    protected function delete_roles()
+    {
+        return $this->remove_rool();
+    }
+
     protected function remove_rool()
     {
         if ($this->uninstall_blocked === TRUE) {
@@ -889,24 +900,13 @@ class installerbase
             'sv' => '##Svenska_Kategorier',
             'tr' => '##Türkçe_Kategoriler',
             'zza' => '##Zazakî_Kategori',
+            'ru' => '##Русский_Категории',
         );
     }
 
     protected function installer_category_starter_labels()
     {
         return array(
-            'contents' => array(
-                'ar' => 'المحتويات',
-                'de' => 'Inhalte',
-                'en' => 'Contents',
-                'fa' => 'محتواها',
-                'fr' => 'Contenus',
-                'ku' => 'Naverok',
-                'ckb' => 'ناوەڕۆکەکان',
-                'sv' => 'Innehåll',
-                'tr' => 'İçerikler',
-                'zza' => 'Naverok',
-            ),
             'news' => array(
                 'ar' => 'الأخبار',
                 'de' => 'Nachrichten',
@@ -918,42 +918,7 @@ class installerbase
                 'sv' => 'Nyheter',
                 'tr' => 'Haberler',
                 'zza' => 'Xeber',
-            ),
-            'products' => array(
-                'ar' => 'المنتجات',
-                'de' => 'Produkte',
-                'en' => 'Products',
-                'fa' => 'محصولات',
-                'fr' => 'Produits',
-                'ku' => 'Hilber',
-                'ckb' => 'کاڵاکان',
-                'sv' => 'Produkter',
-                'tr' => 'Ürünler',
-                'zza' => 'Hilber',
-            ),
-            'projects' => array(
-                'ar' => 'المشاريع',
-                'de' => 'Projekte',
-                'en' => 'Projects',
-                'fa' => 'پروژه‌ها',
-                'fr' => 'Projets',
-                'ku' => 'Proje',
-                'ckb' => 'پرۆژە',
-                'sv' => 'Projekt',
-                'tr' => 'Projeler',
-                'zza' => 'Proje',
-            ),
-            'services' => array(
-                'ar' => 'الخدمات',
-                'de' => 'Dienstleistungen',
-                'en' => 'Services',
-                'fa' => 'خدمات',
-                'fr' => 'Services',
-                'ku' => 'Xizmet',
-                'ckb' => 'خزمەتەکان',
-                'sv' => 'Tjänster',
-                'tr' => 'Hizmetler',
-                'zza' => 'Xızmet',
+                'ru' => 'Новости',
             ),
             'videos' => array(
                 'ar' => 'الفيديوهات',
@@ -966,6 +931,7 @@ class installerbase
                 'sv' => 'Videor',
                 'tr' => 'Videolar',
                 'zza' => 'Vîdyo',
+                'ru' => 'Видео',
             ),
             'publications' => array(
                 'ar' => 'المنشورات',
@@ -978,6 +944,7 @@ class installerbase
                 'sv' => 'Publikationer',
                 'tr' => 'Yayınlar',
                 'zza' => 'Weşan',
+                'ru' => 'Публикации',
             ),
             'bulletin' => array(
                 'ar' => 'النشرة',
@@ -990,18 +957,7 @@ class installerbase
                 'sv' => 'Bulletin',
                 'tr' => 'Bülten',
                 'zza' => 'Bulten',
-            ),
-            'projects' => array(
-                'ar' => 'المشاريع',
-                'de' => 'Projekte',
-                'en' => 'Projects',
-                'fa' => 'پروژه‌ها',
-                'fr' => 'Projets',
-                'ku' => 'Proje',
-                'ckb' => 'پڕۆژەکان',
-                'sv' => 'Projekt',
-                'tr' => 'Projeler',
-                'zza' => 'Proje',
+                'ru' => 'Бюллетень',
             ),
         );
     }

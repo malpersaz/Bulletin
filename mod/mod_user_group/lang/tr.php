@@ -1,55 +1,55 @@
-<?php 
-$lang['mod_user_group']=[
-	'add'=>'Üye Grup Ekle',
-	'management_title'=>'Üye Grup Yönetimi',
-	'user_groups'=>'Üye Grupler',
-	'select_optional'=>'---Dilerseniz Seçin--- ',
-	'confirm_delete'=>'Bu Üye Grubu Silmek İstediğinize Eminmisiniz?<br/> Eğer Bu Üye Grubu Silerseniz Bu Üye Grubuna Ait Tüm Alt Üye Gruplarıda Silinecek!',
-	'group_deleted'=>'Üye Grup Silindi!',
-	'order_changed'=>'Üye Grup Sırası Değiştirildi!',
-	'delete_group'=>'Üye Grubunu Sil',
-	'edit_group'=>'Üye Grubunu Düzenle',
-	'edit'=>'Düzenle',
-	'yes'=>'Evet',
-	'cancel'=>'Vazgeç',
-	'group_list'=>'Üye Grup Listesi',
-	'double_click_instruction'=>'Silmek Yada Düzenlemek istediğiniz Üye Grubunun İsmine Çift Tıklayın',
-	'drag_drop_instruction'=>'Sıralamak istediğiniz Kullanıcı Grubunu sürükleyip bırakın.',
-	'reorder_active' => 'Sıralama Modu Aktif',
-	'add_new_group'=>'Yeni Üye Grup Ekleyin'
-	
+<?php
 
-];
-$lang['mod_user_group']['admin']=[
-	'add_area'=>'Üye Grup Ekleme Alanı',
-	'edit_area'=>'Üye Grup Düzenleme Alanı',
-	'management'=>'Üye Grup Yönetimi',
-	'add_form'=>'Üye Grup Ekleme Formu',
-	'edit_form'=>'Üye Grup Düzenleme Formu',
-	'group_name'=>'Üye Grup Adı',
-	'add'=>'Ekle',
-	'edit'=>'Düzenle',
-	'group_list'=>'Üye Grup Listesi',
-	'list'=>'Üye Grup Listesi',
-	'group_added'=>'Üye Grup Eklendi!',
-	'group_edited'=>'Üye Grup Düzenlendi',
-	'sub_group'=>'Alt Üye Grup'
+$lang['mod_user_group'] = [
+    'add' => 'Üye Grubu Ekle',
+    'management_title' => 'Üye Grubu Yönetimi',
+    'user_groups' => 'Üye Grupları',
+    'select_optional' => '--- Dilerseniz Seçin ---',
+    'confirm_delete' => 'Bu Üye Grubunu Silmek İstediğinize Emin misiniz?<br/> Eğer Bu Üye Grubunu Silerseniz Bu Üye Grubuna Ait Tüm Alt Üye Grupları da Silinecek!',
+    'group_deleted' => 'Üye Grubu Silindi!',
+    'order_changed' => 'Üye Grubu Sırası Değiştirildi!',
+    'delete_group' => 'Üye Grubunu Sil',
+    'edit_group' => 'Üye Grubunu Düzenle',
+    'edit' => 'Düzenle',
+    'yes' => 'Evet',
+    'cancel' => 'Vazgeç',
+    'group_list' => 'Üye Grubu Listesi',
+    'double_click_instruction' => 'Silmek veya Düzenlemek istediğiniz Üye Grubunun İsmine Çift Tıklayın',
+    'drag_drop_instruction' => 'Sıralamak istediğiniz Kullanıcı Grubunu sürükleyip bırakın.',
+    'reorder_active' => 'Sıralama Modu Aktif',
+    'add_new_group' => 'Yeni Üye Grubu Ekleyin'
 ];
 
-$lang['mod_user_group']['hata']=[
-	'name_required'=>'Lütfen Bir Üye Grup Adı Belirleyin',
-	'link_required'=>'Lütfen Bir Üye Grup Linki Belirleyin.',
-	'link_unique'=>'Lütfen Başka bir Üye Grup Linki Belirleyin <br/>Çünkü Belirttiğiniz Üye Grup Linki Kayıtlı'
+$lang['mod_user_group']['admin'] = [
+    'add_area' => 'Üye Grubu Ekleme Alanı',
+    'edit_area' => 'Üye Grubu Düzenleme Alanı',
+    'management' => 'Üye Grubu Yönetimi',
+    'add_form' => 'Üye Grubu Ekleme Formu',
+    'edit_form' => 'Üye Grubu Düzenleme Formu',
+    'group_name' => 'Üye Grubu Adı',
+    'add' => 'Ekle',
+    'edit' => 'Düzenle',
+    'group_list' => 'Üye Grubu Listesi',
+    'list' => 'Üye Grubu Listesi',
+    'group_added' => 'Üye Grubu Eklendi!',
+    'group_edited' => 'Üye Grubu Düzenlendi',
+    'sub_group' => 'Alt Üye Grubu'
 ];
 
-$lang['mod_user_group']['role']=[
-	'name'=>'Üye Grup Rolleri',
-	'add' =>'Üye Grup Ekleyebilir',
-	'edit' =>'Eklediği Üye Grubu Düzenleyebilir.',
-	'delete'=>'Eklediği Üye Grubu Silebilir.',
-	'list' =>'Üye Grup Yönetimini Görüntüleyebilir.',
-	'moderate'=>'Başkasının Eklediği Üye Grubu Yönetebilir.',
-	'move'=>'Üye Grup Sırasını Değiştirebilir'
+$lang['mod_user_group']['hata'] = [
+    'name_required' => 'Lütfen Bir Üye Grubu Adı Belirleyin',
+    'link_required' => 'Lütfen Bir Üye Grubu Bağlantısı Belirleyin.',
+    'link_unique' => 'Lütfen Başka bir Üye Grubu Bağlantısı Belirleyin <br/>Çünkü Belirttiğiniz Üye Grubu Bağlantısı Kayıtlı'
+];
+
+$lang['mod_user_group']['role'] = [
+    'name' => 'Üye Grubu Rolleri',
+    'add' => 'Üye Grubu Ekleyebilir',
+    'edit' => 'Eklediği Üye Grubunu Düzenleyebilir.',
+    'delete' => 'Eklediği Üye Grubunu Silebilir.',
+    'list' => 'Üye Grubu Yönetimini Görüntüleyebilir.',
+    'moderate' => 'Başkasının Eklediği Üye Grubunu Yönetebilir.',
+    'move' => 'Üye Grubu Sırasını Değiştirebilir'
 ];
 
 // Modern language keys (not numbered)
@@ -61,15 +61,16 @@ $lang['mod_user_group']['buttons'] = [
     'save' => 'Kaydet'
 ];
 
-$lang['mod_user_group']['role_errors']=[
-	'management_title'=>'Bir Başkasınına Ait Üye Grubu Düzenlemeye Permissionniz Bulunmuyor.',
-	'user_groups'=>'Bir Başkasınına Ait Üye Grubu Silmeye Permissionniz Yok.',
-	'move'=>'Üye Grup Sırasını Değiştirmeye Permissionniz Yok.',
-	'add' =>'Üye Grup Eklemeye Permissionniz Yok.',
-	'delete'=>'Üye Grup Silmeye Permissionniz Yok.',
-	'edit' =>'Üye Grup Düzenlemeye Permissionniz Yok.',
-	'list' =>'Üye Grup Yönetimini Görüntülemeye Permissionniz Yok.'
+$lang['mod_user_group']['role_errors'] = [
+    'management_title' => 'Bir Başkasına Ait Üye Grubunu Düzenlemeye Yetkiniz Bulunmuyor.',
+    'user_groups' => 'Bir Başkasına Ait Üye Grubunu Silmeye Yetkiniz Yok.',
+    'move' => 'Üye Grubu Sırasını Değiştirmeye Yetkiniz Yok.',
+    'add' => 'Üye Grubu Eklemeye Yetkiniz Yok.',
+    'delete' => 'Üye Grubu Silmeye Yetkiniz Yok.',
+    'edit' => 'Üye Grubu Düzenlemeye Yetkiniz Yok.',
+    'list' => 'Üye Grubu Yönetimini Görüntülemeye Yetkiniz Yok.'
 ];
+
 $lang['mod_user_group']['general'] = [
     'info' => 'Bilgi!',
     'action' => 'İşlem',
@@ -77,4 +78,8 @@ $lang['mod_user_group']['general'] = [
     'error' => 'Hata!',
     'ok' => 'Tamam!'
 ];
-?>
+
+$lang['mod_user_group']['ajax'] = [
+    'success' => 'Başarılı',
+    'error' => 'Hata',
+];

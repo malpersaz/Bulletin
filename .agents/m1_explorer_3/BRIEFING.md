@@ -6,7 +6,7 @@ Investigate templates/admin/layout.twig clean separation (CSS custom properties,
 ## 🔒 My Identity
 - Archetype: explorer
 - Roles: investigation, synthesis
-- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_3
+- Working directory: /home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_3
 - Original parent: a9a3fe81-914d-4f2b-a17e-0a0963c2c6ca
 - Milestone: Milestone 1 (Layout Separation & Boot Strategy)
 
@@ -21,8 +21,8 @@ Investigate templates/admin/layout.twig clean separation (CSS custom properties,
 
 ## Investigation State
 - **Explored paths**:
-  - `templates/admin/layout.twig` (both Rojname and Business)
-  - `templates/admin/assets/css/style.css` (both Rojname and Business)
+  - `templates/admin/layout.twig` (both Bulletin and Business)
+  - `templates/admin/assets/css/style.css` (both Bulletin and Business)
   - `templates/admin/assets/js/modals/` and `templates/admin/assets/css/modals/`
   - `init.php`, `index.php`, `config/*.config.php`, `lib/Registry.class.php`, `lib/Kayit.class.php`, `lib/Register.class.php`, `lib/Load.class.php`
   - `tests/module_management_runtime_test.php`, `tests/e2e/suites/Tier0QualityContractsTest.php`
@@ -37,6 +37,6 @@ Investigate templates/admin/layout.twig clean separation (CSS custom properties,
 - Fully documented exact file paths, line numbers, and diff changes in report.md and handoff.md.
 
 ## Artifact Index
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_3/report.md` — Complete analysis report
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_3/handoff.md` — 5-component handoff report
-- `/home/malpersaz/Desktop/projects/htdocs/AF/Rojname/.agents/m1_explorer_3/progress.md` — Liveness heartbeat tracker
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_3/report.md` — Complete analysis report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_3/handoff.md` — 5-component handoff report
+- `/home/malpersaz/Desktop/projects/htdocs/AF/Bulletin/.agents/m1_explorer_3/progress.md` — Liveness heartbeat tracker

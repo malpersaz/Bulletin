@@ -72,7 +72,7 @@ set_error_handler(function($errorNumber, $errorMessage, $errorFile, $errorLine) 
     if ($isAjaxRequest) {
         // Only exit on fatal-like errors, or if we want to be strict
         // For now, let's just log and continue for non-fatal if we can
-        if (in_array($errorNumber, [E_USER_ERROR, E_RECOVERABLE_ERROR])) {
+        if ($errorNumber === E_RECOVERABLE_ERROR) {
             while (ob_get_level() > 0) ob_end_clean();
             if (!headers_sent()) {
                 header('Content-Type: application/json; charset=utf-8');

@@ -5,25 +5,33 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('videoEditForm');
+    const form = document.getElementById('videoEditForm') || document.getElementById('videoAddForm');
     if (!form) return;
 
     const siteAddress = form.dataset.siteAddress || (window.SITE_URL || '/');
-    const videoId = form.dataset.id || '0';
+    const videoId = form.dataset.id || '{id}';
     const embedInput = document.getElementById('embedInput');
     const embedPreview = document.getElementById('embedPreview');
     const nameInput = document.getElementById('nameInput');
     const originalInput = form.querySelector('[name="original"]');
     const durationInput = form.querySelector('[name="sure"]');
+    const dateInput = document.getElementById('dateInput');
     const contentInput = document.getElementById('videoContent');
     const titleInput = document.getElementById('titleInput');
     const keywordsInput = document.getElementById('keywordsInput');
     const descriptionInput = document.getElementById('descriptionInput');
     const seoPreviewInput = document.getElementById('seoPreviewInput');
     const imageInput = document.getElementById('imageInput');
+    const autofillImageInput = document.getElementById('autofillImageInput');
     const imageUploadArea = document.getElementById('imageUploadArea');
     const autofillBtn = document.getElementById('autofillButton');
     const autofillStatus = document.getElementById('autofillStatus');
+
+    if (dateInput && !dateInput.value) {
+        const now = new Date();
+        const local = new Date(now.getTime() - (now.getTimezoneOffset() * 60000));
+        dateInput.value = local.toISOString().slice(0, 16);
+    }
 
     // Localized strings from form data attributes
     const i18n = {
@@ -190,6 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.keywords && keywordsInput) keywordsInput.value = data.keywords;
                     if (data.description && descriptionInput) descriptionInput.value = data.description;
 
+                    if (data.image && autofillImageInput) autofillImageInput.value = data.image;
                     if (data.image_url && imageUploadArea) {
                         imageUploadArea.innerHTML = `
                             <div class="current-image-wrapper">
@@ -266,6 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         imageInput.addEventListener('change', () => {
             if (imageInput.files && imageInput.files[0]) {
+                if (autofillImageInput) autofillImageInput.value = '';
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     imageUploadArea.innerHTML = `
@@ -292,6 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetImagePlaceholder() {
         if (imageInput) imageInput.value = '';
+        if (autofillImageInput) autofillImageInput.value = '';
         if (imageUploadArea) {
             imageUploadArea.innerHTML = `
                 <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>

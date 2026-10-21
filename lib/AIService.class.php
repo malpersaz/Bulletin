@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/HttpClient.class.php';
+
 /**
  * Amed Framework
  * Class: AIService
@@ -95,27 +97,16 @@ class AIService
                     usleep(400000); // 400ms pause before retry
                 }
 
-                $ch = curl_init($apiUrl);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_POST, true);
-                curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Accept: application/json'
-                ]);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+                $httpResult = HttpClient::postJson($apiUrl, $payload, [], 30);
+                $httpCode = $httpResult['status'];
+                $curlErr = $httpResult['error'];
 
-                $response = curl_exec($ch);
-                $httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                $curlErr = curl_error($ch);
-                curl_close($ch);
-
-                if ($curlErr) {
+                if ($curlErr !== '') {
                     $lastError = 'Connection error (cURL): ' . $curlErr;
                     continue;
                 }
 
-                $resData = json_decode((string) $response, true);
+                $resData = $httpResult['json'];
                 if ($httpCode === 200 && !empty($resData['candidates'])) {
                     $text = $resData['candidates'][0]['content']['parts'][0]['text'] ?? null;
                     return [
@@ -146,7 +137,7 @@ class AIService
     }
 
     /**
-     * Generates a broadsheet news deck strictly matching Rojname's 90-120 character constraint
+     * Generates a broadsheet news deck strictly matching AKM Bulletin CMS's 90-120 character constraint
      */
     public function generateDeck(string $title, string $content, string $lang = 'ku'): array
     {
@@ -163,7 +154,7 @@ class AIService
         ];
         $targetLang = $langNames[strtolower($lang)] ?? 'Kurmanji Kurdish';
 
-        $prompt = "You are a senior news copy-editor for a premier broadsheet newspaper (Rojname).\n"
+        $prompt = "You are a senior news copy-editor for a premier broadsheet newspaper (AKM Bulletin CMS).\n"
             . "Task: Analyze the news article provided below and write an editorial deck / summary in {$targetLang}.\n"
             . "CRITICAL MANDATORY CONSTRAINT:\n"
             . "- The total length of the deck MUST BE EXACTLY between 90 and 120 characters (including letters, spaces, and punctuation).\n"
@@ -437,36 +428,23 @@ class AIService
      */
     private function sendViaCurl(string $url, array $headers, string $jsonPayload): ?array
     {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonPayload);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        $httpResult = HttpClient::postJson($url, $jsonPayload, $headers, 30);
 
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        if (curl_errno($ch) !== 0) {
-            $error_msg = curl_error($ch);
-            error_log("AIService cURL Error: " . $error_msg);
-            curl_close($ch);
+        if ($httpResult['error'] !== '') {
+            error_log("AIService cURL Error: " . $httpResult['error']);
             return null;
         }
 
-        curl_close($ch);
-
-        if ($httpCode !== 200) {
-            error_log("AIService cURL HTTP Error {$httpCode}: " . $response);
+        if ($httpResult['status'] !== 200) {
+            error_log("AIService cURL HTTP Error {$httpResult['status']}: " . $httpResult['body']);
             return null;
         }
 
-        $result = json_decode($response, true);
-        if (json_last_error() !== JSON_ERROR_NONE) {
+        if (!is_array($httpResult['json'])) {
             error_log("AIService cURL JSON Decode Error: " . json_last_error_msg());
             return null;
         }
 
-        return $result;
+        return $httpResult['json'];
     }
 }
