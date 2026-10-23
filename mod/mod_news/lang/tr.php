@@ -2,7 +2,7 @@
 /**
  * News Management Module - Turkish Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'İşlem Başarılı!',
     'error_occurred' => 'Hata Oluştu!',
     'error' => 'Ölümcül Hata Oluştu!',
+    'remove_image_title' => 'Resmi Kaldır',
     'remove_image' => 'Bu Resmi Kaldırmak İstediğinize emin misiniz?',
     'remove_image_success' => 'Resim Kaldırıldı',
     'choose_wish' => 'Dilerseniz Seçin',
@@ -104,8 +105,6 @@ $lang['mod_news'] = [
         'showing_results' => 'Toplam {total} sonuçtan {from} ile {to} arasındaki kayıtlar gösteriliyor.',
         'page' => 'Sayfa',
         'page_count' => 'Sayfa Sayısı',
-        'loading' => 'Veriler yükleniyor, lütfen bekleyin...',
-        'no_data' => 'Veri bulunamadı',
         'connection_error' => 'Bağlantı Hatası',
         'search' => 'Arama',
         'select_at_least_one' => 'Lütfen en az bir satır seçin',
@@ -134,6 +133,10 @@ $lang['mod_news'] = [
         'title_exists' => 'Bu başlık zaten mevcut, lütfen değiştirin',
         'title_unique' => 'Başlığınız benzersiz',
         'deck_length' => 'Lütfen 90 ile 120 karakter arasında bir giriş metni giriniz.',
+        'invalid_lang' => 'Lütfen geçerli ve aktif bir dil seçin.',
+        'category_not_found' => 'Seçilen kategori bulunamadı.',
+        'category_root_forbidden' => 'Kök kategoriler doğrudan seçilemez. Lütfen bir alt kategori seçin.',
+        'category_lang_mismatch' => 'Seçilen kategori, seçilen dil ile eşleşmiyor.',
     ],
 
     // === Permission Roles ===
@@ -345,6 +348,7 @@ $lang['mod_news'] = [
             'video_embed_error' => 'Lütfen geçerli bir embed kodu giriniz (iframe).',
             'video_title_error' => 'Video başlığı en az 3 karakter olmalıdır.',
             'card_click' => 'Kart tıklandı: %s',
+            'no_category_for_lang' => 'Bu dilde kategori bulunamadı. Lütfen önce kategori ekleyin.',
         ],
         'summary' => [
             'title' => 'Özet',
@@ -365,8 +369,6 @@ $lang['mod_news'] = [
         'gallery' => 'Galeri İşlemleri',
         'files' => 'Dosya Ekle',
         'video' => 'Habere Video Ekle',
-        'add_video' => 'Video Ekle',
-        'add_file' => 'Dosya Ekle',
         'status' => 'Durum Değiştir',
         'delete' => 'Sil',
         'delete_error' => 'Silme işlemi başarısız!',
@@ -384,15 +386,29 @@ $lang['mod_news'] = [
         'files_alert' => "DOSYA YÖNETİMİ:\nID: %s\nBaşlık: %s\nHaber için dosya yükleme ekranı açılıyor.",
         'status_alert' => "DURUM GÜNCELLENDİ:\n%s",
         'delete_success' => 'Haber silindi!',
+        'add_video' => 'Video Ekle',
+        'add_file' => 'Dosya Ekle',
     ],
 
-    // === Hero Slider ===
+    // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Slider\'a Gönder',
     'hero_slider_remove' => 'Slider\'dan Kaldır',
     'hero_slider_added' => 'Haber slider\'a eklendi.',
     'hero_slider_removed' => 'Haber slider\'dan kaldırıldı.',
     'hero_slider_error' => 'Slider güncellenemedi.',
     'hero_slider_badge' => 'Slider',
+    'deck_add' => 'Öne Çıkar',
+    'deck_remove' => 'Öne Çıkanlardan Kaldır',
+    'deck_added' => 'Haber öne çıkarıldı.',
+    'deck_removed' => 'Haber öne çıkanlardan kaldırıldı.',
+    'deck_error' => 'Öne çıkarma durumu güncellenemedi.',
+    'deck_badge' => 'Öne Çıkan',
+
+    'picker' => [
+        'gallery' => 'Mevcut Galeriyi Seç',
+        'file' => 'Mevcut Dosyayı Seç',
+        'video' => 'Mevcut Videoyu Seç',
+    ],
 
     // === Latest News ===
     'latest_news' => [
@@ -411,13 +427,6 @@ $lang['mod_news'] = [
         'relation_updated' => 'İlişki başarıyla güncellendi',
     ],
 
-    // === Media Picker UI ===
-    'picker' => [
-        'gallery' => 'Mevcut Galeriyi Seç',
-        'file' => 'Mevcut Dosyayı Seç',
-        'video' => 'Mevcut Videoyu Seç',
-    ],
-
     // === AI Assistant ===
     'ai' => [
         'generate_deck' => 'AI ile Özet Çıkar',
@@ -430,6 +439,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Özet başarıyla oluşturuldu (%d karakter)',
         'deck_error' => 'Özet oluşturulamadı.',
         'headline_success' => 'Başlık önerileri hazırlandı.',
+        'headline_error' => 'Başlık önerileri oluşturulamadı.',
+        'warning_title' => 'Uyarı',
+        'error_title' => 'Hata',
+        'invalid_action' => 'Geçersiz AI işlemi.',
         'copy' => 'Bunu Kullan',
     ],
 ];

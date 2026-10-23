@@ -104,7 +104,7 @@ class index_mod extends indexBase
         }
 
         $news = Load::helper('index.mod_news');
-        $news->arsiv();
+        $news->archive();
         unset($news);
     }
 

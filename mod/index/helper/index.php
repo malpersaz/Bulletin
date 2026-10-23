@@ -62,17 +62,17 @@ class index_mod extends indexBase
 
     public function news($seo = null)
     {
-        return $this->_loadHelper("index.mod_news", "content", [$seo]);
+        return $this->_loadHelper("index.mod_news", "news", [$seo]);
     }
 
     public function newses($category = null, $page = 1)
     {
-        return $this->_loadHelper("index.mod_news", "contents", [$category, $page]);
+        return $this->_loadHelper("index.mod_news", "newses", [$category, $page]);
     }
 
     public function news_archive()
     {
-        return $this->_loadHelper("index.mod_news", "arsiv");
+        return $this->_loadHelper("index.mod_news", "archive");
     }
 
     public function publication($seo = null)

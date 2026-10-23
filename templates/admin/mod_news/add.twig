@@ -7,59 +7,21 @@
 
 {% block title %}{{ lang.mod_news.add }}{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v={{ site.version }}">
+{% endblock %}
+
 {% block content %}
-    <!-- 
-        The Wizard is technically an overlay in the prototype, 
-        but for a dedicated "/add" route, we can show it immediately 
-        or use the page as a wrapper for the wizard.
-        To keep "Single Page App" feel, we might want to auto-open 
-        the wizard overlay on load.
-    -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
-                adminLang.languages = adminLang.languages.filter(function (item) {
-                    return item.status === 'y';
-                });
-            }
-
-            // Auto open wizard if we are on the 'add' page
-            // But we need the wizard HTML to be present. 
-            // It is included in layout.twig block 'wizards' -> 'wizard_content.twig'
-            
-            // We need to initialize the wizard with Form behavior.
-            const wizardOverlay = document.getElementById('contentWizard');
-            if(wizardOverlay) {
-                wizardOverlay.classList.add('active');
-                wizardOverlay.style.visibility = 'visible'; // Force show
-            }
-
-            if (typeof wizardData !== 'undefined') {
-                var activeRouteLang = '{{ site.lang|lower }}';
-                wizardData.lang = activeRouteLang;
-                if (typeof restoreWizardUI === 'function') {
-                    restoreWizardUI();
-                } else {
-                    if (typeof ensureWizardCategoryMatchesLanguage === 'function') ensureWizardCategoryMatchesLanguage();
-                    if (typeof syncWizardCategorySheet === 'function') syncWizardCategorySheet();
-                }
-            }
-        });
-    </script>
-    
-    <div style="padding: 24px; text-align: center; color: #666;">
-        <div class="spinner-track" style="display:inline-block; margin-bottom:16px;">
+    <div class="wizard-page-loader" id="newsAddShell"
+        data-list-url="{{ site.saddress }}mod_news/list"
+        data-active-lang="{{ site.lang|lower }}">
+        <div class="spinner-track wizard-page-spinner">
             <div class="spinner-fill"></div>
         </div>
         <p>{{ lang.mod_news.wizard_loading }}</p>
     </div>
-
 {% endblock %}
 
 {% block scripts %}
-{# 
-    prepareAndSubmitWizard() function is now fully implemented in script.js
-    with proper AJAX handling, TinyMCE support, and localStorage integration.
-    No need for inline override here.
-#}
+<script src="/templates/admin/assets/js/mod_news.js?v={{ site.version }}"></script>
 {% endblock %}

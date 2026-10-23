@@ -2,7 +2,7 @@
 /**
  * News Management Module - English Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'Operation Successful!',
     'error_occurred' => 'Error Occurred!',
     'error' => 'Fatal Error Occurred!',
+    'remove_image_title' => 'Remove Image',
     'remove_image' => 'Are you sure you want to remove this image?',
     'remove_image_success' => 'Image Removed',
     'choose_wish' => 'Please choose if you want',
@@ -104,8 +105,6 @@ $lang['mod_news'] = [
         'showing_results' => 'Showing {from} to {to} of {total} results.',
         'page' => 'Page',
         'page_count' => 'Page Count',
-        'loading' => 'Loading data, please wait...',
-        'no_data' => 'No data found',
         'connection_error' => 'Connection Error',
         'search' => 'Search',
         'select_at_least_one' => 'Please select at least one row',
@@ -134,6 +133,10 @@ $lang['mod_news'] = [
         'title_exists' => 'This title already exists, please change it',
         'title_unique' => 'Your title is unique',
         'deck_length' => 'Please enter an introductory text between 90 and 120 characters.',
+        'invalid_lang' => 'Please select a valid active language.',
+        'category_not_found' => 'The selected category could not be found.',
+        'category_root_forbidden' => 'Root categories cannot be assigned directly. Please select a sub-category.',
+        'category_lang_mismatch' => 'The selected category does not match the selected language.',
     ],
 
     // === Permission Roles ===
@@ -345,6 +348,7 @@ $lang['mod_news'] = [
             'video_embed_error' => 'Please enter a valid embed code (iframe).',
             'video_title_error' => 'Video title must be at least 3 characters.',
             'card_click' => 'Card clicked: %s',
+            'no_category_for_lang' => 'No categories found for this language. Please add a category first.',
         ],
         'summary' => [
             'title' => 'Summary',
@@ -386,13 +390,19 @@ $lang['mod_news'] = [
         'add_file' => 'Add File',
     ],
 
-    // === Hero Slider ===
+    // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Send to Slider',
     'hero_slider_remove' => 'Remove from Slider',
     'hero_slider_added' => 'Sent to slider.',
     'hero_slider_removed' => 'Removed from slider.',
     'hero_slider_error' => 'Slider update failed.',
     'hero_slider_badge' => 'Slider',
+    'deck_add' => 'Mark as Featured',
+    'deck_remove' => 'Remove from Featured',
+    'deck_added' => 'Marked as featured.',
+    'deck_removed' => 'Removed from featured.',
+    'deck_error' => 'Failed to update featured state.',
+    'deck_badge' => 'Featured',
 
     'picker' => [
         'gallery' => 'Select Existing Gallery',
@@ -429,6 +439,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Deck generated successfully (%d chars)',
         'deck_error' => 'Failed to generate deck.',
         'headline_success' => 'Headlines suggested successfully.',
+        'headline_error' => 'Failed to suggest headlines.',
+        'warning_title' => 'Warning',
+        'error_title' => 'Error',
+        'invalid_action' => 'Invalid AI action.',
         'copy' => 'Use This',
     ],
 ];

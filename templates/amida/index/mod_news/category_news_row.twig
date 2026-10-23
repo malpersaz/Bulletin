@@ -23,12 +23,12 @@
                                 {% if news.has_video or news.has_gallery %}
                                     <div class="latest-news-type-badges">
                                         {% if news.has_video %}
-                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.1 }}" aria-label="{{ lang.index.mod_video_embed.1 }}">
+                                            <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.title }}" aria-label="{{ lang.index.mod_video_embed.title }}">
                                                 <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
                                             </span>
                                         {% endif %}
                                         {% if news.has_gallery %}
-                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.search.gallery }}" aria-label="{{ lang.index.search.gallery }}">
+                                            <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.mod_pictures.title }}" aria-label="{{ lang.index.mod_pictures.title }}">
                                                 <i class="bi bi-images" aria-hidden="true"></i>
                                             </span>
                                         {% endif %}

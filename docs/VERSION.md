@@ -1,5 +1,21 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.2 (2026-10-23)
+- **`mod_news` End-to-End Modernization, 100% English Codebase Purification & Multilingual i18n Synchronization (`mod/mod_news/`, `installer/mod_news/`, `config/url.config.php`, `mod/index/`, `templates/admin/`, `templates/amida/`)**:
+  - **Backend Controller, Installer, Models, Schema & Validators (`mod/mod_news/`, `installer/mod_news/`, `config/url.config.php`)**:
+    - Upgraded `mod/mod_news/index.php` (`mod_news_mod`) with `toggleFlag()`, `toggle_hero_slider()`, `toggle_deck()`, `toggle_status()`, `deck` column projection in `datatable_json()` (`$columns`), standardized `$this->jsonResponse()` payloads in `ajax_check_title()` and `ajax_ai_assist()`, and localized `ai.invalid_action` handling.
+    - Synchronized `mod/mod_news/mod_news.sql`, `installer/mod_news/{index.php,mod_news.sql,newses.sql}`, `config/url.config.php`, `mod/mod_news/model/mod_news.model.php`, `mod/mod_news/model/newses.model.php`, and `mod/mod_news/validator/{add,edit}.validator.php` (enforcing active language validation, root-category prohibition, category-language parity, and 90–120 character deck bounds), and removed dead legacy `mod/mod_news/model/{datatable,flexigrid}.model.php`.
+    - Synchronized all 11 `mod/mod_news/lang/*.php` dictionaries (`ar`, `ckb`, `de`, `en`, `fa`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`), completing native German (`de.php`) translations and adding `deck_*` and `ai.invalid_action` keys.
+  - **Phone-Only Admin Views, Wizard, Image Uploader & Floating 9-Button Contextual Toolbar (`templates/admin/`)**:
+    - Modernized `templates/admin/mod_news/{list,add,edit}.twig`, `templates/admin/assets/js/mod_news.js`, `templates/admin/assets/css/mod_news.css`, `templates/admin/layout.twig`, and `templates/admin/assets/js/script.js` with the 9-button floating contextual action bar (`Edit`, `Gallery`, `File`, `Video`, `FAQ`, `Status`, `Slider`, `Deck`, `Delete`), AI assistant triggers, and zero `|default(...)` fallbacks or inline `<script>` / `style="..."` violations.
+    - Eliminated inline `onclick` / `onchange` / `style` attributes and foreign `lang.mod_content` references in `templates/admin/partials/image_uploader.twig` and `templates/admin/partials/wizard_content.twig`, wiring `data-action` delegates in `templates/admin/assets/js/script.js`.
+  - **Public Frontend Helper, Archive Route & Broadsheet Templates (`mod/index/`, `templates/amida/`)**:
+    - Purified `mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, and `mod/index/helper/index.php` to 100% English identifiers (`$this->theme`, `_permission_check`, `archive()`, `archive_years`, `min_year`, `max_year`, `year`, `month`, `not_found`).
+    - Replaced legacy `templates/amida/index/mod_news/arsiv.twig` with `templates/amida/index/mod_news/archive.twig`, removed unreferenced prototype `category_sections.twig`, synchronized `news.twig`, `newses.twig`, `latest_news.twig`, `category_news_row.twig`, and `templates/amida/static/css/news.css`, and normalized `$lang['index']['mod_news']` across all 9 `mod/index/lang/*.php` files to pure descriptive English keys with zero `??` / `|default(...)` fallbacks.
+- **Repository Governance, Documentation Parity & Domain Alignment (`docs/`, `config/site.config.php`, `config/site.config.example.php`)**:
+  - Restored and adapted core governance, quality-agent, and architectural strategy documents (`CODE_QUALITY_AGENT_STRATEGY.md`, `PILOT_AGENT_REVIEW_FLOW.md`, `CROSS_REPO_SYNC_POLICY.md`, `NEW_THEME_CREATION_GUIDE.md`, `MEDIA_LIBRARY_STRATEGY.md`, `SYSTEM_LEGAL_POLICY_PAGES_PLAN.md`, `CURATOR_LANGUAGE_PARITY_AND_NEWS_PIPELINE_PLAN.md`) to match `AF/Bulletin` domain boundaries (`mod_news`, `mod_headline`, `mod_publication`, `amida` public theme, and full multilingual i18n standards).
+  - Updated `docs/MOD_NEWS_MODERNIZATION_PLAN.md` and advanced framework version baseline to `1.0.2`.
+
 ## v1.0.1 (2026-10-21)
 - **PHP 8.5 Deep Modernization & Runtime Compliance (`^8.4 || ^8.5`)**:
   - **Composer Platform & Automated Refactoring Infrastructure (`composer.json`, `composer.lock`, `rector.php`)**:

@@ -2,7 +2,7 @@
 /**
  * News Management Module - Swedish Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'Operationen Lyckades!',
     'error_occurred' => 'Ett Fel Uppstod!',
     'error' => 'Allvarligt Fel Uppstod!',
+    'remove_image_title' => 'Ta bort bild',
     'remove_image' => 'Är du säker på att du vill ta bort den här bilden?',
     'remove_image_success' => 'Bilden har tagits bort',
     'choose_wish' => 'Vänligen välj om du vill',
@@ -104,8 +105,6 @@ $lang['mod_news'] = [
         'showing_results' => 'Visar {from} till {to} av {total} resultat.',
         'page' => 'Sida',
         'page_count' => 'Sidantal',
-        'loading' => 'Laddar data, vänligen vänta...',
-        'no_data' => 'Ingen data hittades',
         'connection_error' => 'Anslutningsfel',
         'search' => 'Sök',
         'select_at_least_one' => 'Vänligen välj minst en rad',
@@ -134,6 +133,10 @@ $lang['mod_news'] = [
         'title_exists' => 'Denna titel finns redan, vänligen ändra den',
         'title_unique' => 'Din titel är unik',
         'deck_length' => 'Vänligen ange en introduktionstext på mellan 90 och 120 tecken.',
+        'invalid_lang' => 'Det valda språket är inte aktivt i systemet.',
+        'category_not_found' => 'Den valda kategorin kunde inte hittas.',
+        'category_root_forbidden' => 'Nyheter kan inte läggas direkt under en huvudkategori. Välj en underkategori.',
+        'category_lang_mismatch' => 'Språket för den valda kategorin matchar inte nyhetens språk.',
     ],
 
     // === Permission Roles ===
@@ -345,6 +348,7 @@ $lang['mod_news'] = [
             'video_embed_error' => 'Vänligen ange en giltig inbäddningskod (iframe).',
             'video_title_error' => 'Videotiteln måste vara minst 3 tecken.',
             'card_click' => 'Kort klickat: %s',
+            'no_category_for_lang' => 'Ingen underkategori hittades för detta språk. Skapa en underkategori först.',
         ],
         'summary' => [
             'title' => 'Sammanfattning',
@@ -382,6 +386,8 @@ $lang['mod_news'] = [
         'files_alert' => "FILHANTERING:\nID: %s\nTitel: %s\nÖppnar filuppladdningsskärm för nyheter.",
         'status_alert' => "STATUS UPPDATERAD:\n%s",
         'delete_success' => 'Nyhet raderad!',
+        'add_video' => 'Lägg till video',
+        'add_file' => 'Lägg till fil',
     ],
 
     // === Hero Slider ===
@@ -391,6 +397,20 @@ $lang['mod_news'] = [
     'hero_slider_removed' => 'Nyheten har tagits bort från bildspelet.',
     'hero_slider_error' => 'Kunde inte uppdatera bildspel.',
     'hero_slider_badge' => 'Bildspel',
+
+    // === Featured (Deck) ===
+    'deck_add' => 'Lägg till i utvalda',
+    'deck_remove' => 'Ta bort från utvalda',
+    'deck_added' => 'Markerad som utvald.',
+    'deck_removed' => 'Borttagen från utvalda.',
+    'deck_error' => 'Status för utvald kunde inte uppdateras.',
+    'deck_badge' => 'Utvald',
+
+    'picker' => [
+        'gallery' => 'Välj befintligt galleri',
+        'file' => 'Välj befintlig fil',
+        'video' => 'Välj befintlig video',
+    ],
 
     // === Latest News ===
     'latest_news' => [
@@ -421,6 +441,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Ingress skapad (%d tecken)',
         'deck_error' => 'Kunde inte generera ingress.',
         'headline_success' => 'Rubrikförslag skapade.',
+        'headline_error' => 'Kunde inte generera rubrikförslag.',
+        'warning_title' => 'Varning',
+        'error_title' => 'Fel',
+        'invalid_action' => 'Ogiltig AI-åtgärd.',
         'copy' => 'Använd denna',
     ],
 ];

@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Business
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'Çêbû!',
     'error_occurred' => 'Çewtî Çêbû!',
     'error' => 'Çewtiya Giran Çêbû!',
+    'remove_image_title' => 'Wêneyî Rake',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
@@ -134,6 +135,10 @@ $lang['mod_news'] = [
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
         'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
+        'invalid_lang' => 'Kerem kerê yew ziwanê aktîf weçine.',
+        'category_not_found' => 'Kategoriya weçinite peyda nêbiyo.',
+        'category_root_forbidden' => 'Kategoriyê kokî nêşenê raste-rast bêrê weçinitene. Kerem kerê binkategoriye weçine.',
+        'category_lang_mismatch' => 'Kategoriya weçinite ziwanê weçinite ra yew niyo.',
     ],
 
     // === Permission Roles ===
@@ -225,6 +230,10 @@ $lang['mod_news'] = [
         'print' => 'Çap Bike',
         'print_info' => 'Agahiya Çapê',
         'created_by' => 'Afirîner',
+        'headline_error' => 'Pêşniyara sernuşteyan serkewtî nêbiya.',
+        'warning_title' => 'Îkaz',
+        'error_title' => 'Xeta',
+        'invalid_action' => 'Karê AI yo nêvêrde.',
         'copy' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
         'default_lang' => 'ZZA',
@@ -346,6 +355,7 @@ $lang['mod_news'] = [
             'video_embed_error' => 'Ji kerema xwe kodek embedê ya derbasdar binivîsin (iframe).',
             'video_title_error' => 'Divê sernavê vîdeoyê kêmzêde 3 tîp be.',
             'card_click' => 'Qert hat tikandin: %s',
+            'no_category_for_lang' => 'Bo no ziwan kategoriye peyda nêbiya. Kerem kerê verê kategoriye eke.',
         ],
         'summary' => [
             'title' => 'Kurtasî',
@@ -383,6 +393,8 @@ $lang['mod_news'] = [
         'files_alert' => "RÊVEBERIYA PELAN:\nID: %s\nSernav: %s\nDîmendera barkirina pelan tê vekirin.",
         'status_alert' => "REWŞ HAT NÛKIRIN:\n%s",
         'delete_success' => 'Nûçe hat jêbirin!',
+        'add_video' => 'Vîdeo Eke',
+        'add_file' => 'Dosya Eke',
     ],
 
     // === Hero Slider ===
@@ -392,6 +404,17 @@ $lang['mod_news'] = [
     'hero_slider_removed' => 'Nûçe Slayderî ra ameye kerdene.',
     'hero_slider_error' => 'Rewşa Slayderî nêbı nûjenkerdene.',
     'hero_slider_badge' => 'Slayder',
+    'deck_add' => 'Bıke Serpêl',
+    'deck_remove' => 'Serpêl ra Wedare',
+    'deck_added' => 'Xeber serpêl de mocniyayo.',
+    'deck_removed' => 'Xeber serpêl ra wedariyayo.',
+    'deck_error' => 'Rewşa serpêlî nêbı nûjenkerdene.',
+    'deck_badge' => 'Serpêl',
+    'picker' => [
+        'gallery' => 'Galeriya Estbîyaye Weçine',
+        'file' => 'Dosyaya Estbîyaye Weçine',
+        'video' => 'Vîdeoya Estbîyaye Weçine',
+    ],
 
     // === Latest News ===
     'latest_news' => [
@@ -422,6 +445,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Kurtenivîs bi serfirazî hat çêkirin (%d tîp)',
         'deck_error' => 'Çêkirina kurtenivîsê bi ser neket.',
         'headline_success' => 'Pêşniyarên sernivîsan hatin amadekirin.',
+        'headline_error' => 'Pêşniyara sernuşteyan serkewtî nêbiya.',
+        'warning_title' => 'Îkaz',
+        'error_title' => 'Xeta',
+        'invalid_action' => 'Karê AI yo nêvêrde.',
         'copy' => 'Vê Bikar Bîne',
     ],
 ];

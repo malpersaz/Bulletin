@@ -74,6 +74,7 @@ $url['video/(:any)']='index/video/$1';
 
 $url['videos']='index/videos';
 $url['videos/']='index/videos';
+$url['videos/(:num)']='index/videos/$1';
 $url['videos/(:any)']='index/videos/$1';
 $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
@@ -83,6 +84,7 @@ $url['news/detail/(:any)']='index/news/$1';
 $url['news/(:any)']='index/news/$1';
 $url['newses']='index/newses';
 $url['newses/']='index/newses';
+$url['newses/(:num)']='index/newses/$1';
 $url['newses/(:any)']='index/newses/$1';
 $url['newses/(:any)/(:num)']='index/newses/$1/$2';
 $url['news-archive']='index/news_archive';
@@ -92,6 +94,7 @@ $url['publication/detail/(:any)']='index/publication/$1';
 $url['publication/(:any)']='index/publication/$1';
 $url['publications']='index/publications';
 $url['publications/']='index/publications';
+$url['publications/(:num)']='index/publications/$1';
 $url['publications/(:any)']='index/publications/$1';
 $url['publications/(:any)/(:num)']='index/publications/$1/$2';
 $url['publication-archive']='index/publication_archive';

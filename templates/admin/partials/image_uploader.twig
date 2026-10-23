@@ -7,13 +7,13 @@
         {% endif %}
     {% endfor %}
 >
-    <div class="image-upload-area wizard-image-dropzone" id="{{ dropzone_id }}" tabindex="0" role="button" onclick="{{ trigger_picker_js }}">
+    <div class="image-upload-area wizard-image-dropzone" id="{{ dropzone_id }}" tabindex="0" role="button" data-action="trigger-image-picker">
         <div class="wizard-image-empty" id="{{ empty_state_id }}"{% if empty_hidden is defined and empty_hidden %} hidden{% endif %}>
             <div class="wizard-image-empty-icon">
                 <i class="bi bi-cloud-arrow-up-fill"></i>
             </div>
             <div class="wizard-image-empty-copy">
-                <span class="wizard-image-empty-title">{{ upload_link is defined and upload_link ? upload_link : (lang.mod_gallery.admin.add_images is defined ? lang.mod_gallery.admin.add_images : (lang.mod_content.wizard.image.upload_link is defined ? lang.mod_content.wizard.image.upload_link : 'Upload Image')) }}</span>
+                <span class="wizard-image-empty-title">{{ upload_link is defined and upload_link ? upload_link : (lang.mod_gallery.admin.add_images is defined ? lang.mod_gallery.admin.add_images : (lang.mod_news.wizard.image.upload_link is defined ? lang.mod_news.wizard.image.upload_link : 'Upload Image')) }}</span>
                 <span class="wizard-image-empty-hint">{{ drop_description is defined and drop_description ? drop_description : (drop_title is defined and drop_title ? drop_title : 'Upload, paste, or move') }}</span>
             </div>
         </div>
@@ -26,7 +26,7 @@
                     {% if remove_btn_id is defined and remove_btn_id %} id="{{ remove_btn_id }}"{% endif %}
                     aria-label="{{ remove_button_label is defined ? remove_button_label : '' }}"
                     title="{{ remove_button_label is defined ? remove_button_label : '' }}"
-                    onclick="event.stopPropagation(); {{ remove_action_js }}"
+                    data-action="remove-uploader-image"
                 >
                     <i class="bi bi-trash-fill"></i>
                 </button>
@@ -64,8 +64,6 @@
         id="{{ file_input_id }}"
         hidden
         accept="image/*"
-        {% if file_input_onchange is defined and file_input_onchange %}
-            onchange="{{ file_input_onchange }}"
-        {% endif %}
+        data-action="uploader-file-input"
     >
 </div>

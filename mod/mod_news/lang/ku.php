@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Property
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'Çêbû!',
     'error_occurred' => 'Çewtî Çêbû!',
     'error' => 'Çewtiya Giran Çêbû!',
+    'remove_image_title' => 'Wêneyî Rake',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
@@ -61,10 +62,6 @@ $lang['mod_news'] = [
         'select_lang' => 'Ziman Hilbijêre',
         'all_langs' => 'Hemû Ziman',
         'select_label' => 'Hilbijêre',
-        'delete_error' => 'Jêbirin biserneket!',
-        'video_success_sim' => 'Vîdeo bi Serkeftî Hat Zêdekirin (Simulasyon)',
-        'video_embed_error' => 'Koda Embed Şaş e',
-        'video_title_error' => 'Sernav Şaş e',
     ],
 
     // === Messages ===
@@ -108,8 +105,6 @@ $lang['mod_news'] = [
         'showing_results' => 'Ji {total} encamên {from} heta {to} tên nîşandan.',
         'page' => 'Rûpel',
         'page_count' => 'Hejmara Rûpelan',
-        'loading' => 'Daneyên têne barkirin, jî kerema xwe bisekinin...',
-        'no_data' => 'Tu dane nehat dîtin',
         'connection_error' => 'Çewtiya Girêdanê',
         'search' => 'Lêgerîn',
         'select_at_least_one' => 'Ji kerema xwe herî kêm rêzekê hilbijêrin',
@@ -138,9 +133,12 @@ $lang['mod_news'] = [
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
         'deck_length' => 'Ji kerema xwe nivîsek destpêkê ya ku di navbera 90 û 120 tîpan de be binivîsin.',
+        'invalid_lang' => 'Ji kerema xwe zimanekî çalak û derbasdar hilbijêrin.',
+        'category_not_found' => 'Kategoriya hilbijartî nehat dîtin.',
+        'category_root_forbidden' => 'Kategoriyên kok (root) rasterast nayên hilbijartin. Ji kerema xwe bin-kategoriyekê hilbijêrin.',
+        'category_lang_mismatch' => 'Kategoriya hilbijartî bi zimanê hilbijartî re li hev nayê.',
     ],
 
-    // === Permission Roles ===
     // === Permission Roles ===
     'role' => [
         'name' => 'Rolên Rêveberiya Nûçeyan',
@@ -392,13 +390,19 @@ $lang['mod_news'] = [
         'add_file' => 'Pelan Lêke',
     ],
 
-    // === Hero Slider ===
+    // === Hero Slider & Featured Deck ===
     'hero_slider_add' => 'Bişîne Sliderê',
     'hero_slider_remove' => 'Ji Sliderê Rake',
     'hero_slider_added' => 'Nûçe bi serkeftî bo Slider hate şandin.',
     'hero_slider_removed' => 'Nûçe ji Slider hate rakirin.',
     'hero_slider_error' => 'Rewşa Slider nehat nûjenkirin!',
     'hero_slider_badge' => 'Slider',
+    'deck_add' => 'Bike Destpêk',
+    'deck_remove' => 'Ji Destpêkê Rake',
+    'deck_added' => 'Nûçe li destpêkê hat nîşandan.',
+    'deck_removed' => 'Nûçe ji destpêkê hat rakirin.',
+    'deck_error' => 'Rewşa destpêkê nehat nûjenkirin!',
+    'deck_badge' => 'Destpêk',
 
     // === Media Picker UI ===
     'picker' => [
@@ -412,23 +416,6 @@ $lang['mod_news'] = [
         'title' => 'Nûçeyên Dawî',
         'subtitle' => 'Hemû Nûçeyan Bibîne',
         'description' => 'Hîna tu nûçe nehatine weşandin.',
-    ],
-
-    'mock' => [
-        'titles' => [
-            "Serdema Nû di Çapemeniya Kurdî de Dest pê dike",
-            "Bernameya Festîvala Çand û Hunerê ya Amedê hat eşkerekirin",
-            "Komxebata Rojnamegeriya Herêmî bi dawî bû",
-            "Nîşeyên li ser Têkiliya Aqilê Çêkirî û Medyayê",
-            "Derbasbûna ji Rojnamegeriya Kevneşopî bo Medyaya Dijîtal",
-            "Amarên Bikaranîna Medyaya Civakî 2024",
-            "Kurteya Teknolojiya Heftane: Çi Qewimî?",
-            "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
-            "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a AKM Bulletin CMS hat nûjenkirin"
-        ],
-        'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
-        'authors' => [],
     ],
 
     // === AJAX & Relation Messages ===
@@ -453,6 +440,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Kurtenivîs bi serfirazî hat çêkirin (%d tîp)',
         'deck_error' => 'Çêkirina kurtenivîsê bi ser neket.',
         'headline_success' => 'Pêşniyarên sernivîsan hatin amadekirin.',
+        'headline_error' => 'Pêşniyara sernivîsan bi ser neket.',
+        'warning_title' => 'Hişyarî',
+        'error_title' => 'Çewtî',
+        'invalid_action' => 'Çalakiya AI nederbasdar e.',
         'copy' => 'Vê Bikar Bîne',
     ],
 ];

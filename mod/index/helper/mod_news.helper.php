@@ -1,37 +1,136 @@
 <?php
 class mod_news_helper extends indexBase
 {
+    use PublicHelperTrait;
 
     public function __construct()
     {
         parent::__construct();
     }
 
+    private function _cleanText(?string $value): string
+    {
+        return html_entity_decode(
+            html_entity_decode((string) $value, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            ENT_QUOTES | ENT_HTML5,
+            'UTF-8'
+        );
+    }
+
+    private function _cleanNewsRow(array $row): array
+    {
+        foreach (['name', 'title', 'summary', 'description', 'keywords', 'category_name'] as $field) {
+            if (isset($row[$field]) && is_string($row[$field])) {
+                $row[$field] = $this->_cleanText($row[$field]);
+            }
+        }
+        if (!empty($row['image'])) {
+            $imageFile = root_dir . 'static' . DS . 'mod_news' . DS . $row['image'];
+            if (!file_exists($imageFile) || !is_file($imageFile)) {
+                $row['image'] = '';
+            }
+        }
+        $row['has_video'] = (!empty($row['video']) && $row['video'] !== 'a:0:{}');
+        $row['has_gallery'] = (isset($row['gallery_id']) && (int) $row['gallery_id'] !== 0);
+        $row['has_file'] = (isset($row['file_id']) && (int) $row['file_id'] !== 0);
+        $row['has_deck'] = (isset($row['deck']) && $row['deck'] === 'y');
+        if (isset($row['created_at'])) {
+            $row['published_ago'] = $this->formatRelativeTime($row['created_at']);
+        }
+        return $row;
+    }
+
+    private function _cleanNewsRows($rows): array
+    {
+        if (!is_array($rows)) {
+            return [];
+        }
+        foreach ($rows as $index => $row) {
+            if (is_array($row)) {
+                $rows[$index] = $this->_cleanNewsRow($row);
+            }
+        }
+        return $rows;
+    }
+
+    private function _checkCategoryHierarchyPermission(int $categoryId): bool
+    {
+        if ($categoryId <= 0) {
+            return false;
+        }
+
+        $lang = (string) ($this->site['lang'] ?? '');
+        $byId = $this->getCategoryHierarchyMap('mod_news_category', $lang);
+        if (!isset($byId[$categoryId])) {
+            $byId = $this->getCategoryHierarchyMap('mod_news_category', '');
+        }
+
+        $currentId = $categoryId;
+        $visited = [];
+        while ($currentId > 0 && !isset($visited[$currentId])) {
+            $visited[$currentId] = true;
+            if (!isset($byId[$currentId])) {
+                break;
+            }
+            $categoryRow = $byId[$currentId];
+            if ($this->_permission_check((int) $categoryRow['acl_id'])) {
+                return true;
+            }
+            $currentId = (int) $categoryRow['parent_id'];
+        }
+
+        return false;
+    }
+
     public function _categories()
     {
         if (!$this->isFeatureReady('news.front')) {
-            $this->tema->ctx_set('categories', []);
+            $this->theme->ctx_set('categories', []);
             return;
         }
 
-        $mod_news_category_nested = Load::model('mod_news_category');
-        $mod_news_category_nested->where_lang_and_root($this->site['lang'], 'n');
-        $mod_news_category_nested->order('order', 'ASC')->gR();
-        
-        $categories = $mod_news_category_nested->toArray();
-        $news_model = Load::model('mod_news.newses');
-        
-        if (is_array($categories)) {
-            foreach ($categories as &$kat) {
-                $kat['name'] = html_entity_decode(html_entity_decode((string)$kat['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $news_model->flush();
-                $kat['news_count'] = $news_model->where_category_seo_and_status_and_lang($kat['seo'], 'y', $this->site['lang'])->getCount();
-            }
-            unset($kat);
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        if (empty($allowedCatIds)) {
+            $this->theme->ctx_set('categories', []);
+            return;
         }
-        
-        $this->tema->ctx_set('categories', $categories);
+
+        $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
+        $mod_news_category_nested = Load::model('mod_news_category');
+        $mod_news_category_nested->flush();
+        $mod_news_category_nested->where_lang_and_root($lang, 'n');
+        $mod_news_category_nested->addWhere("id IN ({$allowedCatList})");
+        $mod_news_category_nested->order('order', 'ASC')->gR();
+
+        $categories = $mod_news_category_nested->toArray();
+
+        $countsByCategoryId = [];
+        $db = Load::lib('Database');
+        $safeLang = addslashes($lang);
+        $aclCondition = $this->getAllowedAclCondition('');
+        $db->fetch_array("SELECT `category_id`, COUNT(*) FROM `mod_news` WHERE `status` = 'y' AND `lang` = '{$safeLang}' AND {$aclCondition} AND `category_id` IN ({$allowedCatList}) GROUP BY `category_id`");
+        $countRows = $db->toArray();
+        if (is_array($countRows)) {
+            foreach ($countRows as $cRow) {
+                if (isset($cRow['category_id'])) {
+                    $countsByCategoryId[(int) $cRow['category_id']] = (int) end($cRow);
+                }
+            }
+        }
+
+        if (is_array($categories)) {
+            foreach ($categories as &$categoryItem) {
+                $categoryItem['name'] = $this->_cleanText($categoryItem['name'] ?? '');
+                $catId = isset($categoryItem['id']) ? (int) $categoryItem['id'] : 0;
+                $categoryItem['news_count'] = $countsByCategoryId[$catId] ?? 0;
+            }
+            unset($categoryItem);
+        }
+
+        $this->theme->ctx_set('categories', $categories);
     }
+
     public function news($seo)
     {
         if (!$this->guardFeatureOr404('news.front')) {
@@ -39,14 +138,18 @@ class mod_news_helper extends indexBase
         }
 
         $this->_categories();
-        $seo = trim(html_entity_decode($seo, ENT_QUOTES, 'UTF-8'));
+        $seo = trim(html_entity_decode((string) $seo, ENT_QUOTES, 'UTF-8'));
         $news = Load::model('mod_news.newses');
+        $news->flush();
         $news->where_seo_and_status_and_lang($seo, 'y', $this->site['lang']);
         $news->limit(1);
         $news->gRo();
         if ($news->getSize() !== 0) {
             $news->sync();
-            if ($this->_permission_kontrol($news->acl_id)) {
+            if ($this->_permission_check((int) $news->acl_id)) {
+                return;
+            }
+            if ($this->_checkCategoryHierarchyPermission((int) $news->category_id)) {
                 return;
             }
             $this->_update_view_count('mod_news', $news->id);
@@ -64,128 +167,131 @@ class mod_news_helper extends indexBase
             } else {
                 $this->_mod_attachment('mod_news', $news->id);
             }
-            $cleanText = function ($str) {
-                return html_entity_decode(html_entity_decode((string)$str, ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            };
 
-            $news_data = $news->toArray();
-            if (isset($news_data['name'])) {
-                $news_data['name'] = $cleanText($news_data['name']);
-            }
-            if (isset($news_data['summary'])) {
-                $news_data['summary'] = $cleanText($news_data['summary']);
-            }
-            $this->tema->ctx_set('d', $news_data);
+            $this->_mod_faq('mod_news', $news->id);
+
+            $news_data = $this->_cleanNewsRow($news->toArray());
+            $this->theme->ctx_set('d', $news_data);
+            $this->theme->ctx_set('detail', $news_data);
+
+            $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang']);
+            $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+            $aclCondition = $this->getAllowedAclCondition('');
 
             $news_24h_model = Load::model('mod_news');
-            $news_24h_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id')
+            $news_24h_model->flush();
+            $news_24h_model->select('id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,deck')
                 ->where_lang_and_status($this->site['lang'], 'y');
             if (!empty($news->id)) {
-                $news_24h_model->addWhere("id != '" . (int)$news->id . "'");
+                $news_24h_model->addWhere("id != '" . (int) $news->id . "'");
             }
+            $news_24h_model->addWhere($aclCondition);
+            $news_24h_model->addWhere("category_id IN ({$allowedCatList})");
             $yesterday = date('Y-m-d H:i:s', time() - 86400);
             $news_24h_model->addWhere("created_at >= '" . $yesterday . "'");
             $news_24h_model->limit(8)->order('created_at', 'DESC');
             $news_24h_model->gR();
             $news_24h = [];
             if ($news_24h_model->getSize() !== 0) {
-                $items = $news_24h_model->toArray();
-                if (is_array($items)) {
-                    foreach ($items as &$item) {
-                        $item['name'] = $cleanText($item['name']);
-                        if (isset($item['summary'])) {
-                            $item['summary'] = $cleanText($item['summary']);
-                        }
-                        $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
-                        $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
-                        $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                        $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                    }
-                    unset($item);
-                    $news_24h = $items;
-                }
+                $news_24h = $this->_cleanNewsRows($news_24h_model->toArray());
             }
-            $this->tema->ctx_set('news_24h', $news_24h);
+            $this->theme->ctx_set('news_24h', $news_24h);
         } else {
             return $this->_404();
         }
-        $this->tema->tpl('index/mod_news/news');
+        $this->theme->tpl('index/mod_news/news');
         $this->_index();
         unset($news);
     }
 
-    public function newses($category = NULL, $page = 1)
+    public function newses($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('news.front')) {
             return;
+        }
+
+        if ($category !== null && is_numeric($category)) {
+            $page = intval($category);
+            $category = null;
+        }
+
+        if ($page !== null && $page !== '' && !is_numeric($page)) {
+            return $this->_404();
         }
 
         $this->_categories();
 
         $page_limit = 80;
         $pager_limit = 4;
+
+        $page = max(1, intval($page ?: 1));
         $offset = ($page - 1) * $page_limit;
 
-        if (($page == "") or ($page == NULL)) {
-            $page = 1;
-        }
-
-        $page = intval($page);
-
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
 
         $news = Load::model('mod_news.newses');
+        $news->flush();
         $category_model = Load::model('mod_news_category');
+        $category_model->flush();
 
-        if ($category == NULL or $category == 'all') {
-            $news->where_status_and_lang('y', $this->site['lang'])->all();
+        $allNewsLabel = $this->lang['index']['mod_news']['all_news'];
+
+        if ($category === null || $category === '' || $category === 'all') {
+            $news->where_status_and_lang('y', $lang);
+            $news->addWhere($aclCondition);
+            $news->addWhere("category_id IN ({$allowedCatList})");
+            $news->all();
             $total_item = $news->getSize();
-            $news->where_status_and_lang('y', $this->site['lang']);
+
+            $news->flush();
+            $news->where_status_and_lang('y', $lang);
+            $news->addWhere($aclCondition);
+            $news->addWhere("category_id IN ({$allowedCatList})");
             $news->limit($page_limit, $offset)->order('created_at', 'DESC')->gR();
 
             if ($news->getSize() != 0) {
-                $news_items = $news->toArray();
-                foreach ($news_items as &$item) {
-                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    if (isset($item['summary'])) {
-                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    }
-                    $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
-                    $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
-                    $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                }
-                $this->tema->ctx_set('newses', $news_items);
+                $news_items = $this->_cleanNewsRows($news->toArray());
+                $this->theme->ctx_set('newses', $news_items);
             }
             $category_seo = 'all';
-            $categoryname = $this->lang['index']['mod_news']['2'];
-        } elseif ($category_model->exists_seo($category) === False) {
-            return $this->_404();
+            $categoryname = $allNewsLabel;
         } else {
-            $news->where_category_seo_and_status_and_lang($category, 'y', $this->site['lang']);
+            $category_model->where_seo_and_lang($category, $lang)->limit(1)->gRo();
+            if ($category_model->getSize() === 0) {
+                return $this->_404();
+            }
+            $category_model->sync();
+            $categoryId = (int) $category_model->id;
+            $categoryRecord = $category_model->toArray();
+            if (isset($categoryRecord['name'])) {
+                $categoryRecord['name'] = $this->_cleanText($categoryRecord['name']);
+            }
+            $categoryname = $this->_cleanText($category_model->name);
+            $category_seo = $category_model->seo;
+
+            if ($this->_checkCategoryHierarchyPermission($categoryId)) {
+                return;
+            }
+
+            $descendantIds = $this->getCategoryDescendantIds($categoryId, $lang, 'mod_news_category');
+            $targetCategoryIds = array_values(array_intersect($descendantIds, $allowedCatIds));
+            $idList = !empty($targetCategoryIds) ? implode(',', array_map('intval', $targetCategoryIds)) : '0';
+
+            $news->where_status_and_lang('y', $lang);
+            $news->addWhere($aclCondition);
+            $news->addWhere("category_id IN ({$idList})");
             $news->order('created_at', 'DESC')->gR();
             $total_item = $news->getSize();
             $news->getLimit($page_limit, $offset);
             if ($news->getSize() !== 0) {
-                $news_items = $news->toArray();
-                foreach ($news_items as &$item) {
-                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    if (isset($item['summary'])) {
-                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    }
-                    $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
-                    $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
-                    $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                }
-                $this->tema->ctx_set('newses', $news_items);
+                $news_items = $this->_cleanNewsRows($news->toArray());
+                $this->theme->ctx_set('newses', $news_items);
             }
-            $category_model->where_seo($category);
-            $category_model->getResultOne();
-            $category_model->sync();
-            $this->tema->ctx_set('category_record', $category_model->toArray());
 
-            $categoryname = $category_model->name;
-            $category_seo = $category_model->seo;
+            $this->theme->ctx_set('category_record', $categoryRecord);
         }
 
         $p = Load::lib('Pager');
@@ -194,35 +300,38 @@ class mod_news_helper extends indexBase
         $p->pager_limit = $pager_limit;
         $p->page = $page;
 
-
-        if ($p->check() === FALSE) {
+        if ($p->check() === false) {
             return $this->_404();
         }
 
-        if ($p->Result() !== FALSE) {
-            $this->tema->ctx_set('pagination', $p->Result());
+        if ($p->Result() !== false) {
+            $this->theme->ctx_set('pagination', $p->Result());
         }
 
-        if ($page != '1') {
-            $d['link'] = $this->site['saddress'] . 'newses/' . $category . '/' . $page;
+        $categorySlug = ($category === null || $category === '') ? 'all' : $category;
+        if ($page > 1) {
+            $d['link'] = $this->site['saddress'] . 'newses/' . $categorySlug . '/' . $page;
         } else {
-            $d['link'] = $this->site['saddress'] . 'newses/' . $category;
+            $d['link'] = $this->site['saddress'] . 'newses/' . $categorySlug;
         }
+
+        $archivePageTemplate = $this->lang['index']['mod_news']['archive_page_title'];
+        $singlePageTemplate = $this->lang['index']['mod_news']['title_format'];
 
         if ($page <= 1) {
-            $d['title'] = sprintf($this->lang['index']['mod_news']['1'], $categoryname);
+            $d['title'] = trim(sprintf($singlePageTemplate, $categoryname));
         } else {
-            $d['title'] = sprintf($this->lang['index']['mod_news']['5'], $categoryname, $page);
+            $d['title'] = trim(sprintf($archivePageTemplate, $categoryname, $page));
         }
 
-        $d['description'] = $this->lang['index']['mod_news']['2'];
-        $d['keywords'] = $this->lang['index']['mod_news']['3'];
+        $d['description'] = $allNewsLabel;
+        $d['keywords'] = $this->lang['index']['mod_news']['keywords'];
 
-        $this->tema->ctx_set('d', $d);
-        $this->tema->ctx_set('categoryname', $categoryname);
-        $this->tema->ctx_set('category_seo', $category_seo);
-        $this->tema->ctx_set('page', $page);
-        $this->tema->tpl('index/mod_news/newses');
+        $this->theme->ctx_set('d', $d);
+        $this->theme->ctx_set('categoryname', $categoryname);
+        $this->theme->ctx_set('category_seo', $category_seo);
+        $this->theme->ctx_set('page', $page);
+        $this->theme->tpl('index/mod_news/newses');
 
         $this->_index();
     }
@@ -233,41 +342,45 @@ class mod_news_helper extends indexBase
             return [];
         }
 
-        $m = Load::model('mod_news')->select($select)->where_lang_and_status($this->site['lang'], 'y');
-        if ($this->_hasSliderColumn()) {
-            $m->addWhere("slider='n'");
-        }
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
+
+        $m = Load::model('mod_news');
+        $m->flush();
+        $m->select($select)->where_lang_and_status($lang, 'y');
+        $m->addWhere("slider='n'");
+        $m->addWhere($aclCondition);
+        $m->addWhere("category_id IN ({$allowedCatList})");
         $m->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {
-            $items = $m->toArray();
-            if (is_array($items)) {
-                foreach ($items as &$item) {
-                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    if (isset($item['summary'])) {
-                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    }
-                    $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
-                    $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
-                    $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                }
-                unset($item);
-            }
-            return $items;
+            return $this->_cleanNewsRows($m->toArray());
         }
 
         return [];
     }
 
-    public function _homepage_categories($limit = 4, $select = 'image,name,seo,summary,created_at')
+    public function _homepage_categories($limit = 4, $select = 'image,name,seo,summary,created_at,deck')
     {
         if (!$this->isFeatureReady('news.homepage_categories')) {
             return [];
         }
 
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        if (empty($allowedCatIds)) {
+            return [];
+        }
+
+        $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
+        $aclCondition = $this->getAllowedAclCondition('');
+
         $cat_model = Load::model('mod_news_category');
-        $cat_model->where_lang_and_show_on_homepage_and_root($this->site['lang'], 'y', 'n');
+        $cat_model->flush();
+        $cat_model->where_lang_and_show_on_homepage_and_root($lang, 'y', 'n');
+        $cat_model->addWhere("id IN ({$allowedCatList})");
         $cat_model->order('order', 'ASC')->gR();
 
         if ($cat_model->getSize() === 0) {
@@ -276,62 +389,32 @@ class mod_news_helper extends indexBase
 
         $categories_raw = $cat_model->toArray();
         $news_model = Load::model('mod_news.newses');
-        
+
         $categories = [];
         $seen_ids = [];
 
-        foreach ($categories_raw as $cat) {
-            if (in_array($cat['id'], $seen_ids)) {
+        foreach ($categories_raw as $categoryItem) {
+            if (in_array($categoryItem['id'], $seen_ids)) {
                 continue;
             }
-            $seen_ids[] = $cat['id'];
-            
+            if (empty($categoryItem['seo'])) {
+                continue;
+            }
+            $seen_ids[] = $categoryItem['id'];
+
             $news_model->flush();
-            $news_model->where_category_seo_and_status_and_lang($cat['seo'], 'y', $this->site['lang']);
+            $news_model->where_category_seo_and_status_and_lang($categoryItem['seo'], 'y', $lang);
+            $news_model->addWhere($aclCondition);
             $news_model->select($select)->order('created_at', 'DESC')->limit($limit);
             $news_model->gR();
 
-            $items = $news_model->toArray();
-            if (is_array($items)) {
-                foreach ($items as &$item) {
-                    $item['name'] = html_entity_decode(html_entity_decode((string)$item['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    if (isset($item['summary'])) {
-                        $item['summary'] = html_entity_decode(html_entity_decode((string)$item['summary'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                    }
-                    $item['has_video'] = (!empty($item['video']) && $item['video'] != 'a:0:{}');
-                    $item['has_gallery'] = (isset($item['gallery_id']) && $item['gallery_id'] != 0);
-                    $item['has_file'] = (isset($item['file_id']) && $item['file_id'] != 0);
-                    $item['published_ago'] = $this->formatRelativeTime($item['created_at'] ?? '');
-                }
-                unset($item);
-            }
-            $cat['name'] = html_entity_decode(html_entity_decode((string)$cat['name'], ENT_QUOTES | ENT_HTML5, 'UTF-8'), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $cat['news'] = $items;
-            $categories[] = $cat;
+            $items = $this->_cleanNewsRows($news_model->toArray());
+            $categoryItem['name'] = $this->_cleanText($categoryItem['name'] ?? '');
+            $categoryItem['news'] = $items;
+            $categories[] = $categoryItem;
         }
 
         return $categories;
-    }
-
-    private function _hasSliderColumn()
-    {
-        $db = Load::lib('Database');
-        if ($db->getAdapterType() && strpos($db->getAdapterType(), 'PDO_SQLITE') !== false) {
-            $db->fetch_array("PRAGMA table_info('mod_news')");
-            $result = $db->toArray();
-            if (is_array($result)) {
-                foreach ($result as $row) {
-                    if (isset($row['name']) && $row['name'] === 'slider') {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        $db->fetch_array("SHOW COLUMNS FROM `mod_news` LIKE 'slider'");
-        $result = $db->getResult()->toArray();
-        return is_array($result) && !empty($result);
     }
 
     private function formatRelativeTime($datetime)
@@ -339,95 +422,112 @@ class mod_news_helper extends indexBase
         return Helper::time_ago($datetime, $this->lang['index'] ?? null);
     }
 
-    public function arsiv()
+    public function archive()
     {
         if (!$this->guardFeatureOr404('news.archive')) {
             return;
         }
 
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
+
         $news = Load::model('mod_news');
-        $sql = "SELECT YEAR(MAX(created_at)) max_yil, YEAR(MIN(created_at)) min_yil FROM `mod_news` WHERE 1";
+        $news->flush();
+        $sql = "SELECT MAX(created_at), MIN(created_at) FROM `mod_news` WHERE 1";
         $news->fetch_array($sql);
-        $news->getResultOne();
-        $this->tema->ctx_set('arsiv_yil', $news->toArray());
+        $row = $news->getResultOne();
+        $row_data = is_object($row) ? $row->toArray() : (array) $row;
+        $values = array_values($row_data);
+        $max_date = $values[0] ?? null;
+        $min_date = $values[1] ?? null;
+        $min_year = $min_date ? (int) date('Y', strtotime($min_date)) : 2020;
+        $max_year = $max_date ? (int) date('Y', strtotime($max_date)) : (int) date('Y');
+        $archiveYears = [
+            'min_year' => $min_year,
+            'max_year' => $max_year
+        ];
+        $this->theme->ctx_set('archive_years', $archiveYears);
+
         $category = Load::model('mod_news_category');
-        $category->where_lang_and_root($this->site['lang'], 'n');
+        $category->flush();
+        $category->where_lang_and_root($lang, 'n');
+        $category->addWhere("id IN ({$allowedCatList})");
         $category->order('parent_id, order', 'DESC');
         $category->gR();
         if ($category->getSize() !== 0) {
-            $this->tema->ctx_set('archive_categories', $category->toArray());
+            $archiveCategories = $category->toArray();
+            if (is_array($archiveCategories)) {
+                foreach ($archiveCategories as &$catRow) {
+                    $catRow['name'] = $this->_cleanText($catRow['name'] ?? '');
+                }
+                unset($catRow);
+            }
+            $this->theme->ctx_set('archive_categories', $archiveCategories);
         }
 
+        $archiveTitle = $this->lang['index']['mod_news']['archive_title'];
+        $d['name'] = $archiveTitle;
+        $d['title'] = $archiveTitle;
+        $d['keywords'] = $archiveTitle;
+        $d['description'] = $archiveTitle;
+        $this->theme->ctx_set('d', $d);
+        $this->theme->tpl('index/mod_news/archive');
 
-        $d['name'] = $this->lang['index']['mod_news']['6'];
-        $d['title'] = $this->lang['index']['mod_news']['6'];
+        if (Req::is_Post('category_id') && Req::is_Post('year') && Req::is_Post('month')) {
+            $rawYear = Req::Post_Safe('year');
+            $rawMonth = Req::Post_Safe('month');
+            $rawCategoryId = Req::Post_Safe('category_id');
 
-        $d['keywords'] = $this->lang['index']['mod_news']['6'];
+            $year = ($rawYear === '*' || $rawYear === '') ? null : intval($rawYear);
+            $month = ($rawMonth === '*' || $rawMonth === '') ? null : intval($rawMonth);
+            $categoryId = ($rawCategoryId === '*' || $rawCategoryId === '') ? '*' : intval($rawCategoryId);
 
-        $d['description'] = $this->lang['index']['mod_news']['6'];
-        $this->tema->ctx_set('d', $d);
-        $this->tema->tpl('index/mod_news/arsiv');
-
-
-        if (Req::is_Post('category_id') and Req::is_Post('yil') and Req::is_Post('ay')) {
-
-            $yil = Req::Post_Safe('yil');
-            $ay = Req::Post_Safe('ay');
-
-            $category_id = Req::Post_Safe('category_id');
-
-            if ($yil === "*") {
-                $yil = NULL;
+            $safeLang = addslashes($lang);
+            if ($categoryId === '*') {
+                $categoryWhere = " AND category_id IN ({$allowedCatList})";
+            } elseif (in_array((int) $categoryId, $allowedCatIds, true)) {
+                $categoryWhere = " AND category_id='" . intval($categoryId) . "'";
+            } else {
+                $categoryWhere = " AND category_id=0";
             }
 
-            if ($ay === "*") {
-                $ay = NULL;
-            }
+            $this->theme->ctx_set('category_id', $categoryId);
 
-
-            $category_where = $category_id === "*" ? "" : " AND category_id='" . $category_id . "'";
-
-            $this->tema->ctx_set('category_id', $category_id);
-
+            $news->flush();
             $news->select('seo,name,created_at,summary');
-            if ($yil !== NULL && $ay !== NULL) {
+            if ($year !== null && $month !== null) {
                 $news->where(
-                    "YEAR(created_at)='" . $yil . "' AND
-                 MONTH(created_at) ='" . $ay . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'" . $category_where
+                    "YEAR(created_at)='" . $year . "' AND MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
                 );
-            } elseif ($yil !== NULL) {
+            } elseif ($year !== null) {
                 $news->where(
-                    "YEAR(created_at)='" . $yil . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'" . $category_where
+                    "YEAR(created_at)='" . $year . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
                 );
-            } elseif ($ay !== NULL) {
+            } elseif ($month !== null) {
                 $news->where(
-                    "MONTH(created_at) ='" . $ay . "' AND
-                lang='" . $this->site['lang'] . "' AND
-                status = 'y'" . $category_where
+                    "MONTH(created_at)='" . $month . "' AND lang='" . $safeLang . "' AND status = 'y' AND " . $aclCondition . $categoryWhere
                 );
             } else {
-                $news->where("status = 'y' AND lang='" . $this->site['lang'] . "'" . $category_where);
+                $news->where("status = 'y' AND lang='" . $safeLang . "' AND " . $aclCondition . $categoryWhere);
             }
 
             $news->gR();
             if ($news->getSize() !== 0) {
-                $this->tema->ctx_set('newses', $news->toArray());
+                $this->theme->ctx_set('newses', $this->_cleanNewsRows($news->toArray()));
             } else {
-                $this->tema->ctx_set('bulunamadi', True);
+                $this->theme->ctx_set('not_found', true);
             }
 
-            if ($yil !== NULL) {
-                $this->tema->ctx_set('yil', $yil);
+            if ($year !== null) {
+                $this->theme->ctx_set('year', $year);
             }
-            if ($ay !== NULL) {
-                $this->tema->ctx_set('ay', $ay);
+            if ($month !== null) {
+                $this->theme->ctx_set('month', $month);
             }
         }
-        $this->tema->tpl('index/mod_news/arsiv');
+        $this->theme->tpl('index/mod_news/archive');
         $this->_index();
     }
 }

@@ -41,9 +41,9 @@ function getNewsCategoryMap() {
 function getNewsLang() {
     if (typeof window.CONTENT_LANG !== 'undefined' && window.CONTENT_LANG) return window.CONTENT_LANG;
     const al = (typeof window.adminLang !== 'undefined' && window.adminLang) ? window.adminLang : {};
-    const mod = al.mod_news || {};
-    const ctx = al.context_menu || {};
-    const dt = al.datatable || {};
+    const mod = al.mod_news || al.active_module || {};
+    const ctx = mod.context_menu || al.context_menu || {};
+    const dt = mod.datatable || al.datatable || {};
 
     return {
         active: mod.status_badge?.active || 'Active',
@@ -57,13 +57,13 @@ function getNewsLang() {
         error_upload: mod.message?.error?.add || 'Upload failed',
         cancel: mod.button?.cancel || ctx.cancel || 'Cancel',
         delete_confirm_text: mod.button?.yes || ctx.confirm || 'Yes',
-        delete_cancel_text: mod.button?.no || ctx.cancel || 'Cancel',
+        delete_cancel_text: mod.button?.cancel || mod.button?.no || ctx.cancel || 'Cancel',
         status_confirm_text: mod.button?.yes || 'Yes',
         status_cancel_text: mod.button?.no || 'No',
-        image_remove_title: mod.remove_image || 'Remove Image',
+        image_remove_title: mod.remove_image_title || mod.button?.remove || mod.remove_image || 'Remove Image',
         image_remove_confirm: mod.remove_image || 'Are you sure you want to remove this image?',
-        image_remove_confirm_text: mod.button?.yes || 'Yes, Delete',
-        image_remove_cancel_text: mod.button?.no || 'Cancel',
+        image_remove_confirm_text: (mod.button?.yes && mod.button?.delete) ? `${mod.button.yes}, ${mod.button.delete}` : (mod.button?.yes || 'Yes, Delete'),
+        image_remove_cancel_text: mod.button?.cancel || mod.button?.no || 'Cancel',
         image_remove_success: mod.remove_image_success || 'Image removed successfully',
         image_updated: mod.success || 'Image updated successfully',
         image_title: mod.wizard?.step?.image || 'Cover Image',
@@ -74,7 +74,16 @@ function getNewsLang() {
         hero_slider_removed: mod.hero_slider_removed || 'Removed from Hero Slider',
         hero_slider_error: mod.hero_slider_error || 'Failed to update Hero Slider',
         hero_slider_badge: mod.hero_slider_badge || 'Hero Slider',
+        deck_add: mod.deck_add || 'Mark as Featured',
+        deck_remove: mod.deck_remove || 'Remove from Featured',
+        deck_added: mod.deck_added || 'Marked as featured',
+        deck_removed: mod.deck_removed || 'Removed from featured',
+        deck_error: mod.deck_error || 'Failed to update featured state',
+        deck_badge: mod.deck_badge || mod.admin?.columns?.deck || 'Featured',
+        status_updated: mod.message?.success?.status || mod.success || 'Status updated',
+        status_error: mod.message?.error?.status || mod.error_occurred || mod.error || 'Failed to update status',
         picker: {
+            gallery: mod.picker?.gallery || ctx.gallery || 'Select Gallery',
             file: mod.picker?.file || ctx.files || 'Select Files',
             video: mod.picker?.video || ctx.video || 'Select Video'
         },
@@ -102,6 +111,7 @@ class NewsManager {
         this.hasMore = true;
         this.selectedContentId = null;
         this.selectedInHeroSlider = false;
+        this.selectedInDeck = false;
         this.imageUploadContentId = null;
         this.imageUploader = null;
         this.imageUploaderBound = false;
@@ -120,6 +130,7 @@ class NewsManager {
 
     init() {
         this.createLoadMoreButton();
+        this.updateToolbar(false);
         this.loadData();
         this.initSearchListener();
         this.initPullToRefresh();
@@ -136,8 +147,14 @@ class NewsManager {
             const action = target.dataset.action;
             if (action === 'close-image-uploader') {
                 this.closeImageUploader();
+            } else if (action === 'submit-list-image-upload') {
+                this.submitListImageUpload();
+            } else if (action === 'toggle-status') {
+                this.toggleNewsStatus();
             } else if (action === 'toggle-slider') {
                 this.toggleHeroSlider();
+            } else if (action === 'toggle-deck') {
+                this.toggleDeck();
             } else if (action === 'open-video') {
                 window.videoSelected?.();
             } else if (action === 'open-gallery') {
@@ -152,6 +169,24 @@ class NewsManager {
                 window.deleteSelected?.();
             }
         });
+
+        const statCards = document.querySelectorAll('.content-stats-row .content-stat-card');
+        statCards.forEach((card) => {
+            card.addEventListener('click', () => {
+                const statusVal = card.dataset.statusFilter || 'all';
+                const filterStatusInput = document.getElementById('filterStatus');
+                if (!filterStatusInput) return;
+
+                statCards.forEach((c) => {
+                    const isSelected = c === card;
+                    c.classList.toggle('active', isSelected);
+                    c.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+                });
+
+                filterStatusInput.value = (statusVal === 'all') ? '' : statusVal;
+                this.loadData(true);
+            });
+        });
     }
 
     initializeImageModalCopy() {
@@ -162,22 +197,21 @@ class NewsManager {
 
     createLoadMoreButton() {
         this.loadMoreBtn = document.createElement('button');
-        this.loadMoreBtn.className = 'm3-btn-outlined';
-        this.loadMoreBtn.style.cssText = 'display:none; margin: 20px auto; width: fit-content; cursor:pointer;';
+        this.loadMoreBtn.className = 'm3-btn-outlined load-more-btn';
 
         let btnText = 'Load More';
         if (getNewsLang().grid && getNewsLang().grid.load_more) {
             btnText = getNewsLang().grid.load_more;
         }
-        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+        this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle btn-icon-left"></i>${btnText}`;
 
         if (this.container && this.loader) {
             this.container.parentNode.insertBefore(this.loadMoreBtn, this.loader);
         }
 
-        this.loadMoreBtn.onclick = () => {
+        this.loadMoreBtn.addEventListener('click', () => {
             this.loadData();
-        };
+        });
     }
 
     async loadData(reset = false) {
@@ -186,7 +220,7 @@ class NewsManager {
         this.isLoading = true;
         if (this.loadMoreBtn) {
             this.loadMoreBtn.disabled = true;
-            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right:8px;"></span>...`;
+            this.loadMoreBtn.innerHTML = `<span class="spinner-border spinner-border-sm btn-icon-left" role="status" aria-hidden="true"></span>...`;
         }
 
         if (reset) {
@@ -196,13 +230,14 @@ class NewsManager {
             this.draw = 1;
             this.selectedContentId = null;
             this.selectedInHeroSlider = false;
+            this.selectedInDeck = false;
             this.updateToolbar(false);
             this.updateFabState(false);
-            if (this.emptyState) this.emptyState.style.display = 'none';
-            if (this.loader) this.loader.style.display = 'flex';
-            if (this.loadMoreBtn) this.loadMoreBtn.style.display = 'none';
+            if (this.emptyState) this.emptyState.classList.add('is-hidden');
+            if (this.loader) this.loader.classList.remove('is-hidden');
+            if (this.loadMoreBtn) this.loadMoreBtn.classList.remove('is-visible');
         } else {
-            if (this.loader) this.loader.style.display = 'flex';
+            if (this.loader) this.loader.classList.remove('is-hidden');
         }
 
         const filterLengthInput = document.getElementById('filterLength');
@@ -229,6 +264,10 @@ class NewsManager {
                 const totalEl = document.getElementById('statTotalNews');
                 if (totalEl) totalEl.textContent = data.totalNews;
             }
+            if (typeof data.publishedNews !== 'undefined') {
+                const pubEl = document.getElementById('statPublishedNews');
+                if (pubEl) pubEl.textContent = data.publishedNews;
+            }
             if (typeof data.draftNews !== 'undefined') {
                 const draftEl = document.getElementById('statDraftNews');
                 if (draftEl) draftEl.textContent = data.draftNews;
@@ -239,27 +278,27 @@ class NewsManager {
 
             if (this.start >= data.recordsFiltered) {
                 this.hasMore = false;
-                if (this.loader) this.loader.style.display = 'none';
+                if (this.loader) this.loader.classList.add('is-hidden');
             }
 
             if (data.recordsFiltered === 0 && this.emptyState) {
-                this.emptyState.style.display = 'flex';
+                this.emptyState.classList.remove('is-hidden');
             }
 
         } catch (error) {
             console.error('Data Load Error:', error);
         } finally {
             this.isLoading = false;
-            if (this.loader) this.loader.style.display = 'none';
+            if (this.loader) this.loader.classList.add('is-hidden');
 
             if (this.loadMoreBtn) {
-                this.loadMoreBtn.style.display = (this.hasMore) ? 'block' : 'none';
+                this.loadMoreBtn.classList.toggle('is-visible', Boolean(this.hasMore));
                 this.loadMoreBtn.disabled = false;
                 let btnText = 'Load More';
                 if (getNewsLang().grid && getNewsLang().grid.load_more) {
                     btnText = getNewsLang().grid.load_more;
                 }
-                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle" style="margin-right:8px;"></i>${btnText}`;
+                this.loadMoreBtn.innerHTML = `<i class="bi bi-arrow-down-circle btn-icon-left"></i>${btnText}`;
             }
         }
     }
@@ -277,8 +316,8 @@ class NewsManager {
             const date = this.stripHtml(item[5]);
             const categoryId = item[7] || 0;
             const statusRaw = item[8] || 'n';
-            const authorName = this.stripHtml(item[9] || '');
             const inHeroSlider = String(item[10] || '0') === '1';
+            const inDeck = String(item[11] || '0') === '1';
 
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = titleHtml;
@@ -288,20 +327,15 @@ class NewsManager {
             const imgTag = tempDiv.querySelector('img');
             const imgSrc = imgTag ? imgTag.src : '';
 
-            const card = document.createElement('div');
+            const card = document.createElement('article');
             card.className = 'm3-card content-card';
             card.dataset.id = id;
+            card.dataset.status = statusRaw === 'y' ? 'y' : 'n';
             card.dataset.imageSrc = imgSrc || '';
-            card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : '';
+            card.dataset.imageName = imgSrc ? (imgSrc.split('/').pop() || titleText || '') : (titleText || '');
             card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
-            card.onclick = () => window.newsManager.selectContent(id, card);
-
-            let statusText = getNewsLang().draft;
-            let statusColor = "#FFAB00";
-            if (statusRaw === 'y') {
-                statusText = getNewsLang().active;
-                statusColor = "var(--md-sys-color-primary)";
-            }
+            card.dataset.inDeck = inDeck ? '1' : '0';
+            card.addEventListener('click', () => window.newsManager.selectContent(id, card));
 
             let categoryName = getNewsLang().general;
             const catMap = getNewsCategoryMap();
@@ -309,67 +343,54 @@ class NewsManager {
                 categoryName = catMap[categoryId];
             }
 
-            const safeStatusText = this.escapeHtml(statusText);
             const safeCategoryName = this.escapeHtml(categoryName);
             const safeTitleText = this.escapeHtml(titleText);
-            const safeLang = this.escapeHtml(lang);
-            const safeDate = this.escapeHtml(date);
-            const safeAuthorName = this.escapeHtml(authorName);
-            const safeSliderBadge = this.escapeHtml(getNewsLang().hero_slider_badge);
+            const safeLang = this.escapeHtml(String(lang || '').toUpperCase());
+            let rawDate = String(date || '');
+            if (rawDate.includes(' ')) {
+                rawDate = rawDate.split(' ')[0];
+            }
+            const safeDate = this.escapeHtml(rawDate);
+            const safeImgSrc = this.escapeHtml(imgSrc);
 
             card.innerHTML = `
                 <div class="card-content-layout">
-                    <div class="card-thumbnail" style="cursor:pointer; display:flex; align-items:center; justify-content:center; color:#999; ${imgSrc ? '' : 'background-color: #f0f0f0;'}">
-                        ${!imgSrc ? '<i class="bi bi-camera-fill" style="font-size: 24px;"></i>' : ''}
+                    <div class="news-thumb-wrapper">
+                        <div class="card-thumbnail">
+                            ${imgSrc ? `<img src="${safeImgSrc}" alt="${safeTitleText}" class="news-card-thumb" loading="lazy">` : '<i class="bi bi-camera-fill"></i>'}
+                        </div>
                     </div>
                     
                     <div class="card-body-col">
-                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                             <div>
-                                <div class="meta-row" style="margin-top:0; margin-bottom:4px;">
-                                    <span class="hero-slider-badge" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'} align-items:center; gap:4px; padding:2px 8px; border-radius:999px; background:rgba(255,193,7,0.18); color:#8a5a00; font-weight:700;">
-                                        <i class="bi bi-stars"></i> ${safeSliderBadge}
-                                    </span>
-                                    <span class="hero-slider-dot" style="${inHeroSlider ? 'display:inline-flex;' : 'display:none;'}">•</span>
-                                    <span style="color:${statusColor}; font-weight:500;">${safeStatusText}</span>
-                                    <span>•</span>
-                                    <span>${safeCategoryName}</span>
-                                </div>
-                                <h3 style="margin:0; font-size:16px; font-weight:500; line-height:1.4; color: var(--md-sys-color-on-surface); text-align: left;">${safeTitleText}</h3>
-                             </div>
-                             <button type="button" class="m3-icon-btn" style="margin-top:-8px; margin-right:-8px;">
+                        <div class="card-header-row">
+                            <h3 class="news-card-title">${safeTitleText}</h3>
+                            <button type="button" class="news-action-btn m3-icon-btn" aria-label="${this.escapeHtml(getNewsLang().context_menu?.title || 'Actions')}">
                                 <i class="bi bi-three-dots-vertical"></i>
-                             </button>
-                        </div>
-
-                        <div class="meta-row" style="margin-top:8px;">
-                             <span style="display:flex; align-items:center; gap:4px;"><i class="bi bi-translate" style="font-size:11px;"></i> ${safeLang}</span>
-                             <span style="margin-left: 12px; display:flex; align-items:center; gap:4px;"><i class="bi bi-calendar3" style="font-size:11px;"></i> ${safeDate}</span>
-                             <span style="margin-left: auto; font-size: 12px; color: var(--md-sys-color-on-surface-variant);">${safeAuthorName}</span>
+                            </button>
                         </div>
                     </div>
                 </div>
+
+                <div class="meta-bottom-row">
+                     <span class="meta-bottom-item"><i class="bi bi-translate"></i> ${safeLang}</span>
+                     <span class="meta-bottom-item meta-date"><i class="bi bi-calendar3"></i> ${safeDate}</span>
+                     <span class="meta-bottom-item meta-category"><i class="bi bi-diagram-2"></i> ${safeCategoryName}</span>
+                </div>
             `;
 
-            const thumbnail = card.querySelector('.card-thumbnail');
-            if (thumbnail) {
-                if (imgSrc) {
-                    thumbnail.style.backgroundImage = `url("${imgSrc}")`;
-                    thumbnail.style.backgroundSize = 'cover';
-                    thumbnail.style.backgroundPosition = 'center';
-                }
-
-                thumbnail.addEventListener('click', (event) => {
+            const thumb = card.querySelector('.news-thumb-wrapper');
+            if (thumb) {
+                thumb.addEventListener('click', (event) => {
                     event.stopPropagation();
                     this.processImageUpload(id);
                 });
             }
 
-            const actionButton = card.querySelector('.m3-icon-btn');
+            const actionButton = card.querySelector('.news-action-btn');
             if (actionButton) {
                 actionButton.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    this.openActionSheet(id, titleText, statusRaw);
+                    this.selectContent(id, card);
                 });
             }
 
@@ -377,6 +398,67 @@ class NewsManager {
         });
 
         this.container.appendChild(fragment);
+
+        const searchInput = document.getElementById('searchInput') || document.getElementById('filterSearch');
+        if (searchInput && searchInput.value) {
+            this.highlightSearchHits(this.container, searchInput.value);
+        }
+    }
+
+    clearHighlights(el) {
+        if (!el) return;
+        const marks = el.querySelectorAll('mark.news-search-hit');
+        marks.forEach(mark => {
+            const parent = mark.parentNode;
+            if (parent) {
+                parent.replaceChild(document.createTextNode(mark.textContent), mark);
+                parent.normalize();
+            }
+        });
+    }
+
+    highlightSearchHits(container, query) {
+        if (!container) return;
+        this.clearHighlights(container);
+        if (!query || !query.trim()) return;
+
+        const targets = container.querySelectorAll('h3, .meta-category');
+        const lowerQuery = query.trim().toLowerCase();
+
+        targets.forEach(target => {
+            const walker = document.createTreeWalker(target, NodeFilter.SHOW_TEXT, null, false);
+            const textNodes = [];
+            while (walker.nextNode()) {
+                textNodes.push(walker.currentNode);
+            }
+
+            textNodes.forEach(node => {
+                const text = node.nodeValue;
+                const lowerText = text.toLowerCase();
+                let index = lowerText.indexOf(lowerQuery);
+                if (index === -1) return;
+
+                const fragment = document.createDocumentFragment();
+                let lastIndex = 0;
+                while (index !== -1) {
+                    if (index > lastIndex) {
+                        fragment.appendChild(document.createTextNode(text.substring(lastIndex, index)));
+                    }
+                    const mark = document.createElement('mark');
+                    mark.className = 'news-search-hit';
+                    mark.textContent = text.substring(index, index + lowerQuery.length);
+                    fragment.appendChild(mark);
+                    lastIndex = index + lowerQuery.length;
+                    index = lowerText.indexOf(lowerQuery, lastIndex);
+                }
+                if (lastIndex < text.length) {
+                    fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+                }
+                if (node.parentNode) {
+                    node.parentNode.replaceChild(fragment, node);
+                }
+            });
+        });
     }
 
     stripHtml(html) {
@@ -501,10 +583,6 @@ class NewsManager {
         this.imageCancelBtn = document.getElementById('newsImageCancelBtn');
         this.imageFooter = document.getElementById('newsImageModalFooter');
 
-        if (this.imageSaveBtn) {
-            this.imageSaveBtn.onclick = () => this.submitListImageUpload();
-        }
-
         const card = document.querySelector(`.content-card[data-id="${id}"]`);
         
         if (!title && card) {
@@ -529,12 +607,12 @@ class NewsManager {
                 subtitleEl.textContent = title;
                 subtitleEl.removeAttribute('hidden');
                 subtitleEl.hidden = false;
-                subtitleEl.style.display = 'block';
+                subtitleEl.classList.remove('is-hidden');
             } else {
                 subtitleEl.textContent = '';
                 subtitleEl.setAttribute('hidden', 'true');
                 subtitleEl.hidden = true;
-                subtitleEl.style.display = 'none';
+                subtitleEl.classList.add('is-hidden');
             }
         }
 
@@ -631,7 +709,7 @@ class NewsManager {
             return;
         }
 
-        if (this.loader) this.loader.style.display = 'flex';
+        if (this.loader) this.loader.classList.remove('is-hidden');
 
         try {
             const formData = new URLSearchParams();
@@ -656,7 +734,7 @@ class NewsManager {
             console.error('Remove image error:', error);
             showSnackbar(getNewsLang().error_general, 'error');
         } finally {
-            if (this.loader) this.loader.style.display = 'none';
+            if (this.loader) this.loader.classList.add('is-hidden');
         }
     }
 
@@ -677,7 +755,7 @@ class NewsManager {
             this.imageSaveBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${getNewsLang().loading}`;
         }
 
-        if (this.loader) this.loader.style.display = 'flex';
+        if (this.loader) this.loader.classList.remove('is-hidden');
 
         try {
             const response = await fetch(`${getNewsModuleUrl()}ajax_image_upload`, {
@@ -705,7 +783,7 @@ class NewsManager {
             this.imageUploader?.showFeedback(getNewsLang().error_upload, 'error');
             showSnackbar(getNewsLang().error_upload, 'error');
         } finally {
-            if (this.loader) this.loader.style.display = 'none';
+            if (this.loader) this.loader.classList.add('is-hidden');
             if (this.imageSaveBtn) {
                 const hasPendingFile = !!this.imageUploader?.getSelectedFile();
                 this.imageSaveBtn.hidden = !hasPendingFile;
@@ -742,6 +820,7 @@ class NewsManager {
         cardElement.classList.add('selected');
         this.selectedContentId = id;
         this.selectedInHeroSlider = cardElement.dataset.inHeroSlider === '1';
+        this.selectedInDeck = cardElement.dataset.inDeck === '1';
         this.updateToolbar(true);
         this.updateFabState(true);
         if (window.navigator.vibrate) window.navigator.vibrate(10);
@@ -763,6 +842,7 @@ class NewsManager {
 
         this.selectedContentId = null;
         this.selectedInHeroSlider = false;
+        this.selectedInDeck = false;
         this.updateToolbar(false);
         this.updateFabState(false);
         if (window.navigator.vibrate) window.navigator.vibrate(8);
@@ -775,36 +855,82 @@ class NewsManager {
     }
 
     updateToolbar(active) {
-        const ids = ['toolbarEdit', 'toolbarGallery', 'toolbarFiles', 'toolbarDelete', 'toolbarSlider', 'toolbarVideo', 'toolbarFaq'];
+        const toolbar = document.getElementById('contentToolbar');
+        if (toolbar) {
+            toolbar.classList.toggle('is-visible', Boolean(active));
+            toolbar.setAttribute('aria-hidden', active ? 'false' : 'true');
+        }
+        document.body.classList.toggle('has-selection', Boolean(active));
+
+        const ids = [
+            'toolbarStatus', 'toolbarDeck', 'toolbarSlider',
+            'toolbarVideo', 'toolbarGallery', 'toolbarFiles',
+            'toolbarFaq', 'toolbarEdit', 'toolbarDelete'
+        ];
         ids.forEach(btnId => {
             const btn = document.getElementById(btnId);
             if (!btn) return;
             if (active) {
                 btn.classList.add('active');
                 btn.classList.remove('is-disabled');
-                btn.style.pointerEvents = 'auto';
-                btn.style.opacity = '1';
             } else {
                 btn.classList.remove('active');
                 btn.classList.add('is-disabled');
-                btn.style.pointerEvents = 'none';
-                btn.style.opacity = '0.3';
             }
         });
-        this.syncSliderToolbarState(active);
+        this.syncCardToolbarState(active);
+    }
+
+    syncCardToolbarState(active) {
+        const card = active ? this.getSelectedCard() : null;
+
+        const statusBtn = document.getElementById('toolbarStatus');
+        if (statusBtn) {
+            const isPublished = card && card.dataset.status === 'y';
+            const statusIcon = statusBtn.querySelector('i');
+            statusBtn.classList.toggle('is-published', Boolean(active && isPublished));
+            statusBtn.classList.toggle('is-draft', Boolean(active && !isPublished));
+            if (statusIcon) {
+                statusIcon.className = (!active || isPublished) ? 'bi bi-eye-fill' : 'bi bi-eye-slash';
+            }
+            const statusLabel = active
+                ? (isPublished ? getNewsLang().active : getNewsLang().draft)
+                : getNewsLang().active;
+            statusBtn.title = statusLabel;
+            statusBtn.setAttribute('aria-label', statusLabel);
+        }
+
+        const deckBtn = document.getElementById('toolbarDeck');
+        if (deckBtn) {
+            const inDeck = Boolean(active && this.selectedInDeck);
+            const deckIcon = deckBtn.querySelector('i');
+            const deckLabel = inDeck ? getNewsLang().deck_remove : getNewsLang().deck_add;
+            deckBtn.classList.toggle('is-selected', inDeck);
+            if (deckIcon) {
+                deckIcon.className = inDeck ? 'bi bi-bookmark-star-fill' : 'bi bi-bookmark-star';
+            }
+            deckBtn.title = deckLabel;
+            deckBtn.setAttribute('aria-label', deckLabel);
+        }
+
+        const sliderBtn = document.getElementById('toolbarSlider');
+        if (sliderBtn) {
+            const inSlider = Boolean(active && this.selectedInHeroSlider);
+            const sliderLabel = inSlider
+                ? getNewsLang().hero_slider_remove
+                : getNewsLang().hero_slider_add;
+            sliderBtn.classList.toggle('is-selected', inSlider);
+            sliderBtn.title = sliderLabel;
+            sliderBtn.setAttribute('aria-label', sliderLabel);
+        }
     }
 
     syncSliderToolbarState(active) {
-        const sliderBtn = document.getElementById('toolbarSlider');
-        if (!sliderBtn) return;
+        this.syncCardToolbarState(active);
+    }
 
-        const label = active && this.selectedInHeroSlider
-            ? getNewsLang().hero_slider_remove
-            : getNewsLang().hero_slider_add;
-
-        sliderBtn.classList.toggle('is-selected', Boolean(active && this.selectedInHeroSlider));
-        sliderBtn.title = label;
-        sliderBtn.setAttribute('aria-label', label);
+    syncDeckToolbarState(active) {
+        this.syncCardToolbarState(active);
     }
 
     getSelectedCard() {
@@ -820,15 +946,96 @@ class NewsManager {
         const dot = card.querySelector('.hero-slider-dot');
 
         if (badge) {
-            badge.style.display = inHeroSlider ? 'inline-flex' : 'none';
+            badge.classList.toggle('is-hidden', !inHeroSlider);
         }
         if (dot) {
-            dot.style.display = inHeroSlider ? 'inline-flex' : 'none';
+            dot.classList.toggle('is-hidden', !inHeroSlider);
+        }
+    }
+
+    applyDeckState(card, inDeck) {
+        if (!card) return;
+
+        card.dataset.inDeck = inDeck ? '1' : '0';
+        const badge = card.querySelector('.deck-badge');
+        const dot = card.querySelector('.deck-dot');
+
+        if (badge) {
+            badge.classList.toggle('is-hidden', !inDeck);
+        }
+        if (dot) {
+            dot.classList.toggle('is-hidden', !inDeck);
+        }
+    }
+
+    async toggleNewsStatus() {
+        if (!this.selectedContentId) return;
+        const card = this.getSelectedCard();
+        const statusBtn = document.getElementById('toolbarStatus');
+        const statusIcon = statusBtn ? statusBtn.querySelector('i') : null;
+
+        if (statusBtn) statusBtn.classList.add('is-loading');
+        if (statusIcon) statusIcon.className = 'bi bi-arrow-repeat';
+
+        const formData = new URLSearchParams();
+        formData.append('id', this.selectedContentId);
+
+        try {
+            const response = await fetch(`${getNewsModuleUrl()}toggle_status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || getNewsLang().status_error, 'error');
+                return;
+            }
+
+            const newStatus = result.new_status === 'y' ? 'y' : 'n';
+            if (card) {
+                const previousStatus = card.dataset.status;
+                card.dataset.status = newStatus;
+
+                const statusLabelEl = card.querySelector('.status-label-active, .status-label-draft');
+                if (statusLabelEl) {
+                    statusLabelEl.className = newStatus === 'y' ? 'status-label-active' : 'status-label-draft';
+                    statusLabelEl.textContent = newStatus === 'y' ? getNewsLang().active : getNewsLang().draft;
+                }
+
+                if (previousStatus !== newStatus) {
+                    const pubEl = document.getElementById('statPublishedNews');
+                    if (pubEl) {
+                        const currentPub = parseInt(pubEl.textContent, 10) || 0;
+                        pubEl.textContent = Math.max(0, newStatus === 'y' ? currentPub + 1 : currentPub - 1);
+                    }
+                    const draftEl = document.getElementById('statDraftNews');
+                    if (draftEl) {
+                        const currentDrafts = parseInt(draftEl.textContent, 10) || 0;
+                        draftEl.textContent = Math.max(0, newStatus === 'n' ? currentDrafts + 1 : currentDrafts - 1);
+                    }
+                }
+            }
+
+            if (window.navigator.vibrate) window.navigator.vibrate(12);
+            showSnackbar(result.message || getNewsLang().status_updated, 'success');
+        } catch (error) {
+            console.error('Status toggle error:', error);
+            showSnackbar(getNewsLang().status_error, 'error');
+        } finally {
+            if (statusBtn) statusBtn.classList.remove('is-loading');
+            this.syncCardToolbarState(Boolean(this.selectedContentId));
         }
     }
 
     async toggleHeroSlider() {
         if (!this.selectedContentId) return;
+
+        const sliderBtn = document.getElementById('toolbarSlider');
+        const sliderIcon = sliderBtn ? sliderBtn.querySelector('i') : null;
+        if (sliderBtn) sliderBtn.classList.add('is-loading');
+        if (sliderIcon) sliderIcon.className = 'bi bi-arrow-repeat';
 
         const formData = new URLSearchParams();
         formData.append('id', this.selectedContentId);
@@ -848,7 +1055,7 @@ class NewsManager {
 
             this.selectedInHeroSlider = Boolean(result.in_hero_slider);
             this.applyHeroSliderState(this.getSelectedCard(), this.selectedInHeroSlider);
-            this.syncSliderToolbarState(true);
+            if (window.navigator.vibrate) window.navigator.vibrate(12);
             showSnackbar(
                 result.message || (this.selectedInHeroSlider ? getNewsLang().hero_slider_added : getNewsLang().hero_slider_removed),
                 'success'
@@ -856,6 +1063,50 @@ class NewsManager {
         } catch (error) {
             console.error('Hero slider toggle error:', error);
             showSnackbar(getNewsLang().hero_slider_error, 'error');
+        } finally {
+            if (sliderBtn) sliderBtn.classList.remove('is-loading');
+            if (sliderIcon) sliderIcon.className = 'bi bi-stars';
+            this.syncCardToolbarState(Boolean(this.selectedContentId));
+        }
+    }
+
+    async toggleDeck() {
+        if (!this.selectedContentId) return;
+
+        const deckBtn = document.getElementById('toolbarDeck');
+        const deckIcon = deckBtn ? deckBtn.querySelector('i') : null;
+        if (deckBtn) deckBtn.classList.add('is-loading');
+        if (deckIcon) deckIcon.className = 'bi bi-arrow-repeat';
+
+        const formData = new URLSearchParams();
+        formData.append('id', this.selectedContentId);
+
+        try {
+            const response = await fetch(`${getNewsModuleUrl()}toggle_deck`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formData
+            });
+            const result = await response.json();
+
+            if (result.status !== 'success') {
+                showSnackbar(result.message || getNewsLang().deck_error, 'error');
+                return;
+            }
+
+            this.selectedInDeck = Boolean(result.in_deck);
+            this.applyDeckState(this.getSelectedCard(), this.selectedInDeck);
+            if (window.navigator.vibrate) window.navigator.vibrate(12);
+            showSnackbar(
+                result.message || (this.selectedInDeck ? getNewsLang().deck_added : getNewsLang().deck_removed),
+                'success'
+            );
+        } catch (error) {
+            console.error('Deck toggle error:', error);
+            showSnackbar(getNewsLang().deck_error, 'error');
+        } finally {
+            if (deckBtn) deckBtn.classList.remove('is-loading');
+            this.syncCardToolbarState(Boolean(this.selectedContentId));
         }
     }
 }
@@ -914,6 +1165,13 @@ window.sliderSelected = function () {
     const mgr = window.newsManager || window.contentManager;
     if (mgr && mgr.selectedContentId) {
         mgr.toggleHeroSlider();
+    }
+};
+
+window.deckSelected = function () {
+    const mgr = window.newsManager || window.contentManager;
+    if (mgr && mgr.selectedContentId) {
+        mgr.toggleDeck();
     }
 };
 
@@ -1054,22 +1312,41 @@ window.handleContextAction = function (action) {
 };
 
 window.openMediaRelationPicker = function(contentId, type) {
-    if (type !== 'files' && type !== 'video') {
+    if (type !== 'files' && type !== 'video' && type !== 'gallery') {
         return;
     }
 
     let endpoint = `${getNewsModuleUrl()}ajax_get_files`;
+    let addUrl = '';
+    let manageUrl = '';
     
     if (type === 'video') {
         endpoint = `${getNewsModuleUrl()}all_video`;
-        window.currentMediaPickerAddUrl = `${SITE_URL}mod_video_embed/add`;
+        addUrl = `${SITE_URL}mod_video_embed/add`;
+        manageUrl = `${SITE_URL}mod_video_embed/list`;
+    } else if (type === 'gallery') {
+        endpoint = `${getNewsModuleUrl()}ajax_get_galleries`;
+        addUrl = `${SITE_URL}mod_gallery/list/mod_news/${contentId}`;
+        manageUrl = addUrl;
     } else {
-        window.currentMediaPickerAddUrl = `${SITE_URL}mod_attachment/list/mod_news/${contentId}`;
+        addUrl = `${SITE_URL}mod_attachment/list/mod_news/${contentId}`;
+        manageUrl = addUrl;
     }
 
+    window.currentMediaPickerModule = 'mod_news';
+    window.currentMediaPickerRecordId = contentId;
+    window.currentMediaPickerContentId = contentId;
+    window.currentMediaPickerType = type;
+    window.currentMediaPickerAddUrl = addUrl;
+    window.currentMediaPickerManageUrl = manageUrl;
+
     const addBtn = document.getElementById('selectPickerAddBtn');
+    const manageBtn = document.getElementById('selectPickerManageBtn');
     if (addBtn) {
-        addBtn.style.display = 'block';
+        addBtn.classList.remove('is-hidden');
+    }
+    if (manageBtn) {
+        manageBtn.classList.remove('is-hidden');
     }
 
     const pickerData = new FormData();
@@ -1087,7 +1364,7 @@ window.openMediaRelationPicker = function(contentId, type) {
             if (!select) {
                 select = document.createElement('select');
                 select.id = 'dynamicMediaSelect';
-                select.style.display = 'none';
+                select.className = 'is-hidden';
                 document.body.appendChild(select);
 
                 select.addEventListener('change', function() {
@@ -1113,7 +1390,9 @@ window.openMediaRelationPicker = function(contentId, type) {
                                 if (mgr) {
                                     mgr.loadData(true);
                                 }
-                                if (typeof closeSelectPickerSheet === 'function') {
+                                if (window.keepSelectPickerOpenOnce) {
+                                    window.keepSelectPickerOpenOnce = false;
+                                } else if (typeof closeSelectPickerSheet === 'function') {
                                     closeSelectPickerSheet();
                                 }
                             } else {
@@ -1127,9 +1406,6 @@ window.openMediaRelationPicker = function(contentId, type) {
                 });
             }
 
-            window.currentMediaPickerContentId = contentId;
-            window.currentMediaPickerType = type;
-
             const card = document.querySelector(`.content-card[data-id="${contentId}"]`);
             const itemTitle = card?.querySelector('h3')?.textContent?.trim() || '';
 
@@ -1137,15 +1413,19 @@ window.openMediaRelationPicker = function(contentId, type) {
             const pickerLangEl = document.getElementById('selectPickerActiveLang');
             const pickerSubtitleEl = document.getElementById('selectPickerSubtitle');
             
+            const pickerTitleText = type === 'video'
+                ? getNewsLang().picker.video
+                : (type === 'gallery' ? getNewsLang().picker.gallery : getNewsLang().picker.file);
+
             if (pickerTitleEl) {
-                pickerTitleEl.textContent = type === 'video' ? getNewsLang().picker.video : getNewsLang().picker.file;
+                pickerTitleEl.textContent = pickerTitleText;
             }
             if (pickerLangEl) {
                 pickerLangEl.textContent = '';
             }
             if (pickerSubtitleEl) {
                 pickerSubtitleEl.textContent = itemTitle;
-                pickerSubtitleEl.style.display = itemTitle ? 'block' : 'none';
+                pickerSubtitleEl.classList.toggle('is-hidden', !itemTitle);
             }
 
             select.innerHTML = '';
@@ -1157,10 +1437,14 @@ window.openMediaRelationPicker = function(contentId, type) {
             });
 
             if (type === 'video') {
-                select.value = '0';
+                const activeVideos = Array.isArray(currentMedia.video) ? currentMedia.video : [];
+                select.value = activeVideos.length > 0 ? String(activeVideos[0]) : '0';
                 select.dataset.pickerTitle = getNewsLang().picker.video;
+            } else if (type === 'gallery') {
+                select.value = currentMedia.gallery_id ? String(currentMedia.gallery_id) : '0';
+                select.dataset.pickerTitle = getNewsLang().picker.gallery;
             } else {
-                select.value = currentMedia.file_id ? currentMedia.file_id.toString() : '0';
+                select.value = currentMedia.file_id ? String(currentMedia.file_id) : '0';
                 select.dataset.pickerTitle = getNewsLang().picker.file;
             }
 
@@ -1172,6 +1456,59 @@ window.openMediaRelationPicker = function(contentId, type) {
             console.error(error);
             showSnackbar(getNewsLang().error_general, 'error');
         });
+};
+
+window.refreshActiveMediaPicker = function(preferredId = null) {
+    const contentId = window.currentMediaPickerRecordId || window.currentMediaPickerContentId;
+    const type = window.currentMediaPickerType || 'files';
+    if (!contentId) return;
+
+    const endpoint = type === 'video'
+        ? `${getNewsModuleUrl()}all_video`
+        : (type === 'gallery' ? `${getNewsModuleUrl()}ajax_get_galleries` : `${getNewsModuleUrl()}ajax_get_files`);
+    const pickerData = new FormData();
+    pickerData.append('q', '');
+    const currentData = new FormData();
+    currentData.append('id', contentId);
+
+    Promise.all([
+        fetch(endpoint, { method: 'POST', body: pickerData }).then((r) => r.json()),
+        fetch(`${getNewsModuleUrl()}ajax_get_current_media`, { method: 'POST', body: currentData }).then((r) => r.json())
+    ])
+        .then(([data, currentMedia]) => {
+            const select = document.getElementById('dynamicMediaSelect');
+            if (!select) return;
+
+            select.innerHTML = '';
+            data.forEach((item) => {
+                const opt = document.createElement('option');
+                opt.value = item.value || item.id;
+                opt.textContent = item.name || item.text || item.title || String(item.id);
+                select.appendChild(opt);
+            });
+
+            let currentValue = '0';
+            if (preferredId) {
+                currentValue = String(preferredId);
+            } else if (type === 'files' && currentMedia.file_id) {
+                currentValue = String(currentMedia.file_id);
+            } else if (type === 'gallery' && currentMedia.gallery_id) {
+                currentValue = String(currentMedia.gallery_id);
+            } else if (type === 'video' && Array.isArray(currentMedia.video) && currentMedia.video.length > 0) {
+                currentValue = String(currentMedia.video[0]);
+            }
+            const hasMatch = Array.from(select.options).some(o => String(o.value) === currentValue);
+            select.value = hasMatch ? currentValue : '0';
+
+            if (typeof renderSelectPickerOptions === 'function') {
+                renderSelectPickerOptions();
+            }
+            const mgr = window.newsManager || window.contentManager;
+            if (mgr && typeof mgr.loadData === 'function') {
+                mgr.loadData(true);
+            }
+        })
+        .catch((err) => console.error('Refresh media picker error:', err));
 };
 
 window.toggleStatus = function (id, currentStatus) {
@@ -1466,6 +1803,11 @@ class NewsEditManager {
         const generatingText = this.form.dataset.aiGenerating || 'Generating...';
         const selectHeadlineText = this.form.dataset.aiSelectHeadline || 'Select a Headline';
         const copyText = this.form.dataset.aiCopy || 'Use This';
+        const warningTitle = this.form.dataset.aiWarningTitle || 'Warning';
+        const errorTitle = this.form.dataset.aiErrorTitle || 'Error';
+        const contentRequiredText = this.form.dataset.aiContentRequired || 'Title or content is required for AI assistance.';
+        const deckErrorText = this.form.dataset.aiDeckError || 'Failed to generate summary.';
+        const headlineErrorText = this.form.dataset.aiHeadlineError || 'Failed to suggest headlines.';
 
         const btnDeck = document.getElementById('btnAiGenerateDeck');
         const btnHeadlines = document.getElementById('btnAiSuggestHeadlines');
@@ -1497,8 +1839,8 @@ class NewsEditManager {
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Hişyarî',
-                            text: 'Ji bo çêkirina kurtenivîsê divê sernav an naverok hebe.',
+                            title: warningTitle,
+                            text: contentRequiredText,
                             confirmButtonColor: '#6750a4'
                         });
                     }
@@ -1534,8 +1876,8 @@ class NewsEditManager {
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Çewtî',
-                                text: data.error || 'Çêkirina kurtenivîsê bi ser neket.',
+                                title: errorTitle,
+                                text: data.error || deckErrorText,
                                 confirmButtonColor: '#6750a4'
                             });
                         }
@@ -1560,8 +1902,8 @@ class NewsEditManager {
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({
                             icon: 'warning',
-                            title: 'Hişyarî',
-                            text: 'Ji bo pêşniyara sernivîsan divê naverok an sernav hebe.',
+                            title: warningTitle,
+                            text: contentRequiredText,
                             confirmButtonColor: '#6750a4'
                         });
                     }
@@ -1612,8 +1954,8 @@ class NewsEditManager {
                         if (typeof Swal !== 'undefined') {
                             Swal.fire({
                                 icon: 'error',
-                                title: 'Çewtî',
-                                text: data.error || 'Pêşniyara sernivîsan bi ser neket.',
+                                title: errorTitle,
+                                text: data.error || headlineErrorText,
                                 confirmButtonColor: '#6750a4'
                             });
                         }
@@ -1650,7 +1992,6 @@ class NewsEditManager {
             if (catHidden) catHidden.value = id;
             if (catLabel) {
                 catLabel.textContent = name;
-                catLabel.style.color = 'var(--md-sys-color-on-surface)';
             }
             if (typeof toggleWizardCategorySheet === 'function') {
                 toggleWizardCategorySheet();
@@ -1742,23 +2083,20 @@ class NewsEditManager {
     initAlerts() {
         if (this.config.errors && this.config.errors.length > 0 && typeof Swal !== 'undefined') {
             const wrapper = document.createElement('div');
-            wrapper.style.textAlign = 'left';
+            wrapper.className = 'swal-error-wrapper';
 
             const titleRow = document.createElement('div');
-            titleRow.style.marginBottom = '8px';
-            titleRow.innerHTML = '<i class="bi bi-exclamation-triangle-fill" style="color: #ba1a1a;"></i> <b></b>';
+            titleRow.className = 'swal-error-title';
+            titleRow.innerHTML = '<i class="bi bi-exclamation-triangle-fill swal-error-icon"></i> <b></b>';
             titleRow.querySelector('b').textContent = this.config.errorMessage || 'Error';
             wrapper.appendChild(titleRow);
 
             const list = document.createElement('ul');
-            list.style.margin = '0';
-            list.style.paddingLeft = '20px';
-            list.style.fontSize = '14px';
-            list.style.color = '#ba1a1a';
+            list.className = 'swal-error-list';
 
             this.config.errors.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.style.marginBottom = '4px';
+                listItem.className = 'swal-error-item';
                 listItem.textContent = item;
                 list.appendChild(listItem);
             });
@@ -1781,6 +2119,31 @@ class NewsEditManager {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const addShell = document.getElementById('newsAddShell');
+    if (addShell) {
+        if (typeof adminLang !== 'undefined' && Array.isArray(adminLang.languages)) {
+            adminLang.languages = adminLang.languages.filter((item) => item.status === 'y');
+        }
+
+        const wizardOverlay = document.getElementById('contentWizard');
+        if (wizardOverlay) {
+            wizardOverlay.classList.add('active');
+        }
+
+        if (typeof wizardData !== 'undefined') {
+            const activeRouteLang = (addShell.dataset.activeLang || '').toLowerCase();
+            if (activeRouteLang) {
+                wizardData.lang = activeRouteLang;
+            }
+            if (typeof restoreWizardUI === 'function') {
+                restoreWizardUI();
+            } else {
+                if (typeof ensureWizardCategoryMatchesLanguage === 'function') ensureWizardCategoryMatchesLanguage();
+                if (typeof syncWizardCategorySheet === 'function') syncWizardCategorySheet();
+            }
+        }
+    }
+
     if (document.getElementById('content-list-container')) {
         window.newsManager = new NewsManager();
         window.contentManager = window.newsManager;

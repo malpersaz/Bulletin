@@ -10,12 +10,14 @@ class mod_news extends installerbase implements installerbaseinterface
         $this->mod = 'mod_news';
         // Slider is part of the content schema, not a separate module table.
         $this->tables = array(
-            'mod_news',
+            'mod_news'
+        );
+        $this->views = array(
             'newses'
         );
         // Hero slider management reuses edit permission on content records.
         $this->roles = array(
-            'add', 'edit',  'delete', 'list','gallery','file','edit_status','change_status','approval', 'moderate_edit','moderate_delete','video_download'
+            'add', 'edit', 'delete', 'list', 'gallery', 'file', 'edit_status', 'change_status', 'approval', 'moderate_edit', 'moderate_delete', 'video_download'
         );
     }
 
@@ -23,6 +25,9 @@ class mod_news extends installerbase implements installerbaseinterface
     {
         // Create the base content table together with the updated view definition.
         if ($this->create_tables() === FALSE) {
+            return FALSE;
+        }
+        if ($this->create_views() === FALSE) {
             return FALSE;
         }
         // Register module
@@ -38,12 +43,17 @@ class mod_news extends installerbase implements installerbaseinterface
 
     public function uninstall()
     {
-
+        $this->remove_views();
         $this->remove_tables();
+        if ($this->uninstall_blocked === TRUE) {
+            return FALSE;
+        }
+        if (class_exists('BridgeCleanupService')) {
+            BridgeCleanupService::cleanModule('mod_news');
+        }
         $this->remove_mods();
         $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }
-
 }

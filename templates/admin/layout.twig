@@ -21,12 +21,13 @@
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.6.2/dist/cropper.min.js"></script>
 
     <!-- CSS Assets (Absolute Path) -->
-    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/style.css?v=4.41">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/style.css?v=4.44">
     <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/modals/core_modals.css?v=2.3">
     <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_faq.css?v=1.5">
     <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/legal_info.css?v=2.4">
     <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/cookie_policy.css?v=2.0">
     <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/working_hours.css?v=2.0">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_attachment.css?v=1.1">
     {% block styles %}{% endblock %}
 </head>
 <body class="{% if hide_navbar %}hide-navbar{% endif %} {% if hide_search %}hide-search{% endif %}">
@@ -250,6 +251,8 @@
             {% endif %},
             mod_page: {{ lang.mod_page is defined and lang.mod_page is not null ? lang.mod_page|json_encode|raw : 'null' }},
             mod_menu: {{ lang.mod_menu is defined and lang.mod_menu is not null ? lang.mod_menu|json_encode|raw : 'null' }},
+            mod_news: {{ lang.mod_news is defined and lang.mod_news is not null ? lang.mod_news|json_encode|raw : 'null' }},
+            mod_publication: {{ lang.mod_publication is defined and lang.mod_publication is not null ? lang.mod_publication|json_encode|raw : 'null' }},
             active_module: {{ active_module_lang is not null ? active_module_lang|json_encode|raw : 'null' }},
             mod_user: {{ lang.mod_user is defined and lang.mod_user is not null ? lang.mod_user|json_encode|raw : 'null' }},
             mod_settings: {{ lang.mod_settings is defined and lang.mod_settings is not null ? lang.mod_settings|json_encode|raw : 'null' }},
@@ -267,13 +270,13 @@
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.5.1/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/af_modal_engine.js?v=1.21"></script>
-    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_menu.js?v=1.07"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_menu.js?v=1.09"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_theme_logo.js?v=1.05"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_site_status.js?v=1.05"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_redirects.js?v=1.05"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_newsletter.js?v=1.05"></script>
     <script src="{{ site.address }}templates/admin/assets/js/modals/modal_user_profile.js?v=1.08"></script>
-    <script src="{{ site.address }}templates/admin/assets/js/script.js?v=1.98"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/script.js?v=2.01"></script>
     {% block scripts %}{% endblock %}
 </body>
 </html>

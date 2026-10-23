@@ -7,6 +7,7 @@ class newses_model extends ORM
     public $name;
     public $created_at;
     public $status;
+    public $slider;
     public $content;
     public $summary;
     public $seo;
@@ -18,12 +19,12 @@ class newses_model extends ORM
     public $acl_id;
     public $deck;
     public $image;
-    public $hit;
     public $lang;
     public $categoryname;
     public $category_name;
     public $category_seo;
     public $category_id;
+    public $category_acl_id;
     public $username;
     public $user_id;
     public $u_name;
@@ -32,6 +33,7 @@ class newses_model extends ORM
     public $group_name;
     public $gallery_count;
     public $video;
+    public $view_count;
 
     public function __construct()
     {
@@ -41,7 +43,7 @@ class newses_model extends ORM
 
     private function ensureViewExists()
     {
-        if ($this->viewExists('newses') && $this->hasUserImageColumn()) {
+        if ($this->viewExists('newses') && $this->hasUserImageColumn() && $this->hasViewCountColumn() && $this->hasCategoryAclIdColumn()) {
             return;
         }
 
@@ -66,10 +68,12 @@ class newses_model extends ORM
     mod_news.file_id AS file_id,
     mod_news.lang,
     mod_news.video,
+    mod_news.view_count,
     mod_news_category.name AS category_name,
     mod_news_category.name AS categoryname,
     mod_news_category.seo AS category_seo,
     mod_news_category.id AS category_id,
+    mod_news_category.acl_id AS category_acl_id,
     mod_user.username,
     mod_user.id AS user_id,
     mod_user.name AS u_name,
@@ -92,12 +96,27 @@ class newses_model extends ORM
 
     private function hasUserImageColumn()
     {
+        return $this->hasViewColumn('user_image');
+    }
+
+    private function hasViewCountColumn()
+    {
+        return $this->hasViewColumn('view_count');
+    }
+
+    private function hasCategoryAclIdColumn()
+    {
+        return $this->hasViewColumn('category_acl_id');
+    }
+
+    private function hasViewColumn($columnName)
+    {
         try {
             if ($this->getAdapterType() && strpos($this->getAdapterType(), 'PDO_SQLITE') !== false) {
                 $this->fetch_array("PRAGMA table_info('newses')");
                 if (is_array($this->_result)) {
                     foreach ($this->_result as $col) {
-                        if (isset($col['name']) && $col['name'] === 'user_image') {
+                        if (isset($col['name']) && $col['name'] === $columnName) {
                             return true;
                         }
                     }
@@ -105,7 +124,8 @@ class newses_model extends ORM
                 return false;
             }
 
-            $this->fetch_array("SHOW COLUMNS FROM newses LIKE 'user_image'");
+            $safeCol = addslashes($columnName);
+            $this->fetch_array("SHOW COLUMNS FROM newses LIKE '" . $safeCol . "'");
             return $this->getSize() !== 0;
         } catch (\Throwable $e) {
             return false;

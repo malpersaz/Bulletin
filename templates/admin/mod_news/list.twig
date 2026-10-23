@@ -2,6 +2,7 @@
 {% set hide_navbar = true %}
 {% set hide_fab = true %}
 {% set show_search = true %}
+{% set show_search_filter_button = true %}
 {% set wizard_module = 'mod_news' %}
 {% extends 'admin/layout.twig' %}
 {% block title %}{{ lang.mod_news.list }}{% endblock %}
@@ -9,25 +10,30 @@
 {% block headline %}{{ lang.mod_news.list }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v=3">
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v={{ site.version }}.4">
 {% endblock %}
 
 {% block content %}
-{% set stat_total_news_label = lang.management.total_news %}
-{% set stat_draft_news_label = lang.management.draft_news %}
-{% set empty_zero_records_label = lang.mod_news.datatable.zeroRecords|default(lang.mod_news.grid.no_data) %}
-{% set empty_table_label = lang.mod_news.datatable.emptyTable|default(lang.mod_news.grid.no_data) %}
-{% set loading_records_label = lang.mod_news.datatable.loadingRecords|default(lang.mod_news.grid.loading) %}
+{% set stat_total_news_label = lang.mod_news.status_badge.general %}
+{% set stat_published_news_label = lang.mod_news.status_badge.active %}
+{% set stat_draft_news_label = lang.mod_news.status_badge.draft %}
+{% set empty_zero_records_label = lang.mod_news.datatable.zeroRecords %}
+{% set empty_table_label = lang.mod_news.datatable.emptyTable %}
+{% set loading_records_label = lang.mod_news.datatable.loadingRecords %}
 <div class="content-stats-container">
     <div class="content-stats-row">
-        <div class="content-stat-card">
-            <div id="statTotalNews" class="content-stat-value">{{ total_news }}</div>
+        <button type="button" class="content-stat-card active" data-status-filter="all" aria-label="{{ stat_total_news_label }}">
+            <div id="statTotalNews" class="content-stat-value">{{ total_news|default(0) }}</div>
             <div class="content-stat-label">{{ stat_total_news_label }}</div>
-        </div>
-        <div class="content-stat-card">
-            <div id="statDraftNews" class="content-stat-value">{{ draft_news }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-published" data-status-filter="y" aria-label="{{ stat_published_news_label }}">
+            <div id="statPublishedNews" class="content-stat-value">{{ published_news|default(0) }}</div>
+            <div class="content-stat-label">{{ stat_published_news_label }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-draft" data-status-filter="n" aria-label="{{ stat_draft_news_label }}">
+            <div id="statDraftNews" class="content-stat-value">{{ draft_news|default(0) }}</div>
             <div class="content-stat-label">{{ stat_draft_news_label }}</div>
-        </div>
+        </button>
     </div>
 </div>
 
@@ -63,6 +69,7 @@
     <input type="hidden" name="search[name]" id="filterSearch" value="">
     <input type="hidden" name="search[lang]" id="filterLang" value="">
     <input type="hidden" name="search[category_id]" id="filterCategory" value="">
+    <input type="hidden" name="search_radio[status]" id="filterStatus" value="">
     <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
     <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
 </form>
@@ -78,6 +85,7 @@
                 <span id="newsImageModalTitle">{{ lang.mod_news.wizard.step.image }}</span>
                 <span id="newsImageModalSubtitle" hidden></span>
             </div>
+            <button type="button" id="newsImageSaveBtn" class="m3-btn-text news-image-save" data-action="submit-list-image-upload" disabled hidden>{{ lang.mod_news.wizard.button.save }}</button>
         </header>
 
         <div class="wizard-progress-bar">
@@ -104,13 +112,11 @@
                     'data-empty-meta': lang.mod_news.wizard.image.drop_description
                 },
                 dropzone_id: 'listImageDropzone',
-                trigger_picker_js: "document.getElementById('listImgInput')?.click()",
                 empty_state_id: 'listImageEmptyState',
                 drop_title: lang.mod_news.wizard.image.drop_title,
                 upload_link: lang.mod_news.wizard.image.upload_link,
                 preview_card_id: 'listImagePreviewCard',
                 remove_button_label: lang.mod_news.button.delete,
-                remove_action_js: 'window.newsManager?.handleListImageRemoveAction()',
                 preview_img_id: 'listImgPreview',
                 preview_alt: '',
                 preview_hidden: true,
@@ -129,50 +135,80 @@
                 link_action: lang.mod_news.wizard.image.link_action,
                 file_input_id: 'listImgInput'
             } %}
+
+            <div id="newsImageModalFooter" class="wizard-footer news-image-modal__footer is-single-action">
+                <button type="button" id="newsImageCancelBtn" class="m3-btn-outlined" data-action="close-image-uploader">{{ lang.mod_news.button.cancel }}</button>
+            </div>
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar news-toolbar" id="contentToolbar">
-        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_news.hero_slider_add }}">
+<div class="standard-toolbar news-toolbar" id="contentToolbar" role="toolbar" aria-label="{{ lang.mod_news.list }}" aria-hidden="true">
+    {% if session.permissions.mod_news.edit is defined or session.permissions.mod_news.change_status is defined or session.permissions.mod_news.approval is defined %}
+        <button id="toolbarStatus" class="toolbar-item is-disabled" data-action="toggle-status" title="{{ lang.mod_news.status_badge.active }}" aria-label="{{ lang.mod_news.status_badge.active }}">
+            <i class="bi bi-eye-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_news.edit is defined %}
+        <button id="toolbarDeck" class="toolbar-item is-disabled" data-action="toggle-deck" title="{{ lang.mod_news.deck_add }}" aria-label="{{ lang.mod_news.deck_add }}">
+            <i class="bi bi-bookmark-star"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_news.edit is defined %}
+        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_news.hero_slider_add }}" aria-label="{{ lang.mod_news.hero_slider_add }}">
             <i class="bi bi-stars"></i>
         </button>
+    {% endif %}
 
-        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_news.context_menu.video }}">
+    {% if session.permissions.mod_news.edit is defined %}
+        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_news.context_menu.video }}" aria-label="{{ lang.mod_news.context_menu.video }}">
             <i class="bi bi-camera-video"></i>
         </button>
+    {% endif %}
 
-        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_news.context_menu.gallery }}">
-            <i class="bi bi-image"></i>
+    {% if session.permissions.mod_news.gallery is defined %}
+        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_news.context_menu.gallery }}" aria-label="{{ lang.mod_news.context_menu.gallery }}">
+            <i class="bi bi-images"></i>
         </button>
+    {% endif %}
 
-        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_news.context_menu.files }}">
+    {% if session.permissions.mod_news.file is defined %}
+        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_news.context_menu.files }}" aria-label="{{ lang.mod_news.context_menu.files }}">
             <i class="bi bi-paperclip"></i>
         </button>
+    {% endif %}
 
-        {% if session.permissions.mod_news.faq is defined or session.permissions.mod_news.edit is defined %}
-        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_faq.module_title }}">
+    {% if session.permissions.mod_news.faq is defined or session.permissions.mod_news.edit is defined %}
+        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_faq.module_title }}" aria-label="{{ lang.mod_faq.module_title }}">
             <i class="bi bi-patch-question-fill"></i>
         </button>
-        {% endif %}
+    {% endif %}
 
-        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_news.context_menu.edit }}">
+    {% if session.permissions.mod_news.edit is defined %}
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_news.context_menu.edit }}" aria-label="{{ lang.mod_news.context_menu.edit }}">
             <i class="bi bi-pencil-fill"></i>
         </button>
+    {% endif %}
 
-        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_news.context_menu.delete }}">
+    {% if session.permissions.mod_news.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_news.context_menu.delete }}" aria-label="{{ lang.mod_news.context_menu.delete }}">
             <i class="bi bi-trash3-fill"></i>
         </button>
-    </div>
+    {% endif %}
+</div>
 
+{% if session.permissions.mod_news.add is defined %}
     <!-- Main FAB Link -->
     <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_news/add" aria-label="{{ lang.mod_news.add }}">
         <i class="bi bi-plus-lg"></i>
     </a>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
-<script src="/templates/admin/assets/js/mod_news.js?v=4.4"></script>
+<script src="/templates/admin/assets/js/mod_news.js?v={{ site.version }}.4"></script>
 {% endblock %}

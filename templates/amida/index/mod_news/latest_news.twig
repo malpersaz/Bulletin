@@ -11,12 +11,12 @@
                 <h2 id="latest-news-heading" class="latest-news-title">
                     <a href="{{ site.saddress }}newses" class="latest-news-title-link">
                         <i class="bi bi-newspaper" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_news.latest_news.1 }}</span>
+                        <span>{{ lang.index.mod_news.latest_news.title }}</span>
                     </a>
                 </h2>
             </div>
             <a href="{{ site.saddress }}newses" class="latest-news-view-all">
-                <span>{{ lang.index.mod_news.latest_news.2 }}</span>
+                <span>{{ lang.index.mod_news.latest_news.all_items }}</span>
                 <i class="bi bi-arrow-right" aria-hidden="true"></i>
             </a>
         </header>
@@ -58,12 +58,12 @@
                             {% if news.has_video or news.has_gallery %}
                                 <div class="latest-news-type-badges">
                                     {% if news.has_video %}
-                                        <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.1 }}" aria-label="{{ lang.index.mod_video_embed.1 }}">
+                                        <span class="latest-news-type-badge latest-news-type-badge-video" title="{{ lang.index.mod_video_embed.title }}" aria-label="{{ lang.index.mod_video_embed.title }}">
                                             <i class="bi bi-camera-video-fill" aria-hidden="true"></i>
                                         </span>
                                     {% endif %}
                                     {% if news.has_gallery %}
-                                        <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.search.gallery }}" aria-label="{{ lang.index.search.gallery }}">
+                                        <span class="latest-news-type-badge latest-news-type-badge-gallery" title="{{ lang.index.mod_pictures.title }}" aria-label="{{ lang.index.mod_pictures.title }}">
                                             <i class="bi bi-images" aria-hidden="true"></i>
                                         </span>
                                     {% endif %}
@@ -117,7 +117,7 @@
 
         <footer class="latest-news-mobile-footer text-center d-md-none">
             <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100">
-                <span>{{ lang.index.mod_news.latest_news.2 }}</span>
+                <span>{{ lang.index.mod_news.latest_news.all_items }}</span>
                 <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
             </a>
         </footer>
@@ -129,7 +129,7 @@
                 <h2 id="latest-news-heading" class="latest-news-title">
                     <span class="latest-news-title-link">
                         <i class="bi bi-newspaper" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_news.latest_news.1 }}</span>
+                        <span>{{ lang.index.mod_news.latest_news.title }}</span>
                     </span>
                 </h2>
             </div>
@@ -137,7 +137,7 @@
         <div class="latest-news-empty">
             <i class="bi bi-newspaper latest-news-empty-icon" aria-hidden="true"></i>
             <p class="latest-news-empty-text">
-                {{ lang.index.mod_news.latest_news.3 }}
+                {{ lang.index.mod_news.latest_news.no_items_found }}
             </p>
         </div>
     </section>

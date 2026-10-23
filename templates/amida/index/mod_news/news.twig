@@ -2,9 +2,9 @@
 {% import "macros/faq.twig" as faq %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.1.33') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.1.33') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version|default('1.1.33') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.1.39') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.1.39') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version|default('1.1.39') }}">
 {% endblock %}
 
 {% block detail_plugins %}
@@ -22,7 +22,9 @@
 {% set faq_lang = ctx_get('faq_lang') %}
 {% set news_24h = ctx_get('news_24h') %}
 {% set has_news_category = d.categoryname is defined and d.categoryname|trim is not empty and d.category_seo is defined and d.category_seo|trim is not empty %}
-{% set news_all_label = lang.index.mod_news[2] %}
+{% set news_all_label = lang.index.mod_news.all_news %}
+{% set author_full_name = (d.u_name is defined and d.u_name is not empty) ? (d.u_name ~ ' ' ~ (d.u_last_name ?? ''))|trim : site.title %}
+{% set author_initials = (d.u_name is defined and d.u_name is not empty) ? ((d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper) : (site.title|default('R')|slice(0, 2)|upper) %}
 
 {% set news_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
 {% set news_share_image = d.image is not empty ? site.iaddress ~ 'mod_news/' ~ d.image : news_logo_asset %}
@@ -95,15 +97,19 @@
 	<script type="application/ld+json">
 		{
 		  "@context": "https://schema.org",
-		  "@type": "Article",
+		  "@type": "NewsArticle",
 		  "headline": {{ d.name|json_encode|raw }},
-		  "image": {% if d.image is not empty %}{{ (site.iaddress ~ 'mod_news/thumb/' ~ d.image)|json_encode|raw }}{% else %}{{ (site.iaddress ~ 'mod_settings/logo.png')|json_encode|raw }}{% endif %},
-		  "author": {
+		  "image": {% if d.image is not empty %}{{ (site.iaddress ~ 'mod_news/' ~ d.image)|json_encode|raw }}{% else %}{{ news_logo_asset|json_encode|raw }}{% endif %},
+		  "author": {% if d.u_name is defined and d.u_name is not empty %}{
+		    "@type": "Person",
+		    "name": {{ author_full_name|json_encode|raw }}{% if d.username is defined and d.username is not empty %},
+		    "url": {{ (site.saddress ~ 'author/' ~ d.username)|json_encode|raw }}{% endif %}
+		  }{% else %}{
 		    "@type": "Organization",
 		    "name": {{ site.title|json_encode|raw }}
 		    {% if site.legal_company_name is defined and site.legal_company_name is not empty %}, "legalName": {{ site.legal_company_name|json_encode|raw }}{% endif %}
 		    {% if site.address is defined and site.address is not empty %}, "url": {{ site.address|json_encode|raw }}{% endif %}
-		  },
+		  }{% endif %},
 		  "publisher": {
 		    "@type": "Organization",
 		    "name": {{ site.title|json_encode|raw }},
@@ -172,7 +178,7 @@
 	<div class="row g-4 {% if news_24h is empty %}justify-content-center{% endif %} detail-shell detail-shell-news" id="mod_news">
 
 		<div class="col-lg-8">
-			<article class="detail-card">
+			<article class="detail-card news-detail-card">
 				<div class="detail-breadcrumb-wrap">
 					<nav aria-label="breadcrumb">
 						<ol class="breadcrumb mb-0" itemscope itemtype="https://schema.org/BreadcrumbList">
@@ -188,200 +194,240 @@
 								</a>
 								<meta itemprop="position" content="2"/>
 							</li>
-								{% if has_news_category %}
-									<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-										<a itemprop="item" href="{{ site.saddress }}newses/{{ d.category_seo }}">
-											<span itemprop="name">{{ d.categoryname }}</span>
-										</a>
-										<meta itemprop="position" content="3"/>
-									</li>
-								{% endif %}
-								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<span itemprop="name">{{ d.name }}</span>
-									<meta itemprop="position" content="{{ has_news_category ? 4 : 3 }}"/>
+							{% if has_news_category %}
+								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<a itemprop="item" href="{{ site.saddress }}newses/{{ d.category_seo }}">
+										<span itemprop="name">{{ d.categoryname }}</span>
+									</a>
+									<meta itemprop="position" content="3"/>
 								</li>
+							{% endif %}
+							<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+								<span itemprop="name">{{ d.name }}</span>
+								<meta itemprop="position" content="{{ has_news_category ? 4 : 3 }}"/>
+							</li>
 						</ol>
 					</nav>
 				</div>
-                <div class="detail-content position-relative">
-                    {% set readingTime = (d.content|striptags|length / 1000)|round(0, 'ceil') %}
+				<div class="detail-content position-relative">
+					{% set readingTime = (d.content|striptags|length / 1000)|round(0, 'ceil') %}
+					{% if readingTime < 1 %}{% set readingTime = 1 %}{% endif %}
 					<div class="detail-story-intro">
-	                        <div class="detail-story-meta">
-	                            {% if has_news_category %}
-	                                <a class="detail-story-kicker text-decoration-none" href="{{ site.saddress }}newses/{{ d.category_seo }}">{{ d.categoryname }}</a>
-	                            {% endif %}
-	                            <span class="detail-story-reading">
-	                                <i class="bi bi-clock-history"></i>
-	                                <span>{{ readingTime }} {{ lang.index.min_read }}</span>
-                            </span>
-                        </div>
-						<h1 class="detail-title">{{ d.name }}</h1>
-                    </div>
+						<div class="detail-story-meta">
+							{% if has_news_category %}
+								<a class="detail-story-kicker text-decoration-none" href="{{ site.saddress }}newses/{{ d.category_seo }}">{{ d.categoryname }}</a>
+							{% endif %}
+							<span class="detail-story-reading">
+								<i class="bi bi-clock-history"></i>
+								<span>{{ readingTime }} {{ lang.index.min_read }}</span>
+							</span>
+						</div>
+						<h1 class="detail-title news-detail-title">{{ d.name }}</h1>
+
+						<div class="detail-meta-bar news-byline-bar">
+							<div class="news-byline-author">
+								{% if d.username is defined and d.username is not empty %}
+									<a href="{{ site.saddress }}author/{{ d.username }}" class="news-byline-avatar-link" aria-label="{{ author_full_name }}">
+								{% else %}
+									<div class="news-byline-avatar-link">
+								{% endif %}
+								{% if d.user_image is defined and d.user_image is not empty %}
+									<img src="{{ site.iaddress }}mod_user/thumb/{{ d.user_image }}"
+									     alt="{{ author_full_name }}"
+									     class="news-byline-avatar"
+									     width="56"
+									     height="56">
+								{% else %}
+									<div class="news-byline-avatar news-byline-avatar-initials">
+										{{ author_initials }}
+									</div>
+								{% endif %}
+								{% if d.username is defined and d.username is not empty %}
+									</a>
+								{% else %}
+									</div>
+								{% endif %}
+
+								<div class="detail-meta-copy news-byline-copy">
+									<div class="news-byline-name-row">
+										{% if d.username is defined and d.username is not empty %}
+											<a href="{{ site.saddress }}author/{{ d.username }}" class="news-byline-name">
+												{{ author_full_name }}
+											</a>
+										{% else %}
+											<span class="news-byline-name">{{ author_full_name }}</span>
+										{% endif %}
+										{% if has_news_category %}
+											<a href="{{ site.saddress }}newses/{{ d.category_seo }}" class="news-byline-role text-decoration-none">{{ d.categoryname }}</a>
+										{% endif %}
+									</div>
+									<div class="news-byline-dates">
+										<span class="news-byline-date-item">
+											<i class="bi bi-calendar3"></i>
+											<span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time></span>
+										</span>
+										{% if d.updated_at is not empty and d.updated_at != d.created_at %}
+											<span class="news-byline-date-item">
+												<i class="bi bi-pencil-square"></i>
+												<span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('Y-m-d') }}">{{ d.updated_at|date('d.m.Y') }}</time></span>
+											</span>
+										{% endif %}
+									</div>
+								</div>
+							</div>
+
+							<div class="detail-tools news-byline-tools">
+								<a href="{{ site.saddress }}tools/saveText/mod_news/{{ d.id }}" rel="nofollow noindex" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery.save_txt }}" aria-label="{{ lang.index.mod_gallery.save_txt }}">
+									<i class="bi bi-file-text"></i>
+								</a>
+								{% if files %}
+									{% for file_item in files %}
+										{% set file_display_name = file_item.filename is defined and file_item.filename is not empty ? file_item.filename : file_item.original_name %}
+										<a href="{{ site.saddress }}tools/saveFile/mod_news/{{ d.id }}/{{ file_item.id }}" rel="nofollow noindex" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}" aria-label="{{ lang.index.mod_attachment.file }}: {{ file_display_name }}">
+											<i class="bi bi-download"></i>
+										</a>
+									{% endfor %}
+								{% endif %}
+								<button type="button" data-action="print" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip" title="{{ lang.index.mod_gallery.print }}" aria-label="{{ lang.index.mod_gallery.print }}">
+									<i class="bi bi-printer"></i>
+								</button>
+							</div>
+						</div>
+					</div>
 
 					<div>
 						{% if d.deck is defined and d.deck == 'y' and d.summary is not empty %}
-							<div class="detail-lead">
-							    <p class="mb-0">
-							        {{ d.summary }}
-                                </p>
-                            </div>
+							<div class="detail-lead news-detail-lead">
+								<p class="mb-0">
+									{{ d.summary }}
+								</p>
+							</div>
 						{% endif %}
 
-						{% if d.image is not empty and d.image != '#' %}
+						{% if d.image is defined and d.image is not empty and d.image != '#' %}
 							<div class="detail-hero">
 								<a href="{{ site.iaddress }}mod_news/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="news-main-image" aria-label="{{ d.name|escape('html_attr') }}">
 									<img src="{{ site.iaddress }}mod_news/{{ d.image }}" fetchpriority="high" class="detail-hero-image" alt="{{ d.name }}" title="{{ d.name }}">
 								</a>
 							</div>
-						{% else %}
-							<div class="detail-hero detail-hero-placeholder">
-								{% if site.logo_path is defined and site.logo_path is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" class="detail-placeholder-logo" alt="{{ site.title }}" title="{{ d.name }}">
-								{% elseif site.logo_symbol is defined and site.logo_symbol is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_symbol }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
-								{% elseif site.site_icon is defined and site.site_icon is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.site_icon }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
-								{% endif %}
-							</div>
 						{% endif %}
 
-	                        <div class="detail-story-context">
-	                            {% if has_news_category %}
-	                                <span class="detail-story-context-item">
-	                                    <i class="bi bi-broadcast"></i>
-	                                    <a href="{{ site.saddress }}newses/{{ d.category_seo }}">{{ d.categoryname }}</a>
-	                                </span>
-	                            {% endif %}
-                            {% if d.u_name is defined and d.u_name is not empty %}
-                                <span class="detail-story-context-item">
-                                    {% if d.username is defined and d.username is not empty %}<a href="{{ site.saddress }}author/{{ d.username }}" class="d-inline-flex align-items-center gap-2 text-decoration-none">{% endif %}
-                                    {% if d.user_image is defined and d.user_image is not empty %}
-                                        <img src="{{ site.iaddress }}mod_user/thumb/{{ d.user_image }}" alt="{{ d.u_name }} {{ d.u_last_name }}" class="detail-story-context-avatar">
-                                    {% else %}
-                                        <span class="detail-story-context-initials">{{ (d.u_name|default('')|slice(0, 1) ~ d.u_last_name|default('')|slice(0, 1))|upper }}</span>
-                                    {% endif %}
-                                    <strong>{{ d.u_name }} {{ d.u_last_name }}</strong>
-                                    {% if d.username is defined and d.username is not empty %}</a>{% endif %}
-                                </span>
-                            {% endif %}
-                            <span class="detail-story-context-item">
-                                <i class="bi bi-calendar3"></i>
-                                <span>{{ lang.index.publish_date }}: <time datetime="{{ d.created_at|date('Y-m-d') }}">{{ d.created_at|date('d.m.Y') }}</time></span>
-                            </span>
-                            {% if d.updated_at != d.created_at %}
-                            <span class="detail-story-context-item">
-                                <i class="bi bi-pencil-square"></i>
-                                <span>{{ lang.index.updated_date }}: <time datetime="{{ d.updated_at|date('Y-m-d') }}">{{ d.updated_at|date('d.m.Y') }}</time></span>
-                            </span>
-                            {% endif %}
-                        </div>
+						{% include 'partials/share.twig' with {
+							'share_wrap_class': 'detail-share-quiet mb-4',
+							'share_container_class': 'justify-content-start',
+							'share_url_path': 'news',
+							'show_share_text': false
+						} %}
 
-                        {% include 'partials/share.twig' with {
-                            'share_wrap_class': 'd-block d-lg-none mb-4 detail-share-quiet',
-                            'share_container_class': 'justify-content-start',
-                            'share_url_path': 'news',
-                            'show_share_text': false
-                        } %}
-
-						<div class="detail-body news-body">
+						<div itemprop="articleBody" class="detail-body news-body">
 							{{ d.content|raw }}
 						</div>
 
-                        {% include 'partials/share_toolbar.twig' with {
-                            'share_url_path': 'news',
-                            'mod_name': 'mod_news',
-                            'item_id': d.id,
-                            'has_gallery': gallery is defined and gallery is not empty
-                        } %}
+						{% include 'partials/share_toolbar.twig' with {
+							'share_url_path': 'news',
+							'mod_name': 'mod_news',
+							'item_id': d.id,
+							'has_gallery': gallery is defined and gallery is not empty
+						} %}
 
-                        {% if video is not empty %}
-                            <section id="mod_video" class="detail-section" aria-labelledby="video-title">
-                                <h2 id="video-title" class="detail-section-heading h4"><i class="bi bi-play-btn"></i>{{ lang.index.mod_video_embed.title }}</h2>
-                                <div class="row">
-                                    {% for v in video %}
-                                        <div class="col-12 mb-4">
-                                            {% if v.embed is defined and v.embed is not empty %}
-                                                <div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
-                                                    {{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
-                                                </div>
-                                            {% else %}
-                                                <a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
-                                                    <div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
-                                                        <img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
-                                                        <i class="bi bi-play-circle-fill play-icon"></i>
-                                                    </div>
-                                                </a>
-                                            {% endif %}
-                                            <p class="fw-bold mt-3 text-center">{{ v.name }}</p>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </section>
-                        {% endif %}
+						{% if video is not empty %}
+							<section id="mod_video" class="detail-section" aria-labelledby="video-title">
+								<h2 id="video-title" class="detail-section-heading h4"><i class="bi bi-play-btn"></i>{{ lang.index.mod_video_embed.title }}</h2>
+								<div class="row">
+									{% for v in video %}
+										<div class="col-12 mb-4">
+											{% if v.embed is defined and v.embed is not empty %}
+												<div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
+													{{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
+												</div>
+											{% else %}
+												<a href="{{ site.saddress }}tools/videoFlv/mod_news/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
+													<div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
+														<img src="{{ site.address }}tools/videoResim/mod_news/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
+														<i class="bi bi-play-circle-fill play-icon"></i>
+													</div>
+												</a>
+											{% endif %}
+											<p class="fw-bold mt-3 text-center">{{ v.name }}</p>
+										</div>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
 
-                        {% if gallery is not empty %}
-                            <section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
-                                <h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_pictures.title }}</h2>
-                                <div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
-                                    {% for image in gallery %}
-                                        {% set img_mod = image.mod_name ?: 'mod_news' %}
-                                        <div class="col-6 col-md-4 mb-3">
-                                            <div class="detail-gallery-card">
-                                                <a href="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image.url }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ image.name|escape('html_attr') }}" aria-label="{{ lang.index.enlarge_image }}: {{ image.name|escape('html_attr') }}">
-                                                    <img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image.url }}" class="card-img-top" alt="{{ image.name|escape('html_attr') }}" loading="lazy">
-                                                </a>
-                                                {% if image.name %}
-                                                    <div class="card-body p-2 text-center">
-                                                        <p class="card-text small text-muted text-truncate mb-0">{{ image.name }}</p>
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </section>
-                        {% endif %}
+						{% if gallery is not empty %}
+							<section class="detail-section" id="mod_gallery" aria-labelledby="gallery-title">
+								<h2 id="gallery-title" class="detail-section-heading h4"><i class="bi bi-images me-2"></i>{{ lang.index.mod_pictures.title }}</h2>
+								<div class="row g-3 detail-gallery-grid" data-masonry='{"percentPosition": true }' data-bs-images-loaded="true">
+									{% for image in gallery %}
+										{% set img_mod = image.mod_name ?: 'mod_news' %}
+										<div class="col-6 col-md-4 mb-3">
+											<div class="detail-gallery-card">
+												<a href="{{ site.iaddress }}mod_gallery/{{ img_mod }}/original/{{ image.url }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="multiimages" data-title="{{ image.name|escape('html_attr') }}" aria-label="{{ lang.index.enlarge_image }}: {{ image.name|escape('html_attr') }}">
+													<img src="{{ site.iaddress }}mod_gallery/{{ img_mod }}/thumb/{{ image.url }}" class="card-img-top" alt="{{ image.name|escape('html_attr') }}" loading="lazy">
+												</a>
+												{% if image.name %}
+													<div class="card-body p-2 text-center">
+														<p class="card-text small text-muted text-truncate mb-0">{{ image.name }}</p>
+													</div>
+												{% endif %}
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</section>
+						{% endif %}
 
-                        {% if files is not empty %}
-                            <section class="detail-section" aria-labelledby="files-title">
-                                <h2 id="files-title" class="detail-section-heading h4"><i class="bi bi-cloud-download"></i>{{ lang.index.mod_attachment.title }}</h2>
-                                <div class="detail-file-list">
-                                    {% for file_item in files %}
-                                        {% set extension = file_item.original_name|split('.')|last|lower %}
-                                        {% set file_icon = 'bi-file-earmark-arrow-down' %}
-                                        {% set badge_color = 'bg-secondary' %}
-                                        
-                                        {% if extension == 'pdf' %}{% set file_icon = 'bi-file-earmark-pdf' %}{% set badge_color = 'bg-danger' %}
-                                        {% elseif extension == 'zip' or extension == 'rar' %}{% set file_icon = 'bi-file-earmark-zip' %}{% set badge_color = 'bg-warning text-dark' %}
-                                        {% elseif extension == 'doc' or extension == 'docx' or extension == 'odt' %}{% set file_icon = 'bi-file-earmark-word' %}{% set badge_color = 'bg-primary' %}
-                                        {% elseif extension == 'xls' or extension == 'xlsx' %}{% set file_icon = 'bi-file-earmark-excel' %}{% set badge_color = 'bg-success' %}
-                                        {% elseif extension == 'ppt' or extension == 'pptx' %}{% set file_icon = 'bi-file-earmark-ppt' %}{% set badge_color = 'bg-info text-dark' %}
-                                        {% elseif extension == 'jpg' or extension == 'jpeg' or extension == 'png' or extension == 'gif' %}{% set file_icon = 'bi-file-earmark-image' %}{% set badge_color = 'bg-info' %}
-                                        {% elseif extension == 'epub' %}{% set file_icon = 'bi-book' %}{% set badge_color = 'bg-success' %}
-                                        {% endif %}
-                                        
-                                        <a href="{{ site.address }}tools/saveFile/mod_news/{{ d.id }}/{{ file_item.id }}" class="detail-file-link">
-                                            <div class="detail-file-meta">
-                                                <div class="detail-file-icon">
-                                                    <i class="bi {{ file_icon }}"></i>
-                                                </div>
-                                                <div>
-                                                    <h6 class="detail-file-title">{{ file_item.original_name }}</h6>
-                                                    <span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
-                                                </div>
-                                            </div>
-                                            <div class="ms-3">
-                                                <span class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
-                                                    <i class="bi bi-download me-1"></i> {{ lang.index.download }}
-                                                </span>
-                                            </div>
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            </section>
-                        {% endif %}
+						{% if files is not empty %}
+							<section class="detail-section" id="news-attachments" aria-labelledby="files-title">
+								<div class="rounded-4 border bg-body-tertiary p-4 p-md-4 shadow-sm">
+									<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+										<div>
+											<h2 id="files-title" class="detail-section-heading h4 mb-1"><i class="bi bi-cloud-download"></i>{{ lang.index.mod_attachment.title }}</h2>
+											<p class="mb-0 text-muted small">{{ files|length }} {{ lang.index.download }}</p>
+										</div>
+										<span class="badge rounded-pill text-bg-light border px-3 py-2">{{ files|length }}</span>
+									</div>
 
-                        {{ faq.render(faqs, faq_lang.mod_faq.title|default('FAQ')) }}
+									<div class="detail-file-list">
+										{% for file_item in files %}
+											{% set file_display_name = file_item.filename is defined and file_item.filename is not empty ? file_item.filename : file_item.original_name %}
+											{% set extension = file_item.original_name|split('.')|last|lower %}
+											{% set file_icon = 'bi-file-earmark-arrow-down' %}
+											{% set badge_color = 'bg-secondary' %}
+
+											{% if extension == 'pdf' %}{% set file_icon = 'bi-file-earmark-pdf' %}{% set badge_color = 'bg-danger' %}
+											{% elseif extension == 'zip' or extension == 'rar' %}{% set file_icon = 'bi-file-earmark-zip' %}{% set badge_color = 'bg-warning text-dark' %}
+											{% elseif extension == 'doc' or extension == 'docx' or extension == 'odt' %}{% set file_icon = 'bi-file-earmark-word' %}{% set badge_color = 'bg-primary' %}
+											{% elseif extension == 'xls' or extension == 'xlsx' %}{% set file_icon = 'bi-file-earmark-excel' %}{% set badge_color = 'bg-success' %}
+											{% elseif extension == 'ppt' or extension == 'pptx' %}{% set file_icon = 'bi-file-earmark-ppt' %}{% set badge_color = 'bg-info text-dark' %}
+											{% elseif extension == 'jpg' or extension == 'jpeg' or extension == 'png' or extension == 'gif' %}{% set file_icon = 'bi-file-earmark-image' %}{% set badge_color = 'bg-info' %}
+											{% elseif extension == 'epub' %}{% set file_icon = 'bi-book' %}{% set badge_color = 'bg-success' %}
+											{% endif %}
+
+											<a href="{{ site.saddress }}tools/saveFile/mod_news/{{ d.id }}/{{ file_item.id }}" rel="nofollow noindex" class="detail-file-link">
+												<div class="detail-file-meta">
+													<div class="detail-file-icon">
+														<i class="bi {{ file_icon }}"></i>
+													</div>
+													<div>
+														<h6 class="detail-file-title">{{ file_display_name }}</h6>
+														<span class="badge {{ badge_color }} text-uppercase small">{{ extension }}</span>
+													</div>
+												</div>
+												<div class="ms-3">
+													<span class="btn btn-primary btn-sm rounded-pill px-3 shadow-sm">
+														<i class="bi bi-download me-1"></i>{{ lang.index.download }}
+													</span>
+												</div>
+											</a>
+										{% endfor %}
+									</div>
+								</div>
+							</section>
+						{% endif %}
+
+						{{ faq.render(faqs, faq_lang.mod_faq.title|default('FAQ')) }}
 					</div>
 				</div>
 			</article>

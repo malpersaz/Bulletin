@@ -1,10 +1,14 @@
 <?php
 class edit_validator
 {
+    use ModuleValidatorTrait;
+
     public $valid;
     public $lang;
     public $mod_news_model;
+    public $module_name = 'mod_news';
     public $errors = [];
+
     function __construct()
     {
         // Load Validator Library
@@ -12,6 +16,7 @@ class edit_validator
         // Language File.
         $this->lang = Load::lang('mod_news');
     }
+
     public function check($id)
     {
         #Check Required
@@ -124,6 +129,9 @@ class edit_validator
         if ($this->_check() === True) {
             return True;
         }
+
+        // Normalize SEO slug (Rule 10)
+        $_POST['seo'] = $this->normalizeSeo((string) Req::Post('seo'));
 
         #Check length
         // name Length
@@ -245,16 +253,20 @@ class edit_validator
             return True;
         }
 
-
-        #Check Unique
-
-        #Check Unique with edit column
-        $this->mod_news_model = Load::model('mod_news');
-        $this->mod_news_model->where_seo_and_lang_and_not_id(html_entity_decode(trim(Req::Post('seo')), ENT_QUOTES, 'UTF-8'), Req::Post_Safe('lang'), $id);
-        if ($this->mod_news_model->limit(1)->gRo()->getSize() > 0) {
-            $this->errors[] = sprintf($this->lang['mod_news']['validator']['unique'], $this->lang['mod_news']['admin']['columns']['seo'], $this->lang['mod_news']['admin']['columns']['seo']);
+        // Validate active language
+        $requestedLang = (string) Req::Post_Safe('lang');
+        if (!$this->validateLanguage($requestedLang, 'mod_news')) {
+            return True;
         }
-        if ($this->_check() === True) {
+
+        // Validate category relation (exists, non-root, matching language)
+        $categoryId = (int) Req::Post_Safe('category_id');
+        if (!$this->validateCategoryRelation($categoryId, $requestedLang, 'mod_news_category', 'mod_news')) {
+            return True;
+        }
+
+        // Validate SEO uniqueness within language excluding current record
+        if (!$this->validateSeoUniqueness('mod_news', (string) $_POST['seo'], $requestedLang, (int) $id, 'mod_news')) {
             return True;
         }
 
@@ -263,7 +275,6 @@ class edit_validator
 
     public function _check()
     {
-
         if ($this->valid->check()) {
             $this->errors = $this->valid->list_errors();
         }
@@ -274,3 +285,4 @@ class edit_validator
         return False;
     }
 }
+

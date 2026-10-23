@@ -18,7 +18,7 @@ CREATE TABLE `mod_news` (
   `file_id` int(11) DEFAULT 0,
   `image` varchar(255) DEFAULT NULL,
   `acl_id` int(11) DEFAULT 0,
-  `video` varchar(255) DEFAULT NULL,
+  `video` text DEFAULT NULL,
   `view_count` int(11) NOT NULL DEFAULT 0,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
@@ -26,4 +26,4 @@ CREATE TABLE `mod_news` (
   INDEX `idx_news_category` (`category_id`),
   INDEX `idx_news_status` (`status`),
   INDEX `idx_news_user` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

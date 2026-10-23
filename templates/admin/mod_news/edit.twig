@@ -14,21 +14,26 @@
 {% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v=3.0">
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_news.css?v={{ site.version }}.4">
 {% endblock %}
 
 {% block content %}
 	<form id="editForm" method="POST" action="{{ site.saddress }}mod_news/edit/{{ d.id }}" enctype="multipart/form-data"
 		data-lang="{{ d.lang|lower }}"
-		data-errors="{{ (errors is defined and errors is not empty ? errors : (error is defined ? [message|default('Error')] : []))|json_encode|escape('html_attr') }}"
+		data-errors="{{ (errors is defined and errors is not empty ? errors : (error is defined ? [message is defined and message ? message : lang.mod_news.error_occurred] : []))|json_encode|escape('html_attr') }}"
 		data-error-message="{{ (message is defined ? message : (errors is defined and errors is not empty ? errors[0] : ''))|escape('html_attr') }}"
 		data-ok-text="{{ lang.mod_news.button.ok|escape('html_attr') }}"
 		data-success-url="{% if success is defined %}{{ site.saddress }}mod_news/list{% endif %}"
 		data-redirect-delay="2000"
 		data-ai-url="{{ site.saddress }}mod_news/ajax_ai_assist"
-		data-ai-generating="{{ (lang.mod_news.ai.generating is defined ? lang.mod_news.ai.generating : 'Generating...')|escape('html_attr') }}"
-		data-ai-select-headline="{{ (lang.mod_news.ai.select_headline is defined ? lang.mod_news.ai.select_headline : 'Select a Headline')|escape('html_attr') }}"
-		data-ai-copy="{{ (lang.mod_news.ai.copy is defined ? lang.mod_news.ai.copy : 'Use This')|escape('html_attr') }}">
+		data-ai-generating="{{ lang.mod_news.ai.generating|escape('html_attr') }}"
+		data-ai-select-headline="{{ lang.mod_news.ai.select_headline|escape('html_attr') }}"
+		data-ai-copy="{{ lang.mod_news.ai.copy|escape('html_attr') }}"
+		data-ai-warning-title="{{ lang.mod_news.ai.warning_title|escape('html_attr') }}"
+		data-ai-error-title="{{ lang.mod_news.ai.error_title|escape('html_attr') }}"
+		data-ai-content-required="{{ lang.mod_news.ai.content_required|escape('html_attr') }}"
+		data-ai-deck-error="{{ lang.mod_news.ai.deck_error|escape('html_attr') }}"
+		data-ai-headline-error="{{ lang.mod_news.ai.headline_error|escape('html_attr') }}">
 		<input type="hidden" name="edit" value="1">
 		<input type="hidden" name="lang" id="editLang" value="{{ d.lang|lower }}">
 		<input type="hidden" name="category_id" id="editCategoryId" value="{{ d.category_id }}">
@@ -37,13 +42,13 @@
 			{% if success is defined %}
 				<div class="banner-m3 banner-success-soft">
 					<i class="bi bi-check-circle-fill"></i>
-					<span>{{ message|default('') }}</span>
+					<span>{{ message is defined ? message : '' }}</span>
 				</div>
 			{% endif %}
 			{% if error is defined and errors is not defined %}
 				<div class="banner-m3 banner-error-soft">
 					<i class="bi bi-exclamation-triangle-fill"></i>
-					<span>{{ message|default('') }}</span>
+					<span>{{ message is defined ? message : '' }}</span>
 				</div>
 			{% endif %}
 
@@ -57,7 +62,7 @@
 							{% if lang_lang is defined %}
 								{% for l in lang_lang %}
 									{% if l.seo == d.lang %}
-										{% set current_lang_name = l.name|default(l.ad) %}
+										{% set current_lang_name = l.name %}
 									{% endif %}
 								{% endfor %}
 							{% endif %}
@@ -91,9 +96,9 @@
 						<label class="m3-floating-label">{{ lang.mod_news.wizard.label.news_title }}</label>
 					</div>
 					<div class="ai-action-bar">
-						<button type="button" class="m3-ai-btn" id="btnAiSuggestHeadlines" data-action="ai-suggest-headlines" title="{{ (lang.mod_news.ai.suggest_headlines is defined ? lang.mod_news.ai.suggest_headlines : 'Suggest Headlines with AI')|escape('html_attr') }}">
+						<button type="button" class="m3-ai-btn" id="btnAiSuggestHeadlines" data-action="ai-suggest-headlines" title="{{ lang.mod_news.ai.suggest_headlines|escape('html_attr') }}">
 							<i class="bi bi-stars"></i>
-							<span>{{ lang.mod_news.ai.suggest_headlines is defined ? lang.mod_news.ai.suggest_headlines : 'Suggest Headlines' }}</span>
+							<span>{{ lang.mod_news.ai.suggest_headlines }}</span>
 						</button>
 					</div>
 					<div id="aiHeadlinesContainer" class="ai-suggestions-container is-hidden"></div>
@@ -123,9 +128,9 @@
 					</div>
 					<div class="deck-helper-bar">
 						<div class="char-counter" id="editIntroCounter">{{ d.summary|length }} / 120</div>
-						<button type="button" class="m3-ai-btn" id="btnAiGenerateDeck" data-action="ai-generate-deck" title="{{ (lang.mod_news.ai.generate_deck is defined ? lang.mod_news.ai.generate_deck : 'Generate Deck with AI')|escape('html_attr') }}">
+						<button type="button" class="m3-ai-btn" id="btnAiGenerateDeck" data-action="ai-generate-deck" title="{{ lang.mod_news.ai.generate_deck|escape('html_attr') }}">
 							<i class="bi bi-stars"></i>
-							<span>{{ lang.mod_news.ai.generate_deck is defined ? lang.mod_news.ai.generate_deck : 'Generate Deck with AI' }}</span>
+							<span>{{ lang.mod_news.ai.generate_deck }}</span>
 						</button>
 					</div>
 				</div>
@@ -183,23 +188,21 @@
 							'data-existing-meta': lang.mod_news.admin.columns.image,
 							'data-remove-url': site.saddress ~ 'mod_news/image_remove_image',
 							'data-remove-id': d.id,
-							'data-remove-title': lang.mod_news.remove_image,
+							'data-remove-title': lang.mod_news.remove_image_title,
 							'data-remove-confirm': lang.mod_news.remove_image,
-							'data-remove-confirm-text': lang.mod_news.button.yes,
-							'data-remove-cancel-text': lang.mod_news.button.no,
+							'data-remove-confirm-text': lang.mod_news.button.yes ~ ', ' ~ lang.mod_news.button.delete,
+							'data-remove-cancel-text': lang.mod_news.button.cancel,
 							'data-success-title': lang.mod_news.success,
 							'data-success-message': lang.mod_news.remove_image_success,
 							'data-error-title': lang.mod_news.error_occurred
 						},
 						dropzone_id: 'editImageDropzone',
-						trigger_picker_js: 'triggerEditImagePicker()',
 						empty_state_id: 'editImageEmptyState',
 						empty_hidden: d.image ? true : false,
 						drop_title: lang.mod_news.wizard.image.drop_title,
 						upload_link: lang.mod_news.wizard.image.upload_link,
 						preview_card_id: 'editImagePreviewCard',
 						remove_button_label: lang.mod_news.button.delete,
-						remove_action_js: 'removeEditImage()',
 						preview_img_id: 'editImgPreview',
 						preview_alt: lang.mod_news.wizard.step.image,
 						preview_hidden: d.image ? false : true,
@@ -217,8 +220,7 @@
 						link_placeholder: lang.mod_news.wizard.image.link_placeholder,
 						import_btn_id: 'editImageUrlImportBtn',
 						link_action: lang.mod_news.wizard.image.link_action,
-						file_input_id: 'editImgInput',
-						file_input_onchange: 'previewEditImage(this)'
+						file_input_id: 'editImgInput'
 					} %}
 				</div>
 
@@ -332,8 +334,5 @@
 {% endblock %}
 
 {% block scripts %}
-	<link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script src="/templates/admin/assets/js/mod_news.js?v=4.2"></script>
+	<script src="/templates/admin/assets/js/mod_news.js?v={{ site.version }}.4"></script>
 {% endblock %}

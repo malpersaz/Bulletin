@@ -1,175 +1,249 @@
 {% extends "layouts/base.twig" %}
 
-{% set kategoriler = ctx_get('categories') %}
-{% set category_seo = ctx_get('category_seo') %}
+{% set categories = ctx_get('categories') %}
 {% set categoryname = ctx_get('categoryname') %}
+{% set category_seo = ctx_get('category_seo') %}
 {% set newses = ctx_get('newses') %}
-{% set sayfalama = ctx_get('sayfalama') %}
-{% set sayfa = ctx_get('sayfa') %}
+{% set pagination = ctx_get('pagination') %}
+{% set page = ctx_get('page') %}
+
+{% set all_news_label = lang.index.mod_news.all_news %}
+{% set is_filtered_category = category_seo is not empty and category_seo != 'all' %}
+{% set current_page_title = is_filtered_category ? categoryname : all_news_label %}
+{% set page_meta_description = is_filtered_category ? (categoryname ~ ' - ' ~ all_news_label) : all_news_label %}
+{% set share_image_asset = site.logo_path is defined and site.logo_path is not empty ? (site.iaddress ~ 'mod_settings/' ~ site.logo_path) : (site.iaddress ~ 'mod_settings/logo.png') %}
 
 {% block canonical %}
-    <link rel="canonical" href="{{ site.saddress }}newses{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}" />
+    <link rel="canonical" href="{{ site.saddress }}newses{% if is_filtered_category %}/{{ category_seo }}{% endif %}{% if page is defined and page > 1 %}/{{ page }}{% endif %}">
 {% endblock %}
 
 {% block title %}
-    <title>
-        {% if category_seo is not empty and category_seo != 'all' %}
-            {{ categoryname }} - {{ lang.index.mod_news.2 }} - {{ site.title }}
-        {% else %}
-            {{ lang.index.mod_news.2 }} - {{ site.title }}
-        {% endif %}
-    </title>
+    <title>{{ current_page_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ page_meta_description }} - {{ site.title }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.saddress }}newses{% if is_filtered_category %}/{{ category_seo }}{% endif %}">
+    <meta property="og:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta property="og:description" content="{{ page_meta_description }} - {{ site.title }}">
+    <meta property="og:image" content="{{ share_image_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ current_page_title }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ page_meta_description }} - {{ site.title }}">
+    <meta name="twitter:image" content="{{ share_image_asset }}">
+{% endblock %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.1.39') }}">
 {% endblock %}
 
 {% block content %}
-<div class="row mt-4" id="mod_news_list">
-
-    <!-- Kategori Sidebar -->
-    <div class="col-lg-3 col-md-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-folder me-2"></i>{{ lang.index.mod_news.2 }}
-                </h5>
-            </div>
-            <div class="list-group list-group-flush">
-                <a href="{{ site.saddress }}newses"
-                   class="list-group-item list-group-item-action{% if category_seo == 'all' or category_seo is empty %} active{% endif %}">
-                    <i class="bi bi-grid me-2"></i>{{ lang.index.mod_news.2 }}
-                </a>
-                {% for kat in kategoriler %}
-                    {% if kat.news_count > 0 %}
-                    <a href="{{ site.saddress }}newses/{{ kat.seo }}"
-                       class="list-group-item list-group-item-action{% if category_seo == kat.seo %} active{% endif %}">
-                        <i class="bi bi-folder2-open me-2"></i>{{ kat.name }}
-                        <span class="badge bg-secondary rounded-pill float-end">{{ kat.news_count }}</span>
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <div class="col-lg-9 col-md-8">
-
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-4" itemscope itemtype="https://schema.org/BreadcrumbList">
+<main class="newses-page" itemscope itemtype="https://schema.org/CollectionPage">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+            <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
+                <meta itemprop="position" content="1">
+            </li>
+            {% if is_filtered_category %}
                 <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                    <a itemprop="item" href="{{ site.saddress }}"><span itemprop="name">{{ lang.index.home }}</span></a>
-                    <meta itemprop="position" content="1" />
+                    <a itemprop="item" href="{{ site.saddress }}newses"><span itemprop="name">{{ all_news_label }}</span></a>
+                    <meta itemprop="position" content="2">
                 </li>
-                {% if category_seo is not empty and category_seo != 'all' %}
-                    <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <a itemprop="item" href="{{ site.saddress }}newses"><span itemprop="name">{{ lang.index.mod_news.2 }}</span></a>
-                        <meta itemprop="position" content="2" />
-                    </li>
-                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <span itemprop="name">{{ categoryname }}</span>
-                        <meta itemprop="position" content="3" />
-                    </li>
-                {% else %}
-                    <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-                        <span itemprop="name">{{ lang.index.mod_news.2 }}</span>
-                        <meta itemprop="position" content="2" />
-                    </li>
-                {% endif %}
-            </ol>
-        </nav>
-
-        <!-- Page Header -->
-        {% if category_seo is not empty and category_seo != 'all' %}
-            <div class="card mb-4 border-0 bg-light">
-                <div class="card-body text-center">
-                    <h1 class="h2 mb-2">{{ categoryname }}</h1>
-                    <p class="text-muted mb-0">{{ lang.index.mod_news.1|format(categoryname) }}</p>
-                </div>
-            </div>
-        {% endif %}
-
-        <!-- News Grid -->
-        {% if newses is not empty %}
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {% for news in newses %}
-                    <div class="col">
-                        <div class="card h-100 shadow-sm">
-                            <a href="{{ site.saddress }}news/{{ news.seo }}" title="{{ news.name }}" class="text-decoration-none">
-                                {% if news.image is not empty %}
-                                    <img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}"
-                                         class="card-img-top"
-                                         style="height: 200px; object-fit: cover;"
-                                         parent_id="{{ news.name }}"
-                                         loading="lazy">
-                                {% else %}
-                                    <img src="{{ site.iaddress }}mod_settings/logo.png"
-                                         class="card-img-top p-4 bg-light"
-                                         style="height: 200px; object-fit: contain;"
-                                         parent_id="{{ news.name }}"
-                                         loading="lazy">
-                                {% endif %}
-                            </a>
-                            <div class="card-body d-flex flex-column">
-                                <h5 class="card-title">
-                                    <a href="{{ site.saddress }}news/{{ news.seo }}"
-                                       title="{{ news.name }}"
-                                       class="text-decoration-none text-dark">
-                                        {{ news.name }}
-                                    </a>
-                                </h5>
-                                <p class="card-text text-muted flex-grow-1">
-                                    {{ news.summary|striptags|slice(0, 150) }}{% if news.summary|length > 150 %}...{% endif %}
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center mt-auto">
-                                    <small class="text-muted">
-                                        <i class="bi bi-calendar3 me-1"></i>
-                                        {{ news.created_at|date('d.m.Y') }}
-                                    </small>
-                                    {% if news.categoryname is defined %}
-                                        <span class="badge bg-primary text-decoration-none">
-                                            {{ news.categoryname }}
-                                        </span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-
-            <!-- Pagination -->
-            {% if sayfalama is not empty %}
-                <nav aria-label="{{ lang.index.mod_news.17 }}" class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% for s in sayfalama %}
-                            {% if s == '...' %}
-                                <li class="page-item disabled">
-                                    <span class="page-link">...</span>
-                                </li>
-                            {% elseif s == sayfa %}
-                                <li class="page-item active" aria-current="page">
-                                    <span class="page-link">{{ s }}</span>
-                                </li>
-                            {% else %}
-                                <li class="page-item">
-                                    <a class="page-link"
-                                       href="{{ site.saddress }}newses{% if category_seo is not empty and category_seo != 'all' %}/{{ category_seo }}{% endif %}/{% if s != 1 %}{{ s }}{% endif %}"
-                                       title="{{ lang.index.mod_news.16|format(s) }}">{{ s }}</a>
-                                </li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </nav>
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ categoryname }}</span>
+                    <meta itemprop="position" content="3">
+                </li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ all_news_label }}</span>
+                    <meta itemprop="position" content="2">
+                </li>
             {% endif %}
-        {% else %}
-            <div class="card">
-                <div class="card-body text-center py-5">
-                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
-                    <h4 class="text-muted">{{ lang.index.mod_news.4 }}</h4>
-                    <p class="text-muted">{{ lang.index.mod_news.18 }}</p>
-                </div>
-            </div>
+        </ol>
+    </nav>
+
+    <header class="newses-header">
+        <div class="newses-header-lead">
+            <h1 class="newses-page-title" itemprop="name">
+                <i class="bi bi-newspaper" aria-hidden="true"></i>
+                <span>{{ current_page_title }}</span>
+            </h1>
+            {% if is_filtered_category %}
+                <p class="newses-subtitle">{{ all_news_label }}</p>
+            {% endif %}
+        </div>
+        {% if newses is not empty %}
+            <span class="newses-count-badge">
+                <i class="bi bi-newspaper" aria-hidden="true"></i>
+                <span>{{ newses|length }}{% if pagination is not empty %}+{% endif %}</span>
+            </span>
         {% endif %}
+    </header>
+
+    <div class="row g-4" id="mod_news_list">
+        <aside class="col-lg-3 col-md-4 newses-sidebar-col" aria-label="{{ lang.index.mod_news.category }}">
+            <nav class="news-filter-card" aria-label="{{ lang.index.mod_news.category }}">
+                <div class="news-filter-header">
+                    <h2 class="news-filter-title">
+                        <i class="bi bi-folder2-open" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_news.category }}</span>
+                    </h2>
+                </div>
+                <div class="news-filter-list">
+                    <a href="{{ site.saddress }}newses"
+                       class="news-filter-item{% if not is_filtered_category %} active{% endif %}">
+                        <span class="news-filter-name">
+                            <i class="bi bi-grid-fill" aria-hidden="true"></i>
+                            <span>{{ all_news_label }}</span>
+                        </span>
+                    </a>
+                    {% for category in categories %}
+                        {% if category.news_count > 0 %}
+                            <a href="{{ site.saddress }}newses/{{ category.seo }}"
+                               class="news-filter-item{% if category_seo == category.seo %} active{% endif %}">
+                                <span class="news-filter-name">
+                                    <i class="bi bi-folder" aria-hidden="true"></i>
+                                    <span>{{ category.name }}</span>
+                                </span>
+                                <span class="news-filter-badge">{{ category.news_count }}</span>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </nav>
+        </aside>
+
+        <section class="col-lg-9 col-md-8 newses-main-col">
+            {% if newses is not empty %}
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4 newses-grid">
+                    {% for news in newses %}
+                        {% set news_title = news.name %}
+                        {% if news.summary is not empty %}
+                            {% set news_excerpt = news.summary|striptags %}
+                        {% elseif news.description is defined and news.description is not empty %}
+                            {% set news_excerpt = news.description|striptags %}
+                        {% else %}
+                            {% set news_excerpt = news_title|striptags %}
+                        {% endif %}
+                        {% set words = news_excerpt|split(' ')|length %}
+                        {% set reading_minutes = (words / 160)|round(0, 'ceil') %}
+                        {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+
+                        <div class="col newses-grid-col">
+                            <article class="news-card" itemscope itemtype="https://schema.org/NewsArticle">
+                                <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                   class="news-card-media"
+                                   title="{{ news_title }}"
+                                   itemprop="url">
+                                    {% if news.image is not empty %}
+                                        <img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}"
+                                             class="news-card-img"
+                                             alt="{{ news_title }}"
+                                             width="640"
+                                             height="360"
+                                             loading="lazy"
+                                             decoding="async"
+                                             itemprop="image">
+                                    {% else %}
+                                        <div class="news-card-placeholder">
+                                            <i class="bi bi-newspaper news-card-placeholder-icon" aria-hidden="true"></i>
+                                        </div>
+                                    {% endif %}
+                                </a>
+
+                                <div class="news-card-body">
+                                    <div class="news-card-meta">
+                                        {% if news.created_at is defined and news.created_at is not empty %}
+                                            <span class="news-card-meta-item">
+                                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                                <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
+                                            </span>
+                                        {% endif %}
+
+                                        {% if news.categoryname is defined and news.categoryname is not empty %}
+                                            <span class="news-card-category-pill" itemprop="articleSection">
+                                                <i class="bi bi-folder-fill" aria-hidden="true"></i>
+                                                <span>{{ news.categoryname }}</span>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <h2 class="news-card-title" itemprop="headline">
+                                        <a href="{{ site.saddress }}news/{{ news.seo }}" itemprop="url">
+                                            {{ news_title }}
+                                        </a>
+                                    </h2>
+
+                                    <p class="news-card-summary" itemprop="description">
+                                        {{ news_excerpt|length > 150 ? news_excerpt|slice(0, 147) ~ '...' : news_excerpt }}
+                                    </p>
+
+                                    <div class="news-card-footer">
+                                        <span class="news-card-read-time">
+                                            <i class="bi bi-clock" aria-hidden="true"></i>
+                                            <span>{{ reading_minutes }} {{ lang.index.min_read }}</span>
+                                        </span>
+                                        <a href="{{ site.saddress }}news/{{ news.seo }}"
+                                           class="news-card-read-more"
+                                           aria-label="{{ news_title }}">
+                                            <span>{{ lang.index.read_more }}</span>
+                                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                {% if pagination is not empty %}
+                    <nav class="newses-pagination-nav" aria-label="{{ lang.index.mod_news.pagination }}">
+                        <ul class="newses-pagination-list">
+                            {% for p in pagination %}
+                                {% if p == '...' %}
+                                    <li class="newses-page-item disabled" aria-disabled="true">
+                                        <span class="newses-page-link">&hellip;</span>
+                                    </li>
+                                {% elseif p == page %}
+                                    <li class="newses-page-item active" aria-current="page">
+                                        <span class="newses-page-link">{{ p }}</span>
+                                    </li>
+                                {% else %}
+                                    <li class="newses-page-item">
+                                        <a class="newses-page-link"
+                                           href="{{ site.saddress }}newses{% if is_filtered_category %}/{{ category_seo }}{% endif %}{% if p != 1 %}/{{ p }}{% endif %}"
+                                           title="{{ lang.index.mod_news.go_to_page|format(p) }}">
+                                            {{ p }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            {% else %}
+                <div class="news-empty-card">
+                    <div class="news-empty-icon-wrap">
+                        <i class="bi bi-inbox" aria-hidden="true"></i>
+                    </div>
+                    <h2 class="news-empty-title">{{ lang.index.mod_news.no_content_found }}</h2>
+                    <p class="news-empty-text">{{ lang.index.mod_news.no_content_available }}</p>
+                    {% if is_filtered_category %}
+                        <a href="{{ site.saddress }}newses" class="news-empty-action">
+                            <i class="bi bi-arrow-left" aria-hidden="true"></i>
+                            <span>{{ all_news_label }}</span>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </section>
     </div>
-</div>
+</main>
 {% endblock %}

@@ -1,0 +1,156 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/news.css?v={{ site.version|default('1.0') }}">
+{% endblock %}
+
+{% block content %}
+{% set d = ctx_get('detail') ?: ctx_get('d') %}
+{% set archive_categories = ctx_get('archive_categories') %}
+{% set selected_category = ctx_get('category_id') %}
+{% set archive_years = ctx_get('archive_years') %}
+{% set selected_year = ctx_get('year') %}
+{% set selected_month = ctx_get('month') %}
+{% set not_found = ctx_get('not_found') %}
+{% set newses = ctx_get('newses') %}
+{% set min_year = archive_years.min_year ?: ("now"|date("Y")) %}
+{% set max_year = archive_years.max_year ?: ("now"|date("Y")) %}
+
+<div class="row g-4" id="mod_news_list">
+    <div class="col-12">
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" href="{{ site.saddress }}" class="text-decoration-none">
+                        <span itemprop="name">{{ lang.index.home }}</span>
+                    </a>
+                    <meta itemprop="position" content="1" />
+                </li>
+                <li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <a itemprop="item" href="{{ site.saddress }}newses" class="text-decoration-none">
+                        <span itemprop="name">{{ lang.index.mod_news.all_news }}</span>
+                    </a>
+                    <meta itemprop="position" content="2" />
+                </li>
+                <li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+                    <span itemprop="name">{{ lang.index.mod_news.archive_title }}</span>
+                    <meta itemprop="position" content="3" />
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-lg-4 col-md-5">
+        <div class="card shadow-sm border-0 mb-4 archive-filter-card">
+            <div class="card-header bg-transparent py-3 border-bottom">
+                <h2 class="h5 mb-0 d-flex align-items-center">
+                    <i class="bi bi-funnel me-2 text-primary"></i>
+                    {{ lang.index.mod_news.archive_title }}
+                </h2>
+            </div>
+            <div class="card-body">
+                <form method="post" action="" class="archive-search-form">
+                    <div class="mb-3">
+                        <label for="category_id" class="form-label fw-semibold small">
+                            <i class="bi bi-folder2-open me-1 text-secondary"></i>
+                            {{ lang.index.mod_news.category }}
+                        </label>
+                        <select id="category_id" name="category_id" class="form-select">
+                            <option value="*"{% if selected_category == '*' or selected_category is empty %} selected{% endif %}>*</option>
+                            {% for category_item in archive_categories %}
+                                <option value="{{ category_item.id }}"{% if selected_category == category_item.id %} selected{% endif %}>{{ category_item.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="year" class="form-label fw-semibold small">
+                            <i class="bi bi-calendar-event me-1 text-secondary"></i>
+                            {{ lang.index.mod_news.year }}
+                        </label>
+                        <select id="year" name="year" class="form-select">
+                            <option value="*"{% if selected_year == '*' or selected_year is empty %} selected{% endif %}>*</option>
+                            {% for year_item in range(min_year, max_year) %}
+                                <option value="{{ year_item }}"{% if selected_year == year_item %} selected{% endif %}>{{ year_item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="month" class="form-label fw-semibold small">
+                            <i class="bi bi-calendar-month me-1 text-secondary"></i>
+                            {{ lang.index.mod_news.month }}
+                        </label>
+                        <select id="month" name="month" class="form-select">
+                            <option value="*"{% if selected_month == '*' or selected_month is empty %} selected{% endif %}>*</option>
+                            {% for month_index, month_label in lang.index.mod_news.months %}
+                                {% set month_value = month_index + 1 %}
+                                <option value="{{ month_value }}"{% if selected_month == month_value %} selected{% endif %}>{{ month_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" id="search_archive" name="search_archive" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i> {{ lang.index.mod_news.view }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8 col-md-7">
+        {% if newses is not empty %}
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-transparent py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h1 class="h5 mb-0 d-flex align-items-center">
+                        <i class="bi bi-newspaper me-2 text-primary"></i>
+                        {{ lang.index.mod_news.search_results }}
+                    </h1>
+                    <span class="badge bg-primary rounded-pill">{{ newses|length }}</span>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for news in newses %}
+                        {% set news_url = site.saddress ~ 'news/' ~ news.seo %}
+                        <div class="list-group-item list-group-item-action py-3">
+                            <div class="d-flex w-100 justify-content-between align-items-start gap-2 mb-1">
+                                <h2 class="h6 mb-0 flex-grow-1">
+                                    <a href="{{ news_url }}" class="text-decoration-none text-dark stretched-link" title="{{ news.summary ? news.summary|striptags : news.name }}">
+                                        {{ news.name }}
+                                    </a>
+                                </h2>
+                                <span class="badge bg-light text-muted border small text-nowrap">
+                                    <i class="bi bi-calendar3 me-1"></i>
+                                    {{ news.created_at|date("d.m.Y") }}
+                                </span>
+                            </div>
+                            {% if news.summary is defined and news.summary is not empty %}
+                                <p class="text-muted small mb-0 mt-1">
+                                    {{ news.summary|striptags|slice(0, 140) }}{{ news.summary|length > 140 ? '...' : '' }}
+                                </p>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% elseif not_found is not empty %}
+            <div class="card shadow-sm border-0 text-center py-5">
+                <div class="card-body">
+                    <i class="bi bi-calendar-x display-4 text-muted mb-3 d-block"></i>
+                    <h2 class="h5 text-muted mb-2">{{ lang.index.mod_news.no_data_found }}</h2>
+                </div>
+            </div>
+        {% else %}
+            <div class="card shadow-sm border-0 text-center py-5">
+                <div class="card-body">
+                    <i class="bi bi-archive display-4 text-muted mb-3 d-block"></i>
+                    <h2 class="h5 text-muted mb-2">{{ lang.index.mod_news.archive_title }}</h2>
+                    <p class="text-muted small mb-0">{{ lang.index.mod_news.select_archive_date }}</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

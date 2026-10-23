@@ -14,17 +14,17 @@
 
     <!-- Wizard Header -->
     <header class="wizard-header">
-        <button type="button" class="icon-btn" onclick="if(window.location.pathname.endsWith('/add')) { window.location.href='{{ site.saddress }}{{ wizard_lang_key }}/list'; } else { closeWizard(); }"><i class="bi bi-x-lg"></i></button>
+        <button type="button" class="icon-btn" data-action="close-content-wizard" data-list-url="{{ site.saddress }}{{ wizard_lang_key }}/list"><i class="bi bi-x-lg"></i></button>
         <div class="wizard-title">
             <span id="wizardStepTitle">{{ wizard_lang.wizard.step.language }}</span>
             <span id="wizardStepCounter">1/8</span>
         </div>
-        <button type="button" onclick="prepareAndSubmitWizard()" class="m3-btn-text">{{ wizard_lang.wizard.button.save }}</button>
+        <button type="button" class="m3-btn-text" data-action="submit-content-wizard">{{ wizard_lang.wizard.button.save }}</button>
     </header>
 
     <!-- Progress Bar -->
     <div class="wizard-progress-bar">
-        <div class="wizard-progress-fill" id="wizardProgressFill" style="width: 12.5%;"></div>
+        <div class="wizard-progress-fill" id="wizardProgressFill"></div>
     </div>
 
     <!-- Wizard Content Scrollable -->
@@ -53,7 +53,7 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.language }}</p>
             <div class="selection-grid">
                 {% for item in lang_lang %}
-                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" onclick="selectWizardLang(this, '{{ item.seo|lower }}')">
+                <div class="selection-card{% if item.seo|lower == site.lang|lower %} active{% endif %}" data-action="select-wizard-lang" data-lang="{{ item.seo|lower }}">
                     <div class="selection-icon">{{ item.seo|upper }}</div>
                     <div class="selection-label">{{ item.name }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
@@ -69,7 +69,7 @@
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.category }}</p>
 
             <div class="m3-input-wrapper">
-                <div class="m3-fake-select" onclick="toggleWizardCategorySheet()">
+                <div class="m3-fake-select" data-action="toggle-wizard-category-sheet">
                     <span id="wizardSelectedCategory">{{ wizard_lang.wizard.label.category_select }}</span>
                     <i class="bi bi-chevron-down"></i>
                 </div>
@@ -117,7 +117,7 @@
             <h2 class="step-headline">{{ attribute(wizard_lang.wizard.step, wizard_body_key) }}</h2>
             <p class="step-subhead">{{ attribute(wizard_lang.wizard.subtitle, wizard_body_key) }}</p>
             
-            <div style="margin-top: 12px;">
+            <div class="mod-news-editor-wrap">
                 <textarea name="content" id="wizardContentTextarea"></textarea>
             </div>
         </div>
@@ -126,7 +126,7 @@
         <div class="wizard-step" id="wizardStep7">
             <h2 class="step-headline">{{ wizard_lang.wizard.step.image }}</h2>
             <p class="step-subhead">{{ wizard_lang.wizard.subtitle.image }}</p>
-            {% set wizard_img_lang = wizard_lang.wizard.image is defined and wizard_lang.wizard.image ? wizard_lang.wizard.image : (lang.mod_content.wizard.image is defined ? lang.mod_content.wizard.image : {}) %}
+            {% set wizard_img_lang = wizard_lang.wizard.image is defined and wizard_lang.wizard.image ? wizard_lang.wizard.image : {} %}
             {% include 'admin/partials/image_uploader.twig' with {
                 shell_id: 'wizardImageShell',
                 shell_class: '',
@@ -146,13 +146,11 @@
                     'data-empty-meta': wizard_img_lang.drop_description
                 },
                 dropzone_id: 'wizardImageDropzone',
-                trigger_picker_js: 'triggerWizardImagePicker()',
                 empty_state_id: 'wizardImageEmptyState',
                 drop_title: wizard_img_lang.drop_title,
                 upload_link: wizard_img_lang.upload_link,
                 preview_card_id: 'wizardImagePreviewCard',
                 remove_btn_id: 'wizardImageRemoveBtn',
-                remove_action_js: 'removeWizardImage()',
                 preview_img_id: 'wizardImgPreview',
                 preview_alt: wizard_lang.wizard.step.image,
                 preview_hidden: true,
@@ -168,8 +166,7 @@
                 link_placeholder: wizard_img_lang.link_placeholder,
                 import_btn_id: 'wizardImageUrlImportBtn',
                 link_action: wizard_img_lang.link_action,
-                file_input_id: 'wizardImgInput',
-                file_input_onchange: 'previewWizardImage(this)'
+                file_input_id: 'wizardImgInput'
             } %}
         </div>
 
@@ -181,13 +178,13 @@
             <input type="hidden" name="status" value="y" id="wizardPublishHidden">
             
             <div class="selection-grid">
-                <div class="selection-card active" onclick="selectWizardPublishStatus(this, 'y')">
-                    <i class="bi bi-cloud-check selection-icon" style="font-size:24px;"></i>
+                <div class="selection-card active" data-action="select-wizard-publish-status" data-status="y">
+                    <i class="bi bi-cloud-check selection-icon"></i>
                     <div class="selection-label">{{ wizard_lang.context_menu.publish }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
                 </div>
-                <div class="selection-card" onclick="selectWizardPublishStatus(this, 'n')">
-                    <i class="bi bi-pencil-square selection-icon" style="font-size:24px;"></i>
+                <div class="selection-card" data-action="select-wizard-publish-status" data-status="n">
+                    <i class="bi bi-pencil-square selection-icon"></i>
                     <div class="selection-label">{{ wizard_lang.context_menu.unpublish }}</div>
                     <i class="bi bi-check-circle-fill check-icon"></i>
                 </div>
@@ -208,10 +205,9 @@
 
     <!-- Wizard Footer -->
     <div class="wizard-footer">
-        <button type="button" class="m3-btn-outlined" id="btnWizardPrev" onclick="prevWizardStep(); return false;" disabled>{{ wizard_lang.wizard.button.prev }}</button>
-        <button type="button" class="m3-btn-filled" id="btnWizardNext" onclick="nextWizardStep(); return false;">{{ wizard_lang.wizard.button.next }}</button>
-        <button type="button" class="m3-btn-filled success" id="btnWizardFinish"
-            style="display:none;">{{ wizard_lang.wizard.button.finish }}</button>
+        <button type="button" class="m3-btn-outlined" id="btnWizardPrev" data-action="prev-wizard-step" disabled>{{ wizard_lang.wizard.button.prev }}</button>
+        <button type="button" class="m3-btn-filled" id="btnWizardNext" data-action="next-wizard-step">{{ wizard_lang.wizard.button.next }}</button>
+        <button type="button" class="m3-btn-filled success" id="btnWizardFinish" hidden>{{ wizard_lang.wizard.button.finish }}</button>
     </div>
 </div>
 </form>

@@ -967,11 +967,18 @@ function updateWizardUI() {
     if (btnPrev) btnPrev.disabled = (wizardCurrentStep === 1);
 
     if (wizardCurrentStep === wizardTotalSteps) {
-        if (btnNext) btnNext.style.display = 'none';
-        if (btnFinish) btnFinish.style.display = 'block';
+        if (btnNext) {
+            btnNext.style.display = 'none';
+            btnNext.hidden = true;
+        }
+        if (btnFinish) {
+            btnFinish.hidden = false;
+            btnFinish.style.display = 'block';
+        }
         updateSummary();
     } else {
         if (btnNext) {
+            btnNext.hidden = false;
             btnNext.style.display = 'block';
 
             // VALIDATION LOGIC FOR BUTTON COLOR
@@ -982,7 +989,10 @@ function updateWizardUI() {
                 btnNext.classList.add('btn-invalid');
             }
         }
-        if (btnFinish) btnFinish.style.display = 'none';
+        if (btnFinish) {
+            btnFinish.style.display = 'none';
+            btnFinish.hidden = true;
+        }
     }
 
     // Auto-fill SEO when entering SEO step (Step 8)
@@ -1324,11 +1334,35 @@ function syncSelectPickerSelectionWithLang(select) {
     }
 }
 
+function getPickerFileTypeMeta(label, extHint = '') {
+    const rawExt = String(extHint || (String(label || '').includes('.') ? String(label).split('.').pop() : '')).trim().toLowerCase();
+    if (rawExt === 'pdf') {
+        return { icon: 'bi-file-earmark-pdf', modifier: 'select-picker-item-meta--pdf', badge: 'PDF' };
+    }
+    if (['doc', 'docx', 'odt', 'rtf', 'txt'].includes(rawExt)) {
+        return { icon: 'bi-file-earmark-word', modifier: 'select-picker-item-meta--doc', badge: rawExt.toUpperCase() };
+    }
+    if (['xls', 'xlsx', 'csv', 'ods'].includes(rawExt)) {
+        return { icon: 'bi-file-earmark-excel', modifier: 'select-picker-item-meta--sheet', badge: rawExt.toUpperCase() };
+    }
+    if (['zip', 'rar', '7z', 'tar', 'gz'].includes(rawExt)) {
+        return { icon: 'bi-file-earmark-zip', modifier: 'select-picker-item-meta--archive', badge: rawExt.toUpperCase() };
+    }
+    if (['jpg', 'jpeg', 'png', 'webp', 'gif', 'svg'].includes(rawExt)) {
+        return { icon: 'bi-file-earmark-image', modifier: 'select-picker-item-meta--image', badge: rawExt.toUpperCase() };
+    }
+    return {
+        icon: 'bi-file-earmark-text',
+        modifier: '',
+        badge: rawExt && rawExt.length <= 5 ? rawExt.toUpperCase() : ''
+    };
+}
+
 function renderSelectPickerOptions() {
-    console.log('Rendering Picker for:', activeSelectPickerId);
     const select = activeSelectPickerId ? document.getElementById(activeSelectPickerId) : null;
     const list = document.getElementById('selectPickerList');
     const empty = document.getElementById('selectPickerEmpty');
+    const emptyAddBtn = document.getElementById('selectPickerEmptyAddBtn');
     const count = document.getElementById('selectPickerVisibleCount');
     const langEl = document.getElementById('selectPickerActiveLang');
     const searchInput = document.getElementById('selectPickerSearchInput');
@@ -1337,7 +1371,14 @@ function renderSelectPickerOptions() {
 
     const query = String(searchInput?.value || '').trim().toLocaleLowerCase();
     const activeLang = getSelectPickerLangCode(select);
-    const options = Array.from(select.options);
+    const currentSelectedVal = String(select.value || '0');
+    const options = Array.from(select.options).sort((a, b) => {
+        const aSelected = String(a.value || '0') !== '0' && String(a.value || '0') === currentSelectedVal;
+        const bSelected = String(b.value || '0') !== '0' && String(b.value || '0') === currentSelectedVal;
+        if (aSelected && !bSelected) return -1;
+        if (!aSelected && bSelected) return 1;
+        return 0;
+    });
     let visibleCount = 0;
 
     list.innerHTML = '';
@@ -1370,16 +1411,30 @@ function renderSelectPickerOptions() {
         const isFiles = window.currentMediaPickerType === 'files';
         const isGallery = window.currentMediaPickerType === 'gallery';
         const isVideo = window.currentMediaPickerType === 'video';
-        
+
         let iconClass = 'bi-bookmark-star';
-        if (value === '0') iconClass = 'bi-eraser';
-        else if (isFiles) iconClass = 'bi-file-earmark-arrow-up';
-        else if (isGallery) iconClass = 'bi-images';
-        else if (isVideo) iconClass = 'bi-play-btn';
-        
-        // Remove fallback. If there's no optionLang, just hide it.
-        const subtitleHtml = (optionLang && optionLang !== ADMIN_UI.all && value !== '0') 
-            ? `<span class="select-picker-item-subtitle">${optionLang}</span>`
+        let metaModifierClass = '';
+        let fileBadge = '';
+
+        if (value === '0') {
+            iconClass = 'bi-eraser';
+            metaModifierClass = 'select-picker-item-meta--reset';
+        } else if (isFiles) {
+            const fileMeta = getPickerFileTypeMeta(label, option.dataset.ext || '');
+            iconClass = fileMeta.icon;
+            metaModifierClass = fileMeta.modifier;
+            fileBadge = fileMeta.badge;
+        } else if (isGallery) {
+            iconClass = 'bi-images';
+        } else if (isVideo) {
+            iconClass = 'bi-play-btn';
+        }
+
+        const subtitleText = (optionLang && optionLang !== ADMIN_UI.all && value !== '0')
+            ? optionLang
+            : (isFiles && fileBadge ? fileBadge : '');
+        const subtitleHtml = subtitleText
+            ? `<span class="select-picker-item-subtitle">${subtitleText}</span>`
             : '';
 
         let removeLabel = 'Clear Selection';
@@ -1392,7 +1447,7 @@ function renderSelectPickerOptions() {
         const itemTitle = (value === '0') ? removeLabel : (label || (select.dataset.pickerPlaceholder || ''));
 
         item.innerHTML = `
-            <span class="select-picker-item-meta" ${value === '0' ? 'style="background:var(--md-sys-color-surface-variant); color:var(--md-sys-color-on-surface-variant);"' : ''}><i class="bi ${iconClass}"></i></span>
+            <span class="select-picker-item-meta ${metaModifierClass}"><i class="bi ${iconClass}"></i></span>
             <span class="select-picker-item-body">
                 <span class="select-picker-item-title">${itemTitle}</span>
                 ${subtitleHtml}
@@ -1402,7 +1457,6 @@ function renderSelectPickerOptions() {
 
         item.addEventListener('click', () => {
             if (select.value === value) {
-                // If the user clicks the row that is already selected, it deselects it logic
                 select.value = '0';
             } else {
                 select.value = value;
@@ -1426,6 +1480,11 @@ function renderSelectPickerOptions() {
     if (empty) {
         empty.style.display = visibleCount === 0 ? 'block' : 'none';
     }
+
+    if (emptyAddBtn) {
+        const showEmptyUpload = visibleCount === 0 && window.currentMediaPickerType === 'files';
+        emptyAddBtn.classList.toggle('is-hidden', !showEmptyUpload);
+    }
 }
 
 function openSelectPickerSheet(selectId) {
@@ -1435,6 +1494,39 @@ function openSelectPickerSheet(selectId) {
     const titleEl = document.getElementById('selectPickerTitle');
     const searchInput = document.getElementById('selectPickerSearchInput');
     if (!select || !sheet || !overlay) return;
+
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    const manageBtn = document.getElementById('selectPickerManageBtn');
+    const emptyAddBtn = document.getElementById('selectPickerEmptyAddBtn');
+
+    const isMediaSelect = selectId === 'dynamicMediaSelect' || selectId === 'dynamicPageFileSelect';
+    if (!isMediaSelect) {
+        window.currentMediaPickerType = null;
+        addBtn?.classList.add('is-hidden');
+        manageBtn?.classList.add('is-hidden');
+        emptyAddBtn?.classList.add('is-hidden');
+    } else {
+        if (addBtn) {
+            addBtn.style.display = '';
+            addBtn.classList.remove('is-hidden');
+        }
+        if (manageBtn) {
+            manageBtn.style.display = '';
+            manageBtn.classList.remove('is-hidden');
+        }
+        if (!window.currentMediaPickerManageUrl && window.currentMediaPickerAddUrl) {
+            window.currentMediaPickerManageUrl = window.currentMediaPickerAddUrl;
+        }
+        if (!window.currentMediaPickerRecordId) {
+            window.currentMediaPickerRecordId = window.currentMediaPickerPubId || window.currentMediaPickerContentId || 0;
+        }
+        if (!window.currentMediaPickerModule && window.currentMediaPickerAddUrl) {
+            const modMatch = String(window.currentMediaPickerAddUrl).match(/\/(mod_[a-z0-9_]+)\/\d+/i);
+            if (modMatch && modMatch[1]) {
+                window.currentMediaPickerModule = modMatch[1];
+            }
+        }
+    }
 
     activeSelectPickerId = selectId;
 
@@ -1458,6 +1550,10 @@ function openSelectPickerSheet(selectId) {
 }
 
 function closeSelectPickerSheet() {
+    if (window.keepSelectPickerOpenOnce) {
+        window.keepSelectPickerOpenOnce = false;
+        return;
+    }
     const sheet = document.getElementById('select-picker-sheet');
     const overlay = document.getElementById('select-picker-overlay');
     const list = document.getElementById('selectPickerList');
@@ -1468,6 +1564,10 @@ function closeSelectPickerSheet() {
     sheet.classList.remove('active');
     overlay.classList.remove('active');
     overlay.style.display = 'none';
+
+    document.getElementById('selectPickerAddBtn')?.classList.add('is-hidden');
+    document.getElementById('selectPickerManageBtn')?.classList.add('is-hidden');
+    document.getElementById('selectPickerEmptyAddBtn')?.classList.add('is-hidden');
 
     if (list) {
         list.innerHTML = '';
@@ -1481,10 +1581,201 @@ function filterSelectPickerSheet() {
     renderSelectPickerOptions();
 }
 
-window.handleSelectPickerAdd = function() {
-    if (window.currentMediaPickerAddUrl) {
-        window.location.href = window.currentMediaPickerAddUrl;
+window.handleSelectPickerAddDirect = function() {
+    if (window.currentMediaPickerType === 'files') {
+        const fileInput = document.getElementById('pickerAttachmentFileInput');
+        if (fileInput) {
+            window.lastFileInputTime = Date.now();
+            fileInput.value = '';
+            fileInput.click();
+            return;
+        }
     }
+    if (window.currentMediaPickerAddUrl) {
+        if (window.AFModalEngine && typeof window.AFModalEngine.push === 'function') {
+            window.AFModalEngine.push(window.currentMediaPickerAddUrl, { skipHistory: true });
+        } else {
+            window.location.href = window.currentMediaPickerAddUrl;
+        }
+    }
+};
+
+window.handleSelectPickerAdd = window.handleSelectPickerAddDirect;
+
+window.handleSelectPickerManage = function() {
+    const targetUrl = window.currentMediaPickerManageUrl || window.currentMediaPickerAddUrl;
+    if (!targetUrl) return;
+
+    if (window.AFModalEngine && typeof window.AFModalEngine.push === 'function') {
+        const dynamicBody = document.getElementById('modal-dynamic-body');
+        if (dynamicBody) {
+            dynamicBody.dataset.loadedUrl = '';
+            dynamicBody.innerHTML = '';
+        }
+        const dynamicDialog = document.getElementById('modal-dynamic-dialog');
+        if (dynamicDialog) {
+            dynamicDialog.addEventListener('close', () => {
+                if (typeof window.refreshActiveMediaPicker === 'function') {
+                    window.refreshActiveMediaPicker();
+                }
+            }, { once: true });
+        }
+        window.AFModalEngine.push(targetUrl, { skipHistory: true });
+    } else {
+        window.location.href = targetUrl;
+    }
+};
+
+window.refreshActiveMediaPicker = function(preferredId = null) {
+    const recordId = window.currentMediaPickerRecordId || window.currentMediaPickerPubId || window.currentMediaPickerContentId;
+    const type = window.currentMediaPickerType || 'files';
+    const modName = window.currentMediaPickerModule || 'mod_publication';
+    const baseUrl = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+    if (!recordId) return;
+
+    const endpoint = type === 'gallery'
+        ? `${baseUrl}${modName}/ajax_get_galleries`
+        : `${baseUrl}${modName}/ajax_get_files`;
+
+    const formData = new FormData();
+    formData.append('q', '');
+    const currentData = new FormData();
+    currentData.append('id', String(recordId));
+
+    Promise.all([
+        fetch(endpoint, { method: 'POST', body: formData }).then(r => r.json()),
+        fetch(`${baseUrl}${modName}/ajax_get_current_media`, { method: 'POST', body: currentData }).then(r => r.json())
+    ])
+    .then(([data, currentMedia]) => {
+        const select = document.getElementById('dynamicMediaSelect') || document.getElementById('dynamicPageFileSelect');
+        if (!select || !Array.isArray(data)) return;
+
+        select.innerHTML = '';
+        data.forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.value || item.id;
+            opt.textContent = item.name || item.text || item.title || ('ID: ' + item.id);
+            select.appendChild(opt);
+        });
+
+        let currentValue = '0';
+        if (preferredId) {
+            currentValue = String(preferredId);
+        } else if (type === 'files' && currentMedia && currentMedia.file_id) {
+            currentValue = String(currentMedia.file_id);
+        } else if (type === 'gallery' && currentMedia && currentMedia.gallery_id) {
+            currentValue = String(currentMedia.gallery_id);
+        }
+
+        const hasMatch = Array.from(select.options).some(o => String(o.value) === currentValue);
+        select.value = hasMatch ? currentValue : '0';
+
+        if (typeof renderSelectPickerOptions === 'function') {
+            renderSelectPickerOptions();
+        }
+        const mgr = window.newsManager || window.publicationManager;
+        if (mgr && typeof mgr.loadData === 'function') {
+            mgr.loadData(true);
+        }
+    })
+    .catch(err => console.error('Refresh media picker error:', err));
+};
+
+window.handleDirectAttachmentUpload = function(fileInput) {
+    if (!fileInput || !fileInput.files || !fileInput.files.length) return;
+    const file = fileInput.files[0];
+    const addBtn = document.getElementById('selectPickerAddBtn');
+    const modName = window.currentMediaPickerModule || 'mod_publication';
+    const recordId = window.currentMediaPickerRecordId || window.currentMediaPickerPubId || window.currentMediaPickerContentId || 0;
+    const baseUrl = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+
+    if (addBtn) {
+        addBtn.classList.add('is-loading');
+        addBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('isim', 'file');
+    formData.append('vid', String(recordId));
+    formData.append('mod_name', modName);
+    formData.append('response_format', 'json');
+
+    fetch(`${baseUrl}mod_attachment/upload`, {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: formData
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res && res.status === 'success' && res.id) {
+            const newId = String(res.id);
+            const displayName = res.name || res.filename || res.original_name || file.name;
+            const select = activeSelectPickerId ? document.getElementById(activeSelectPickerId) : document.getElementById('dynamicMediaSelect');
+
+            if (select) {
+                let opt = Array.from(select.options).find(o => String(o.value) === newId);
+                if (!opt) {
+                    opt = document.createElement('option');
+                    opt.value = newId;
+                    select.appendChild(opt);
+                }
+                opt.textContent = displayName;
+                opt.dataset.triggerLabel = displayName;
+                if (res.ext) {
+                    opt.dataset.ext = res.ext;
+                }
+                select.value = newId;
+                window.keepSelectPickerOpenOnce = true;
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+                renderSelectPickerOptions();
+                document.getElementById('selectPickerList')?.scrollTo({ top: 0, behavior: 'smooth' });
+            } else if (recordId) {
+                const relData = new FormData();
+                relData.append('id', String(recordId));
+                relData.append('type', 'files');
+                relData.append('value', newId);
+                fetch(`${baseUrl}${modName}/ajax_update_relation`, {
+                    method: 'POST',
+                    body: relData
+                }).then(() => {
+                    if (typeof window.refreshActiveMediaPicker === 'function') {
+                        window.refreshActiveMediaPicker(newId);
+                    }
+                    const mgr = window.newsManager || window.publicationManager;
+                    if (mgr && typeof mgr.loadData === 'function') {
+                        mgr.loadData(true);
+                    }
+                });
+            }
+
+            if (typeof showToast === 'function') {
+                showToast(displayName, 'success');
+            } else if (window.AFModalEngine && typeof window.AFModalEngine.showToast === 'function') {
+                window.AFModalEngine.showToast(displayName, 'success');
+            }
+        } else {
+            const errMsg = (res && res.message) ? res.message : 'Upload failed';
+            if (typeof showToast === 'function') {
+                showToast(errMsg, 'error');
+            } else if (window.AFModalEngine && typeof window.AFModalEngine.showToast === 'function') {
+                window.AFModalEngine.showToast(errMsg, 'error');
+            }
+        }
+    })
+    .catch(err => {
+        console.error('Direct attachment upload error:', err);
+        if (typeof showToast === 'function') {
+            showToast('Upload error', 'error');
+        }
+    })
+    .finally(() => {
+        if (addBtn) {
+            addBtn.classList.remove('is-loading');
+            addBtn.innerHTML = '<i class="bi bi-plus-lg"></i>';
+        }
+        fileInput.value = '';
+    });
 };
 
 function initSelectPickerSheets(root = document) {
@@ -1912,6 +2203,17 @@ function createImageUploader(config = {}) {
         bound = true;
         elements.dropzone.dataset.bound = 'true';
 
+        elements.dropzone.addEventListener('click', (event) => {
+            if (event.target.closest('.wizard-image-remove-btn')) {
+                return;
+            }
+            if (typeof config.onTriggerPicker === 'function') {
+                config.onTriggerPicker(api);
+            } else {
+                elements.input.click();
+            }
+        });
+
         elements.dropzone.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
@@ -2034,6 +2336,126 @@ function createImageUploader(config = {}) {
 }
 
 window.createImageUploader = createImageUploader;
+
+document.addEventListener('click', (event) => {
+    const closeWizardBtn = event.target.closest('[data-action="close-content-wizard"]');
+    if (closeWizardBtn) {
+        event.preventDefault();
+        if (window.location.pathname.endsWith('/add')) {
+            window.location.href = closeWizardBtn.dataset.listUrl || '/';
+        } else if (typeof closeWizard === 'function') {
+            closeWizard();
+        }
+        return;
+    }
+
+    const submitWizardBtn = event.target.closest('[data-action="submit-content-wizard"]');
+    if (submitWizardBtn) {
+        event.preventDefault();
+        if (typeof prepareAndSubmitWizard === 'function') {
+            prepareAndSubmitWizard();
+        }
+        return;
+    }
+
+    const selectLangCard = event.target.closest('[data-action="select-wizard-lang"]');
+    if (selectLangCard) {
+        if (typeof selectWizardLang === 'function') {
+            selectWizardLang(selectLangCard, selectLangCard.dataset.lang || '');
+        }
+        return;
+    }
+
+    const toggleCatSheet = event.target.closest('[data-action="toggle-wizard-category-sheet"]');
+    if (toggleCatSheet) {
+        if (typeof toggleWizardCategorySheet === 'function') {
+            toggleWizardCategorySheet();
+        }
+        return;
+    }
+
+    const selectPublishCard = event.target.closest('[data-action="select-wizard-publish-status"]');
+    if (selectPublishCard) {
+        if (typeof selectWizardPublishStatus === 'function') {
+            selectWizardPublishStatus(selectPublishCard, selectPublishCard.dataset.status || 'y');
+        }
+        return;
+    }
+
+    const prevStepBtn = event.target.closest('[data-action="prev-wizard-step"]');
+    if (prevStepBtn) {
+        event.preventDefault();
+        if (typeof prevWizardStep === 'function') {
+            prevWizardStep();
+        }
+        return;
+    }
+
+    const nextStepBtn = event.target.closest('[data-action="next-wizard-step"]');
+    if (nextStepBtn) {
+        event.preventDefault();
+        if (typeof nextWizardStep === 'function') {
+            nextWizardStep();
+        }
+        return;
+    }
+
+    const removeBtn = event.target.closest('[data-action="remove-uploader-image"]');
+    if (removeBtn) {
+        if (window.announcementWizard) {
+            return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        const shell = removeBtn.closest('.wizard-image-shell');
+        if (!shell) return;
+        if (shell.id === 'wizardImageShell') {
+            removeWizardImage();
+        } else if (shell.id === 'editImageShell') {
+            if (window.announcementFormManager && typeof window.announcementFormManager.removeImage === 'function') {
+                window.announcementFormManager.removeImage();
+            } else {
+                removeEditImage();
+            }
+        } else if (shell.id === 'listImageShell') {
+            if (window.newsManager && typeof window.newsManager.handleListImageRemoveAction === 'function') {
+                window.newsManager.handleListImageRemoveAction();
+            } else if (window.contentManager && typeof window.contentManager.handleListImageRemoveAction === 'function') {
+                window.contentManager.handleListImageRemoveAction();
+            } else if (window.announcementsManager && typeof window.announcementsManager.handleListImageRemoveAction === 'function') {
+                window.announcementsManager.handleListImageRemoveAction();
+            }
+        }
+        return;
+    }
+
+    const dropzone = event.target.closest('[data-action="trigger-image-picker"]');
+    if (dropzone && dropzone.dataset.bound !== 'true' && !window.announcementWizard) {
+        const shell = dropzone.closest('.wizard-image-shell');
+        const fileInput = shell ? shell.querySelector('input[type="file"]') : null;
+        if (fileInput) {
+            fileInput.click();
+        }
+    }
+});
+
+document.addEventListener('change', (event) => {
+    const fileInput = event.target.closest('[data-action="uploader-file-input"]');
+    if (!fileInput) return;
+    if (window.announcementFormManager || window.announcementWizard) {
+        return;
+    }
+    const shell = fileInput.closest('.wizard-image-shell');
+    const dropzone = shell ? shell.querySelector('.wizard-image-dropzone') : null;
+    if (dropzone && dropzone.dataset.bound === 'true') {
+        return;
+    }
+    if (fileInput.id === 'wizardImgInput' && typeof previewWizardImage === 'function') {
+        previewWizardImage(fileInput);
+    } else if (fileInput.id === 'editImgInput' && typeof previewEditImage === 'function') {
+        previewEditImage(fileInput);
+    }
+});
 
 function showWizardImageFeedback(message, type = 'default') {
     const uploader = wizardImageUploader || initializeWizardImageInteractions();
@@ -4196,10 +4618,12 @@ window.initRichEditor = function (selector, height = 400) {
             if (e.target.closest('.content-card') ||
                 e.target.closest('.m3-card') ||
                 e.target.closest('.standard-toolbar') ||
-                e.target.closest('.service-toolbar') ||
+                e.target.closest('.news-toolbar') ||
                 e.target.closest('#mainFab') ||
-                e.target.closest('.service-image-modal') ||
+                e.target.closest('.news-image-modal') ||
+                e.target.closest('.bottom-sheet') ||
                 e.target.closest('.m3-bottom-sheet') ||
+                e.target.closest('.overlay') ||
                 e.target.closest('.swal2-container') ||
                 e.target.closest('dialog[open]')) {
                 return;
@@ -4210,7 +4634,7 @@ window.initRichEditor = function (selector, height = 400) {
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (document.querySelector('.service-image-modal.active, .m3-bottom-sheet.active, .swal2-container, dialog[open]')) {
+                if (document.querySelector('.news-image-modal.active, .bottom-sheet.active, .m3-bottom-sheet.active, .swal2-container, dialog[open]')) {
                     return;
                 }
                 const hasSelected = document.querySelector('.m3-card.selected, .content-card.selected');

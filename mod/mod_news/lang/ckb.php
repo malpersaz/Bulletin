@@ -2,7 +2,7 @@
 /**
  * News Management Module - Kurdish Language File
  *
- * @package AKM Bulletin CMS
+ * @package AKM Property
  * @module  mod_news
  * @version 1.0.0
  * @author  AKM Software
@@ -27,6 +27,7 @@ $lang['mod_news'] = [
     'success' => 'Çêbû!',
     'error_occurred' => 'Çewtî Çêbû!',
     'error' => 'Çewtiya Giran Çêbû!',
+    'remove_image_title' => 'سڕینەوەی وێنە',
     'remove_image' => 'Ma tu bawer î ku dixwazî vî wêneyî jêbibî?',
     'remove_image_success' => 'Wêne hate rakirin',
     'choose_wish' => 'Beşekê Hilbijêre',
@@ -138,6 +139,10 @@ $lang['mod_news'] = [
         'title_exists' => 'Ev sernav jixwe heye, ji kerema xwe biguherînin',
         'title_unique' => 'Sernavê we bêhempa ye',
         'deck_length' => 'تکایە کورتەیەک لە نێوان ۹۰ تا ۱۲۰ پیت بنووسە.',
+        'invalid_lang' => 'تکایە زمانێکی چالاکی دروست هەڵبژێرە.',
+        'category_not_found' => 'پۆلی هەڵبژێردراو نەدۆزرایەوە.',
+        'category_root_forbidden' => 'پۆلە سەرەکییەکان ناتوانرێت ڕاستەوخۆ دیاری بکرێن. تکایە ژێرپۆلێک هەڵبژێرە.',
+        'category_lang_mismatch' => 'پۆلی هەڵبژێردراو لەگەڵ زمانی هەڵبژێردراودا ناگونجێت.',
     ],
 
     // === Permission Roles ===
@@ -229,6 +234,10 @@ $lang['mod_news'] = [
         'print' => 'Çap Bike',
         'print_info' => 'Agahiya Çapê',
         'created_by' => 'Afirîner',
+        'headline_error' => 'پێشنیارکردنی سەردێڕەکان سەرکەوتوو نەبوو.',
+        'warning_title' => 'ئاگادارکردنەوە',
+        'error_title' => 'هەڵە',
+        'invalid_action' => 'کرداری AI نادروستە.',
         'copy' => 'Ji Ber Bigire',
         'default_sort' => 'Yên Nû',
         'default_lang' => 'KU',
@@ -399,6 +408,12 @@ $lang['mod_news'] = [
     'hero_slider_removed' => 'Nûçe ji Slider hate rakirin.',
     'hero_slider_error' => 'Rewşa Slider nehat nûjenkirin!',
     'hero_slider_badge' => 'Slider',
+    'deck_add' => 'بیکە بە دیارکراو',
+    'deck_remove' => 'لە دیارکراو لایبە',
+    'deck_added' => 'وەک دیارکراو نیشانکرا.',
+    'deck_removed' => 'لە دیارکراو لابرا.',
+    'deck_error' => 'نوێکردنەوەی دۆخی دیارکراو سەرکەوتوو نەبوو.',
+    'deck_badge' => 'دیارکراو',
 
     // === Media Picker UI ===
     'picker' => [
@@ -425,7 +440,7 @@ $lang['mod_news'] = [
             "Kurteya Teknolojiya Heftane: Çi Qewimî?",
             "Yekîtiya Nivîskaran Rêveberiya Nû Hilbijart",
             "Qeydên Atolyeya Wênekêşiyê Dest pê kirin",
-            "Serlêdana Mobîl a AKM Bulletin CMS hat nûjenkirin"
+            "Serlêdana Mobîl a Rojname hat nûjenkirin"
         ],
         'categories' => ["Rojev", "Çand & Huner", "Teknolojî", "Medya", "Jiyan"],
         'authors' => [],
@@ -453,6 +468,10 @@ $lang['mod_news'] = [
         'deck_success' => 'Kurtenivîs bi serfirazî hat çêkirin (%d tîp)',
         'deck_error' => 'Çêkirina kurtenivîsê bi ser neket.',
         'headline_success' => 'Pêşniyarên sernivîsan hatin amadekirin.',
+        'headline_error' => 'پێشنیارکردنی سەردێڕەکان سەرکەوتوو نەبوو.',
+        'warning_title' => 'ئاگادارکردنەوە',
+        'error_title' => 'هەڵە',
+        'invalid_action' => 'کرداری AI نادروستە.',
         'copy' => 'Vê Bikar Bîne',
     ],
 ];
