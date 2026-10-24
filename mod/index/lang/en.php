@@ -110,7 +110,6 @@ $lang['index'] = [
     'min_read' => 'min read',
     'minute' => 'min',
     'enlarge_image' => 'Enlarge image',
-    'add_content'=>'Add Content',
     'add_news'=>'Add News',
     'add_publication'=>'Add Publication',
     'share' => 'Share',
@@ -482,11 +481,6 @@ $lang['index']['mod_publication'] = [
     '15' => 'View',
     '18' => 'No publications available in this category.',
 ];
-$lang['index']['mod_publication']['latest_content'] = [
-    'title' => 'Our Articles',
-    'all_items' => 'View All Content',
-    'no_items_found' => 'No published content is available yet.',
-];
 $lang['index']['mod_publication']['authors'] = 'Our Authors';
 $lang['index']['mod_publication']['author'] = 'Author';
 $lang['index']['mod_publication']['editor'] = 'Editor';
@@ -564,7 +558,7 @@ $lang['index']['time_ago'] = [
 $lang['index']['error'] = [
     'title' => 'Error',
     '1' => 'Error',
-    'method' => ['title' => 'Invalid Method', 'message' => 'Method %s not found', 'ad' => 'Invalid Method', 'mesaj' => 'Method %s not found'],
-    'mod' => ['title' => 'Module Error', 'message' => 'Module %s not found', 'ad' => 'Module Error', 'mesaj' => 'Module %s not found'],
-    'not' => ['title' => 'Page Not Found', 'message' => 'Requested page %s not found', 'ad' => 'Page Not Found', 'mesaj' => 'Requested page %s not found'],
+    'method' => ['title' => 'Invalid Method', 'message' => 'Method %s not found'],
+    'mod' => ['title' => 'Module Error', 'message' => 'Module %s not found'],
+    'not' => ['title' => 'Page Not Found', 'message' => 'Requested page %s not found'],
 ];

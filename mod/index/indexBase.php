@@ -2,6 +2,8 @@
 
 abstract class indexBase
 {
+    use PublicHelperTrait;
+
     public $url;
     public $tema;
     public $theme;
@@ -84,8 +86,9 @@ abstract class indexBase
             return FALSE;
         }
         $acl->sync();
-        Cache::set(unserialize($acl->acl), "permission-acl-" . $acl_id);
-        return unserialize($acl->acl);
+        $unserializedAcl = @unserialize($acl->acl, ['allowed_classes' => false]);
+        Cache::set($unserializedAcl, "permission-acl-" . $acl_id);
+        return $unserializedAcl;
     }
 
 
@@ -115,6 +118,21 @@ abstract class indexBase
         return $this->_fetch_gallery_images($mod, $vid);
     }
 
+    private function _normalizeAttachmentRows(array $rows): array
+    {
+        foreach ($rows as &$row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $row['raw_original_name'] = $row['original_name'] ?? '';
+            $displayName = (!empty($row['filename'])) ? $row['filename'] : ($row['original_name'] ?? '');
+            $row['display_name'] = $displayName;
+            $row['original_name'] = $displayName;
+        }
+        unset($row);
+        return $rows;
+    }
+
     public function _mod_attachment($mod, $vid)
     {
         $file = Load::model('mod_attachment');
@@ -123,7 +141,7 @@ abstract class indexBase
         $file->gR();
 
         if ($file->getSize() !== 0) {
-            $file_array = $file->toArray();
+            $file_array = $this->_normalizeAttachmentRows($file->toArray());
             $this->tema->ctx_set('file', $file_array);
             $this->tema->ctx_set('files', $file_array);
         }
@@ -137,7 +155,7 @@ abstract class indexBase
         $file->select('id,url,original_name,filename')->gRo();
         
         if ($file->getSize() !== 0) {
-            $file_array = [$file->toArray()];
+            $file_array = $this->_normalizeAttachmentRows([$file->toArray()]);
             $this->tema->ctx_set('file', $file_array);
             $this->tema->ctx_set('files', $file_array);
         }
@@ -163,12 +181,43 @@ abstract class indexBase
         }
     }
 
+    public function _mod_faq($mod, $vid)
+    {
+        try {
+            $faq = Load::model('mod_faq');
+            $faq->where_mod_name_and_vid_and_lang_and_status($mod, (int) $vid, $this->site['lang'], 'y');
+            $faq->select('id,lang,mod_name,vid,question,answer,sort_order,status')->order('sort_order', 'ASC')->order('id', 'ASC');
+            $faq->gR();
+
+            $faq_lang = Load::lang('mod_faq');
+            $this->tema->ctx_set('faq_lang', $faq_lang);
+
+            if ($faq->getSize() !== 0) {
+                $faq_array = $faq->toArray();
+                $this->tema->ctx_set('faqs', $faq_array);
+                $this->tema->ctx_set('faq', $faq_array);
+                unset($faq);
+                return $faq_array;
+            }
+
+            $this->tema->ctx_set('faqs', []);
+            $this->tema->ctx_set('faq', []);
+            unset($faq);
+            return [];
+        } catch (\Throwable $e) {
+            error_log('Amed Framework Notice: FAQ query failed or table does not exist: ' . $e->getMessage());
+            $this->tema->ctx_set('faqs', []);
+            $this->tema->ctx_set('faq', []);
+            return [];
+        }
+    }
+
     public function _mod_video($v)
     {
         if (empty($v) || !is_string($v)) {
             return;
         }
-        $data = @unserialize($v);
+        $data = @unserialize($v, ['allowed_classes' => false]);
         if ($data === false && $v !== 'b:0;') {
             error_log("Amed Framework Warning: Failed to unserialize video data: " . $v);
             return;

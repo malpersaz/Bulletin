@@ -8,7 +8,7 @@
  */
 class mod_attachment_mod extends BaseModuleController
 {
-    public $mlang;
+    public $module_lang;
     public $mod_attachment_model;
     public $r;
 
@@ -28,34 +28,83 @@ class mod_attachment_mod extends BaseModuleController
 
     private function _resolve_record_title($record, $configured_value = null)
     {
-        if (!is_array($record) || $record === [] || $configured_value === null || $configured_value === '') {
+        if (!is_array($record) || $record === []) {
             return false;
         }
 
-        if (!array_key_exists($configured_value, $record)) {
-            return false;
+        $candidates = array_filter(array_unique([
+            $configured_value,
+            'name',
+            'title',
+            'headline',
+            'subject'
+        ]));
+
+        foreach ($candidates as $field) {
+            if (!is_string($field) || $field === '' || $field === 'id' || substr($field, -3) === '_id') {
+                continue;
+            }
+            if (array_key_exists($field, $record)) {
+                $value = trim((string) $record[$field]);
+                if ($value !== '') {
+                    return $value;
+                }
+            }
         }
 
-        $value = trim((string) $record[$configured_value]);
-        if ($value === '') {
-            return false;
+        if (isset($record['id'])) {
+            return '#' . (string) $record['id'];
         }
 
-        if ($configured_value === 'id' || substr($configured_value, -3) === '_id') {
-            return false;
-        }
+        return false;
+    }
 
-        return $value;
+    private function _has_attachment_permission($mod = null, $action = 'file')
+    {
+        $targetMod = ($mod && $mod !== 'mod_attachment') ? $mod : 'mod_attachment';
+        $this->module_lang = Load::lang($targetMod);
+        $roleError = $this->module_lang[$targetMod]['role_errors']['file']
+            ?? ($this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied');
+
+        return (
+            Role::hasPermission($targetMod, 'file') ||
+            Role::hasPermission($targetMod, 'edit') ||
+            Role::hasPermission('mod_attachment', 'list') ||
+            Role::hasPermission('mod_attachment', 'edit') ||
+            Role::hasPermission('mod_attachment', $action) ||
+            $this->user->hasPermission($targetMod, 'file', $roleError, 1)
+        );
+    }
+
+    private function _send_json($payload)
+    {
+        if (ob_get_level() > 0) {
+            ob_clean();
+        }
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($payload);
     }
 
     public function _check_mod($mod, $vid)
     {
-        if ($mod === null) {
-            exit($this->lang['mod_attachment']['errors']['missing_module_name']);
+        $isJsonOrAjax = Req::is_Ajax() || (isset($_GET['ajax']) && $_GET['ajax'] == 1) || Req::Post('response_format') === 'json';
+
+        if ($mod === null || $mod === '') {
+            $msg = $this->lang['mod_attachment']['errors']['missing_module_name'];
+            if ($isJsonOrAjax) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
-        if ($vid === null) {
-            exit($this->lang['mod_attachment']['errors']['missing_record_id']);
+        if ($vid === null || $vid === '') {
+            $msg = $this->lang['mod_attachment']['errors']['missing_record_id'];
+            if ($isJsonOrAjax) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $this->mod = Load::model('mod_attachment_mod');
@@ -73,36 +122,54 @@ class mod_attachment_mod extends BaseModuleController
         }
 
         if ($this->mod->exists_mod_name($mod) === false) {
-            exit($this->lang['mod_attachment']['errors']['invalid_module']);
+            $msg = $this->lang['mod_attachment']['errors']['invalid_module'];
+            if ($isJsonOrAjax) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $this->mod->getResultOne();
         $this->mod->sync();
 
-        $this->mlang = Load::lang($mod);
-        $roleError = $this->mlang[$mod]['role_errors']['file'] ?? ($this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied');
+        $this->module_lang = Load::lang($mod);
+        $roleError = $this->module_lang[$mod]['role_errors']['file'] ?? ($this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied');
 
-        $hasPermission = (
-            Role::hasPermission($mod, 'file') ||
-            Role::hasPermission($mod, 'edit') ||
-            Role::hasPermission('mod_attachment', 'list') ||
-            Role::hasPermission('mod_attachment', 'edit') ||
-            $this->user->hasPermission($mod, 'file', $roleError, 1)
-        );
-
-        if (!$hasPermission) {
+        if (!$this->_has_attachment_permission($mod, 'file')) {
+            if ($isJsonOrAjax) {
+                $this->_send_json(['status' => 'error', 'message' => $roleError]);
+                return false;
+            }
             exit($roleError);
         }
 
-        $this->model = Load::model($mod);
-        if (!$this->model || $this->model->exists_id($vid) === false) {
-            Helper::redirect($this->site['address'] . $mod . '/list', 1);
-            print($this->lang['mod_attachment']['errors']['invalid_record']);
-            return false;
-        }
+        $record = [];
+        $record_title = '';
 
-        $this->model->getResultOne();
-        $this->model->sync();
+        if (intval($vid) > 0 && $mod !== 'mod_attachment') {
+            $this->model = Load::model($mod);
+            if (!$this->model || $this->model->exists_id($vid) === false) {
+                $msg = $this->lang['mod_attachment']['errors']['invalid_record'];
+                if ($isJsonOrAjax) {
+                    $this->_send_json(['status' => 'error', 'message' => $msg]);
+                    return false;
+                }
+                Helper::redirect($this->site['address'] . $mod . '/list', 1);
+                print($msg);
+                return false;
+            }
+
+            $this->model->getResultOne();
+            $this->model->sync();
+            $record = $this->model->toArray();
+            $record_title = $this->_resolve_record_title($record, $this->mod->mod_value);
+            if ($record_title === false) {
+                $record_title = '#' . (string) $vid;
+            }
+        } else {
+            $record_title = $this->lang['mod_attachment']['admin']['file_management'] ?? 'Files';
+        }
 
         $this->theme->set('key', $this->mod->mod_key);
         $this->theme->set('value', $this->mod->mod_value);
@@ -111,15 +178,10 @@ class mod_attachment_mod extends BaseModuleController
         $this->mod_attachment_model = Load::model('mod_attachment');
         $this->mod_attachment_model->where_vid_and_mod_name($vid, $mod)->gR();
 
-        $record = $this->model->toArray();
-        $record_title = $this->_resolve_record_title($record, $this->mod->mod_value);
-        if ($record_title === false) {
-            exit($this->lang['mod_attachment']['errors']['invalid_record_title_field']);
-        }
-
         $this->theme->set('d', $record);
         $this->theme->set('record_title', $record_title);
         $this->theme->set('vid', $vid);
+        $this->theme->set('active_file_id', isset($record['file_id']) ? intval($record['file_id']) : 0);
 
         return true;
     }
@@ -128,6 +190,8 @@ class mod_attachment_mod extends BaseModuleController
     {
         $mod = Req::Url_Clear($mod);
         $vid = Req::Url_Clear($vid);
+        $isAjax = Req::is_Ajax() || (isset($_GET['ajax']) && $_GET['ajax'] == 1);
+        $this->theme->set('is_ajax', $isAjax);
 
         if ($mod === '') {
             $mod = null;
@@ -145,12 +209,14 @@ class mod_attachment_mod extends BaseModuleController
             $this->site['title'] = $this->lang['mod_attachment']['admin']['file_management'];
             $this->theme->set('site', $this->site);
             $this->theme->set('is_global_list', true);
+            $this->theme->set('mod_name', 'mod_attachment');
+            $this->theme->set('vid', 0);
+            $this->theme->set('active_file_id', 0);
 
-            $this->mod_attachment_model = Load::model('mod_attachment');
-            $this->mod_attachment_model->select('id,filename,url,ext,original_name,type,created_at,mod_name,vid,user_id')->gR();
-
-            if ($this->mod_attachment_model->getSize() !== 0) {
-                $this->theme->set('dosyalar', $this->mod_attachment_model->toArray());
+            $this->db->fetch_array("SELECT id, filename, url, ext, original_name, type, created_at, mod_name, vid, user_id FROM `mod_attachment` ORDER BY id DESC");
+            $rows = $this->db->getResult()->toArray();
+            if (!empty($rows)) {
+                $this->theme->set('files', $rows);
             }
 
             $this->theme->tpl('mod_attachment/list');
@@ -175,8 +241,12 @@ class mod_attachment_mod extends BaseModuleController
         }
         $this->theme->set('back_url', $back_url);
 
-        if ($this->mod_attachment_model->getSize() !== 0) {
-            $this->theme->set('dosyalar', $this->mod_attachment_model->toArray());
+        $safeMod = addslashes((string) $mod);
+        $safeVid = intval($vid);
+        $this->db->fetch_array("SELECT id, filename, url, ext, original_name, type, created_at, mod_name, vid, user_id FROM `mod_attachment` ORDER BY CASE WHEN mod_name = '{$safeMod}' AND vid = {$safeVid} THEN 0 ELSE 1 END, id DESC");
+        $rows = $this->db->getResult()->toArray();
+        if (!empty($rows)) {
+            $this->theme->set('files', $rows);
         }
 
         $this->theme->tpl('mod_attachment/list');
@@ -186,9 +256,16 @@ class mod_attachment_mod extends BaseModuleController
     public function edit($id = null)
     {
         $vid = Req::Post_Safe('vid');
-        $mod = Req::Post_Safe('mod_name');
-        if ($this->_check_mod($mod, $vid) === false) {
-            return false;
+        $mod = Req::Post_Safe('mod_name') ?: 'mod_attachment';
+        $wantJson = Req::Post('response_format') === 'json';
+
+        if (!$this->_has_attachment_permission($mod, 'edit')) {
+            $msg = $this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied';
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $this->r = Load::model('mod_attachment');
@@ -196,49 +273,115 @@ class mod_attachment_mod extends BaseModuleController
         $this->r->where_id($id)->gRo();
 
         if ($this->r->getSize() === 0) {
-            exit($this->lang['mod_attachment']['errors']['invalid_file']);
+            $msg = $this->lang['mod_attachment']['errors']['invalid_file'];
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
+        }
+
+        $newName = trim((string) Req::Post_Safe('name'));
+        if ($newName === '') {
+            $msg = $this->lang['mod_attachment']['errors']['invalid_file'];
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $this->r->id = $id;
-        $this->r->filename = Req::Post_Safe('name');
+        $this->r->filename = $newName;
         $this->r->update('id');
+
+        if ($wantJson) {
+            $this->_send_json([
+                'status' => 'success',
+                'id'     => intval($id),
+                'name'   => $newName
+            ]);
+            return true;
+        }
+
         echo 'OK';
+        return true;
     }
 
     public function delete()
     {
         $vid = Req::Post_Safe('vid');
-        $mod = Req::Post_Safe('mod_name');
-        if ($this->_check_mod($mod, $vid) === false) {
-            return false;
+        $mod = Req::Post_Safe('mod_name') ?: 'mod_attachment';
+        $wantJson = Req::Post('response_format') === 'json';
+
+        if (!$this->_has_attachment_permission($mod, 'delete')) {
+            $msg = $this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied';
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $file_model = Load::model('mod_attachment');
-        $id = Req::Post_Safe('id');
-        $file_model->where_id_and_vid_and_mod_name($id, $vid, $mod)->limit(1)->gRo();
+        $id = intval(Req::Post_Safe('id'));
+        $file_model->where_id($id)->limit(1)->gRo();
 
         if ($file_model->getSize() === 0) {
-            exit($this->lang['mod_attachment']['errors']['invalid_file']);
+            $msg = $this->lang['mod_attachment']['errors']['invalid_file'];
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $file_model->sync();
+        $targetMod = !empty($file_model->mod_name) ? $file_model->mod_name : $mod;
 
         $file = Load::mod('file');
-        $file->mod = $mod;
+        $file->mod = $targetMod;
         $file->url = $file_model->url;
 
-        if ($file->_delete() && $file_model->delete()) {
+        $deletedFile = $file->_delete();
+        $deletedRow = $file_model->delete();
+
+        if ($deletedRow) {
+            foreach (['mod_publication', 'mod_news', 'mod_page'] as $refTable) {
+                try {
+                    $this->db->query("UPDATE `{$refTable}` SET `file_id` = 0 WHERE `file_id` = {$id}");
+                } catch (Exception $e) {
+                    // Ignore if table or column does not exist
+                }
+            }
+
+            if ($wantJson) {
+                $this->_send_json([
+                    'status' => 'success',
+                    'id'     => $id
+                ]);
+                return;
+            }
+
             echo 'OK';
             return;
         }
 
-        echo $file->error;
+        $errMsg = $file->error ?: 'Delete error';
+        if ($wantJson) {
+            $this->_send_json(['status' => 'error', 'message' => $errMsg]);
+            return;
+        }
+        echo $errMsg;
     }
 
     public function add()
     {
-        $vid = Req::Post_Safe('vid');
-        $mod = Req::Post_Safe('mod_name');
+        $vid = Req::is_Post('vid') ? Req::Post_Safe('vid') : Req::Get_Safe('vid');
+        $mod = Req::is_Post('mod_name') ? Req::Post_Safe('mod_name') : Req::Get_Safe('mod_name');
+        $isAjax = Req::is_Ajax() || (isset($_GET['ajax']) && $_GET['ajax'] == 1);
+        $this->theme->set('is_ajax', $isAjax);
+
         if ($this->_check_mod($mod, $vid) === false) {
             return false;
         }
@@ -255,21 +398,46 @@ class mod_attachment_mod extends BaseModuleController
 
     public function upload()
     {
-        $input_name = Req::Post_Safe('isim');
+        $input_name = Req::Post_Safe('isim') ?: 'file';
+        $wantJson = Req::Post('response_format') === 'json';
+
         if (Req::is_Files($input_name) === false) {
-            exit($this->lang['mod_attachment']['errors']['upload_field_missing']);
+            $msg = $this->lang['mod_attachment']['errors']['upload_field_missing'];
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $vid = Req::Post_Safe('vid');
-        $mod = basename(Req::Post_Safe('mod_name'));
-        if ($this->_check_mod($mod, $vid) === false) {
-            return false;
+        if ($vid === '' || $vid === null) {
+            $vid = 0;
+        }
+        $mod = basename(Req::Post_Safe('mod_name') ?: 'mod_publication');
+
+        if (intval($vid) > 0 && $mod !== 'mod_attachment') {
+            if ($this->_check_mod($mod, $vid) === false) {
+                return false;
+            }
+        } elseif (!$this->_has_attachment_permission($mod, 'file')) {
+            $msg = $this->lang['mod_attachment']['errors']['access_denied'] ?? 'Permission denied';
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
-        $valid_ext = ['txt', 'xls', 'jpg', 'png', 'gif', 'bmp', 'jpeg', 'JPG', 'JPEG', 'PNG', 'GIF', 'rar', 'zip', 'pdf', 'doc', 'docx', 'ods', 'ppt', 'odt', 'epub', 'RAR', 'ZIP', 'PDF', 'DOC', 'DOCX', 'ODS', 'PPT', 'ODT', 'EPUB'];
+        $valid_ext = ['txt', 'xls', 'xlsx', 'csv', 'jpg', 'png', 'gif', 'bmp', 'jpeg', 'webp', 'JPG', 'JPEG', 'PNG', 'GIF', 'WEBP', 'rar', 'zip', '7z', 'pdf', 'doc', 'docx', 'ods', 'ppt', 'pptx', 'odt', 'epub', 'RAR', 'ZIP', '7Z', 'PDF', 'DOC', 'DOCX', 'ODS', 'PPT', 'PPTX', 'ODT', 'EPUB'];
 
         if (!Req::is_Files($input_name) || Req::Files_Name($input_name) == '') {
-            exit($this->lang['mod_attachment']['errors']['uploaded_file_missing']);
+            $msg = $this->lang['mod_attachment']['errors']['uploaded_file_missing'];
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $msg]);
+                return false;
+            }
+            exit($msg);
         }
 
         $file = Load::mod('file');
@@ -277,24 +445,61 @@ class mod_attachment_mod extends BaseModuleController
         $file->name = $input_name;
 
         if (!$file->_upload(['valid_ext' => $valid_ext])) {
+            if ($wantJson) {
+                $this->_send_json(['status' => 'error', 'message' => $file->error]);
+                return false;
+            }
             echo $file->error;
             return false;
         }
 
         $result = $file->result;
         $file_model = Load::model('mod_attachment');
-        $file_model->filename = Req::Clear($result['original_name']);
+        $cleanName = Req::Clear($result['original_name']);
+        $file_model->filename = $cleanName;
         $file_model->url = $result['url'];
         $file_model->ext = $result['ext'];
         $file_model->original_name = $result['original_name'];
         $file_model->type = $result['type'];
         $file_model->mod_name = $mod;
-        $file_model->vid = $vid;
+        $file_model->vid = intval($vid);
         $file_model->user_id = $this->session->get('id');
 
         if ($file_model->save()) {
+            $newId = intval($file_model->insert_id());
+            if ($newId <= 0) {
+                $newId = intval($this->db->insert_id());
+            }
+            if ($newId <= 0) {
+                $this->db->fetch_array("SELECT id FROM `mod_attachment` ORDER BY id DESC LIMIT 1");
+                $lastRow = $this->db->getResult()->toArray();
+                if (!empty($lastRow[0]['id'])) {
+                    $newId = intval($lastRow[0]['id']);
+                }
+            }
+
+            if ($wantJson) {
+                $this->_send_json([
+                    'status'        => 'success',
+                    'id'            => $newId,
+                    'filename'      => $cleanName,
+                    'original_name' => $result['original_name'],
+                    'name'          => $cleanName ?: $result['original_name'],
+                    'url'           => $result['url'],
+                    'ext'           => $result['ext'],
+                    'mod_name'      => $mod,
+                    'vid'           => intval($vid)
+                ]);
+                return true;
+            }
+
             echo $result['original_name'];
             return true;
+        }
+
+        if ($wantJson) {
+            $this->_send_json(['status' => 'error', 'message' => 'Database save failed']);
+            return false;
         }
 
         echo 'ERROR';

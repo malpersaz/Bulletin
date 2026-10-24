@@ -110,7 +110,6 @@ $lang['index'] = [
     'min_read' => 'dakika okuma',
     'minute' => 'dk',
     'enlarge_image' => 'Resmi büyüt',
-    'add_content' => 'İçerik Ekle',
     'add_news' => 'Haber Ekle',
     'add_publication' => 'Yayın Ekle',
     'comments' => 'Yorumlar',
@@ -460,14 +459,6 @@ $lang['index'] = [
             10 => 'Kasım',
             11 => 'Aralık',
         ],
-        'latest_content' => [
-            'title' => 'Makalelerimiz',
-            'all_items' => 'Tüm İçerikleri Gör',
-            'no_items_found' => 'Henüz yayınlanmış bir içerik bulunmuyor.',
-            1 => 'Makalelerimiz',
-            2 => 'Tüm İçerikler',
-            3 => 'Henüz yayınlanmış bir içerik bulunmuyor.',
-        ],
         'latest_news' => [
             1 => 'Haberler',
             2 => 'Tüm Haberler',
@@ -534,8 +525,8 @@ $lang['index'] = [
     'error' => [
         'title' => 'Hata',
         '1' => 'Hata',
-        'method' => ['title' => 'Geçersiz Metot', 'message' => '%s metodu bulunamadı', 'ad' => 'Geçersiz Metot', 'mesaj' => '%s metodu bulunamadı'],
-        'mod' => ['title' => 'Modül Hatası', 'message' => '%s modülü bulunamadı', 'ad' => 'Modül Hatası', 'mesaj' => '%s modülü bulunamadı'],
-        'not' => ['title' => 'Sayfa Bulunamadı', 'message' => 'İstenen sayfa %s bulunamadı', 'ad' => 'Sayfa Bulunamadı', 'mesaj' => 'İstenen sayfa %s bulunamadı'],
+        'method' => ['title' => 'Geçersiz Metot', 'message' => '%s metodu bulunamadı'],
+        'mod' => ['title' => 'Modül Hatası', 'message' => '%s modülü bulunamadı'],
+        'not' => ['title' => 'Sayfa Bulunamadı', 'message' => 'İstenen sayfa %s bulunamadı'],
     ],
 ];

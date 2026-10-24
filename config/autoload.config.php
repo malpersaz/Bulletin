@@ -26,6 +26,7 @@ $autoload['libfile'] = array(
     'Orm',
     'BaseModuleController',
     'BaseModuleValidator',
+    'BridgeCleanupService',
     'DataTableService',
     'ImageService',
     'GoogleIndexingService',

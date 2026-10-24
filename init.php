@@ -65,6 +65,13 @@ define('helper_dir', 'helper' . DS);
 require_once(lib_dir . 'Registry.class.php');
 // Loader Class
 require_once(lib_dir . 'Load.class.php');
+// Shared Traits
+if (file_exists(lib_dir . 'Traits' . DS . 'ModuleValidatorTrait.php')) {
+    require_once(lib_dir . 'Traits' . DS . 'ModuleValidatorTrait.php');
+}
+if (file_exists(lib_dir . 'Traits' . DS . 'PublicHelperTrait.php')) {
+    require_once(lib_dir . 'Traits' . DS . 'PublicHelperTrait.php');
+}
 // Autoload Files
 require_once(config_dir . 'autoload.config.php');
 $autoload = Registry::get('autoload_config');
@@ -76,8 +83,8 @@ if (isset($autoload['libfile'][0])) {
 }
 // Automatically Loaded Configuration Files
 if (isset($autoload['config'][0])) {
-    foreach ($autoload['config'] as $conf) {
-        Load::config($conf);
+    foreach ($autoload['config'] as $configName) {
+        Load::config($configName);
     }
 }
 

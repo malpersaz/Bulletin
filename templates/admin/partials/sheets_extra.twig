@@ -173,13 +173,16 @@
             <div id="selectPickerSubtitle" class="select-picker-subtitle-text"></div>
         </div>
         <div class="select-picker-actions-wrapper">
-            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add is-hidden" data-action="select-picker-add">
-                <div class="add-btn-bg"></div>
-                <span class="add-btn-content"><i class="bi bi-plus-lg"></i> {{ wizard_lang.button.add }}</span>
+            <button type="button" id="selectPickerAddBtn" class="m3-btn-select-add is-hidden" data-action="select-picker-add" title="{{ wizard_lang.button.add }}" aria-label="{{ wizard_lang.button.add }}">
+                <i class="bi bi-plus-lg"></i>
             </button>
-            <button type="button" class="m3-btn-icon-close" aria-label="Close" data-action="close-select-picker"><i class="bi bi-x-lg"></i></button>
+            <button type="button" id="selectPickerManageBtn" class="m3-btn-select-manage is-hidden" data-action="select-picker-manage" title="{{ wizard_lang.button.file }}" aria-label="{{ wizard_lang.button.file }}">
+                <i class="bi bi-folder2-open"></i>
+            </button>
+            <button type="button" class="m3-btn-icon-close" aria-label="{{ wizard_lang.button.cancel }}" data-action="close-select-picker"><i class="bi bi-x-lg"></i></button>
         </div>
     </div>
+    <input type="file" id="pickerAttachmentFileInput" class="is-hidden">
     <div class="select-picker-meta is-hidden">
         <div class="select-picker-pill">
             <i class="bi bi-translate"></i>
@@ -201,5 +204,9 @@
     <div id="selectPickerEmpty" class="select-picker-empty">
         <i class="bi bi-search select-picker-empty-icon"></i>
         <p class="select-picker-empty-text">{{ wizard_lang.wizard.summary.selected_none }}</p>
+        <button type="button" id="selectPickerEmptyAddBtn" class="m3-btn-select-empty-add is-hidden" data-action="select-picker-add">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ wizard_lang.button.add }}</span>
+        </button>
     </div>
 </div>

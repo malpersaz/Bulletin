@@ -395,9 +395,14 @@ class index_mod extends indexBase
         }
 
         header("content-type: text/xml; charset=utf-8");
-        
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
         $news = Load::model('mod_news.newses');
         $news->where_status_and_lang('y', $this->site['lang']);
+        $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
         $news->select(['title', 'summary', 'created_at', 'seo', 'lang', 'image']);
         $news->limit(50);
@@ -497,9 +502,14 @@ class index_mod extends indexBase
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
-        
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
         $news = Load::model('mod_news.newses');
         $news->where_status_and_lang('y', $this->site['lang']);
+        $news->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $news->addWhere("category_id IN ({$allowedCatList})");
         $news->order('created_at', 'DESC');
         $news->select(['seo', 'lang']);
         $news->limit($page_limit, $offset);
@@ -529,9 +539,14 @@ class index_mod extends indexBase
         $page_limit = 50000;
         $page = (intval($page) === 0) ? 1 : intval($page);
         $offset = ($page - 1) * $page_limit;
-        
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_publication_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
         $pub = Load::model('mod_publication');
         $pub->where_status_and_lang('y', $this->site['lang']);
+        $pub->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $pub->addWhere("category_id IN ({$allowedCatList})");
         $pub->order('created_at', 'DESC');
         $pub->select(['seo', 'lang']);
         $pub->limit($page_limit, $offset);
@@ -562,6 +577,7 @@ class index_mod extends indexBase
         
         $model = Load::model('mod_announcements');
         $model->where_status_and_lang('y', $this->site['lang']);
+        $model->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $model->order('created_at', 'DESC');
         $model->select(['id', 'name', 'lang']);
         $model->limit($page_limit, $offset);
@@ -595,6 +611,7 @@ class index_mod extends indexBase
         // 1. Local videos
         $model_local = Load::model('mod_video');
         $model_local->where_status_and_lang('y', $this->site['lang']);
+        $model_local->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $model_local->order('created_at', 'DESC');
         $model_local->select(['id', 'name', 'lang']);
         $model_local->limit($page_limit, $offset);
@@ -613,6 +630,7 @@ class index_mod extends indexBase
         if ($this->isFeatureReady('video_embed.latest')) {
             $model_embed = Load::model('mod_video_embed');
             $model_embed->where_status_and_lang('y', $this->site['lang']);
+            $model_embed->addWhere('(acl_id = 0 OR acl_id IS NULL)');
             $model_embed->order('created_at', 'DESC');
             $model_embed->select(['id', 'name', 'lang']);
             $model_embed->limit($page_limit, $offset);
@@ -641,6 +659,7 @@ class index_mod extends indexBase
         
         $model = Load::model('mod_imagecategories');
         $model->where_root_and_lang('n', $this->site['lang']);
+        $model->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $model->order('order', 'ASC');
         $model->select(['seo', 'lang']);
         $model->limit($page_limit, $offset);
@@ -674,32 +693,44 @@ class index_mod extends indexBase
         <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         if ($this->isFeatureReady('news.front')) {
-            $cat_news = Load::model('mod_news_category');
-            $cat_news->where_lang($this->site['lang'])->select(['seo', 'lang']);
-            $cat_news->gR();
-            if ($cat_news->getSize() != 0) {
-                foreach ($cat_news->toArray() as $o) {
-                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
-                        echo '<url>
-                                  <loc>' . $this->site['address'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
-                                  <priority>0.60</priority>
-                            </url>';
+            $allowedNewsCats = $this->getAllowedCategoryIds('mod_news_category', (string) $this->site['lang'], true);
+            if (!empty($allowedNewsCats)) {
+                $catList = implode(',', array_map('intval', $allowedNewsCats));
+                $cat_news = Load::model('mod_news_category');
+                $cat_news->where_lang_and_root($this->site['lang'], 'n');
+                $cat_news->addWhere("id IN ({$catList})");
+                $cat_news->select(['seo', 'lang']);
+                $cat_news->gR();
+                if ($cat_news->getSize() != 0) {
+                    foreach ($cat_news->toArray() as $o) {
+                        if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                            echo '<url>
+                                      <loc>' . $this->site['address'] . $o['lang'] . '/newses/' . $o['seo'] . '</loc>
+                                      <priority>0.60</priority>
+                                </url>';
+                        }
                     }
                 }
             }
         }
 
         if ($this->isFeatureReady('publication.front')) {
-            $cat_pub = Load::model('mod_publication_category');
-            $cat_pub->where_lang($this->site['lang'])->select(['seo', 'lang']);
-            $cat_pub->gR();
-            if ($cat_pub->getSize() != 0) {
-                foreach ($cat_pub->toArray() as $o) {
-                    if ($o['seo'] !== '#' && $o['seo'] !== '') {
-                        echo '<url>
-                                  <loc>' . $this->site['address'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
-                                  <priority>0.60</priority>
-                            </url>';
+            $allowedPubCats = $this->getAllowedCategoryIds('mod_publication_category', (string) $this->site['lang'], true);
+            if (!empty($allowedPubCats)) {
+                $catList = implode(',', array_map('intval', $allowedPubCats));
+                $cat_pub = Load::model('mod_publication_category');
+                $cat_pub->where_lang_and_root($this->site['lang'], 'n');
+                $cat_pub->addWhere("id IN ({$catList})");
+                $cat_pub->select(['seo', 'lang']);
+                $cat_pub->gR();
+                if ($cat_pub->getSize() != 0) {
+                    foreach ($cat_pub->toArray() as $o) {
+                        if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                            echo '<url>
+                                      <loc>' . $this->site['address'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                                      <priority>0.60</priority>
+                                </url>';
+                        }
                     }
                 }
             }
@@ -719,6 +750,7 @@ class index_mod extends indexBase
         
         $pages = Load::model('mod_page');
         $pages->where_status_and_lang('y', $this->site['lang']);
+        $pages->addWhere('(acl_id = 0 OR acl_id IS NULL)');
         $pages->select(['seo', 'lang']);
         $pages->limit($page_limit, $offset);
         $pages->gR();

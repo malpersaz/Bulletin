@@ -6,355 +6,100 @@
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
 {% set hide_contextual_bar = true %}
-{% set search_placeholder = lang.mod_attachment.admin[23] %}
-{% extends 'admin/layout.twig' %}
+{% set search_placeholder = lang.mod_attachment.admin.file_name %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
 
-{% block title %}{{ lang.mod_attachment.admin[14] }}{% endblock %}
-{% block headline %}{{ lang.mod_attachment.admin[14] }}{% endblock %}
+{% block title %}{{ lang.mod_attachment.admin.file_management }}{% endblock %}
+{% block headline %}{{ lang.mod_attachment.admin.file_management }}{% endblock %}
 
 {% block styles %}
-<style>
-    .attachment-shell {
-        padding: 8px 16px 16px;
-        display: grid;
-        gap: 14px;
-        background:
-            radial-gradient(circle at top left, rgba(31, 78, 121, 0.10), transparent 24%),
-            radial-gradient(circle at bottom right, rgba(11, 107, 92, 0.10), transparent 28%),
-            linear-gradient(180deg, #eef4f9 0%, #f4f8f3 100%);
-    }
-    .attachment-banner,
-    .attachment-card,
-    .attachment-empty {
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.92);
-        border: 1px solid rgba(0, 0, 0, 0.07);
-        box-shadow: 0 12px 30px rgba(22, 30, 52, 0.06);
-    }
-    .attachment-banner {
-        padding: 18px;
-        display: grid;
-        gap: 8px;
-    }
-    .attachment-banner h2 {
-        margin: 0;
-        font-size: 18px;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-    }
-    .attachment-banner p {
-        margin: 0;
-        color: var(--md-sys-color-on-surface-variant);
-        font-size: 13px;
-        line-height: 1.6;
-    }
-    .attachment-banner-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    .attachment-banner-meta span {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        min-height: 28px;
-        padding: 0 12px;
-        border-radius: 999px;
-        background: #eef6ff;
-        color: #1e4f7a;
-        font-size: 12px;
-        font-weight: 700;
-    }
-    .attachment-entry-card {
-        border-radius: 20px;
-        background: linear-gradient(135deg, rgba(31, 78, 121, 0.10), rgba(11, 107, 92, 0.12));
-        border: 1px solid rgba(31, 78, 121, 0.10);
-        padding: 16px 18px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-    }
-    .attachment-entry-copy {
-        min-width: 0;
-    }
-    .attachment-entry-title {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 800;
-        color: var(--md-sys-color-on-surface);
-    }
-    .attachment-browse-btn {
-        min-height: 44px;
-        padding: 0 18px;
-        border: none;
-        border-radius: 999px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        background: linear-gradient(135deg, #1f4e79, #0b6b5c);
-        color: #fff;
-        font-weight: 800;
-        cursor: pointer;
-        box-shadow: 0 10px 24px rgba(31, 78, 121, 0.20);
-    }
-    @media (max-width: 640px) {
-        .attachment-entry-card {
-            align-items: stretch;
-            flex-direction: column;
-        }
-        .attachment-browse-btn {
-            width: 100%;
-            justify-content: center;
-        }
-    }
-    .attachment-grid {
-        display: grid;
-        gap: 12px;
-    }
-    .attachment-card {
-        display: grid;
-        gap: 14px;
-        padding: 16px;
-        cursor: pointer;
-        transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    }
-    .attachment-card.selected {
-        border-color: rgba(31, 78, 121, 0.28);
-        box-shadow: 0 16px 30px rgba(31, 78, 121, 0.14);
-        transform: translateY(-1px);
-    }
-    .attachment-card.is-new {
-        border-color: rgba(11, 107, 92, 0.28);
-        box-shadow: 0 16px 32px rgba(11, 107, 92, 0.14);
-    }
-    .attachment-card.hidden-by-search {
-        display: none;
-    }
-    .attachment-topline {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        gap: 12px;
-        align-items: center;
-    }
-    .attachment-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(135deg, #d9ecff, #d6f5ea);
-        color: #215f57;
-        font-size: 22px;
-    }
-    .attachment-icon.type-pdf {
-        background: linear-gradient(135deg, #fde3df, #fff0ec);
-        color: #b3261e;
-    }
-    .attachment-icon.type-image {
-        background: linear-gradient(135deg, #d9ecff, #eef5ff);
-        color: #245ea8;
-    }
-    .attachment-icon.type-archive {
-        background: linear-gradient(135deg, #efe3ff, #f7f0ff);
-        color: #6947b6;
-    }
-    .attachment-icon.type-sheet {
-        background: linear-gradient(135deg, #dcf5e8, #eefcf4);
-        color: #157347;
-    }
-    .attachment-icon.type-doc {
-        background: linear-gradient(135deg, #e2ebff, #f1f5ff);
-        color: #315ea8;
-    }
-    .attachment-icon.type-generic {
-        background: linear-gradient(135deg, #eceff3, #f8fafb);
-        color: #5d6875;
-    }
-    .attachment-title {
-        margin: 0;
-        font-size: 15px;
-        font-weight: 800;
-        line-height: 1.4;
-        word-break: break-word;
-    }
-    .attachment-meta {
-        margin-top: 6px;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        color: var(--md-sys-color-on-surface-variant);
-        font-size: 12px;
-    }
-    .attachment-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 24px;
-        padding: 0 10px;
-        border-radius: 999px;
-        background: #eff2ff;
-        color: #33429a;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .attachment-chip.type-pdf {
-        background: #fde8e6;
-        color: #b3261e;
-    }
-    .attachment-chip.type-image {
-        background: #e7f0ff;
-        color: #245ea8;
-    }
-    .attachment-chip.type-archive {
-        background: #efe7ff;
-        color: #6947b6;
-    }
-    .attachment-chip.type-sheet {
-        background: #dff5e8;
-        color: #157347;
-    }
-    .attachment-chip.type-doc {
-        background: #e8efff;
-        color: #315ea8;
-    }
-    .attachment-chip.type-generic {
-        background: #eef2f5;
-        color: #5d6875;
-    }
-    .attachment-fresh-badge {
-        display: inline-flex;
-        align-items: center;
-        min-height: 24px;
-        padding: 0 10px;
-        border-radius: 999px;
-        background: #dff5e8;
-        color: #157347;
-        font-size: 11px;
-        font-weight: 800;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-    }
-    .attachment-rename-btn {
-        width: 40px;
-        height: 40px;
-        border: 1px solid rgba(0, 0, 0, 0.08);
-        border-radius: 14px;
-        background: rgba(255, 255, 255, 0.9);
-        color: var(--md-sys-color-on-surface-variant);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-    }
-    .attachment-inline-edit {
-        display: grid;
-        gap: 10px;
-    }
-    .attachment-input {
-        width: 100%;
-        border-radius: 14px;
-        border: 1px solid var(--md-sys-color-outline);
-        background: transparent;
-        padding: 12px 14px;
-        color: var(--md-sys-color-on-surface);
-        box-sizing: border-box;
-        outline: none;
-    }
-    .attachment-input:focus {
-        border-color: var(--md-sys-color-primary);
-    }
-    .attachment-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-    .attachment-actions button,
-    .attachment-actions a {
-        min-height: 40px;
-        border-radius: 999px;
-        border: none;
-        padding: 0 14px;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        text-decoration: none;
-        font-weight: 700;
-        cursor: pointer;
-    }
-    .attachment-download {
-        background: #dff3ec;
-        color: #1d5c4e;
-    }
-    .attachment-edit {
-        background: #e8efff;
-        color: #294f8d;
-    }
-    .attachment-delete {
-        background: #fce8e6;
-        color: #b3261e;
-    }
-    .attachment-toolbar #toolbarDelete.active {
-        color: #b3261e !important;
-        background: rgba(179, 38, 30, 0.12);
-    }
-    .attachment-toolbar #toolbarDelete.active i {
-        filter: drop-shadow(0 2px 4px rgba(179, 38, 30, 0.24));
-    }
-    .attachment-empty {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-        padding: 56px 28px;
-        text-align: center;
-    }
-    .attachment-empty p {
-        margin: 0;
-        color: var(--md-sys-color-on-surface-variant);
-    }
-</style>
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_attachment.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
 {% block content %}
-<div class="attachment-shell">
-    {% if not is_global_list %}
-        <input id="attachmentInlineInput" type="file" multiple hidden>
-    {% endif %}
+<div id="attachmentShellRoot"
+     class="attachment-shell {{ is_ajax ? 'attachment-shell--modal' : '' }}"
+     data-modal-title="{{ lang.mod_attachment.admin.file_management }}"
+     data-modal-icon="bi-folder2-open"
+     data-site-url="{{ site.saddress }}"
+     data-mod-name="{{ mod_name|default('mod_attachment') }}"
+     data-vid="{{ vid|default(0) }}"
+     data-sid="{{ session.sid|default('') }}"
+     data-lang-new="{{ lang.mod_attachment.admin.new }}"
+     data-lang-file-name="{{ lang.mod_attachment.admin.file_name }}"
+     data-lang-file-edited="{{ lang.mod_attachment.admin.file_edited }}"
+     data-lang-file-deleted="{{ lang.mod_attachment.admin.file_deleted }}"
+     data-lang-upload-failed="{{ lang.mod_attachment.admin.file_upload_failed }}"
+     data-lang-delete-title="{{ lang.mod_attachment.admin.delete_file }}"
+     data-lang-delete-confirm="{{ lang.mod_attachment.admin.confirm_delete_file }}"
+     data-lang-yes="{{ lang.mod_attachment.admin.yes }}"
+     data-lang-cancel="{{ lang.mod_attachment.admin.cancel }}">
+
+    <input id="attachmentInlineInput" type="file" multiple class="is-hidden">
 
     <section class="attachment-banner">
-        <h2>{{ lang.mod_attachment.admin[42] }}</h2>
+        <div class="attachment-banner-info">
+            <h2>{{ lang.mod_attachment.admin.file_management }}</h2>
+            {% if not is_global_list and record_title is defined and record_title %}
+                <p class="attachment-banner-record">{{ record_title }}</p>
+            {% endif %}
+        </div>
         <div class="attachment-banner-meta">
             {% if is_global_list %}
-                <span><i class="bi bi-collection"></i>{{ lang.mod_attachment.admin[26] }}</span>
+                <span><i class="bi bi-collection"></i>{{ lang.mod_attachment.admin.all_files }}</span>
             {% else %}
-                <span><i class="bi bi-collection"></i>{{ mod_name }}</span>
                 <span><i class="bi bi-hash"></i>{{ vid }}</span>
             {% endif %}
-            <span><i class="bi bi-paperclip"></i><strong id="attachmentCount">{{ dosyalar is defined ? dosyalar|length : 0 }}</strong></span>
+            <span><i class="bi bi-paperclip"></i><strong id="attachmentCount">{{ files is defined ? files|length : 0 }}</strong></span>
         </div>
     </section>
 
-    {% if not is_global_list %}
-        <section class="attachment-entry-card">
-            <div class="attachment-entry-copy">
-                <h3 class="attachment-entry-title">{{ lang.mod_attachment.admin[38] }}</h3>
+    <section class="attachment-entry-card">
+        <div class="attachment-entry-copy">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <h3 class="attachment-entry-title">{{ lang.mod_attachment.admin.add_files }}</h3>
+        </div>
+        <button type="button" class="attachment-browse-btn" data-action="open-upload">
+            <i class="bi bi-plus-lg"></i>
+            <span>{{ lang.mod_attachment.admin.browse }}</span>
+        </button>
+    </section>
+
+    <div class="attachment-controls-bar">
+        {% if is_ajax %}
+            <div class="attachment-modal-search">
+                <i class="bi bi-search"></i>
+                <input type="text" id="attachmentModalSearchInput" placeholder="{{ lang.mod_attachment.admin.file_name }}" autocomplete="off">
+                <button type="button" id="attachmentSearchClearBtn" class="attachment-search-clear is-hidden" data-action="clear-attachment-search" aria-label="{{ lang.mod_attachment.admin.cancel }}">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-            <button type="button" class="attachment-browse-btn" onclick="openAttachmentUpload()">
-                <i class="bi bi-folder2-open"></i>
-                <span>{{ lang.mod_attachment.admin[11] }}</span>
-            </button>
-        </section>
-    {% endif %}
+        {% endif %}
+
+        {% if not is_global_list %}
+            <div class="attachment-scope-tabs" role="tablist">
+                <button type="button" class="attachment-scope-tab active" data-action="scope-filter" data-scope="all">
+                    <i class="bi bi-collection"></i>
+                    <span>{{ lang.mod_attachment.admin.all_files }}</span>
+                    <strong id="attachmentScopeAllCount">{{ files is defined ? files|length : 0 }}</strong>
+                </button>
+                <button type="button" class="attachment-scope-tab" data-action="scope-filter" data-scope="record">
+                    <i class="bi bi-bookmark-check"></i>
+                    <span>#{{ vid }}</span>
+                    <strong id="attachmentScopeRecordCount">0</strong>
+                </button>
+            </div>
+        {% endif %}
+    </div>
 
     <div id="attachment-list" class="attachment-grid">
-        {% if dosyalar is defined and dosyalar is not empty %}
-            {% for dosya in dosyalar %}
-                {% set current_mod_name = dosya.mod_name|default(mod_name) %}
-                {% set current_vid = dosya.vid|default(vid) %}
-                {% set file_ext = dosya.ext|lower %}
+        {% if files is defined and files is not empty %}
+            {% for file_item in files %}
+                {% set current_mod_name = file_item.mod_name|default(mod_name) %}
+                {% set current_vid = file_item.vid|default(vid) %}
+                {% set is_record_match = (not is_global_list and current_mod_name == mod_name and current_vid == vid) or (active_file_id is defined and active_file_id == file_item.id) %}
+                {% set display_name = file_item.filename|default(file_item.original_name) %}
+                {% set file_ext = file_item.ext|lower %}
                 {% set type_class = 'type-generic' %}
                 {% set type_icon = 'bi-file-earmark' %}
                 {% if file_ext in ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'] %}
@@ -373,35 +118,59 @@
                     {% set type_class = 'type-doc' %}
                     {% set type_icon = 'bi-file-earmark-text' %}
                 {% endif %}
-                {% set search_text = (dosya.filename ~ ' ' ~ dosya.original_name ~ ' ' ~ dosya.ext ~ ' ' ~ dosya.id ~ ' ' ~ current_mod_name ~ ' ' ~ current_vid)|lower %}
-                <article class="attachment-card" id="attachment-{{ dosya.id }}" data-search="{{ search_text }}" data-mod-name="{{ current_mod_name }}" data-vid="{{ current_vid }}" data-file-name="{{ dosya.filename|lower }}" data-original-name="{{ dosya.original_name|lower }}" onclick="selectAttachment('{{ dosya.id }}')">
+                {% set search_text = (display_name ~ ' ' ~ file_item.original_name ~ ' ' ~ file_item.ext ~ ' ' ~ file_item.id ~ ' ' ~ current_mod_name ~ ' ' ~ current_vid)|lower %}
+                <article class="attachment-card"
+                         id="attachment-{{ file_item.id }}"
+                         data-action="select-attachment"
+                         data-id="{{ file_item.id }}"
+                         data-search="{{ search_text }}"
+                         data-mod-name="{{ current_mod_name }}"
+                         data-vid="{{ current_vid }}"
+                         data-is-record="{{ is_record_match ? '1' : '0' }}"
+                         data-file-name="{{ display_name|lower }}"
+                         data-original-name="{{ file_item.original_name|lower }}">
                     <div class="attachment-topline">
                         <div class="attachment-icon {{ type_class }}"><i class="bi {{ type_icon }}"></i></div>
-                        <div>
-                            <h3 class="attachment-title" data-display>{{ dosya.filename }}</h3>
+                        <div class="attachment-body">
+                            <h3 class="attachment-title" data-display>{{ display_name }}</h3>
                             <div class="attachment-meta">
-                                <span class="attachment-chip {{ type_class }}">{{ dosya.ext }}</span>
-                                <span>#{{ dosya.id }}</span>
-                                {% if is_global_list %}
-                                    <span>{{ current_mod_name }}</span>
-                                    <span>#{{ current_vid }}</span>
-                                {% endif %}
-                                {% if dosya.original_name %}
-                                    <span>{{ dosya.original_name }}</span>
+                                <span class="attachment-chip {{ type_class }}">{{ file_item.ext }}</span>
+                                <span>#{{ file_item.id }}</span>
+                                {% if file_item.original_name and file_item.original_name != display_name %}
+                                    <span>{{ file_item.original_name }}</span>
                                 {% endif %}
                             </div>
                         </div>
-                        <button class="attachment-rename-btn" type="button" onclick="event.stopPropagation(); toggleAttachmentEdit('{{ dosya.id }}')">
-                            <i class="bi bi-pencil"></i>
-                        </button>
+                        <div class="attachment-card-actions">
+                            <button class="attachment-rename-btn"
+                                    type="button"
+                                    data-action="toggle-rename"
+                                    data-id="{{ file_item.id }}"
+                                    title="{{ lang.mod_attachment.admin.edit_file_name }}"
+                                    aria-label="{{ lang.mod_attachment.admin.edit_file_name }}">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="attachment-delete-btn"
+                                    type="button"
+                                    data-action="delete-attachment"
+                                    data-id="{{ file_item.id }}"
+                                    title="{{ lang.mod_attachment.admin.delete_file }}"
+                                    aria-label="{{ lang.mod_attachment.admin.delete_file }}">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="attachment-inline-edit" id="attachment-edit-{{ dosya.id }}" style="display:none;">
-                        <input class="attachment-input" type="text" id="attachment-input-{{ dosya.id }}" value="{{ dosya.filename }}" onclick="event.stopPropagation()" ondblclick="event.stopPropagation()">
+                    <div class="attachment-inline-edit is-hidden" id="attachment-edit-{{ file_item.id }}">
+                        <input class="attachment-input" type="text" id="attachment-input-{{ file_item.id }}" value="{{ display_name }}">
                         <div class="attachment-actions">
-                            <button type="button" class="attachment-edit" onclick="event.stopPropagation(); saveAttachmentName('{{ dosya.id }}')">
+                            <button type="button" class="attachment-cancel-btn" data-action="cancel-rename" data-id="{{ file_item.id }}">
+                                <i class="bi bi-x-lg"></i>
+                                <span>{{ lang.mod_attachment.admin.cancel }}</span>
+                            </button>
+                            <button type="button" class="attachment-edit" data-action="save-rename" data-id="{{ file_item.id }}">
                                 <i class="bi bi-check2"></i>
-                                <span>{{ lang.mod_attachment.admin[21] }}</span>
+                                <span>{{ lang.mod_attachment.admin.save }}</span>
                             </button>
                         </div>
                     </div>
@@ -410,423 +179,57 @@
         {% endif %}
     </div>
 
-    <section id="attachment-empty" class="attachment-empty" {% if dosyalar is defined and dosyalar is not empty %}style="display:none;"{% endif %}>
+    <section id="attachment-empty" class="attachment-empty {{ (files is defined and files is not empty) ? 'is-hidden' : '' }}">
         <div class="empty-icon-box"><i class="bi bi-folder2-open"></i></div>
-        <h3>{{ lang.mod_attachment.admin[27] }}</h3>
-        <p>{{ lang.mod_attachment.admin[28] }}</p>
+        <h3>{{ lang.mod_attachment.admin.no_saved_file_found }}</h3>
+        <p>{{ lang.mod_attachment.admin.select_category_add_file }}</p>
     </section>
 
-    <section id="search-empty" class="attachment-empty" style="display:none;">
+    <section id="search-empty" class="attachment-empty is-hidden">
         <div class="empty-icon-box"><i class="bi bi-search"></i></div>
-        <h3>{{ lang.mod_attachment.admin[25] }}</h3>
-        <p>{{ lang.mod_attachment.admin[23] }}</p>
+        <h3>{{ lang.mod_attachment.admin.no_file_found }}</h3>
+        <p>{{ lang.mod_attachment.admin.file_name }}</p>
     </section>
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
+{% if not is_ajax %}
 <div class="standard-toolbar attachment-toolbar">
+    <button id="toolbarDelete" type="button" class="toolbar-item is-disabled" data-action="delete-selected-attachment">
+        <i class="bi bi-trash3-fill"></i>
+        <span>{{ lang.mod_attachment.admin.delete_file }}</span>
+    </button>
+
+    <button type="button" class="toolbar-item" data-action="nav-url" data-url="{{ site.saddress }}mod_user/panel">
+        <i class="bi bi-speedometer2"></i>
+        <span>{{ lang.mod_attachment.admin.panel }}</span>
+    </button>
+
+    <button type="button" class="toolbar-item active" data-action="nav-url" data-url="{{ site.saddress }}mod_attachment/list">
+        <i class="bi bi-card-list"></i>
+        <span>{{ lang.mod_attachment.admin.file_management }}</span>
+    </button>
+
     {% if not is_global_list %}
-        <button id="toolbarDelete" class="toolbar-item" onclick="deleteSelectedAttachment()" style="opacity:0.3; pointer-events:none;">
-            <i class="bi bi-trash3-fill"></i>
-            <span>{{ lang.mod_attachment.admin[18] }}</span>
-        </button>
-
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'">
-            <i class="bi bi-speedometer2"></i>
-            <span>{{ lang.mod_attachment.admin[44] }}</span>
-        </button>
-
-        <button class="toolbar-item active" onclick="location.href='{{ site.saddress }}mod_attachment/list'">
-            <i class="bi bi-card-list"></i>
-            <span>{{ lang.mod_attachment.admin[14] }}</span>
-        </button>
-
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}{{ mod_name }}/list'">
+        <button type="button" class="toolbar-item" data-action="nav-url" data-url="{{ site.saddress }}{{ mod_name }}/list">
             <i class="bi bi-chevron-left"></i>
-            <span>{{ lang.mod_attachment.admin[12] }}</span>
+            <span>{{ lang.mod_attachment.admin.back }}</span>
         </button>
     {% else %}
-        <button class="toolbar-item" onclick="location.href='{{ site.saddress }}mod_user/panel'">
-            <i class="bi bi-speedometer2"></i>
-            <span>{{ lang.mod_attachment.admin[44] }}</span>
-        </button>
-
-        <button class="toolbar-item active" onclick="location.href='{{ site.saddress }}mod_attachment/list'">
-            <i class="bi bi-card-list"></i>
-            <span>{{ lang.mod_attachment.admin[14] }}</span>
-        </button>
-
-        <button class="toolbar-item" onclick="history.back()">
+        <button type="button" class="toolbar-item" data-action="nav-back">
             <i class="bi bi-chevron-left"></i>
-            <span>{{ lang.mod_attachment.admin[12] }}</span>
+            <span>{{ lang.mod_attachment.admin.back }}</span>
         </button>
     {% endif %}
 </div>
 
-{% if not is_global_list %}
-    <!-- Main FAB Button -->
-    <button type="button" class="main-fab" id="mainFab" onclick="openAttachmentUpload()" aria-label="{{ lang.mod_attachment.add }}">
-        <i class="bi bi-plus-lg"></i>
-    </button>
+<button type="button" class="main-fab" id="mainFab" aria-label="{{ lang.mod_attachment.admin.add_files }}">
+    <i class="bi bi-plus-lg"></i>
+</button>
 {% endif %}
 {% endblock %}
 
 {% block scripts %}
-<script>
-    let selectedAttachmentId = null;
-
-    function normalizeAttachmentName(value) {
-        return String(value || '').trim().toLocaleLowerCase('tr-TR');
-    }
-
-    function updateAttachmentToolbar(active) {
-        const deleteBtn = document.getElementById('toolbarDelete');
-        if (!deleteBtn) {
-            return;
-        }
-
-        if (active) {
-            deleteBtn.style.opacity = '1';
-            deleteBtn.style.pointerEvents = 'auto';
-            deleteBtn.classList.add('active');
-        } else {
-            deleteBtn.style.opacity = '0.3';
-            deleteBtn.style.pointerEvents = 'none';
-            deleteBtn.classList.remove('active');
-        }
-    }
-
-    function selectAttachment(id) {
-        const targetCard = document.getElementById('attachment-' + id);
-        if (!targetCard) {
-            return;
-        }
-
-        document.querySelectorAll('.attachment-card.selected').forEach((card) => {
-            if (card !== targetCard) {
-                card.classList.remove('selected');
-            }
-        });
-
-        const alreadySelected = targetCard.classList.contains('selected');
-        targetCard.classList.toggle('selected', !alreadySelected);
-        selectedAttachmentId = alreadySelected ? null : id;
-        updateAttachmentToolbar(Boolean(selectedAttachmentId));
-    }
-
-    function openAttachmentUpload() {
-        document.getElementById('attachmentInlineInput')?.click();
-    }
-
-    function markFreshAttachments(fileNames) {
-        if (!Array.isArray(fileNames) || !fileNames.length) {
-            return;
-        }
-
-        const list = document.getElementById('attachment-list');
-        if (!list) {
-            return;
-        }
-
-        const wanted = new Set(fileNames.map(normalizeAttachmentName));
-        const matchedCards = [];
-
-        Array.from(list.querySelectorAll('.attachment-card')).forEach((card) => {
-            const fileName = normalizeAttachmentName(card.dataset.fileName);
-            const originalName = normalizeAttachmentName(card.dataset.originalName);
-            if (wanted.has(fileName) || wanted.has(originalName)) {
-                matchedCards.push(card);
-            }
-        });
-
-        matchedCards.reverse().forEach((card) => {
-            card.classList.add('is-new');
-            const meta = card.querySelector('.attachment-meta');
-            if (meta && !meta.querySelector('.attachment-fresh-badge')) {
-                const badge = document.createElement('span');
-                badge.className = 'attachment-fresh-badge';
-                badge.textContent = '{{ lang.mod_attachment.admin[43]|e('js') }}';
-                meta.prepend(badge);
-            }
-            list.prepend(card);
-        });
-        updateAttachmentEmptyState();
-    }
-
-    function refreshAttachmentList(onDone, freshFiles = []) {
-        fetch(window.location.href, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-            .then((response) => response.text())
-            .then((html) => {
-                const doc = new DOMParser().parseFromString(html, 'text/html');
-                const nextList = doc.getElementById('attachment-list');
-                const nextEmpty = doc.getElementById('attachment-empty');
-                const nextSearchEmpty = doc.getElementById('search-empty');
-                const currentList = document.getElementById('attachment-list');
-                const currentEmpty = document.getElementById('attachment-empty');
-                const currentSearchEmpty = document.getElementById('search-empty');
-
-                if (nextList && currentList) {
-                    currentList.innerHTML = nextList.innerHTML;
-                }
-                if (nextEmpty && currentEmpty) {
-                    currentEmpty.outerHTML = nextEmpty.outerHTML;
-                }
-                if (nextSearchEmpty && currentSearchEmpty) {
-                    currentSearchEmpty.outerHTML = nextSearchEmpty.outerHTML;
-                }
-
-                selectedAttachmentId = null;
-                updateAttachmentToolbar(false);
-                markFreshAttachments(freshFiles);
-                filterAttachments(document.getElementById('searchInput')?.value || '');
-                if (typeof onDone === 'function') {
-                    onDone();
-                }
-            })
-            .catch((error) => {
-                showSnackbar(String(error.message || error), 'error');
-                if (typeof onDone === 'function') {
-                    onDone(error);
-                }
-            });
-    }
-
-    function uploadAttachmentFiles(files) {
-        const uploadFiles = Array.from(files || []);
-        if (!uploadFiles.length) {
-            return;
-        }
-
-        let completed = 0;
-        let hasError = false;
-        const uploadedNames = uploadFiles.map((file) => file.name);
-
-        uploadFiles.forEach((file) => {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('vid', '{{ vid|default('') }}');
-            formData.append('isim', 'file');
-            formData.append('sid', '{{ session.sid|default('') }}');
-            formData.append('mod_name', '{{ mod_name|default('') }}');
-
-            fetch('{{ site.saddress }}mod_attachment/upload', {
-                method: 'POST',
-                body: formData
-            })
-                .then((response) => response.text())
-                .then((text) => {
-                    const result = String(text || '').trim();
-                    if (!result || result === 'ERROR') {
-                        throw new Error('{{ lang.mod_attachment.admin[41]|e('js') }}');
-                    }
-                    showSnackbar(result, 'success');
-                })
-                .catch((error) => {
-                    hasError = true;
-                    showSnackbar(String(error.message || error), 'error');
-                })
-                .finally(() => {
-                    completed += 1;
-                    if (completed === uploadFiles.length && !hasError) {
-                        refreshAttachmentList(null, uploadedNames);
-                    }
-                });
-        });
-    }
-
-    function toggleAttachmentEdit(id) {
-        const panel = document.getElementById('attachment-edit-' + id);
-        if (!panel) {
-            return;
-        }
-
-        const nextState = panel.style.display === 'none' ? 'grid' : 'none';
-        document.querySelectorAll('.attachment-inline-edit').forEach((item) => {
-            item.style.display = 'none';
-        });
-        panel.style.display = nextState;
-    }
-
-    function closeAttachmentMenus() {
-        document.querySelectorAll('.attachment-inline-edit').forEach((item) => {
-            item.style.display = 'none';
-        });
-    }
-
-    function updateAttachmentEmptyState() {
-        const cards = Array.from(document.querySelectorAll('.attachment-card'));
-        const visibleCards = cards.filter((card) => !card.classList.contains('hidden-by-search'));
-        const hasCards = cards.length > 0;
-
-        const countNode = document.getElementById('attachmentCount');
-        if (countNode) {
-            countNode.textContent = String(cards.length);
-        }
-
-        const empty = document.getElementById('attachment-empty');
-        if (empty) {
-            empty.style.display = hasCards ? 'none' : 'flex';
-        }
-
-        const searchEmpty = document.getElementById('search-empty');
-        if (searchEmpty) {
-            const hasSearch = Boolean(document.getElementById('searchInput')?.value?.trim());
-            searchEmpty.style.display = hasCards && hasSearch && visibleCards.length === 0 ? 'flex' : 'none';
-        }
-    }
-
-    function saveAttachmentName(id) {
-        const input = document.getElementById('attachment-input-' + id);
-        if (!input) {
-            return;
-        }
-
-        const value = input.value.trim();
-        if (!value) {
-            showSnackbar('{{ lang.mod_attachment.admin[23]|e('js') }}', 'warning');
-            input.focus();
-            return;
-        }
-
-        const card = document.getElementById('attachment-' + id);
-        const modName = card?.dataset.modName || '{{ mod_name|default('') }}';
-        const recordId = card?.dataset.vid || '{{ vid|default('') }}';
-        const body = new URLSearchParams();
-        body.set('id', id);
-        body.set('name', value);
-        body.set('vid', recordId);
-        body.set('mod_name', modName);
-
-        fetch('{{ site.saddress }}mod_attachment/edit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: body.toString()
-        })
-            .then((response) => response.text())
-            .then((text) => {
-                if (text.trim() !== 'OK') {
-                    throw new Error(text);
-                }
-
-                const card = document.getElementById('attachment-' + id);
-                if (card) {
-                    card.querySelector('[data-display]').textContent = value;
-                    card.dataset.search = [value, input.defaultValue, card.dataset.search || ''].join(' ').toLowerCase();
-                }
-                input.defaultValue = value;
-                toggleAttachmentEdit(id);
-                filterAttachments(document.getElementById('searchInput')?.value || '');
-                showSnackbar('{{ lang.mod_attachment.admin[39]|e('js') }}', 'success');
-            })
-            .catch((error) => showSnackbar(String(error.message || error), 'error'));
-    }
-
-    function deleteAttachment(id) {
-        const card = document.getElementById('attachment-' + id);
-        const modName = card?.dataset.modName || '{{ mod_name|default('') }}';
-        const recordId = card?.dataset.vid || '{{ vid|default('') }}';
-        Swal.fire({
-            icon: 'warning',
-            title: '{{ lang.mod_attachment.admin[18]|e('js') }}',
-            text: '{{ lang.mod_attachment.admin[17]|e('js') }}',
-            showCancelButton: true,
-            confirmButtonText: '{{ lang.mod_attachment.admin[19]|e('js') }}',
-            cancelButtonText: '{{ lang.mod_attachment.admin[20]|e('js') }}'
-        }).then((result) => {
-            if (!result.isConfirmed) {
-                return;
-            }
-
-            const body = new URLSearchParams();
-            body.set('id', id);
-            body.set('vid', recordId);
-            body.set('mod_name', modName);
-
-            fetch('{{ site.saddress }}mod_attachment/delete', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body.toString()
-            })
-                .then((response) => response.text())
-                .then((text) => {
-                    if (text.trim() !== 'OK') {
-                        throw new Error(text);
-                    }
-
-                    document.getElementById('attachment-' + id)?.remove();
-                    if (selectedAttachmentId === id) {
-                        selectedAttachmentId = null;
-                        updateAttachmentToolbar(false);
-                    }
-                    updateAttachmentEmptyState();
-                    showSnackbar('{{ lang.mod_attachment.admin[36]|e('js') }}', 'success');
-                })
-                .catch((error) => showSnackbar(String(error.message || error), 'error'));
-        });
-    }
-
-    function deleteSelectedAttachment() {
-        if (!selectedAttachmentId) {
-            return;
-        }
-        deleteAttachment(selectedAttachmentId);
-    }
-
-    function clearSearch() {
-        const input = document.getElementById('searchInput');
-        if (input) {
-            input.value = '';
-        }
-        filterAttachments('');
-    }
-
-    function filterAttachments(value) {
-        const term = String(value || '').toLowerCase().trim();
-        document.querySelectorAll('.attachment-card').forEach((card) => {
-            const matched = !term || (card.dataset.search || '').includes(term);
-            card.classList.toggle('hidden-by-search', !matched);
-        });
-        updateAttachmentEmptyState();
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        document.addEventListener('click', function (event) {
-            if (!event.target.closest('.attachment-rename-btn') && !event.target.closest('.attachment-inline-edit')) {
-                closeAttachmentMenus();
-            }
-        });
-
-        const inlineInput = document.getElementById('attachmentInlineInput');
-        if (inlineInput) {
-            inlineInput.addEventListener('change', function (event) {
-                if (event.target.files?.length) {
-                    uploadAttachmentFiles(event.target.files);
-                    event.target.value = '';
-                }
-            });
-        }
-
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', (event) => filterAttachments(event.target.value));
-        }
-
-        document.querySelectorAll('.attachment-title').forEach((node) => {
-            node.addEventListener('dblclick', function () {
-                const card = this.closest('.attachment-card');
-                if (!card) {
-                    return;
-                }
-                const id = card.id.replace('attachment-', '');
-                toggleAttachmentEdit(id);
-                document.getElementById('attachment-input-' + id)?.focus();
-            });
-        });
-
-        updateAttachmentEmptyState();
-    });
-</script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_attachment.js?v={{ site.version|default('1.0') }}"></script>
 {% endblock %}

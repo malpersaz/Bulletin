@@ -1,5 +1,20 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.3 (2026-10-24)
+- **Shared Core Traits, `BridgeCleanupService`, `Dbuilder`, `mod_attachment` Modernization, Public ACL Hardening & Admin UI/i18n Synchronization (`init.php`, `config/autoload.config.php`, `lib/`, `mod/mod_attachment/`, `mod/index/`, `templates/admin/`)**:
+  - **Shared Validator, Public Helper Traits, `BridgeCleanupService` & SQL `ORDER BY` Escaping (`init.php`, `config/autoload.config.php`, `lib/Traits/ModuleValidatorTrait.php`, `lib/Traits/PublicHelperTrait.php`, `lib/BridgeCleanupService.class.php`, `lib/Database/Dbuilder.php`, `mod/index/indexBase.php`, `lib/BaseModuleController.class.php`)**:
+    - Added `ModuleValidatorTrait` and `PublicHelperTrait` under `lib/Traits/` and registered them in `init.php` to support `mod_news` validator rules, cached ACL SQL conditions (`getAllowedAclCondition()`), ancestor-aware category ACL filtering (`getAllowedCategoryIds()`), and safe deserialization (`allowed_classes => false`).
+    - Ported `lib/BridgeCleanupService.class.php` and registered `BridgeCleanupService` in `config/autoload.config.php` to resolve fatal `Class "BridgeCleanupService" not found` errors in `mod_news/all_video`, `mod_news/all_video_get`, and module uninstall routines.
+    - Updated `Dbuilder::order()` (`lib/Database/Dbuilder.php`) to split comma-separated column strings and wrap each identifier individually with backticks, resolving MySQL 8.0 `1064` syntax errors on reserved SQL keywords (`parent_id, order` in `mod_news.helper.php` and `mod_publication.helper.php` archive pages).
+    - Synchronized `mod/index/indexBase.php` and `lib/BaseModuleController.class.php` with `PublicHelperTrait`, `_mod_faq()`, `_normalizeAttachmentRows()`, attachment display-name resolution, null-safe `need_content_refs` iteration (preventing pre-doctype PHP warnings on empty `mod_attachment` tables so HTML5 Standards Mode and TinyMCE initialize cleanly), and hardened `unserialize()` calls (`['allowed_classes' => false]`).
+  - **Attachment Module & Select-Picker Sheet Modernization (`mod/mod_attachment/`, `templates/admin/mod_attachment/`, `templates/admin/partials/sheets_extra.twig`, `templates/admin/assets/css/mod_attachment.css`, `templates/admin/assets/js/mod_attachment.js`)**:
+    - Synchronized `mod/mod_attachment/index.php`, `mod/mod_attachment/lang/{ku,tr}.php`, `templates/admin/mod_attachment/{list,add}.twig`, `templates/admin/partials/sheets_extra.twig`, `templates/admin/assets/css/mod_attachment.css`, and `templates/admin/assets/js/mod_attachment.js` with `AF/Rojname`, eliminating all 27 inline `<style>` / `<script>` / `onclick` violations and resolving the `mod_attachment.css` 404 on admin pages.
+  - **Public RSS & XML Sitemap ACL Filtering (`mod/index/index.php`)**:
+    - Enforced anonymous ACL filtering (`(acl_id = 0 OR acl_id IS NULL)`) and allowed-category hierarchy checks (`getAllowedCategoryIds(..., true)`) across `rss()`, `newsSitemap()`, `publicationSitemap()`, `announcementSitemap()`, `videoSitemap()`, `gallerySitemap()`, `categorySitemap()`, and `pageSitemap()`.
+  - **Phone-First Admin Styles & Public Index Language Cleanup (`templates/admin/assets/css/style.css`, `mod/index/lang/*.php`)**:
+    - Synchronized `.standard-toolbar #toolbarDeck` active/selected states, `.main-fab.is-cancel` hover/active scoping (`body:not(.has-selection)`), and `#select-picker-sheet` mobile layout rules in `templates/admin/assets/css/style.css`.
+    - Removed legacy unused keys (`add_content`, `mod_publication.latest_content`) and non-English error keys (`ad`, `mesaj`) across all 9 `mod/index/lang/*.php` dictionaries (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `sv`, `tr`, `zza`), standardizing `$lang['index']['error']` on `title` and `message`.
+
 ## v1.0.2 (2026-10-23)
 - **`mod_news` End-to-End Modernization, 100% English Codebase Purification & Multilingual i18n Synchronization (`mod/mod_news/`, `installer/mod_news/`, `config/url.config.php`, `mod/index/`, `templates/admin/`, `templates/amida/`)**:
   - **Backend Controller, Installer, Models, Schema & Validators (`mod/mod_news/`, `installer/mod_news/`, `config/url.config.php`)**:

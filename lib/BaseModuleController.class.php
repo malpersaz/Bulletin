@@ -297,7 +297,20 @@ abstract class BaseModuleController
         foreach ($this->need_content_refs as $table_name => $variable_names) {
             foreach ($variable_names as $variable_name) {
                 $this->db->fetch_array("SELECT * FROM `{$table_name}` ORDER BY id DESC");
-                $data[$variable_name] = $this->db->getResult()->toArray();
+                $rows = $this->db->getResult()->toArray();
+                if (!is_array($rows)) {
+                    $rows = [];
+                }
+                if ($table_name === 'mod_attachment') {
+                    foreach ($rows as &$row) {
+                        if (!empty($row['filename'])) {
+                            $row['original_name'] = $row['filename'];
+                        }
+                        $row['name'] = !empty($row['filename']) ? $row['filename'] : ($row['original_name'] ?? '');
+                    }
+                    unset($row);
+                }
+                $data[$variable_name] = $rows;
             }
         }
 
@@ -842,19 +855,20 @@ abstract class BaseModuleController
 
         $q_param = Req::is_Post('q') ? Req::Post_Safe('q') : (Req::is_Get('q') ? Req::Get_Safe('q') : null);
         $model = Load::model('mod_attachment');
-        $model->select('id, original_name as name');
+        $model->select('id, filename, original_name');
         if ($q_param) {
-            $model->addWhere("original_name LIKE '%" . $q_param . "%'");
+            $model->addWhere("(filename LIKE '%" . $q_param . "%' OR original_name LIKE '%" . $q_param . "%')");
         }
         $model->order('id', 'DESC')->gR();
 
         $results = [];
         if ($model->getSize() > 0) {
             foreach ($model->toArray() as $item) {
+                $displayName = (!empty($item['filename'])) ? $item['filename'] : ($item['original_name'] ?? '');
                 $results[] = [
                     'id'   => intval($item['id']),
-                    'name' => $item['name'] ?? '',
-                    'text' => $item['name'] ?? ''
+                    'name' => $displayName,
+                    'text' => $displayName
                 ];
             }
         }
@@ -906,7 +920,7 @@ abstract class BaseModuleController
 
         $video = [];
         if (!empty($model->video)) {
-            $unserialized = @unserialize($model->video);
+            $unserialized = @unserialize($model->video, ['allowed_classes' => false]);
             $video = is_array($unserialized) ? $unserialized : [];
         }
 
@@ -968,7 +982,7 @@ abstract class BaseModuleController
 
         if ($type === 'video') {
             $video_data = $model->video;
-            $existed = (is_string($video_data) && !empty($video_data)) ? @unserialize($video_data) : [];
+            $existed = (is_string($video_data) && !empty($video_data)) ? @unserialize($video_data, ['allowed_classes' => false]) : [];
             if (!is_array($existed)) {
                 $existed = [];
             }

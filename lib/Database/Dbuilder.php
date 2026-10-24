@@ -23,14 +23,14 @@ class Dbuilder
         return $arg;
     }
 
-    public static function table_join($conf)
+    public static function table_join($joinConfig)
     {
-        if (is_array($conf) === false) {
+        if (is_array($joinConfig) === false) {
             throw new DbuilderException("Table JOIN error: parameter is not an array!");
         }
         $join = "";
         $select = [];
-        foreach ($conf as $data) {
+        foreach ($joinConfig as $data) {
             foreach ($data['table']['1'] as $column) {
                 $select[] = $data['table']['0'] . "." . $column;
             }
@@ -91,25 +91,25 @@ class Dbuilder
             return $val;
         }
 
-        $sym = self::$symbol ?? '';
+        $quoteSymbol = self::$symbol ?? '';
         
         // Handle table-prefixed columns (e.g., table.column)
         if (strpos($val, '.') !== false) {
             $parts = explode('.', $val);
-            $escaped_parts = array_map(function($part) use ($sym) {
-                if ($part === '*' || ($sym !== '' && strpos($part, $sym) === 0 && substr($part, -1) === $sym)) {
+            $escaped_parts = array_map(function($part) use ($quoteSymbol) {
+                if ($part === '*' || ($quoteSymbol !== '' && strpos($part, $quoteSymbol) === 0 && substr($part, -1) === $quoteSymbol)) {
                     return $part;
                 }
-                return $sym . $part . $sym;
+                return $quoteSymbol . $part . $quoteSymbol;
             }, $parts);
             return implode('.', $escaped_parts);
         }
 
         // If already wrapped with symbol, do not add again
-        if ($sym !== '' && strpos($val, $sym) === 0 && substr($val, -1) === $sym) {
+        if ($quoteSymbol !== '' && strpos($val, $quoteSymbol) === 0 && substr($val, -1) === $quoteSymbol) {
             return $val;
         }
-        return $sym . $val . $sym;
+        return $quoteSymbol . $val . $quoteSymbol;
     }
 
     public static function limit($limit, $offset = null)
@@ -117,15 +117,19 @@ class Dbuilder
         return $offset == null ? "LIMIT " . $limit : "LIMIT $limit OFFSET $offset";
     }
 
-    public static function order($colom, $type)
+    public static function order($column, $type)
     {
-        if (is_array($colom)) {
-            $escaped_cols = array_map([self::class, 'wrapSymbol'], $colom);
-            $colom = implode(',', $escaped_cols);
+        if (is_array($column)) {
+            $escaped_cols = array_map([self::class, 'wrapSymbol'], $column);
+            $column = implode(',', $escaped_cols);
+        } elseif (strpos((string)$column, ',') !== false) {
+            $parts = explode(',', (string)$column);
+            $escaped_cols = array_map([self::class, 'wrapSymbol'], $parts);
+            $column = implode(',', $escaped_cols);
         } else {
-            $colom = self::wrapSymbol($colom);
+            $column = self::wrapSymbol($column);
         }
-        return " ORDER BY " . $colom . " " . $type;
+        return " ORDER BY " . $column . " " . $type;
     }
 
     public static function where($data)
