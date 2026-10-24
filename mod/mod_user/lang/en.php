@@ -514,6 +514,36 @@ $lang['mod_user']['panel'] = [
     'admin_brand' => 'AKM Bulletin CMS Admin'
 ];
 
+$lang['mod_user']['agent'] = [
+    'title' => 'AKM Agent',
+    'badge' => 'Gemini 3.8 Flash Active',
+    'greeting' => 'Hello! I am your AI assistant for CMS management (Gemini 3.8 Flash). What would you like to do today?',
+    'input_placeholder' => 'Type a command or question...',
+    'send' => 'Send',
+    'clear' => 'Clear chat',
+    'thinking' => 'Gemini is thinking...',
+    'empty_error' => 'Please enter a prompt.',
+    'network_error' => 'A network error occurred.',
+    'unauthorized' => 'Please log in again.',
+    'chat' => 'Chat',
+    'rate_limit_exceeded' => 'Too many requests. Please wait a moment (Rate limit exceeded).',
+    'csrf_error' => 'Security error (CSRF token invalid or missing).',
+    'history_cleared' => 'Chat history cleared.',
+    'action_cancelled' => 'Action confirmation cancelled.',
+    'action_expired' => 'Action for confirmation not found or expired.',
+    'confirm_warning_title' => 'Sensitive / Destructive Action:',
+    'confirm_btn_yes' => 'Yes, execute',
+    'confirm_btn_no' => 'Cancel',
+    'timeout_error' => 'Response timed out. Please try again.',
+    'general_error' => 'An error occurred while processing the response.',
+    'job_started' => 'Background task started successfully.',
+    'job_failed' => 'Background task failed.',
+    'job_cancelled' => 'Background task cancelled.',
+    'tools_read_only_time_exhausted' => 'The assistant inspected the system but the time limit was reached before modifications could be applied. No changes were saved.',
+    'tools_read_only_api_error' => 'The assistant queried the system but encountered an API communication error before modifications could be made.',
+    'concurrent_run' => 'Another AI task is currently in progress. Please wait for it to complete.',
+];
+
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Add Announcement',
     'add_service' => 'Add Service',

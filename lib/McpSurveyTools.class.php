@@ -8,6 +8,252 @@
 class McpSurveyTools extends McpCrudToolsBase
 {
     // ------------------------------------------------------------------
+    // Tool definitions
+    // ------------------------------------------------------------------
+
+    public static function definitions(): array
+    {
+        return [
+            'list_surveys' => [
+                'module' => 'mod_survey',
+                'role' => 'list',
+                'domain' => 'survey',
+                'handler' => 'listSurveys',
+                'description' => 'List surveys (polls) with optional filters. Returns paginated items (id, lang, question, status, acl_id, user_id) plus the total count. Status \'y\' marks the active default poll of its language; only one survey per language can be active at a time.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (for example \'en\').'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Filter by status: \'y\' active default poll, \'n\' inactive.'
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Case-insensitive substring search in the question text.'
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'description' => 'Number of records to return (default 10, maximum 50).'
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Number of records to skip for pagination (default 0).'
+                        ]
+                    ]
+                ],
+                'title' => 'List Surveys',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_survey' => [
+                'module' => 'mod_survey',
+                'role' => 'list',
+                'domain' => 'survey',
+                'handler' => 'getSurvey',
+                'description' => 'Get a single survey (poll) record with all fields plus its voting options (id, option_text, hit) ordered by option id.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'The survey record id.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Get Survey',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_survey' => [
+                'module' => 'mod_survey',
+                'role' => 'add',
+                'domain' => 'survey',
+                'handler' => 'createSurvey',
+                'description' => 'Create a survey (poll) record. Required: question (2-255 characters), an active language code, and at least two voting options. Status defaults to \'y\' (active default poll of the language) and acl_id defaults to 0 (no access restriction).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'question' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'The poll question shown to visitors.'
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (for example \'en\').'
+                        ],
+                        'options' => [
+                            'type' => 'array',
+                            'minItems' => 2,
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'option_text' => [
+                                        'type' => 'string',
+                                        'minLength' => 1,
+                                        'maxLength' => 255,
+                                        'description' => 'The voting option label.'
+                                    ]
+                                ],
+                                'required' => ['option_text']
+                            ],
+                            'description' => 'At least two voting options for the poll. Vote counters start at zero.'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => '\'y\' makes this the active default poll of the language, \'n\' keeps it inactive. Default \'y\'.'
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Access control list id restricting visibility; 0 means no restriction. Default 0.'
+                        ]
+                    ],
+                    'required' => ['question', 'lang', 'options']
+                ],
+                'title' => 'Create Survey',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_survey' => [
+                'module' => 'mod_survey',
+                'role' => 'edit',
+                'domain' => 'survey',
+                'handler' => 'updateSurvey',
+                'description' => 'Partially update a survey (poll) record. Only provided fields change. When \'options\' is provided it replaces the full option set like the admin edit form: entries with an existing option id update the label and keep their vote counters, entries without an id are appended as new options, and omitted options are deleted. Editing a record owned by another admin requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'The survey record id.'
+                        ],
+                        'question' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'The poll question shown to visitors.'
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (for example \'en\').'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => '\'y\' marks the survey as an active default poll candidate, \'n\' inactive. Use set_default_survey to activate one poll per language exclusively.'
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Access control list id restricting visibility; 0 means no restriction.'
+                        ],
+                        'options' => [
+                            'type' => 'array',
+                            'minItems' => 2,
+                            'items' => [
+                                'type' => 'object',
+                                'properties' => [
+                                    'id' => [
+                                        'type' => 'integer',
+                                        'minimum' => 1,
+                                        'description' => 'Existing option id to update (vote counters preserved). Omit to append a new option.'
+                                    ],
+                                    'option_text' => [
+                                        'type' => 'string',
+                                        'minLength' => 1,
+                                        'maxLength' => 255,
+                                        'description' => 'The voting option label.'
+                                    ]
+                                ],
+                                'required' => ['option_text']
+                            ],
+                            'description' => 'Replacement option set (at least two options). Omit the field entirely to leave options untouched.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Update Survey',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_survey' => [
+                'module' => 'mod_survey',
+                'role' => 'delete',
+                'domain' => 'survey',
+                'handler' => 'deleteSurvey',
+                'description' => 'Delete a survey (poll) record. Its voting options and recorded voter IP entries are cleaned up automatically. Deleting a record owned by another admin requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'The survey record id.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Delete Survey',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'set_default_survey' => [
+                'module' => 'mod_survey',
+                'role' => 'moderate_edit',
+                'domain' => 'survey',
+                'handler' => 'setDefaultSurvey',
+                'description' => 'Set one survey as the active default poll of its language (mirrors the admin set_default action): all other surveys of the same language are deactivated (status \'n\') and the selected survey is activated (status \'y\'). Requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'The survey record id to activate.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Set Default Survey',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    // ------------------------------------------------------------------
     // mod_survey tools
     // ------------------------------------------------------------------
 
@@ -68,6 +314,7 @@ class McpSurveyTools extends McpCrudToolsBase
 
         $lang = $this->requireActiveLang($args);
         $options = $this->parseSurveyOptions($args['options'] ?? null);
+        $this->assertContentMatchesLang($lang, ['question' => $question]);
 
         $model = $this->freshModel('mod_survey');
         $model->lang = $lang;
@@ -114,6 +361,8 @@ class McpSurveyTools extends McpCrudToolsBase
             }
             $model->question = $question;
         }
+
+        $this->assertContentMatchesLang((string) $model->lang, ['question' => (string) $model->question]);
 
         if (isset($args['status'])) {
             $model->status = $this->optionalEnum($args, 'status', (string) $model->status, ['y', 'n']);

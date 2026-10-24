@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Authorize MCP access</title>
+    <link rel="stylesheet" href="{{ resource }}/templates/oauth/assets/css/oauth.css">
+</head>
+<body>
+<div class="oauth-container">
+    <div class="oauth-card">
+        <div class="oauth-header">
+            <div class="oauth-icon">🔐</div>
+            <h1 class="oauth-title">MCP authorization</h1>
+            {% if logged_in %}
+                <p class="oauth-description"><span class="oauth-client-badge">{{ client_name }}</span> requests access to the MCP tools of <strong>{{ server_name }}</strong> using your CMS account. Approved requests use your group permissions until the token expires.</p>
+            {% else %}
+                <p class="oauth-description">Sign in to authorize <span class="oauth-client-badge">{{ client_name }}</span> to connect to <strong>{{ server_name }}</strong>.</p>
+            {% endif %}
+        </div>
+
+        {% if error %}
+            <div class="oauth-error-alert">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" action="{{ resource }}/oauth/authorize" autocomplete="off">
+            {% for field, value in hidden_params %}
+                <input type="hidden" name="{{ field }}" value="{{ value }}">
+            {% endfor %}
+
+            {% if logged_in %}
+                <input type="hidden" name="oauth_action" value="consent">
+                <input type="hidden" name="csrf" value="{{ csrf }}">
+                <div class="oauth-actions">
+                    <button type="submit" name="decision" value="approve" class="oauth-btn oauth-btn-primary">Authorize access</button>
+                    <button type="submit" name="decision" value="deny" class="oauth-btn oauth-btn-secondary">Deny</button>
+                </div>
+            {% else %}
+                <input type="hidden" name="oauth_action" value="login">
+                <div class="oauth-form-group">
+                    <label for="oauth-username" class="oauth-label">Username</label>
+                    <input type="text" id="oauth-username" name="username" class="oauth-input" required autofocus>
+                </div>
+                <div class="oauth-form-group">
+                    <label for="oauth-password" class="oauth-label">Password</label>
+                    <input type="password" id="oauth-password" name="password" class="oauth-input" required>
+                </div>
+                <div class="oauth-actions">
+                    <button type="submit" class="oauth-btn oauth-btn-primary">Sign in to continue</button>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+</body>
+</html>

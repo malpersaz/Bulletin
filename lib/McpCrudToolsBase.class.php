@@ -38,6 +38,13 @@ abstract class McpCrudToolsBase
         $this->groupPermissions = $groupPermissions;
     }
 
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    abstract public static function definitions(): array;
+
     // ------------------------------------------------------------------
     // Model and lookup helpers
     // ------------------------------------------------------------------
@@ -68,6 +75,37 @@ abstract class McpCrudToolsBase
         return $model;
     }
 
+    /**
+     * Resolves a record by numeric 'id' or by 'seo' slug (with optional 'lang' filter).
+     */
+    protected function loadRecordByIdOrSeo(string $modelName, array $args, string $label): ORM
+    {
+        $id = (int) ($args['id'] ?? 0);
+        if ($id > 0) {
+            return $this->loadRecordById($modelName, $id, $label);
+        }
+
+        $seo = trim((string) ($args['seo'] ?? ''));
+        if ($seo !== '') {
+            $lang = trim((string) ($args['lang'] ?? ''));
+            $model = $this->freshModel($modelName);
+            if ($lang !== '') {
+                $model->where_seo_and_lang($seo, $lang);
+            } else {
+                $model->where_seo($seo);
+            }
+            $model->limit(1)->getResultOne(true, true);
+            if ($model->getSize() === 0) {
+                $suffix = $lang !== '' ? " (lang '{$lang}')" : '';
+                throw new McpToolException("{$label} record with seo '{$seo}'{$suffix} not found.");
+            }
+            $model->sync();
+            return $model;
+        }
+
+        throw new McpToolException("Field 'id' (positive integer) or 'seo' (slug string) is required.");
+    }
+
     protected function recordSeoExists(string $modelName, string $seo, string $lang, int $excludeId = 0): bool
     {
         $model = $this->freshModel($modelName);
@@ -94,6 +132,55 @@ abstract class McpCrudToolsBase
     // Validation helpers
     // ------------------------------------------------------------------
 
+    /**
+     * Queries the `lang` table and returns language metadata:
+     * - 'map': array<string, array{seo: string, name: string, status: string, is_default: string}>
+     * - 'active_languages': list<string> of language codes where status === 'y'
+     * - 'default_language': string default active language code
+     */
+    protected function getSiteLanguageMap(): array
+    {
+        $db = Load::lib('Database');
+        $db->fetch_array('SELECT seo, name, status, is_default FROM lang ORDER BY is_default DESC, seo ASC');
+        $rows = $db->toArray();
+        $map = [];
+        $activeLanguages = [];
+        $defaultLanguage = '';
+        if (is_array($rows)) {
+            foreach ($rows as $r) {
+                if (!is_array($r)) {
+                    continue;
+                }
+                $seo = (string) ($r['seo'] ?? '');
+                if ($seo === '') {
+                    continue;
+                }
+                $status = (string) ($r['status'] ?? 'n');
+                $isDefault = (string) ($r['is_default'] ?? 'n');
+                $map[$seo] = [
+                    'seo' => $seo,
+                    'name' => (string) ($r['name'] ?? $seo),
+                    'status' => $status,
+                    'is_default' => $isDefault,
+                ];
+                if ($status === 'y') {
+                    $activeLanguages[] = $seo;
+                    if ($defaultLanguage === '' || $isDefault === 'y') {
+                        $defaultLanguage = $seo;
+                    }
+                }
+            }
+        }
+        if ($defaultLanguage === '' && !empty($activeLanguages)) {
+            $defaultLanguage = $activeLanguages[0];
+        }
+        return [
+            'map' => $map,
+            'active_languages' => $activeLanguages,
+            'default_language' => $defaultLanguage,
+        ];
+    }
+
     protected function requireActiveLang(array $args): string
     {
         $lang = trim((string) ($args['lang'] ?? ''));
@@ -101,13 +188,76 @@ abstract class McpCrudToolsBase
             throw new McpToolException("Field 'lang' is required.");
         }
 
-        $db = Load::lib('Database');
-        $db->fetch_array('SELECT seo FROM lang WHERE seo = \'' . Obuilder::cc($lang) . '\' AND status = \'y\' LIMIT 1');
-        if ($db->getSize() === 0) {
-            throw new McpToolException("Language '{$lang}' is not an active site language.");
+        $langMeta = $this->getSiteLanguageMap();
+        if (!in_array($lang, $langMeta['active_languages'], true)) {
+            $activeList = !empty($langMeta['active_languages']) ? implode(', ', $langMeta['active_languages']) : 'none';
+            throw new McpToolException("Language '{$lang}' is not an active site language. Active languages: {$activeList}.");
         }
 
         return $lang;
+    }
+
+    /**
+     * Enforces linguistic homogeneity between the target record language ($lang)
+     * and the prose supplied in name, summary, and content.
+     */
+    protected function assertContentMatchesLang(string $lang, string $name, string $summary = '', string $content = ''): void
+    {
+        $lang = strtolower(trim($lang));
+        if ($lang === '') {
+            return;
+        }
+
+        $combined = strip_tags($name . ' ' . $summary . ' ' . $content);
+        $combined = html_entity_decode($combined, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $lower = mb_strtolower($combined, 'UTF-8');
+
+        // 1. Detect Kurdish prose inside a non-Kurdish record (e.g. tr, en)
+        if (!in_array($lang, self::KURDISH_LOCALES, true)) {
+            $kuCharCount = preg_match_all('/[êîû]/u', $lower);
+            if ($kuCharCount >= 2) {
+                $kuStopwords = [
+                    'ji', 'bo', 'yên', 'derbarê', 'hatiye', 'wekî', 'ligel',
+                    'navbera', 'piştî', 'berî', 'xwe', 'herî', 'dê', 'bû',
+                    'li', 'ku', 'ev', 'wê', 'wan',
+                ];
+                $matchedKuWords = 0;
+                foreach ($kuStopwords as $word) {
+                    if (preg_match('/(?<!\p{L})' . preg_quote($word, '/') . '(?!\p{L})/u', $lower)) {
+                        $matchedKuWords++;
+                    }
+                }
+                if ($matchedKuWords >= 2) {
+                    throw new McpToolException(
+                        "Content language mismatch: target record language is '{$lang}', but the supplied text appears to be Kurmanji Kurdish ('ku'). Translate all fields into '{$lang}' before saving."
+                    );
+                }
+            }
+        }
+
+        // 2. Detect Turkish prose inside a non-Turkish record (e.g. ku, en)
+        if ($lang !== 'tr') {
+            $trCharCount = preg_match_all('/[ğı]/u', $lower) + preg_match_all('/İ/u', $combined);
+            if ($trCharCount >= 2) {
+                $trStopwords = [
+                    'için', 'olarak', 'tarafından', 'olan', 'birlikte', 'göre',
+                    'ancak', 'sonrası', 'öncesi', 'hakkında', 'ilgili', 'arasında',
+                    'üzerine', 'kapsamında', 'nedeniyle', 'konusunda', 'yapılan',
+                    'edildi', 'olduğu',
+                ];
+                $matchedTrWords = 0;
+                foreach ($trStopwords as $word) {
+                    if (preg_match('/(?<!\p{L})' . preg_quote($word, '/') . '(?!\p{L})/u', $lower)) {
+                        $matchedTrWords++;
+                    }
+                }
+                if ($matchedTrWords >= 2) {
+                    throw new McpToolException(
+                        "Content language mismatch: target record language is '{$lang}', but the supplied text appears to be Turkish ('tr'). Translate all fields into '{$lang}' before saving."
+                    );
+                }
+            }
+        }
     }
 
     protected function assertRecordMatchesLang(string $modelName, int $recordId, string $lang, string $label): void
@@ -134,6 +284,9 @@ abstract class McpCrudToolsBase
 
     protected function assertPermission(string $module, string $role): void
     {
+        if (!empty($this->groupPermissions['*']['*']) || !empty($this->groupPermissions[$module]['*'])) {
+            return;
+        }
         if (!isset($this->groupPermissions[$module][$role])) {
             throw new McpToolException("The API key's permission group does not have the '{$module}:{$role}' role required for this operation.");
         }
@@ -157,6 +310,7 @@ abstract class McpCrudToolsBase
         return $value;
     }
 
+
     /**
      * Generic paginated category listing shared by domain tool classes
      */
@@ -164,11 +318,23 @@ abstract class McpCrudToolsBase
     {
         $limit = $this->normalizeLimit($args, $defaultLimit);
         $offset = $this->normalizeOffset($args);
+        $langMeta = $this->getSiteLanguageMap();
 
         $model = $this->freshModel($modelName);
         $this->applyCategoryFilters($model, $args);
         $model->order('`order`', 'ASC')->limit($limit, $offset)->getResult(true, true);
         $items = $model->toArray();
+        $rows = is_array($items) ? $items : [];
+
+        $enriched = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $rowLang = (string) ($row['lang'] ?? '');
+            $row['lang_status'] = $langMeta['map'][$rowLang]['status'] ?? 'n';
+            $enriched[] = $row;
+        }
 
         $countModel = $this->freshModel($modelName);
         $countModel->select('id');
@@ -177,10 +343,12 @@ abstract class McpCrudToolsBase
         $total = $countModel->getSize();
 
         return [
-            'items' => is_array($items) ? $items : [],
+            'items' => $enriched,
             'total' => $total,
             'limit' => $limit,
-            'offset' => $offset
+            'offset' => $offset,
+            'active_languages' => $langMeta['active_languages'],
+            'default_language' => $langMeta['default_language'],
         ];
     }
 
@@ -192,10 +360,15 @@ abstract class McpCrudToolsBase
         if (isset($args['root']) && in_array($args['root'], ['y', 'n'], true)) {
             $model->where_root($args['root']);
         }
+        if (isset($args['seo']) && trim((string) $args['seo']) !== '') {
+            $model->where_seo(trim((string) $args['seo']));
+        }
         if (isset($args['search']) && trim((string) $args['search']) !== '') {
-            $model->where('name LIKE \'%' . Obuilder::cc(trim((string) $args['search'])) . '%\'');
+            $escaped = Obuilder::cc(trim((string) $args['search']));
+            $model->where("(name LIKE '%{$escaped}%' OR seo LIKE '%{$escaped}%')");
         }
     }
+
 
     protected function optionalDateTime(array $args, string $key, string $default): string
     {
@@ -223,8 +396,96 @@ abstract class McpCrudToolsBase
     protected function assertSummaryLength(string $summary): void
     {
         $summaryLength = mb_strlen($summary);
-        if ($summaryLength < 90 || $summaryLength > 120) {
-            throw new McpToolException("Field 'summary' must be between 90 and 120 characters (deck summary standard), got {$summaryLength}.");
+        if ($summaryLength < 90 || $summaryLength > 160) {
+            throw new McpToolException("Field 'summary' must be between 90 and 160 characters (90 and 120 deck standard; 120-160 SERP snippet standard), got {$summaryLength}.");
+        }
+    }
+
+    /**
+     * Sanitizes rich HTML body content:
+     * - Applies Helper::clear_html()
+     * - Strips inline style="..." attributes and <style>/<script> tags (AGENTS.md Rule 2)
+     * - Downgrades stray <h1> tags in body content to <h2> to preserve single-H1 page hierarchy
+     */
+    protected function sanitizeBodyHtml(string $html): string
+    {
+        if (class_exists('Helper') && method_exists('Helper', 'clear_html')) {
+            $html = (string) Helper::clear_html($html);
+        }
+        $html = preg_replace('/<(script|style)\b[^>]*>.*?<\/\1>/is', '', $html) ?? $html;
+        $html = preg_replace('/(<[a-zA-Z0-9]+\b[^>]*?)\s+style\s*=\s*(?:"[^"]*"|\'[^\']*\')/i', '$1', $html) ?? $html;
+        $html = preg_replace(['/<h1(\b[^>]*)>/i', '/<\/h1>/i'], ['<h2$1>', '</h2>'], $html) ?? $html;
+        return $html;
+    }
+
+    /**
+     * Synchronizes summary and description fields on partial updates so that
+     * Twig templates evaluating `d.summary ?: d.description` never render stale metadata.
+     */
+    protected function synchronizeSummaryAndDescription(ORM $model, array $args): void
+    {
+        $hasSummaryArg = isset($args['summary']);
+        $hasDescArg = isset($args['description']);
+
+        if ($hasSummaryArg && !$hasDescArg) {
+            $model->description = (string) $model->summary;
+        } elseif ($hasDescArg && !$hasSummaryArg) {
+            $desc = trim(strip_tags((string) $model->description));
+            $descLen = mb_strlen($desc);
+            if ($descLen >= 90 && $descLen <= 160) {
+                $model->summary = $desc;
+            }
+        }
+    }
+
+    /**
+     * Automatically registers or updates an HTTP 301 redirect in mod_redirect
+     * whenever a record's or category's SEO slug or language changes on update.
+     */
+    protected function registerSlugRedirectIfChanged(string $oldLang, string $oldSeo, string $newLang, string $newSeo, string $routePrefix): void
+    {
+        $oldSeo = trim($oldSeo, '/');
+        $newSeo = trim($newSeo, '/');
+        $oldLang = trim($oldLang, '/');
+        $newLang = trim($newLang, '/');
+        $routePrefix = trim($routePrefix, '/');
+
+        if ($oldSeo === '' || $newSeo === '' || ($oldSeo === $newSeo && $oldLang === $newLang)) {
+            return;
+        }
+
+        $oldPath = ($oldLang !== '' ? $oldLang . '/' : '') . ($routePrefix !== '' ? $routePrefix . '/' : '') . $oldSeo;
+        $newPath = ($newLang !== '' ? $newLang . '/' : '') . ($routePrefix !== '' ? $routePrefix . '/' : '') . $newSeo;
+
+        if ($oldPath === $newPath) {
+            return;
+        }
+
+        try {
+            $db = Load::lib('Database');
+            $safeOld = Obuilder::cc($oldPath);
+            $safeNew = Obuilder::cc($newPath);
+            $now = date('Y-m-d H:i:s');
+
+            // Collapse redirect chains: any redirect pointing to oldPath now points directly to newPath
+            $db->query("UPDATE mod_redirect SET new_url = '{$safeNew}' WHERE new_url = '{$safeOld}' OR new_url = '/{$safeOld}'");
+
+            // Prevent circular redirect if reverting to a previously redirected slug
+            $db->query("DELETE FROM mod_redirect WHERE old_url = '{$safeNew}' OR old_url = '/{$safeNew}'");
+
+            // Insert or update oldPath -> newPath 301 redirect
+            $db->fetch_array("SELECT id FROM mod_redirect WHERE old_url = '{$safeOld}' LIMIT 1");
+            if ($db->getSize() > 0) {
+                $existing = $db->toArray()[0];
+                $rid = (int) ($existing['id'] ?? 0);
+                if ($rid > 0) {
+                    $db->query("UPDATE mod_redirect SET new_url = '{$safeNew}', status_code = 301 WHERE id = {$rid}");
+                }
+            } else {
+                $db->query("INSERT INTO mod_redirect (old_url, new_url, status_code, created_at) VALUES ('{$safeOld}', '{$safeNew}', 301, '{$now}')");
+            }
+        } catch (\Throwable $e) {
+            // Do not fail primary CRUD update if redirect table is unavailable
         }
     }
 
@@ -303,7 +564,7 @@ abstract class McpCrudToolsBase
         }
 
         $cleanBase64 = preg_replace('/\s+/', '', (string) $image['data_base64']);
-        $data = base64_decode($cleanBase64, true);
+        $data = base64_decode((string) $cleanBase64, true);
         if ($data === false || $data === '') {
             throw new McpToolException("Field 'image.data_base64' is not valid base64 data.");
         }
@@ -368,13 +629,13 @@ abstract class McpCrudToolsBase
     // Pagination helpers
     // ------------------------------------------------------------------
 
-    protected function normalizeLimit(array $args, int $default = 10): int
+    protected function normalizeLimit(array $args, int $default = 10, int $max = 50): int
     {
         $limit = (int) ($args['limit'] ?? $default);
         if ($limit < 1) {
             $limit = 1;
         }
-        return min($limit, 50);
+        return min($limit, $max);
     }
 
     protected function normalizeOffset(array $args): int
@@ -399,8 +660,7 @@ abstract class McpCrudToolsBase
         $value = preg_replace('/[\x{0027}\x{0022}\x{2019}\x{201B}\x{201C}\x{201D}\x{201E}\x{201F}]/u', '', $text) ?? '';
         // Whitespace and dashes become underscores
         $value = preg_replace('/[\s-]+/u', '_', $value) ?? '';
-        // Locale-aware lowercase
-        $value = mb_strtolower($value, 'UTF-8');
+        // Wikipedia-style parity: preserve original casing, do not force lowercase
         // Normalize to NFC and strip stray combining dot above (U+0307)
         if (class_exists('Normalizer')) {
             $normalized = \Normalizer::normalize($value, \Normalizer::FORM_C);
@@ -411,7 +671,7 @@ abstract class McpCrudToolsBase
         $value = str_replace("\u{0307}", '', $value);
         // Kurdish keyboard typo normalizations
         if ($isKurdish) {
-            $value = str_replace(['ı', 'İ'], 'i', $value);
+            $value = str_replace(['ı', 'İ'], ['i', 'I'], $value);
         }
         // Collapse repeated underscores and trim
         $value = preg_replace('/_+/', '_', $value) ?? '';

@@ -374,3 +374,149 @@
         transition: none !important;
     }
 }
+
+/* Confirmation Card for Destructive Actions */
+.agent-confirm-card {
+    margin-top: 10px;
+    padding: 12px;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.agent-confirm-warning {
+    font-size: 13px;
+    color: #9a3412;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.agent-confirm-details {
+    font-size: 12px;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    word-break: break-word;
+    color: #7c2d12;
+}
+
+.agent-confirm-details code {
+    font-size: 11.5px;
+    background: #ffedd5;
+    color: #9a3412;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.agent-confirm-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.agent-btn-confirm {
+    background: #dc2626;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    flex: 1;
+    transition: background 0.15s;
+}
+
+.agent-btn-confirm:hover {
+    background: #b91c1c;
+}
+
+.agent-btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    min-height: 44px;
+    flex: 1;
+    transition: background 0.15s;
+}
+
+.agent-btn-cancel:hover {
+    background: #e2e8f0;
+}
+
+/* Progress Chips for SSE Streaming (§4 B4) */
+.agent-progress-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+    align-items: center;
+}
+
+.agent-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 999px;
+    max-width: 100%;
+    box-sizing: border-box;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease-in-out;
+}
+
+.agent-chip i {
+    font-size: 11px;
+}
+
+.agent-chip-status {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    animation: agentChipPulse 1.8s infinite ease-in-out;
+}
+
+.agent-chip-tool {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+.agent-chip-done {
+    background: #ecfdf5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+@keyframes agentChipPulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .agent-chip-status {
+        animation: none !important;
+    }
+}

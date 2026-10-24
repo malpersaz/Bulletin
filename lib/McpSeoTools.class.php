@@ -12,6 +12,114 @@
 
 class McpSeoTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'get_seo_settings' => [
+                'module' => 'mod_seo',
+                'role' => 'list',
+                'domain' => 'seo',
+                'handler' => 'getSeoSettings',
+                'description' => 'Read the Google Search Console configuration status: the normalized property domain, whether it is configured, and whether the service account key file exists. Credentials content is never returned.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => (object) [],
+                ],
+                'title' => 'Get SEO Settings',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'update_seo_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'seo',
+                'handler' => 'updateSeoSettings',
+                'description' => 'Save the Google Search Console property URL (normalized like the admin settings page: scheme and sc-domain: prefix stripped, slashes trimmed; empty string resets the configuration) and optionally replace the service account key JSON file. Mirrors the admin settings() save flow.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'property_url' => [
+                            'type' => 'string',
+                            'description' => 'Search Console property domain (e.g. example.com or https://example.com). Empty string resets the configuration.',
+                        ],
+                        'credentials_json' => [
+                            'type' => 'string',
+                            'description' => 'Optional: full Google service account JSON (must contain private_key and client_email) stored as the Search Console API key file.',
+                        ],
+                    ],
+                    'required' => [
+                        'property_url',
+                    ],
+                ],
+                'title' => 'Update SEO Settings',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_google_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'seo',
+                'handler' => 'getGoogleSettings',
+                'description' => 'Read the Google integrations configuration: bucket name, Gemini API key, and whether the service account credentials file exists.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => (object) [],
+                ],
+                'title' => 'Get Google Settings',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'update_google_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'seo',
+                'handler' => 'updateGoogleSettings',
+                'description' => 'Save the Google integrations configuration (bucket name and Gemini API key are always saved as a pair, like the admin form) and optionally replace the service account credentials JSON file. Clears the template caches after saving, mirroring the admin google_settings() flow.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'bucket_name' => [
+                            'type' => 'string',
+                            'description' => 'Google Cloud Storage bucket name. Saved together with gemini_api_key; use an empty string to clear.',
+                        ],
+                        'gemini_api_key' => [
+                            'type' => 'string',
+                            'description' => 'Gemini API key used for meta generation. Saved together with bucket_name; use an empty string to clear.',
+                        ],
+                        'credentials_json' => [
+                            'type' => 'string',
+                            'description' => 'Optional: full Google service account JSON (must contain private_key and client_email) stored as the credentials file.',
+                        ],
+                    ],
+                    'required' => [
+                        'bucket_name',
+                        'gemini_api_key',
+                    ],
+                ],
+                'title' => 'Update Google Settings',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     private const SETTINGS_FILE = 'seo_settings.json';
     private const SEARCH_CONSOLE_KEY_FILE = 'google_search_console_api.json';
     private const GOOGLE_SETTINGS_FILE = 'google_settings.json';
@@ -92,9 +200,18 @@ class McpSeoTools extends McpCrudToolsBase
             }
         }
 
+        $hasGeminiKey = $geminiApiKey !== '';
+        $maskedKey = '';
+        if ($hasGeminiKey) {
+            $maskedKey = mb_strlen($geminiApiKey) > 8
+                ? mb_substr($geminiApiKey, 0, 4) . str_repeat('*', 8) . mb_substr($geminiApiKey, -4)
+                : '********';
+        }
+
         return [
             'bucket_name' => $bucketName,
-            'gemini_api_key' => $geminiApiKey,
+            'gemini_api_key' => $maskedKey,
+            'has_gemini_api_key' => $hasGeminiKey,
             'has_credentials' => file_exists($this->dataPath(self::GOOGLE_CREDENTIALS_FILE)),
         ];
     }

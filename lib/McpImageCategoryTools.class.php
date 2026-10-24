@@ -8,6 +8,342 @@
 class McpImageCategoryTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_image_categories' => [
+                'module' => 'mod_imagecategories',
+                'role' => 'list',
+                'domain' => 'imagecategories',
+                'handler' => 'listImageCategories',
+                'description' => 'Lists image gallery categories (mod_imagecategories) with optional filters. Returns display columns, total count and pagination info.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. \'en\', \'ku\').',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by root flag: \'y\' for root categories, \'n\' for nested categories.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Case-insensitive substring filter on the category name.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 50,
+                            'description' => 'Maximum number of categories to return (capped at 50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of categories to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Image Categories',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_image_category' => [
+                'module' => 'mod_imagecategories',
+                'role' => 'list',
+                'domain' => 'imagecategories',
+                'handler' => 'getImageCategory',
+                'description' => 'Returns a single image gallery category with all fields.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Image category record id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Image Category',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_image_category' => [
+                'module' => 'mod_imagecategories',
+                'role' => 'add',
+                'domain' => 'imagecategories',
+                'handler' => 'createImageCategory',
+                'description' => 'Creates an image gallery category. Mirrors the admin add validator: name 2-255, seo unique per language (auto-generated from name when omitted), title/keywords/description 1-255, parent must exist and match language, one language root (\'##\' name with root \'y\') per language. Optionally uploads an image and attaches the category to a menu.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Category name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Content language code; must be an active site language.',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'SEO slug, unique per language. Auto-generated from the name when omitted.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta title (1-255 characters). Defaults to the name.',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta keywords (1-255 characters). Defaults to the name.',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta description (1-255 characters). Defaults to the name.',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'Optional rich-text category content.',
+                        ],
+                        'parent_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Parent category id (0 for top-level). Must belong to the same language; a language root category cannot have a parent.',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'n',
+                            'description' => 'Root flag.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Access control list id (0 = public).',
+                        ],
+                        'image' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'data_base64' => [
+                                            'type' => 'string',
+                                            'description' => 'Base64-encoded image data (max 10 MB decoded).',
+                                        ],
+                                        'mime' => [
+                                            'type' => 'string',
+                                            'enum' => [
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/webp',
+                                            ],
+                                            'description' => 'Image MIME type.',
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'data_base64',
+                                        'mime',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'null',
+                                ],
+                            ],
+                            'description' => 'Image upload ({data_base64, mime}). Resized to 400px wide with a 200px wide thumbnail.',
+                        ],
+                        'menu_parent_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Menu parent id; when greater than 0 a menu entry pointing to lang/gallery/<seo> is created under it.',
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'lang',
+                    ],
+                ],
+                'title' => 'Create Image Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_image_category' => [
+                'module' => 'mod_imagecategories',
+                'role' => 'edit',
+                'domain' => 'imagecategories',
+                'handler' => 'updateImageCategory',
+                'description' => 'Partially updates an image gallery category. Only provided fields change. Enforces admin edit validation: name 2-255, seo unique per language, no self-parenting or parent cycles, parent language match, one language root per language. Syncs the attached menu entry (lang/gallery/<seo> URL) and requires moderate_edit for records owned by other users.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Image category record id.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Category name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Content language code; must be an active site language.',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'SEO slug, unique per language.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta title (1-255 characters).',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta keywords (1-255 characters).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Meta description (1-255 characters).',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'Rich-text category content.',
+                        ],
+                        'parent_id' => [
+                            'type' => 'integer',
+                            'description' => 'Parent category id (0 for top-level). Cannot be the category itself or one of its descendants; must belong to the same language.',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Root flag.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'description' => 'Access control list id (0 = public).',
+                        ],
+                        'order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Explicit sibling order. Recomputed automatically when the parent changes.',
+                        ],
+                        'image' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'data_base64' => [
+                                            'type' => 'string',
+                                            'description' => 'Base64-encoded image data (max 10 MB decoded).',
+                                        ],
+                                        'mime' => [
+                                            'type' => 'string',
+                                            'enum' => [
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/webp',
+                                            ],
+                                            'description' => 'Image MIME type.',
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'data_base64',
+                                        'mime',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'null',
+                                ],
+                            ],
+                            'description' => 'Image upload ({data_base64, mime}) replaces the current image; null removes it; omit to leave untouched. Resized to 400px wide with a 200px wide thumbnail.',
+                        ],
+                        'menu_parent_id' => [
+                            'type' => 'integer',
+                            'description' => 'Menu parent id. 0 detaches the category menu entry; greater than 0 moves or creates the menu entry under that menu parent.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Image Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_image_category' => [
+                'module' => 'mod_imagecategories',
+                'role' => 'delete',
+                'domain' => 'imagecategories',
+                'handler' => 'deleteImageCategory',
+                'description' => 'Deletes an image gallery category and its whole subtree. Cleans up image files, gallery/attachment bridge relations and the attached menu entry. Requires moderate_delete for records owned by other users.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Image category record id; the category and all descendant categories are deleted.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Image Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Image sizes mirror mod_imagecategories_mod::imageOptions()
      */
     private const IMAGE_SIZES = [
@@ -440,20 +776,7 @@ class McpImageCategoryTools extends McpCrudToolsBase
             $this->deleteImageFiles('mod_imagecategories', (string) $model->image, self::IMAGE_SIZES);
         }
 
-        $removeBridgeRelations = function(string $module, int $recordId) {
-            $bridges = [
-                'mod_gallery_mod' => 'mod_gallery',
-                'mod_attachment_mod' => 'mod_attachment',
-                'mod_faq_mod' => 'mod_faq',
-            ];
-            foreach ($bridges as $bridgeTable => $bridgeModule) {
-                $bridgeModel = $this->freshModel($bridgeTable);
-                if ($bridgeModel->exists_mod_name($module) === true) {
-                    Run::import($bridgeModule, '_remove', [$module, $recordId]);
-                }
-            }
-        };
-        $removeBridgeRelations('mod_imagecategories', $id);
+        $this->removeBridgeRelations('mod_imagecategories', $id);
 
         $this->deleteMenuByUrl($this->categoryMenuUrl((string) $model->lang, (string) $model->seo));
 

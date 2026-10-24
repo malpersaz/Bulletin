@@ -381,4 +381,17 @@ $lang['mod_settings'] = [
     'no_affiliations_found' => 'Henüz kayıtlı kurumsal bağlantı veya iş birliği bulunmuyor.',
     'affiliation_reordered_success' => 'Sıralama başarıyla güncellendi.',
     'affiliation_toggle_success' => 'Durum başarıyla güncellendi.',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Google Hizmetleri Merkezi',
+    'json_invalid' => 'Geçersiz JSON dosya formatı!',
+    'google' => [
+        'bucket_name' => 'Google Cloud Storage Kova (Bucket) Adı',
+        'gemini_api_key' => 'Google Gemini API Anahtarı',
+        'credentials_file' => 'Hizmet Hesabı Kimlik Bilgileri (JSON)',
+        'credentials_status' => 'Kimlik Bilgileri Durumu',
+        'credentials_ok' => 'Yüklendi ve Aktif',
+        'credentials_missing' => 'Yüklenmedi',
+        'settings_ok' => 'Google Ayarları Başarıyla Güncellendi!',
+    ],
 ];

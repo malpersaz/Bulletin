@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>MCP authorization error</title>
+    <link rel="stylesheet" href="{{ resource }}/templates/oauth/assets/css/oauth.css">
+</head>
+<body>
+<div class="oauth-container">
+    <div class="oauth-card">
+        <div class="oauth-header">
+            <div class="oauth-icon">⚠️</div>
+            <h1 class="oauth-title">Authorization failed</h1>
+            <p class="oauth-description">The MCP authorization request was rejected: <code class="oauth-code-block">{{ error }}</code></p>
+        </div>
+        {% if description %}
+            <div class="oauth-error-alert">{{ description }}</div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * AKM Rojname Content Management System
+ * Amed Framework Content Management System
  * Web: www.akmsoftware.co.uk
  * E-Mail: info@akmsoftware.co.uk
  * User: AKM
@@ -19,6 +19,7 @@ class Database
     public $_sql_text;
 
     public $_for_update = false;
+    public $_transaction_depth = 0;
     public static $_sql_querys = [];
 
     public static $_instances = [];
@@ -211,8 +212,16 @@ class Database
 
     public function start_transaction()
     {
-        $this->query("SET AUTOCOMMIT=0");
-        $this->query("START TRANSACTION");
+        $db = $this->getDB();
+        if ($this->_transaction_depth === 0) {
+            if ($db && method_exists($db, 'begin_transaction')) {
+                $db->begin_transaction();
+            } else {
+                $this->query("START TRANSACTION");
+            }
+        }
+        $this->_transaction_depth++;
+        return true;
     }
 
     public function setForUpdate($u = true)
@@ -223,11 +232,27 @@ class Database
     public function commit()
     {
         $this->setForUpdate(false);
-        try {
-            $this->query("COMMIT");
-        } catch (DatabaseException $e) {
-            $e->show();
-            return false;
+        if ($this->_transaction_depth > 0) {
+            $this->_transaction_depth--;
+        }
+        if ($this->_transaction_depth === 0) {
+            $db = $this->getDB();
+            try {
+                if ($db && method_exists($db, 'in_transaction') && method_exists($db, 'commit')) {
+                    if ($db->in_transaction()) {
+                        $db->commit();
+                    }
+                } elseif ($db && method_exists($db, 'commit')) {
+                    $db->commit();
+                } else {
+                    $this->query("COMMIT");
+                }
+            } catch (DatabaseException $e) {
+                $e->show();
+                return false;
+            } catch (\Throwable $e) {
+                return false;
+            }
         }
         return true;
     }
@@ -235,13 +260,34 @@ class Database
     public function rollback()
     {
         $this->setForUpdate(false);
+        $this->_transaction_depth = 0;
+        $db = $this->getDB();
         try {
-            $this->query("ROLLBACK");
+            if ($db && method_exists($db, 'in_transaction') && method_exists($db, 'rollback')) {
+                if ($db->in_transaction()) {
+                    $db->rollback();
+                }
+            } elseif ($db && method_exists($db, 'rollback')) {
+                $db->rollback();
+            } else {
+                $this->query("ROLLBACK");
+            }
         } catch (DatabaseException $e) {
             $e->show();
             return false;
+        } catch (\Throwable $e) {
+            return false;
         }
         return true;
+    }
+
+    public function in_transaction()
+    {
+        $db = $this->getDB();
+        if ($db && method_exists($db, 'in_transaction')) {
+            return (bool)$db->in_transaction();
+        }
+        return $this->_transaction_depth > 0;
     }
 
     public function truncate($table)
@@ -488,10 +534,10 @@ class Database
         return $this;
     }
 
-    public function table_join($conf)
+    public function table_join($config)
     {
         try {
-            $res = Dbuilder::table_join($conf);
+            $res = Dbuilder::table_join($config);
         } catch (DbuilderException $e) {
             $e->show();
             exit();
@@ -533,10 +579,10 @@ class Database
         return $this;
     }
 
-    public function order($colom, $type)
+    public function order($column, $type)
     {
         try {
-            $this->_order = Dbuilder::order($colom, $type);
+            $this->_order = Dbuilder::order($column, $type);
         } catch (DbuilderException $e) {
             $e->show();
         }

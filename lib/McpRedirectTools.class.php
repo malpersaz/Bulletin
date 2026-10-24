@@ -7,6 +7,198 @@
 
 class McpRedirectTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_redirects' => [
+                'module' => 'mod_redirect',
+                'role' => 'list',
+                'domain' => 'redirect',
+                'handler' => 'listRedirects',
+                'description' => 'List URL redirects with optional search and status code filters. Returns paginated items (id, old_url, new_url, status_code, created_at), the filtered total, and unfiltered stats (total, permanent 301 count, temporary 302 count).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'status_code' => [
+                            'type' => 'integer',
+                            'enum' => [
+                                301,
+                                302,
+                            ],
+                            'description' => 'Filter by redirect type: 301 (permanent) or 302 (temporary).',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against old_url and new_url.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Redirects',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_redirect' => [
+                'module' => 'mod_redirect',
+                'role' => 'list',
+                'domain' => 'redirect',
+                'handler' => 'getRedirect',
+                'description' => 'Get a single redirect record with all fields.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Redirect record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Redirect',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_redirect' => [
+                'module' => 'mod_redirect',
+                'role' => 'add',
+                'domain' => 'redirect',
+                'handler' => 'createRedirect',
+                'description' => 'Create a URL redirect. The old_url must be 2-250 characters and unique across all redirects; the new_url must be 1-250 characters; the status code must be 301 (permanent, default) or 302 (temporary).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'old_url' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 250,
+                            'description' => 'The old path or URL that should redirect. Must be unique across all redirects.',
+                        ],
+                        'new_url' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 250,
+                            'description' => 'The destination path or URL.',
+                        ],
+                        'status_code' => [
+                            'type' => 'integer',
+                            'enum' => [
+                                301,
+                                302,
+                            ],
+                            'default' => 301,
+                            'description' => 'HTTP redirect status: 301 (permanent) or 302 (temporary). Defaults to 301.',
+                        ],
+                    ],
+                    'required' => [
+                        'old_url',
+                        'new_url',
+                    ],
+                ],
+                'title' => 'Create Redirect',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_redirect' => [
+                'module' => 'mod_redirect',
+                'role' => 'edit',
+                'domain' => 'redirect',
+                'handler' => 'updateRedirect',
+                'description' => 'Partially update a redirect record. Only provided fields change; the old_url (if provided) must remain unique across all other redirects.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Redirect record ID.',
+                        ],
+                        'old_url' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 250,
+                            'description' => 'New old path or URL. Must be unique across all other redirects.',
+                        ],
+                        'new_url' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 250,
+                            'description' => 'New destination path or URL.',
+                        ],
+                        'status_code' => [
+                            'type' => 'integer',
+                            'enum' => [
+                                301,
+                                302,
+                            ],
+                            'description' => 'New HTTP redirect status: 301 (permanent) or 302 (temporary).',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Redirect',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_redirect' => [
+                'module' => 'mod_redirect',
+                'role' => 'delete',
+                'domain' => 'redirect',
+                'handler' => 'deleteRedirect',
+                'description' => 'Delete a redirect record.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Redirect record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Redirect',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     private const STATUS_CODES = [301, 302];
 
     // ------------------------------------------------------------------

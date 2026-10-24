@@ -313,4 +313,17 @@ $lang['mod_settings'] = [
     'mcp_link_title' => 'بەڕێوەبردنی MCP',
     'mcp_link_desc' => 'بۆ ئەوەی کلایەنتەکانی AI (ChatGPT، Cursor، Claude) ماڵپەڕ بە MCP بەڕێوە ببەن، کلیڵەکانی API و کلایەنتەکانی OAuth دروست و بەڕێوە ببە.',
     'mcp_link_button' => 'بەڕێوەبردنی MCP بکەوە',
+
+    // === Google Services Hub ===
+    'google_settings' => 'ناوەندی خزمەتگوزارییەکانی گووگڵ',
+    'json_invalid' => 'شێوازی فایلی JSON نادروستە!',
+    'google' => [
+        'bucket_name' => 'ناوی Google Cloud Storage Bucket',
+        'gemini_api_key' => 'کلیلی Google Gemini API',
+        'credentials_file' => 'زانیارییەکانی هەژماری خزمەتگوزاری (JSON)',
+        'credentials_status' => 'دۆخی بڕوانامەکان',
+        'credentials_ok' => 'بارکراوە و چالاکە',
+        'credentials_missing' => 'بارنەکراوە',
+        'settings_ok' => 'ڕێکخستنەکانی گووگڵ بە سەرکەوتوویی نوێکرانەوە!',
+    ],
 ];

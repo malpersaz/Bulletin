@@ -482,6 +482,36 @@ $lang['mod_user']['panel'] = [
     'admin_brand' => 'AKM Bulletin CMS Admin'
 ];
 
+$lang['mod_user']['agent'] = [
+    'title' => 'AKM Agent',
+    'badge' => 'Gemini 3.8 Flash Aktiv',
+    'greeting' => 'Hallo! Ich bin Ihr KI-Assistent für die CMS-Verwaltung (Gemini 3.8 Flash). Was möchten Sie heute tun?',
+    'input_placeholder' => 'Befehl oder Frage eingeben...',
+    'send' => 'Senden',
+    'clear' => 'Chat leeren',
+    'thinking' => 'Gemini denkt nach...',
+    'empty_error' => 'Bitte geben Sie einen Prompt ein.',
+    'network_error' => 'Ein Netzwerkfehler ist aufgetreten.',
+    'unauthorized' => 'Bitte melden Sie sich erneut an.',
+    'chat' => 'Chat',
+    'rate_limit_exceeded' => 'Zu viele Anfragen. Bitte warten Sie einen Moment (Ratenbegrenzung überschritten).',
+    'csrf_error' => 'Sicherheitsfehler (CSRF-Token ungültig oder fehlt).',
+    'history_cleared' => 'Chatverlauf gelöscht.',
+    'action_cancelled' => 'Aktionsbestätigung abgebrochen.',
+    'action_expired' => 'Aktion zur Bestätigung nicht gefunden oder abgelaufen.',
+    'confirm_warning_title' => 'Sensible / Destruktive Aktion:',
+    'confirm_btn_yes' => 'Ja, ausführen',
+    'confirm_btn_no' => 'Abbrechen',
+    'timeout_error' => 'Zeitüberschreitung der Antwort. Bitte versuchen Sie es erneut.',
+    'general_error' => 'Bei der Verarbeitung der Antwort ist ein Fehler aufgetreten.',
+    'job_started' => 'Hintergrundaufgabe erfolgreich gestartet.',
+    'job_failed' => 'Hintergrundaufgabe fehlgeschlagen.',
+    'job_cancelled' => 'Hintergrundaufgabe abgebrochen.',
+    'tools_read_only_time_exhausted' => 'Der Assistent hat das System überprüft, aber das Zeitlimit wurde erreicht, bevor Änderungen angewendet werden konnten. Es wurden keine Änderungen gespeichert.',
+    'tools_read_only_api_error' => 'Der Assistent hat das System abgefragt, aber es trat ein API-Kommunikationsfehler auf, bevor Änderungen vorgenommen werden konnten.',
+    'concurrent_run' => 'Eine andere KI-Aufgabe wird derzeit ausgeführt. Bitte warten Sie, bis sie abgeschlossen ist.',
+];
+
 $lang['mod_user']['fab'] = [
     'add_announcement' => 'Ankündigung hinzufügen',
     'add_service' => 'Dienstleistung hinzufügen',

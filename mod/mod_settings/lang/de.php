@@ -307,4 +307,17 @@ $lang['mod_settings'] = [
     'mcp_link_title' => 'MCP-Verwaltung',
     'mcp_link_desc' => 'API-Schlüssel und OAuth-Clients erstellen und verwalten, damit KI-Clients (ChatGPT, Cursor, Claude) die Website über den MCP-Endpunkt verwalten.',
     'mcp_link_button' => 'MCP-Verwaltung öffnen',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Google-Dienste-Hub',
+    'json_invalid' => 'Ungültiges JSON-Dateiformat!',
+    'google' => [
+        'bucket_name' => 'Google Cloud Storage-Bucket-Name',
+        'gemini_api_key' => 'Google Gemini-API-Schlüssel',
+        'credentials_file' => 'Dienstkonto-Anmeldedaten (JSON)',
+        'credentials_status' => 'Status der Anmeldedaten',
+        'credentials_ok' => 'Hochgeladen & Aktiv',
+        'credentials_missing' => 'Nicht hochgeladen',
+        'settings_ok' => 'Google-Einstellungen erfolgreich aktualisiert!',
+    ],
 ];

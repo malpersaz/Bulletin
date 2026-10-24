@@ -39,6 +39,7 @@ $lang['mod_settings'] = [
     'button' => [
         'cancel' => 'Betal ke',
         'close' => 'Bigire',
+        'back' => 'Peyser',
         'edit' => 'Bıvurne',
         'save_and_close' => 'Qeyd ke u Bigire',
         'generate_assets' => 'Ikonan Vıraze',
@@ -298,4 +299,17 @@ $lang['mod_settings'] = [
     'mcp_link_title' => 'İdarekerdaşa MCP',
     'mcp_link_desc' => 'Ke AI kılitî (ChatGPT, Cursor, Claude) çılawişi be MCP idare kere, kılitanê APIyê û kılitanê OAuthy biafirîne û idare kere.',
     'mcp_link_button' => 'İdarekerdaşa MCP veke',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Merkezê Xizmetanê Google',
+    'json_invalid' => 'Formatê dosyaya JSONî nêvêreno!',
+    'google' => [
+        'bucket_name' => 'Nameyê Google Cloud Storage Bucket',
+        'gemini_api_key' => 'Mifteyê Google Gemini API',
+        'credentials_file' => 'Dosyaya Melumatê Hesabê Xizmetî (JSON)',
+        'credentials_status' => 'Rewşa Melumatan',
+        'credentials_ok' => 'Barkerde û Aktîf',
+        'credentials_missing' => 'Nêameyo Barkerdene',
+        'settings_ok' => 'Eyare Google bi serkewtiş ameyî newekerdene!',
+    ],
 ];

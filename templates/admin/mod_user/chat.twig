@@ -11,11 +11,22 @@
 
 {% block styles %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_user_agent.css?v=1.0">
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_user_agent.css?v={{ agent_asset_version }}">
 {% endblock %}
 
 {% block content %}
-<div class="agent-dialogue-wrapper">
+<div class="agent-dialogue-wrapper"
+    id="agentDialogueWrapper"
+    data-confirm-warning-title="{{ lang.mod_user.agent.confirm_warning_title }}"
+    data-confirm-btn-yes="{{ lang.mod_user.agent.confirm_btn_yes }}"
+    data-confirm-btn-no="{{ lang.mod_user.agent.confirm_btn_no }}"
+    data-timeout-error="{{ lang.mod_user.agent.timeout_error }}"
+    data-network-error="{{ lang.mod_user.agent.network_error }}"
+    data-general-error="{{ lang.mod_user.agent.general_error }}"
+    data-cancelled-msg="{{ lang.mod_user.agent.action_cancelled }}"
+    data-concurrent-error="{{ lang.mod_user.agent.concurrent_run }}"
+    data-thinking-msg="{{ lang.mod_user.agent.thinking }}"
+    data-default-model="{{ gemini_model }}">
 
     <!-- Status Header Pill -->
     <div class="agent-status-bar">
@@ -55,6 +66,9 @@
 <div class="agent-input-container">
     <form id="agentChatForm" class="agent-chat-form" action="{{ agent_chat_url }}" method="post" autocomplete="off">
         <input type="hidden" id="agentChatUrl" value="{{ agent_chat_url }}">
+        <input type="hidden" id="agentStreamUrl" value="{{ agent_stream_url }}">
+        <input type="hidden" id="agentCsrfUrl" value="{{ agent_csrf_url }}">
+        <input type="hidden" id="agentChatCsrf" name="csrf" value="{{ agent_chat_csrf }}">
         <div class="agent-input-pill">
             <textarea
                 id="agentPromptInput"
@@ -74,5 +88,5 @@
 
 {% block scripts %}
     {{ parent() }}
-    <script src="{{ site.address }}templates/admin/assets/js/mod_user_agent.js?v=1.0"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_user_agent.js?v={{ agent_asset_version }}"></script>
 {% endblock %}

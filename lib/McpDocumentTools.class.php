@@ -8,6 +8,312 @@
 class McpDocumentTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_documents' => [
+                'module' => 'mod_document',
+                'role' => 'list',
+                'domain' => 'document',
+                'handler' => 'listDocuments',
+                'description' => 'List documents with optional filters. Returns paginated items (id, lang, name, seo, status, image) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by active site language code (e.g. en, tr, ku).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by publication status: y = published, n = draft.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Case-insensitive substring filter applied to the document name.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Number of documents to return (max 50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of documents to skip for pagination.',
+                        ],
+                    ],
+                    'required' => [
+                    ],
+                ],
+                'title' => 'List Documents',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_document' => [
+                'module' => 'mod_document',
+                'role' => 'list',
+                'domain' => 'document',
+                'handler' => 'getDocument',
+                'description' => 'Get a single document record with all fields, including SEO metadata and the image reference.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'The document record id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Document',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_document' => [
+                'module' => 'mod_document',
+                'role' => 'add',
+                'domain' => 'document',
+                'handler' => 'createDocument',
+                'description' => 'Create a document record. Requires lang, name, keywords and description. The seo slug must be unique per language; it defaults to a slug generated from the name. The title defaults to the name. Status defaults to published. An optional image can be uploaded as {data_base64, mime} (jpeg, png, gif, webp; max 10 MB decoded), or set to null to leave the image empty.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Active site language code for the document (e.g. en, tr, ku).',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Document name (2-255 characters).',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'URL slug, unique per language. Defaults to a slug generated from the name.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'HTML title tag. Defaults to the document name.',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'Meta keywords (1-255 characters).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 500,
+                            'description' => 'Meta description (1-500 characters).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Publication status: y = published, n = draft. Defaults to published.',
+                        ],
+                        'image' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'data_base64' => [
+                                            'type' => 'string',
+                                            'description' => 'Base64-encoded image data (max 10 MB decoded).',
+                                        ],
+                                        'mime' => [
+                                            'type' => 'string',
+                                            'enum' => [
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/webp',
+                                            ],
+                                            'description' => 'Image MIME type.',
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'data_base64',
+                                        'mime',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'null',
+                                ],
+                            ],
+                            'description' => 'Image upload object {data_base64, mime}, or null to explicitly leave/remove the image. Omit to keep untouched.',
+                        ],
+                    ],
+                    'required' => [
+                        'lang',
+                        'name',
+                        'keywords',
+                        'description',
+                    ],
+                ],
+                'title' => 'Create Document',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_document' => [
+                'module' => 'mod_document',
+                'role' => 'edit',
+                'domain' => 'document',
+                'handler' => 'updateDocument',
+                'description' => 'Partially update a document record. Only provided fields change. The seo slug (if provided) must remain unique per language. Editing a document owned by another admin requires the moderate_edit role. The image argument accepts {data_base64, mime} to replace, null to remove, or can be omitted to keep the current image.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'The document record id.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Active site language code to move the document to (e.g. en, tr, ku).',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Document name (2-255 characters).',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'URL slug, unique per language.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'HTML title tag.',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 255,
+                            'description' => 'Meta keywords (1-255 characters).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 500,
+                            'description' => 'Meta description (1-500 characters).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Publication status: y = published, n = draft.',
+                        ],
+                        'image' => [
+                            'oneOf' => [
+                                [
+                                    'type' => 'object',
+                                    'properties' => [
+                                        'data_base64' => [
+                                            'type' => 'string',
+                                            'description' => 'Base64-encoded image data (max 10 MB decoded).',
+                                        ],
+                                        'mime' => [
+                                            'type' => 'string',
+                                            'enum' => [
+                                                'image/jpeg',
+                                                'image/png',
+                                                'image/gif',
+                                                'image/webp',
+                                            ],
+                                            'description' => 'Image MIME type.',
+                                        ],
+                                    ],
+                                    'required' => [
+                                        'data_base64',
+                                        'mime',
+                                    ],
+                                ],
+                                [
+                                    'type' => 'null',
+                                ],
+                            ],
+                            'description' => 'Image upload object {data_base64, mime} to replace the image, or null to remove it. Omit to keep the current image.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Document',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_document' => [
+                'module' => 'mod_document',
+                'role' => 'delete',
+                'domain' => 'document',
+                'handler' => 'deleteDocument',
+                'description' => 'Delete a document record. Related gallery and attachment (file) relations and the uploaded image files are cleaned up automatically. Deleting a document owned by another admin requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'The document record id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Document',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Image size pipeline mirroring the mod_document admin controller
      */
     private const DOCUMENT_IMAGE_SIZES = [

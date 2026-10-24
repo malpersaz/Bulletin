@@ -830,7 +830,7 @@ class mod_settings_mod extends indexMain
         $data = $this->db->toArray()[0] ?? [];
 
         $site_status = (!empty($data['site_status']) && $data['site_status'] === 'closed') ? 'closed' : 'open';
-        $defaultMsg = $this->lang['mod_settings']['default_maintenance_message'] ?? 'Malpera me nha ji bo weşanê amade dibe. Di demek kin de em dê bi we re bin.';
+        $defaultMsg = $this->lang['mod_settings']['default_maintenance_message'] ?? '';
         $maintenance_message = (isset($data['maintenance_message']) && trim($data['maintenance_message']) !== '') ? $data['maintenance_message'] : $defaultMsg;
 
         $this->_json_response([
@@ -858,7 +858,7 @@ class mod_settings_mod extends indexMain
         $new_status = (Req::post('site_status') === 'closed') ? 'closed' : 'open';
         $message = Req::post('maintenance_message');
         if (!is_string($message) || trim($message) === '') {
-            $message = $this->lang['mod_settings']['default_maintenance_message'] ?? 'Malpera me nha ji bo weşanê amade dibe. Di demek kin de em dê bi we re bin.';
+            $message = $this->lang['mod_settings']['default_maintenance_message'] ?? '';
         }
         $safeMessage = $this->db->quote($message);
 
@@ -3470,5 +3470,105 @@ class mod_settings_mod extends indexMain
             'status' => 'success',
             'message' => $this->lang['mod_settings']['messages']['success']['updated']
         ]);
+    }
+
+    public function google_settings()
+    {
+        if ($this->user->hasPermission('mod_settings', 'edit', $this->lang['mod_settings']['permission_errors']['settings_edit'], 1) === false) {
+            return false;
+        }
+
+        Run::import('management', '_index');
+
+        $dataDir = root_dir . 'data' . DS;
+        if (!is_dir($dataDir)) {
+            @mkdir($dataDir, 0755, true);
+        }
+        $settingsPath = $dataDir . 'google_settings.json';
+        $credentialsPath = $dataDir . 'credentials.json';
+
+        $csrfToken = (string) $this->session->get('google_settings_csrf');
+        if (strlen($csrfToken) !== 32) {
+            $csrfToken = bin2hex(random_bytes(16));
+            $this->session->set('google_settings_csrf', $csrfToken);
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $submittedCsrf = (string) ($_POST['csrf'] ?? '');
+            if ($submittedCsrf === '' || !hash_equals($csrfToken, $submittedCsrf)) {
+                $this->session->setFlash('error', $this->lang['mod_settings']['generic_error']);
+                Helper::redirect($this->site['saddress'] . 'mod_settings/google_settings', 0);
+                return;
+            }
+
+            $bucketName = trim((string) Req::Post_Safe('bucket_name'));
+            $geminiApiKey = trim((string) Req::Post_Safe('gemini_api_key'));
+
+            $settings = [
+                'bucket_name' => $bucketName,
+                'gemini_api_key' => $geminiApiKey,
+            ];
+            file_put_contents($settingsPath, json_encode($settings, JSON_PRETTY_PRINT));
+
+            if (isset($_FILES['credentials_file']) && $_FILES['credentials_file']['error'] === UPLOAD_ERR_OK) {
+                $tmpPath = $_FILES['credentials_file']['tmp_name'];
+                $content = file_get_contents($tmpPath);
+                $decoded = json_decode((string) $content, true);
+
+                if ($decoded && isset($decoded['private_key']) && isset($decoded['client_email'])) {
+                    file_put_contents($credentialsPath, $content);
+                } else {
+                    $this->session->setFlash('error', $this->lang['mod_settings']['json_invalid']);
+                    Helper::redirect($this->site['saddress'] . 'mod_settings/google_settings', 0);
+                    return;
+                }
+            }
+
+            $cacheDir = root_dir . 'cache' . DS;
+            $templatesCDir = root_dir . 'templates_c' . DS;
+            foreach ([$cacheDir, $templatesCDir] as $dir) {
+                if (is_dir($dir)) {
+                    $files = new RecursiveIteratorIterator(
+                        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+                        RecursiveIteratorIterator::CHILD_FIRST
+                    );
+                    foreach ($files as $fileinfo) {
+                        $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
+                        @$todo($fileinfo->getRealPath());
+                    }
+                }
+            }
+
+            $this->session->setFlash('success', $this->lang['mod_settings']['google']['settings_ok']);
+            Helper::redirect($this->site['saddress'] . 'mod_settings/google_settings', 0);
+            return;
+        }
+
+        $bucketName = '';
+        $geminiApiKey = '';
+
+        if (file_exists($settingsPath)) {
+            $settings = json_decode((string) file_get_contents($settingsPath), true);
+            $bucketName = $settings['bucket_name'] ?? '';
+            $geminiApiKey = $settings['gemini_api_key'] ?? '';
+        }
+
+        $hasCredentials = file_exists($credentialsPath);
+        $flashSuccess = $this->session->getFlash('success');
+        $flashError = $this->session->getFlash('error');
+
+        $this->site['title'] = $this->lang['mod_settings']['google_settings'];
+        $this->theme->set('site', $this->site);
+        $this->theme->set('google_settings_csrf', $csrfToken);
+        $this->theme->set('flash_success', $flashSuccess);
+        $this->theme->set('flash_error', $flashError);
+        $this->theme->set('bucket_name', $bucketName);
+        $this->theme->set('gemini_api_key', $geminiApiKey);
+        $this->theme->set('has_credentials', $hasCredentials);
+        $this->theme->set('cancel_url', $this->site['saddress'] . 'mod_user/panel');
+        $this->theme->set('cancel_label', $this->lang['mod_settings']['button']['back']);
+        $this->theme->set('submit_label', $this->lang['mod_settings']['save']);
+        $this->theme->set('form_id', 'googleSettingsForm');
+        $this->theme->tpl('mod_settings/google_settings');
     }
 }

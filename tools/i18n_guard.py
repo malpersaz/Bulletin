@@ -63,6 +63,7 @@ DEV_TERMS = {
     "mindset", "quantification", "ensurance", "offboarding", "onboarding", "tokenizing", "tokenization",
     "lightbox", "glightbox", "accordion", "tooltip", "breadcrumb", "breadcrumbs", "breakpoint", "scrim",
     "iframe", "iframes", "swiper", "dbuilder", "llms", "akm", "akmsoftware", "amed", "amedresize", "rmodel", "cdn", "stoon", "bento",
+    "diag", "cimd", "ssrf", "goog", "inst", "instantiate", "dsn", "doesn", "gsc", "conf", "ro",
     "rgb", "rgba", "hsl", "hsla", "pk", "ai", "tinymce", "mce", "nfc", "enum", "qtype",
     "ttl", "proj", "vars", "reqs", "accs", "dbrefs", "rownum",
     "kb", "mb", "gb", "tb", "fps", "hd", "sd",

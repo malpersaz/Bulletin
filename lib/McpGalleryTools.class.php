@@ -14,6 +14,414 @@
 class McpGalleryTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_galleries' => [
+                'module' => 'mod_gallery',
+                'role' => 'list',
+                'domain' => 'gallery',
+                'handler' => 'listGalleries',
+                'description' => 'List galleries as (mod_name, vid) groups with image counts and the last three preview image urls. Only modules registered in the gallery bridge are listed. Optional filters: mod_name, vid, and a search term matched against the module name and record id.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Filter galleries by target module name (for example mod_news).',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Filter galleries by target record id.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against the module name and record id.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'default' => 10,
+                            'maximum' => 50,
+                            'description' => 'Maximum number of galleries to return (1-50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Number of galleries to skip.',
+                        ],
+                    ],
+                    'required' => [
+                    ],
+                ],
+                'title' => 'List Galleries',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_gallery' => [
+                'module' => 'mod_gallery',
+                'role' => 'list',
+                'domain' => 'gallery',
+                'handler' => 'getGallery',
+                'description' => 'Get one gallery with all of its image rows (id, name, url, created_at, mod_name, vid, user_id), the resolved record label, and the image count. The target module must be registered for galleries and the target record must exist.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Target module name that owns the gallery (for example mod_news).',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Target record id that owns the gallery.',
+                        ],
+                    ],
+                    'required' => [
+                        'mod_name',
+                        'vid',
+                    ],
+                ],
+                'title' => 'Get Gallery',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'upload_gallery_image' => [
+                'module' => 'mod_gallery',
+                'role' => 'edit',
+                'domain' => 'gallery',
+                'handler' => 'uploadGalleryImage',
+                'description' => 'Upload a new image into a gallery. Stores an original copy (max width 1920) and a thumb (max width 500) under static/mod_gallery/{mod_name}/ and creates the image row. The display name defaults to the target record label; the target module must be registered for galleries and the target record must exist.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Target module name that owns the gallery.',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Target record id that owns the gallery.',
+                        ],
+                        'image' => [
+                            'type' => 'object',
+                            'description' => 'The image file to upload.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                    'description' => 'Image MIME type.',
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 250,
+                            'description' => 'Optional display name for the image. Defaults to the target record label.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Optional creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                    ],
+                    'required' => [
+                        'mod_name',
+                        'vid',
+                        'image',
+                    ],
+                ],
+                'title' => 'Upload Gallery Image',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'rename_gallery_image' => [
+                'module' => 'mod_gallery',
+                'role' => 'edit',
+                'domain' => 'gallery',
+                'handler' => 'renameGalleryImage',
+                'description' => 'Rename a gallery image row. Requires the gallery role on the target module that owns the image.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Gallery image record id.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 250,
+                            'description' => 'New display name for the image.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                        'name',
+                    ],
+                ],
+                'title' => 'Rename Gallery Image',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_gallery_image' => [
+                'module' => 'mod_gallery',
+                'role' => 'delete',
+                'domain' => 'gallery',
+                'handler' => 'deleteGalleryImage',
+                'description' => 'Delete one gallery image row together with its generated original and thumb files.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Gallery image record id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Gallery Image',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'clear_gallery' => [
+                'module' => 'mod_gallery',
+                'role' => 'delete',
+                'domain' => 'gallery',
+                'handler' => 'clearGallery',
+                'description' => 'Remove every image of one gallery (all images attached to a target record) together with their generated files. Mirrors the admin bulk delete.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Target module name that owns the gallery.',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Target record id that owns the gallery.',
+                        ],
+                    ],
+                    'required' => [
+                        'mod_name',
+                        'vid',
+                    ],
+                ],
+                'title' => 'Clear Gallery',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_gallery_modules' => [
+                'module' => 'mod_gallery_mod',
+                'role' => 'list',
+                'domain' => 'gallery',
+                'handler' => 'listGalleryModules',
+                'description' => 'List the modules registered as gallery-capable in the gallery bridge (id, name, mod_name, mod_key, mod_value), ordered by id descending.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against name, mod_name, mod_key, and mod_value.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'default' => 10,
+                            'maximum' => 50,
+                            'description' => 'Maximum number of registrations to return (1-50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Number of registrations to skip.',
+                        ],
+                    ],
+                    'required' => [
+                    ],
+                ],
+                'title' => 'List Gallery Modules',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_gallery_module' => [
+                'module' => 'mod_gallery_mod',
+                'role' => 'list',
+                'domain' => 'gallery',
+                'handler' => 'getGalleryModule',
+                'description' => 'Get a single gallery module registration with all fields.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Gallery module registration id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Gallery Module',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_gallery_module' => [
+                'module' => 'mod_gallery_mod',
+                'role' => 'add',
+                'domain' => 'gallery',
+                'handler' => 'createGalleryModule',
+                'description' => 'Register a module as gallery-capable. Required: name, mod_name, mod_key, mod_value (2-255 characters each). mod_name must be a valid module identifier and must not already be registered. mod_key is the target table key column (usually id) and mod_value the record column used to resolve gallery display labels (usually name).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Display name of the registration (2-255 characters).',
+                        ],
+                        'mod_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Module name to register (2-255 characters, lowercase identifier).',
+                        ],
+                        'mod_key' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Key column of the target module (2-255 characters, usually id).',
+                        ],
+                        'mod_value' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Label column of the target module (2-255 characters, usually name).',
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'mod_name',
+                        'mod_key',
+                        'mod_value',
+                    ],
+                ],
+                'title' => 'Create Gallery Module',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_gallery_module' => [
+                'module' => 'mod_gallery_mod',
+                'role' => 'edit',
+                'domain' => 'gallery',
+                'handler' => 'updateGalleryModule',
+                'description' => 'Partially update a gallery module registration. Only provided fields change; each must remain 2-255 characters. Editing a registration owned by another admin requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Gallery module registration id.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New display name (2-255 characters).',
+                        ],
+                        'mod_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New module name (2-255 characters, must not collide with another registration).',
+                        ],
+                        'mod_key' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New key column (2-255 characters).',
+                        ],
+                        'mod_value' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New label column (2-255 characters).',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Gallery Module',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_gallery_module' => [
+                'module' => 'mod_gallery_mod',
+                'role' => 'delete',
+                'domain' => 'gallery',
+                'handler' => 'deleteGalleryModule',
+                'description' => 'Delete a gallery module registration and remove every image attached to that module, including all generated image files. Deleting a registration owned by another admin requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Gallery module registration id.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Gallery Module',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Image size map used by the admin gallery uploader, keyed by the target
      * module: an original copy (max width 1920) and a thumb (max width 500).
      */
@@ -548,7 +956,7 @@ class McpGalleryTools extends McpCrudToolsBase
         }
 
         $db = Load::lib('Database');
-        $db->fetch_array('SELECT mod_name, vid FROM mod_gallery WHERE 1' . $where . ' GROUP BY mod_name, vid ORDER BY id DESC');
+        $db->fetch_array('SELECT mod_name, vid FROM mod_gallery WHERE 1' . $where . ' GROUP BY mod_name, vid ORDER BY MAX(id) DESC');
         $rows = $db->toArray();
         if (!is_array($rows)) {
             return [];

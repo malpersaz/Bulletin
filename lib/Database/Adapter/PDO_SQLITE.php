@@ -313,6 +313,17 @@ class Adapter_PDO_SQLITE
     }
 
     /**
+     * Check if in transaction
+     *
+     * @access public
+     * @return boolean
+     */
+    public function in_transaction()
+    {
+        return $this->_con ? $this->_con->inTransaction() : false;
+    }
+
+    /**
      * Destructor - Close connection
      */
     public function __destruct()

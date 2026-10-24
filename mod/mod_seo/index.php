@@ -162,7 +162,7 @@ class mod_seo_mod extends indexMain
         if (Req::is_Post('save')) {
             $inputDomain = trim((string) Req::Post_Safe('property_url'));
             
-            // Clean and normalize domain name (e.g. https://saruhankurs.com/ -> saruhankurs.com)
+            // Clean and normalize domain name (e.g. https://example.com/ -> example.com)
             $cleanDomain = preg_replace('#^https?://#i', '', $inputDomain);
             $cleanDomain = preg_replace('#^sc-domain:#i', '', $cleanDomain);
             $cleanDomain = trim($cleanDomain, " /\t\n\r\0\x0B");
@@ -404,90 +404,7 @@ class mod_seo_mod extends indexMain
 
     public function google_settings()
     {
-        // Check settings permission
-        if ($this->user->hasPermission('mod_settings', 'edit', $this->lang['mod_seo']['role_errors']['settings'], 1) === false) {
-            return false;
-        }
-
-        Run::import('management', '_index');
-
-        $dataDir = root_dir . 'data' . DS;
-        $settingsPath = $dataDir . 'google_settings.json';
-        $credentialsPath = $dataDir . 'credentials.json';
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $bucketName = trim((string) Req::Post_Safe('bucket_name'));
-            $geminiApiKey = trim((string) Req::Post_Safe('gemini_api_key'));
-
-            // Save google_settings.json
-            $settings = [
-                'bucket_name' => $bucketName,
-                'gemini_api_key' => $geminiApiKey
-            ];
-            file_put_contents($settingsPath, json_encode($settings, JSON_PRETTY_PRINT));
-
-            // Handle credentials file upload
-            if (isset($_FILES['credentials_file']) && $_FILES['credentials_file']['error'] === UPLOAD_ERR_OK) {
-                $tmpPath = $_FILES['credentials_file']['tmp_name'];
-                $content = file_get_contents($tmpPath);
-                $decoded = json_decode($content, true);
-
-                if ($decoded && isset($decoded['private_key']) && isset($decoded['client_email'])) {
-                    file_put_contents($credentialsPath, $content);
-                } else {
-                    $this->session->setFlash('error', $this->lang['mod_seo']['messages']['json_invalid']);
-                    Helper::redirect($this->site['saddress'] . 'mod_seo/google_settings', 0);
-                    return;
-                }
-            }
-
-            // Automatically clear Twig template caches so end-users see updates instantly without manual refresh
-            $cacheDir = root_dir . 'cache' . DS;
-            $templatesCDir = root_dir . 'templates_c' . DS;
-            foreach ([$cacheDir, $templatesCDir] as $dir) {
-                if (is_dir($dir)) {
-                    $files = new RecursiveIteratorIterator(
-                        new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
-                        RecursiveIteratorIterator::CHILD_FIRST
-                    );
-                    foreach ($files as $fileinfo) {
-                        $todo = ($fileinfo->isDir() ? 'rmdir' : 'unlink');
-                        @$todo($fileinfo->getRealPath());
-                    }
-                }
-            }
-
-            $this->session->setFlash('success', $this->lang['mod_seo']['google']['settings_ok']);
-            Helper::redirect($this->site['saddress'] . 'mod_seo/google_settings', 0);
-            return;
-        }
-
-        $bucketName = '';
-        $geminiApiKey = '';
-
-        if (file_exists($settingsPath)) {
-            $settings = json_decode(file_get_contents($settingsPath), true);
-            $bucketName = $settings['bucket_name'] ?? '';
-            $geminiApiKey = $settings['gemini_api_key'] ?? '';
-        }
-
-        $hasCredentials = file_exists($credentialsPath);
-        $flashSuccess = $this->session->getFlash('success');
-        $flashError = $this->session->getFlash('error');
-
-        $this->site['title'] = $this->lang['mod_seo']['google_settings'];
-        $this->theme->set('site', $this->site);
-        $this->theme->set('flash_success', $flashSuccess);
-        $this->theme->set('flash_error', $flashError);
-        $this->theme->set('bucket_name', $bucketName);
-        $this->theme->set('gemini_api_key', $geminiApiKey);
-        $this->theme->set('has_credentials', $hasCredentials);
-        // Standard fixed bottom bar variables
-        $this->theme->set('cancel_url', $this->site['saddress'] . 'mod_user/panel');
-        $this->theme->set('cancel_label', $this->lang['mod_seo']['button']['back']);
-        $this->theme->set('submit_label', $this->lang['mod_seo']['button']['save']);
-        $this->theme->set('form_id', 'googleSettingsForm');
-        $this->theme->tpl('mod_seo/google_settings');
+        Helper::redirect($this->site['saddress'] . 'mod_settings/google_settings', 0);
     }
 
     protected function jsonResponse(array $payload)

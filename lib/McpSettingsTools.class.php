@@ -11,6 +11,704 @@
 
 class McpSettingsTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_site_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'listSiteSettings',
+                'description' => 'List site settings rows (one per language) enriched with lang_status (y/n) and is_default_lang (y/n) from the lang table, plus top-level active_languages and default_language.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'active_only' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'When y, only return settings rows for languages that are active in the lang table (lang.status = y).',
+                        ],
+                    ],
+                ],
+                'title' => 'List Site Settings',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_site_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'getSiteSettings',
+                'description' => 'Get the full site settings row for one language, enriched with lang_status (y/n), is_default_lang (y/n), active_languages, and default_language.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of the settings row (e.g. ku, en, tr).',
+                        ],
+                    ],
+                    'required' => [
+                        'lang',
+                    ],
+                ],
+                'title' => 'Get Site Settings',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'update_site_settings' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'updateSiteSettings',
+                'description' => 'Partially update the site settings row for one language. Editable fields: title, site_name, description, owner_name, phone, whatsapp, email, office_address, work_address, map_embed_code, google_search_console, google_analytics, meta_tags, cookie_policy_content, established_year, show_logo, logo_type, workforce and offices counters, plus the global site_status (open/closed), maintenance_message and maintenance_retry_after (synchronized across all languages). Logo/favicon asset paths are managed through the admin upload UI and are intentionally not editable here.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of the settings row to update.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Browser tab title.',
+                        ],
+                        'site_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Public site name.',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'description' => 'Site meta description.',
+                        ],
+                        'owner_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Site owner name.',
+                        ],
+                        'phone' => [
+                            'type' => 'string',
+                            'maxLength' => 50,
+                            'description' => 'Contact phone number.',
+                        ],
+                        'whatsapp' => [
+                            'type' => 'string',
+                            'maxLength' => 50,
+                            'description' => 'WhatsApp number.',
+                        ],
+                        'email' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Contact e-mail address.',
+                        ],
+                        'office_address' => [
+                            'type' => 'string',
+                            'description' => 'Office address text.',
+                        ],
+                        'work_address' => [
+                            'type' => 'string',
+                            'description' => 'Workshop address text.',
+                        ],
+                        'map_embed_code' => [
+                            'type' => 'string',
+                            'description' => 'Map embed HTML snippet.',
+                        ],
+                        'google_search_console' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Google Search Console verification value.',
+                        ],
+                        'google_analytics' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Google Analytics measurement ID.',
+                        ],
+                        'meta_tags' => [
+                            'type' => 'string',
+                            'description' => 'Additional meta tags HTML.',
+                        ],
+                        'cookie_policy_content' => [
+                            'type' => 'string',
+                            'description' => 'Cookie policy page content (HTML).',
+                        ],
+                        'established_year' => [
+                            'type' => 'string',
+                            'description' => '4-digit founding year, or empty.',
+                        ],
+                        'show_logo' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Show the site logo. Synchronized across all languages.',
+                        ],
+                        'logo_type' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'square',
+                                'rectangle',
+                                'square_name',
+                                'rectangle_name',
+                                'name_only',
+                            ],
+                            'description' => 'Logo layout type. Synchronized across all languages.',
+                        ],
+                        'stat_workforce' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Workforce counter.',
+                        ],
+                        'stat_offices' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Offices counter.',
+                        ],
+                        'site_status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'open',
+                                'closed',
+                            ],
+                            'description' => 'Site availability. Synchronized across all languages.',
+                        ],
+                        'maintenance_message' => [
+                            'type' => 'string',
+                            'description' => 'Maintenance page message. Synchronized across all languages.',
+                        ],
+                        'maintenance_retry_after' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Retry-after seconds for the maintenance page. Synchronized across all languages.',
+                        ],
+                    ],
+                    'required' => [
+                        'lang',
+                    ],
+                ],
+                'title' => 'Update Site Settings',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_social_links' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'listSocialLinks',
+                'description' => 'List the social media links ordered by display order (platform, url, icon, active state).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => (object) [],
+                ],
+                'title' => 'List Social Links',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'update_social_link' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'updateSocialLink',
+                'description' => 'Update an existing social link (url, is_active, display_order). Social links are seeded at install; creating new ones is an admin UI concern and not available here.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Social link record ID.',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                            'description' => 'New profile URL.',
+                        ],
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Active state.',
+                        ],
+                        'display_order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Display order.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Social Link',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_cookie_declarations' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'listCookieDeclarations',
+                'description' => 'List cookie declarations with optional language and category filters.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code.',
+                        ],
+                        'category' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'necessary',
+                                'functional',
+                                'analytics',
+                                'marketing',
+                            ],
+                            'description' => 'Filter by cookie category.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Cookie Declarations',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_cookie_declaration' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'createCookieDeclaration',
+                'description' => 'Create a cookie declaration. Required: lang and cookie_name. Category defaults to necessary.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language.',
+                        ],
+                        'cookie_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Cookie name (1-255 characters).',
+                        ],
+                        'category' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'necessary',
+                                'functional',
+                                'analytics',
+                                'marketing',
+                            ],
+                            'default' => 'necessary',
+                            'description' => 'Cookie category.',
+                        ],
+                        'provider' => [
+                            'type' => 'string',
+                            'description' => 'Cookie provider.',
+                        ],
+                        'purpose' => [
+                            'type' => 'string',
+                            'description' => 'Cookie purpose description.',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'description' => 'Cookie lifetime description.',
+                        ],
+                        'display_order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Display order.',
+                        ],
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Active state.',
+                        ],
+                    ],
+                    'required' => [
+                        'lang',
+                        'cookie_name',
+                    ],
+                ],
+                'title' => 'Create Cookie Declaration',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_cookie_declaration' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'updateCookieDeclaration',
+                'description' => 'Partially update a cookie declaration. Only provided fields change.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Cookie declaration record ID.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.',
+                        ],
+                        'cookie_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New cookie name.',
+                        ],
+                        'category' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'necessary',
+                                'functional',
+                                'analytics',
+                                'marketing',
+                            ],
+                            'description' => 'New cookie category.',
+                        ],
+                        'provider' => [
+                            'type' => 'string',
+                            'description' => 'New provider.',
+                        ],
+                        'purpose' => [
+                            'type' => 'string',
+                            'description' => 'New purpose description.',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'description' => 'New duration description.',
+                        ],
+                        'display_order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'New display order.',
+                        ],
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New active state.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Cookie Declaration',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_cookie_declaration' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'deleteCookieDeclaration',
+                'description' => 'Delete a cookie declaration permanently.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Cookie declaration record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Cookie Declaration',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_affiliations' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'listAffiliations',
+                'description' => 'List institutional affiliations and partnerships with optional status filtering and pagination.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by active status.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Substring search in institution name or URL.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 100,
+                            'default' => 20,
+                            'description' => 'Number of items to return.',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Affiliations',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_affiliation' => [
+                'module' => 'mod_settings',
+                'role' => 'list',
+                'domain' => 'settings',
+                'handler' => 'getAffiliation',
+                'description' => 'Get a single institutional affiliation record by ID.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'Affiliation ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Affiliation',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_affiliation' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'createAffiliation',
+                'description' => 'Create a new institutional affiliation or partnership entry.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 150,
+                            'description' => 'Institution or partner name.',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 500,
+                            'description' => 'Destination URL link.',
+                        ],
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Display status in marquee band.',
+                        ],
+                        'display_order' => [
+                            'type' => 'integer',
+                            'description' => 'Sort order (defaults to next order).',
+                        ],
+                        'logo' => [
+                            'type' => 'object',
+                            'description' => 'Logo file upload (base64 encoded).',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64 encoded image data.',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/webp',
+                                        'image/svg+xml',
+                                    ],
+                                    'description' => 'MIME type.',
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'url',
+                    ],
+                ],
+                'title' => 'Create Affiliation',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_affiliation' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'updateAffiliation',
+                'description' => 'Partially update an institutional affiliation record.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'Affiliation ID to update.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 150,
+                            'description' => 'Institution name.',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                            'minLength' => 1,
+                            'maxLength' => 500,
+                            'description' => 'URL link.',
+                        ],
+                        'is_active' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Active status.',
+                        ],
+                        'display_order' => [
+                            'type' => 'integer',
+                            'description' => 'Sort order.',
+                        ],
+                        'logo' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a new logo or null to remove existing.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64 encoded image data.',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/webp',
+                                        'image/svg+xml',
+                                    ],
+                                    'description' => 'MIME type.',
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Affiliation',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_affiliation' => [
+                'module' => 'mod_settings',
+                'role' => 'edit',
+                'domain' => 'settings',
+                'handler' => 'deleteAffiliation',
+                'description' => 'Delete an institutional affiliation record and cleans up logo files.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'Affiliation ID to delete.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Affiliation',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     private const SETTINGS_STRING_FIELDS = [
         'title' => 255,
         'site_name' => 255,
@@ -43,22 +741,47 @@ class McpSettingsTools extends McpCrudToolsBase
     // ------------------------------------------------------------------
 
     /**
-     * Lists site settings rows (one per language)
+     * Lists site settings rows (one per language) enriched with active language status
      */
     public function listSiteSettings(array $args): array
     {
+        $langMeta = $this->getSiteLanguageMap();
+        $activeOnly = isset($args['active_only']) && (string) $args['active_only'] === 'y';
+
         $model = $this->freshModel('mod_settings');
         if (isset($args['lang']) && trim((string) $args['lang']) !== '') {
             $model->where_lang(trim((string) $args['lang']));
         }
         $model->order('id', 'ASC')->getResult(true, true);
         $items = $model->toArray();
+        $rows = is_array($items) ? $items : [];
 
-        return ['items' => is_array($items) ? $items : []];
+        $enriched = [];
+        foreach ($rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $rowLang = (string) ($row['lang'] ?? '');
+            $info = $langMeta['map'][$rowLang] ?? null;
+            $row['lang_name'] = $info['name'] ?? $rowLang;
+            $row['lang_status'] = $info['status'] ?? 'n';
+            $row['is_default_lang'] = $info['is_default'] ?? 'n';
+
+            if ($activeOnly && $row['lang_status'] !== 'y') {
+                continue;
+            }
+            $enriched[] = $row;
+        }
+
+        return [
+            'items' => $enriched,
+            'active_languages' => $langMeta['active_languages'],
+            'default_language' => $langMeta['default_language'],
+        ];
     }
 
     /**
-     * Returns a single site settings row
+     * Returns a single site settings row enriched with active language status
      */
     public function getSiteSettings(array $args): array
     {
@@ -79,7 +802,17 @@ class McpSettingsTools extends McpCrudToolsBase
             throw new McpToolException("Site settings row for language '{$lang}' could not be read.");
         }
 
-        return ['item' => $row];
+        $langMeta = $this->getSiteLanguageMap();
+        $info = $langMeta['map'][$lang] ?? null;
+        $row['lang_name'] = $info['name'] ?? $lang;
+        $row['lang_status'] = $info['status'] ?? 'n';
+        $row['is_default_lang'] = $info['is_default'] ?? 'n';
+
+        return [
+            'item' => $row,
+            'active_languages' => $langMeta['active_languages'],
+            'default_language' => $langMeta['default_language'],
+        ];
     }
 
     /**

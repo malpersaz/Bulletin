@@ -14,10 +14,12 @@ In this repository (`amedbulten.com`), `kevanger` drafts news articles exclusive
 
 ## Sequence
 
-### 1. Pre-Flight Verification of MCP Connectivity
+### 1. Pre-Flight Verification of MCP Connectivity & Active Language Gate
 - Verify that the `amedbulten.com` (`http://localhost:8080/mcp.php`) MCP bridge is functional and authenticated.
+- Call `list_site_settings(active_only='y')` to inspect `active_languages`, `default_language`, and `lang_status === 'y'`. Never infer active site languages from `site_status` or unverified category rows (`lang_status === 'n'`).
+- Strictly separate **Conversational Language** (Kurmanji Kurdish with the user per `AGENTS.md` Rule 8) from **Target CMS Record Language (`record.lang`)**: every database field (`name`, `summary`, `content`, `title`, `description`, `keywords`, `seo`, and `mod_faq` `question`/`answer`) MUST be written 100% in the active target `record.lang`.
 - Perform a lightweight liveness check (e.g. `list_news_categories` with `lang: "tr"`).
-- If connection fails or credentials are missing, report immediately and halt before drafting.
+- If connection fails, credentials are missing, or the target language is inactive (`lang_status === 'n'`), report immediately in Kurmanji Kurdish and halt before drafting.
 
 ### 2. Research Dossier Intake (`kevkolin` & `kevrast` Stage 1)
 - Receive the verified Research Dossier produced by `kevkolin` and pre-verified by `kevrast` (Stage 1).
@@ -48,13 +50,14 @@ In this repository (`amedbulten.com`), `kevanger` drafts news articles exclusive
   - Optimize as WebP (under 100 KB) and attach via MCP.
   - Add attribution at the bottom: `<p><strong>Fotoğraf: Amed Bülten / Temsili</strong></p>`.
 
-### 5. SEO & Semantic HTML Gate (`kevseo`)
+### 5. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
 - Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.
 - Execute the `kevseo` auditor script against the drafted article, deck summary, and headline:
   ```bash
   python3 .agents/skills/kevseo/scripts/audit_seo.py --content "$DRAFT_HTML" --summary "$SUMMARY" --headline "$HEADLINE" --seo "$SEO_SLUG"
   ```
-- Address any flagged HTML architecture issues, deck length violations (must be 90–120 chars), or invalid URL slugs before proceeding.
+- After staging or updating via MCP, verify the persisted database record against the 100-point rubric (`tools/audit_content_seo.py --module mod_news --id <id>`) to confirm active language status, zero cross-language prose contamination, metadata synchronization, and strict code separation.
+- Address any flagged HTML architecture issues, deck length violations (must be 90–120 chars; 90–160 chars accepted by MCP SERP parity), or invalid URL slugs before proceeding.
 
 ### 6. Fact-Checking & Anti-Hallucination Gate (`kevrast` Stage 2)
 - Execute `kevrast` auditor script against the drafted article:

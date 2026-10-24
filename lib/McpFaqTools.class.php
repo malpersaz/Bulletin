@@ -7,6 +7,243 @@
 
 class McpFaqTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_faqs' => [
+                'module' => 'mod_faq',
+                'role' => 'list',
+                'domain' => 'faq',
+                'handler' => 'listFaqs',
+                'description' => 'List FAQ records with optional filters, ordered by sort_order then id. Returns paginated items (id, lang, mod_name, vid, question, sort_order, status, created_at, updated_at) plus the total count. The answer body is only returned by get_faq.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Filter by host module name (e.g. mod_page). FAQ records are attached to records of host modules registered in mod_faq_mod.',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Filter by host record ID the FAQ items are attached to.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by publish status: y (published) or n (draft).',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against the question text.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List FAQs',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_faq' => [
+                'module' => 'mod_faq',
+                'role' => 'list',
+                'domain' => 'faq',
+                'handler' => 'getFaq',
+                'description' => 'Get a single FAQ record with all fields, including the full answer.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'FAQ record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get FAQ',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_faq' => [
+                'module' => 'mod_faq',
+                'role' => 'add',
+                'domain' => 'faq',
+                'handler' => 'createFaq',
+                'description' => 'Create a FAQ record attached to a host module record. The host module must be registered in mod_faq_mod and the host record must exist. Questions are unique per host entity and language (case-insensitive); each entity and language accepts at most 25 questions. Editing a record owned by another admin requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Host module name that owns the entity (must be registered in mod_faq_mod, e.g. mod_page).',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'ID of the existing host module record the FAQ is attached to.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'question' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Question text (1-255 characters, unique per entity and language).',
+                        ],
+                        'answer' => [
+                            'type' => 'string',
+                            'maxLength' => 5000,
+                            'description' => 'Answer text (1-5000 characters).',
+                        ],
+                        'sort_order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'Display order among the entity\'s FAQ items. Defaults to the last position.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Publish status: y (published) or n (draft).',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                    ],
+                    'required' => [
+                        'mod_name',
+                        'vid',
+                        'lang',
+                        'question',
+                        'answer',
+                    ],
+                ],
+                'title' => 'Create FAQ',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_faq' => [
+                'module' => 'mod_faq',
+                'role' => 'edit',
+                'domain' => 'faq',
+                'handler' => 'updateFaq',
+                'description' => 'Partially update a FAQ record. Only provided fields change. The host entity (mod_name, vid) is immutable. Questions must remain unique per host entity and language (case-insensitive). Editing a record owned by another admin requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'FAQ record ID.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'question' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New question text (1-255 characters, unique per entity and language).',
+                        ],
+                        'answer' => [
+                            'type' => 'string',
+                            'maxLength' => 5000,
+                            'description' => 'New answer text (1-5000 characters).',
+                        ],
+                        'sort_order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'New display order among the entity\'s FAQ items.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New publish status: y (published) or n (draft).',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update FAQ',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_faq' => [
+                'module' => 'mod_faq',
+                'role' => 'delete',
+                'domain' => 'faq',
+                'handler' => 'deleteFaq',
+                'description' => 'Delete a FAQ record. Deleting a record owned by another admin requires the moderate_delete role. No bridge relations exist between FAQ records and the host modules, so no cleanup is required.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'FAQ record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete FAQ',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     private const FAQ_MODULE = 'mod_faq';
     private const FAQ_MAX_PER_ENTITY = 25;
     private const FAQ_QUESTION_MAX = 255;
@@ -76,6 +313,7 @@ class McpFaqTools extends McpCrudToolsBase
         if ($answer === '' || mb_strlen($answer, 'UTF-8') > self::FAQ_ANSWER_MAX) {
             throw new McpToolException("Field 'answer' is required (1-" . self::FAQ_ANSWER_MAX . " characters).");
         }
+        $this->assertContentMatchesLang($lang, $question, '', $answer);
 
         $this->assertQuestionUnique($modName, (int) $vid, $lang, $question, 0);
         $this->assertEntityCeiling($modName, (int) $vid, $lang);
@@ -155,6 +393,7 @@ class McpFaqTools extends McpCrudToolsBase
         }
 
         $model->lang = $lang;
+        $this->assertContentMatchesLang($lang, (string) $model->question, '', (string) $model->answer);
 
         $model->updated_at = date('Y-m-d H:i:s');
 

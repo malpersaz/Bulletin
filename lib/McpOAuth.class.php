@@ -153,12 +153,18 @@ class McpOAuth
      */
     public static function logDiag(string $message): void
     {
-        $line = '[' . date('Y-m-d H:i:s') . '] ' . $message . "\n";
-        foreach ([root_dir . 'log' . DS . 'oauth-debug.log', sys_get_temp_dir() . DS . 'oauth-debug.log'] as $path) {
-            if (@file_put_contents($path, $line, FILE_APPEND | LOCK_EX) !== false) {
-                return;
-            }
+        $mcpConfig = Registry::get('mcp_config') ?? [];
+        if (empty($mcpConfig['debug_oauth']) && getenv('MCP_DEBUG_OAUTH') !== '1') {
+            return;
         }
+
+        $logDir = root_dir . 'log';
+        if (!is_dir($logDir)) {
+            @mkdir($logDir, 0750, true);
+        }
+        $logPath = $logDir . DS . 'oauth-debug.log';
+        $line = '[' . date('Y-m-d H:i:s') . '] ' . $message . "\n";
+        @file_put_contents($logPath, $line, FILE_APPEND | LOCK_EX);
     }
 
 
@@ -201,8 +207,6 @@ class McpOAuth
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');
         header('Referrer-Policy: no-referrer');
-
-        self::ensureTables();
 
         switch ($this->resolveRoute()) {
             case 'protected_resource':
@@ -270,6 +274,13 @@ class McpOAuth
             return;
         }
 
+        require_once __DIR__ . '/McpAuditLogger.class.php';
+        $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
+        if (!McpAuditLogger::checkRateLimit('oauth', 'ip_' . $ip, 30, 'oauth_register')) {
+            $this->sendJson(['error' => 'temporarily_unavailable', 'error_description' => 'Rate limit exceeded for client registration. Please try again later.'], 429);
+            return;
+        }
+
         $payload = json_decode((string) file_get_contents('php://input'), true);
         if (!is_array($payload)) {
             $payload = $_POST;
@@ -319,6 +330,15 @@ class McpOAuth
             $this->sendJson(['error' => 'server_error', 'error_description' => 'Client could not be persisted.'], 500);
             return;
         }
+
+        McpAuditLogger::log([
+            'caller_type' => 'oauth',
+            'caller_id' => 'ip_' . $ip,
+            'ip_address' => $ip,
+            'tool_name' => 'oauth_register',
+            'status_code' => 201,
+            'is_error' => 0,
+        ]);
 
         $this->sendJson([
             'client_id' => $model->client_id,
@@ -374,10 +394,25 @@ class McpOAuth
         $action = (string) ($_POST['oauth_action'] ?? '');
 
         if ($action === 'login') {
+            require_once __DIR__ . '/McpAuditLogger.class.php';
+            $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
+            if (!McpAuditLogger::checkRateLimit('oauth', 'ip_' . $ip, 20, 'oauth_login_failed')) {
+                $this->renderAuthorizePage($params, $client, $redirectUri, $resource, 'Too many failed login attempts. Please wait a minute and try again.');
+                return;
+            }
+
             $username = trim((string) ($_POST['username'] ?? ''));
             $password = (string) ($_POST['password'] ?? '');
             $user = Load::model('mod_user.user');
             if (!$user->login($username, $password)) {
+                McpAuditLogger::log([
+                    'caller_type' => 'oauth',
+                    'caller_id' => 'ip_' . $ip,
+                    'ip_address' => $ip,
+                    'tool_name' => 'oauth_login_failed',
+                    'status_code' => 401,
+                    'is_error' => 1,
+                ]);
                 $this->renderAuthorizePage($params, $client, $redirectUri, $resource, 'Invalid username or password.');
                 return;
             }
@@ -548,7 +583,7 @@ class McpOAuth
 
         return [
             'client_id' => $clientId,
-            'client_name' => (string) ($document['client_name'] ?? 'MCP client'),
+            'client_name' => !empty($document['client_name']) ? (string) $document['client_name'] : $clientId,
             'redirect_uris' => implode("\n", array_map('strval', $document['redirect_uris'])),
             'status' => 'y',
         ];
@@ -581,6 +616,13 @@ class McpOAuth
             return;
         }
 
+        require_once __DIR__ . '/McpAuditLogger.class.php';
+        $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
+        if (!McpAuditLogger::checkRateLimit('oauth', 'ip_' . $ip, 60, 'oauth_token')) {
+            $this->sendJson(['error' => 'temporarily_unavailable', 'error_description' => 'Rate limit exceeded for token exchange. Please try again later.'], 429);
+            return;
+        }
+
         $grantType = (string) ($_POST['grant_type'] ?? '');
         self::logDiag('token request: grant=' . $grantType . ' fields=' . implode(',', array_keys($_POST)) . ' client_id=' . (string) ($_POST['client_id'] ?? '') . ' resource=' . (string) ($_POST['resource'] ?? ''));
         try {
@@ -589,19 +631,51 @@ class McpOAuth
             } elseif ($grantType === 'refresh_token') {
                 $response = $this->grantRefreshToken();
             } else {
+                McpAuditLogger::log([
+                    'caller_type' => 'oauth',
+                    'caller_id' => 'ip_' . $ip,
+                    'ip_address' => $ip,
+                    'tool_name' => 'oauth_token',
+                    'status_code' => 400,
+                    'is_error' => 1,
+                ]);
                 $this->sendJson(['error' => 'unsupported_grant_type', 'error_description' => 'Supported grants: authorization_code, refresh_token.'], 400);
                 return;
             }
         } catch (OAuthTokenException $e) {
             self::logDiag('token rejection: ' . $e->getOAuthError() . ' :: ' . $e->getMessage());
+            McpAuditLogger::log([
+                'caller_type' => 'oauth',
+                'caller_id' => 'ip_' . $ip,
+                'ip_address' => $ip,
+                'tool_name' => 'oauth_token',
+                'status_code' => 400,
+                'is_error' => 1,
+            ]);
             $this->sendJson(['error' => $e->getOAuthError(), 'error_description' => $e->getMessage()], 400);
             return;
         } catch (\Throwable $e) {
             self::logDiag('token error: ' . get_class($e) . ': ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
+            McpAuditLogger::log([
+                'caller_type' => 'oauth',
+                'caller_id' => 'ip_' . $ip,
+                'ip_address' => $ip,
+                'tool_name' => 'oauth_token',
+                'status_code' => 500,
+                'is_error' => 1,
+            ]);
             $this->sendJson(['error' => 'server_error', 'error_description' => 'The token request could not be processed.'], 500);
             return;
         }
 
+        McpAuditLogger::log([
+            'caller_type' => 'oauth',
+            'caller_id' => 'ip_' . $ip,
+            'ip_address' => $ip,
+            'tool_name' => 'oauth_token',
+            'status_code' => 200,
+            'is_error' => 0,
+        ]);
         self::logDiag('token issued: grant=' . $grantType);
 
         header('Cache-Control: no-store');
@@ -651,6 +725,10 @@ class McpOAuth
         // Single-use: consume the code; a replay revokes the tokens minted from this client
         $db = Load::lib('Database');
         $db->query("UPDATE mod_mcp_oauth_code SET used_at = '" . date('Y-m-d H:i:s') . "' WHERE id = " . (int) $codeRow['id'] . " AND used_at IS NULL");
+        if ((int) $db->affected_rows() !== 1) {
+            $this->revokeTokensForClient((string) $codeRow['client_id'], (string) $codeRow['resource']);
+            throw new OAuthTokenException('invalid_grant', 'Authorization code has already been used.');
+        }
 
         return $this->issueTokenRow(
             (string) $codeRow['client_id'],
@@ -676,6 +754,8 @@ class McpOAuth
         $row = $model->toArray();
 
         if (($row['status'] ?? 'n') !== 'y') {
+            // A replay of an already-rotated or revoked refresh token indicates compromise; revoke client tokens
+            $this->revokeTokensForClient((string) $row['client_id'], (string) $row['resource']);
             throw new OAuthTokenException('invalid_grant', 'Refresh token has been revoked.');
         }
         if (strtotime((string) $row['refresh_expires_at']) < time()) {
@@ -685,9 +765,13 @@ class McpOAuth
             throw new OAuthTokenException('invalid_grant', 'Refresh token was issued to another client.');
         }
 
-        // Rotation: deactivate the presented refresh token and mint a fresh pair
+        // Rotation: atomically deactivate the presented refresh token and mint a fresh pair
         $db = Load::lib('Database');
-        $db->query("UPDATE mod_mcp_oauth_token SET status = 'n' WHERE id = " . (int) $row['id']);
+        $db->query("UPDATE mod_mcp_oauth_token SET status = 'n' WHERE id = " . (int) $row['id'] . " AND status = 'y'");
+        if ((int) $db->affected_rows() !== 1) {
+            $this->revokeTokensForClient((string) $row['client_id'], (string) $row['resource']);
+            throw new OAuthTokenException('invalid_grant', 'Refresh token has already been used.');
+        }
 
         return $this->issueTokenRow(
             (string) $row['client_id'],
@@ -803,90 +887,139 @@ class McpOAuth
         $csrf = bin2hex(random_bytes(16));
         $this->session->set('oauth_csrf', $csrf);
 
-        $hidden = '';
+        $hiddenParams = [];
         foreach (['response_type', 'client_id', 'redirect_uri', 'scope', 'state', 'code_challenge', 'code_challenge_method', 'resource'] as $field) {
-            $value = (string) ($params[$field] ?? '');
-            $hidden .= '<input type="hidden" name="' . htmlspecialchars($field, ENT_QUOTES) . '" value="' . htmlspecialchars($value, ENT_QUOTES) . '">' . "\n";
+            $hiddenParams[$field] = (string) ($params[$field] ?? '');
         }
 
-        $clientName = htmlspecialchars((string) ($client['client_name'] ?? 'MCP client'), ENT_QUOTES);
-        $serverName = htmlspecialchars((string) (Registry::get('site_config')['site_name'] ?? $this->resource), ENT_QUOTES);
-        $errorBlock = $error === '' ? '' : '<p class="oauth-error">' . htmlspecialchars($error, ENT_QUOTES) . '</p>';
-        $loginOrConsent = $loggedIn ? $this->consentHtml($csrf) : $this->loginHtml();
+        $clientName = !empty($client['client_name']) ? (string) $client['client_name'] : (string) ($client['client_id'] ?? '');
+        $siteConfig = Registry::get('site_config');
+        $serverName = (string) ($siteConfig['site_name'] ?? $this->resource);
 
-        echo '<!DOCTYPE html>
+        $viewData = [
+            'logged_in' => $loggedIn,
+            'client_name' => $clientName,
+            'server_name' => $serverName,
+            'resource' => $this->resource,
+            'error' => $error,
+            'csrf' => $csrf,
+            'hidden_params' => $hiddenParams,
+        ];
+
+        $GLOBALS['oauth_html_mode'] = true;
+        try {
+            $twig = Load::lib('TwigTemplate');
+            echo $twig->twig->render('oauth/authorize.twig', $viewData);
+        } catch (\Throwable $e) {
+            echo $this->renderAuthorizeFallback($viewData);
+        }
+    }
+
+    private function renderAuthorizeFallback(array $data): string
+    {
+        $resource = htmlspecialchars((string) ($data['resource'] ?? ''), ENT_QUOTES);
+        $clientName = htmlspecialchars((string) ($data['client_name'] ?? ''), ENT_QUOTES);
+        $serverName = htmlspecialchars((string) ($data['server_name'] ?? ''), ENT_QUOTES);
+        $error = htmlspecialchars((string) ($data['error'] ?? ''), ENT_QUOTES);
+        $csrf = htmlspecialchars((string) ($data['csrf'] ?? ''), ENT_QUOTES);
+        $loggedIn = !empty($data['logged_in']);
+
+        $hidden = '';
+        foreach (($data['hidden_params'] ?? []) as $k => $v) {
+            $hidden .= '<input type="hidden" name="' . htmlspecialchars($k, ENT_QUOTES) . '" value="' . htmlspecialchars($v, ENT_QUOTES) . '">' . "\n";
+        }
+
+        $errorHtml = $error !== '' ? '<div class="oauth-error-alert">' . $error . '</div>' : '';
+        $body = $loggedIn
+            ? '<input type="hidden" name="oauth_action" value="consent">
+               <input type="hidden" name="csrf" value="' . $csrf . '">
+               <div class="oauth-actions">
+                   <button type="submit" name="decision" value="approve" class="oauth-btn oauth-btn-primary">Authorize access</button>
+                   <button type="submit" name="decision" value="deny" class="oauth-btn oauth-btn-secondary">Deny</button>
+               </div>'
+            : '<input type="hidden" name="oauth_action" value="login">
+               <div class="oauth-form-group">
+                   <label for="oauth-username" class="oauth-label">Username</label>
+                   <input type="text" id="oauth-username" name="username" class="oauth-input" required autofocus>
+               </div>
+               <div class="oauth-form-group">
+                   <label for="oauth-password" class="oauth-label">Password</label>
+                   <input type="password" id="oauth-password" name="password" class="oauth-input" required>
+               </div>
+               <div class="oauth-actions">
+                   <button type="submit" class="oauth-btn oauth-btn-primary">Sign in to continue</button>
+               </div>';
+
+        return '<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>Authorize MCP access</title>
-<style>
-body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f7;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#1d1d1f}
-.oauth-card{width:100%;max-width:380px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.08);padding:32px;box-sizing:border-box}
-.oauth-card h1{font-size:18px;margin:0 0 8px}
-.oauth-card p{font-size:14px;line-height:1.5;color:#555;margin:0 0 20px}
-.oauth-error{color:#c0262f;font-size:13px;margin:-8px 0 16px}
-label{display:block;font-size:13px;font-weight:600;margin:0 0 6px}
-input[type=text],input[type=password]{width:100%;box-sizing:border-box;padding:10px 12px;font-size:15px;border:1px solid #d2d2d7;border-radius:8px;margin:0 0 16px}
-button{width:100%;padding:11px 16px;font-size:15px;font-weight:600;border:0;border-radius:8px;cursor:pointer}
-button.primary{background:#1d1d1f;color:#fff;margin-bottom:10px}
-button.secondary{background:transparent;color:#1d1d1f;border:1px solid #d2d2d7}
-</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Authorize MCP access</title>
+    <link rel="stylesheet" href="' . $resource . '/templates/oauth/assets/css/oauth.css">
 </head>
 <body>
-<div class="oauth-card">
-<h1>MCP authorization</h1>
-' . $errorBlock . '
-' . ($loggedIn
-            ? '<p><strong>' . $clientName . '</strong> requests access to the MCP tools of <strong>' . $serverName . '</strong> using your CMS account. Approved requests use your group permissions until the token expires.</p>'
-            : '') . '
-<form method="post" action="' . htmlspecialchars($this->resource, ENT_QUOTES) . '/oauth/authorize" autocomplete="off">
-' . $hidden . '
-' . $loginOrConsent . '
-</form>
+<div class="oauth-container">
+    <div class="oauth-card">
+        <div class="oauth-header">
+            <h1 class="oauth-title">MCP authorization</h1>
+            <p class="oauth-description"><span class="oauth-client-badge">' . $clientName . '</span> requests access to the MCP tools of <strong>' . $serverName . '</strong>.</p>
+        </div>
+        ' . $errorHtml . '
+        <form method="post" action="' . $resource . '/oauth/authorize" autocomplete="off">
+            ' . $hidden . '
+            ' . $body . '
+        </form>
+    </div>
 </div>
 </body>
 </html>';
-        $GLOBALS['oauth_html_mode'] = true;
-    }
-
-    private function loginHtml(): string
-    {
-        return '<input type="hidden" name="oauth_action" value="login">
-<label for="oauth-username">Username</label>
-<input type="text" id="oauth-username" name="username" required autofocus>
-<label for="oauth-password">Password</label>
-<input type="password" id="oauth-password" name="password" required>
-<button type="submit" class="primary">Sign in to continue</button>';
-    }
-
-    private function consentHtml(string $csrf): string
-    {
-        return '<input type="hidden" name="oauth_action" value="consent">
-<input type="hidden" name="csrf" value="' . htmlspecialchars($csrf, ENT_QUOTES) . '">
-<button type="submit" name="decision" value="approve" class="primary">Authorize access</button>
-<button type="submit" name="decision" value="deny" class="secondary">Deny</button>';
     }
 
     private function renderErrorPage(string $error, string $description): void
     {
         http_response_code(400);
         $GLOBALS['oauth_html_mode'] = true;
-        echo '<!DOCTYPE html>
+
+        $viewData = [
+            'resource' => $this->resource,
+            'error' => $error,
+            'description' => $description,
+        ];
+
+        try {
+            $twig = Load::lib('TwigTemplate');
+            echo $twig->twig->render('oauth/error.twig', $viewData);
+        } catch (\Throwable $e) {
+            echo $this->renderErrorFallback($viewData);
+        }
+    }
+
+    private function renderErrorFallback(array $data): string
+    {
+        $resource = htmlspecialchars((string) ($data['resource'] ?? ''), ENT_QUOTES);
+        $error = htmlspecialchars((string) ($data['error'] ?? ''), ENT_QUOTES);
+        $description = htmlspecialchars((string) ($data['description'] ?? ''), ENT_QUOTES);
+
+        return '<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>MCP authorization error</title>
-<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f5f5f7;font-family:system-ui,sans-serif;color:#1d1d1f}.oauth-card{max-width:380px;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.08);padding:32px}h1{font-size:18px}code{background:#f0f0f2;border-radius:6px;padding:2px 6px;font-size:13px}</style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>MCP authorization error</title>
+    <link rel="stylesheet" href="' . $resource . '/templates/oauth/assets/css/oauth.css">
 </head>
 <body>
-<div class="oauth-card">
-<h1>Authorization failed</h1>
-<p>The MCP authorization request was rejected: <code>' . htmlspecialchars($error, ENT_QUOTES) . '</code></p>
-<p>' . htmlspecialchars($description, ENT_QUOTES) . '</p>
+<div class="oauth-container">
+    <div class="oauth-card">
+        <div class="oauth-header">
+            <h1 class="oauth-title">Authorization failed</h1>
+            <p class="oauth-description">The MCP authorization request was rejected: <code class="oauth-code-block">' . $error . '</code></p>
+        </div>
+        <div class="oauth-error-alert">' . $description . '</div>
+    </div>
 </div>
 </body>
 </html>';

@@ -13,6 +13,232 @@
 class McpAttachmentTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_attachments' => [
+                'module' => 'mod_attachment',
+                'role' => 'list',
+                'domain' => 'attachment',
+                'handler' => 'listAttachments',
+                'description' => 'List downloadable attachment file records with optional filters. Returns paginated items (id, filename, url, ext, original_name, type, created_at, mod_name, vid, user_id) plus the total count. Each attachment belongs to a host record of another module through mod_name and vid.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Filter by host module name (e.g. mod_news, mod_page).',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Filter by host record ID.',
+                        ],
+                        'ext' => [
+                            'type' => 'string',
+                            'description' => 'Filter by file extension (e.g. pdf, docx, zip).',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against the original file name.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                    'required' => [
+                    ],
+                ],
+                'title' => 'List Attachments',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_attachment' => [
+                'module' => 'mod_attachment',
+                'role' => 'list',
+                'domain' => 'attachment',
+                'handler' => 'getAttachment',
+                'description' => 'Get a single attachment record with all fields, including the stored URL, extension, original file name, MIME type, host module binding (mod_name, vid) and view count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Attachment record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Attachment',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_attachment' => [
+                'module' => 'mod_attachment',
+                'role' => 'add',
+                'domain' => 'attachment',
+                'handler' => 'createAttachment',
+                'description' => 'Upload a downloadable file and attach it to a host record. The file is stored under static/mod_attachment/<host_module>/ with a random key; the extension must be one of the admin upload whitelist (txt, xls, jpg, jpeg, png, gif, bmp, rar, zip, pdf, doc, docx, ods, ppt, odt, epub) and the decoded payload must not exceed 10 MB. The host module must be registered in the attachment bridge (mod_attachment_mod) and the host record must exist.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'mod_name' => [
+                            'type' => 'string',
+                            'description' => 'Host module name the file is attached to (e.g. mod_news). Must be registered in the attachment bridge.',
+                        ],
+                        'vid' => [
+                            'type' => 'integer',
+                            'description' => 'Host record ID the file is attached to. Must exist in the host module.',
+                        ],
+                        'file' => [
+                            'type' => 'object',
+                            'description' => 'The file to upload.',
+                            'properties' => [
+                                'filename' => [
+                                    'type' => 'string',
+                                    'description' => 'Original file name including the extension (e.g. report.pdf). Determines the stored extension and the default display name.',
+                                ],
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded file content (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'maxLength' => 250,
+                                    'description' => 'MIME type stored with the record. Defaults to application/octet-stream.',
+                                ],
+                            ],
+                            'required' => [
+                                'filename',
+                                'data_base64',
+                            ],
+                        ],
+                        'filename' => [
+                            'type' => 'string',
+                            'maxLength' => 250,
+                            'description' => 'Optional display name override. Defaults to the sanitized original file name.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                    ],
+                    'required' => [
+                        'mod_name',
+                        'vid',
+                        'file',
+                    ],
+                ],
+                'title' => 'Create Attachment',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_attachment' => [
+                'module' => 'mod_attachment',
+                'role' => 'edit',
+                'domain' => 'attachment',
+                'handler' => 'updateAttachment',
+                'description' => 'Update an attachment record. The display filename can be renamed and the stored binary can optionally be replaced with a new upload (same whitelist and size rules as create; the previous file is removed after a successful save). The host binding (mod_name, vid) cannot be moved, mirroring the admin edit flow.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Attachment record ID.',
+                        ],
+                        'filename' => [
+                            'type' => 'string',
+                            'maxLength' => 250,
+                            'description' => 'New display name (1-250 characters).',
+                        ],
+                        'file' => [
+                            'type' => 'object',
+                            'description' => 'Replacement file upload.',
+                            'properties' => [
+                                'filename' => [
+                                    'type' => 'string',
+                                    'description' => 'Original file name including the extension (e.g. report.pdf). Determines the stored extension and the default display name.',
+                                ],
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded file content (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'maxLength' => 250,
+                                    'description' => 'MIME type stored with the record. Defaults to application/octet-stream.',
+                                ],
+                            ],
+                            'required' => [
+                                'filename',
+                                'data_base64',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Attachment',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_attachment' => [
+                'module' => 'mod_attachment',
+                'role' => 'delete',
+                'domain' => 'attachment',
+                'handler' => 'deleteAttachment',
+                'description' => 'Delete an attachment record and its stored file from static/mod_attachment/<host_module>/. Deleting a host record through its own module tools removes all attached files automatically; deleting another user\'s attachment requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Attachment record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Attachment',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Extension whitelist of the admin upload flow (case-insensitive set)
      */
     private const ALLOWED_FILE_EXTENSIONS = [

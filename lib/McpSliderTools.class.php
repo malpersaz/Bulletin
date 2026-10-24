@@ -8,6 +8,365 @@
 class McpSliderTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_sliders' => [
+                'module' => 'mod_slider',
+                'role' => 'list',
+                'domain' => 'slider',
+                'handler' => 'listSliders',
+                'description' => 'List hero slider items with optional filters. Returns paginated items (id, lang, name, url, status, target, created_at) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by publish status: y (published) or n (draft).',
+                        ],
+                        'target' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by open-in-new-tab flag: y or n.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against slider item names.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Sliders',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_slider' => [
+                'module' => 'mod_slider',
+                'role' => 'list',
+                'domain' => 'slider',
+                'handler' => 'getSlider',
+                'description' => 'Get a single hero slider item with all fields, including description and image references.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Slider item ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Slider',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_slider' => [
+                'module' => 'mod_slider',
+                'role' => 'add',
+                'domain' => 'slider',
+                'handler' => 'createSlider',
+                'description' => 'Create a hero slider item. Name and link url are required (2-255 characters each). Supports a desktop image (resized to 1920x1080 plus a 100px thumbnail) and an optional mobile image (resized to 1080px width).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Slider item name (2-255 characters).',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Link target URL (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Publish status: y (published) or n (draft).',
+                        ],
+                        'target' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Open the link in a new tab: y or n.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'description' => 'Optional long description of the slider item.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Access control group ID (0 = public).',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Desktop image upload (base64-encoded) or null to explicitly set no image. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                        'image_mobile' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Mobile image upload (base64-encoded) or null to explicitly set no mobile image. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'url',
+                        'lang',
+                    ],
+                ],
+                'title' => 'Create Slider',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_slider' => [
+                'module' => 'mod_slider',
+                'role' => 'edit',
+                'domain' => 'slider',
+                'handler' => 'updateSlider',
+                'description' => 'Partially update a hero slider item. Only provided fields change; editing another user\'s item requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Slider item ID.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'New slider item name.',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'New link target URL.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New publish status.',
+                        ],
+                        'target' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New open-in-new-tab flag.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'description' => 'New long description.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'description' => 'New access control group ID.',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Desktop image upload (base64-encoded) or null to remove the existing one. Absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                        'image_mobile' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Mobile image upload (base64-encoded) or null to remove the existing one. Absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Slider',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_slider' => [
+                'module' => 'mod_slider',
+                'role' => 'delete',
+                'domain' => 'slider',
+                'handler' => 'deleteSlider',
+                'description' => 'Delete a hero slider item. Related gallery, attachment, and FAQ relations and both uploaded image files (desktop and mobile) are cleaned up automatically. Deleting another user\'s item requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Slider item ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Slider',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * Desktop image sizes, mirrors the admin controller option array
      */
     private const SLIDER_IMAGE_SIZES = [

@@ -27,6 +27,7 @@ $lang['mod_settings'] = [
     'button' => [
         'cancel' => 'إلغاء',
         'close' => 'إغلاق',
+        'back' => 'رجوع',
         'edit' => 'تعديل',
         'save_and_close' => 'حفظ وإغلاق',
         'generate_assets' => 'إنشاء الأيقونات',
@@ -295,4 +296,17 @@ $lang['mod_settings'] = [
     'mcp_link_title' => 'إدارة MCP',
     'mcp_link_desc' => 'إنشاء وإدارة مفاتيح API وعملاء OAuth ليتمكن عملاء الذكاء الاصطناعي (ChatGPT وCursor وClaude) من إدارة الموقع عبر نقطة MCP.',
     'mcp_link_button' => 'افتح إدارة MCP',
+
+    // === Google Services Hub ===
+    'google_settings' => 'مركز خدمات Google',
+    'json_invalid' => 'تنسيق ملف JSON غير صالح!',
+    'google' => [
+        'bucket_name' => 'اسم حاوية Google Cloud Storage (Bucket)',
+        'gemini_api_key' => 'مفتاح Google Gemini API',
+        'credentials_file' => 'بيانات اعتماد حساب الخدمة (JSON)',
+        'credentials_status' => 'حالة بيانات الاعتماد',
+        'credentials_ok' => 'تم الرفع ومفعل',
+        'credentials_missing' => 'غير مرفوع',
+        'settings_ok' => 'تم تحديث إعدادات Google بنجاح!',
+    ],
 ];

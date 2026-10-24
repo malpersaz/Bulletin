@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout</title>
+    <link rel="stylesheet" href="data:text/css;base64,KiB7CiAgICBib3gtc2l6aW5nOiBib3JkZXItYm94OwogICAgbWFyZ2luOiAwOwogICAgcGFkZGluZzogMDsKfQpib2R5IHsKICAgIGZvbnQtZmFtaWx5OiBzeXN0ZW0tdWksIC1hcHBsZS1zeXN0ZW0sIHNhbnMtc2VyaWY7CiAgICBiYWNrZ3JvdW5kOiAjZmZmZmZmOwogICAgY29sb3I6ICMxMTExMTE7CiAgICBwYWRkaW5nOiAyMHB4OwogICAgZm9udC1zaXplOiAxM3B4Owp9Ci5jb250YWluZXIgewogICAgbWF4LXdpZHRoOiAxMjAwcHg7CiAgICBtYXJnaW46IDAgYXV0bzsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAgZ2FwOiAxNnB4Owp9Ci5ib3ggewogICAgYm9yZGVyOiAycHggc29saWQgIzExMTExMTsKICAgIHBhZGRpbmc6IDEycHg7Cn0KLmNlbGwgewogICAgYm9yZGVyOiAxcHggc29saWQgIzExMTExMTsKICAgIHBhZGRpbmc6IDEwcHg7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOwogICAgdGV4dC1hbGlnbjogY2VudGVyOwp9Ci5oZWFkZXItdG9wIHsKICAgIGRpc3BsYXk6IGdyaWQ7CiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDE4MHB4IDFmciAxNjBweDsKICAgIGdhcDogMTJweDsKICAgIG1hcmdpbi1ib3R0b206IDEycHg7Cn0KLm5hdi1iYXIgewogICAgaGVpZ2h0OiA0MHB4Owp9Ci5zcGxpdC04MDAtMzg0IHsKICAgIGRpc3BsYXk6IGdyaWQ7CiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IDgwMHB4IDM4NHB4OwogICAgZ2FwOiAxNnB4OwogICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7Cn0KLmxlZnQtc3RhY2sgewogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBnYXA6IDE2cHg7Cn0KLnJpZ2h0LXN0YWNrIHsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAgZ2FwOiAxNnB4Owp9Ci5zbGlkZXIgewogICAgd2lkdGg6IDgwMHB4OwogICAgaGVpZ2h0OiA0NTBweDsKICAgIGJvcmRlcjogMnB4IHNvbGlkICMxMTExMTE7CiAgICBkaXNwbGF5OiBncmlkOwogICAgZ3JpZC10ZW1wbGF0ZS1jb2x1bW5zOiA0OHB4IDFmciA0OHB4OwogICAgZ3JpZC10ZW1wbGF0ZS1yb3dzOiAxZnIgMzJweDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBwYWRkaW5nOiAxNnB4OwogICAgYmFja2dyb3VuZDogI2ZhZmFmYTsKfQouc2xpZGVyLWFycm93IHsKICAgIHdpZHRoOiAzNnB4OwogICAgaGVpZ2h0OiAzNnB4OwogICAgYm9yZGVyOiAxcHggc29saWQgIzExMTExMTsKICAgIGJhY2tncm91bmQ6ICNmZmZmZmY7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOwogICAgbWFyZ2luOiAwIGF1dG87CiAgICBmb250LXdlaWdodDogYm9sZDsKfQouc2xpZGVyLWNlbnRlciB7CiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICBmb250LXdlaWdodDogNjAwOwogICAgZm9udC1zaXplOiAxNXB4OwogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBnYXA6IDZweDsKfQouc2xpZGVyLXJhdGlvIHsKICAgIGZvbnQtc2l6ZTogMTJweDsKICAgIGZvbnQtd2VpZ2h0OiA0MDA7CiAgICBjb2xvcjogIzQ0NDQ0NDsKfQouc2xpZGVyLWRvdHMgewogICAgZ3JpZC1jb2x1bW46IDEgLyAtMTsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjsKICAgIGdhcDogOHB4Owp9Ci5kb3QgewogICAgd2lkdGg6IDEwcHg7CiAgICBoZWlnaHQ6IDEwcHg7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgYm9yZGVyLXJhZGl1czogNTAlOwogICAgYmFja2dyb3VuZDogI2ZmZmZmZjsKfQouZG90LmFjdGl2ZSB7CiAgICBiYWNrZ3JvdW5kOiAjMTExMTExOwp9Ci5zZWN0aW9uLWhlYWQgewogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICBmb250LXdlaWdodDogNjAwOwogICAgbWFyZ2luLWJvdHRvbTogMTBweDsKICAgIHBhZGRpbmctYm90dG9tOiA2cHg7CiAgICBib3JkZXItYm90dG9tOiAxcHggc29saWQgIzExMTExMTsKICAgIGZsZXgtc2hyaW5rOiAwOwp9Ci5zaWRlYmFyLWJsb2NrIHsKICAgIHdpZHRoOiAzODRweDsKICAgIGhlaWdodDogNDUwcHg7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsKICAgIHBhZGRpbmc6IDEycHg7Cn0KLnNpZGViYXItYmxvY2stZWtvbm9taSB7CiAgICB3aWR0aDogMzg0cHg7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsKICAgIHBhZGRpbmc6IDEycHg7CiAgICBnYXA6IDEwcHg7Cn0KLnNpZGViYXItYmxvY2stYWdlbmRhIHsKICAgIHdpZHRoOiAzODRweDsKICAgIGZsZXg6IDE7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsKICAgIHBhZGRpbmc6IDEycHg7Cn0KLndvcmxkLWxpc3QgewogICAgZmxleDogMTsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAgZ2FwOiA4cHg7Cn0KLndvcmxkLWxlYWQgewogICAgZmxleDogMS41OwogICAgYm9yZGVyOiAxcHggc29saWQgIzExMTExMTsKICAgIHBhZGRpbmc6IDhweDsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuOwogICAgZ2FwOiA2cHg7CiAgICBiYWNrZ3JvdW5kOiAjZmFmYWZhOwp9Ci53b3JsZC1sZWFkLXRvcCB7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGdhcDogMTBweDsKfQoud29ybGQtbGVhZC10aHVtYiB7CiAgICB3aWR0aDogMTYwcHg7CiAgICBoZWlnaHQ6IDkwcHg7CiAgICBhc3BlY3QtcmF0aW86IDE2IC8gOTsKICAgIGJvcmRlcjogMXB4IGRhc2hlZCAjNDQ0NDQ0OwogICAgYmFja2dyb3VuZDogI2ZmZmZmZjsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICBmb250LXNpemU6IDExcHg7CiAgICBmb250LXdlaWdodDogNjAwOwogICAgZmxleC1zaHJpbms6IDA7Cn0KLndvcmxkLWxlYWQtdGl0bGUgewogICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgIGZvbnQtc2l6ZTogMTNweDsKICAgIGxpbmUtaGVpZ2h0OiAxLjM7CiAgICB0ZXh0LWFsaWduOiBsZWZ0Owp9Ci53b3JsZC1sZWFkLXN1bW1hcnkgewogICAgZm9udC1zaXplOiAxMXB4OwogICAgbGluZS1oZWlnaHQ6IDEuMzU7CiAgICBjb2xvcjogIzMzMzMzMzsKICAgIHRleHQtYWxpZ246IGxlZnQ7CiAgICBib3JkZXItdG9wOiAxcHggZG90dGVkICNjY2NjY2M7CiAgICBwYWRkaW5nLXRvcDogNXB4Owp9Ci53b3JsZC1zdWIgewogICAgZmxleDogMTsKICAgIGJvcmRlcjogMXB4IHNvbGlkICMxMTExMTE7CiAgICBwYWRkaW5nOiA3cHggOHB4OwogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBnYXA6IDEwcHg7CiAgICBiYWNrZ3JvdW5kOiAjZmZmZmZmOwp9Ci53b3JsZC1zdWItdGh1bWIgewogICAgd2lkdGg6IDEwNHB4OwogICAgaGVpZ2h0OiA1OC41cHg7CiAgICBhc3BlY3QtcmF0aW86IDE2IC8gOTsKICAgIGJvcmRlcjogMXB4IGRhc2hlZCAjNjY2NjY2OwogICAgYmFja2dyb3VuZDogI2ZhZmFmYTsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICBmb250LXNpemU6IDEwcHg7CiAgICBmbGV4LXNocmluazogMDsKfQoud29ybGQtc3ViLWJvZHkgewogICAgZmxleDogMTsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAgZ2FwOiAzcHg7CiAgICB0ZXh0LWFsaWduOiBsZWZ0OwogICAgbWluLXdpZHRoOiAwOwp9Ci53b3JsZC1zdWItdGl0bGUgewogICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgIGZvbnQtc2l6ZTogMTEuNXB4OwogICAgbGluZS1oZWlnaHQ6IDEuMjsKfQoud29ybGQtc3ViLXN1bW1hcnkgewogICAgZm9udC1zaXplOiAxMC41cHg7CiAgICBsaW5lLWhlaWdodDogMS4zOwogICAgY29sb3I6ICM1NTU1NTU7CiAgICBkaXNwbGF5OiAtd2Via2l0LWJveDsKICAgIC13ZWJraXQtbGluZS1jbGFtcDogMjsKICAgIC13ZWJraXQtYm94LW9yaWVudDogdmVydGljYWw7CiAgICBvdmVyZmxvdzogaGlkZGVuOwp9Ci5tYXJrZXQtd2lkZ2V0IHsKICAgIGJvcmRlcjogMS41cHggc29saWQgIzExMTExMTsKICAgIGJhY2tncm91bmQ6ICNmYWZhZmE7CiAgICBwYWRkaW5nOiA4cHg7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsKICAgIGdhcDogNnB4Owp9Ci5tYXJrZXQtaGVhZCB7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGp1c3RpZnktY29udGVudDogc3BhY2UtYmV0d2VlbjsKICAgIGZvbnQtc2l6ZTogMTFweDsKICAgIGZvbnQtd2VpZ2h0OiA3MDA7CiAgICB0ZXh0LXRyYW5zZm9ybTogdXBwZXJjYXNlOwogICAgbGV0dGVyLXNwYWNpbmc6IDAuMDNlbTsKICAgIHBhZGRpbmctYm90dG9tOiA0cHg7CiAgICBib3JkZXItYm90dG9tOiAxcHggc29saWQgI2NjY2NjYzsKfQoubWFya2V0LWdyaWQgewogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogcmVwZWF0KDIsIDFmcik7CiAgICBnYXA6IDZweDsKfQoubWFya2V0LWl0ZW0gewogICAgYm9yZGVyOiAxcHggc29saWQgIzk5OTk5OTsKICAgIGJhY2tncm91bmQ6ICNmZmZmZmY7CiAgICBwYWRkaW5nOiA1cHggN3B4OwogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47CiAgICBnYXA6IDZweDsKfQoubWFya2V0LWxlZnQgewogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICB0ZXh0LWFsaWduOiBsZWZ0OwogICAgZ2FwOiAxcHg7Cn0KLm1hcmtldC1uYW1lIHsKICAgIGZvbnQtc2l6ZTogOS41cHg7CiAgICBmb250LXdlaWdodDogNzAwOwogICAgY29sb3I6ICM1NTU1NTU7CiAgICBsZXR0ZXItc3BhY2luZzogMC4wMmVtOwp9Ci5tYXJrZXQtdmFsIHsKICAgIGZvbnQtc2l6ZTogMTJweDsKICAgIGZvbnQtd2VpZ2h0OiA4MDA7CiAgICBjb2xvcjogIzExMTExMTsKfQoubWFya2V0LXJpZ2h0IHsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAgYWxpZ24taXRlbXM6IGZsZXgtZW5kOwogICAgdGV4dC1hbGlnbjogcmlnaHQ7CiAgICBnYXA6IDFweDsKfQoubWFya2V0LWJhZGdlIHsKICAgIGZvbnQtc2l6ZTogOS41cHg7CiAgICBmb250LXdlaWdodDogNzAwOwogICAgcGFkZGluZzogMXB4IDRweDsKICAgIGJvcmRlci1yYWRpdXM6IDJweDsKICAgIGJvcmRlcjogMXB4IHNvbGlkICMxMTExMTE7Cn0KLm1hcmtldC1iYWRnZS51cCB7CiAgICBiYWNrZ3JvdW5kOiAjZWVmYmYzOwogICAgYm9yZGVyLWNvbG9yOiAjMmU3ZDMyOwogICAgY29sb3I6ICMxYjVlMjA7Cn0KLm1hcmtldC1iYWRnZS5kb3duIHsKICAgIGJhY2tncm91bmQ6ICNmZGYyZjI7CiAgICBib3JkZXItY29sb3I6ICNjNjI4Mjg7CiAgICBjb2xvcjogI2I3MWMxYzsKfQoubWFya2V0LWRpZmYgewogICAgZm9udC1zaXplOiA5cHg7CiAgICBjb2xvcjogIzY2NjY2NjsKfQovKiBFVEvEsE5MxLBLIEFKQU5EQVNJICovCi5hZ2VuZGEtY29udHJvbHMgewogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBnYXA6IDRweDsKfQouYWdlbmRhLWJ0biB7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgYmFja2dyb3VuZDogI2ZhZmFmYTsKICAgIHBhZGRpbmc6IDJweCA2cHg7CiAgICBmb250LXNpemU6IDExcHg7CiAgICBmb250LXdlaWdodDogNzAwOwp9Ci5hZ2VuZGEtYm9keSB7CiAgICBmbGV4OiAxOwogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogMTQ4cHggMWZyOwogICAgZ2FwOiAxMHB4OwogICAgYWxpZ24taXRlbXM6IHN0cmV0Y2g7Cn0KLmFnZW5kYS1wb3N0ZXIgewogICAgYm9yZGVyOiAxcHggZGFzaGVkICM0NDQ0NDQ7CiAgICBiYWNrZ3JvdW5kOiAjZmFmYWZhOwogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7CiAgICBwYWRkaW5nOiA4cHg7CiAgICBmb250LXNpemU6IDExcHg7CiAgICBmb250LXdlaWdodDogNjAwOwogICAgZ2FwOiA0cHg7Cn0KLmFnZW5kYS1wb3N0ZXItc3ViIHsKICAgIGZvbnQtc2l6ZTogMTBweDsKICAgIGZvbnQtd2VpZ2h0OiA0MDA7CiAgICBjb2xvcjogIzU1NTU1NTsKfQouYWdlbmRhLWxpc3QgewogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47Cn0KLmFnZW5kYS1pdGVtIHsKICAgIGJvcmRlci1ib3R0b206IDFweCBzb2xpZCAjZGRkZGRkOwogICAgcGFkZGluZzogNHB4IDA7CiAgICB0ZXh0LWFsaWduOiBsZWZ0OwogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBnYXA6IDFweDsKfQouYWdlbmRhLWl0ZW0tdGl0bGUgewogICAgZm9udC1zaXplOiAxMXB4OwogICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgIGNvbG9yOiAjMTExMTExOwp9Ci5hZ2VuZGEtaXRlbS1tZXRhIHsKICAgIGZvbnQtc2l6ZTogMTBweDsKICAgIGNvbG9yOiAjNTU1NTU1Owp9Ci5hZ2VuZGEtZG90cyB7CiAgICBkaXNwbGF5OiBmbGV4OwogICAganVzdGlmeS1jb250ZW50OiBjZW50ZXI7CiAgICBnYXA6IDZweDsKICAgIHBhZGRpbmctdG9wOiA2cHg7Cn0KLyogQVVUSE9SUyAqLwouYXV0aG9ycy1ncmlkIHsKICAgIGRpc3BsYXk6IGdyaWQ7CiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IHJlcGVhdCgzLCAxZnIpOwogICAgZ2FwOiAxMnB4Owp9Ci5hdXRob3ItY2FyZCB7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgcGFkZGluZzogMTJweDsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAgZ2FwOiAxMnB4OwogICAgYmFja2dyb3VuZDogI2ZhZmFmYTsKfQouYXV0aG9yLWF2YXRhciB7CiAgICB3aWR0aDogNDhweDsKICAgIGhlaWdodDogNDhweDsKICAgIGJvcmRlcjogMXB4IHNvbGlkICMxMTExMTE7CiAgICBib3JkZXItcmFkaXVzOiA1MCU7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGp1c3RpZnktY29udGVudDogY2VudGVyOwogICAgZmxleC1zaHJpbms6IDA7CiAgICBmb250LXNpemU6IDExcHg7CiAgICBiYWNrZ3JvdW5kOiAjZmZmZmZmOwp9Ci5hdXRob3ItaW5mbyB7CiAgICBmbGV4OiAxOwogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBnYXA6IDRweDsKICAgIHRleHQtYWxpZ246IGxlZnQ7Cn0KLmF1dGhvci1uYW1lIHsKICAgIGZvbnQtd2VpZ2h0OiA2MDA7CiAgICBmb250LXNpemU6IDEycHg7Cn0KLmF1dGhvci1hcnRpY2xlIHsKICAgIGZvbnQtc2l6ZTogMTFweDsKICAgIGNvbG9yOiAjNDQ0NDQ0Owp9Ci8qIExBVEVTVCBORVdTIFNFQ1RJT04gKi8KLm5ld3MtYm94LWdyb3cgewogICAgZmxleDogMTsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwp9Ci5sYXRlc3QtbmV3cy1ncmlkIHsKICAgIGRpc3BsYXk6IGdyaWQ7CiAgICBncmlkLXRlbXBsYXRlLWNvbHVtbnM6IHJlcGVhdCgzLCAxZnIpOwogICAgZ2FwOiAxMnB4OwogICAgZmxleDogMTsKfQouc3Bvci1ncmlkLTIgewogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogcmVwZWF0KDIsIDFmcik7CiAgICBnYXA6IDEycHg7Cn0KLnNwb3ItY2FyZCB7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgYmFja2dyb3VuZDogI2ZmZmZmZjsKICAgIHBhZGRpbmc6IDhweDsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBhbGlnbi1pdGVtczogY2VudGVyOwogICAgZ2FwOiAxMnB4Owp9Ci5zcG9yLXRodW1iIHsKICAgIHdpZHRoOiAxNjBweDsKICAgIGhlaWdodDogOTBweDsKICAgIGFzcGVjdC1yYXRpbzogMTYgLyA5OwogICAgYm9yZGVyOiAxcHggZGFzaGVkICM0NDQ0NDQ7CiAgICBiYWNrZ3JvdW5kOiAjZjVmNWY1OwogICAgZGlzcGxheTogZmxleDsKICAgIGFsaWduLWl0ZW1zOiBjZW50ZXI7CiAgICBqdXN0aWZ5LWNvbnRlbnQ6IGNlbnRlcjsKICAgIGZvbnQtc2l6ZTogMTFweDsKICAgIGZvbnQtd2VpZ2h0OiA2MDA7CiAgICBmbGV4LXNocmluazogMDsKfQouc3Bvci1ib2R5IHsKICAgIGZsZXg6IDE7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgZmxleC1kaXJlY3Rpb246IGNvbHVtbjsKICAgIGdhcDogNHB4OwogICAgdGV4dC1hbGlnbjogbGVmdDsKICAgIG1pbi13aWR0aDogMDsKfQoubGF0ZXN0LW5ld3MtY2FyZCB7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgYmFja2dyb3VuZDogI2ZmZmZmZjsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwp9Ci5sYXRlc3QtbmV3cy1tZWRpYSB7CiAgICB3aWR0aDogMTAwJTsKICAgIGFzcGVjdC1yYXRpbzogMTYgLyA5OwogICAgYm9yZGVyLWJvdHRvbTogMXB4IGRhc2hlZCAjNDQ0NDQ0OwogICAgYmFja2dyb3VuZDogI2Y1ZjVmNTsKICAgIHBhZGRpbmc6IDZweDsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOwogICAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuOwp9Ci5sYXRlc3QtbmV3cy1vdmVybGF5cyB7CiAgICBkaXNwbGF5OiBmbGV4OwogICAganVzdGlmeS1jb250ZW50OiBzcGFjZS1iZXR3ZWVuOwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKfQoubGF0ZXN0LW5ld3MtdGltZWFnbyB7CiAgICBib3JkZXI6IDFweCBzb2xpZCAjMTExMTExOwogICAgYmFja2dyb3VuZDogI2ZmZmZmZjsKICAgIHBhZGRpbmc6IDJweCA1cHg7CiAgICBmb250LXNpemU6IDkuNXB4OwogICAgZm9udC13ZWlnaHQ6IDYwMDsKfQoubGF0ZXN0LW5ld3MtYmFkZ2VzIHsKICAgIGRpc3BsYXk6IGZsZXg7CiAgICBnYXA6IDNweDsKfQoubGF0ZXN0LW5ld3MtYmFkZ2UgewogICAgYm9yZGVyOiAxcHggc29saWQgIzExMTExMTsKICAgIGJhY2tncm91bmQ6ICNmZmZmZmY7CiAgICBwYWRkaW5nOiAycHggNHB4OwogICAgZm9udC1zaXplOiA5cHg7CiAgICBmb250LXdlaWdodDogNjAwOwp9Ci5sYXRlc3QtbmV3cy1pbWctbGFiZWwgewogICAgdGV4dC1hbGlnbjogY2VudGVyOwogICAgZm9udC1zaXplOiAxMXB4OwogICAgZm9udC13ZWlnaHQ6IDYwMDsKICAgIGNvbG9yOiAjMzMzMzMzOwogICAgbWFyZ2luLWJvdHRvbTogYXV0bzsKICAgIG1hcmdpbi10b3A6IGF1dG87Cn0KLmxhdGVzdC1uZXdzLWJvZHkgewogICAgZmxleDogMTsKICAgIHBhZGRpbmc6IDhweCAxMHB4OwogICAgZGlzcGxheTogZmxleDsKICAgIGZsZXgtZGlyZWN0aW9uOiBjb2x1bW47CiAgICBnYXA6IDVweDsKICAgIHRleHQtYWxpZ246IGxlZnQ7Cn0KLmxhdGVzdC1uZXdzLW1ldGEgewogICAgZm9udC1zaXplOiAxMHB4OwogICAgY29sb3I6ICM1NTU1NTU7CiAgICBkaXNwbGF5OiBmbGV4OwogICAgYWxpZ24taXRlbXM6IGNlbnRlcjsKICAgIGdhcDogNHB4Owp9Ci5sYXRlc3QtbmV3cy1hcnRpY2xlLXRpdGxlIHsKICAgIGZvbnQtc2l6ZTogMTJweDsKICAgIGZvbnQtd2VpZ2h0OiA3MDA7CiAgICBsaW5lLWhlaWdodDogMS4yNTsKfQoubGF0ZXN0LW5ld3Mtc3VtbWFyeSB7CiAgICBmb250LXNpemU6IDEwLjVweDsKICAgIGxpbmUtaGVpZ2h0OiAxLjM1OwogICAgY29sb3I6ICM0NDQ0NDQ7CiAgICBmbGV4OiAxOwp9Ci5ncmlkLTMgewogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogcmVwZWF0KDMsIDFmcik7CiAgICBnYXA6IDEycHg7Cn0KLnZpZGVvLWl0ZW0gewogICAgaGVpZ2h0OiAxNjVweDsKfQouZm9vdGVyLWdyaWQgewogICAgZGlzcGxheTogZ3JpZDsKICAgIGdyaWQtdGVtcGxhdGUtY29sdW1uczogNGZyIDJmciA2ZnI7CiAgICBnYXA6IDE2cHg7CiAgICBtYXJnaW4tYm90dG9tOiAxMnB4Owp9Ci5mb290ZXItYm94IHsKICAgIGhlaWdodDogMTIwcHg7Cn0KLmZvb3Rlci1zcGFjZXIgewogICAgaGVpZ2h0OiAxMjBweDsKICAgIGJvcmRlcjogMXB4IGRhc2hlZCAjOTk5OTk5Owp9Ci5mb290ZXItYm90dG9tIHsKICAgIGhlaWdodDogMzZweDsKfQ==">
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- 1. HEADER & TOPMENU -->
+        <header class="box">
+            <div class="header-top">
+                <div class="cell">Logo</div>
+                <div class="cell">Arama</div>
+                <div class="cell">Giriş / Tema</div>
+            </div>
+            <div class="cell nav-bar">Menü (Kategoriler)</div>
+        </header>
+
+        <!-- 2. TWO-COLUMN MAIN LAYOUT: LEFT (800px) + RIGHT (384px) -->
+        <div class="split-800-384">
+
+            <!-- LEFT COLUMN (800px): SLIDER + 3 AUTHORS + HABERLER + SPOR (2) + VİDEOLAR -->
+            <div class="left-stack">
+                <!-- SLIDER (800x450) -->
+                <div class="slider">
+                    <div class="slider-arrow">&lt;</div>
+                    <div class="slider-center">
+                        <span>Manşet Slider</span>
+                        <span class="slider-ratio">1280&times;720 px &rarr; 800&times;450 px (16:9)</span>
+                    </div>
+                    <div class="slider-arrow">&gt;</div>
+                    <div class="slider-dots">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+
+                <!-- YAZARLAR / KÖŞE YAZILARI (3 ITEMS BELOW SLIDER) -->
+                <section class="box">
+                    <div class="section-head">
+                        <span>Yazarlar / Köşe Yazıları</span>
+                        <span>Tüm Yazarlar &rarr;</span>
+                    </div>
+                    <div class="authors-grid">
+                        <div class="author-card">
+                            <div class="author-avatar">Foto</div>
+                            <div class="author-info">
+                                <span class="author-name">Yazar Adı 1</span>
+                                <span class="author-article">Köşe Yazısı Başlığı</span>
+                            </div>
+                        </div>
+                        <div class="author-card">
+                            <div class="author-avatar">Foto</div>
+                            <div class="author-info">
+                                <span class="author-name">Yazar Adı 2</span>
+                                <span class="author-article">Köşe Yazısı Başlığı</span>
+                            </div>
+                        </div>
+                        <div class="author-card">
+                            <div class="author-avatar">Foto</div>
+                            <div class="author-info">
+                                <span class="author-name">Yazar Adı 3</span>
+                                <span class="author-article">Köşe Yazısı Başlığı</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HABERLER (EXACT STRUCTURE OF latest_news.twig) -->
+                <section class="box news-box-grow">
+                    <div class="section-head">
+                        <span>Haberler</span>
+                        <span>Tümünü Gör &rarr;</span>
+                    </div>
+                    <div class="latest-news-grid">
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                        
+                        <article class="latest-news-card">
+                            <div class="latest-news-media">
+                                <div class="latest-news-overlays">
+                                    <span class="latest-news-timeago">2 saat önce</span>
+                                    <span class="latest-news-badges">
+                                        <span class="latest-news-badge">Video</span>
+                                        <span class="latest-news-badge">Galeri</span>
+                                    </span>
+                                </div>
+                                <div class="latest-news-img-label">480&times;270 &rarr; 248&times;140 (16:9)</div>
+                            </div>
+                            <div class="latest-news-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Haber Başlığı (latest-news-article-title)</div>
+                                <div class="latest-news-summary">Haber özeti metni (latest-news-summary, maks 180 karakter)...</div>
+                            </div>
+                        </article>
+
+                    </div>
+                </section>
+
+                <!-- SPOR (2 ITEMS ABOVE VİDEOLAR) -->
+                <section class="box">
+                    <div class="section-head">
+                        <span>Spor</span>
+                        <span>Tümünü Gör &rarr;</span>
+                    </div>
+                    <div class="spor-grid-2">
+                        <article class="spor-card">
+                            <div class="spor-thumb">160&times;90 (16:9)</div>
+                            <div class="spor-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Spor Haber Başlığı 1</div>
+                                <div class="latest-news-summary">Spor haber özeti metni burada yer alır...</div>
+                            </div>
+                        </article>
+                        <article class="spor-card">
+                            <div class="spor-thumb">160&times;90 (16:9)</div>
+                            <div class="spor-body">
+                                <div class="latest-news-meta">
+                                    <span>24.10.2026</span>
+                                    <span>&middot;</span>
+                                    <span>1 dk okuma</span>
+                                </div>
+                                <div class="latest-news-article-title">Spor Haber Başlığı 2</div>
+                                <div class="latest-news-summary">Spor haber özeti metni burada yer alır...</div>
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <!-- VİDEOLAR -->
+                <section class="box">
+                    <div class="section-head">
+                        <span>Videolar</span>
+                        <span>Tümünü Gör &rarr;</span>
+                    </div>
+                    <div class="grid-3">
+                        <div class="cell video-item">Video 1</div>
+                        <div class="cell video-item">Video 2</div>
+                        <div class="cell video-item">Video 3</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- RIGHT COLUMN (384px): DÜNYA & ORTADOĞU + EKONOMİ + ETKİNLİK AJANDASI -->
+            <div class="right-stack">
+                <!-- BLOCK 1: DÜNYA & ORTADOĞU -->
+                <aside class="box sidebar-block">
+                    <div class="section-head">
+                        <span>Dünya &amp; Ortadoğu</span>
+                        <span>&rarr;</span>
+                    </div>
+                    <div class="world-list">
+                        <div class="world-lead">
+                            <div class="world-lead-top">
+                                <div class="world-lead-thumb">160&times;90 (16:9)</div>
+                                <div class="world-lead-title">Öne Çıkan Manşet Haber Başlığı 1</div>
+                            </div>
+                            <div class="world-lead-summary">Öne çıkan haber özeti alanı (120 karakter sınırıyla tam açıklama metni burada yer alır)...</div>
+                        </div>
+                        <div class="world-sub">
+                            <div class="world-sub-thumb">104&times;58 (16:9)</div>
+                            <div class="world-sub-body">
+                                <div class="world-sub-title">Haber Başlığı 2</div>
+                                <div class="world-sub-summary">Haber özeti alanı (120 karakter sınırıyla kısa açıklama metni burada yer alır)...</div>
+                            </div>
+                        </div>
+                        <div class="world-sub">
+                            <div class="world-sub-thumb">104&times;58 (16:9)</div>
+                            <div class="world-sub-body">
+                                <div class="world-sub-title">Haber Başlığı 3</div>
+                                <div class="world-sub-summary">Haber özeti alanı (120 karakter sınırıyla kısa açıklama metni burada yer alır)...</div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- BLOCK 2: EKONOMİ + PİYASA DURUMU -->
+                <aside class="box sidebar-block-ekonomi">
+                    <div class="section-head">
+                        <span>Ekonomi</span>
+                        <span>&rarr;</span>
+                    </div>
+                    <div class="world-list">
+                        <div class="world-lead">
+                            <div class="world-lead-top">
+                                <div class="world-lead-thumb">160&times;90 (16:9)</div>
+                                <div class="world-lead-title">Öne Çıkan Ekonomi Haber Başlığı 1</div>
+                            </div>
+                            <div class="world-lead-summary">Öne çıkan ekonomi haber özeti alanı (120 karakter sınırıyla tam açıklama metni burada yer alır)...</div>
+                        </div>
+                        <div class="world-sub">
+                            <div class="world-sub-thumb">104&times;58 (16:9)</div>
+                            <div class="world-sub-body">
+                                <div class="world-sub-title">Ekonomi Haber Başlığı 2</div>
+                                <div class="world-sub-summary">Ekonomi haber özeti alanı (120 karakter sınırıyla kısa açıklama metni burada yer alır)...</div>
+                            </div>
+                        </div>
+                        <div class="world-sub">
+                            <div class="world-sub-thumb">104&times;58 (16:9)</div>
+                            <div class="world-sub-body">
+                                <div class="world-sub-title">Ekonomi Haber Başlığı 3</div>
+                                <div class="world-sub-summary">Ekonomi haber özeti alanı (120 karakter sınırıyla kısa açıklama metni burada yer alır)...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MARKET TICKER BOARD -->
+                    <div class="market-widget">
+                        <div class="market-head">
+                            <span>Piyasalar</span>
+                            <span>Canlı Veriler</span>
+                        </div>
+                        <div class="market-grid">
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">GRAM ALTIN</span>
+                                    <span class="market-val">6.384,76</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-0,62</span>
+                                    <span class="market-diff">(-39,83)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">DOLAR</span>
+                                    <span class="market-val">49,6918</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge up">%0,08</span>
+                                    <span class="market-diff">(0,0397)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">EURO</span>
+                                    <span class="market-val">55,7233</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-0,14</span>
+                                    <span class="market-diff">(-0,0781)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">STERLİN</span>
+                                    <span class="market-val">66,5508</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-0,14</span>
+                                    <span class="market-diff">(-0,0933)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">BIST 100</span>
+                                    <span class="market-val">11.116,99</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-0,92</span>
+                                    <span class="market-diff">(-103,23)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">BITCOIN</span>
+                                    <span class="market-val">$80.533</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-1,34</span>
+                                    <span class="market-diff">(-$1.091)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">GRAM GÜMÜŞ</span>
+                                    <span class="market-val">86,16</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge down">%-1,20</span>
+                                    <span class="market-diff">(-1,05)</span>
+                                </div>
+                            </div>
+                            <div class="market-item">
+                                <div class="market-left">
+                                    <span class="market-name">BRENT</span>
+                                    <span class="market-val">$116,93</span>
+                                </div>
+                                <div class="market-right">
+                                    <span class="market-badge up">%0,18</span>
+                                    <span class="market-diff">($0,21)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- BLOCK 3: ETKİNLİK AJANDASI (BELOW EKONOMİ) -->
+                <aside class="box sidebar-block-agenda">
+                    <div class="section-head">
+                        <span>Etkinlik Ajandası</span>
+                        <div class="agenda-controls">
+                            <span class="agenda-btn" title="Tüm Etkinlikler">&#9638;</span>
+                            <span class="agenda-btn">&lt;</span>
+                            <span class="agenda-btn">&gt;</span>
+                        </div>
+                    </div>
+                    <div class="agenda-body">
+                        <div class="agenda-poster">
+                            <span>Etkinlik Afişi</span>
+                            <span class="agenda-poster-sub">(Seçili Etkinlik Görseli)</span>
+                        </div>
+                        <div class="agenda-list">
+                            <div class="agenda-item">
+                                <span class="agenda-item-title">&raquo; Halk Oyunları Etkinliği</span>
+                                <span class="agenda-item-meta">Halk Oyunları / 24.10.2026 19:00</span>
+                            </div>
+                            <div class="agenda-item">
+                                <span class="agenda-item-title">&raquo; Kontrabas</span>
+                                <span class="agenda-item-meta">Müzikal / 25.10.2026 20:00</span>
+                            </div>
+                            <div class="agenda-item">
+                                <span class="agenda-item-title">&raquo; Berlin Kaplanı</span>
+                                <span class="agenda-item-meta">Sinema / 26.10.2026 21:00</span>
+                            </div>
+                            <div class="agenda-item">
+                                <span class="agenda-item-title">&raquo; Paşa Paşa Tiyatro Yahut...</span>
+                                <span class="agenda-item-meta">Tiyatro / 27.10.2026 19:30</span>
+                            </div>
+                            <div class="agenda-item">
+                                <span class="agenda-item-title">&raquo; İhsan Süreyya Sırma</span>
+                                <span class="agenda-item-meta">Konferans / 28.10.2026 18:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="agenda-dots">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                    </div>
+                </aside>
+            </div>
+
+        </div>
+
+        <!-- 3. FOOTER -->
+        <footer class="box">
+            <div class="footer-grid">
+                <div class="cell footer-box">Sol (Logo &amp; Bağlantılar)</div>
+                <div class="footer-spacer"></div>
+                <div class="cell footer-box">Sağ (İletişim &amp; Sosyal Medya)</div>
+            </div>
+            <div class="cell footer-bottom">Telif Hakkı &amp; Versiyon</div>
+        </footer>
+
+    </div>
+
+</body>
+</html>

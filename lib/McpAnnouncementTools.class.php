@@ -7,6 +7,142 @@
 
 class McpAnnouncementTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_announcements' => [
+                'module' => 'mod_announcements',
+                'role' => 'list',
+                'domain' => 'announcement',
+                'handler' => 'listAnnouncements',
+                'description' => 'List announcements with optional filters. Returns paginated items (id, lang, name, status, deck, created_at) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => ['type' => 'string', 'description' => 'Filter by language code (e.g. ku, en, tr).'],
+                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by publish status: y (published) or n (draft).'],
+                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'Filter by deck flag.'],
+                        'search' => ['type' => 'string', 'description' => 'Search term matched against announcement names.'],
+                        'limit' => ['type' => 'integer', 'minimum' => 1, 'maximum' => 50, 'default' => 10, 'description' => 'Page size (1-50, default 10).'],
+                        'offset' => ['type' => 'integer', 'minimum' => 0, 'default' => 0, 'description' => 'Number of items to skip for pagination.'],
+                    ],
+                ],
+                'title' => 'List Announcements',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_announcement' => [
+                'module' => 'mod_announcements',
+                'role' => 'list',
+                'domain' => 'announcement',
+                'handler' => 'getAnnouncement',
+                'description' => 'Get a single announcement record with all fields, including the full body content and summary.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'integer', 'description' => 'Announcement record ID.'],
+                    ],
+                    'required' => ['id'],
+                ],
+                'title' => 'Get Announcement',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_announcement' => [
+                'module' => 'mod_announcements',
+                'role' => 'add',
+                'domain' => 'announcement',
+                'handler' => 'createAnnouncement',
+                'description' => 'Create an announcement record. The summary must be between 90 and 160 characters (90-120 deck / 120-160 SERP snippet standard). Announcement names are 1-70 characters.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => ['type' => 'string', 'maxLength' => 70, 'description' => 'Announcement name (1-70 characters).'],
+                        'lang' => ['type' => 'string', 'description' => 'Language code of an active site language (e.g. ku, en, tr).'],
+                        'content' => ['type' => 'string', 'description' => 'Full HTML body of the announcement.'],
+                        'summary' => ['type' => 'string', 'minLength' => 90, 'maxLength' => 160, 'description' => 'Deck summary and meta description (90-160 characters; 120-155 recommended).'],
+                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'y', 'description' => 'Publish status: y (published) or n (draft).'],
+                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'default' => 'n', 'description' => 'Show on deck: y or n.'],
+                        'created_at' => ['type' => 'string', 'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.'],
+                        'gallery_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related gallery ID.'],
+                        'file_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Related attachment file ID.'],
+                        'acl_id' => ['type' => 'integer', 'default' => 0, 'description' => 'Access control group ID (0 = public).'],
+                        'image' => ['type' => ['object', 'null'], 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
+                    ],
+                    'required' => ['name', 'lang', 'content', 'summary'],
+                ],
+                'title' => 'Create Announcement',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_announcement' => [
+                'module' => 'mod_announcements',
+                'role' => 'edit',
+                'domain' => 'announcement',
+                'handler' => 'updateAnnouncement',
+                'description' => 'Partially update an announcement record. Only provided fields change; the summary (if provided) must be between 90 and 160 characters.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'integer', 'description' => 'Announcement record ID.'],
+                        'name' => ['type' => 'string', 'maxLength' => 70, 'description' => 'New announcement name (1-70 characters).'],
+                        'lang' => ['type' => 'string', 'description' => 'New language code of an active site language.'],
+                        'content' => ['type' => 'string', 'description' => 'New full HTML body.'],
+                        'summary' => ['type' => 'string', 'minLength' => 90, 'maxLength' => 160, 'description' => 'New deck summary (90-160 characters; 120-155 recommended).'],
+                        'status' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New publish status.'],
+                        'deck' => ['type' => 'string', 'enum' => ['y', 'n'], 'description' => 'New deck flag.'],
+                        'created_at' => ['type' => 'string', 'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).'],
+                        'gallery_id' => ['type' => 'integer', 'description' => 'New related gallery ID.'],
+                        'file_id' => ['type' => 'integer', 'description' => 'New related attachment file ID.'],
+                        'acl_id' => ['type' => 'integer', 'description' => 'New access control group ID.'],
+                        'image' => ['type' => ['object', 'null'], 'description' => 'Upload an image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.', 'properties' => ['data_base64' => ['type' => 'string', 'description' => 'Base64-encoded image file (max 10 MB decoded).'], 'mime' => ['type' => 'string', 'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']]], 'required' => ['data_base64', 'mime']],
+                    ],
+                    'required' => ['id'],
+                ],
+                'title' => 'Update Announcement',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_announcement' => [
+                'module' => 'mod_announcements',
+                'role' => 'delete',
+                'domain' => 'announcement',
+                'handler' => 'deleteAnnouncement',
+                'description' => 'Delete an announcement record. Related gallery, attachment, and FAQ relations and uploaded image files are cleaned up automatically.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => ['type' => 'integer', 'description' => 'Announcement record ID.'],
+                    ],
+                    'required' => ['id'],
+                ],
+                'title' => 'Delete Announcement',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     private const ANNOUNCEMENT_IMAGE_SIZES = [
         '/' => ['width' => 600, 'height' => 780, 'option' => 'width'],
         '/thumb' => ['width' => 300, 'height' => 390, 'option' => 'width'],
@@ -62,23 +198,24 @@ class McpAnnouncementTools extends McpCrudToolsBase
      */
     public function createAnnouncement(array $args): array
     {
-        $name = trim((string) ($args['name'] ?? ''));
+        $name = trim(strip_tags((string) ($args['name'] ?? '')));
         if ($name === '' || mb_strlen($name) > 70) {
             throw new McpToolException("Field 'name' is required (1-70 characters).");
         }
 
         $lang = $this->requireActiveLang($args);
 
-        $content = (string) ($args['content'] ?? '');
+        $content = $this->sanitizeBodyHtml((string) ($args['content'] ?? ''));
         if (trim(strip_tags($content)) === '') {
             throw new McpToolException("Field 'content' is required.");
         }
 
-        $summary = trim((string) ($args['summary'] ?? ''));
+        $summary = trim(strip_tags((string) ($args['summary'] ?? '')));
         if ($summary === '') {
             throw new McpToolException("Field 'summary' is required.");
         }
         $this->assertSummaryLength($summary);
+        $this->assertContentMatchesLang($lang, $name, $summary, $content);
 
         $model = $this->freshModel('mod_announcements');
         $model->name = $name;
@@ -124,7 +261,7 @@ class McpAnnouncementTools extends McpCrudToolsBase
         $lang = isset($args['lang']) ? $this->requireActiveLang($args) : (string) $model->lang;
 
         if (isset($args['name'])) {
-            $name = trim((string) $args['name']);
+            $name = trim(strip_tags((string) $args['name']));
             if ($name === '' || mb_strlen($name) > 70) {
                 throw new McpToolException("Field 'name' must be 1-70 characters.");
             }
@@ -132,7 +269,7 @@ class McpAnnouncementTools extends McpCrudToolsBase
         }
 
         if (isset($args['content'])) {
-            $content = (string) $args['content'];
+            $content = $this->sanitizeBodyHtml((string) $args['content']);
             if (trim(strip_tags($content)) === '') {
                 throw new McpToolException("Field 'content' cannot be empty.");
             }
@@ -140,10 +277,12 @@ class McpAnnouncementTools extends McpCrudToolsBase
         }
 
         if (isset($args['summary'])) {
-            $summary = trim((string) $args['summary']);
+            $summary = trim(strip_tags((string) $args['summary']));
             $this->assertSummaryLength($summary);
             $model->summary = $summary;
         }
+
+        $this->assertContentMatchesLang($lang, (string) $model->name, (string) $model->summary, (string) $model->content);
 
         foreach (['status', 'deck'] as $field) {
             if (isset($args[$field])) {
@@ -157,6 +296,12 @@ class McpAnnouncementTools extends McpCrudToolsBase
 
         if (isset($args['acl_id'])) {
             $model->acl_id = (int) $args['acl_id'];
+        }
+        if (isset($args['gallery_id'])) {
+            $model->gallery_id = (int) $args['gallery_id'];
+        }
+        if (isset($args['file_id'])) {
+            $model->file_id = (int) $args['file_id'];
         }
 
         $model->lang = $lang;

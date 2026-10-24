@@ -472,7 +472,8 @@ class Amed
 
                 if ($tableExists) {
                     $safeUrl = addslashes($cleanRequestUrl);
-                    $db->fetch_array("SELECT * FROM mod_redirect WHERE old_url = '" . $safeUrl . "' OR old_url = '/" . $safeUrl . "' LIMIT 1");
+                    $safeLangUrl = addslashes((isset($this->site['lang']) ? $this->site['lang'] . '/' : '') . $cleanRequestUrl);
+                    $db->fetch_array("SELECT * FROM mod_redirect WHERE old_url = '" . $safeUrl . "' OR old_url = '/" . $safeUrl . "' OR old_url = '" . $safeLangUrl . "' OR old_url = '/" . $safeLangUrl . "' LIMIT 1");
                     if ($db->getSize() > 0) {
                         $redirectRow = $db->toArray()[0];
                         $target = $redirectRow['new_url'];

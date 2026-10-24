@@ -309,7 +309,7 @@ $lang['mod_settings'] = [
     'mcp_link_desc' => 'Bo AI serketdaran (ChatGPT, Cursor, Claude) ku bi rayicê MCP malperê rêve bibin kilîtanên API û serketdarên OAuth biafirîne û birêve bibe.',
     'mcp_link_button' => 'Rêvebirina MCP veke',
 
-    // === Saetên Kar û Girtina Kargehê ===
+    // === Working Hours & Closures ===
     'working_hours_title' => 'Saetên Kar û Betlane',
     'working_hours_menu_desc' => 'Birêvebirina saetên kar ên heftane û girtina klînîkê',
     'section_weekly_hours' => 'Bernameya Xebatê ya Heftane',
@@ -359,7 +359,7 @@ $lang['mod_settings'] = [
     'clear_break' => 'Bêhnvedanê Rake',
     'closed_summary' => 'Tevahiya rojê girtî ye',
 
-    // === Saziyên Peywendîdar & Hevkarî (Affiliations) ===
+    // === Affiliated Institutions & Partnerships (Affiliations) ===
     'affiliations_title' => 'Saziyên Girêdayî & Hevkarî',
     'affiliations_menu_desc' => 'Birêvebirina baro, akredîtasyon, hevkar û peywendiyên sazûmanî',
     'affiliations_section_title' => 'Lîsteya Sazî & Hevkariyan',
@@ -383,4 +383,17 @@ $lang['mod_settings'] = [
     'no_affiliations_found' => 'Hîn tu sazî an hevkariyek nehatiye tomarkirin.',
     'affiliation_reordered_success' => 'Rêz bi serkeftî hat nûjenkirin.',
     'affiliation_toggle_success' => 'Rewş bi serkeftî hat nûjenkirin.',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Navenda Xizmetên Google',
+    'json_invalid' => 'Formata pelê JSON ne derbasdar e!',
+    'google' => [
+        'bucket_name' => 'Navê Google Cloud Storage Bucket',
+        'gemini_api_key' => 'Mifteya Google Gemini API',
+        'credentials_file' => 'Pelê Nasnameya Xizmetê (JSON)',
+        'credentials_status' => 'Rewşa Nasnameyê',
+        'credentials_ok' => 'Barkirî û Çalak',
+        'credentials_missing' => 'Nehatiye Barkirin',
+        'settings_ok' => 'Mîhengên Google bi serkeftî hatin nûjenkirin!',
+    ],
 ];

@@ -331,4 +331,17 @@ $lang['mod_settings'] = [
     'copy_weekdays_success' => 'Часы понедельника скопированы на все будние дни.',
     'clear_break' => 'Удалить перерыв',
     'closed_summary' => 'Закрыто весь день',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Центр сервисов Google',
+    'json_invalid' => 'Неверный формат JSON-файла!',
+    'google' => [
+        'bucket_name' => 'Имя корзины (Bucket) Google Cloud Storage',
+        'gemini_api_key' => 'Ключ API Google Gemini',
+        'credentials_file' => 'Учетные данные сервисного аккаунта (JSON)',
+        'credentials_status' => 'Статус учетных данных',
+        'credentials_ok' => 'Загружено и активно',
+        'credentials_missing' => 'Не загружено',
+        'settings_ok' => 'Настройки Google успешно обновлены!',
+    ],
 ];

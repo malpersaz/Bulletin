@@ -864,28 +864,85 @@ class mod_user_mod extends indexMain
 
         Run::import('management', '_index');
         $this->_assert_panel_language_keys();
-        $this->site['title'] = $this->lang['mod_user']['agent']['title'] ?? 'Amed Agentic';
+        $this->site['title'] = $this->lang['mod_user']['agent']['title'] ?? '';
 
-        // Fetch Gemini configuration from registry or json file
-        $googleConfig = Registry::get('google_config') ?? [];
-        $geminiApiKey = $googleConfig['gemini_api_key'] ?? '';
-        if (empty($geminiApiKey)) {
-            $settingsPath = root_dir . 'data' . DS . 'google_settings.json';
-            if (file_exists($settingsPath)) {
-                $raw = json_decode((string) file_get_contents($settingsPath), true);
-                $geminiApiKey = $raw['gemini_api_key'] ?? '';
-            }
+        // Fetch Gemini configuration via AgentRunner::resolveApiKey()
+        require_once(lib_dir . 'AgentRunner.class.php');
+        $geminiApiKey = AgentRunner::resolveApiKey();
+        $chatCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (strlen($chatCsrf) !== 32) {
+            $chatCsrf = bin2hex(random_bytes(16));
+            $this->session->set('agent_chat_csrf', $chatCsrf);
         }
+        $this->theme->set('agent_chat_csrf', $chatCsrf);
+
+        $assetDir = root_dir . 'templates' . DS . 'admin' . DS . 'assets' . DS;
+        $assetTime = max(
+            (int) @filemtime($assetDir . 'js' . DS . 'mod_user_agent.js'),
+            (int) @filemtime($assetDir . 'css' . DS . 'mod_user_agent.css')
+        );
+        $fallbackVersion = !empty($this->site['version']) ? (string) $this->site['version'] : '1.0.3.79';
+        $this->theme->set('agent_asset_version', $assetTime > 0 ? (string) $assetTime : $fallbackVersion);
+
         $hasGemini = !empty($geminiApiKey);
         $this->theme->set('site', $this->site);
         $this->theme->set('has_gemini', $hasGemini);
-        $this->theme->set('gemini_model', 'gemini-3.8-flash');
+        $activeModel = (string) $this->session->get('agent_active_model');
+        if (empty($activeModel)) {
+            $loggedInUserId = (int) $this->session->get('id');
+            $activeModel = AgentRunner::getActiveModel($loggedInUserId);
+        }
+        $this->theme->set('gemini_model', $activeModel ?: 'gemini-3.8-flash');
         $this->theme->set('agent_chat_url', $this->site['saddress'] . 'mod_user/ajax_agent_chat');
+        $this->theme->set('agent_stream_url', $this->site['saddress'] . 'mod_user/ajax_agent_stream');
+        $this->theme->set('agent_csrf_url', $this->site['saddress'] . 'mod_user/ajax_agent_csrf');
         $this->theme->tpl('mod_user/chat');
     }
 
     /**
-     * AJAX endpoint for AI dialogue powered by Gemini
+     * AJAX endpoint to re-sync or retrieve active CSRF token for the agent dialogue
+     */
+    public function ajax_agent_csrf()
+    {
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
+            ]);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Method not allowed.'
+            ]);
+            exit;
+        }
+
+        $chatCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (strlen($chatCsrf) !== 32) {
+            $chatCsrf = bin2hex(random_bytes(16));
+            $this->session->set('agent_chat_csrf', $chatCsrf);
+        }
+
+        session_write_close();
+
+        header('Cache-Control: no-store, no-cache, must-revalidate');
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => true,
+            'csrf' => $chatCsrf
+        ]);
+        exit;
+    }
+
+    /**
+     * AJAX endpoint for AI dialogue powered by Gemini (Synchronous / Fallback)
      */
     public function ajax_agent_chat()
     {
@@ -894,7 +951,459 @@ class mod_user_mod extends indexMain
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
-                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? 'Unauthorized.'
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
+            ]);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Method not allowed.'
+            ]);
+            exit;
+        }
+
+        $input = file_get_contents('php://input');
+        $data = json_decode((string) $input, true);
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
+
+        // 0.1: CSRF protection
+        $csrfToken = (string) ($data['csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? Req::Post_Safe('csrf')));
+        $sessionCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (empty($sessionCsrf) || empty($csrfToken) || !hash_equals($sessionCsrf, $csrfToken)) {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'code' => 'csrf_invalid',
+                'error' => $this->lang['mod_user']['agent']['csrf_error'] ?? ''
+            ]);
+            exit;
+        }
+
+        $userId = (int) $this->session->get('id');
+        $groupId = (int) $this->session->get('group_id');
+        if ($groupId === 0 && isset($_SESSION['group_id'])) {
+            $groupId = (int) $_SESSION['group_id'];
+        }
+
+        require_once(lib_dir . 'AgentRunner.class.php');
+
+        // 0.2: Dedicated Clear Conversation Handler
+        if (!empty($data['clear_history'])) {
+            AgentRunner::clearChatHistory($userId);
+            AgentRunner::clearPendingAction($userId);
+            AgentRunner::deleteState($userId, 'model_pin', 'default');
+            session_write_close();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'message' => $this->lang['mod_user']['agent']['history_cleared'] ?? ''
+            ]);
+            exit;
+        }
+
+        // 0.3: Cancel Pending Action Handler
+        if (!empty($data['cancel_action_id'])) {
+            AgentRunner::clearPendingAction($userId);
+            session_write_close();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => true,
+                'cancelled' => true,
+                'reply' => $this->lang['mod_user']['agent']['action_cancelled'] ?? ''
+            ]);
+            exit;
+        }
+
+        // 0.4: Per-User Chat Rate Limiting
+        require_once(lib_dir . 'McpAuditLogger.class.php');
+        if (!McpAuditLogger::checkRateLimit('agent_chat', 'user_' . $userId, 30, 'chat_request')) {
+            session_write_close();
+            header('HTTP/1.1 429 Too Many Requests');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['rate_limit_exceeded'] ?? ''
+            ]);
+            exit;
+        }
+
+        // 0.5: Single-flight concurrency lock with owner token and shutdown hook (§4 A6)
+        $lockToken = AgentRunner::acquireLock($userId, 45);
+        if (!$lockToken) {
+            session_write_close();
+            header('HTTP/1.1 429 Too Many Requests');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'code' => 'concurrent_run',
+                'error' => $this->lang['mod_user']['agent']['concurrent_run'] ?? ''
+            ]);
+            exit;
+        }
+
+        register_shutdown_function(function() use ($userId, $lockToken) {
+            AgentRunner::releaseLock($userId, $lockToken);
+        });
+
+        // 0.6: Deduplication check (§4 A5)
+        $requestId = trim((string) ($data['request_id'] ?? ''));
+        if ($requestId !== '') {
+            $cached = AgentRunner::getRequestResult($userId, $requestId);
+            if ($cached !== null) {
+                AgentRunner::releaseLock($userId, $lockToken);
+                session_write_close();
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($cached);
+                exit;
+            }
+        }
+
+        $activeLang = $this->site['lang'] ?? 'en';
+        $preferredModel = AgentRunner::getActiveModel($userId) ?: (string) $this->session->get('agent_active_model');
+        session_write_close();
+
+        try {
+            $runner = new AgentRunner($userId, $groupId, $activeLang, null, 'blocking', $preferredModel ?: null);
+            $runner->setLockToken($lockToken);
+
+            // Resume Server-Side Confirmed Action
+            if (!empty($data['confirm_action_id'])) {
+                $confirmId = (string) $data['confirm_action_id'];
+                $pendingAction = AgentRunner::getPendingAction($userId, $confirmId) ?: AgentRunner::getPendingAction($userId);
+                if (!is_array($pendingAction) || ($pendingAction['id'] ?? '') !== $confirmId || ($pendingAction['user_id'] ?? 0) !== $userId) {
+                    header('HTTP/1.1 400 Bad Request');
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'success' => false,
+                        'error' => $this->lang['mod_user']['agent']['action_expired'] ?? ''
+                    ]);
+                    return;
+                }
+
+                AgentRunner::clearPendingAction($userId);
+                set_time_limit(90);
+
+                McpAuditLogger::log([
+                    'caller_type' => 'agent_chat',
+                    'caller_id' => 'user_' . $userId,
+                    'user_id' => $userId,
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                    'tool_name' => 'chat_request',
+                    'tokens_used' => 0,
+                    'status_code' => 200,
+                    'is_error' => 0,
+                ]);
+
+                $result = $runner->resumeConfirmation($pendingAction);
+                if (!empty($result['success']) && !empty($result['reply'])) {
+                    $serverHistory = AgentRunner::getChatHistory($userId);
+                    $serverHistory[] = ['role' => 'model', 'text' => $result['reply']];
+                    AgentRunner::setChatHistory($userId, $serverHistory);
+                    if (!empty($result['model'])) {
+                        AgentRunner::setActiveModel($userId, $result['model']);
+                    }
+                }
+                if ($requestId !== '') {
+                    AgentRunner::recordRequestId($userId, $requestId, $result);
+                }
+
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode($result);
+                return;
+            }
+
+            // New Prompt Turn
+            $prompt = trim((string) ($data['prompt'] ?? Req::Post_Safe('prompt')));
+            if ($prompt === '') {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'success' => false,
+                    'error' => $this->lang['mod_user']['agent']['empty_error'] ?? ''
+                ]);
+                return;
+            }
+
+            set_time_limit(90);
+            McpAuditLogger::log([
+                'caller_type' => 'agent_chat',
+                'caller_id' => 'user_' . $userId,
+                'user_id' => $userId,
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                'tool_name' => 'chat_request',
+                'tokens_used' => 0,
+                'status_code' => 200,
+                'is_error' => 0,
+            ]);
+
+            $serverHistory = AgentRunner::getChatHistory($userId);
+            $result = $runner->execute($prompt, $serverHistory, $data);
+
+            if (!empty($result['success']) && !empty($result['reply'])) {
+                $serverHistory[] = ['role' => 'user', 'text' => $prompt];
+                $serverHistory[] = ['role' => 'model', 'text' => $result['reply']];
+                AgentRunner::setChatHistory($userId, $serverHistory);
+                if (!empty($result['model'])) {
+                    AgentRunner::setActiveModel($userId, $result['model']);
+                }
+            }
+            if ($requestId !== '') {
+                AgentRunner::recordRequestId($userId, $requestId, $result);
+            }
+
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($result);
+            return;
+        } finally {
+            AgentRunner::releaseLock($userId, $lockToken);
+        }
+    }
+
+    /**
+     * SSE Streaming endpoint for AI dialogue powered by Gemini (§4 Workstream B)
+     */
+    public function ajax_agent_stream()
+    {
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
+            ]);
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('HTTP/1.1 405 Method Not Allowed');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Method not allowed.'
+            ]);
+            exit;
+        }
+
+        $input = file_get_contents('php://input');
+        $data = json_decode((string) $input, true);
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
+
+        // CSRF protection
+        $csrfToken = (string) ($data['csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? Req::Post_Safe('csrf')));
+        $sessionCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (empty($sessionCsrf) || empty($csrfToken) || !hash_equals($sessionCsrf, $csrfToken)) {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'code' => 'csrf_invalid',
+                'error' => $this->lang['mod_user']['agent']['csrf_error'] ?? ''
+            ]);
+            exit;
+        }
+
+        $userId = (int) $this->session->get('id');
+        $groupId = (int) $this->session->get('group_id');
+        if ($groupId === 0 && isset($_SESSION['group_id'])) {
+            $groupId = (int) $_SESSION['group_id'];
+        }
+
+        require_once(lib_dir . 'AgentRunner.class.php');
+
+        // Per-User Chat Rate Limiting
+        require_once(lib_dir . 'McpAuditLogger.class.php');
+        if (!McpAuditLogger::checkRateLimit('agent_chat', 'user_' . $userId, 30, 'chat_request')) {
+            session_write_close();
+            header('HTTP/1.1 429 Too Many Requests');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['rate_limit_exceeded'] ?? ''
+            ]);
+            exit;
+        }
+
+        // Single-flight concurrency lock with owner token and shutdown hook (§4 A6)
+        $lockToken = AgentRunner::acquireLock($userId, 45);
+        if (!$lockToken) {
+            session_write_close();
+            header('HTTP/1.1 429 Too Many Requests');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'code' => 'concurrent_run',
+                'error' => $this->lang['mod_user']['agent']['concurrent_run'] ?? ''
+            ]);
+            exit;
+        }
+
+        register_shutdown_function(function() use ($userId, $lockToken) {
+            AgentRunner::releaseLock($userId, $lockToken);
+        });
+
+        // Deduplication check (§4 A5)
+        $requestId = trim((string) ($data['request_id'] ?? ''));
+        if ($requestId !== '') {
+            $cached = AgentRunner::getRequestResult($userId, $requestId);
+            if ($cached !== null) {
+                AgentRunner::releaseLock($userId, $lockToken);
+                session_write_close();
+
+                while (ob_get_level()) { @ob_end_flush(); }
+                @ini_set('zlib.output_compression', '0');
+                ob_implicit_flush(true);
+                header('Content-Type: text/event-stream; charset=utf-8');
+                header('Cache-Control: no-cache, no-transform');
+                header('Connection: keep-alive');
+                header('X-Accel-Buffering: no');
+                echo ": connected\n\n";
+                echo "data: " . json_encode(array_merge(['seq' => 1, 'type' => 'done'], $cached), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+                flush();
+                exit;
+            }
+        }
+
+        $activeLang = $this->site['lang'] ?? 'en';
+        $preferredModel = AgentRunner::getActiveModel($userId) ?: (string) $this->session->get('agent_active_model');
+        session_write_close();
+
+        // Prepare SSE stream environment (§4 B1)
+        while (ob_get_level()) {
+            @ob_end_flush();
+        }
+        @ini_set('zlib.output_compression', '0');
+        if (function_exists('apache_setenv')) {
+            @apache_setenv('no-gzip', '1');
+        }
+        ob_implicit_flush(true);
+        ignore_user_abort(true);
+        set_time_limit(270);
+
+        header('Content-Type: text/event-stream; charset=utf-8');
+        header('Cache-Control: no-cache, no-transform');
+        header('Connection: keep-alive');
+        header('X-Accel-Buffering: no');
+
+        echo ": connected\n\n";
+        flush();
+
+        $sequenceNumber = 0;
+        $eventSink = function (array $event) use (&$sequenceNumber) {
+            $sequenceNumber++;
+            $payload = json_encode(array_merge(['seq' => $sequenceNumber], $event), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            echo "data: {$payload}\n\n";
+            flush();
+        };
+
+        try {
+            $runner = new AgentRunner($userId, $groupId, $activeLang, null, 'stream', $preferredModel ?: null);
+            $runner->setEventSink($eventSink);
+            $runner->setLockToken($lockToken);
+
+            // Resume Confirmation Action
+            if (!empty($data['confirm_action_id'])) {
+                $confirmId = (string) $data['confirm_action_id'];
+                $pendingAction = AgentRunner::getPendingAction($userId, $confirmId) ?: AgentRunner::getPendingAction($userId);
+                if (!is_array($pendingAction) || ($pendingAction['id'] ?? '') !== $confirmId || ($pendingAction['user_id'] ?? 0) !== $userId) {
+                    $eventSink([
+                        'type' => 'error',
+                        'error' => $this->lang['mod_user']['agent']['action_expired'] ?? ''
+                    ]);
+                    return;
+                }
+
+                AgentRunner::clearPendingAction($userId);
+                McpAuditLogger::log([
+                    'caller_type' => 'agent_chat',
+                    'caller_id' => 'user_' . $userId,
+                    'user_id' => $userId,
+                    'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                    'tool_name' => 'chat_request',
+                    'tokens_used' => 0,
+                    'status_code' => 200,
+                    'is_error' => 0,
+                ]);
+
+                $result = $runner->resumeConfirmation($pendingAction);
+                if (!empty($result['success']) && !empty($result['reply'])) {
+                    $serverHistory = AgentRunner::getChatHistory($userId);
+                    $serverHistory[] = ['role' => 'model', 'text' => $result['reply']];
+                    AgentRunner::setChatHistory($userId, $serverHistory);
+                    if (!empty($result['model'])) {
+                        AgentRunner::setActiveModel($userId, $result['model']);
+                    }
+                }
+                if ($requestId !== '') {
+                    AgentRunner::recordRequestId($userId, $requestId, $result);
+                }
+                return;
+            }
+
+            // New Prompt Turn
+            $prompt = trim((string) ($data['prompt'] ?? Req::Post_Safe('prompt')));
+            if ($prompt === '') {
+                $eventSink([
+                    'type' => 'error',
+                    'error' => $this->lang['mod_user']['agent']['empty_error'] ?? ''
+                ]);
+                return;
+            }
+
+            McpAuditLogger::log([
+                'caller_type' => 'agent_chat',
+                'caller_id' => 'user_' . $userId,
+                'user_id' => $userId,
+                'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+                'tool_name' => 'chat_request',
+                'tokens_used' => 0,
+                'status_code' => 200,
+                'is_error' => 0,
+            ]);
+
+            $serverHistory = AgentRunner::getChatHistory($userId);
+            $result = $runner->execute($prompt, $serverHistory, $data);
+
+            if (!empty($result['success']) && !empty($result['reply'])) {
+                $serverHistory[] = ['role' => 'user', 'text' => $prompt];
+                $serverHistory[] = ['role' => 'model', 'text' => $result['reply']];
+                AgentRunner::setChatHistory($userId, $serverHistory);
+                if (!empty($result['model'])) {
+                    AgentRunner::setActiveModel($userId, $result['model']);
+                }
+            }
+            if ($requestId !== '') {
+                AgentRunner::recordRequestId($userId, $requestId, $result);
+            }
+        } catch (\Throwable $t) {
+            $eventSink([
+                'type' => 'error',
+                'error' => 'Runtime error: ' . $t->getMessage()
+            ]);
+        } finally {
+            AgentRunner::releaseLock($userId, $lockToken);
+        }
+        exit;
+    }
+
+    /**
+     * Starts an asynchronous background agent job
+     */
+    public function ajax_agent_job_start()
+    {
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
             ]);
             exit;
         }
@@ -908,259 +1417,212 @@ class mod_user_mod extends indexMain
             exit;
         }
 
-        $googleConfig = Registry::get('google_config') ?? [];
-        $apiKey = $googleConfig['gemini_api_key'] ?? '';
-        if (empty($apiKey)) {
-            $settingsPath = root_dir . 'data' . DS . 'google_settings.json';
-            if (file_exists($settingsPath)) {
-                $raw = json_decode((string) file_get_contents($settingsPath), true);
-                $apiKey = $raw['gemini_api_key'] ?? '';
-            }
-        }
-
-        if (empty($apiKey)) {
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode([
-                'success' => false,
-                'error' => 'Mifteya Gemini API nehatiye tomarkirin. Ji kerema xwe ji Google Services Hubê mifteya xwe tomar bike.'
-            ]);
-            exit;
-        }
-
         $input = file_get_contents('php://input');
-        $data = json_decode($input, true);
-        $prompt = '';
-        $history = [];
-        if (is_array($data)) {
-            $prompt = trim((string) ($data['prompt'] ?? ''));
-            $history = is_array($data['history'] ?? null) ? $data['history'] : [];
-        } else {
-            $prompt = trim((string) Req::Post_Safe('prompt'));
+        $data = json_decode((string) $input, true);
+        if (!is_array($data)) {
+            $data = $_POST;
         }
 
-        if ($prompt === '') {
+        // CSRF protection
+        $csrfToken = (string) ($data['csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? Req::Post_Safe('csrf')));
+        $sessionCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (empty($sessionCsrf) || empty($csrfToken) || !hash_equals($sessionCsrf, $csrfToken)) {
+            header('HTTP/1.1 403 Forbidden');
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
-                'error' => $this->lang['mod_user']['agent']['empty_error'] ?? 'Ji kerema xwe fermanekê binivîse.'
+                'code' => 'csrf_invalid',
+                'error' => $this->lang['mod_user']['agent']['csrf_error'] ?? ''
             ]);
             exit;
         }
 
-        // Build conversation messages array
-        $contents = [];
-        foreach ($history as $msg) {
-            if (isset($msg['role'], $msg['text']) && is_string($msg['text']) && trim($msg['text']) !== '') {
-                $role = ($msg['role'] === 'user') ? 'user' : 'model';
-                $contents[] = [
-                    'role' => $role,
-                    'parts' => [
-                        ['text' => trim($msg['text'])]
-                    ]
-                ];
-            }
-        }
-
-        // Add current user prompt
-        $contents[] = [
-            'role' => 'user',
-            'parts' => [
-                ['text' => $prompt]
-            ]
-        ];
-
-        // Strict system instructions for Kurdish dialect and MCP tool execution
-        $activeLang = $this->site['lang'] ?? 'ku';
-        $systemInstruction = "Tu alîkarê zana, jêhatî û rêveberê xweser ê pergala AKM Bulletin CMS yî.
-Rêgezên te yên sereke:
-1. Zimanê te her dem Kurdiya Kurmancî ya standard, resen û bi alfabeya Latînî (a-z, ç, ê, î, ş, û) ye.
-2. Peyvên taybet: ji bo 'update' peyva 'nûjenkirin', ji bo 'click' peyva 'tikandin', û ji bo 'add' peyva 'lêke' (mînak: gotarekê lêke, pêşekekê lêke) bi kar bîne.
-3. Şiyana te ya fermî heye ku bi riya amûrên AKM Bulletin CMS MCP rasterast di sîstemê de çalakiyan pêk bînî.
-4. Zimanê niha yê çalakiya rêveberiyê: '{$activeLang}'. Dema tu tiştekî çêdikî an lê digerî, heke ziman nehatibe diyarkirin vê zimanê '{$activeLang}' bi kar bîne.
-5. Rêbaza xebatê ya çalak, rasterast û lezgîn:
-   - Daxwaza rêveber di kêmtirîn gavan de (1 an 2 gavan) pêk bîne.
-   - Heke ji bo pêşekekê (menu) cîh an parent_id lazim be, pêşî bi list_menu_items bibîne, piştre rasterast bi create_menu_item yan update_menu_item çêke/nûjen bike.
-   - Ji bo rêzkirinê (order), qet pêdivî nîne tu hêmanên din jê bibî! Tenê nirxa order li gorî rêza xwestî diyar bike. Tu caran hêmanên din ên pergalê bêyî daxwaza rêveber jê mebe!
-6. Piştî ku amûr hat xebitandin, di gava din de bi lezgînî bi kurteyek zelal, kêrhatî û dilgerm bi Kurmancî ji rêveber re bibêje ku daxwaza wî bi serkeftî hat pêkanîn.";
-
-        // Initialize MCP Server for logged-in user
-        require_once(lib_dir . 'McpServer.class.php');
-        $mcpServer = new McpServer();
         $userId = (int) $this->session->get('id');
         $groupId = (int) $this->session->get('group_id');
         if ($groupId === 0 && isset($_SESSION['group_id'])) {
             $groupId = (int) $_SESSION['group_id'];
         }
-        $mcpServer->initForUser($userId, $groupId);
-        $geminiTools = $mcpServer->getToolsForGemini();
 
-        $payload = [
-            'system_instruction' => [
-                'parts' => [
-                    ['text' => $systemInstruction]
-                ]
-            ],
-            'contents' => $contents,
-            'generationConfig' => [
-                'temperature' => 0.4,
-                'maxOutputTokens' => 2048,
-            ]
-        ];
-
-        if (!empty($geminiTools)) {
-            $payload['tools'] = [
-                [
-                    'functionDeclarations' => $geminiTools
-                ]
-            ];
-        }
-
-        // Multi-turn autonomous tool execution loop (up to 6 turns)
-        $maxToolTurns = 6;
-        $currentTurn = 0;
-        $replyText = '';
-        $usedModel = 'gemini-3.8-flash';
-        $lastError = '';
-        $executedTools = [];
-
-        while ($currentTurn < $maxToolTurns) {
-            $currentTurn++;
-            $turnRes = $this->_call_gemini_api($payload, $apiKey);
-
-            if (!$turnRes['success']) {
-                $lastError = $turnRes['error'];
-                break;
-            }
-
-            $usedModel = $turnRes['model'];
-            $resData = $turnRes['data'];
-            $candidate = $resData['candidates'][0] ?? null;
-            $parts = $candidate['content']['parts'] ?? [];
-
-            // Detect all functionCall parts in this turn (supporting parallel function calling)
-            $functionCalls = [];
-            foreach ($parts as $p) {
-                if (!empty($p['functionCall'])) {
-                    $functionCalls[] = $p['functionCall'];
-                }
-            }
-
-            if (!empty($functionCalls)) {
-                // Append model's turn with its exact parts (preserves thoughtSignature, functionCalls, etc.)
-                $payload['contents'][] = [
-                    'role' => 'model',
-                    'parts' => $parts
-                ];
-
-                // Execute all tools and collect their responses
-                $functionResponseParts = [];
-                foreach ($functionCalls as $fc) {
-                    $toolName = (string) ($fc['name'] ?? '');
-                    $toolArgs = is_array($fc['args'] ?? null) ? $fc['args'] : [];
-
-                    $executedTools[] = $toolName;
-                    $toolExecutionResult = $mcpServer->executeToolDirect($toolName, $toolArgs);
-
-                    $frItem = [
-                        'name' => $toolName,
-                        'response' => [
-                            'content' => $toolExecutionResult
-                        ]
-                    ];
-                    if (!empty($fc['id'])) {
-                        $frItem['id'] = $fc['id'];
-                    }
-
-                    $functionResponseParts[] = [
-                        'functionResponse' => $frItem
-                    ];
-                }
-
-                // Append tool responses as user turn
-                $payload['contents'][] = [
-                    'role' => 'user',
-                    'parts' => $functionResponseParts
-                ];
-
-                // Continue to next turn so Gemini generates confirmation or executes next tool
-                continue;
-            }
-
-            // Extract final text response (excluding thinking blocks)
-            $candidateText = '';
-            foreach ($parts as $p) {
-                if (!empty($p['thought'])) {
-                    continue;
-                }
-                if (!empty($p['text'])) {
-                    $candidateText .= $p['text'];
-                }
-            }
-            if ($candidateText === '' && !empty($parts[0]['text'])) {
-                $candidateText = $parts[0]['text'];
-            }
-
-            if ($candidateText !== '') {
-                $replyText = $candidateText;
-                break;
-            }
-        }
-
-        // If tools executed but model did not produce a text summary yet, request summary
-        if ($replyText === '' && !empty($executedTools)) {
-            $summaryPayload = $payload;
-            unset($summaryPayload['tools']);
-            $summaryPayload['contents'][] = [
-                'role' => 'user',
-                'parts' => [
-                    ['text' => 'Amûrên pêwîst hatin xebitandin. Ji kerema xwe niha bi Kurmancî bersiveke kurt û zelal bide rêveber ku çi hat kirin.']
-                ]
-            ];
-            $summaryRes = $this->_call_gemini_api($summaryPayload, $apiKey);
-            if ($summaryRes['success']) {
-                $summaryCandidate = $summaryRes['data']['candidates'][0] ?? null;
-                $sParts = $summaryCandidate['content']['parts'] ?? [];
-                foreach ($sParts as $sp) {
-                    if (!empty($sp['text'])) {
-                        $replyText .= $sp['text'];
-                    }
-                }
-            }
-            if ($replyText === '') {
-                $replyText = "Daxwaza te bi serkeftî di pergalê de bi riya amûran (" . implode(', ', array_unique($executedTools)) . ") hat pêkanîn.";
-            }
-        }
-
-        header('Content-Type: application/json; charset=utf-8');
-
-        if ($replyText === '') {
-            $errMsg = !empty($lastError) ? $lastError : 'Tu bersiv ji modelê nehat standin.';
+        require_once(lib_dir . 'McpAuditLogger.class.php');
+        if (!McpAuditLogger::checkRateLimit('agent_chat', 'user_' . $userId, 30, 'chat_request')) {
+            session_write_close();
+            header('HTTP/1.1 429 Too Many Requests');
+            header('Content-Type: application/json; charset=utf-8');
             echo json_encode([
                 'success' => false,
-                'error' => $errMsg
+                'error' => $this->lang['mod_user']['agent']['rate_limit_exceeded'] ?? ''
             ]);
             exit;
         }
 
+        $prompt = trim((string) ($data['prompt'] ?? Req::Post_Safe('prompt')));
+        if ($prompt === '') {
+            session_write_close();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['empty_error'] ?? ''
+            ]);
+            exit;
+        }
+
+        session_write_close();
+
+        McpAuditLogger::log([
+            'caller_type' => 'agent_chat',
+            'caller_id' => 'user_' . $userId,
+            'user_id' => $userId,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1',
+            'tool_name' => 'chat_request',
+            'tokens_used' => 0,
+            'status_code' => 200,
+            'is_error' => 0,
+        ]);
+
+        require_once(lib_dir . 'AgentRunner.class.php');
+        $lang = $this->site['lang'] ?? 'en';
+        $jobId = AgentRunner::createJob($userId, $groupId, $lang, $prompt);
+
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'success' => true,
-            'reply' => $replyText,
-            'model' => $usedModel,
-            'executed_tools' => $executedTools,
+            'job_id' => $jobId,
+            'status' => 'queued',
         ]);
         exit;
     }
 
     /**
-     * Executes resilient Gemini API calls with automated model fallback and transient error retry
+     * Polls the status and result of a background agent job
      */
-    private function _call_gemini_api(array $payload, string $apiKey): array
+    public function ajax_agent_job_status()
     {
-        if (!class_exists('AIService')) {
-            require_once lib_dir . 'AIService.class.php';
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
+            ]);
+            exit;
         }
-        $aiService = new AIService($apiKey);
-        return $aiService->generateContent($payload);
+
+        $jobId = trim((string) ($_GET['job_id'] ?? ($_POST['job_id'] ?? Req::Post_Safe('job_id'))));
+        if ($jobId === '') {
+            header('HTTP/1.1 400 Bad Request');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Missing job_id.'
+            ]);
+            exit;
+        }
+
+        $userId = (int) $this->session->get('id');
+        $groupId = (int) $this->session->get('group_id');
+        if ($groupId === 0 && isset($_SESSION['group_id'])) {
+            $groupId = (int) $_SESSION['group_id'];
+        }
+        session_write_close();
+
+        require_once(lib_dir . 'AgentRunner.class.php');
+        $job = AgentRunner::getJob($jobId);
+        if (!$job) {
+            header('HTTP/1.1 404 Not Found');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Job not found.'
+            ]);
+            exit;
+        }
+
+        // Ownership validation: owner or root admin
+        if ((int) $job['user_id'] !== $userId && $groupId !== 1) {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Access denied.'
+            ]);
+            exit;
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => true,
+            'job_id' => $job['job_id'],
+            'status' => $job['status'],
+            'stop_reason' => $job['stop_reason'] ?? null,
+            'current_turn' => (int) ($job['current_turn'] ?? 0),
+            'progress_text' => $job['progress_text'] ?? null,
+            'result' => $job['result'] ?? null,
+            'tokens_used' => (int) ($job['tokens_used'] ?? 0),
+            'created_at' => $job['created_at'],
+            'updated_at' => $job['updated_at'],
+        ]);
+        exit;
+    }
+
+    /**
+     * Cancels an ongoing background agent job
+     */
+    public function ajax_agent_job_cancel()
+    {
+        if ($this->user->checklogin() === false) {
+            header('HTTP/1.1 401 Unauthorized');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => $this->lang['mod_user']['agent']['unauthorized'] ?? ''
+            ]);
+            exit;
+        }
+
+        $input = file_get_contents('php://input');
+        $data = json_decode((string) $input, true);
+        if (!is_array($data)) {
+            $data = $_POST;
+        }
+
+        $csrfToken = (string) ($data['csrf'] ?? ($_SERVER['HTTP_X_CSRF_TOKEN'] ?? Req::Post_Safe('csrf')));
+        $sessionCsrf = (string) $this->session->get('agent_chat_csrf');
+        if (empty($sessionCsrf) || empty($csrfToken) || !hash_equals($sessionCsrf, $csrfToken)) {
+            header('HTTP/1.1 403 Forbidden');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'code' => 'csrf_invalid',
+                'error' => $this->lang['mod_user']['agent']['csrf_error'] ?? ''
+            ]);
+            exit;
+        }
+
+        $jobId = trim((string) ($data['job_id'] ?? ''));
+        if ($jobId === '') {
+            session_write_close();
+            header('HTTP/1.1 400 Bad Request');
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([
+                'success' => false,
+                'error' => 'Missing job_id.'
+            ]);
+            exit;
+        }
+
+        $userId = (int) $this->session->get('id');
+        session_write_close();
+
+        require_once(lib_dir . 'AgentRunner.class.php');
+        $cancelled = AgentRunner::cancelJob($jobId, $userId);
+
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => $cancelled,
+            'job_id' => $jobId,
+            'cancelled' => $cancelled,
+        ]);
+        exit;
     }
 
     private function _panel_module($module, $permAction, $title, $icon, array $links, array $extraKeywords = [])
@@ -1401,6 +1863,7 @@ Rêgezên te yên sereke:
                         $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['working_hours_title'] ?? 'Working Hours & Closures', $base . 'mod_settings/working_hours'),
                         $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['affiliations_title'] ?? 'Affiliations & Partnerships', $base . 'mod_settings/affiliations'),
                         $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['social'], $base . 'mod_settings/social_media'),
+                        $this->_panel_link('mod_settings', 'edit', $settings_lang['mod_settings']['google_settings'], $base . 'mod_settings/google_settings'),
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_status_menu_title'], 'open-site-status'),
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['stats_title'], 'open-stats'),
                         $this->_panel_action('mod_settings', 'edit', $settings_lang['mod_settings']['site_settings_menu_title'], 'open-site-settings-menu'),
@@ -1415,7 +1878,6 @@ Rêgezên te yên sereke:
                     ], ['saat', 'calisma saatleri', 'working hours', 'saeten xebate', 'tatil', 'closures', 'betlane', 'mesai', 'tatiller']),
                     $mod('mod_seo', 'list', $seo_lang['mod_seo']['list'], 'bi bi-graph-up-arrow', [
                         $this->_panel_link('mod_seo', 'list', $p['link_list'], $base . 'mod_seo/index'),
-                        $this->_panel_link('mod_settings', 'edit', $seo_lang['mod_seo']['google_settings'], $base . 'mod_seo/google_settings'),
                     ]),
                     $mod('mod_settings', 'edit', $management['language_management_menu'], 'bi bi-translate', [
                         $this->_panel_link('mod_settings', 'edit', $p['link_list'], $base . 'lang/panel'),
@@ -1492,6 +1954,7 @@ Rêgezên te yên sereke:
             [$settings_lang, ['mod_settings', 'legal_info_description']],
             [$settings_lang, ['mod_settings', 'theme_management_title']],
             [$settings_lang, ['mod_settings', 'theme_select_label']],
+            [$settings_lang, ['mod_settings', 'google_settings']],
             [$this->lang, ['mod_user', 'fab', 'add_content']],
             [$this->lang, ['mod_user', 'fab', 'add_page']],
             [$this->lang, ['mod_user', 'fab', 'add_publication']],

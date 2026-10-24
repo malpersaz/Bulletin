@@ -11,6 +11,11 @@
 {% endblock %}
 
 {% block content %}
+<div class="mcp-tabs">
+    <a href="{{ site.saddress }}mod_mcp/list" class="mcp-tab-item active">{{ lang.mod_mcp.nav_keys }}</a>
+    <a href="{{ site.saddress }}mod_mcp/audit" class="mcp-tab-item">{{ lang.mod_mcp.nav_audit }}</a>
+</div>
+
 <div class="mcp-page-intro">{{ lang.mod_mcp.page_intro }}</div>
 
 <div class="mcp-endpoint-card">

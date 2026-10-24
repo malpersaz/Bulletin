@@ -8,6 +8,996 @@
 class McpVideoTools extends McpCrudToolsBase
 {
     /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_videos' => [
+                'module' => 'mod_video',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'listVideos',
+                'description' => 'List local video records with optional filters. Returns paginated items (id, lang, name, duration, status, slider, image, created_at) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by hero slider flag.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against video names.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Videos',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_video' => [
+                'module' => 'mod_video',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'getVideo',
+                'description' => 'Get a single local video record with all fields, including the converted file name, original file name, duration, description, and ACL group.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Video',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_video' => [
+                'module' => 'mod_video',
+                'role' => 'add',
+                'domain' => 'video',
+                'handler' => 'createVideo',
+                'description' => 'Create a local video record. The duration must be 5-8 characters (e.g. HH:MM:SS). Optionally uploads a thumbnail image (base64-encoded).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Video name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'minLength' => 5,
+                            'maxLength' => 8,
+                            'description' => 'Video duration (5-8 characters, e.g. HH:MM:SS).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'description' => 'Optional video description.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'n',
+                            'description' => 'Show in hero slider flag.',
+                        ],
+                        'flv' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'File name of the converted video under static/mod_video/flv. Optional.',
+                        ],
+                        'original' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'File name of the original upload under static/mod_video/original. Optional.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Access control group ID.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a thumbnail image (base64-encoded) or null to skip. On create: absent = no image.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'lang',
+                        'duration',
+                    ],
+                ],
+                'title' => 'Create Video',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_video' => [
+                'module' => 'mod_video',
+                'role' => 'edit',
+                'domain' => 'video',
+                'handler' => 'updateVideo',
+                'description' => 'Partially update a local video record. Only supplied fields change; the image argument uploads a new thumbnail (base64) or null removes the existing one. Absent = unchanged.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video record ID.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New video name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'minLength' => 5,
+                            'maxLength' => 8,
+                            'description' => 'New video duration (5-8 characters, e.g. HH:MM:SS).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'description' => 'New video description.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New hero slider flag.',
+                        ],
+                        'flv' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New converted video file name.',
+                        ],
+                        'original' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New original video file name.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'description' => 'New access control group ID.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a new thumbnail (base64-encoded) or null to remove the existing one. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Video',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_video' => [
+                'module' => 'mod_video',
+                'role' => 'delete',
+                'domain' => 'video',
+                'handler' => 'deleteVideo',
+                'description' => 'Delete a local video record. Related gallery/attachment relations, the converted and original video files, and the thumbnail image are cleaned up automatically.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Video',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_video_embeds' => [
+                'module' => 'mod_video_embed',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'listVideoEmbeds',
+                'description' => 'List embedded video records with optional filters. Returns paginated items (id, lang, category_id, name, duration, status, slider, image, created_at) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'category_id' => [
+                            'type' => 'integer',
+                            'description' => 'Filter by video embed category ID.',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by hero slider flag.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against video names.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Video Embeds',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_video_embed' => [
+                'module' => 'mod_video_embed',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'getVideoEmbed',
+                'description' => 'Get a single embedded video record with all fields, including the embed code, body content, SEO metadata, and thumbnail.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Video Embed',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_video_embed' => [
+                'module' => 'mod_video_embed',
+                'role' => 'add',
+                'domain' => 'video',
+                'handler' => 'createVideoEmbed',
+                'description' => 'Create an embedded video record (e.g. YouTube). The category must exist and match the video language. The content field is sanitized through the same HTML purifier as the admin form. Emoji in name, content, title, keywords, or description are rejected, mirroring the admin validator.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Video name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'category_id' => [
+                            'type' => 'integer',
+                            'description' => 'ID of an existing video embed category with the same language.',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'minLength' => 5,
+                            'maxLength' => 8,
+                            'description' => 'Video duration (5-8 characters, e.g. HH:MM:SS).',
+                        ],
+                        'embed' => [
+                            'type' => 'string',
+                            'description' => 'Embed code or URL (e.g. a YouTube iframe embed). Required.',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'Full HTML body of the video description. Required; sanitized like the admin form.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO title (1-255 characters). Required.',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO keywords (1-255 characters). Required.',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO description (1-255 characters). Required.',
+                        ],
+                        'original' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Original video URL (e.g. the YouTube watch URL). Optional.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'y',
+                            'description' => 'Publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'n',
+                            'description' => 'Show in hero slider flag.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Access control group ID.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'Creation datetime (YYYY-MM-DD HH:MM:SS). Defaults to now.',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a thumbnail image (base64-encoded) or null to skip. On create: absent = no image.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'lang',
+                        'category_id',
+                        'duration',
+                        'embed',
+                        'content',
+                        'title',
+                        'keywords',
+                        'description',
+                    ],
+                ],
+                'title' => 'Create Video Embed',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_video_embed' => [
+                'module' => 'mod_video_embed',
+                'role' => 'edit',
+                'domain' => 'video',
+                'handler' => 'updateVideoEmbed',
+                'description' => 'Partially update an embedded video record. The category must match the (possibly new) language. Emoji are rejected in name, content, title, keywords, and description. The image argument uploads a new thumbnail (base64) or null removes the existing one. Absent = unchanged.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed record ID.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New video name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.',
+                        ],
+                        'category_id' => [
+                            'type' => 'integer',
+                            'description' => 'New video embed category ID; must match the video language.',
+                        ],
+                        'duration' => [
+                            'type' => 'string',
+                            'minLength' => 5,
+                            'maxLength' => 8,
+                            'description' => 'New video duration (5-8 characters, e.g. HH:MM:SS).',
+                        ],
+                        'embed' => [
+                            'type' => 'string',
+                            'description' => 'New embed code or URL. Cannot be empty.',
+                        ],
+                        'content' => [
+                            'type' => 'string',
+                            'description' => 'New full HTML body; sanitized like the admin form. Cannot be empty.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO title (1-255 characters).',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO keywords (1-255 characters).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO description (1-255 characters).',
+                        ],
+                        'original' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New original video URL.',
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New publish status: y (published) or n (draft).',
+                        ],
+                        'slider' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New hero slider flag.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'description' => 'New access control group ID.',
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a new thumbnail (base64-encoded) or null to remove the existing one. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Video Embed',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_video_embed' => [
+                'module' => 'mod_video_embed',
+                'role' => 'delete',
+                'domain' => 'video',
+                'handler' => 'deleteVideoEmbed',
+                'description' => 'Delete an embedded video record. Related gallery/attachment relations and the thumbnail image files are cleaned up automatically.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Video Embed',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'list_video_embed_categories' => [
+                'module' => 'mod_video_embed_category',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'listVideoEmbedCategories',
+                'description' => 'List video embed categories with optional filters. Returns paginated items ordered by sort order plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'Filter by language-root flag.',
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against category names.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 50,
+                            'description' => 'Page size (1-50, default 50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.',
+                        ],
+                    ],
+                ],
+                'title' => 'List Video Embed Categories',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_video_embed_category' => [
+                'module' => 'mod_video_embed_category',
+                'role' => 'list',
+                'domain' => 'video',
+                'handler' => 'getVideoEmbedCategory',
+                'description' => 'Get a single video embed category with all fields, including parent, sort order, root flag, SEO metadata, and image.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed category record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get Video Embed Category',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_video_embed_category' => [
+                'module' => 'mod_video_embed_category',
+                'role' => 'add',
+                'domain' => 'video',
+                'handler' => 'createVideoEmbedCategory',
+                'description' => 'Create a video embed category. The seo slug must be unique per language and defaults to a slug generated from the name. A parent_id of 0 is only allowed while the language has no language-root category yet. Optionally creates a menu entry pointing at lang/videos/{seo}.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Category name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).',
+                        ],
+                        'parent_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Parent category ID. 0 is only allowed while the language has no language-root category.',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'default' => 'n',
+                            'description' => 'Language-root flag.',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'URL slug. Defaults to a slug generated from the name. Must be unique per language.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO title (1-255 characters). Defaults to the name.',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO keywords (1-255 characters). Required.',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'SEO description (1-255 characters). Required.',
+                        ],
+                        'menu' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Menu parent ID; when non-zero a menu entry linking to this category is created.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'default' => 0,
+                            'description' => 'Access control group ID applied to the created menu entry.',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a category image (base64-encoded) or null to skip. On create: absent = no image.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                        'lang',
+                        'keywords',
+                        'description',
+                    ],
+                ],
+                'title' => 'Create Video Embed Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_video_embed_category' => [
+                'module' => 'mod_video_embed_category',
+                'role' => 'edit',
+                'domain' => 'video',
+                'handler' => 'updateVideoEmbedCategory',
+                'description' => 'Partially update a video embed category. Moving a category re-appends it after its new siblings and keeps the linked menu entry in sync (rename, re-parent, or delete it when menu=0). The image argument uploads a new image (base64) or null removes the existing one. Absent = unchanged.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed category record ID.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New category name (2-255 characters).',
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.',
+                        ],
+                        'parent_id' => [
+                            'type' => 'integer',
+                            'description' => 'New parent category ID. Cannot be the category itself or one of its descendants.',
+                        ],
+                        'root' => [
+                            'type' => 'string',
+                            'enum' => [
+                                'y',
+                                'n',
+                            ],
+                            'description' => 'New language-root flag.',
+                        ],
+                        'seo' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New URL slug; must be unique per language. Linked menu URLs are updated.',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO title (1-255 characters).',
+                        ],
+                        'keywords' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO keywords (1-255 characters).',
+                        ],
+                        'description' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'New SEO description (1-255 characters).',
+                        ],
+                        'order' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'description' => 'New sort order. Defaults to appending after the siblings when the parent changes.',
+                        ],
+                        'menu' => [
+                            'type' => 'integer',
+                            'description' => 'New menu parent ID: 0 deletes the linked menu entry, non-zero re-parents or creates it. Absent = keep the existing entry aligned.',
+                        ],
+                        'acl_id' => [
+                            'type' => 'integer',
+                            'description' => 'New access control group ID for the linked menu entry.',
+                        ],
+                        'image' => [
+                            'type' => [
+                                'object',
+                                'null',
+                            ],
+                            'description' => 'Upload a new image (base64-encoded) or null to remove the existing one. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => [
+                                        'image/jpeg',
+                                        'image/png',
+                                        'image/gif',
+                                        'image/webp',
+                                    ],
+                                ],
+                            ],
+                            'required' => [
+                                'data_base64',
+                                'mime',
+                            ],
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update Video Embed Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_video_embed_category' => [
+                'module' => 'mod_video_embed_category',
+                'role' => 'delete',
+                'domain' => 'video',
+                'handler' => 'deleteVideoEmbedCategory',
+                'description' => 'Delete a video embed category and all of its child categories recursively. Related images, gallery/attachment relations, and linked menu entries are cleaned up automatically.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Video embed category record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete Video Embed Category',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    /**
      * mod_video thumbnail pipeline (admin ajax_image_upload / image_remove_image)
      */
     private const VIDEO_IMAGE_SIZES = [

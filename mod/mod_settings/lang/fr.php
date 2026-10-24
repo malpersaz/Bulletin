@@ -27,6 +27,7 @@ $lang['mod_settings'] = [
     'button' => [
         'cancel' => 'Annuler',
         'close' => 'Fermer',
+        'back' => 'Retour',
         'edit' => 'Modifier',
         'save_and_close' => 'Enregistrer et fermer',
         'generate_assets' => 'Generer les Icones',
@@ -295,4 +296,17 @@ $lang['mod_settings'] = [
     'mcp_link_title' => 'Gestion MCP',
     'mcp_link_desc' => 'Créez et gérez les clés API et les clients OAuth permettant aux clients IA (ChatGPT, Cursor, Claude) de gérer le site via le point de terminaison MCP.',
     'mcp_link_button' => 'Ouvrir la gestion MCP',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Hub de Services Google',
+    'json_invalid' => 'Format de fichier JSON invalide !',
+    'google' => [
+        'bucket_name' => 'Nom du Bucket Google Cloud Storage',
+        'gemini_api_key' => 'Clé API Google Gemini',
+        'credentials_file' => 'Identifiants du Compte de Service (JSON)',
+        'credentials_status' => 'Statut des Identifiants',
+        'credentials_ok' => 'Téléchargé et Actif',
+        'credentials_missing' => 'Non Téléchargé',
+        'settings_ok' => 'Paramètres Google mis à jour avec succès !',
+    ],
 ];

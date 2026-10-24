@@ -382,4 +382,17 @@ $lang['mod_settings'] = [
     'no_affiliations_found' => 'No affiliated institutions or partnerships found.',
     'affiliation_reordered_success' => 'Display order updated successfully.',
     'affiliation_toggle_success' => 'Status updated successfully.',
+
+    // === Google Services Hub ===
+    'google_settings' => 'Google Services Hub',
+    'json_invalid' => 'Invalid JSON file format!',
+    'google' => [
+        'bucket_name' => 'Google Cloud Storage Bucket Name',
+        'gemini_api_key' => 'Google Gemini API Key',
+        'credentials_file' => 'Service Account Credentials (JSON)',
+        'credentials_status' => 'Credentials Status',
+        'credentials_ok' => 'Uploaded & Active',
+        'credentials_missing' => 'Not Uploaded',
+        'settings_ok' => 'Google Settings Updated Successfully!',
+    ],
 ];

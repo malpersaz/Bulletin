@@ -7,6 +7,183 @@
 
 class McpAclTools extends McpCrudToolsBase
 {
+    /**
+     * Return array of tool definitions provided by this domain tool class.
+     *
+     * @return array<string, array>
+     */
+    public static function definitions(): array
+    {
+        return [
+            'list_acls' => [
+                'module' => 'mod_acl',
+                'role' => 'list',
+                'domain' => 'acl',
+                'handler' => 'listAclGroups',
+                'description' => 'List ACL groups (id and name) with optional name search. Results are ordered by ID descending and paginated (limit capped at 50).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Optional case-insensitive substring filter on the group name.',
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Maximum number of records to return (capped at 50).',
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of records to skip for pagination.',
+                        ],
+                    ],
+                    'required' => [
+                    ],
+                ],
+                'title' => 'List ACLs',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_acl' => [
+                'module' => 'mod_acl',
+                'role' => 'list',
+                'domain' => 'acl',
+                'handler' => 'getAclGroup',
+                'description' => 'Get a single ACL group by ID, including the raw serialized ACL column and the decoded list of allowed user group IDs (0 = guest).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'ACL group record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Get ACL',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_acl' => [
+                'module' => 'mod_acl',
+                'role' => 'add',
+                'domain' => 'acl',
+                'handler' => 'createAclGroup',
+                'description' => 'Create an ACL group. The name is required (2-255 characters, mirrors the admin validator). \'groups\' lists the user group IDs granted access (0 = guest); every non-zero ID must exist in user group management.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'ACL group name (2-255 characters).',
+                        ],
+                        'groups' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'integer',
+                                'minimum' => 0,
+                            ],
+                            'default' => [
+                            ],
+                            'description' => 'User group IDs allowed by this ACL (0 = guest). Each non-zero ID must reference an existing user group. Omit for an empty list.',
+                        ],
+                    ],
+                    'required' => [
+                        'name',
+                    ],
+                ],
+                'title' => 'Create ACL',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_acl' => [
+                'module' => 'mod_acl',
+                'role' => 'edit',
+                'domain' => 'acl',
+                'handler' => 'updateAclGroup',
+                'description' => 'Partially update an ACL group. Only supplied fields change; editing a record owned by another user requires the moderate_edit role. The permission cache for the record is invalidated after a successful update.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'ACL group record ID.',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'New ACL group name (2-255 characters).',
+                        ],
+                        'groups' => [
+                            'type' => 'array',
+                            'items' => [
+                                'type' => 'integer',
+                                'minimum' => 0,
+                            ],
+                            'description' => 'Replacement list of user group IDs allowed by this ACL (0 = guest). Each non-zero ID must reference an existing user group.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Update ACL',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_acl' => [
+                'module' => 'mod_acl',
+                'role' => 'delete',
+                'domain' => 'acl',
+                'handler' => 'deleteAclGroup',
+                'description' => 'Delete an ACL group by ID. Deleting a record owned by another user requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'description' => 'ACL group record ID.',
+                        ],
+                    ],
+                    'required' => [
+                        'id',
+                    ],
+                ],
+                'title' => 'Delete ACL',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
     // ------------------------------------------------------------------
     // mod_acl tools
     // ------------------------------------------------------------------
@@ -182,7 +359,7 @@ class McpAclTools extends McpCrudToolsBase
         if ($acl === '') {
             return [];
         }
-        $decoded = @unserialize($acl);
+        $decoded = @unserialize($acl, ['allowed_classes' => false]);
         if (!is_array($decoded)) {
             return [];
         }

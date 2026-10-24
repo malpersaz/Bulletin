@@ -11,7 +11,6 @@ class mod_mcp_mod extends BaseModuleController
     public function __construct()
     {
         parent::__construct('mod_mcp');
-        $this->ensureInfrastructure();
     }
 
     /**
@@ -24,38 +23,6 @@ class mod_mcp_mod extends BaseModuleController
             if (!$pdo) {
                 return;
             }
-
-            $driver = strtolower($pdo->getAttribute(\PDO::ATTR_DRIVER_NAME));
-            if ($driver === 'sqlite') {
-                $sql = "CREATE TABLE IF NOT EXISTS `mod_mcp_api_key` (
-                  `id` INTEGER PRIMARY KEY AUTOINCREMENT,
-                  `name` VARCHAR(100) NOT NULL,
-                  `api_key_hash` VARCHAR(64) NOT NULL UNIQUE,
-                  `key_prefix` VARCHAR(16) NOT NULL,
-                  `group_id` INTEGER NOT NULL DEFAULT 1,
-                  `user_id` INTEGER NOT NULL DEFAULT 1,
-                  `status` TEXT NOT NULL DEFAULT 'y' CHECK(status IN ('y', 'n')),
-                  `last_used_at` DATETIME NULL,
-                  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  `updated_at` DATETIME NULL
-                );";
-            } else {
-                $sql = "CREATE TABLE IF NOT EXISTS `mod_mcp_api_key` (
-                  `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                  `name` VARCHAR(100) NOT NULL,
-                  `api_key_hash` VARCHAR(64) NOT NULL UNIQUE,
-                  `key_prefix` VARCHAR(16) NOT NULL,
-                  `group_id` INT UNSIGNED NOT NULL DEFAULT 1,
-                  `user_id` INT UNSIGNED NOT NULL DEFAULT 1,
-                  `status` ENUM('y', 'n') NOT NULL DEFAULT 'y',
-                  `last_used_at` DATETIME NULL,
-                  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                  `updated_at` DATETIME NULL,
-                  INDEX `idx_group` (`group_id`),
-                  INDEX `idx_status` (`status`)
-                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-            }
-            $pdo->exec($sql);
 
             // Ensure module entry in 'mods' table
             $stmt = $pdo->prepare("SELECT `mod_id` FROM `mods` WHERE `mod_name` = ? LIMIT 1");
@@ -128,6 +95,25 @@ class mod_mcp_mod extends BaseModuleController
     }
 
     /**
+     * Resolves the current logged-in user's ID and live group_id from mod_user.
+     *
+     * @return array{0: int, 1: int} [userId, groupId]
+     */
+    private function resolveCurrentUserScope(): array
+    {
+        $userId = (int) $this->session->get('id');
+        $groupId = (int) $this->session->get('group_id');
+        if ($userId > 0) {
+            $this->db->fetch_array("SELECT `group_id`, `status` FROM `mod_user` WHERE `id` = " . $userId . " LIMIT 1");
+            $row = $this->db->getResult()->toArray();
+            if (!empty($row[0]['group_id'])) {
+                $groupId = (int) $row[0]['group_id'];
+            }
+        }
+        return [$userId, $groupId];
+    }
+
+    /**
      * Renders the API key management list
      */
     public function list()
@@ -136,18 +122,26 @@ class mod_mcp_mod extends BaseModuleController
             return false;
         }
 
+        [$creatorUserId, $creatorGroupId] = $this->resolveCurrentUserScope();
+        $whereKeyClause = ($creatorGroupId === 1) ? '' : ('WHERE k.`user_id` = ' . (int) $creatorUserId . ' AND k.`group_id` <> 1');
+
         $this->db->fetch_array(
             "SELECT k.`id`, k.`name`, k.`key_prefix`, k.`group_id`, k.`status`, k.`last_used_at`, k.`created_at`,
                     g.`name` AS group_name, u.`username` AS creator_username
              FROM `mod_mcp_api_key` k
              LEFT JOIN `mod_user_group` g ON g.`group_id` = k.`group_id`
              LEFT JOIN `mod_user` u ON u.`id` = k.`user_id`
+             {$whereKeyClause}
              ORDER BY k.`id` DESC"
         );
         $keys = $this->db->getResult()->toArray();
         $this->view->set('mcp_keys', is_array($keys) ? $keys : []);
 
-        $this->db->fetch_array("SELECT `group_id`, `name` FROM `mod_user_group` ORDER BY `group_id` ASC");
+        if ($creatorGroupId === 1) {
+            $this->db->fetch_array("SELECT `group_id`, `name` FROM `mod_user_group` ORDER BY `group_id` ASC");
+        } else {
+            $this->db->fetch_array("SELECT `group_id`, `name` FROM `mod_user_group` WHERE `group_id` = " . $creatorGroupId . " ORDER BY `group_id` ASC");
+        }
         $groups = $this->db->getResult()->toArray();
         $this->view->set('mcp_groups', is_array($groups) ? $groups : []);
 
@@ -155,15 +149,18 @@ class mod_mcp_mod extends BaseModuleController
         $this->view->set('mcp_endpoint', rtrim(isset($site['address']) ? $site['address'] : '', '/') . '/mcp.php');
 
         Load::libfile('McpOAuth');
-        McpOAuth::ensureTables();
-        $this->db->fetch_array(
-            "SELECT c.`id`, c.`client_id`, c.`client_name`, c.`redirect_uris`, c.`status`, c.`created_at`,
-                    (SELECT COUNT(*) FROM `mod_mcp_oauth_token` t WHERE t.`client_id` = c.`client_id` AND t.`status` = 'y') AS active_tokens,
-                    (SELECT MAX(t.`last_used_at`) FROM `mod_mcp_oauth_token` t WHERE t.`client_id` = c.`client_id`) AS last_used_at
-             FROM `mod_mcp_oauth_client` c
-             ORDER BY c.`id` DESC"
-        );
-        $clients = $this->db->getResult()->toArray();
+        if ($creatorGroupId === 1) {
+            $this->db->fetch_array(
+                "SELECT c.`id`, c.`client_id`, c.`client_name`, c.`redirect_uris`, c.`status`, c.`created_at`,
+                        (SELECT COUNT(*) FROM `mod_mcp_oauth_token` t WHERE t.`client_id` = c.`client_id` AND t.`status` = 'y') AS active_tokens,
+                        (SELECT MAX(t.`last_used_at`) FROM `mod_mcp_oauth_token` t WHERE t.`client_id` = c.`client_id`) AS last_used_at
+                 FROM `mod_mcp_oauth_client` c
+                 ORDER BY c.`id` DESC"
+            );
+            $clients = $this->db->getResult()->toArray();
+        } else {
+            $clients = [];
+        }
         $this->view->set('mcp_oauth_clients', is_array($clients) ? $clients : []);
         Run::import('management', '_index');
         $this->view->tpl('admin/mod_mcp/list');
@@ -193,7 +190,11 @@ class mod_mcp_mod extends BaseModuleController
             $errors[] = $this->lang['mod_mcp']['errors']['invalid_name'];
         }
 
+        [$creatorUserId, $creatorGroupId] = $this->resolveCurrentUserScope();
+
         if ($groupId <= 0 || $this->groupExists($groupId) === false) {
+            $errors[] = $this->lang['mod_mcp']['errors']['invalid_group'];
+        } elseif ($creatorGroupId !== 1 && ($groupId === 1 || $groupId !== $creatorGroupId)) {
             $errors[] = $this->lang['mod_mcp']['errors']['invalid_group'];
         }
 
@@ -217,7 +218,7 @@ class mod_mcp_mod extends BaseModuleController
         $model->api_key_hash = hash('sha256', $plaintextKey);
         $model->key_prefix = substr($plaintextKey, 0, 12);
         $model->group_id = $groupId;
-        $model->user_id = (int) $this->session->get('id');
+        $model->user_id = $creatorUserId;
         $model->status = 'y';
         $model->created_at = date('Y-m-d H:i:s');
 
@@ -268,6 +269,7 @@ class mod_mcp_mod extends BaseModuleController
 
         $isAjax = $this->isAjaxRequest();
         $id = (int) Req::Post_Safe('id');
+        [$creatorUserId, $creatorGroupId] = $this->resolveCurrentUserScope();
 
         $model = Load::model('mod_mcp.mod_mcp_api_key');
         $model->where_id($id)->limit(1)->getResultOne(true, true);
@@ -286,6 +288,17 @@ class mod_mcp_mod extends BaseModuleController
         }
 
         $model->sync();
+        if ($creatorGroupId !== 1 && ((int) $model->user_id !== $creatorUserId || (int) $model->group_id === 1)) {
+            $forbiddenMsg = $this->getRoleErrorMessage('delete');
+            if ($isAjax) {
+                $this->jsonResponse(['status' => 'error', 'message' => $forbiddenMsg]);
+                return false;
+            }
+            $this->_error_message($forbiddenMsg);
+            $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
+            return false;
+        }
+
         $deleted = $model->delete();
 
         if ($isAjax) {
@@ -321,6 +334,7 @@ class mod_mcp_mod extends BaseModuleController
 
         $isAjax = $this->isAjaxRequest();
         $id = (int) Req::Post_Safe('id');
+        [$creatorUserId, $creatorGroupId] = $this->resolveCurrentUserScope();
 
         $model = Load::model('mod_mcp.mod_mcp_api_key');
         $model->where_id($id)->limit(1)->getResultOne(true, true);
@@ -339,6 +353,17 @@ class mod_mcp_mod extends BaseModuleController
         }
 
         $model->sync();
+        if ($creatorGroupId !== 1 && ((int) $model->user_id !== $creatorUserId || (int) $model->group_id === 1)) {
+            $forbiddenMsg = $this->getRoleErrorMessage('edit');
+            if ($isAjax) {
+                $this->jsonResponse(['status' => 'error', 'message' => $forbiddenMsg]);
+                return false;
+            }
+            $this->_error_message($forbiddenMsg);
+            $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
+            return false;
+        }
+
         $model->status = ($model->status === 'y') ? 'n' : 'y';
         $model->updated_at = date('Y-m-d H:i:s');
         $updated = $model->update('id');
@@ -360,6 +385,7 @@ class mod_mcp_mod extends BaseModuleController
         $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
         return (bool) $updated;
     }
+
     /**
      * Toggles an OAuth client's active state; deactivation revokes its live tokens
      */
@@ -375,6 +401,18 @@ class mod_mcp_mod extends BaseModuleController
         }
 
         $isAjax = $this->isAjaxRequest();
+        [, $creatorGroupId] = $this->resolveCurrentUserScope();
+        if ($creatorGroupId !== 1) {
+            $forbiddenMsg = $this->getRoleErrorMessage('edit');
+            if ($isAjax) {
+                $this->jsonResponse(['status' => 'error', 'message' => $forbiddenMsg]);
+                return false;
+            }
+            $this->_error_message($forbiddenMsg);
+            $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
+            return false;
+        }
+
         $id = (int) Req::Post_Safe('id');
 
         $model = Load::model('mod_mcp.mod_mcp_oauth_client');
@@ -400,7 +438,13 @@ class mod_mcp_mod extends BaseModuleController
 
         if ($model->status === 'n') {
             // Deactivating a client must immediately cut its live tokens
-            $this->db->query("UPDATE `mod_mcp_oauth_token` SET `status` = 'n' WHERE `client_id` = '" . addslashes((string) $model->client_id) . "'");
+            $pdo = method_exists($this->db, 'get_connection') ? $this->db->get_connection() : null;
+            if ($pdo instanceof \PDO) {
+                $stmt = $pdo->prepare("UPDATE `mod_mcp_oauth_token` SET `status` = 'n' WHERE `client_id` = ?");
+                $stmt->execute([(string) $model->client_id]);
+            } else {
+                $this->db->query("UPDATE `mod_mcp_oauth_token` SET `status` = 'n' WHERE `client_id` = '" . addslashes((string) $model->client_id) . "'");
+            }
         }
 
         if ($isAjax) {
@@ -436,6 +480,18 @@ class mod_mcp_mod extends BaseModuleController
         }
 
         $isAjax = $this->isAjaxRequest();
+        [, $creatorGroupId] = $this->resolveCurrentUserScope();
+        if ($creatorGroupId !== 1) {
+            $forbiddenMsg = $this->getRoleErrorMessage('delete');
+            if ($isAjax) {
+                $this->jsonResponse(['status' => 'error', 'message' => $forbiddenMsg]);
+                return false;
+            }
+            $this->_error_message($forbiddenMsg);
+            $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
+            return false;
+        }
+
         $id = (int) Req::Post_Safe('id');
 
         $model = Load::model('mod_mcp.mod_mcp_oauth_client');
@@ -455,9 +511,18 @@ class mod_mcp_mod extends BaseModuleController
         }
 
         $model->sync();
-        $clientId = addslashes((string) $model->client_id);
-        $this->db->query("DELETE FROM `mod_mcp_oauth_token` WHERE `client_id` = '{$clientId}'");
-        $this->db->query("DELETE FROM `mod_mcp_oauth_code` WHERE `client_id` = '{$clientId}'");
+        $clientId = (string) $model->client_id;
+        $pdo = method_exists($this->db, 'get_connection') ? $this->db->get_connection() : null;
+        if ($pdo instanceof \PDO) {
+            $stmtToken = $pdo->prepare("DELETE FROM `mod_mcp_oauth_token` WHERE `client_id` = ?");
+            $stmtToken->execute([$clientId]);
+            $stmtCode = $pdo->prepare("DELETE FROM `mod_mcp_oauth_code` WHERE `client_id` = ?");
+            $stmtCode->execute([$clientId]);
+        } else {
+            $escapedId = addslashes($clientId);
+            $this->db->query("DELETE FROM `mod_mcp_oauth_token` WHERE `client_id` = '{$escapedId}'");
+            $this->db->query("DELETE FROM `mod_mcp_oauth_code` WHERE `client_id` = '{$escapedId}'");
+        }
         $deleted = $model->delete();
 
         if ($isAjax) {
@@ -475,6 +540,61 @@ class mod_mcp_mod extends BaseModuleController
         }
         $this->_redirect_now($this->site['saddress'] . 'mod_mcp/list');
         return (bool) $deleted;
+    }
+
+    /**
+     * Renders the Phone-First MCP Audit Logs & Metrics Dashboard
+     */
+    public function audit()
+    {
+        if ($this->user->hasPermission('mod_mcp', 'list', $this->getRoleErrorMessage('list'), 1) === false) {
+            return false;
+        }
+
+        require_once lib_dir . 'McpAuditLogger.class.php';
+        McpAuditLogger::ensureTable();
+
+        $callerType = trim((string) Req::Get_Safe('caller_type'));
+        $toolName = trim((string) Req::Get_Safe('tool_name'));
+        $isError = Req::Get_Safe('is_error');
+
+        $filters = [];
+        if ($callerType !== '' && in_array($callerType, ['api_key', 'oauth', 'agent_chat', 'internal'], true)) {
+            $filters['caller_type'] = $callerType;
+        }
+        if ($toolName !== '') {
+            $filters['tool_name'] = $toolName;
+        }
+        if ($isError !== null && $isError !== '') {
+            $filters['is_error'] = (int) $isError;
+        }
+
+        $page = max(1, (int) Req::Get_Safe('p'));
+        $perPage = 30;
+        $offset = ($page - 1) * $perPage;
+
+        $logs = McpAuditLogger::queryLogs($filters, $perPage, $offset);
+        $dailyTokens = McpAuditLogger::getDailyTokenUsage();
+
+        $this->db->fetch_array("SELECT COUNT(*) FROM mod_mcp_audit_log");
+        $totalCalls = (int) ($this->db->toRow()[0] ?? 0);
+
+        $this->db->fetch_array("SELECT COALESCE(SUM(is_error), 0) FROM mod_mcp_audit_log");
+        $errorCalls = (int) ($this->db->toRow()[0] ?? 0);
+
+        $this->view->set('audit_logs', $logs);
+        $this->view->set('daily_tokens', $dailyTokens);
+        $this->view->set('total_calls', $totalCalls);
+        $this->view->set('error_calls', $errorCalls);
+        $this->view->set('current_page', $page);
+        $this->view->set('filters', [
+            'caller_type' => $callerType,
+            'tool_name' => $toolName,
+            'is_error' => $isError,
+        ]);
+
+        Run::import('management', '_index');
+        $this->view->tpl('admin/mod_mcp/audit');
     }
 
     private function groupExists($groupId)

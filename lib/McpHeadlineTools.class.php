@@ -16,6 +16,213 @@ class McpHeadlineTools extends McpCrudToolsBase
     ];
 
     // ------------------------------------------------------------------
+    // Tool definitions
+    // ------------------------------------------------------------------
+
+    public static function definitions(): array
+    {
+        return [
+            'list_headlines' => [
+                'module' => 'mod_headline',
+                'role' => 'list',
+                'domain' => 'headline',
+                'handler' => 'listHeadlines',
+                'description' => 'List headline items with optional filters. Returns paginated items (id, lang, name, status, created_at) plus the total count.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Filter by language code (e.g. ku, en, tr).'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Filter by publish status: y (published) or n (draft).'
+                        ],
+                        'search' => [
+                            'type' => 'string',
+                            'description' => 'Search term matched against headline item names.'
+                        ],
+                        'limit' => [
+                            'type' => 'integer',
+                            'minimum' => 1,
+                            'maximum' => 50,
+                            'default' => 10,
+                            'description' => 'Page size (1-50, default 10).'
+                        ],
+                        'offset' => [
+                            'type' => 'integer',
+                            'minimum' => 0,
+                            'default' => 0,
+                            'description' => 'Number of items to skip for pagination.'
+                        ]
+                    ]
+                ],
+                'title' => 'List Headlines',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'get_headline' => [
+                'module' => 'mod_headline',
+                'role' => 'list',
+                'domain' => 'headline',
+                'handler' => 'getHeadline',
+                'description' => 'Get a single headline item with all fields, including the image reference.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Headline item ID.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Get Headline',
+                'annotations' => [
+                    'readOnlyHint' => true,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'create_headline' => [
+                'module' => 'mod_headline',
+                'role' => 'add',
+                'domain' => 'headline',
+                'handler' => 'createHeadline',
+                'description' => 'Create a headline item. Name is required (2-255 characters) and the creation datetime is stamped automatically. Supports an optional image (resized to 2000x750 plus a 100px thumbnail).',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'Headline item name (2-255 characters).'
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'Language code of an active site language (e.g. ku, en, tr).'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'default' => 'y',
+                            'description' => 'Publish status: y (published) or n (draft).'
+                        ],
+                        'image' => [
+                            'type' => ['object', 'null'],
+                            'description' => 'Image upload (base64-encoded) or null to explicitly set no image. On update: absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).'
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+                                ]
+                            ],
+                            'required' => ['data_base64', 'mime']
+                        ]
+                    ],
+                    'required' => ['name', 'lang']
+                ],
+                'title' => 'Create Headline',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => false,
+                ],
+            ],
+            'update_headline' => [
+                'module' => 'mod_headline',
+                'role' => 'edit',
+                'domain' => 'headline',
+                'handler' => 'updateHeadline',
+                'description' => 'Partially update a headline item. Only provided fields change; editing another user\'s item requires the moderate_edit role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Headline item ID.'
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                            'minLength' => 2,
+                            'maxLength' => 255,
+                            'description' => 'New headline item name.'
+                        ],
+                        'lang' => [
+                            'type' => 'string',
+                            'description' => 'New language code of an active site language.'
+                        ],
+                        'status' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'New publish status.'
+                        ],
+                        'created_at' => [
+                            'type' => 'string',
+                            'description' => 'New creation datetime (YYYY-MM-DD HH:MM:SS).'
+                        ],
+                        'image' => [
+                            'type' => ['object', 'null'],
+                            'description' => 'Image upload (base64-encoded) or null to remove the existing one. Absent = unchanged.',
+                            'properties' => [
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64-encoded image file (max 10 MB decoded).'
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+                                ]
+                            ],
+                            'required' => ['data_base64', 'mime']
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Update Headline',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => false,
+                    'idempotentHint' => true,
+                ],
+            ],
+            'delete_headline' => [
+                'module' => 'mod_headline',
+                'role' => 'delete',
+                'domain' => 'headline',
+                'handler' => 'deleteHeadline',
+                'description' => 'Delete a headline item. Related gallery and attachment relations and the uploaded image file are cleaned up automatically. Deleting another user\'s item requires the moderate_delete role.',
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                            'description' => 'Headline item ID.'
+                        ]
+                    ],
+                    'required' => ['id']
+                ],
+                'title' => 'Delete Headline',
+                'annotations' => [
+                    'readOnlyHint' => false,
+                    'destructiveHint' => true,
+                    'idempotentHint' => true,
+                ],
+            ],
+        ];
+    }
+
+    // ------------------------------------------------------------------
     // mod_headline tools
     // ------------------------------------------------------------------
 
@@ -74,6 +281,7 @@ class McpHeadlineTools extends McpCrudToolsBase
         }
 
         $lang = $this->requireActiveLang($args);
+        $this->assertContentMatchesLang($lang, ['name' => $name]);
 
         $model = $this->freshModel('mod_headline');
         $model->name = $name;
@@ -130,6 +338,7 @@ class McpHeadlineTools extends McpCrudToolsBase
         }
 
         $model->lang = $lang;
+        $this->assertContentMatchesLang($lang, ['name' => (string) $model->name]);
 
         if (array_key_exists('image', $args)) {
             $previousUrl = (string) ($model->image ?? '');
