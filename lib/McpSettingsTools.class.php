@@ -148,6 +148,148 @@ class McpSettingsTools extends McpCrudToolsBase
                             'type' => 'string',
                             'description' => 'Cookie policy page content (HTML).',
                         ],
+                        'managing_director' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Publisher / Managing Director (Masthead / Künye).',
+                        ],
+                        'editor_in_chief' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Editor-in-Chief (Masthead / Künye).',
+                        ],
+                        'press_code_license' => [
+                            'type' => 'string',
+                            'maxLength' => 150,
+                            'description' => 'Press license, BİK code, or ISSN registration.',
+                        ],
+                        'dpo_email' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Data Protection Officer (DPO / KVKK) email address.',
+                        ],
+                        'hosting_provider' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Statutory hosting provider under Law No. 5651.',
+                        ],
+                        'compliance_jurisdiction' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Competent courts and legal jurisdiction.',
+                        ],
+                        'legal_company_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Official registered corporate entity name.',
+                        ],
+                        'legal_trading_name' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Brand or trade name used for publishing operations.',
+                        ],
+                        'company_type' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Company legal type (e.g. Anonim Şirket, Limited Şirket).',
+                        ],
+                        'company_registration_number' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Commercial company registration ID.',
+                        ],
+                        'trade_registry_number' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Trade registry number.',
+                        ],
+                        'central_registration_number' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Central registry number (MERSIS, DUNS, LEI).',
+                        ],
+                        'chamber_of_commerce' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Chamber of commerce and industry affiliation.',
+                        ],
+                        'corporate_address' => [
+                            'type' => 'string',
+                            'description' => 'Registered corporate headquarters address.',
+                        ],
+                        'tax_office' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Registered tax office.',
+                        ],
+                        'tax_number' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Tax identification number (VKN).',
+                        ],
+                        'vat_number' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'VAT / Value Added Tax number.',
+                        ],
+                        'authorized_person' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Authorized legal representative.',
+                        ],
+                        'registered_email' => [
+                            'type' => 'string',
+                            'maxLength' => 255,
+                            'description' => 'Registered legal email address (KEP / official).',
+                        ],
+                        'legal_contact_phone' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Official corporate contact telephone.',
+                        ],
+                        'contact_address' => [
+                            'type' => 'string',
+                            'description' => 'Physical contact address for statutory notices.',
+                        ],
+                        'country' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Country of incorporation or operation.',
+                        ],
+                        'is_online_retail' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Whether digital sales or paid subscriptions are offered.',
+                        ],
+                        'is_local_store' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Whether physical premises or offices exist.',
+                        ],
+                        'is_service_business' => [
+                            'type' => 'string',
+                            'enum' => ['y', 'n'],
+                            'description' => 'Whether professional or corporate services are offered.',
+                        ],
+                        'default_warranty_duration' => [
+                            'type' => 'string',
+                            'maxLength' => 50,
+                            'description' => 'Warranty duration (legacy).',
+                        ],
+                        'warranty_type' => [
+                            'type' => 'string',
+                            'maxLength' => 100,
+                            'description' => 'Warranty type (legacy).',
+                        ],
+                        'return_policy_days' => [
+                            'type' => 'string',
+                            'maxLength' => 50,
+                            'description' => 'Return period days (legacy).',
+                        ],
+                        'warranty_description' => [
+                            'type' => 'string',
+                            'description' => 'Warranty description terms (legacy).',
+                        ],
                         'established_year' => [
                             'type' => 'string',
                             'description' => '4-digit founding year, or empty.',
@@ -724,6 +866,32 @@ class McpSettingsTools extends McpCrudToolsBase
         'google_analytics' => 255,
         'meta_tags' => null,
         'cookie_policy_content' => null,
+        'managing_director' => 255,
+        'editor_in_chief' => 255,
+        'press_code_license' => 150,
+        'dpo_email' => 255,
+        'hosting_provider' => 255,
+        'compliance_jurisdiction' => 255,
+        'legal_company_name' => 255,
+        'legal_trading_name' => 255,
+        'company_type' => 100,
+        'company_registration_number' => 100,
+        'trade_registry_number' => 100,
+        'central_registration_number' => 100,
+        'chamber_of_commerce' => 255,
+        'corporate_address' => null,
+        'contact_address' => null,
+        'tax_office' => 255,
+        'tax_number' => 100,
+        'vat_number' => 100,
+        'authorized_person' => 255,
+        'registered_email' => 255,
+        'legal_contact_phone' => 100,
+        'country' => 100,
+        'default_warranty_duration' => 50,
+        'warranty_type' => 100,
+        'return_policy_days' => 50,
+        'warranty_description' => null,
     ];
 
     private const SETTINGS_INT_FIELDS = [
@@ -736,6 +904,127 @@ class McpSettingsTools extends McpCrudToolsBase
 
     private const COOKIE_CATEGORIES = ['necessary', 'functional', 'analytics', 'marketing'];
 
+    private const GLOBAL_LEGAL_FIELDS = [
+        'managing_director',
+        'editor_in_chief',
+        'press_code_license',
+        'dpo_email',
+        'hosting_provider',
+        'compliance_jurisdiction',
+        'legal_company_name',
+        'legal_trading_name',
+        'company_type',
+        'company_registration_number',
+        'trade_registry_number',
+        'central_registration_number',
+        'chamber_of_commerce',
+        'corporate_address',
+        'contact_address',
+        'tax_office',
+        'tax_number',
+        'vat_number',
+        'authorized_person',
+        'registered_email',
+        'legal_contact_phone',
+        'country',
+        'is_online_retail',
+        'is_local_store',
+        'is_service_business',
+        'default_warranty_duration',
+        'warranty_type',
+        'return_policy_days',
+        'warranty_description',
+    ];
+
+    /**
+     * Ensures all legal and masthead columns exist in mod_settings table.
+     */
+    private function ensureSettingsColumns(): void
+    {
+        static $checked = false;
+        if ($checked) {
+            return;
+        }
+        $checked = true;
+
+        try {
+            $db = Load::lib('Database');
+            if (!$db) {
+                return;
+            }
+        } catch (Exception $e) {
+            return;
+        }
+
+        $columns = [
+            'legal_company_name' => 'VARCHAR(255) DEFAULT NULL',
+            'legal_trading_name' => 'VARCHAR(255) DEFAULT NULL',
+            'company_type' => 'VARCHAR(100) DEFAULT NULL',
+            'company_registration_number' => 'VARCHAR(100) DEFAULT NULL',
+            'trade_registry_number' => 'VARCHAR(100) DEFAULT NULL',
+            'central_registration_number' => 'VARCHAR(100) DEFAULT NULL',
+            'chamber_of_commerce' => 'VARCHAR(255) DEFAULT NULL',
+            'corporate_address' => 'TEXT DEFAULT NULL',
+            'contact_address' => 'TEXT DEFAULT NULL',
+            'tax_office' => 'VARCHAR(255) DEFAULT NULL',
+            'tax_number' => 'VARCHAR(100) DEFAULT NULL',
+            'vat_number' => 'VARCHAR(100) DEFAULT NULL',
+            'authorized_person' => 'VARCHAR(255) DEFAULT NULL',
+            'registered_email' => 'VARCHAR(255) DEFAULT NULL',
+            'legal_contact_phone' => 'VARCHAR(100) DEFAULT NULL',
+            'managing_director' => 'VARCHAR(255) DEFAULT NULL',
+            'editor_in_chief' => 'VARCHAR(255) DEFAULT NULL',
+            'press_code_license' => 'VARCHAR(150) DEFAULT NULL',
+            'dpo_email' => 'VARCHAR(255) DEFAULT NULL',
+            'hosting_provider' => 'VARCHAR(255) DEFAULT NULL',
+            'compliance_jurisdiction' => 'VARCHAR(255) DEFAULT NULL',
+            'default_warranty_duration' => 'VARCHAR(50) DEFAULT NULL',
+            'warranty_type' => 'VARCHAR(100) DEFAULT NULL',
+            'return_policy_days' => 'VARCHAR(50) DEFAULT NULL',
+            'country' => 'VARCHAR(100) DEFAULT NULL',
+            'is_online_retail' => "VARCHAR(1) DEFAULT 'n'",
+            'is_local_store' => "VARCHAR(1) DEFAULT 'y'",
+            'is_service_business' => "VARCHAR(1) DEFAULT 'n'",
+            'warranty_description' => 'TEXT DEFAULT NULL',
+            'cookie_policy_content' => 'TEXT DEFAULT NULL',
+        ];
+
+        $safeTable = 'mod_settings';
+        $adapter = (string) $db->getAdapterType();
+
+        foreach ($columns as $column => $definition) {
+            $safeColumn = addslashes($column);
+            $exists = false;
+            try {
+                if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+                    $rows = $db->toArray();
+                    if (is_array($rows)) {
+                        foreach ($rows as $row) {
+                            if (isset($row['name']) && $row['name'] === $column) {
+                                $exists = true;
+                                break;
+                            }
+                        }
+                    }
+                } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                    $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+                    $db->fetch_array($sql);
+                    $exists = ($db->getSize() !== 0);
+                } else {
+                    $db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+                    $exists = ($db->getSize() !== 0);
+                }
+
+                if (!$exists) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `" . $safeColumn . "` " . $definition;
+                    $db->query($sql);
+                }
+            } catch (Exception $e) {
+            }
+        }
+    }
+
     // ------------------------------------------------------------------
     // Site settings tools
     // ------------------------------------------------------------------
@@ -745,6 +1034,7 @@ class McpSettingsTools extends McpCrudToolsBase
      */
     public function listSiteSettings(array $args): array
     {
+        $this->ensureSettingsColumns();
         $langMeta = $this->getSiteLanguageMap();
         $activeOnly = isset($args['active_only']) && (string) $args['active_only'] === 'y';
 
@@ -785,6 +1075,7 @@ class McpSettingsTools extends McpCrudToolsBase
      */
     public function getSiteSettings(array $args): array
     {
+        $this->ensureSettingsColumns();
         $lang = trim((string) ($args['lang'] ?? ''));
         if ($lang === '') {
             throw new McpToolException("Field 'lang' is required.");
@@ -820,6 +1111,7 @@ class McpSettingsTools extends McpCrudToolsBase
      */
     public function updateSiteSettings(array $args): array
     {
+        $this->ensureSettingsColumns();
         $lang = trim((string) ($args['lang'] ?? ''));
         if ($lang === '') {
             throw new McpToolException("Field 'lang' is required.");
@@ -833,6 +1125,7 @@ class McpSettingsTools extends McpCrudToolsBase
         $model->sync();
 
         $applied = [];
+        $globalFields = [];
 
         // Strings
         foreach (self::SETTINGS_STRING_FIELDS as $field => $maxLen) {
@@ -843,10 +1136,13 @@ class McpSettingsTools extends McpCrudToolsBase
             if ($maxLen !== null && mb_strlen($value) > $maxLen) {
                 throw new McpToolException("Field '{$field}' must be at most {$maxLen} characters.");
             }
-            if ($field === 'email' && $value !== '' && filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
-                throw new McpToolException("Field 'email' must be a valid e-mail address.");
+            if (in_array($field, ['email', 'dpo_email', 'registered_email'], true) && $value !== '' && filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+                throw new McpToolException("Field '{$field}' must be a valid e-mail address.");
             }
             $model->{$field} = $value;
+            if (in_array($field, self::GLOBAL_LEGAL_FIELDS, true)) {
+                $globalFields[$field] = $value;
+            }
             $applied[] = $field;
         }
 
@@ -876,7 +1172,23 @@ class McpSettingsTools extends McpCrudToolsBase
         // Enums
         if (array_key_exists('show_logo', $args)) {
             $model->show_logo = $this->optionalEnum($args, 'show_logo', (string) $model->show_logo, ['y', 'n']);
+            $globalFields['show_logo'] = $model->show_logo;
             $applied[] = 'show_logo';
+        }
+        if (array_key_exists('is_online_retail', $args)) {
+            $model->is_online_retail = $this->optionalEnum($args, 'is_online_retail', (string) $model->is_online_retail, ['y', 'n']);
+            $globalFields['is_online_retail'] = $model->is_online_retail;
+            $applied[] = 'is_online_retail';
+        }
+        if (array_key_exists('is_local_store', $args)) {
+            $model->is_local_store = $this->optionalEnum($args, 'is_local_store', (string) $model->is_local_store, ['y', 'n']);
+            $globalFields['is_local_store'] = $model->is_local_store;
+            $applied[] = 'is_local_store';
+        }
+        if (array_key_exists('is_service_business', $args)) {
+            $model->is_service_business = $this->optionalEnum($args, 'is_service_business', (string) $model->is_service_business, ['y', 'n']);
+            $globalFields['is_service_business'] = $model->is_service_business;
+            $applied[] = 'is_service_business';
         }
         if (array_key_exists('logo_type', $args)) {
             $logoType = trim((string) $args['logo_type']);
@@ -885,12 +1197,12 @@ class McpSettingsTools extends McpCrudToolsBase
             }
             if ($logoType !== '') {
                 $model->logo_type = $logoType;
+                $globalFields['logo_type'] = $logoType;
                 $applied[] = 'logo_type';
             }
         }
 
         // Global fields (site status / maintenance)
-        $globalFields = [];
         if (array_key_exists('site_status', $args)) {
             $siteStatus = strtolower(trim((string) $args['site_status']));
             if (!in_array($siteStatus, ['open', 'closed'], true)) {

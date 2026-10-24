@@ -99,6 +99,11 @@
     flex-shrink: 0;
 }
 
+.legal-section-icon.press {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
 .legal-section-icon.company {
     background: var(--md-sys-color-primary-container, #EADDFF);
     color: var(--md-sys-color-on-primary-container, #21005D);

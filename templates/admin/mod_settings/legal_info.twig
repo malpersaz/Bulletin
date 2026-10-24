@@ -26,6 +26,50 @@
     <form action="{{ site.saddress }}mod_settings/legal_info" method="post" id="legalInfoForm" class="legal-shell">
         <input type="hidden" name="legal_info" value="1">
 
+        <!-- Section 0: Publishing Credentials & Masthead (Künye) -->
+        <section class="legal-section-card">
+            <div class="legal-section-header">
+                <div class="legal-section-icon press">
+                    <i class="bi bi-journal-bookmark"></i>
+                </div>
+                <div class="legal-section-title-wrap">
+                    <h3 class="legal-section-title">{{ lang.mod_settings.section_publishing_credentials }}</h3>
+                    <p class="legal-section-desc">{{ lang.mod_settings.section_publishing_credentials_desc }}</p>
+                </div>
+            </div>
+            <div class="legal-section-body">
+                <div class="legal-field-group">
+                    <label for="managing_director" class="legal-field-label">{{ lang.mod_settings.managing_director }}</label>
+                    <input type="text" id="managing_director" name="managing_director" class="legal-field-input" value="{{ setting.managing_director|default('') }}" placeholder="{{ lang.mod_settings.managing_director_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="editor_in_chief" class="legal-field-label">{{ lang.mod_settings.editor_in_chief }}</label>
+                    <input type="text" id="editor_in_chief" name="editor_in_chief" class="legal-field-input" value="{{ setting.editor_in_chief|default('') }}" placeholder="{{ lang.mod_settings.editor_in_chief_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="press_code_license" class="legal-field-label">{{ lang.mod_settings.press_code_license }}</label>
+                    <input type="text" id="press_code_license" name="press_code_license" class="legal-field-input" value="{{ setting.press_code_license|default('') }}" placeholder="{{ lang.mod_settings.press_code_license_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="dpo_email" class="legal-field-label">{{ lang.mod_settings.dpo_email }}</label>
+                    <input type="email" id="dpo_email" name="dpo_email" class="legal-field-input" value="{{ setting.dpo_email|default('') }}" placeholder="{{ lang.mod_settings.dpo_email_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="hosting_provider" class="legal-field-label">{{ lang.mod_settings.hosting_provider }}</label>
+                    <input type="text" id="hosting_provider" name="hosting_provider" class="legal-field-input" value="{{ setting.hosting_provider|default('') }}" placeholder="{{ lang.mod_settings.hosting_provider_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="compliance_jurisdiction" class="legal-field-label">{{ lang.mod_settings.compliance_jurisdiction }}</label>
+                    <input type="text" id="compliance_jurisdiction" name="compliance_jurisdiction" class="legal-field-input" value="{{ setting.compliance_jurisdiction|default('') }}" placeholder="{{ lang.mod_settings.compliance_jurisdiction_placeholder }}">
+                </div>
+            </div>
+        </section>
+
         <!-- Section 1: Company & Registry -->
         <section class="legal-section-card">
             <div class="legal-section-header">
@@ -101,25 +145,18 @@
                 </div>
 
                 <div class="legal-field-group">
-                    <label for="company_type" class="legal-field-label mb-1">{{ lang.mod_settings.company_type }}</label>
-                    <div class="legal-select-wrapper {{ setting.company_type|default('') ? 'has-value' : '' }}" id="companyTypeWrapper">
-                        <select id="company_type" name="company_type" class="legal-field-select {{ setting.company_type|default('') ? 'is-selected' : '' }}">
-                            <option value="">-- {{ lang.mod_settings.company_type_placeholder }} --</option>
-                            {% if organization_types is defined and organization_types is not empty %}
-                                {% for item in organization_types %}
-                                    <option value="{{ item.code }}" {{ setting.company_type|default('') == item.code ? 'selected' : '' }}>
-                                        {{ item.name }}
-                                    </option>
-                                {% endfor %}
-                            {% endif %}
-                        </select>
-                        <span class="legal-select-ok-badge" title="OK">
-                            <i class="bi bi-check-circle-fill"></i>
-                        </span>
-                        <span class="legal-select-arrow">
-                            <i class="bi bi-chevron-down"></i>
-                        </span>
-                    </div>
+                    <label for="legal_trading_name" class="legal-field-label">{{ lang.mod_settings.legal_trading_name }}</label>
+                    <input type="text" id="legal_trading_name" name="legal_trading_name" class="legal-field-input" value="{{ setting.legal_trading_name|default('') }}" placeholder="{{ lang.mod_settings.legal_trading_name_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="company_type" class="legal-field-label">{{ lang.mod_settings.company_type }}</label>
+                    <input type="text" id="company_type" name="company_type" class="legal-field-input" value="{{ setting.company_type|default('') }}" placeholder="{{ lang.mod_settings.company_type_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="company_registration_number" class="legal-field-label">{{ lang.mod_settings.company_registration_number }}</label>
+                    <input type="text" id="company_registration_number" name="company_registration_number" class="legal-field-input" value="{{ setting.company_registration_number|default('') }}" placeholder="{{ lang.mod_settings.company_registration_number_placeholder }}">
                 </div>
 
                 <div class="legal-field-group">
@@ -135,6 +172,11 @@
                 <div class="legal-field-group">
                     <label for="chamber_of_commerce" class="legal-field-label">{{ lang.mod_settings.chamber_of_commerce }}</label>
                     <input type="text" id="chamber_of_commerce" name="chamber_of_commerce" class="legal-field-input" value="{{ setting.chamber_of_commerce|default('') }}" placeholder="{{ lang.mod_settings.chamber_of_commerce_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="corporate_address" class="legal-field-label">{{ lang.mod_settings.corporate_address }}</label>
+                    <textarea id="corporate_address" name="corporate_address" class="legal-field-textarea" placeholder="{{ lang.mod_settings.corporate_address_placeholder }}">{{ setting.corporate_address|default('') }}</textarea>
                 </div>
             </div>
         </section>
@@ -159,6 +201,11 @@
                 <div class="legal-field-group">
                     <label for="tax_number" class="legal-field-label">{{ lang.mod_settings.tax_number }}</label>
                     <input type="text" id="tax_number" name="tax_number" class="legal-field-input" value="{{ setting.tax_number|default('') }}" placeholder="{{ lang.mod_settings.tax_number_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="vat_number" class="legal-field-label">{{ lang.mod_settings.vat_number }}</label>
+                    <input type="text" id="vat_number" name="vat_number" class="legal-field-input" value="{{ setting.vat_number|default('') }}" placeholder="{{ lang.mod_settings.vat_number_placeholder }}">
                 </div>
             </div>
         </section>
@@ -188,6 +235,11 @@
                 <div class="legal-field-group">
                     <label for="legal_contact_phone" class="legal-field-label">{{ lang.mod_settings.legal_contact_phone }}</label>
                     <input type="text" id="legal_contact_phone" name="legal_contact_phone" class="legal-field-input" value="{{ setting.legal_contact_phone|default('') }}" placeholder="{{ lang.mod_settings.legal_contact_phone_placeholder }}">
+                </div>
+
+                <div class="legal-field-group">
+                    <label for="contact_address" class="legal-field-label">{{ lang.mod_settings.contact_address }}</label>
+                    <textarea id="contact_address" name="contact_address" class="legal-field-textarea" placeholder="{{ lang.mod_settings.contact_address_placeholder }}">{{ setting.contact_address|default('') }}</textarea>
                 </div>
             </div>
         </section>

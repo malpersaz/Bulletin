@@ -1,0 +1,233 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
+{% endblock %}
+
+{% set page_meta_title = lang.index.compliance %}
+{% set page_meta_description = lang.index.compliance_subtitle is defined and lang.index.compliance_subtitle is not empty ? lang.index.compliance_subtitle : site.description %}
+
+{% block canonical %}
+	<link rel="canonical" href="{{ site.saddress }}compliance"/>
+{% endblock %}
+
+{% block title %}
+	<title>{{ page_meta_title }} - {{ site.name }}</title>
+{% endblock %}
+
+{% block description %}
+	<meta name="description" content="{{ page_meta_description }}">
+{% endblock %}
+
+{% block meta_tags %}
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="{{ site.saddress }}compliance">
+	<meta property="og:title" content="{{ page_meta_title }}">
+	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	<meta property="og:site_name" content="{{ site.name }}">
+	{% set og_locale = site.lang %}
+	{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
+	{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
+	{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+	{% elseif site.lang == 'fr' %}{% set og_locale = 'fr_FR' %}
+	{% elseif site.lang == 'sv' %}{% set og_locale = 'sv_SE' %}
+	{% elseif site.lang == 'ru' %}{% set og_locale = 'ru_RU' %}
+	{% elseif site.lang == 'ar' %}{% set og_locale = 'ar_AR' %}
+	{% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
+	{% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
+	{% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
+	{% endif %}
+	<meta property="og:locale" content="{{ og_locale }}">
+
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:url" content="{{ site.saddress }}compliance">
+	<meta name="twitter:title" content="{{ page_meta_title }}">
+	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+{% endblock %}
+
+{% block schema %}
+	<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@type": "WebPage",
+		  "name": {{ page_meta_title|json_encode|raw }},
+		  "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
+		  "url": {{ (site.saddress ~ 'compliance')|json_encode|raw }},
+		  "isPartOf": {
+		    "@type": "WebSite",
+		    "name": {{ site.name|json_encode|raw }},
+		    "url": {{ site.address|json_encode|raw }}
+		  },
+		  "breadcrumb": {
+		    "@type": "BreadcrumbList",
+		    "itemListElement": [
+		      {
+			"@type": "ListItem",
+			"position": 1,
+			"name": {{ lang.index.home|json_encode|raw }},
+			"item": {{ site.saddress|json_encode|raw }}
+		      },
+		      {
+			"@type": "ListItem",
+			"position": 2,
+			"name": {{ page_meta_title|json_encode|raw }},
+			"item": {{ (site.saddress ~ 'compliance')|json_encode|raw }}
+		      }
+		    ]
+		  }
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_compliance">
+	<div class="col-lg-10">
+		<div class="detail-page-layout">
+			<div class="detail-page-content w-100">
+				<article class="detail-card">
+					<!-- Breadcrumb Navigation -->
+					<div class="detail-breadcrumb-wrap mb-4">
+						<nav aria-label="{{ lang.index.home }}">
+							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<a itemprop="item" href="{{ site.saddress }}">
+										<span itemprop="name">{{ lang.index.home }}</span>
+									</a>
+									<meta itemprop="position" content="1"/>
+								</li>
+								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+									<span itemprop="name">{{ page_meta_title }}</span>
+									<meta itemprop="position" content="2"/>
+								</li>
+							</ol>
+						</nav>
+					</div>
+
+					<div class="detail-content position-relative">
+						<!-- Horizontal Policy Navigation -->
+						{% include "partials/_legal_nav.twig" %}
+
+						<!-- Hero Header -->
+						<div class="detail-page-intro mb-4">
+							<div class="detail-page-meta mb-2">
+								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">
+									<i class="bi bi-patch-check me-1" aria-hidden="true"></i>{{ page_meta_title }}
+								</span>
+							</div>
+							<h1 class="detail-title fw-bold">{{ page_meta_title }}</h1>
+							<p class="text-muted leading-relaxed mt-2">{{ page_meta_description }}</p>
+						</div>
+
+						<div class="policy-card-stack">
+							<!-- 1. Journalistic Code of Ethics -->
+							<section class="policy-section-card" aria-labelledby="sec-compliance-ethics">
+								<div class="policy-section-header">
+									<div class="policy-section-icon" aria-hidden="true">
+										<i class="bi bi-award-fill"></i>
+									</div>
+									<div>
+										<span class="policy-section-kicker">{{ page_meta_title }}</span>
+										<h2 id="sec-compliance-ethics" class="policy-section-title">{{ lang.index.compliance_ethics_title }}</h2>
+									</div>
+								</div>
+								<div class="policy-section-body">
+									<p>{{ lang.index.compliance_ethics_desc }}</p>
+								</div>
+							</section>
+
+							<!-- 2. Editorial & Commercial Separation -->
+							<section class="policy-section-card" aria-labelledby="sec-compliance-ad">
+								<div class="policy-section-header">
+									<div class="policy-section-icon" aria-hidden="true">
+										<i class="bi bi-layout-split"></i>
+									</div>
+									<div>
+										<span class="policy-section-kicker">{{ page_meta_title }}</span>
+										<h2 id="sec-compliance-ad" class="policy-section-title">{{ lang.index.compliance_ad_separation_title }}</h2>
+									</div>
+								</div>
+								<div class="policy-section-body">
+									<p>{{ lang.index.compliance_ad_separation_desc }}</p>
+								</div>
+							</section>
+
+							<!-- 3. Conflict of Interest & Anti-Corruption -->
+							<section class="policy-section-card" aria-labelledby="sec-compliance-conflict">
+								<div class="policy-section-header">
+									<div class="policy-section-icon" aria-hidden="true">
+										<i class="bi bi-shield-x"></i>
+									</div>
+									<div>
+										<span class="policy-section-kicker">{{ page_meta_title }}</span>
+										<h2 id="sec-compliance-conflict" class="policy-section-title">{{ lang.index.compliance_conflict_title }}</h2>
+									</div>
+								</div>
+								<div class="policy-section-body">
+									<p>{{ lang.index.compliance_conflict_desc }}</p>
+								</div>
+							</section>
+
+							<!-- 4. Confidential Reporting & Whistleblowing -->
+							<section class="policy-section-card" aria-labelledby="sec-compliance-whistleblower">
+								<div class="policy-section-header">
+									<div class="policy-section-icon" aria-hidden="true">
+										<i class="bi bi-shield-lock-fill"></i>
+									</div>
+									<div>
+										<span class="policy-section-kicker">{{ lang.index.statutory_compliance }}</span>
+										<h2 id="sec-compliance-whistleblower" class="policy-section-title">{{ lang.index.compliance_whistleblower_title }}</h2>
+									</div>
+								</div>
+								<div class="policy-section-body">
+									<p>{{ lang.index.compliance_whistleblower_desc }}</p>
+									{% if (site.registered_email is defined and site.registered_email is not empty) or (site.mail is defined and site.mail is not empty) %}
+										<ul class="policy-clause-list">
+											{% if site.registered_email is defined and site.registered_email is not empty %}
+												<li class="policy-clause-item">
+													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
+													<div class="policy-clause-content">
+														<strong>{{ lang.index.registered_email }}:</strong>
+														<a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
+													</div>
+												</li>
+											{% elseif site.mail is defined and site.mail is not empty %}
+												<li class="policy-clause-item">
+													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
+													<div class="policy-clause-content">
+														<strong>{{ lang.index.email }}:</strong>
+														<a href="mailto:{{ site.mail }}">{{ site.mail }}</a>
+													</div>
+												</li>
+											{% endif %}
+										</ul>
+									{% endif %}
+								</div>
+							</section>
+						</div>
+
+						<!-- Bottom Contact Card -->
+						<div class="policy-footer-card">
+							<div class="policy-footer-info">
+								<div class="policy-footer-icon" aria-hidden="true">
+									<i class="bi bi-lock"></i>
+								</div>
+								<div>
+									<h3 class="policy-footer-title">{{ lang.index.compliance_whistleblower_title }}</h3>
+									<p class="policy-footer-text">{{ lang.index.compliance_whistleblower_desc }}</p>
+								</div>
+							</div>
+							<div class="policy-footer-action">
+								<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
+									<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
+								</a>
+							</div>
+						</div>
+					</div>
+				</article>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

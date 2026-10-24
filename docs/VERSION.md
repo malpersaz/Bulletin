@@ -1,5 +1,33 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.5 (2026-10-25)
+- **Statutory Publishing Credentials, Masthead (Künye), Corporate Schema & Comprehensive Legal Policy Pages Ecosystem (`installer/`, `mod/mod_settings/`, `lib/`, `mod/index/`, `config/url.config.php`, `templates/admin/mod_settings/`, `templates/amida/`)**:
+  - **Database Schema & Publishing Governance Expansion (`installer/mod_settings/mod_settings.sql`, `mod/mod_settings/model/mod_settings.model.php`, `mod/mod_settings/index.php`)**:
+    - Added 10 statutory columns to `mod_settings`: `legal_trading_name`, `company_registration_number`, `corporate_address`, `contact_address`, `managing_director`, `editor_in_chief`, `press_code_license`, `dpo_email`, `hosting_provider`, `compliance_jurisdiction`.
+    - Added corresponding model properties, getters/setters in `mod_settings.model.php`, and automated runtime schema migration in `mod_settings_mod::ensureLegalInfoColumns()`.
+  - **Phone-First Admin Künye & Legal Info Interface (`templates/admin/mod_settings/legal_info.twig`, `templates/admin/assets/css/legal_info.css`, `mod/mod_settings/lang/*.php`)**:
+    - Reorganized `legal_info.twig` with Section 0: "Publishing Credentials & Masthead (Künye)" covering `managing_director`, `editor_in_chief`, `press_code_license`, `dpo_email`, `hosting_provider`, and `compliance_jurisdiction`.
+    - Replaced empty `#company_type` dropdown with a text input and added fields for trading name, company registration number, corporate address, and contact address.
+    - Synchronized all 10 language dictionaries in `mod/mod_settings/lang/` (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`), validated 100% clean with `tools/i18n_guard.py` and `tools/code_separation_guard.py`.
+  - **MCP `update_site_settings` Tool Schema, Global Sync & Validation (`lib/McpSettingsTools.class.php`, `tasks/mcp_smoke.php`)**:
+    - Synchronized `McpSettingsTools::definitions()` and `update_site_settings` handler with all 10 publishing and corporate fields, including strict email format checks (`dpo_email`, `registered_email`, `email`), automatic runtime column migration (`ensureSettingsColumns()`), global synchronization of `GLOBAL_LEGAL_FIELDS` across all language rows (admin `_save_legal_fields()` parity), and round-trip smoke assertions in `tasks/mcp_smoke.php` (49 passing checks).
+  - **Canonical Policy Routing & Multi-Policy Controller Architecture (`config/url.config.php`, `mod/index/index.php`, `mod/index/helper/legal.helper.php`)**:
+    - Added canonical routes and aliases in `config/url.config.php` for `legal`, `imprint`, `cookie-policy`, `cookies`, `privacy-policy`, `privacy`, `terms-of-service`, `terms`, `editorial-policy`, `editorial-guidelines`, `corrections-policy`, `accessibility`, `a11y`, `security-policy`, `security`, `compliance`, `ethics-policy`.
+    - Extended `mod/index/index.php` with direct action delegates routing to `index.legal`.
+    - Refactored `legal_helper::render($type)` into a unified deterministic registry handling all 8 policy archetypes (`info`, `cookies`, `privacy`, `terms`, `editorial`, `accessibility`, `security`, `compliance`) with runtime schema verification (`ensureLegalInfoColumns()`), metadata, canonical URLs, schema types, and dynamic context assignment via `$this->theme->set()`.
+  - **Multilingual Policy Localization Parity (`mod/index/lang/*.php`)**:
+    - Created `mod/index/lang/ru.php` and synchronized navigation keys, cookie fallbacks, feed/index labels (`llms_index`), and 6 dedicated policy section keys across all 10 language packs (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`), achieving 100% key parity with `en.php` (`0 missing`) and zero violations under `tools/i18n_guard.py`.
+  - **Public Theme Templates, Policy Navigation Bar & Bento Card Design (`templates/amida/index/legal/`, `templates/amida/partials/`, `templates/amida/static/css/legal-info.css`, `templates/amida/index/footer.twig`)**:
+    - Fixed meta description defect and enriched `NewsMediaOrganization` JSON-LD schema in `templates/amida/index/legal/index.twig` with `publishingPrinciples`, `correctionsPolicy` (`editorial-policy#corrections`), `actionableFeedbackPolicy`, `ethicsPolicy`, `diversityPolicy`, and `masthead`, plus `company_type` rendering in `templates/amida/partials/_legal_info.twig`.
+    - Removed hardcoded English fallback strings from `templates/amida/index/legal/cookie_policy.twig`, `templates/amida/index/footer.twig`, and all 6 new policy templates, binding dynamic institutional contact/registry attributes (`dpo_email`, `registered_email`, `legal_contact_phone`, `corporate_address`, `contact_address`, `hosting_provider`, `compliance_jurisdiction`).
+    - Created reusable responsive navigation component `templates/amida/partials/_legal_nav.twig` featuring horizontal scrolling pills and active page highlighting.
+    - Created 6 dedicated semantic policy templates: `privacy_policy.twig`, `terms_of_service.twig`, `editorial_policy.twig` (with `#corrections` anchor), `accessibility.twig`, `security_policy.twig`, and `compliance.twig` with zero inline CSS/JS violations.
+    - Extended `templates/amida/static/css/legal-info.css` with responsive navigation pills, card stack layouts, icon badges, clause lists, dark mode styles, and RTL support.
+    - Enhanced `templates/amida/index/footer.twig` with a dedicated legal & policy links bar linking all 8 policies.
+  - **XML Sitemap & llms.txt Machine-Readable Discovery (`mod/index/index.php`, `lib/LlmsService.class.php`)**:
+    - Appended all 8 canonical policy URLs to `pageSitemap.xml` on page 1 with priority `0.60`.
+    - Updated `## Optional` section in `lib/LlmsService.class.php` to include machine-readable discovery links for all 8 statutory policy endpoints.
+
 ## v1.0.4 (2026-10-24)
 - **Active-Language Parity, Editorial Pipeline Hardening, MCP `definitions()` Architecture, `mod_settings/google_settings` Consolidation & Agent Timeout/Streaming Resilience (`lib/`, `mod/`, `templates/admin/`, `tasks/`, `tools/`, `.agents/skills/`)**:
   - **Active Language Discovery & Cross-Language Contamination Gate (`lib/McpCrudToolsBase.class.php`, `lib/McpSettingsTools.class.php`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `lib/McpPageTools.class.php`, `lib/McpAnnouncementTools.class.php`, `lib/McpFaqTools.class.php`, `lib/McpHeadlineTools.class.php`, `lib/McpSurveyTools.class.php`, `.agents/skills/kevanger/SKILL.md`, `tools/audit_content_seo.py`)**:

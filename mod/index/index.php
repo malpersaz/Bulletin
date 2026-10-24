@@ -36,6 +36,48 @@ class index_mod extends indexBase
         unset($legal);
     }
 
+    public function privacy_policy()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('privacy');
+        unset($legal);
+    }
+
+    public function terms_of_service()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('terms');
+        unset($legal);
+    }
+
+    public function editorial_policy()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('editorial');
+        unset($legal);
+    }
+
+    public function accessibility()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('accessibility');
+        unset($legal);
+    }
+
+    public function security_policy()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('security');
+        unset($legal);
+    }
+
+    public function compliance()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('compliance');
+        unset($legal);
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {
@@ -770,6 +812,25 @@ class index_mod extends indexBase
                 echo '<url>
                           <loc>' . $this->site['address'] . $o['lang'] . '/page/' . $o['seo'] . '</loc>
                           <priority>0.50</priority>
+                    </url>';
+            }
+        }
+
+        if ($page === 1) {
+            $policySlugs = [
+                'legal',
+                'editorial-policy',
+                'privacy-policy',
+                'cookie-policy',
+                'terms-of-service',
+                'accessibility',
+                'security-policy',
+                'compliance',
+            ];
+            foreach ($policySlugs as $pslug) {
+                echo '<url>
+                          <loc>' . $this->site['saddress'] . $pslug . '</loc>
+                          <priority>0.60</priority>
                     </url>';
             }
         }

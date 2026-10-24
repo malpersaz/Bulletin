@@ -1,0 +1,37 @@
+{# Policy Navigation Bar #}
+<nav class="policy-nav-pills-wrap mb-4" aria-label="{{ lang.index.legal_info }}">
+	<div class="policy-nav-pills">
+		<a href="{{ site.saddress }}legal" class="policy-nav-link{% if legal_type == 'legal' or legal_type == 'info' or legal_type is empty %} active{% endif %}"{% if legal_type == 'legal' or legal_type == 'info' or legal_type is empty %} aria-current="page"{% endif %}>
+			<i class="bi bi-journal-bookmark" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_masthead }}</span>
+		</a>
+		<a href="{{ site.saddress }}editorial-policy" class="policy-nav-link{% if legal_type == 'editorial' or legal_type == 'editorial_policy' %} active{% endif %}"{% if legal_type == 'editorial' or legal_type == 'editorial_policy' %} aria-current="page"{% endif %}>
+			<i class="bi bi-newspaper" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_editorial }}</span>
+		</a>
+		<a href="{{ site.saddress }}privacy-policy" class="policy-nav-link{% if legal_type == 'privacy' or legal_type == 'privacy_policy' %} active{% endif %}"{% if legal_type == 'privacy' or legal_type == 'privacy_policy' %} aria-current="page"{% endif %}>
+			<i class="bi bi-shield-check" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_privacy }}</span>
+		</a>
+		<a href="{{ site.saddress }}cookie-policy" class="policy-nav-link{% if legal_type == 'cookies' or legal_type == 'cookie_policy' %} active{% endif %}"{% if legal_type == 'cookies' or legal_type == 'cookie_policy' %} aria-current="page"{% endif %}>
+			<i class="bi bi-cookie" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_cookies }}</span>
+		</a>
+		<a href="{{ site.saddress }}terms-of-service" class="policy-nav-link{% if legal_type == 'terms' or legal_type == 'terms_of_service' %} active{% endif %}"{% if legal_type == 'terms' or legal_type == 'terms_of_service' %} aria-current="page"{% endif %}>
+			<i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_terms }}</span>
+		</a>
+		<a href="{{ site.saddress }}accessibility" class="policy-nav-link{% if legal_type == 'accessibility' %} active{% endif %}"{% if legal_type == 'accessibility' %} aria-current="page"{% endif %}>
+			<i class="bi bi-universal-access" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_accessibility }}</span>
+		</a>
+		<a href="{{ site.saddress }}security-policy" class="policy-nav-link{% if legal_type == 'security' or legal_type == 'security_policy' %} active{% endif %}"{% if legal_type == 'security' or legal_type == 'security_policy' %} aria-current="page"{% endif %}>
+			<i class="bi bi-shield-lock" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_security }}</span>
+		</a>
+		<a href="{{ site.saddress }}compliance" class="policy-nav-link{% if legal_type == 'compliance' %} active{% endif %}"{% if legal_type == 'compliance' %} aria-current="page"{% endif %}>
+			<i class="bi bi-patch-check" aria-hidden="true"></i>
+			<span>{{ lang.index.legal_nav_compliance }}</span>
+		</a>
+	</div>
+</nav>

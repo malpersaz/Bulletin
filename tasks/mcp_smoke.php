@@ -463,6 +463,55 @@ check('Curator[LangGate]: create_news rejects cross-language prose contamination
     json_encode($resMismatch)
 );
 
+// Legal & Masthead (Künye) Settings Round-Trip (v1.0.5)
+$resGetBefore = runRpc(['jsonrpc' => '2.0', 'id' => 24, 'method' => 'tools/call', 'params' => ['name' => 'get_site_settings', 'arguments' => ['lang' => $testLang]]], $plaintextKey);
+$beforeItem = json_decode($resGetBefore['result']['content'][0]['text'] ?? 'null', true)['item'] ?? [];
+
+$resUpdateLegal = runRpc(['jsonrpc' => '2.0', 'id' => 25, 'method' => 'tools/call', 'params' => ['name' => 'update_site_settings', 'arguments' => [
+    'lang' => $testLang,
+    'managing_director' => 'Smoke Publisher',
+    'editor_in_chief' => 'Smoke Editor-in-Chief',
+    'press_code_license' => 'ISSN-SMOKE-2026',
+    'dpo_email' => 'dpo@example.org',
+    'hosting_provider' => 'Smoke Cloud Hosting',
+    'compliance_jurisdiction' => 'Diyarbakır Courts',
+    'legal_trading_name' => 'Smoke Media Group',
+    'company_registration_number' => 'REG-SMOKE-01',
+    'corporate_address' => 'Smoke HQ Address',
+    'contact_address' => 'Smoke Contact Address',
+]]], $plaintextKey);
+$updatedLegalPayload = json_decode($resUpdateLegal['result']['content'][0]['text'] ?? 'null', true);
+$updatedLegalItem = $updatedLegalPayload['item'] ?? [];
+check('Settings[v1.0.5]: update_site_settings persists masthead (Künye) and corporate legal fields',
+    ($resUpdateLegal['result']['isError'] ?? true) === false
+    && ($updatedLegalItem['managing_director'] ?? '') === 'Smoke Publisher'
+    && ($updatedLegalItem['editor_in_chief'] ?? '') === 'Smoke Editor-in-Chief'
+    && ($updatedLegalItem['press_code_license'] ?? '') === 'ISSN-SMOKE-2026'
+    && ($updatedLegalItem['dpo_email'] ?? '') === 'dpo@example.org'
+    && ($updatedLegalItem['hosting_provider'] ?? '') === 'Smoke Cloud Hosting'
+    && ($updatedLegalItem['compliance_jurisdiction'] ?? '') === 'Diyarbakır Courts'
+    && ($updatedLegalItem['legal_trading_name'] ?? '') === 'Smoke Media Group'
+    && ($updatedLegalItem['company_registration_number'] ?? '') === 'REG-SMOKE-01'
+    && ($updatedLegalItem['corporate_address'] ?? '') === 'Smoke HQ Address'
+    && ($updatedLegalItem['contact_address'] ?? '') === 'Smoke Contact Address',
+    json_encode($updatedLegalPayload)
+);
+
+// Restore previous legal settings
+runRpc(['jsonrpc' => '2.0', 'id' => 26, 'method' => 'tools/call', 'params' => ['name' => 'update_site_settings', 'arguments' => [
+    'lang' => $testLang,
+    'managing_director' => (string) ($beforeItem['managing_director'] ?? ''),
+    'editor_in_chief' => (string) ($beforeItem['editor_in_chief'] ?? ''),
+    'press_code_license' => (string) ($beforeItem['press_code_license'] ?? ''),
+    'dpo_email' => (string) ($beforeItem['dpo_email'] ?? ''),
+    'hosting_provider' => (string) ($beforeItem['hosting_provider'] ?? ''),
+    'compliance_jurisdiction' => (string) ($beforeItem['compliance_jurisdiction'] ?? ''),
+    'legal_trading_name' => (string) ($beforeItem['legal_trading_name'] ?? ''),
+    'company_registration_number' => (string) ($beforeItem['company_registration_number'] ?? ''),
+    'corporate_address' => (string) ($beforeItem['corporate_address'] ?? ''),
+    'contact_address' => (string) ($beforeItem['contact_address'] ?? ''),
+]]], $plaintextKey);
+
 // =========================================================================
 // 7. Cleanup
 // =========================================================================

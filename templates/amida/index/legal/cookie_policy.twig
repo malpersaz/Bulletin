@@ -3,10 +3,11 @@
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
-{% set page_meta_title = lang.index.cookie_policy is defined and lang.index.cookie_policy is not empty ? lang.index.cookie_policy : 'Cookie Policy' %}
+{% set page_meta_title = lang.index.cookie_policy %}
 {% set page_meta_description = lang.index.cookie_policy_subtitle is defined and lang.index.cookie_policy_subtitle is not empty ? lang.index.cookie_policy_subtitle : site.description %}
 
 {% block canonical %}
@@ -31,6 +32,10 @@
 	{% if site.lang == 'en' %}{% set og_locale = 'en_US' %}
 	{% elseif site.lang == 'tr' %}{% set og_locale = 'tr_TR' %}
 	{% elseif site.lang == 'de' %}{% set og_locale = 'de_DE' %}
+	{% elseif site.lang == 'fr' %}{% set og_locale = 'fr_FR' %}
+	{% elseif site.lang == 'sv' %}{% set og_locale = 'sv_SE' %}
+	{% elseif site.lang == 'ru' %}{% set og_locale = 'ru_RU' %}
+	{% elseif site.lang == 'ar' %}{% set og_locale = 'ar_AR' %}
 	{% elseif site.lang == 'ku' %}{% set og_locale = 'ku' %}
 	{% elseif site.lang == 'ckb' %}{% set og_locale = 'ckb' %}
 	{% elseif site.lang == 'zza' %}{% set og_locale = 'zza' %}
@@ -98,6 +103,8 @@
 					</ol>
 				</nav>
 			</div>
+
+			{% include "partials/_legal_nav.twig" %}
 
 			<!-- Page Intro -->
 			<div class="mb-4">
@@ -171,20 +178,20 @@
 								{% else %}
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">PHPSESSID</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Preserves user session state across page requests.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} ({{ lang.index.cookie_first_party }})</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_session_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_session }}</td>
 									</tr>
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">csrf_token</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Security protection against cross-site request forgery.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} ({{ lang.index.cookie_first_party }})</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_csrf_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_session }}</td>
 									</tr>
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">cookie_consent</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Stores user cookie consent and category choices.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} ({{ lang.index.cookie_first_party }})</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_consent_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_6_months }}</td>
 									</tr>
 								{% endif %}
@@ -231,14 +238,14 @@
 								{% else %}
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">theme</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Remembers light/dark and template theme preferences.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} ({{ lang.index.cookie_first_party }})</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_theme_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">lang</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} (First-party)</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Stores the visitor selected browsing language.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ site.name }} ({{ lang.index.cookie_first_party }})</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_lang_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 								{% endif %}
@@ -285,8 +292,8 @@
 								{% else %}
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">_ga, _gid</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">Analytics Provider</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Aggregated, anonymized visitor statistics and speed metrics.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ lang.index.cookie_sample_analytics_provider }}</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_analytics_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_1_year }}</td>
 									</tr>
 								{% endif %}
@@ -333,8 +340,8 @@
 								{% else %}
 									<tr>
 										<td data-label="{{ lang.index.cookie_name }}"><span class="cookie-code-tag">_camp_id</span></td>
-										<td data-label="{{ lang.index.cookie_provider }}">Media & News Portal</td>
-										<td data-label="{{ lang.index.cookie_purpose }}">Measures outreach campaign effectiveness and interactions.</td>
+										<td data-label="{{ lang.index.cookie_provider }}">{{ lang.index.cookie_sample_marketing_provider }}</td>
+										<td data-label="{{ lang.index.cookie_purpose }}">{{ lang.index.cookie_sample_marketing_purpose }}</td>
 										<td data-label="{{ lang.index.cookie_duration }}">{{ lang.index.cookie_6_months }}</td>
 									</tr>
 								{% endif %}

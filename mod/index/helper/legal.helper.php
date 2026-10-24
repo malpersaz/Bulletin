@@ -10,25 +10,116 @@ class legal_helper extends indexBase
 
     public function render($type = null)
     {
-        $type = $type !== null ? strtolower(trim((string) $type)) : 'info';
-        $type = Req::Url_Clear($type);
-
-        $validTypes = ['info', 'cookies', 'privacy', 'terms', 'warranty'];
-        if (!in_array($type, $validTypes, true)) {
-            $type = 'info';
+        $rawType = $type !== null ? strtolower(trim((string) $type)) : 'info';
+        $rawType = Req::Url_Clear($rawType);
+        if ($rawType === '') {
+            $rawType = 'info';
         }
 
-        $template = 'index/legal/index';
-        if ($type === 'cookies') {
-            $title = isset($this->lang['index']['cookie_policy']) && !empty($this->lang['index']['cookie_policy'])
-                ? $this->lang['index']['cookie_policy']
-                : 'Cookie Policy';
-            $description = isset($this->lang['index']['cookie_policy_subtitle']) && !empty($this->lang['index']['cookie_policy_subtitle'])
-                ? $this->lang['index']['cookie_policy_subtitle']
-                : '';
-            $canonicalUrl = $this->site['saddress'] . 'cookie-policy';
-            $template = 'index/legal/cookie_policy';
+        $aliasMap = [
+            'info' => 'info',
+            'legal' => 'info',
+            'imprint' => 'info',
+            'kunya' => 'info',
+            'cookies' => 'cookies',
+            'cookie-policy' => 'cookies',
+            'privacy' => 'privacy',
+            'privacy-policy' => 'privacy',
+            'terms' => 'terms',
+            'terms-of-service' => 'terms',
+            'editorial' => 'editorial',
+            'editorial-policy' => 'editorial',
+            'editorial-guidelines' => 'editorial',
+            'corrections' => 'editorial',
+            'corrections-policy' => 'editorial',
+            'accessibility' => 'accessibility',
+            'a11y' => 'accessibility',
+            'security' => 'security',
+            'security-policy' => 'security',
+            'compliance' => 'compliance',
+            'ethics-policy' => 'compliance',
+        ];
 
+        if (!isset($aliasMap[$rawType])) {
+            return $this->_404();
+        }
+
+        $this->ensureLegalInfoColumns();
+
+        $resolvedKey = $aliasMap[$rawType];
+
+        $registry = [
+            'info' => [
+                'canonical_slug' => 'legal',
+                'template' => 'index/legal/index',
+                'title_key' => 'legal_info',
+                'desc_key' => 'legal_notice_desc',
+                'schema_type' => 'AboutPage',
+            ],
+            'cookies' => [
+                'canonical_slug' => 'cookie-policy',
+                'template' => 'index/legal/cookie_policy',
+                'title_key' => 'cookie_policy',
+                'desc_key' => 'cookie_policy_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'privacy' => [
+                'canonical_slug' => 'privacy-policy',
+                'template' => 'index/legal/privacy_policy',
+                'title_key' => 'privacy_policy',
+                'desc_key' => 'privacy_policy_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'terms' => [
+                'canonical_slug' => 'terms-of-service',
+                'template' => 'index/legal/terms_of_service',
+                'title_key' => 'terms_of_service',
+                'desc_key' => 'terms_of_service_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'editorial' => [
+                'canonical_slug' => 'editorial-policy',
+                'template' => 'index/legal/editorial_policy',
+                'title_key' => 'editorial_policy',
+                'desc_key' => 'editorial_policy_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'accessibility' => [
+                'canonical_slug' => 'accessibility',
+                'template' => 'index/legal/accessibility',
+                'title_key' => 'accessibility',
+                'desc_key' => 'accessibility_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'security' => [
+                'canonical_slug' => 'security-policy',
+                'template' => 'index/legal/security_policy',
+                'title_key' => 'security_policy',
+                'desc_key' => 'security_policy_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+            'compliance' => [
+                'canonical_slug' => 'compliance',
+                'template' => 'index/legal/compliance',
+                'title_key' => 'compliance',
+                'desc_key' => 'compliance_subtitle',
+                'schema_type' => 'WebPage',
+            ],
+        ];
+
+        $policy = $registry[$resolvedKey];
+
+        $title = isset($this->lang['index'][$policy['title_key']]) && !empty($this->lang['index'][$policy['title_key']])
+            ? $this->lang['index'][$policy['title_key']]
+            : ucwords(str_replace('-', ' ', $policy['canonical_slug']));
+
+        $description = isset($this->lang['index'][$policy['desc_key']]) && !empty($this->lang['index'][$policy['desc_key']])
+            ? $this->lang['index'][$policy['desc_key']]
+            : (!empty($this->site['description']) ? $this->site['description'] : '');
+
+        $canonicalUrl = $this->site['saddress'] . $policy['canonical_slug'];
+
+        if ($resolvedKey === 'cookies') {
             // Fetch dynamic cookies grouped by category from mod_settings_cookies
             $cookiesByCategory = [
                 'necessary' => [],
@@ -75,22 +166,13 @@ class legal_helper extends indexBase
                 }
             }
             $this->theme->set('cookies_by_category', $cookiesByCategory);
-        } else {
-            $title = isset($this->lang['index']['legal_info']) && !empty($this->lang['index']['legal_info'])
-                ? $this->lang['index']['legal_info']
-                : 'Legal Information';
-
-            $description = isset($this->lang['index']['legal_notice_desc']) && !empty($this->lang['index']['legal_notice_desc'])
-                ? $this->lang['index']['legal_notice_desc']
-                : (isset($this->lang['index']['legal_info_pending']) && !empty($this->lang['index']['legal_info_pending'])
-                    ? $this->lang['index']['legal_info_pending']
-                    : '');
-
-            $canonicalUrl = $this->site['saddress'] . 'legal' . ($type !== 'info' ? '/' . $type : '');
         }
 
-        $this->theme->ctx_set('legal_type', $type);
-        $this->theme->ctx_set('canonical_url', $canonicalUrl);
+        $this->theme->set('legal_type', $resolvedKey);
+        $this->theme->set('canonical_url', $canonicalUrl);
+        $this->theme->set('schema_type', $policy['schema_type']);
+        $this->theme->set('policy_title', $title);
+        $this->theme->set('policy_description', $description);
 
         $this->site['title'] = $title;
         if (!empty($description)) {
@@ -98,7 +180,7 @@ class legal_helper extends indexBase
         }
 
         $this->theme->set('site', $this->site);
-        $this->theme->tpl($template);
+        $this->theme->tpl($policy['template']);
         $this->_index();
     }
 
@@ -348,5 +430,103 @@ class legal_helper extends indexBase
                 'display_order' => 6
             ]
         ];
+    }
+
+    /**
+     * Ensures all legal and masthead columns exist in mod_settings table
+     * and merges any non-empty legal fields into $this->site if missing.
+     */
+    private function ensureLegalInfoColumns()
+    {
+        if (!$this->db) {
+            return;
+        }
+
+        $columns = [
+            'legal_company_name' => 'VARCHAR(255) DEFAULT NULL',
+            'legal_trading_name' => 'VARCHAR(255) DEFAULT NULL',
+            'company_type' => 'VARCHAR(100) DEFAULT NULL',
+            'company_registration_number' => 'VARCHAR(100) DEFAULT NULL',
+            'trade_registry_number' => 'VARCHAR(100) DEFAULT NULL',
+            'central_registration_number' => 'VARCHAR(100) DEFAULT NULL',
+            'chamber_of_commerce' => 'VARCHAR(255) DEFAULT NULL',
+            'corporate_address' => 'TEXT DEFAULT NULL',
+            'contact_address' => 'TEXT DEFAULT NULL',
+            'tax_office' => 'VARCHAR(255) DEFAULT NULL',
+            'tax_number' => 'VARCHAR(100) DEFAULT NULL',
+            'vat_number' => 'VARCHAR(100) DEFAULT NULL',
+            'authorized_person' => 'VARCHAR(255) DEFAULT NULL',
+            'registered_email' => 'VARCHAR(255) DEFAULT NULL',
+            'legal_contact_phone' => 'VARCHAR(100) DEFAULT NULL',
+            'managing_director' => 'VARCHAR(255) DEFAULT NULL',
+            'editor_in_chief' => 'VARCHAR(255) DEFAULT NULL',
+            'press_code_license' => 'VARCHAR(150) DEFAULT NULL',
+            'dpo_email' => 'VARCHAR(255) DEFAULT NULL',
+            'hosting_provider' => 'VARCHAR(255) DEFAULT NULL',
+            'compliance_jurisdiction' => 'VARCHAR(255) DEFAULT NULL',
+            'default_warranty_duration' => 'VARCHAR(50) DEFAULT NULL',
+            'warranty_type' => 'VARCHAR(100) DEFAULT NULL',
+            'return_policy_days' => 'VARCHAR(50) DEFAULT NULL',
+            'country' => 'VARCHAR(100) DEFAULT NULL',
+            'is_online_retail' => "VARCHAR(1) DEFAULT 'n'",
+            'is_local_store' => "VARCHAR(1) DEFAULT 'y'",
+            'is_service_business' => "VARCHAR(1) DEFAULT 'n'",
+            'warranty_description' => 'TEXT DEFAULT NULL',
+            'cookie_policy_content' => 'TEXT DEFAULT NULL',
+        ];
+
+        $safeTable = 'mod_settings';
+        $adapter = (string) $this->db->getAdapterType();
+
+        foreach ($columns as $column => $definition) {
+            $safeColumn = addslashes($column);
+            $exists = false;
+            try {
+                if (strpos($adapter, 'PDO_SQLITE') !== false) {
+                    $this->db->fetch_array("PRAGMA table_info('" . $safeTable . "')");
+                    $rows = $this->db->toArray();
+                    if (is_array($rows)) {
+                        foreach ($rows as $row) {
+                            if (isset($row['name']) && $row['name'] === $column) {
+                                $exists = true;
+                                break;
+                            }
+                        }
+                    }
+                } elseif (strpos($adapter, 'POSTGRESQL') !== false) {
+                    $sql = "SELECT column_name FROM information_schema.columns WHERE table_schema NOT IN ('pg_catalog', 'information_schema') AND table_name='" . $safeTable . "' AND column_name='" . $safeColumn . "'";
+                    $this->db->fetch_array($sql);
+                    $exists = ($this->db->getSize() !== 0);
+                } else {
+                    $this->db->fetch_array("SHOW COLUMNS FROM `" . $safeTable . "` LIKE '" . $safeColumn . "'");
+                    $exists = ($this->db->getSize() !== 0);
+                }
+
+                if (!$exists) {
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `" . $safeColumn . "` " . $definition;
+                    $this->db->query($sql);
+                }
+            } catch (Exception $e) {
+            }
+        }
+
+        try {
+            $langCode = Registry::get('lang');
+            $safeLang = is_string($langCode) && $langCode !== '' ? addslashes($langCode) : 'en';
+            $this->db->fetch_array("SELECT * FROM `" . $safeTable . "` WHERE `lang` = '" . $safeLang . "' LIMIT 1");
+            $rows = $this->db->toArray();
+            if (empty($rows)) {
+                $this->db->fetch_array("SELECT * FROM `" . $safeTable . "` ORDER BY `id` ASC LIMIT 1");
+                $rows = $this->db->toArray();
+            }
+            if (!empty($rows) && is_array($rows[0])) {
+                foreach (array_keys($columns) as $colKey) {
+                    if ((!isset($this->site[$colKey]) || $this->site[$colKey] === '') && isset($rows[0][$colKey]) && $rows[0][$colKey] !== '') {
+                        $this->site[$colKey] = $rows[0][$colKey];
+                    }
+                }
+            }
+        } catch (Exception $e) {
+        }
     }
 }

@@ -9,19 +9,13 @@
 				</a>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
                 <div class="mt-4 d-flex flex-wrap gap-3 feeds-area">
-                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.rss_feed is defined and lang.index.rss_feed is not empty ? lang.index.rss_feed : 'RSS Feed' }}" aria-label="{{ lang.index.rss_feed is defined and lang.index.rss_feed is not empty ? lang.index.rss_feed : 'RSS Feed' }}">
+                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.rss_feed }}" aria-label="{{ lang.index.rss_feed }}">
                         <i class="bi bi-rss-fill text-warning"></i> RSS
                     </a>
-                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="Sitemap" aria-label="Sitemap">
-                        <i class="bi bi-diagram-3-fill text-info"></i> Sitemap
+                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.sitemap }}" aria-label="{{ lang.index.sitemap }}">
+                        <i class="bi bi-diagram-3-fill text-info"></i> {{ lang.index.sitemap }}
                     </a>
-                    <a href="{{ site.saddress }}legal" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" title="{{ lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' }}" aria-label="{{ lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' }}">
-                        <i class="bi bi-shield-check text-success"></i> {{ lang.index.legal_info is defined and lang.index.legal_info is not empty ? lang.index.legal_info : 'Legal Information' }}
-                    </a>
-                    <a href="{{ site.saddress }}cookie-policy" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" title="{{ lang.index.cookie_policy is defined and lang.index.cookie_policy is not empty ? lang.index.cookie_policy : 'Cookie Policy' }}" aria-label="{{ lang.index.cookie_policy is defined and lang.index.cookie_policy is not empty ? lang.index.cookie_policy : 'Cookie Policy' }}">
-                        <i class="bi bi-cookie text-warning"></i> {{ lang.index.cookie_policy is defined and lang.index.cookie_policy is not empty ? lang.index.cookie_policy : 'Cookie Policy' }}
-                    </a>
-                    <a href="{{ site.saddress }}llms.txt" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="AI Index (llms.txt)" aria-label="AI Index (llms.txt)">
+                    <a href="{{ site.saddress }}llms.txt" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.llms_index }}" aria-label="{{ lang.index.llms_index }}">
                         <i class="bi bi-cpu text-primary"></i> llms.txt
                     </a>
                 </div>
@@ -141,6 +135,41 @@
 				</div>
 			</div>
 		{% endif %}
+
+		<!-- Legal & Policy Links -->
+		<div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 gap-md-3 pt-4 mt-4 border-top footer-policies-area small opacity-75">
+			<a href="{{ site.saddress }}legal" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_masthead }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}editorial-policy" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_editorial }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}privacy-policy" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_privacy }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}cookie-policy" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_cookies }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}terms-of-service" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_terms }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}accessibility" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_accessibility }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}security-policy" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_security }}
+			</a>
+			<span class="opacity-25 d-none d-sm-inline">&bull;</span>
+			<a href="{{ site.saddress }}compliance" class="text-decoration-none transition-link">
+				{{ lang.index.legal_nav_compliance }}
+			</a>
+		</div>
 
 		<!-- Copyright -->
 		<div class="d-flex flex-column flex-md-row justify-content-between align-items-center pt-4 mt-5 border-top copyright-section small">

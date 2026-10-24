@@ -37,9 +37,45 @@ $url['page/(:any)']='index/page/$1';
 $url['legal'] = 'index/legal';
 $url['legal/'] = 'index/legal';
 $url['legal/(:any)'] = 'index/legal/$1';
+$url['imprint'] = 'index/legal';
+$url['imprint/'] = 'index/legal';
+
 $url['cookie-policy'] = 'index/cookie_policy';
 $url['cookie-policy/'] = 'index/cookie_policy';
 $url['cookies'] = 'index/cookie_policy';
+$url['cookies/'] = 'index/cookie_policy';
+
+$url['privacy-policy'] = 'index/privacy_policy';
+$url['privacy-policy/'] = 'index/privacy_policy';
+$url['privacy'] = 'index/privacy_policy';
+$url['privacy/'] = 'index/privacy_policy';
+
+$url['terms-of-service'] = 'index/terms_of_service';
+$url['terms-of-service/'] = 'index/terms_of_service';
+$url['terms'] = 'index/terms_of_service';
+$url['terms/'] = 'index/terms_of_service';
+
+$url['editorial-policy'] = 'index/editorial_policy';
+$url['editorial-policy/'] = 'index/editorial_policy';
+$url['editorial-guidelines'] = 'index/editorial_policy';
+$url['editorial-guidelines/'] = 'index/editorial_policy';
+$url['corrections-policy'] = 'index/editorial_policy';
+$url['corrections-policy/'] = 'index/editorial_policy';
+
+$url['accessibility'] = 'index/accessibility';
+$url['accessibility/'] = 'index/accessibility';
+$url['a11y'] = 'index/accessibility';
+$url['a11y/'] = 'index/accessibility';
+
+$url['security-policy'] = 'index/security_policy';
+$url['security-policy/'] = 'index/security_policy';
+$url['security'] = 'index/security_policy';
+$url['security/'] = 'index/security_policy';
+
+$url['compliance'] = 'index/compliance';
+$url['compliance/'] = 'index/compliance';
+$url['ethics-policy'] = 'index/compliance';
+$url['ethics-policy/'] = 'index/compliance';
 
 // Sitemaps
 $url['rss.xml'] = 'index/rss';
