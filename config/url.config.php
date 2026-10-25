@@ -74,6 +74,8 @@ $url['security/'] = 'index/security_policy';
 
 $url['compliance'] = 'index/compliance';
 $url['compliance/'] = 'index/compliance';
+$url['contact'] = 'index/contact';
+$url['contact/'] = 'index/contact';
 $url['ethics-policy'] = 'index/compliance';
 $url['ethics-policy/'] = 'index/compliance';
 

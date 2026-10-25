@@ -78,6 +78,13 @@ class index_mod extends indexBase
         unset($legal);
     }
 
+    public function contact()
+    {
+        $legal = Load::helper("index.legal");
+        $legal->render('contact');
+        unset($legal);
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {
@@ -826,6 +833,7 @@ class index_mod extends indexBase
                 'accessibility',
                 'security-policy',
                 'compliance',
+                'contact',
             ];
             foreach ($policySlugs as $pslug) {
                 echo '<url>

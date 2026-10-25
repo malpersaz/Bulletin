@@ -31,51 +31,26 @@ body.dark-mode,
 
 /* Base Card & Shell */
 .cookie-policy-shell {
-  padding-top: 1.5rem;
-  padding-bottom: 3.5rem;
+  margin-top: 1.5rem;
+  margin-bottom: 4rem;
 }
 
-.cookie-hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.825rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  background-color: var(--cookie-accent-subtle);
-  color: var(--cookie-accent);
-  border: 1px solid var(--cookie-card-border);
-  margin-bottom: 1rem;
-}
-
-.cookie-card-main {
-  background-color: var(--cookie-card-bg);
-  border: 1px solid var(--cookie-card-border);
-  border-radius: 1.25rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  padding: 2rem;
-  margin-bottom: 2rem;
-}
-
-.cookie-lead-text {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: var(--cookie-text);
-  margin-bottom: 1.75rem;
+.cookie-card-main.legal-document-sheet {
+  padding: 0;
+  margin-bottom: 0;
+  border-radius: var(--legal-radius-lg, 12px);
+  box-shadow: none;
 }
 
 .cookie-custom-notice-box {
-  background: var(--cookie-table-bg);
-  border: 1px solid var(--cookie-card-border);
-  border-left: 4px solid var(--cookie-accent);
-  border-radius: 0.75rem;
-  padding: 1.25rem 1.5rem;
+  background: var(--legal-surface-subtle, #f8fafc);
+  border: 1px solid var(--legal-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
   margin-top: 1rem;
-  margin-bottom: 1.5rem;
   color: var(--cookie-text);
-  font-size: 0.975rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.65;
 }
 
 .cookie-custom-notice-text {
@@ -84,11 +59,18 @@ body.dark-mode,
 
 /* Preferences Center Container */
 .cookie-preferences-container {
-  background: var(--cookie-table-bg);
-  border: 1px solid var(--cookie-card-border);
-  border-radius: 1rem;
-  padding: 1.75rem;
-  margin: 2rem 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--legal-border, #e2e8f0);
+  border-radius: 0;
+  padding: 2rem 2.5rem;
+  margin: 0;
+}
+
+.cookie-card-main > section:last-of-type {
+  padding: 2rem 2.5rem;
+  margin-top: 0 !important;
+  border-top: none !important;
 }
 
 .cookie-pref-header {
@@ -311,26 +293,17 @@ body.dark-mode,
 
 /* Mobile-First Responsive Layout */
 @media (max-width: 767.98px) {
-  .cookie-policy-shell {
-    padding-top: 1rem;
-    padding-bottom: 2.5rem;
-  }
-
-  .cookie-card-main {
-    padding: 1.25rem 0.875rem;
-    border-radius: 1rem;
-  }
-
-  .cookie-lead-text {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin-bottom: 1.25rem;
+  .cookie-card-main.legal-document-sheet {
+    padding: 0;
   }
 
   .cookie-preferences-container {
-    padding: 1rem 0.75rem;
-    border-radius: 0.875rem;
-    margin: 1.5rem 0;
+    padding: 1.5rem 1.25rem;
+    margin: 0;
+  }
+
+  .cookie-card-main > section:last-of-type {
+    padding: 1.5rem 1.25rem;
   }
 
   .cookie-pref-actions-top {

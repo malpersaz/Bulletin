@@ -2,7 +2,6 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
@@ -82,153 +81,128 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_security_policy">
-	<div class="col-lg-10">
-		<div class="detail-page-layout">
-			<div class="detail-page-content w-100">
-				<article class="detail-card">
-					<!-- Breadcrumb Navigation -->
-					<div class="detail-breadcrumb-wrap mb-4">
-						<nav aria-label="{{ lang.index.home }}">
-							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<a itemprop="item" href="{{ site.saddress }}">
-										<span itemprop="name">{{ lang.index.home }}</span>
-									</a>
-									<meta itemprop="position" content="1"/>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<span itemprop="name">{{ page_meta_title }}</span>
-									<meta itemprop="position" content="2"/>
-								</li>
-							</ol>
-						</nav>
+<div class="legal-dossier-shell" id="mod_security_policy">
+	<div class="legal-breadcrumb-bar">
+		<nav aria-label="{{ lang.index.home }}">
+			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="{{ site.saddress }}">
+						<span itemprop="name">{{ lang.index.home }}</span>
+					</a>
+					<meta itemprop="position" content="1"/>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">{{ page_meta_title }}</span>
+					<meta itemprop="position" content="2"/>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="legal-dossier-grid">
+		<aside class="legal-dossier-sidebar">
+			{% include "partials/_legal_nav.twig" %}
+		</aside>
+
+		<article class="legal-document-sheet">
+			<header class="legal-doc-header">
+				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
+				<p class="legal-doc-lead">{{ page_meta_description }}</p>
+			</header>
+
+			<div class="policy-card-stack">
+				<!-- 1. Technical & Application Safeguards -->
+				<section class="policy-section-card" aria-labelledby="sec-security-safeguards">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-shield-shaded"></i>
+						</div>
+						<h2 id="sec-security-safeguards" class="policy-section-title">{{ lang.index.security_safeguards_title }}</h2>
 					</div>
-
-					<div class="detail-content position-relative">
-						<!-- Horizontal Policy Navigation -->
-						{% include "partials/_legal_nav.twig" %}
-
-						<!-- Hero Header -->
-						<div class="detail-page-intro mb-4">
-							<div class="detail-page-meta mb-2">
-								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">
-									<i class="bi bi-shield-lock me-1" aria-hidden="true"></i>{{ page_meta_title }}
-								</span>
-							</div>
-							<h1 class="detail-title fw-bold">{{ page_meta_title }}</h1>
-							<p class="text-muted leading-relaxed mt-2">{{ page_meta_description }}</p>
-						</div>
-
-						<div class="policy-card-stack">
-							<!-- 1. Technical & Application Safeguards -->
-							<section class="policy-section-card" aria-labelledby="sec-security-safeguards">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-shield-shaded"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-security-safeguards" class="policy-section-title">{{ lang.index.security_safeguards_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.security_safeguards_desc }}</p>
-								</div>
-							</section>
-
-							<!-- 2. Responsible Vulnerability Disclosure -->
-							<section class="policy-section-card" aria-labelledby="sec-security-disclosure">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-bug"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-security-disclosure" class="policy-section-title">{{ lang.index.security_disclosure_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.security_disclosure_desc }}</p>
-									{% if (site.registered_email is defined and site.registered_email is not empty) or (site.dpo_email is defined and site.dpo_email is not empty) or (site.mail is defined and site.mail is not empty) %}
-										<ul class="policy-clause-list">
-											{% if site.dpo_email is defined and site.dpo_email is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.dpo_email }}:</strong> <a href="mailto:{{ site.dpo_email }}">{{ site.dpo_email }}</a>
-													</div>
-												</li>
-											{% endif %}
-											{% if site.registered_email is defined and site.registered_email is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.registered_email }}:</strong> <a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
-													</div>
-												</li>
-											{% elseif site.mail is defined and site.mail is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.email }}:</strong> <a href="mailto:{{ site.mail }}">{{ site.mail }}</a>
-													</div>
-												</li>
-											{% endif %}
-										</ul>
-									{% endif %}
-								</div>
-							</section>
-
-							<!-- 3. Incident Response & Platform Resilience -->
-							<section class="policy-section-card" aria-labelledby="sec-security-incident">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-cpu"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ lang.index.statutory_compliance }}</span>
-										<h2 id="sec-security-incident" class="policy-section-title">{{ lang.index.security_incident_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.security_incident_desc }}</p>
-									{% if site.registered_email is defined and site.registered_email is not empty %}
-										<ul class="policy-clause-list">
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.registered_email }}:</strong>
-													<a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
-												</div>
-											</li>
-										</ul>
-									{% endif %}
-								</div>
-							</section>
-						</div>
-
-						<!-- Bottom Contact Card -->
-						<div class="policy-footer-card">
-							<div class="policy-footer-info">
-								<div class="policy-footer-icon" aria-hidden="true">
-									<i class="bi bi-shield-check"></i>
-								</div>
-								<div>
-									<h3 class="policy-footer-title">{{ lang.index.security_disclosure_title }}</h3>
-									<p class="policy-footer-text">{{ lang.index.security_disclosure_desc }}</p>
-								</div>
-							</div>
-							<div class="policy-footer-action">
-								<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
-									<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
-								</a>
-							</div>
-						</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.security_safeguards_desc }}</p>
 					</div>
-				</article>
+				</section>
+
+				<!-- 2. Responsible Vulnerability Disclosure -->
+				<section class="policy-section-card" aria-labelledby="sec-security-disclosure">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-bug"></i>
+						</div>
+						<h2 id="sec-security-disclosure" class="policy-section-title">{{ lang.index.security_disclosure_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.security_disclosure_desc }}</p>
+						{% if (site.registered_email is defined and site.registered_email is not empty) or (site.dpo_email is defined and site.dpo_email is not empty) or (site.mail is defined and site.mail is not empty) %}
+							<ul class="policy-clause-list">
+								{% if site.dpo_email is defined and site.dpo_email is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.dpo_email }}:</strong> <a href="mailto:{{ site.dpo_email }}">{{ site.dpo_email }}</a>
+										</div>
+									</li>
+								{% endif %}
+								{% if site.registered_email is defined and site.registered_email is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.registered_email }}:</strong> <a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
+										</div>
+									</li>
+								{% elseif site.mail is defined and site.mail is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.email }}:</strong> <a href="mailto:{{ site.mail }}">{{ site.mail }}</a>
+										</div>
+									</li>
+								{% endif %}
+							</ul>
+						{% endif %}
+					</div>
+				</section>
+
+				<!-- 3. Incident Response & Platform Resilience -->
+				<section class="policy-section-card" aria-labelledby="sec-security-incident">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-cpu"></i>
+						</div>
+						<h2 id="sec-security-incident" class="policy-section-title">{{ lang.index.security_incident_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.security_incident_desc }}</p>
+						{% if site.registered_email is defined and site.registered_email is not empty %}
+							<ul class="policy-clause-list">
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.registered_email }}:</strong>
+										<a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
+									</div>
+								</li>
+							</ul>
+						{% endif %}
+					</div>
+				</section>
 			</div>
-		</div>
+
+			<!-- Bottom Institutional Contact Bar -->
+			<footer class="policy-footer-card">
+				<div class="policy-footer-info">
+					<div class="policy-footer-icon" aria-hidden="true">
+						<i class="bi bi-shield-check"></i>
+					</div>
+					<div>
+						<h3 class="policy-footer-title">{{ lang.index.contact_us }}</h3>
+						<p class="policy-footer-text">{{ lang.index.security_disclosure_title }}</p>
+					</div>
+				</div>
+				<div class="policy-footer-action">
+					<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
+						<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
+					</a>
+				</div>
+			</footer>
+		</article>
 	</div>
 </div>
 {% endblock %}

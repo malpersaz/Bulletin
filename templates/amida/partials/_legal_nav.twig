@@ -1,5 +1,5 @@
-{# Policy Navigation Bar #}
-<nav class="policy-nav-pills-wrap mb-4" aria-label="{{ lang.index.legal_info }}">
+{# Statutory & Policy Directory Navigation #}
+<nav class="policy-nav-pills-wrap" aria-label="{{ lang.index.legal_info }}">
 	<div class="policy-nav-pills">
 		<a href="{{ site.saddress }}legal" class="policy-nav-link{% if legal_type == 'legal' or legal_type == 'info' or legal_type is empty %} active{% endif %}"{% if legal_type == 'legal' or legal_type == 'info' or legal_type is empty %} aria-current="page"{% endif %}>
 			<i class="bi bi-journal-bookmark" aria-hidden="true"></i>
@@ -32,6 +32,10 @@
 		<a href="{{ site.saddress }}compliance" class="policy-nav-link{% if legal_type == 'compliance' %} active{% endif %}"{% if legal_type == 'compliance' %} aria-current="page"{% endif %}>
 			<i class="bi bi-patch-check" aria-hidden="true"></i>
 			<span>{{ lang.index.legal_nav_compliance }}</span>
+		</a>
+		<a href="{{ site.saddress }}contact" class="policy-nav-link{% if legal_type == 'contact' %} active{% endif %}"{% if legal_type == 'contact' %} aria-current="page"{% endif %}>
+			<i class="bi bi-headset" aria-hidden="true"></i>
+			<span>{{ lang.index.contact_us }}</span>
 		</a>
 	</div>
 </nav>

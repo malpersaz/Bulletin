@@ -38,6 +38,7 @@ class legal_helper extends indexBase
             'security-policy' => 'security',
             'compliance' => 'compliance',
             'ethics-policy' => 'compliance',
+            'contact' => 'contact',
         ];
 
         if (!isset($aliasMap[$rawType])) {
@@ -104,6 +105,13 @@ class legal_helper extends indexBase
                 'title_key' => 'compliance',
                 'desc_key' => 'compliance_subtitle',
                 'schema_type' => 'WebPage',
+            ],
+            'contact' => [
+                'canonical_slug' => 'contact',
+                'template' => 'index/legal/contact',
+                'title_key' => 'contact_us',
+                'desc_key' => 'legal_notice_desc',
+                'schema_type' => 'ContactPage',
             ],
         ];
 
@@ -513,17 +521,29 @@ class legal_helper extends indexBase
         try {
             $langCode = Registry::get('lang');
             $safeLang = is_string($langCode) && $langCode !== '' ? addslashes($langCode) : 'en';
-            $this->db->fetch_array("SELECT * FROM `" . $safeTable . "` WHERE `lang` = '" . $safeLang . "' LIMIT 1");
+            $this->db->fetch_array("SELECT * FROM `" . $safeTable . "` ORDER BY CASE WHEN `lang` = '" . $safeLang . "' THEN 0 ELSE 1 END, `id` ASC");
             $rows = $this->db->toArray();
-            if (empty($rows)) {
-                $this->db->fetch_array("SELECT * FROM `" . $safeTable . "` ORDER BY `id` ASC LIMIT 1");
-                $rows = $this->db->toArray();
-            }
-            if (!empty($rows) && is_array($rows[0])) {
-                foreach (array_keys($columns) as $colKey) {
-                    if ((!isset($this->site[$colKey]) || $this->site[$colKey] === '') && isset($rows[0][$colKey]) && $rows[0][$colKey] !== '') {
-                        $this->site[$colKey] = $rows[0][$colKey];
+            if (!empty($rows) && is_array($rows)) {
+                $mergeKeys = array_merge(array_keys($columns), [
+                    'phone',
+                    'whatsapp',
+                    'email',
+                    'office_address',
+                    'work_address',
+                    'map_embed_code',
+                ]);
+                foreach ($rows as $row) {
+                    if (!is_array($row)) {
+                        continue;
                     }
+                    foreach ($mergeKeys as $colKey) {
+                        if ((!isset($this->site[$colKey]) || $this->site[$colKey] === '') && isset($row[$colKey]) && $row[$colKey] !== '') {
+                            $this->site[$colKey] = $row[$colKey];
+                        }
+                    }
+                }
+                if ((!isset($this->site['mail']) || $this->site['mail'] === '') && !empty($this->site['email'])) {
+                    $this->site['mail'] = $this->site['email'];
                 }
             }
         } catch (Exception $e) {

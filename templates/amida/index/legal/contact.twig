@@ -1,0 +1,422 @@
+{% extends "layouts/base.twig" %}
+
+{% block css_custom %}
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
+{% endblock %}
+
+{% set page_meta_title = policy_title is defined and policy_title is not empty ? policy_title : lang.index.contact_us %}
+{% set page_meta_description = site.description is defined and site.description is not empty ? site.description : lang.index.legal_notice_desc %}
+{% set page_canonical_url = canonical_url is defined and canonical_url is not empty ? canonical_url : (site.saddress ~ 'contact') %}
+{% set site_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
+{% set page_logo_asset = site.iaddress ~ 'mod_settings/' ~ site_fallback_icon %}
+
+{% block canonical %}
+	<link rel="canonical" href="{{ page_canonical_url }}"/>
+{% endblock %}
+
+{% block title %}
+	<title>{{ page_meta_title }} - {{ site.name }}</title>
+{% endblock %}
+
+{% block description %}
+	<meta name="description" content="{{ page_meta_description }}">
+{% endblock %}
+
+{% block meta_tags %}
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="{{ page_canonical_url }}">
+	<meta property="og:title" content="{{ page_meta_title }}">
+	<meta property="og:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+	<meta property="og:site_name" content="{{ site.name }}">
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:url" content="{{ page_canonical_url }}">
+	<meta name="twitter:title" content="{{ page_meta_title }}">
+	<meta name="twitter:description" content="{{ page_meta_description|striptags|slice(0, 200) }}">
+{% endblock %}
+
+{% block schema %}
+	<script type="application/ld+json">
+		{
+		  "@context": "https://schema.org",
+		  "@graph": [
+		    {
+		      "@type": "ContactPage",
+		      "@id": {{ (page_canonical_url ~ '#webpage')|json_encode|raw }},
+		      "url": {{ page_canonical_url|json_encode|raw }},
+		      "name": {{ page_meta_title|json_encode|raw }},
+		      "description": {{ page_meta_description|striptags|slice(0, 200)|json_encode|raw }},
+		      "isPartOf": {
+		        "@type": "WebSite",
+		        "@id": {{ (site.saddress ~ '#website')|json_encode|raw }},
+		        "name": {{ site.name|json_encode|raw }},
+		        "url": {{ site.address|json_encode|raw }}
+		      },
+		      "breadcrumb": {
+		        "@type": "BreadcrumbList",
+		        "itemListElement": [
+		          {
+		            "@type": "ListItem",
+		            "position": 1,
+		            "name": {{ lang.index.home|json_encode|raw }},
+		            "item": {{ site.saddress|json_encode|raw }}
+		          },
+		          {
+		            "@type": "ListItem",
+		            "position": 2,
+		            "name": {{ page_meta_title|json_encode|raw }},
+		            "item": {{ page_canonical_url|json_encode|raw }}
+		          }
+		        ]
+		      }
+		    },
+		    {
+		      "@type": "NewsMediaOrganization",
+		      "@id": {{ (site.saddress ~ '#organization')|json_encode|raw }},
+		      "name": {{ site.name|json_encode|raw }},
+		      {% if site.legal_company_name is defined and site.legal_company_name is not empty %}"legalName": {{ site.legal_company_name|json_encode|raw }},{% endif %}
+		      {% if site.mail is defined and site.mail is not empty %}"email": {{ site.mail|json_encode|raw }},{% elseif site.registered_email is defined and site.registered_email is not empty %}"email": {{ site.registered_email|json_encode|raw }},{% endif %}
+		      {% if site.phone is defined and site.phone is not empty %}"telephone": {{ site.phone|json_encode|raw }},{% elseif site.legal_contact_phone is defined and site.legal_contact_phone is not empty %}"telephone": {{ site.legal_contact_phone|json_encode|raw }},{% endif %}
+		      "url": {{ site.address|json_encode|raw }},
+		      "logo": {{ page_logo_asset|json_encode|raw }}
+		    }
+		  ]
+		}
+	</script>
+{% endblock %}
+
+{% block content %}
+{% set has_direct_contact = (site.phone is defined and site.phone is not empty)
+	or (site.whatsapp is defined and site.whatsapp is not empty)
+	or (site.mail is defined and site.mail is not empty)
+	or (site.office_address is defined and site.office_address is not empty)
+	or (site.work_address is defined and site.work_address is not empty) %}
+
+{% set has_statutory_contact = (site.legal_company_name is defined and site.legal_company_name is not empty)
+	or (site.authorized_person is defined and site.authorized_person is not empty)
+	or (site.managing_director is defined and site.managing_director is not empty)
+	or (site.editor_in_chief is defined and site.editor_in_chief is not empty)
+	or (site.registered_email is defined and site.registered_email is not empty)
+	or (site.legal_contact_phone is defined and site.legal_contact_phone is not empty)
+	or (site.dpo_email is defined and site.dpo_email is not empty)
+	or (site.contact_address is defined and site.contact_address is not empty)
+	or (site.corporate_address is defined and site.corporate_address is not empty) %}
+
+{% set has_social_links = site.social_links is defined and site.social_links is not empty %}
+{% set has_map_embed = site.map_embed_code is defined and site.map_embed_code is not empty %}
+{% set has_any_contact_data = has_direct_contact or has_statutory_contact or has_social_links or has_map_embed %}
+
+<div class="legal-dossier-shell" id="mod_legal">
+	<div class="legal-breadcrumb-bar">
+		<nav aria-label="{{ lang.index.home }}">
+			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="{{ site.saddress }}">
+						<span itemprop="name">{{ lang.index.home }}</span>
+					</a>
+					<meta itemprop="position" content="1"/>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">{{ page_meta_title }}</span>
+					<meta itemprop="position" content="2"/>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="legal-dossier-grid">
+		<aside class="legal-dossier-sidebar">
+			{% include "partials/_legal_nav.twig" %}
+		</aside>
+
+		<article class="legal-document-sheet">
+			<header class="legal-doc-header">
+				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
+				{% if site.description is defined and site.description is not empty %}
+					<p class="legal-doc-lead">{{ site.description }}</p>
+				{% endif %}
+			</header>
+
+			<div id="amed_content" class="legal-doc-body">
+				{% if not has_any_contact_data %}
+					<div class="legal-empty-card" role="region" aria-label="{{ page_meta_title }}">
+						<div class="legal-empty-icon">
+							<i class="bi bi-headset" aria-hidden="true"></i>
+						</div>
+						<h2 class="legal-empty-title">{{ page_meta_title }}</h2>
+						<p class="legal-empty-desc">{{ lang.index.legal_info_pending }}</p>
+					</div>
+				{% else %}
+					<div class="legal-info-wrapper" role="region" aria-label="{{ page_meta_title }}">
+						<header class="legal-header-box">
+							<div class="legal-header-top">
+								<div class="legal-verified-badge" aria-label="{{ lang.index.verified_company }}">
+									<span class="legal-verified-pulse" aria-hidden="true"></span>
+									<span>{{ lang.index.verified_company }}</span>
+								</div>
+								<div class="legal-actions-bar">
+									<button type="button" class="legal-action-btn legal-print-btn" title="{{ lang.index.print_record }}" aria-label="{{ lang.index.print_record }}">
+										<i class="bi bi-printer" aria-hidden="true"></i>
+										<span>{{ lang.index.print_record }}</span>
+									</button>
+									<button type="button" class="legal-action-btn legal-share-btn" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.copy_link }}" aria-label="{{ lang.index.copy_link }}">
+										<i class="bi bi-share" aria-hidden="true"></i>
+										<span>{{ lang.index.copy_link }}</span>
+									</button>
+								</div>
+							</div>
+						</header>
+
+						<div class="legal-bento-grid">
+							<section class="legal-card span-2" aria-labelledby="card-direct-contact-title">
+								<div class="legal-card-header">
+									<div class="legal-card-icon" aria-hidden="true">
+										<i class="bi bi-headset"></i>
+									</div>
+									<h2 id="card-direct-contact-title" class="legal-card-title">{{ lang.index.contact_us }}</h2>
+								</div>
+								{% if has_direct_contact %}
+									<ul class="legal-field-list">
+										{% if site.phone is defined and site.phone is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.legal_contact_phone }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="contact-channel-item">
+														<span class="contact-channel-badge" aria-hidden="true"><i class="bi bi-phone"></i></span>
+														<a href="tel:{{ site.phone }}" class="legal-field-value font-monospace">{{ site.phone }}</a>
+													</span>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.phone }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ site.phone }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.whatsapp is defined and site.whatsapp is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">WhatsApp</span>
+												<div class="legal-field-value-wrap">
+													<span class="contact-channel-item">
+														<span class="contact-channel-badge" aria-hidden="true"><i class="bi bi-whatsapp"></i></span>
+														<a href="https://wa.me/{{ site.whatsapp }}" target="_blank" rel="noopener noreferrer" class="legal-field-value font-monospace">{{ site.whatsapp }}</a>
+													</span>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.whatsapp }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ site.whatsapp }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.mail is defined and site.mail is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.email }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="contact-channel-item">
+														<span class="contact-channel-badge" aria-hidden="true"><i class="bi bi-envelope"></i></span>
+														<a href="mailto:{{ site.mail }}" class="legal-field-value font-monospace">{{ site.mail }}</a>
+													</span>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.mail }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ site.mail }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.office_address is defined and site.office_address is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.corporate_address }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="contact-channel-item">
+														<span class="contact-channel-badge" aria-hidden="true"><i class="bi bi-building"></i></span>
+														<span class="legal-field-value">{{ site.office_address|raw }}</span>
+													</span>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.work_address is defined and site.work_address is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.registered_address }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="contact-channel-item">
+														<span class="contact-channel-badge" aria-hidden="true"><i class="bi bi-geo-alt-fill"></i></span>
+														<span class="legal-field-value">{{ site.work_address|raw }}</span>
+													</span>
+												</div>
+											</li>
+										{% endif %}
+									</ul>
+								{% else %}
+									<p class="legal-empty-desc mb-0">{{ lang.index.legal_info_pending }}</p>
+								{% endif %}
+							</section>
+
+							{% if has_statutory_contact %}
+								<section class="legal-card span-2" aria-labelledby="card-statutory-contact-title">
+									<div class="legal-card-header">
+										<div class="legal-card-icon" aria-hidden="true">
+											<i class="bi bi-person-badge"></i>
+										</div>
+										<h2 id="card-statutory-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title }}</h2>
+									</div>
+									<ul class="legal-field-list">
+										{% if site.legal_company_name is defined and site.legal_company_name is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.legal_company_name }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value legal-company-highlight">{{ site.legal_company_name }}</span>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_company_name }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.legal_company_name }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.authorized_person is defined and site.authorized_person is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.authorized_person }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value">{{ site.authorized_person }}</span>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.managing_director is defined and site.managing_director is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.managing_director }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value">{{ site.managing_director }}</span>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.editor_in_chief is defined and site.editor_in_chief is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.editor_in_chief }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value">{{ site.editor_in_chief }}</span>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.registered_email is defined and site.registered_email is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.registered_email }}</span>
+												<div class="legal-field-value-wrap">
+													<a href="mailto:{{ site.registered_email }}" class="legal-field-value font-monospace">{{ site.registered_email }}</a>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.registered_email }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.registered_email }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.legal_contact_phone is defined and site.legal_contact_phone is not empty and site.legal_contact_phone != site.phone %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.legal_contact_phone }}</span>
+												<div class="legal-field-value-wrap">
+													<a href="tel:{{ site.legal_contact_phone }}" class="legal-field-value font-monospace">{{ site.legal_contact_phone }}</a>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.legal_contact_phone }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.legal_contact_phone }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.dpo_email is defined and site.dpo_email is not empty %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.dpo_email }}</span>
+												<div class="legal-field-value-wrap">
+													<a href="mailto:{{ site.dpo_email }}" class="legal-field-value font-monospace">{{ site.dpo_email }}</a>
+													<button type="button" class="legal-copy-btn" data-copy-text="{{ site.dpo_email }}" data-copied-label="{{ lang.index.copied }}" title="{{ lang.index.quick_copy }}" aria-label="{{ lang.index.copy_value }} {{ lang.index.dpo_email }}">
+														<i class="bi bi-copy" aria-hidden="true"></i>
+													</button>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.contact_address is defined and site.contact_address is not empty and site.contact_address != site.work_address %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.registered_address }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value">{{ site.contact_address }}</span>
+												</div>
+											</li>
+										{% endif %}
+
+										{% if site.corporate_address is defined and site.corporate_address is not empty and site.corporate_address != site.office_address %}
+											<li class="legal-field-row">
+												<span class="legal-field-label">{{ lang.index.corporate_address }}</span>
+												<div class="legal-field-value-wrap">
+													<span class="legal-field-value">{{ site.corporate_address }}</span>
+												</div>
+											</li>
+										{% endif %}
+									</ul>
+								</section>
+							{% endif %}
+
+							{% if has_social_links %}
+								<section class="legal-card span-2" aria-labelledby="card-social-links-title">
+									<div class="legal-card-header">
+										<div class="legal-card-icon" aria-hidden="true">
+											<i class="bi bi-share"></i>
+										</div>
+										<h2 id="card-social-links-title" class="legal-card-title">{{ lang.index.follow_us }}</h2>
+									</div>
+									<div class="contact-social-grid">
+										{% for link in site.social_links %}
+											{% if link.url|trim is not empty %}
+												<a href="{{ link.url }}" class="contact-social-pill" target="_blank" rel="noopener noreferrer" title="{{ link.platform|capitalize }}">
+													<i class="{{ link.icon_class }}" aria-hidden="true"></i>
+													<span>{{ link.platform|capitalize }}</span>
+												</a>
+											{% endif %}
+										{% endfor %}
+									</div>
+								</section>
+							{% endif %}
+
+							{% if has_map_embed %}
+								<section class="legal-card span-2" aria-labelledby="card-map-embed-title">
+									<div class="legal-card-header">
+										<div class="legal-card-icon" aria-hidden="true">
+											<i class="bi bi-map-fill"></i>
+										</div>
+										<h2 id="card-map-embed-title" class="legal-card-title">{{ lang.index.find_us }}</h2>
+									</div>
+									<div class="contact-map-embed">
+										{{ site.map_embed_code|raw }}
+									</div>
+								</section>
+							{% endif %}
+						</div>
+
+						<div class="policy-footer-card">
+							<div class="policy-footer-info">
+								<div class="policy-footer-icon" aria-hidden="true">
+									<i class="bi bi-journal-bookmark"></i>
+								</div>
+								<div>
+									<h3 class="policy-footer-title">{{ lang.index.legal_info }}</h3>
+									<p class="policy-footer-text">{{ lang.index.legal_notice_desc }}</p>
+								</div>
+							</div>
+							<div class="policy-footer-action">
+								<a href="{{ site.saddress }}legal" class="btn btn-primary btn-sm rounded-pill px-4">
+									<i class="bi bi-building me-1" aria-hidden="true"></i>
+									{{ lang.index.legal_nav_masthead }}
+								</a>
+							</div>
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</article>
+	</div>
+</div>
+{% endblock %}
+
+{% block js_custom %}
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/legal-info.js?v={{ site.version|default('1.0') }}"></script>
+{% endblock %}

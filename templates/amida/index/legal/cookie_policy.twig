@@ -2,7 +2,6 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
@@ -83,43 +82,39 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center detail-shell cookie-policy-shell" id="mod_cookie_policy">
-	<div class="col-lg-10">
-		<article class="cookie-card-main">
-			<!-- Breadcrumbs -->
-			<div class="detail-breadcrumb-wrap mb-4">
-				<nav aria-label="{{ lang.index.home }}">
-					<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-						<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-							<a itemprop="item" href="{{ site.saddress }}">
-								<span itemprop="name">{{ lang.index.home }}</span>
-							</a>
-							<meta itemprop="position" content="1"/>
-						</li>
-						<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-							<span itemprop="name">{{ page_meta_title }}</span>
-							<meta itemprop="position" content="2"/>
-						</li>
-					</ol>
-				</nav>
-			</div>
+<div class="legal-dossier-shell cookie-policy-shell" id="mod_cookie_policy">
+	<div class="legal-breadcrumb-bar">
+		<nav aria-label="{{ lang.index.home }}">
+			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="{{ site.saddress }}">
+						<span itemprop="name">{{ lang.index.home }}</span>
+					</a>
+					<meta itemprop="position" content="1"/>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">{{ page_meta_title }}</span>
+					<meta itemprop="position" content="2"/>
+				</li>
+			</ol>
+		</nav>
+	</div>
 
+	<div class="legal-dossier-grid">
+		<aside class="legal-dossier-sidebar">
 			{% include "partials/_legal_nav.twig" %}
+		</aside>
 
-			<!-- Page Intro -->
-			<div class="mb-4">
-				<div class="cookie-hero-badge">
-					<i class="bi bi-shield-lock" aria-hidden="true"></i>
-					<span>{{ page_meta_title }}</span>
-				</div>
-				<h1 class="h2 fw-bold text-body mb-3">{{ page_meta_title }}</h1>
-				<p class="cookie-lead-text">{{ lang.index.cookie_policy_subtitle }}</p>
+		<article class="legal-document-sheet cookie-card-main">
+			<header class="legal-doc-header">
+				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
+				<p class="legal-doc-lead">{{ lang.index.cookie_policy_subtitle }}</p>
 				{% if site.cookie_policy_content is defined and site.cookie_policy_content is not empty %}
 					<div class="cookie-custom-notice-box">
 						<div class="cookie-custom-notice-text">{{ site.cookie_policy_content|nl2br }}</div>
 					</div>
 				{% endif %}
-			</div>
+			</header>
 
 			<!-- Preferences Center Box -->
 			<section class="cookie-preferences-container" aria-labelledby="pref-center-heading">

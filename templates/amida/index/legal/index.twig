@@ -2,7 +2,6 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
@@ -109,44 +108,39 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_legal">
-	<div class="col-lg-10">
-		<div class="detail-page-layout">
-			<div class="detail-page-content w-100">
-				<article class="detail-card">
-					<div class="detail-breadcrumb-wrap mb-4">
-						<nav aria-label="{{ lang.index.home }}">
-							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<a itemprop="item" href="{{ site.saddress }}">
-										<span itemprop="name">{{ lang.index.home }}</span>
-									</a>
-									<meta itemprop="position" content="1"/>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<span itemprop="name">{{ page_meta_title }}</span>
-									<meta itemprop="position" content="2"/>
-								</li>
-							</ol>
-						</nav>
-					</div>
+<div class="legal-dossier-shell" id="mod_legal">
+	<div class="legal-breadcrumb-bar">
+		<nav aria-label="{{ lang.index.home }}">
+			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="{{ site.saddress }}">
+						<span itemprop="name">{{ lang.index.home }}</span>
+					</a>
+					<meta itemprop="position" content="1"/>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">{{ page_meta_title }}</span>
+					<meta itemprop="position" content="2"/>
+				</li>
+			</ol>
+		</nav>
+	</div>
 
-					<div class="detail-content position-relative">
-						<div class="detail-page-intro mb-4">
-							<div class="detail-page-meta mb-2">
-								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill"><i class="bi bi-shield-check me-1"></i>{{ page_meta_title }}</span>
-							</div>
-							<h1 class="detail-title fw-bold">{{ page_meta_title }}</h1>
-						</div>
+	<div class="legal-dossier-grid">
+		<aside class="legal-dossier-sidebar">
+			{% include "partials/_legal_nav.twig" %}
+		</aside>
 
-						<div id="amed_content" class="detail-body">
-							{% include "partials/_legal_nav.twig" %}
-							{% include 'partials/_legal_info.twig' %}
-						</div>
-					</div>
-				</article>
+		<article class="legal-document-sheet">
+			<header class="legal-doc-header">
+				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
+				<p class="legal-doc-lead">{{ page_meta_description }}</p>
+			</header>
+
+			<div id="amed_content" class="legal-doc-body">
+				{% include 'partials/_legal_info.twig' with {'hide_intro_desc': true} %}
 			</div>
-		</div>
+		</article>
 	</div>
 </div>
 {% endblock %}

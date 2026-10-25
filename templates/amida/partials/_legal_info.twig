@@ -43,7 +43,7 @@
     </div>
 {% else %}
     <div class="legal-info-wrapper" role="region" aria-label="{{ lang.index.legal_info }}">
-        <!-- Official Trust & Actions Header Box -->
+        <!-- Official Trust & Actions Utility Bar -->
         <header class="legal-header-box">
             <div class="legal-header-top">
                 <div class="legal-verified-badge" aria-label="{{ lang.index.verified_company }}">
@@ -61,12 +61,14 @@
                     </button>
                 </div>
             </div>
-            <p class="legal-header-desc">
-                {{ lang.index.legal_notice_desc }}
-            </p>
+            {% if not (hide_intro_desc is defined and hide_intro_desc) %}
+                <p class="legal-header-desc">
+                    {{ lang.index.legal_notice_desc }}
+                </p>
+            {% endif %}
         </header>
 
-        <!-- Bento Grid Cards -->
+        <!-- Statutory Ledger Grid -->
         <div class="legal-bento-grid">
             <!-- 1. Publishing Credentials & Editorial Governance (Kunya) -->
             {% if has_publishing_info %}
@@ -75,10 +77,7 @@
                         <div class="legal-card-icon" aria-hidden="true">
                             <i class="bi bi-journal-bookmark"></i>
                         </div>
-                        <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
-                            <h2 id="card-publishing-title" class="legal-card-title">{{ lang.index.publishing_credentials_title }}</h2>
-                        </div>
+                        <h2 id="card-publishing-title" class="legal-card-title">{{ lang.index.publishing_credentials_title }}</h2>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.managing_director is defined and site.managing_director is not empty %}
@@ -151,10 +150,7 @@
                         <div class="legal-card-icon" aria-hidden="true">
                             <i class="bi bi-building"></i>
                         </div>
-                        <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
-                            <h2 id="card-company-title" class="legal-card-title">{{ lang.index.company_registry_title }}</h2>
-                        </div>
+                        <h2 id="card-company-title" class="legal-card-title">{{ lang.index.company_registry_title }}</h2>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.legal_company_name is defined and site.legal_company_name is not empty %}
@@ -260,10 +256,7 @@
                         <div class="legal-card-icon" aria-hidden="true">
                             <i class="bi bi-receipt-cutoff"></i>
                         </div>
-                        <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
-                            <h2 id="card-tax-title" class="legal-card-title">{{ lang.index.tax_fiscal_title }}</h2>
-                        </div>
+                        <h2 id="card-tax-title" class="legal-card-title">{{ lang.index.tax_fiscal_title }}</h2>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.tax_office is defined and site.tax_office is not empty %}
@@ -309,10 +302,7 @@
                         <div class="legal-card-icon" aria-hidden="true">
                             <i class="bi bi-person-badge"></i>
                         </div>
-                        <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
-                            <h2 id="card-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title }}</h2>
-                        </div>
+                        <h2 id="card-contact-title" class="legal-card-title">{{ lang.index.legal_contact_title }}</h2>
                     </div>
                     <ul class="legal-field-list">
                         {% if site.authorized_person is defined and site.authorized_person is not empty %}
@@ -367,10 +357,7 @@
                         <div class="legal-card-icon" aria-hidden="true">
                             <i class="bi bi-shield-check"></i>
                         </div>
-                        <div>
-                            <span class="legal-card-kicker">{{ lang.index.statutory_compliance }}</span>
-                            <h2 id="card-warranty-title" class="legal-card-title">{{ lang.index.warranty_policies_title }}</h2>
-                        </div>
+                        <h2 id="card-warranty-title" class="legal-card-title">{{ lang.index.warranty_policies_title }}</h2>
                     </div>
 
                     <div class="legal-policy-badges">

@@ -2,7 +2,6 @@
 
 {% block css_custom %}
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.0') }}">
 	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
 {% endblock %}
 
@@ -82,250 +81,210 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center detail-shell detail-shell-page detail-page-shell" id="mod_privacy_policy">
-	<div class="col-lg-10">
-		<div class="detail-page-layout">
-			<div class="detail-page-content w-100">
-				<article class="detail-card">
-					<!-- Breadcrumb Navigation -->
-					<div class="detail-breadcrumb-wrap mb-4">
-						<nav aria-label="{{ lang.index.home }}">
-							<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
-								<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<a itemprop="item" href="{{ site.saddress }}">
-										<span itemprop="name">{{ lang.index.home }}</span>
-									</a>
-									<meta itemprop="position" content="1"/>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
-									<span itemprop="name">{{ page_meta_title }}</span>
-									<meta itemprop="position" content="2"/>
-								</li>
-							</ol>
-						</nav>
+<div class="legal-dossier-shell" id="mod_privacy_policy">
+	<div class="legal-breadcrumb-bar">
+		<nav aria-label="{{ lang.index.home }}">
+			<ol class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+				<li class="breadcrumb-item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<a itemprop="item" href="{{ site.saddress }}">
+						<span itemprop="name">{{ lang.index.home }}</span>
+					</a>
+					<meta itemprop="position" content="1"/>
+				</li>
+				<li class="breadcrumb-item active" aria-current="page" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+					<span itemprop="name">{{ page_meta_title }}</span>
+					<meta itemprop="position" content="2"/>
+				</li>
+			</ol>
+		</nav>
+	</div>
+
+	<div class="legal-dossier-grid">
+		<aside class="legal-dossier-sidebar">
+			{% include "partials/_legal_nav.twig" %}
+		</aside>
+
+		<article class="legal-document-sheet">
+			<header class="legal-doc-header">
+				<h1 class="legal-doc-title">{{ page_meta_title }}</h1>
+				<p class="legal-doc-lead">{{ page_meta_description }}</p>
+			</header>
+
+			<div class="policy-card-stack">
+				<!-- 1. Data Controller Identity -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-controller">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-building"></i>
+						</div>
+						<h2 id="sec-privacy-controller" class="policy-section-title">{{ lang.index.privacy_data_controller_title }}</h2>
 					</div>
-
-					<div class="detail-content position-relative">
-						<!-- Horizontal Policy Navigation -->
-						{% include "partials/_legal_nav.twig" %}
-
-						<!-- Hero Header -->
-						<div class="detail-page-intro mb-4">
-							<div class="detail-page-meta mb-2">
-								<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2 rounded-pill">
-									<i class="bi bi-shield-check me-1" aria-hidden="true"></i>{{ page_meta_title }}
-								</span>
-							</div>
-							<h1 class="detail-title fw-bold">{{ page_meta_title }}</h1>
-							<p class="text-muted leading-relaxed mt-2">{{ page_meta_description }}</p>
-						</div>
-
-						<div class="policy-card-stack">
-							<!-- 1. Data Controller Identity -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-controller">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-building"></i>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_data_controller_desc }}</p>
+						<ul class="policy-clause-list">
+							<li class="policy-clause-item">
+								<div class="policy-clause-content">
+									<strong>{{ lang.index.legal_company_name }}:</strong> {{ site.legal_company_name is defined and site.legal_company_name is not empty ? site.legal_company_name : site.name }}
+								</div>
+							</li>
+							{% if site.corporate_address is defined and site.corporate_address is not empty %}
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.corporate_address }}:</strong> {{ site.corporate_address }}
 									</div>
-									<div>
-										<span class="policy-section-kicker">{{ lang.index.statutory_compliance }}</span>
-										<h2 id="sec-privacy-controller" class="policy-section-title">{{ lang.index.privacy_data_controller_title }}</h2>
+								</li>
+							{% elseif site.office_address is defined and site.office_address is not empty %}
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.corporate_address }}:</strong> {{ site.office_address|striptags }}
 									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_data_controller_desc }}</p>
-									<ul class="policy-clause-list">
-										<li class="policy-clause-item">
-											<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-											<div class="policy-clause-content">
-												<strong>{{ lang.index.legal_company_name }}:</strong> {{ site.legal_company_name is defined and site.legal_company_name is not empty ? site.legal_company_name : site.name }}
-											</div>
-										</li>
-										{% if site.corporate_address is defined and site.corporate_address is not empty %}
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.corporate_address }}:</strong> {{ site.corporate_address }}
-												</div>
-											</li>
-										{% elseif site.office_address is defined and site.office_address is not empty %}
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.corporate_address }}:</strong> {{ site.office_address|striptags }}
-												</div>
-											</li>
-										{% endif %}
-										{% if site.company_registration_number is defined and site.company_registration_number is not empty %}
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.company_registration_number }}:</strong> {{ site.company_registration_number }}
-												</div>
-											</li>
-										{% endif %}
-										{% if site.tax_number is defined and site.tax_number is not empty %}
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.tax_number }}:</strong> {{ site.tax_number }}
-												</div>
-											</li>
-										{% endif %}
-										{% if site.registered_email is defined and site.registered_email is not empty %}
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.registered_email }}:</strong> <a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
-												</div>
-											</li>
-										{% endif %}
-									</ul>
-								</div>
-							</section>
-
-							<!-- 2. Categories of Processed Data -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-collected">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-folder-check"></i>
+								</li>
+							{% endif %}
+							{% if site.company_registration_number is defined and site.company_registration_number is not empty %}
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.company_registration_number }}:</strong> {{ site.company_registration_number }}
 									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-privacy-collected" class="policy-section-title">{{ lang.index.privacy_data_collected_title }}</h2>
+								</li>
+							{% endif %}
+							{% if site.tax_number is defined and site.tax_number is not empty %}
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.tax_number }}:</strong> {{ site.tax_number }}
 									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_data_collected_desc }}</p>
-								</div>
-							</section>
-
-							<!-- 3. Legal Bases & Purposes -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-legal-basis">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-journal-text"></i>
+								</li>
+							{% endif %}
+							{% if site.registered_email is defined and site.registered_email is not empty %}
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.registered_email }}:</strong> <a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
 									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-privacy-legal-basis" class="policy-section-title">{{ lang.index.privacy_legal_basis_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_legal_basis_desc }}</p>
-								</div>
-							</section>
-
-							<!-- 4. Data Retention & Infrastructure -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-retention">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-hdd-network"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-privacy-retention" class="policy-section-title">{{ lang.index.privacy_retention_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_retention_desc }}</p>
-									{% if site.hosting_provider is defined and site.hosting_provider is not empty %}
-										<ul class="policy-clause-list">
-											<li class="policy-clause-item">
-												<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-												<div class="policy-clause-content">
-													<strong>{{ lang.index.hosting_provider }}:</strong> {{ site.hosting_provider }}
-												</div>
-											</li>
-										</ul>
-									{% endif %}
-								</div>
-							</section>
-
-							<!-- 5. Data Subject Rights -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-rights">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-person-check"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ page_meta_title }}</span>
-										<h2 id="sec-privacy-rights" class="policy-section-title">{{ lang.index.privacy_subject_rights_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_subject_rights_desc }}</p>
-								</div>
-							</section>
-
-							<!-- 6. DPO & Contact -->
-							<section class="policy-section-card" aria-labelledby="sec-privacy-dpo">
-								<div class="policy-section-header">
-									<div class="policy-section-icon" aria-hidden="true">
-										<i class="bi bi-envelope-at"></i>
-									</div>
-									<div>
-										<span class="policy-section-kicker">{{ lang.index.statutory_compliance }}</span>
-										<h2 id="sec-privacy-dpo" class="policy-section-title">{{ lang.index.privacy_dpo_contact_title }}</h2>
-									</div>
-								</div>
-								<div class="policy-section-body">
-									<p>{{ lang.index.privacy_dpo_contact_desc }}</p>
-									{% if (site.dpo_email is defined and site.dpo_email is not empty) or (site.registered_email is defined and site.registered_email is not empty) or (site.mail is defined and site.mail is not empty) %}
-										<ul class="policy-clause-list">
-											{% if site.dpo_email is defined and site.dpo_email is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.dpo_email }}:</strong>
-														<a href="mailto:{{ site.dpo_email }}">{{ site.dpo_email }}</a>
-													</div>
-												</li>
-											{% endif %}
-											{% if site.registered_email is defined and site.registered_email is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.registered_email }}:</strong>
-														<a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
-													</div>
-												</li>
-											{% elseif site.mail is defined and site.mail is not empty %}
-												<li class="policy-clause-item">
-													<i class="bi bi-dot policy-clause-bullet" aria-hidden="true"></i>
-													<div class="policy-clause-content">
-														<strong>{{ lang.index.email }}:</strong>
-														<a href="mailto:{{ site.mail }}">{{ site.mail }}</a>
-													</div>
-												</li>
-											{% endif %}
-										</ul>
-									{% endif %}
-								</div>
-							</section>
-						</div>
-
-						<!-- Bottom Contact Card -->
-						<div class="policy-footer-card">
-							<div class="policy-footer-info">
-								<div class="policy-footer-icon" aria-hidden="true">
-									<i class="bi bi-shield-lock"></i>
-								</div>
-								<div>
-									<h3 class="policy-footer-title">{{ lang.index.contact_us }}</h3>
-									<p class="policy-footer-text">{{ lang.index.privacy_dpo_contact_desc }}</p>
-								</div>
-							</div>
-							<div class="policy-footer-action">
-								<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
-									<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
-								</a>
-							</div>
-						</div>
+								</li>
+							{% endif %}
+						</ul>
 					</div>
-				</article>
+				</section>
+
+				<!-- 2. Categories of Processed Data -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-collected">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-folder-check"></i>
+						</div>
+						<h2 id="sec-privacy-collected" class="policy-section-title">{{ lang.index.privacy_data_collected_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_data_collected_desc }}</p>
+					</div>
+				</section>
+
+				<!-- 3. Legal Bases & Purposes -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-legal-basis">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-journal-text"></i>
+						</div>
+						<h2 id="sec-privacy-legal-basis" class="policy-section-title">{{ lang.index.privacy_legal_basis_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_legal_basis_desc }}</p>
+					</div>
+				</section>
+
+				<!-- 4. Data Retention & Infrastructure -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-retention">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-hdd-network"></i>
+						</div>
+						<h2 id="sec-privacy-retention" class="policy-section-title">{{ lang.index.privacy_retention_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_retention_desc }}</p>
+						{% if site.hosting_provider is defined and site.hosting_provider is not empty %}
+							<ul class="policy-clause-list">
+								<li class="policy-clause-item">
+									<div class="policy-clause-content">
+										<strong>{{ lang.index.hosting_provider }}:</strong> {{ site.hosting_provider }}
+									</div>
+								</li>
+							</ul>
+						{% endif %}
+					</div>
+				</section>
+
+				<!-- 5. Data Subject Rights -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-rights">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-person-check"></i>
+						</div>
+						<h2 id="sec-privacy-rights" class="policy-section-title">{{ lang.index.privacy_subject_rights_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_subject_rights_desc }}</p>
+					</div>
+				</section>
+
+				<!-- 6. DPO & Contact -->
+				<section class="policy-section-card" aria-labelledby="sec-privacy-dpo">
+					<div class="policy-section-header">
+						<div class="policy-section-icon" aria-hidden="true">
+							<i class="bi bi-envelope-at"></i>
+						</div>
+						<h2 id="sec-privacy-dpo" class="policy-section-title">{{ lang.index.privacy_dpo_contact_title }}</h2>
+					</div>
+					<div class="policy-section-body">
+						<p>{{ lang.index.privacy_dpo_contact_desc }}</p>
+						{% if (site.dpo_email is defined and site.dpo_email is not empty) or (site.registered_email is defined and site.registered_email is not empty) or (site.mail is defined and site.mail is not empty) %}
+							<ul class="policy-clause-list">
+								{% if site.dpo_email is defined and site.dpo_email is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.dpo_email }}:</strong>
+											<a href="mailto:{{ site.dpo_email }}">{{ site.dpo_email }}</a>
+										</div>
+									</li>
+								{% endif %}
+								{% if site.registered_email is defined and site.registered_email is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.registered_email }}:</strong>
+											<a href="mailto:{{ site.registered_email }}">{{ site.registered_email }}</a>
+										</div>
+									</li>
+								{% elseif site.mail is defined and site.mail is not empty %}
+									<li class="policy-clause-item">
+										<div class="policy-clause-content">
+											<strong>{{ lang.index.email }}:</strong>
+											<a href="mailto:{{ site.mail }}">{{ site.mail }}</a>
+										</div>
+									</li>
+								{% endif %}
+							</ul>
+						{% endif %}
+					</div>
+				</section>
 			</div>
-		</div>
+
+			<!-- Bottom Institutional Contact Bar -->
+			<footer class="policy-footer-card">
+				<div class="policy-footer-info">
+					<div class="policy-footer-icon" aria-hidden="true">
+						<i class="bi bi-shield-lock"></i>
+					</div>
+					<div>
+						<h3 class="policy-footer-title">{{ lang.index.contact_us }}</h3>
+						<p class="policy-footer-text">{{ lang.index.privacy_dpo_contact_title }}</p>
+					</div>
+				</div>
+				<div class="policy-footer-action">
+					<a href="{{ site.saddress }}contact" class="btn btn-primary rounded-pill px-4">
+						<i class="bi bi-send me-1" aria-hidden="true"></i>{{ lang.index.contact }}
+					</a>
+				</div>
+			</footer>
+		</article>
 	</div>
 </div>
 {% endblock %}
