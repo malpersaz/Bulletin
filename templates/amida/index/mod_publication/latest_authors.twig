@@ -1,18 +1,21 @@
-{{ run({"mod": "index", "method": "_latest_authors", "extra": [6]}) }}
+{% set author_limit = limit|default(3) %}
+{{ run({"mod": "index", "method": "_latest_authors", "extra": [author_limit]}) }}
 {% set latest_authors = ctx_get('latest_authors') %}
 
 {% if latest_authors %}
-<section id="latest-publication-authors">
-
+<section id="latest-publication-authors" aria-labelledby="latest-authors-heading">
     <div class="latest-authors-card">
-        <div class="latest-authors-head">
-            <h2 class="latest-authors-title">
-                <a href="{{ site.saddress }}authors" class="text-decoration-none d-inline-flex align-items-center">
+        <header class="latest-authors-head">
+            <h2 id="latest-authors-heading" class="latest-authors-title">
+                <a href="{{ site.saddress }}authors" class="latest-authors-title-link">
                     <span>{{ lang.index.mod_publication.authors }}</span>
-                    <i class="bi bi-chevron-right ms-2 small"></i>
                 </a>
             </h2>
-        </div>
+            <a href="{{ site.saddress }}authors" class="latest-authors-view-all">
+                <span>{{ lang.index.mod_news.latest_news.all_items }}</span>
+                <i class="bi bi-arrow-right" aria-hidden="true"></i>
+            </a>
+        </header>
 
         <div class="latest-authors-list">
             {% for author in latest_authors %}
@@ -20,24 +23,24 @@
                 {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
                 {% set latest_publication_title = (author.title is defined and author.title is not empty ? author.title : author.name)|trim %}
                 <article class="latest-authors-item">
-                    <span class="latest-authors-copy">
-                        <a class="latest-authors-name" href="{{ site.saddress }}author/{{ author.username }}">{{ latest_author_name }}</a>
-                        {% set author_published_ago = author.published_ago is not empty ? author.published_ago : (author.created_at is defined and author.created_at is not empty ? author.created_at|time_ago : '') %}
-                        {% if author_published_ago is not empty %}
-                            <span class="latest-authors-timeago">
-                                <i class="bi bi-clock-history"></i>
-                                {{ author_published_ago }}
-                            </span>
-                        {% endif %}
-                        <a class="latest-authors-publication" href="{{ site.saddress }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
-                    </span>
                     <a class="latest-authors-avatar" href="{{ site.saddress }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
                         {% if author.user_image is defined and author.user_image is not empty %}
-                            <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" width="54" height="54" loading="lazy" decoding="async">
+                            <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}" alt="{{ latest_author_name }}" width="48" height="48" loading="lazy" decoding="async">
                         {% else %}
                             <span>{{ latest_author_initials }}</span>
                         {% endif %}
                     </a>
+                    <span class="latest-authors-copy">
+                        <a class="latest-authors-name" href="{{ site.saddress }}author/{{ author.username }}">{{ latest_author_name }}</a>
+                        <a class="latest-authors-publication" href="{{ site.saddress }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
+                        {% set author_published_ago = author.published_ago is not empty ? author.published_ago : (author.created_at is defined and author.created_at is not empty ? author.created_at|time_ago : '') %}
+                        {% if author_published_ago is not empty %}
+                            <span class="latest-authors-timeago">
+                                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                {{ author_published_ago }}
+                            </span>
+                        {% endif %}
+                    </span>
                 </article>
             {% endfor %}
         </div>

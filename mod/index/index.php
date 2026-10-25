@@ -375,6 +375,30 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _sports_news($t, $limit = 2)
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            $t->ctx_set('sports_news', []);
+            $t->ctx_set('sports_category_seo', '');
+            $t->ctx_set('sports_category_url', $this->site['saddress'] . 'newses');
+            return;
+        }
+
+        $helper = Load::helper('index.mod_news');
+        $result = $helper->_category_news(
+            ['Spor', 'Werzîş', 'Werzis', 'Sports', 'Sport', 'رياضة', 'وەرزش'],
+            (int) $limit
+        );
+        $categorySeo = (string) ($result['category_seo'] ?? '');
+        $t->ctx_set('sports_news', $result['items']);
+        $t->ctx_set('sports_category_seo', $categorySeo);
+        $t->ctx_set(
+            'sports_category_url',
+            $categorySeo !== '' ? $this->site['saddress'] . 'newses/' . $categorySeo : $this->site['saddress'] . 'newses'
+        );
+        unset($helper);
+    }
+
     public function _homepage_news_categories($t, $limit, $select)
     {
         if (!$this->isFeatureReady('news.homepage_categories')) {

@@ -1,0 +1,290 @@
+/* ==========================================================================
+   Sports News Section Styles (Amida Public Theme)
+   Amed Framework - AF/Bulletin
+   ========================================================================== */
+
+.sports-news-section {
+    --sports-ink: #0f172a;
+    --sports-muted: #475569;
+    --sports-box-bg: #ffffff;
+    --sports-box-border: rgba(15, 23, 42, 0.12);
+    --sports-card-bg: #f8fafc;
+    --sports-card-hover-bg: #f1f5f9;
+    --sports-card-border: rgba(15, 23, 42, 0.08);
+    --sports-card-hover-border: rgba(15, 23, 42, 0.18);
+    --sports-accent: #15803d;
+    --sports-accent-bar: #16a34a;
+    --sports-accent-hover: #166534;
+    --sports-placeholder-bg: #f1f5f9;
+    --sports-placeholder-icon: #64748b;
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--sports-box-border);
+    border-radius: 8px;
+    background: var(--sports-box-bg);
+}
+
+.sports-news-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--sports-accent);
+}
+
+.sports-news-heading-wrap {
+    display: flex;
+    align-items: center;
+}
+
+.sports-news-title {
+    margin: 0;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-weight: 800;
+    font-size: 0.8125rem;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.sports-news-title-link {
+    color: var(--sports-ink);
+    text-decoration: none;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.sports-news-title-link:hover {
+    color: var(--sports-accent);
+}
+
+.sports-news-title-accent {
+    display: inline-block;
+    width: 4px;
+    height: 0.95rem;
+    background-color: var(--sports-accent-bar);
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.sports-news-view-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sports-accent);
+    text-decoration: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sports-news-view-all i {
+    transition: transform 0.2s ease;
+}
+
+.sports-news-view-all:hover {
+    color: var(--sports-accent-hover);
+}
+
+.sports-news-view-all:hover i {
+    transform: translateX(3px);
+}
+
+/* 2-Column Grid for Sports Cards */
+.sports-news-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .sports-news-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+}
+
+/* Horizontal Split Card */
+.sports-news-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid var(--sports-card-border);
+    border-radius: 6px;
+    background: var(--sports-card-bg);
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.sports-news-card:hover {
+    background-color: var(--sports-card-hover-bg);
+    border-color: var(--sports-card-hover-border);
+}
+
+.sports-news-thumb-link {
+    position: relative;
+    width: 160px;
+    height: 90px;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--sports-placeholder-bg);
+    text-decoration: none;
+    display: block;
+}
+
+.sports-news-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.sports-news-card:hover .sports-news-thumb-img {
+    transform: scale(1.04);
+}
+
+.sports-news-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sports-placeholder-bg);
+}
+
+.sports-news-placeholder-icon {
+    font-size: 1.75rem;
+    color: var(--sports-placeholder-icon);
+}
+
+.sports-news-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+}
+
+.sports-news-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-size: 0.68rem;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--sports-muted);
+    line-height: 1.1;
+}
+
+.sports-news-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.sports-news-meta-item i {
+    font-size: 0.72rem;
+    color: var(--sports-accent);
+}
+
+.sports-news-meta-sep {
+    opacity: 0.6;
+}
+
+.sports-news-article-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-wrap: balance;
+}
+
+.sports-news-article-title a {
+    color: var(--sports-ink);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.sports-news-article-title a:hover {
+    color: var(--sports-accent);
+}
+
+.sports-news-summary {
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-size: 0.76rem;
+    line-height: 1.35;
+    color: var(--sports-muted);
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-wrap: pretty;
+}
+
+.sports-news-title-link:focus-visible,
+.sports-news-view-all:focus-visible,
+.sports-news-thumb-link:focus-visible,
+.sports-news-article-title a:focus-visible {
+    outline: 2px solid var(--sports-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Dark Mode Tokens */
+html[data-bs-theme="dark"] .sports-news-section,
+body.dark .sports-news-section,
+body.dark-mode .sports-news-section {
+    --sports-ink: #f8fafc;
+    --sports-muted: #94a3b8;
+    --sports-box-bg: #1e293b;
+    --sports-box-border: rgba(255, 255, 255, 0.12);
+    --sports-card-bg: rgba(15, 23, 42, 0.55);
+    --sports-card-hover-bg: rgba(255, 255, 255, 0.06);
+    --sports-card-border: rgba(255, 255, 255, 0.08);
+    --sports-card-hover-border: rgba(255, 255, 255, 0.18);
+    --sports-accent: #4ade80;
+    --sports-accent-bar: #22c55e;
+    --sports-accent-hover: #86efac;
+    --sports-placeholder-bg: #0f172a;
+    --sports-placeholder-icon: #475569;
+}
+
+/* RTL Support */
+[dir="rtl"] .sports-news-body {
+    text-align: right;
+}
+
+[dir="rtl"] .sports-news-view-all:hover i {
+    transform: translateX(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sports-news-card,
+    .sports-news-thumb-img,
+    .sports-news-view-all,
+    .sports-news-view-all i {
+        transition: none !important;
+        transform: none !important;
+    }
+}

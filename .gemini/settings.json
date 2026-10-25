@@ -16,6 +16,11 @@
         "@upstash/context7-mcp@latest"
       ],
       "trust": true
+    },
+    "amed-bulletin": {
+      "command": "/home/malpersaz/.gemini/antigravity/bin/amed_bulletin_mcp.py",
+      "args": [],
+      "trust": true
     }
   }
 }

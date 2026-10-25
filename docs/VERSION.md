@@ -1,5 +1,42 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.7 (2026-10-25)
+- **MCP Multi-Repository Domain Isolation & Dedicated Bridge Architecture (`.gemini/settings.json`, `~/.gemini/`)**:
+  - **Zero Cross-Repo Collision Policy**: Cleaned global MCP configuration namespaces (`amed-business`, `amidakurd`) that caused ambiguous targeting across sibling repositories (`AF/Business`, `AF/Rojname`, `AF/Bulletin`).
+  - **Dedicated Bulletin MCP Bridge**: Provisioned `/home/malpersaz/.gemini/antigravity/bin/amed_bulletin_mcp.py` and registered local workspace server `amed-bulletin` in `.gemini/settings.json`, strictly binding endpoint authorization (`amcp_1f4a7d...`) and tooling to `AF/Bulletin` without risk of cross-repository data pollution or mutation.
+- **Homepage Hero Slider & Left Editorial Column Modernization (`lib/`, `mod/index/`, `templates/amida/`, `mod/index/lang/`)**:
+  - **16:9 Aspect Ratio Contract & MCP Upload Pipeline Alignment (`lib/McpNewsTools.class.php`)**:
+    - Aligned `McpNewsTools::NEWS_IMAGE_SIZES` with admin controller specifications: `/` (`1280 × 720 px`, `option => 'cover'`) and `/thumb` (`480 × 270 px`, `option => 'cover'`), ensuring all images uploaded or curated via MCP preserve the exact `16:9` (`1.7778:1`) broadsheet aspect ratio.
+  - **Hero Slider ACL Hardening & Runtime Feature Readiness (`mod/index/helper/mod_hero_slider.helper.php`)**:
+    - Added `isFeatureReady('news.front')` and `isFeatureReady('publication.front')` guards to `loadNewsItems()` and `loadPublicationItems()`.
+    - Integrated cached hierarchical ACL category resolution (`getAllowedCategoryIds()`) and session-aware SQL conditions (`getAllowedAclCondition('')`), guaranteeing restricted category contents never leak into the public hero slider.
+  - **Category News Helper & Controller Architecture (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`)**:
+    - Updated `_latest_news()` to query `Load::model('mod_news.newses')` (joining `mod_news_category`), enabling `category_name` and `category_seo` in column projections.
+    - Implemented `_category_news(array $categoryCandidates, int $limit, ...)` in `mod_news_helper`, resolving localized candidate category names/slugs against active language settings, including category descendants via `getCategoryDescendantIds()`, enforcing ACL permissions, and producing 120-character truncated summaries (`summary_short`).
+    - Added `_sports_news($t, $limit = 2)` widget method in `mod/index/index.php` with multilingual candidate resolution (`['Spor', 'Werzîş', 'Werzis', 'Sports', 'Sport', 'رياضة', 'وەرزش']`), populating both `sports_category_seo` and `sports_category_url`.
+  - **Hero Slider Dual-Layer Backdrop Elimination & Exact `800 × 450 px` (16:9) Geometry (`templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/hero-news-slider.min.css`, `templates/amida/static/css/custom.css`, `templates/amida/static/css/custom.min.css`)**:
+    - Removed redundant `.hero-slide__backdrop` blurred duplicate image element and dead CSS rules, eliminating dual-image network overhead for every hero slide.
+    - Updated cover image tag dimensions to native `1280 × 720 px` (`width="1280" height="720" sizes="(max-width: 991px) 100vw, 800px"`).
+    - Modernized `.hero-news-slider` and `.hero-news-swiper` to exact `800 × 450 px` (`aspect-ratio: 16 / 9; max-height: 450px; border: 0` with inset ring shadow so outer and inner boxes measure `800.00 × 450.00 px` on desktop, aligning 1:1 horizontally with the `384 × 450 px` Right Sidebar Block R1).
+    - Enabled tactile bottom-right bullet pagination (`.hero-news-swiper-pagination`) with expanded active bullet animation and RTL positioning.
+    - Synchronized both `hero-news-slider.min.css` and `custom.min.css` (loaded by `base.twig`).
+  - **Exact `1200 px` (`800 px` Left + `16 px` Gap + `384 px` Right) Spatial Grid & 5-Block Broadsheet Stack (`templates/amida/index/index.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/custom.css`)**:
+    - Enforced deterministic CSS Grid geometry on `#homepageHeroRow` (`grid-template-columns: 800px 384px; gap: 16px; align-items: stretch;` at `>= 1224px` inside a `1200 px` content container, scaling proportionally via `minmax(0, 800fr) minmax(0, 384fr)` at `992px–1223px` and single-column below `992px`).
+    - Eliminated duplicate `_hero_slider` invocation and standardized stylesheet loading in `{% block stylesheets %}` to prevent FOUC/CLS.
+    - Arranged `#homepageHeroMain` (`800 px`) and `#homepageHeroSidebar` (`384 px`) as `display: flex; flex-direction: column; gap: 16px;` stacks with zero stray child margins (`#homepageHeroMain > *`, `#homepageHeroSidebar > *`):
+      - **Block L1**: Hero News Slider (`800 × 450 px`, `16:9`, 10 items).
+      - **Block L2**: Horizontal Authors Strip (`latest_authors.twig`, 3 columns, `12 px` box padding & `12 px` grid gap -> `250 px` cards).
+      - **Block L3**: Latest News Grid (`latest_news.twig`, `.news-box-grow` with `flex: 1`, 6 cards in `3 × 2` grid, `12 px` box padding & `12 px` grid gap -> exact `248 × 140 px` `16:9` card media).
+      - **Block L4**: Sports News Section (`sports_news.twig`, 2 horizontal split cards, `12 px` box padding & `12 px` grid gap -> `381 px` cards with `160 × 90 px` `16:9` media).
+      - **Block L5**: Video Gallery (`latest_videos.twig`, 3 cards in `3 × 1` grid, `12 px` box padding & `12 px` grid gap -> `250 px` cards with `248 × 140 px` `16:9` media).
+  - **Taste Skill & Impeccable Super Polish (`templates/amida/index/mod_publication/latest_authors.twig`, `templates/amida/index/mod_news/latest_news.twig`, `templates/amida/index/mod_news/sports_news.twig`, `templates/amida/index/mod_video_embed/latest_videos.twig`, `templates/amida/static/css/latest-authors.css`, `templates/amida/static/css/latest-news.css`, `templates/amida/static/css/sports-news.css`, `templates/amida/static/css/latest-videos.css`)**:
+    - Aligned all Left Column blocks (`L2`–`L5`) to a unified `12 px` bordered editorial box system with `2 px` bottom-accented `.section-head` headers (title on left, uppercase view-all link on right).
+    - Reordered `.latest-authors-item` in `latest_authors.twig` to place the `48 × 48 px` circular avatar (`width="48" height="48"`) on the left and author/publication copy on the right, matching `docs/plan/homepage-layout-wireframe.html`.
+    - Added reading-time metadata (`reading_minutes`) to `sports_news.twig` alongside publication date, matching wireframe specifications.
+    - Enforced WCAG AA contrast ratios (`>= 4.5:1`), `font-variant-numeric: tabular-nums` on all dates/timestamps/durations, `text-wrap: balance` on headlines, `:focus-visible` keyboard outlines, `@media (prefers-reduced-motion: reduce)` guards, and verified `0` anti-patterns under `impeccable detect --json`.
+  - **10-Language Localization Parity (`mod/index/lang/*.php`)**:
+    - Added `$lang['index']['mod_news']['sports_news']` (`title` and `all_items`) across all 10 language dictionaries (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`), maintaining 100% key parity under `tools/i18n_guard.py`.
+
 ## v1.0.6 (2026-10-25)
 - **Public Legal & Statutory Policy Dossier Redesign — Taste Skill & Impeccable Super Polish (`templates/amida/index/legal/`, `templates/amida/partials/_legal_info.twig`, `templates/amida/partials/_legal_nav.twig`, `templates/amida/static/css/legal-info.css`, `templates/amida/static/css/cookie-policy.css`)**:
   - **Asymmetric 2-Column Editorial Dossier Architecture (`templates/amida/index/legal/*.twig`, `templates/amida/partials/_legal_nav.twig`, `templates/amida/static/css/legal-info.css`)**:

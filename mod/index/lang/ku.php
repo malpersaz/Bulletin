@@ -494,6 +494,10 @@ $lang['index'] = [
             'no_items_found' => 'Hêj tu nûçeya weşandî tune.',
             'last_24_hours' => '24 Saetên Dawî',
         ],
+        'sports_news' => [
+            'title' => 'Werzîş',
+            'all_items' => 'Hemûyan Bibîne',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'Hemû Weşan',

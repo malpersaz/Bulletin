@@ -494,6 +494,10 @@ $lang['index'] = [
             'no_items_found' => 'هێشتا هیچ هەواڵێکی بڵاوکراوە بەردەست نییە.',
             'last_24_hours' => '٢٤ کاتژمێری ڕابردوو',
         ],
+        'sports_news' => [
+            'title' => 'وەرزش',
+            'all_items' => 'بینینی هەمووی',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'هەموو بڵاوکراوەکان',

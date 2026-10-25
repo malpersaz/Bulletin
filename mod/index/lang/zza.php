@@ -494,6 +494,10 @@ $lang['index'] = [
             'no_items_found' => 'Hêna xebera weşiyaye amade niyo.',
             'last_24_hours' => '24 Saetê Peyênî',
         ],
+        'sports_news' => [
+            'title' => 'Spor',
+            'all_items' => 'Pêroyî Bivîne',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'Pêro Weşan',

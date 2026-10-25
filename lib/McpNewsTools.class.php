@@ -8,8 +8,8 @@
 class McpNewsTools extends McpCrudToolsBase
 {
     private const NEWS_IMAGE_SIZES = [
-        '/' => ['width' => 1600, 'height' => null, 'option' => 'width'],
-        '/thumb' => ['width' => 600, 'height' => null, 'option' => 'width'],
+        '/' => ['width' => 1280, 'height' => 720, 'option' => 'cover'],
+        '/thumb' => ['width' => 480, 'height' => 270, 'option' => 'cover'],
     ];
 
     private const CATEGORY_IMAGE_SIZES = [

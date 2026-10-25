@@ -2,7 +2,7 @@
 
 {% block head_preload %}
     {{ parent() }}
-    {{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
+    {{ run({"mod": "index", "method": "_hero_slider", "extra": [10]}) }}
     {% set first_hero_img = (ctx_get('hero_slider')|filter(s => s.image_url is defined and s.image_url is not empty))|first %}
     {% if first_hero_img and first_hero_img.image_url is not empty %}
         {% if first_hero_img.thumb_url is defined and first_hero_img.thumb_url is not empty %}
@@ -16,13 +16,12 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.min.css?v={{ site.version|default('1.1.33') }}">
-    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
-    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.33') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.33') }}"></noscript>
-    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.33') }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.33') }}"></noscript>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.css?v={{ site.version|default('1.1.33') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version|default('1.1.33') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version|default('1.1.33') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version|default('1.1.33') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version|default('1.1.33') }}">
 {% endblock %}
 
 {% block js_custom %}
@@ -33,52 +32,50 @@
 
 {% block content %}
 <!-- START: index/index.twig -->
-    {{ run({"mod": "index", "method": "_hero_slider", "extra": [6]}) }}
     {% set homepage_hero_slider = ctx_get('hero_slider') %}
+    {% if homepage_hero_slider is empty %}
+        {{ run({"mod": "index", "method": "_hero_slider", "extra": [10]}) }}
+        {% set homepage_hero_slider = ctx_get('hero_slider') %}
+    {% endif %}
 
     <section class="row mt-3 homepage-hero-row" id="homepageHeroRow">
-        {% if homepage_hero_slider and homepage_hero_slider|length > 0 %}
-        <article id="homepageHeroMain" class="col-md-9 homepage-hero-main">
-            {% include 'index/hero_slider.twig' with { hero_slider_items: homepage_hero_slider } %}
+        <article id="homepageHeroMain" class="col-12 col-lg-8 homepage-hero-main">
+            {# Block L1 — Hero News Slider (800 x 450 px, 16:9) #}
+            {% if homepage_hero_slider and homepage_hero_slider|length > 0 %}
+                {% include 'index/hero_slider.twig' with { hero_slider_items: homepage_hero_slider } %}
+            {% endif %}
+
+            {# Block L2 — Horizontal Authors Strip (3 Columns) #}
+            {% include 'index/mod_publication/latest_authors.twig' with { limit: 3 } %}
+
+            {# Block L3 — Latest News Grid (6 Cards in 3x2 Grid) #}
+            {% include 'index/mod_news/latest_news.twig' %}
+
+            {# Block L4 — Sports News Section (2 Horizontal Cards in 2x1 Grid) #}
+            {% include 'index/mod_news/sports_news.twig' %}
+
+            {# Block L5 — Video Gallery (3 Cards in 3x1 Grid) #}
             {% include 'index/mod_video_embed/latest_videos.twig' with { limit: 3 } %}
         </article>
-        <aside id="homepageHeroSidebar" class="col-md-3 homepage-hero-sidebar">
-            {% include 'index/mod_publication/latest_authors.twig' %}
-        </aside>
-        {% else %}
-        <aside id="homepageHeroSidebar" class="col-12 col-md-3 ms-md-auto homepage-hero-sidebar">
-            {% include 'index/mod_publication/latest_authors.twig' %}
-        </aside>
-        {% endif %}
-    </section>
 
-    <section class="row">
-        <article class="col-12">
-            {# Fetch and display news for each category pinned to the homepage. #}
+        <aside id="homepageHeroSidebar" class="col-12 col-lg-4 homepage-hero-sidebar">
+            {# Pinned Homepage Categories Sidebar #}
             {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [1, "image,name,seo,summary,created_at,video,gallery_id,file_id"]}) }}
             {% set homepage_categories = ctx_get('homepage_news_categories') %}
             
             {% if homepage_categories and homepage_categories|length > 0 %}
-                <div class="row g-0 category-columns-row"> {# Use g-0 with category-columns-row for seamless broadsheet transitions. #}
-                    {% for category in homepage_categories %}
-                        {% if category.news|length > 0 %}
-                            
-                            <div class="col-md-4 category-column">
-                                <div class="category-homepage-section h-100">
-                                    <h2 class="nyt-news-heading">
-                                        <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none nyt-news-heading-link">{{ category.name|raw }}</a>
-                                    </h2>
-                                    {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo, is_column: true } %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% else %}
-                {# Fall back to the general latest news when no categories are pinned. #}
-                {% include 'index/mod_news/latest_news.twig' %}
+                {% for category in homepage_categories %}
+                    {% if category.news|length > 0 %}
+                        <div class="category-homepage-section">
+                            <h2 class="nyt-news-heading">
+                                <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none nyt-news-heading-link">{{ category.name|raw }}</a>
+                            </h2>
+                            {% include 'index/mod_news/category_news_row.twig' with { news_items: category.news, category_name: category.name, category_seo: category.seo, is_column: true } %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-        </article>
+        </aside>
     </section>
     
     {# Include the bottom menu when needed. #}

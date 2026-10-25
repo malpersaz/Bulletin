@@ -523,6 +523,10 @@ $lang['index']['mod_news'] = [
         'no_items_found' => 'No published news is available yet.',
         'last_24_hours' => 'Last 24 Hours',
     ],
+    'sports_news' => [
+        'title' => 'Sports',
+        'all_items' => 'View All',
+    ],
 ];
 $lang['index']['comments'] = 'Comments';
 $lang['index']['add_comment'] = 'Add Comment';

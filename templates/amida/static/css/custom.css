@@ -1360,21 +1360,78 @@ body {
 /* ==========================================================================
    Critical Hero Slider Container Skeleton (Anti-CLS & Instant LCP Baseline)
    ========================================================================== */
+@media (min-width: 1224px) {
+    main > .container,
+    .site-footer > .container {
+        max-width: 1224px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
 #homepageHeroRow,
 .homepage-hero-row {
-    margin-top: 1.25rem;
-    margin-bottom: 1.25rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
+    width: 100%;
+    margin: 1rem 0 1.25rem;
+    padding: 0;
+}
+
+@media (min-width: 992px) {
+    #homepageHeroRow,
+    .homepage-hero-row {
+        grid-template-columns: minmax(0, 800fr) minmax(0, 384fr);
+        gap: 16px;
+    }
+}
+
+@media (min-width: 1224px) {
+    #homepageHeroRow,
+    .homepage-hero-row {
+        grid-template-columns: 800px 384px;
+        gap: 16px;
+        max-width: 1200px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+#homepageHeroMain,
+.homepage-hero-main,
+#homepageHeroSidebar,
+.homepage-hero-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: 0;
+    margin: 0;
+}
+
+#homepageHeroMain > *,
+.homepage-hero-main > *,
+#homepageHeroSidebar > *,
+.homepage-hero-sidebar > * {
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 .hero-slider-shell,
 .hero-news-slider {
     position: relative;
     width: 100%;
-    margin-bottom: 0.5rem;
+    aspect-ratio: 16 / 9;
+    max-height: 450px;
+    margin: 0;
     overflow: hidden;
     background: #090d16;
-    border-radius: 16px;
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 12px;
+    border: 0;
     contain: layout paint;
 }
 
@@ -1385,8 +1442,9 @@ body {
 
 .hero-news-swiper {
     width: 100%;
-    height: 390px;
-    min-height: 390px;
+    height: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 450px;
     position: relative;
     border-radius: inherit;
     overflow: hidden;
@@ -1398,28 +1456,31 @@ body {
 
 @media (max-width: 991px) {
     .hero-news-swiper {
-        height: 350px;
-        min-height: 350px;
+        height: auto;
+        max-height: 450px;
+        min-height: 0;
     }
 }
 
 @media (max-width: 768px) {
     .hero-slider-shell,
     .hero-news-slider {
-        margin-bottom: 1.25rem;
-        border-radius: 12px;
+        margin-bottom: 0;
+        border-radius: 10px;
     }
 
     .hero-news-swiper {
-        height: 280px;
-        min-height: 280px;
+        height: auto;
+        max-height: 450px;
+        min-height: 0;
     }
 }
 
 @media (max-width: 575px) {
     .hero-news-swiper {
-        height: 240px;
-        min-height: 240px;
+        height: auto;
+        max-height: 450px;
+        min-height: 0;
     }
 }
 

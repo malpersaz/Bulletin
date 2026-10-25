@@ -1,0 +1,76 @@
+{{ run({"mod": "index", "method": "_sports_news", "extra": [2]}) }}
+{% set sports_news = ctx_get('sports_news') %}
+{% set sports_category_seo = ctx_get('sports_category_seo') %}
+{% set sports_category_url = ctx_get('sports_category_url')|default(sports_category_seo ? site.saddress ~ 'newses/' ~ sports_category_seo : site.saddress ~ 'newses') %}
+
+{% if sports_news is not empty %}
+<section class="sports-news-section" aria-labelledby="sports-news-heading">
+    <header class="sports-news-header">
+        <div class="sports-news-heading-wrap">
+            <h2 id="sports-news-heading" class="sports-news-title">
+                <a href="{{ sports_category_url }}" class="sports-news-title-link">
+                    <span class="sports-news-title-accent" aria-hidden="true"></span>
+                    <span>{{ lang.index.mod_news.sports_news.title }}</span>
+                </a>
+            </h2>
+        </div>
+        <a href="{{ sports_category_url }}" class="sports-news-view-all">
+            <span>{{ lang.index.mod_news.sports_news.all_items }}</span>
+            <i class="bi bi-arrow-right" aria-hidden="true"></i>
+        </a>
+    </header>
+
+    <div class="sports-news-grid">
+        {% for item in sports_news %}
+            {% set clean_summary = (item.summary is defined and item.summary != '' ? item.summary : item.name)|striptags %}
+            {% set words = clean_summary|split(' ')|length %}
+            {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
+            {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+            <article class="sports-news-card" itemscope itemtype="https://schema.org/NewsArticle">
+                <a href="{{ site.saddress }}news/{{ item.seo }}" class="sports-news-thumb-link" title="{{ item.name }}" itemprop="url">
+                    {% if item.image is not empty %}
+                        <img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
+                             class="sports-news-thumb-img"
+                             alt="{{ item.name }}"
+                             width="480"
+                             height="270"
+                             sizes="160px"
+                             loading="lazy"
+                             decoding="async"
+                             itemprop="image">
+                    {% else %}
+                        <div class="sports-news-placeholder">
+                            <i class="bi bi-trophy sports-news-placeholder-icon" aria-hidden="true"></i>
+                        </div>
+                    {% endif %}
+                </a>
+                <div class="sports-news-body">
+                    <div class="sports-news-meta">
+                        {% if item.created_at is defined and item.created_at is not empty %}
+                            <span class="sports-news-meta-item">
+                                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                            </span>
+                            <span class="sports-news-meta-sep" aria-hidden="true">·</span>
+                        {% endif %}
+                        <span class="sports-news-meta-item">
+                            <i class="bi bi-book" aria-hidden="true"></i>
+                            <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
+                        </span>
+                    </div>
+                    <h3 class="sports-news-article-title" itemprop="headline">
+                        <a href="{{ site.saddress }}news/{{ item.seo }}" itemprop="url">
+                            {{ item.name|raw }}
+                        </a>
+                    </h3>
+                    {% if item.summary_short is defined and item.summary_short is not empty %}
+                        <p class="sports-news-summary" itemprop="description">
+                            {{ item.summary_short }}
+                        </p>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

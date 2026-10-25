@@ -347,7 +347,7 @@ class mod_news_helper extends indexBase
         $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
         $aclCondition = $this->getAllowedAclCondition('');
 
-        $m = Load::model('mod_news');
+        $m = Load::model('mod_news.newses');
         $m->flush();
         $m->select($select)->where_lang_and_status($lang, 'y');
         $m->addWhere("slider='n'");
@@ -360,6 +360,92 @@ class mod_news_helper extends indexBase
         }
 
         return [];
+    }
+
+    public function _category_news(array $categoryCandidates, int $limit = 3, string $select = 'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo'): array
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+        }
+
+        $lang = (string) $this->site['lang'];
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
+        if (empty($allowedCatIds)) {
+            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+        }
+
+        $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
+        $catModel = Load::model('mod_news_category');
+        $catModel->flush();
+        $catModel->where_lang($lang);
+        $catModel->addWhere("id IN ({$allowedCatList})");
+        $catModel->gR();
+
+        $matchedCategoryId = null;
+        $matchedCategoryName = '';
+        $matchedCategorySeo = '';
+
+        if ($catModel->getSize() > 0) {
+            $categories = $catModel->toArray();
+            $candidateLookup = array_map(function ($c) {
+                return mb_strtolower(trim((string) $c));
+            }, $categoryCandidates);
+
+            foreach ($categories as $cat) {
+                $cName = mb_strtolower(trim((string) ($cat['name'] ?? '')));
+                $cSeo = mb_strtolower(trim((string) ($cat['seo'] ?? '')));
+                if (in_array($cName, $candidateLookup, true) || in_array($cSeo, $candidateLookup, true)) {
+                    $matchedCategoryId = (int) $cat['id'];
+                    $matchedCategoryName = (string) ($cat['name'] ?? '');
+                    $matchedCategorySeo = (string) ($cat['seo'] ?? '');
+                    break;
+                }
+            }
+        }
+
+        if (!$matchedCategoryId) {
+            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+        }
+
+        $targetCategoryIds = [$matchedCategoryId];
+        $descendants = $this->getCategoryDescendantIds($matchedCategoryId, $lang, 'mod_news_category');
+        if (!empty($descendants)) {
+            $targetCategoryIds = array_values(array_unique(array_merge($targetCategoryIds, $descendants)));
+        }
+        $targetCategoryIds = array_intersect($targetCategoryIds, $allowedCatIds);
+        if (empty($targetCategoryIds)) {
+            return ['items' => [], 'category_name' => $matchedCategoryName, 'category_seo' => $matchedCategorySeo];
+        }
+
+        $targetCatList = implode(',', array_map('intval', $targetCategoryIds));
+        $aclCondition = $this->getAllowedAclCondition('');
+
+        $m = Load::model('mod_news.newses');
+        $m->flush();
+        $m->select($select)->where_lang_and_status($lang, 'y');
+        $m->addWhere("slider='n'");
+        $m->addWhere($aclCondition);
+        $m->addWhere("category_id IN ({$targetCatList})");
+        $m->limit($limit)->order('created_at', 'DESC');
+        $m->gR();
+
+        $items = [];
+        if ($m->getSize() !== 0) {
+            $rawRows = $this->_cleanNewsRows($m->toArray());
+            foreach ($rawRows as $row) {
+                $summaryPlain = trim(strip_tags((string) ($row['summary'] ?? '')));
+                $row['summary_short'] = mb_strlen($summaryPlain) > 120
+                    ? mb_substr($summaryPlain, 0, 117) . '...'
+                    : $summaryPlain;
+                $items[] = $row;
+            }
+        }
+
+        return [
+            'items' => $items,
+            'category_name' => $matchedCategoryName,
+            'category_seo' => $matchedCategorySeo,
+        ];
     }
 
     public function _homepage_categories($limit = 4, $select = 'image,name,seo,summary,created_at,deck')

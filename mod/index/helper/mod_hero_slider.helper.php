@@ -49,9 +49,18 @@ class mod_hero_slider_helper extends indexBase
 
     private function loadNewsItems()
     {
+        if (!$this->isFeatureReady('news.front')) {
+            return [];
+        }
+
         if (!$this->hasSliderColumn('mod_news')) {
             return [];
         }
+
+        $currentLang = strtolower(Req::Clear($this->site['lang']));
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $currentLang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
 
         $news_model = Load::model('mod_news.newses');
         $news_model->select([
@@ -70,8 +79,9 @@ class mod_hero_slider_helper extends indexBase
             'username',
             'lang',
         ]);
-        $currentLang = strtolower(Req::Clear($this->site['lang']));
         $news_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
+        $news_model->addWhere($aclCondition);
+        $news_model->addWhere("category_id IN ({$allowedCatList})");
         $news_model->order('created_at', 'DESC');
         $news_model->gR();
 
@@ -96,9 +106,18 @@ class mod_hero_slider_helper extends indexBase
 
     private function loadPublicationItems()
     {
+        if (!$this->isFeatureReady('publication.front')) {
+            return [];
+        }
+
         if (!$this->hasSliderColumn('mod_publication')) {
             return [];
         }
+
+        $currentLang = strtolower(Req::Clear($this->site['lang']));
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_publication_category', $currentLang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
 
         $publication_model = Load::model('mod_publication.publications');
         $publication_model->select([
@@ -118,8 +137,9 @@ class mod_hero_slider_helper extends indexBase
             'user_image',
             'lang',
         ]);
-        $currentLang = strtolower(Req::Clear($this->site['lang']));
         $publication_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
+        $publication_model->addWhere($aclCondition);
+        $publication_model->addWhere("category_id IN ({$allowedCatList})");
         $publication_model->order('created_at', 'DESC');
         $publication_model->gR();
 

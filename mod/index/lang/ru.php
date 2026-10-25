@@ -520,6 +520,10 @@ $lang['index']['mod_news'] = [
         'no_items_found' => 'Опубликованных новостей пока нет.',
         'last_24_hours' => 'За последние 24 часа',
     ],
+    'sports_news' => [
+        'title' => 'Спорт',
+        'all_items' => 'Все новости',
+    ],
 ];
 $lang['index']['comments'] = 'Комментарии';
 $lang['index']['add_comment'] = 'Добавить комментарий';
