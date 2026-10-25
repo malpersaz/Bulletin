@@ -20,5 +20,6 @@ This skill defines the checks required before completing a task in the repositor
    * Run `comment-guard` to clean Turkish/Kurdish comments in touched files.
    * Run `i18n-guard` (`python3 tools/i18n_guard.py`) to check for hard-coded visible strings and missing language keys.
    * Run `code-separation-guard` (`python3 tools/code_separation_guard.py`) to enforce strict code separation (no inline styles or event handlers).
+   * Run `min-css-guard` (`python3 tools/min_css_guard.py`) to verify `.min.css` bundle rule-set parity and absence of orphan `.min.css` artifacts.
    * Run `policy-gate` to consolidate final findings.
 2. **Prepare Walkthrough:** Update or create the `walkthrough.md` artifact summarizing findings and verification results.

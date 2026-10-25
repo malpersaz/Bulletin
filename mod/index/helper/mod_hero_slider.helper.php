@@ -32,8 +32,8 @@ class mod_hero_slider_helper extends indexBase
         $limit = max(1, (int) $limit);
 
         $items = array_merge(
-            $this->loadNewsItems(),
-            $this->loadPublicationItems()
+            $this->loadNewsItems($limit),
+            $this->loadPublicationItems($limit)
         );
 
         if (empty($items)) {
@@ -47,7 +47,7 @@ class mod_hero_slider_helper extends indexBase
         return array_slice($items, 0, $limit);
     }
 
-    private function loadNewsItems()
+    private function loadNewsItems(int $limit)
     {
         if (!$this->isFeatureReady('news.front')) {
             return [];
@@ -63,6 +63,7 @@ class mod_hero_slider_helper extends indexBase
         $aclCondition = $this->getAllowedAclCondition('');
 
         $news_model = Load::model('mod_news.newses');
+        $news_model->flush();
         $news_model->select([
             'id',
             'name',
@@ -83,6 +84,7 @@ class mod_hero_slider_helper extends indexBase
         $news_model->addWhere($aclCondition);
         $news_model->addWhere("category_id IN ({$allowedCatList})");
         $news_model->order('created_at', 'DESC');
+        $news_model->limit($limit);
         $news_model->gR();
 
         $records = $news_model->toArray();
@@ -104,7 +106,7 @@ class mod_hero_slider_helper extends indexBase
         return array_values(array_filter($items));
     }
 
-    private function loadPublicationItems()
+    private function loadPublicationItems(int $limit)
     {
         if (!$this->isFeatureReady('publication.front')) {
             return [];
@@ -120,6 +122,7 @@ class mod_hero_slider_helper extends indexBase
         $aclCondition = $this->getAllowedAclCondition('');
 
         $publication_model = Load::model('mod_publication.publications');
+        $publication_model->flush();
         $publication_model->select([
             'id',
             'name',
@@ -141,6 +144,7 @@ class mod_hero_slider_helper extends indexBase
         $publication_model->addWhere($aclCondition);
         $publication_model->addWhere("category_id IN ({$allowedCatList})");
         $publication_model->order('created_at', 'DESC');
+        $publication_model->limit($limit);
         $publication_model->gR();
 
         $records = $publication_model->toArray();
@@ -176,6 +180,7 @@ class mod_hero_slider_helper extends indexBase
         }
 
         $user_model = Load::model('mod_user.user');
+        $user_model->flush();
         $user_model->select('id, image');
         $user_model->addWhere("id IN (" . $this->buildIdList($user_ids) . ")");
         $user_model->gR();

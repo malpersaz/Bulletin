@@ -1,7 +1,7 @@
 {% extends "layouts/base.twig" %}
 
 {% block css_custom %}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version|default('1.1.25') }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/content.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,7 @@
 
 <div class="row mt-4" id="mod_video_embed_list">
 
-    <!-- Sol Sütun: Kategoriler -->
+    <!-- Left Column: Categories -->
     <aside class="col-lg-3 order-lg-1 mb-4">
         <div class="card sticky-top" aria-labelledby="video-categories-title">
             <div class="card-header">
@@ -31,7 +31,7 @@
         </div>
     </aside>
 
-    <!-- Sağ Sütun: Videolar -->
+    <!-- Right Column: Videos -->
     <div class="col-lg-9 order-lg-2">
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">

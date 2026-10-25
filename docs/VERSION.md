@@ -1,5 +1,23 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.8 (2026-10-25)
+- **Bundle-Aware CSS Guard, Minified Hero Stylesheet Activation, 34-Template Cache-Buster & 404 Asset Sweep, Hero Slider ORM/SQL Hardening, Uniform Empty-State Hiding & Port 8082 Isolation (`tools/`, `templates/`, `mod/`, `config/`, `docker-compose.yml`, `.env.example`, `.agents/skills/`)**:
+  - **Bundle-Aware `*.min.css` Guard & String-Safe Deterministic Pipeline (`tools/min_css_guard.py`, `templates/amida/static/css/`, `.agents/skills/task-validation/SKILL.md`)**:
+    - Added `tools/min_css_guard.py` enforcing `@media`-aware rule-set parity (`missing-in-min = 0`, `stale-in-min = 0`) across the 2-into-1 core bundle (`custom.css` + `stacked-top-menu.css` → `custom.min.css`, 307 rule blocks) and `hero-news-slider.css` → `hero-news-slider.min.css` (56 rule blocks), with a string-preserving `--build` mode and orphan detection, wired into `.agents/skills/task-validation/SKILL.md`.
+    - Removed the unreferenced `templates/amida/static/css/stacked-top-menu.min.css` orphan left over from the `v1.1.31` navigation bundle consolidation.
+  - **Minified Hero Stylesheet Activation (`templates/amida/index/index.twig`)**:
+    - Switched `index.twig` from unminified `hero-news-slider.css` (17,941 B) to `hero-news-slider.min.css` (10,991 B), saving ~7 KB per homepage request.
+  - **34-Template Cache-Buster Sweep, 404 Stylesheet Remediation & English Comment Hygiene (`templates/amida/`, `templates/admin/mod_attachment/`, `config/site.config.example.php`)**:
+    - Removed all 76 stale `site.version|default('...')` fallbacks across 34 Twig templates (and `site.app_template|default('amida')` in `mod_publication/archive.twig`) in favor of `{{ site.version }}`, and synchronized `config/site.config.example.php` fallback version to `1.0.8`.
+    - Resolved two HTTP 404 stylesheet requests on detail views by removing non-existent `static/css/page-detail.css` from `mod_page/page.twig` and replacing non-existent `static/css/publication.css` with `static/css/content.css` in `mod_publication/publication.twig`.
+    - Translated legacy Turkish comments in `layouts/base.twig`, `mod_video_embed/videos.twig`, and `static/css/content.css` into English.
+  - **Hero Slider ORM Singleton Flush & SQL `LIMIT` Bounds (`mod/index/helper/mod_hero_slider.helper.php`, `mod/mod_publication/model/publications.model.php`)**:
+    - Added `->flush()` calls before query construction on singleton ORM models (`mod_news.newses`, `mod_publication.publications`, `mod_user.user`), applied per-source `$news_model->limit($limit)` and `$publication_model->limit($limit)` before `gR()`, and declared `public $slider;` on `publications_model`.
+  - **Uniform Hide-When-Empty Widget Policy (`templates/amida/index/mod_news/latest_news.twig`, `templates/amida/index/mod_video_embed/latest_videos.twig`, `templates/amida/index/mod_publication/latest_publications.twig`)**:
+    - Removed the `{% else %}` empty-state branches from `latest_news.twig`, `latest_videos.twig`, and `latest_publications.twig` (and scoped `latest_publications.twig` stylesheet preloads inside the non-empty guard) so all homepage and widget blocks uniformly hide when their dataset is empty.
+  - **Dedicated Docker Host Ports & MCP/Local Host Alignment (`docker-compose.yml`, `.env.example`, `.agents/skills/kevanger/SKILL.md`, `tools/mobile_simulator.html`, `tools/code_separation_guard.py`)**:
+    - Parameterized `web` and `pma` ports (`BULLETIN_WEB_PORT:-8082`, `BULLETIN_PMA_PORT:-8083`) and aligned local runtime configuration (`config/site.config.local.php`) and the `amed-bulletin` MCP bridge (`~/.gemini/antigravity/bin/amed_bulletin_mcp.py`, `.agents/skills/kevanger/SKILL.md`) to port `8082`, allowing Bulletin (`8082`/`8083`) and Rojname (`8080`/`8081`) stacks to run concurrently with zero cross-stack traffic.
+
 ## v1.0.7 (2026-10-25)
 - **MCP Multi-Repository Domain Isolation & Dedicated Bridge Architecture (`.gemini/settings.json`, `~/.gemini/`)**:
   - **Zero Cross-Repo Collision Policy**: Cleaned global MCP configuration namespaces (`amed-business`, `amidakurd`) that caused ambiguous targeting across sibling repositories (`AF/Business`, `AF/Rojname`, `AF/Bulletin`).

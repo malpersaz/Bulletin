@@ -34,7 +34,7 @@ AUDIT_EXTENSIONS = {".twig", ".html", ".php"}
 
 # Directories to exclude from scan
 EXCLUDE_DIRS = {
-    ".git", ".gemini", ".agents", "vendor", "node_modules", "docs", "cache", "data", "static/assets/vendor", "lib"
+    ".git", ".gemini", ".agents", "vendor", "node_modules", "docs", "cache", "data", "static/assets/vendor", "lib", "tools"
 }
 
 

@@ -110,23 +110,4 @@
             </a>
         </footer>
     </section>
-{% else %}
-    <section class="latest-news-section news-box-grow" aria-labelledby="latest-news-heading">
-        <header class="latest-news-header">
-            <div class="latest-news-heading-wrap">
-                <h2 id="latest-news-heading" class="latest-news-title">
-                    <span class="latest-news-title-link">
-                        <i class="bi bi-newspaper" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_news.latest_news.title }}</span>
-                    </span>
-                </h2>
-            </div>
-        </header>
-        <div class="latest-news-empty">
-            <i class="bi bi-newspaper latest-news-empty-icon" aria-hidden="true"></i>
-            <p class="latest-news-empty-text">
-                {{ lang.index.mod_news.latest_news.no_items_found }}
-            </p>
-        </div>
-    </section>
 {% endif %}

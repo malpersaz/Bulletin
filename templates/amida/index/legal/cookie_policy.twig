@@ -1,9 +1,9 @@
 {% extends "layouts/base.twig" %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version|default('1.0') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version|default('1.0') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/legal-info.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/cookie-policy.css?v={{ site.version }}">
 {% endblock %}
 
 {% set page_meta_title = lang.index.cookie_policy %}
@@ -392,5 +392,5 @@
 {% endblock %}
 
 {% block js_custom %}
-	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/cookie-policy.js?v={{ site.version|default('1.0') }}"></script>
+	<script src="{{ site.taddress }}{{ site.app_template }}/static/js/cookie-policy.js?v={{ site.version }}"></script>
 {% endblock %}

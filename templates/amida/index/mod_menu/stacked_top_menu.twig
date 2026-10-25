@@ -395,6 +395,6 @@
 
 <!-- CSS Assets -->
 {% if not is_logged_in %}
-	<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-	<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version|default('1.1.26') }}"></noscript>
+	<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version }}" onload="this.onload=null;this.rel='stylesheet'">
+	<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version }}"></noscript>
 {% endif %}

@@ -7,6 +7,7 @@ class publications_model extends ORM
     public $name;
     public $created_at;
     public $status;
+    public $slider;
     public $content;
     public $summary;
     public $seo;

@@ -1,10 +1,10 @@
 {{ run({"mod": "index", "method": "_latest_publications", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,deck"]}) }}
 {% set latest_publications = ctx_get('latest_publications') %}
 
-<link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.26') }}" onload="this.onload=null;this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version|default('1.1.26') }}"></noscript>
-
 {% if latest_publications is not empty %}
+    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version }}" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version }}"></noscript>
+
     <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
         <header class="latest-publications-header">
             <div class="latest-publications-heading-wrap">
@@ -78,21 +78,5 @@
                 <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
             </a>
         </footer>
-    </section>
-{% else %}
-    <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
-        <header class="latest-publications-header">
-            <div class="latest-publications-heading-wrap">
-                <h2 id="latest-publications-heading" class="latest-publications-title">
-                    <span>{{ lang.index.mod_publication.latest_publications.title }}</span>
-                </h2>
-            </div>
-        </header>
-        <div class="latest-pub-empty">
-            <i class="bi bi-journal-x latest-pub-empty-icon" aria-hidden="true"></i>
-            <p class="latest-pub-empty-text">
-                {{ lang.index.mod_publication.latest_publications.no_items_found }}
-            </p>
-        </div>
     </section>
 {% endif %}

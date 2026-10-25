@@ -11,7 +11,7 @@
 {% block headline %}{{ lang.mod_attachment.admin.upload_area }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_attachment.css?v={{ site.version|default('1.0') }}">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_attachment.css?v={{ site.version }}">
 {% endblock %}
 
 {% block content %}
@@ -82,5 +82,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/mod_attachment.js?v={{ site.version|default('1.0') }}"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_attachment.js?v={{ site.version }}"></script>
 {% endblock %}

@@ -1,10 +1,10 @@
-/* content.css - Bu dosya sadece content.twig şablonu için özel stiller içerir. */
+/* content.css - Shared article media and embedded video card styles. */
 
 /* Article Main Image */
 .article-main-image {
     aspect-ratio: 16 / 9;
     object-fit: cover;
-    background-color: #f8f9fa; /* Görsel yüklenene kadar gri bir fon göster */
+    background-color: #f8f9fa; /* Neutral background placeholder while image loads */
 }
 
 /* Video Gallery Styles */

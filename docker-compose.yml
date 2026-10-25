@@ -16,7 +16,7 @@ services:
     image: nginx:alpine
     container_name: bulletin_web
     ports:
-      - "8080:80"
+      - "${BULLETIN_WEB_PORT:-8082}:80"
     volumes:
       - ./:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
@@ -48,7 +48,7 @@ services:
       PMA_USER: bulletin
       PMA_PASSWORD: bulletin_password
     ports:
-      - "8081:80"
+      - "${BULLETIN_PMA_PORT:-8083}:80"
     depends_on:
       - db
     networks:

@@ -15,7 +15,7 @@ In this repository (`amedbulten.com`), `kevanger` drafts news articles exclusive
 ## Sequence
 
 ### 1. Pre-Flight Verification of MCP Connectivity & Active Language Gate
-- Verify that the `amedbulten.com` (`http://localhost:8080/mcp.php`) MCP bridge is functional and authenticated.
+- Verify that the `amedbulten.com` (`http://localhost:8082/mcp.php`) MCP bridge is functional and authenticated.
 - Call `list_site_settings(active_only='y')` to inspect `active_languages`, `default_language`, and `lang_status === 'y'`. Never infer active site languages from `site_status` or unverified category rows (`lang_status === 'n'`).
 - Strictly separate **Conversational Language** (Kurmanji Kurdish with the user per `AGENTS.md` Rule 8) from **Target CMS Record Language (`record.lang`)**: every database field (`name`, `summary`, `content`, `title`, `description`, `keywords`, `seo`, and `mod_faq` `question`/`answer`) MUST be written 100% in the active target `record.lang`.
 - Perform a lightweight liveness check (e.g. `list_news_categories` with `lang: "tr"`).

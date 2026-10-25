@@ -73,25 +73,4 @@
             {% endfor %}
         </div>
     </section>
-{% else %}
-    <section class="latest-videos-section" aria-labelledby="latest-videos-heading">
-        <header class="latest-videos-header">
-            <div class="latest-videos-heading-wrap">
-                <h2 id="latest-videos-heading" class="latest-videos-title">
-                    <span class="latest-videos-title-link">
-                        <span class="latest-videos-badge" aria-hidden="true">
-                            <i class="bi bi-play-fill"></i>
-                        </span>
-                        <span>{{ lang.index.mod_video_embed.latest_videos.1 }}</span>
-                    </span>
-                </h2>
-            </div>
-        </header>
-        <div class="latest-video-empty">
-            <i class="bi bi-camera-video-off latest-video-empty-icon" aria-hidden="true"></i>
-            <p class="latest-video-empty-text">
-                {{ lang.index.mod_video_embed.4 }}
-            </p>
-        </div>
-    </section>
 {% endif %}

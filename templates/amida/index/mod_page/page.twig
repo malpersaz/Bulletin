@@ -2,9 +2,8 @@
 {% import "macros/faq.twig" as faq %}
 
 {% block css_custom %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version|default('1.1.33') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/page-detail.css?v={{ site.version|default('1.1.33') }}">
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version|default('1.1.33') }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
+	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
 {% endblock %}
 
 {% block detail_plugins %}
