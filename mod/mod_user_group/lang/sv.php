@@ -15,6 +15,7 @@ $lang['mod_user_group']=[
 	'group_list'=>'Användargruppslista',
 	'double_click_instruction'=>'Dubbelklicka på användargruppsnamnet du vill ta bort eller redigera',
 	'drag_drop_instruction'=>'Dra och släpp användargrupper du vill omordna',
+	'reorder_active'=>'Omordningsläge aktivt',
 	'add_new_group'=>'Lägg till Ny Användargrupp'
 ];
 

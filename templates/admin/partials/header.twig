@@ -12,6 +12,10 @@
             <a href="{{ site.saddress }}" target="_blank" rel="noopener" class="breadcrumb-link">{{ lang.management.site_home }}</a>
             <i class="bi bi-chevron-right breadcrumb-sep" aria-hidden="true"></i>
             <a href="{{ site.saddress }}mod_user/panel" class="breadcrumb-link">{{ lang.mod_user.panel.panel_title }}</a>
+            {% if breadcrumb_parent_url is defined and breadcrumb_parent_url and breadcrumb_parent_title is defined and breadcrumb_parent_title is not empty %}
+                <i class="bi bi-chevron-right breadcrumb-sep" aria-hidden="true"></i>
+                <a href="{{ breadcrumb_parent_url }}" class="breadcrumb-link">{{ breadcrumb_parent_title }}</a>
+            {% endif %}
             {% if breadcrumb_current is not empty and breadcrumb_current != lang.mod_user.panel.panel_title %}
                 <i class="bi bi-chevron-right breadcrumb-sep" aria-hidden="true"></i>
                 <span class="breadcrumb-current" aria-current="page">{{ breadcrumb_current|raw }}</span>

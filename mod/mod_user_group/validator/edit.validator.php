@@ -19,7 +19,7 @@ class edit_validator
 				'name' => 'name',
 				'func' => 'required',
 				'arg' => '',
-				'message' => $this->lang['mod_user_group']['hata']['1']
+				'message' => $this->lang['mod_user_group']['hata']['name_required']
 			]
 		);
 

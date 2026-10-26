@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/world-news.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version }}">
 {% endblock %}
 
@@ -59,13 +60,16 @@
         </article>
 
         <aside id="homepageHeroSidebar" class="col-12 col-lg-4 homepage-hero-sidebar">
+            {# Block R1 — World & Middle East (Dünya & Ortadoğu) #}
+            {% include 'index/mod_news/world_news.twig' %}
+
             {# Pinned Homepage Categories Sidebar #}
             {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [1, "image,name,seo,summary,created_at,video,gallery_id,file_id"]}) }}
             {% set homepage_categories = ctx_get('homepage_news_categories') %}
             
             {% if homepage_categories and homepage_categories|length > 0 %}
                 {% for category in homepage_categories %}
-                    {% if category.news|length > 0 %}
+                    {% if category.news|length > 0 and category.seo not in ['Dünya', 'Ortadoğu', 'Cîhan', 'Rojhilata_Navîn', 'World', 'Middle_East'] %}
                         <div class="category-homepage-section">
                             <h2 class="nyt-news-heading">
                                 <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none nyt-news-heading-link">{{ category.name|raw }}</a>

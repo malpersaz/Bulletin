@@ -15,6 +15,7 @@ $lang['mod_user_group']=[
 	'group_list'=>'Liste des Groupes d\'Utilisateurs',
 	'double_click_instruction'=>'Double-cliquez sur le nom du groupe que vous voulez supprimer ou modifier',
 	'drag_drop_instruction'=>'Glissez-déposez les groupes que vous voulez réorganiser',
+	'reorder_active'=>'Mode de réorganisation actif',
 	'add_new_group'=>'Ajouter un Nouveau Groupe d\'Utilisateurs'
 ];
 

@@ -498,6 +498,11 @@ $lang['index'] = [
             'title' => 'Werzîş',
             'all_items' => 'Hemûyan Bibîne',
         ],
+        'world_news' => [
+            'title' => 'Cîhan & Rojhilata Navîn',
+            'world_title' => 'Cîhan',
+            'middle_east_title' => 'Rojhilata Navîn',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'Hemû Weşan',

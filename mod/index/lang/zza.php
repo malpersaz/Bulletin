@@ -498,6 +498,11 @@ $lang['index'] = [
             'title' => 'Spor',
             'all_items' => 'Pêroyî Bivîne',
         ],
+        'world_news' => [
+            'title' => 'Dinya & Rojhelato Mîyanên',
+            'world_title' => 'Dinya',
+            'middle_east_title' => 'Rojhelato Mîyanên',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'Pêro Weşan',

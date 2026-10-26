@@ -15,6 +15,7 @@ $lang['mod_user_group']=[
 	'group_list'=>'Lîsteya Komela Bikarhêner',
 	'double_click_instruction'=>'Ji bo jêbirin an guherandina Komela Bikarhênerê ku hêvî dikî li ser navê wê du car bitikîne',
 	'drag_drop_instruction'=>'Komelên Bikarhênerên ku hêvî dikî rêzê wan biguherîne bikşî û biavêje',
+	'reorder_active'=>'Moda Rêzkirinê Çalak e',
 	'add_new_group'=>'Komela Bikarhênerên Nû Lê Zêde Bike'
 ];
 

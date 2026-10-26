@@ -84,6 +84,11 @@ class mod_user_group_mod extends indexMain
 
 		if (Req::is_Post('edit')) {
 			$this->_edit($id);
+			$group->flush();
+			$group->where_group_id($id)->limit(1)->gRo();
+			if ($group->getSize() > 0) {
+				$d = $group->toArray();
+			}
 		}
 		Run::import('management', '_index');
 

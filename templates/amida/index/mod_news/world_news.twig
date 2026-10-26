@@ -1,0 +1,56 @@
+{{ run({"mod": "index", "method": "_world_news", "extra": [3]}) }}
+{% set world_news = ctx_get('world_news') %}
+{% set world_links = ctx_get('world_category_links') %}
+{% set world_url = world_links.world_url|default(site.saddress ~ 'newses') %}
+{% set middle_east_url = world_links.middle_east_url|default(site.saddress ~ 'newses') %}
+
+{% if world_news is not empty %}
+<section class="world-news-section" aria-labelledby="world-news-heading">
+    <header class="world-news-header">
+        <h2 id="world-news-heading" class="world-news-title">
+            <span class="world-news-title-ribbon">
+                <a href="{{ world_url }}" class="world-news-title-pill">{{ lang.index.mod_news.world_news.world_title }}</a>
+                <span class="world-news-title-main">
+                    <span class="world-news-title-amp" aria-hidden="true">&amp;</span>
+                    <a href="{{ middle_east_url }}" class="world-news-title-sub">{{ lang.index.mod_news.world_news.middle_east_title }}</a>
+                </span>
+            </span>
+        </h2>
+    </header>
+
+    <div class="world-list">
+        {% for item in world_news %}
+            {% set item_url = site.saddress ~ 'news/' ~ item.seo %}
+            <article class="world-card {{ loop.first ? 'world-lead' : 'world-sub' }}" itemscope itemtype="https://schema.org/NewsArticle">
+                <h3 class="world-card-title" itemprop="headline">
+                    <a href="{{ item_url }}" class="world-card-title-link" itemprop="url">{{ item.name|raw }}</a>
+                </h3>
+                <div class="world-card-content">
+                    <a href="{{ item_url }}" class="world-card-thumb" title="{{ item.name }}" itemprop="url">
+                        {% if item.image is not empty %}
+                            <img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
+                                 class="world-card-thumb-img"
+                                 alt="{{ item.name }}"
+                                 width="480"
+                                 height="270"
+                                 sizes="116px"
+                                 loading="lazy"
+                                 decoding="async"
+                                 itemprop="image">
+                        {% else %}
+                            <div class="world-news-placeholder">
+                                <i class="bi bi-globe-americas world-news-placeholder-icon" aria-hidden="true"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    {% if item.summary_short is defined and item.summary_short is not empty %}
+                        <p class="world-card-summary" itemprop="description">
+                            <a href="{{ item_url }}" class="world-card-summary-link">{{ item.summary_short }}</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

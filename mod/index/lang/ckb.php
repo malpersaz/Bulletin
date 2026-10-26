@@ -498,6 +498,11 @@ $lang['index'] = [
             'title' => 'وەرزش',
             'all_items' => 'بینینی هەمووی',
         ],
+        'world_news' => [
+            'title' => 'جیهان و ڕۆژهەڵاتی ناوەڕاست',
+            'world_title' => 'جیهان',
+            'middle_east_title' => 'ڕۆژهەڵاتی ناوەڕاست',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'هەموو بڵاوکراوەکان',

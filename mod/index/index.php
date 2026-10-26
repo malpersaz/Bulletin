@@ -399,6 +399,62 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _world_news($t, $limit = 3)
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            $t->ctx_set('world_news', []);
+            $t->ctx_set('world_category_links', [
+                'world_url' => $this->site['saddress'] . 'newses',
+                'middle_east_url' => $this->site['saddress'] . 'newses',
+            ]);
+            return;
+        }
+
+        $excludeIds = [];
+        $heroSlider = (is_object($t) && isset($t->ctx) && is_object($t->ctx)) ? $t->ctx->get('hero_slider') : null;
+        if (is_array($heroSlider)) {
+            foreach ($heroSlider as $slide) {
+                if (($slide['source_mod'] ?? '') === 'mod_news' && !empty($slide['source_id'])) {
+                    $excludeIds[] = (int) $slide['source_id'];
+                }
+            }
+        }
+
+        $helper = Load::helper('index.mod_news');
+        $worldGroup = ['Dünya', 'Dunya', 'Cîhan', 'Cihan', 'World', 'Welt', 'Monde', 'Världen', 'العالم', 'جیهان'];
+        $middleEastGroup = ['Ortadoğu', 'Ortadogu', 'Rojhilata_Navîn', 'Rojhilata Navîn', 'Middle_East', 'Middle East', 'Naher_Osten', 'Naher Osten', 'Moyen-Orient', 'Mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'];
+
+        $result = $helper->_category_news(
+            array_merge($worldGroup, $middleEastGroup),
+            (int) $limit,
+            'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo',
+            $excludeIds
+        );
+
+        $worldUrl = $this->site['saddress'] . 'newses';
+        $middleEastUrl = $this->site['saddress'] . 'newses';
+        $worldLookup = array_map('mb_strtolower', $worldGroup);
+        $middleEastLookup = array_map('mb_strtolower', $middleEastGroup);
+
+        foreach (($result['matched_categories'] ?? []) as $cat) {
+            $cName = mb_strtolower(trim((string) ($cat['name'] ?? '')));
+            $cSeo = mb_strtolower(trim((string) ($cat['seo'] ?? '')));
+            if ((in_array($cName, $worldLookup, true) || in_array($cSeo, $worldLookup, true)) && !empty($cat['seo']) && $cat['seo'] !== '#') {
+                $worldUrl = $this->site['saddress'] . 'newses/' . $cat['seo'];
+            }
+            if ((in_array($cName, $middleEastLookup, true) || in_array($cSeo, $middleEastLookup, true)) && !empty($cat['seo']) && $cat['seo'] !== '#') {
+                $middleEastUrl = $this->site['saddress'] . 'newses/' . $cat['seo'];
+            }
+        }
+
+        $t->ctx_set('world_news', $result['items']);
+        $t->ctx_set('world_category_links', [
+            'world_url' => $worldUrl,
+            'middle_east_url' => $middleEastUrl,
+        ]);
+        unset($helper);
+    }
+
     public function _homepage_news_categories($t, $limit, $select)
     {
         if (!$this->isFeatureReady('news.homepage_categories')) {

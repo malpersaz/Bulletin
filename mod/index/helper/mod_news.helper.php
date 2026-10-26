@@ -362,16 +362,16 @@ class mod_news_helper extends indexBase
         return [];
     }
 
-    public function _category_news(array $categoryCandidates, int $limit = 3, string $select = 'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo'): array
+    public function _category_news(array $categoryCandidates, int $limit = 3, string $select = 'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo', array $excludeIds = []): array
     {
         if (!$this->isFeatureReady('news.latest')) {
-            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+            return ['items' => [], 'category_name' => '', 'category_seo' => '', 'matched_categories' => []];
         }
 
         $lang = (string) $this->site['lang'];
         $allowedCatIds = $this->getAllowedCategoryIds('mod_news_category', $lang);
         if (empty($allowedCatIds)) {
-            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+            return ['items' => [], 'category_name' => '', 'category_seo' => '', 'matched_categories' => []];
         }
 
         $allowedCatList = implode(',', array_map('intval', $allowedCatIds));
@@ -381,7 +381,8 @@ class mod_news_helper extends indexBase
         $catModel->addWhere("id IN ({$allowedCatList})");
         $catModel->gR();
 
-        $matchedCategoryId = null;
+        $matchedCategoryIds = [];
+        $matchedCategories = [];
         $matchedCategoryName = '';
         $matchedCategorySeo = '';
 
@@ -395,26 +396,43 @@ class mod_news_helper extends indexBase
                 $cName = mb_strtolower(trim((string) ($cat['name'] ?? '')));
                 $cSeo = mb_strtolower(trim((string) ($cat['seo'] ?? '')));
                 if (in_array($cName, $candidateLookup, true) || in_array($cSeo, $candidateLookup, true)) {
-                    $matchedCategoryId = (int) $cat['id'];
-                    $matchedCategoryName = (string) ($cat['name'] ?? '');
-                    $matchedCategorySeo = (string) ($cat['seo'] ?? '');
-                    break;
+                    $catId = (int) $cat['id'];
+                    $catNameClean = $this->_cleanText((string) ($cat['name'] ?? ''));
+                    $catSeoClean = (string) ($cat['seo'] ?? '');
+                    $matchedCategoryIds[] = $catId;
+                    $matchedCategories[] = [
+                        'id' => $catId,
+                        'name' => $catNameClean,
+                        'seo' => $catSeoClean,
+                    ];
+                    if ($matchedCategoryName === '') {
+                        $matchedCategoryName = $catNameClean;
+                        $matchedCategorySeo = $catSeoClean;
+                    }
                 }
             }
         }
 
-        if (!$matchedCategoryId) {
-            return ['items' => [], 'category_name' => '', 'category_seo' => ''];
+        if (empty($matchedCategoryIds)) {
+            return ['items' => [], 'category_name' => '', 'category_seo' => '', 'matched_categories' => []];
         }
 
-        $targetCategoryIds = [$matchedCategoryId];
-        $descendants = $this->getCategoryDescendantIds($matchedCategoryId, $lang, 'mod_news_category');
-        if (!empty($descendants)) {
-            $targetCategoryIds = array_values(array_unique(array_merge($targetCategoryIds, $descendants)));
+        $targetCategoryIds = $matchedCategoryIds;
+        foreach ($matchedCategoryIds as $matchedCatId) {
+            $descendants = $this->getCategoryDescendantIds($matchedCatId, $lang, 'mod_news_category');
+            if (!empty($descendants)) {
+                $targetCategoryIds = array_merge($targetCategoryIds, $descendants);
+            }
         }
+        $targetCategoryIds = array_values(array_unique($targetCategoryIds));
         $targetCategoryIds = array_intersect($targetCategoryIds, $allowedCatIds);
         if (empty($targetCategoryIds)) {
-            return ['items' => [], 'category_name' => $matchedCategoryName, 'category_seo' => $matchedCategorySeo];
+            return [
+                'items' => [],
+                'category_name' => $matchedCategoryName,
+                'category_seo' => $matchedCategorySeo,
+                'matched_categories' => $matchedCategories,
+            ];
         }
 
         $targetCatList = implode(',', array_map('intval', $targetCategoryIds));
@@ -424,6 +442,12 @@ class mod_news_helper extends indexBase
         $m->flush();
         $m->select($select)->where_lang_and_status($lang, 'y');
         $m->addWhere("slider='n'");
+        $cleanExcludeIds = array_values(array_unique(array_filter(array_map('intval', $excludeIds), function ($id) {
+            return $id > 0;
+        })));
+        if (!empty($cleanExcludeIds)) {
+            $m->addWhere("id NOT IN (" . implode(',', $cleanExcludeIds) . ")");
+        }
         $m->addWhere($aclCondition);
         $m->addWhere("category_id IN ({$targetCatList})");
         $m->limit($limit)->order('created_at', 'DESC');
@@ -434,9 +458,7 @@ class mod_news_helper extends indexBase
             $rawRows = $this->_cleanNewsRows($m->toArray());
             foreach ($rawRows as $row) {
                 $summaryPlain = trim(strip_tags((string) ($row['summary'] ?? '')));
-                $row['summary_short'] = mb_strlen($summaryPlain) > 120
-                    ? mb_substr($summaryPlain, 0, 117) . '...'
-                    : $summaryPlain;
+                $row['summary_short'] = $summaryPlain;
                 $items[] = $row;
             }
         }
@@ -445,6 +467,7 @@ class mod_news_helper extends indexBase
             'items' => $items,
             'category_name' => $matchedCategoryName,
             'category_seo' => $matchedCategorySeo,
+            'matched_categories' => $matchedCategories,
         ];
     }
 
@@ -490,6 +513,7 @@ class mod_news_helper extends indexBase
 
             $news_model->flush();
             $news_model->where_category_seo_and_status_and_lang($categoryItem['seo'], 'y', $lang);
+            $news_model->addWhere("slider='n'");
             $news_model->addWhere($aclCondition);
             $news_model->select($select)->order('created_at', 'DESC')->limit($limit);
             $news_model->gR();

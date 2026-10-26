@@ -527,6 +527,11 @@ $lang['index']['mod_news'] = [
         'title' => 'Sports',
         'all_items' => 'View All',
     ],
+    'world_news' => [
+        'title' => 'World & Middle East',
+        'world_title' => 'World',
+        'middle_east_title' => 'Middle East',
+    ],
 ];
 $lang['index']['comments'] = 'Comments';
 $lang['index']['add_comment'] = 'Add Comment';

@@ -1,0 +1,480 @@
+/* ==========================================================================
+   World & Middle East Sidebar Section (Super Polish v7 - Floating Pill Badge)
+   Amed Framework - AF/Bulletin (Amida Public Theme)
+   - Floating Pill Capsule Header (Option B) with 1/4 Brand Blue Core
+   - Tight outer padding so content fills the full width & height of the box
+   - Upgraded Thumbnail + Unified Right Column (Headline & Summary)
+   ========================================================================== */
+
+.world-news-section {
+    /* Header Capsule Tokens (Matched to Brand Identity Blue) */
+    --world-brand-blue: var(--mp-blue-700, #0369a1);
+    --world-brand-blue-hover: #0284c7;
+    --world-capsule-bg: rgba(3, 105, 161, 0.08);
+    --world-capsule-border: rgba(3, 105, 161, 0.20);
+    --world-pill-ink: #ffffff;
+    --world-sub-ink: var(--mp-blue-700, #0369a1);
+    --world-sub-hover: #0f172a;
+
+    /* Body & Row Tokens */
+    --world-body-bg: #ffffff;
+    --world-border: rgba(15, 23, 42, 0.12);
+    --world-divider: #e2e8f0;
+    --world-row-hover: #f8fafc;
+    --world-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.08);
+
+    /* Typography Tokens (WCAG AAA Contrast) */
+    --world-card-ink: #0f172a;
+    --world-card-ink-hover: #0369a1;
+    --world-card-muted: #334155;
+
+    /* Media Tokens */
+    --world-placeholder-bg: #f1f5f9;
+    --world-placeholder-icon: #0369a1;
+    --world-thumb-border: rgba(15, 23, 42, 0.08);
+
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--world-border);
+    border-top: 0;
+    border-radius: 12px 12px 12px 12px;
+    background-color: var(--world-body-bg);
+    box-shadow: var(--world-shadow);
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.world-news-section ::selection {
+    background-color: #bae6fd;
+    color: #0f172a;
+}
+
+@media (min-width: 992px) {
+    .world-news-section {
+        height: 450px;
+        max-height: 450px;
+    }
+}
+
+/* Floating Pill Badge Header (Crown / Cover of the Block) */
+.world-news-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0;
+    background-color: var(--world-body-bg);
+    border-bottom: 1px solid var(--world-divider);
+    flex-shrink: 0;
+}
+
+.world-news-title {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 5px 13px 5px 6px;
+    border-radius: 12px 12px 0 0;
+    background-color: transparent;
+    border: 0;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-size: 0.75rem;
+    line-height: 1.1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.world-news-title::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px 12px 0 0;
+    background:
+        linear-gradient(90deg,
+            var(--world-capsule-bg) 0%,
+            var(--world-capsule-bg) 52%,
+            rgba(3, 105, 161, 0.05) 84%,
+            rgba(3, 105, 161, 0) 100%),
+        radial-gradient(rgba(3, 105, 161, 0.17) 1px, transparent 1px);
+    background-size: 100% 100%, 4px 4px;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 62%, rgba(0, 0, 0, 0.78) 80%, rgba(0, 0, 0, 0.35) 93%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 62%, rgba(0, 0, 0, 0.78) 80%, rgba(0, 0, 0, 0.35) 93%, transparent 100%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.world-news-title::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px 12px 0 0;
+    border-top: 1px solid var(--world-capsule-border);
+    border-left: 1px solid var(--world-capsule-border);
+    border-right: 0;
+    border-bottom: 0;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.5) 82%, transparent 99%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 58%, rgba(0, 0, 0, 0.5) 82%, transparent 99%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.world-news-title-ribbon {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 0 3px 2px;
+    margin-left: 2px;
+    isolation: isolate;
+}
+
+/* Top-left overlapping light-blue slanted cap containing DÜNYA */
+.world-news-title-pill {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 12px 4px 11px;
+    margin-top: -5px;
+    margin-right: -8px;
+    background: transparent;
+    color: #ffffff;
+    font-size: 0.69rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    isolation: isolate;
+    transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.world-news-title-pill::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #0ea5e9 0%, #38bdf8 100%);
+    border-radius: 5px 4px 5px 4px;
+    transform: skewX(-24deg);
+    box-shadow: 2px 2px 6px rgba(8, 15, 85, 0.32);
+    z-index: -1;
+}
+
+.world-news-title-pill:hover {
+    color: #f0f9ff;
+    transform: translateY(-1px);
+}
+
+/* Main long dark-navy-to-bright-blue bar containing & ORTADOĞU + pixel dissolution tail + bottom silver bar */
+.world-news-title-main {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34rem;
+    padding: 5px 52px 5px 18px;
+    margin-top: 2px;
+    color: #ffffff;
+    isolation: isolate;
+}
+
+.world-news-title-main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg,
+            #081258 0%,
+            #0353a4 42%,
+            #0094ff 66%,
+            rgba(0, 148, 255, 0.35) 82%,
+            rgba(0, 148, 255, 0) 97%),
+        radial-gradient(#0094ff 1.25px, transparent 1.25px);
+    background-size: 100% 100%, 4px 4px;
+    border-radius: 6px 4px 6px 4px;
+    transform: skewX(-24deg);
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 68%, rgba(0, 0, 0, 0.82) 78%, rgba(0, 0, 0, 0.4) 90%, transparent 100%);
+    mask-image: linear-gradient(90deg, #000 0%, #000 68%, rgba(0, 0, 0, 0.82) 78%, rgba(0, 0, 0, 0.4) 90%, transparent 100%);
+    z-index: -1;
+}
+
+/* Bottom silver/gray slanted bar underneath main blue bar */
+.world-news-title-main::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    right: 38px;
+    bottom: -3px;
+    height: 4px;
+    background: linear-gradient(90deg, #828a94 0%, #dbe2ea 75%, rgba(238, 242, 246, 0) 100%);
+    border-radius: 1px;
+    transform: skewX(-24deg);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.world-news-title-amp {
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 700;
+    user-select: none;
+}
+
+.world-news-title-sub {
+    color: #ffffff;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color 0.18s ease;
+}
+
+.world-news-title-sub:hover {
+    color: #e0f2fe;
+}
+
+/* Editorial Rows Container */
+.world-list {
+    flex: 1;
+    min-height: 0;
+    background-color: var(--world-body-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Editorial Card: Full-Width Headline on Top (max 70 chars) + (Thumbnail Left & Summary Right max 120 chars) Below */
+.world-card,
+.world-lead,
+.world-sub {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    padding: 7px 13px;
+    border: 0;
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    transition: background-color 0.18s ease;
+}
+
+.world-card:not(:last-child)::after,
+.world-sub:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 13px;
+    right: 13px;
+    bottom: 0;
+    height: 1px;
+    background-color: var(--world-divider);
+    pointer-events: none;
+}
+
+.world-card:hover,
+.world-lead:hover,
+.world-sub:hover {
+    background-color: var(--world-row-hover);
+}
+
+/* Headline Full-Width Across the Top (Sized for mod_news 70-char standard, no truncation) */
+.world-card-title,
+.world-lead-title,
+.world-sub-title {
+    font-family: 'Newsreader', Georgia, serif;
+    font-size: 0.94rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    margin: 0;
+    width: 100%;
+    text-align: left;
+    text-wrap: pretty;
+}
+
+.world-card-title-link,
+.world-lead-title-link,
+.world-sub-title-link {
+    color: var(--world-card-ink);
+    text-decoration: none;
+    display: block;
+    transition: color 0.18s ease;
+}
+
+.world-card-title-link:hover,
+.world-lead-title-link:hover,
+.world-sub-title-link:hover {
+    color: var(--world-card-ink-hover);
+}
+
+/* Bottom Row: Thumbnail (Left) + Summary (Right) */
+.world-card-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    min-height: 0;
+    width: 100%;
+}
+
+.world-card-thumb,
+.world-lead-thumb,
+.world-sub-thumb {
+    position: relative;
+    width: 108px;
+    height: 61px;
+    aspect-ratio: 16 / 9;
+    flex-shrink: 0;
+    border-radius: 6px;
+    box-shadow: inset 0 0 0 1px var(--world-thumb-border);
+    overflow: hidden;
+    background-color: var(--world-placeholder-bg);
+    text-decoration: none;
+    display: block;
+}
+
+.world-card-thumb-img,
+.world-lead-thumb-img,
+.world-sub-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.world-card:hover .world-card-thumb-img,
+.world-lead:hover .world-lead-thumb-img,
+.world-sub:hover .world-sub-thumb-img {
+    transform: scale(1.04);
+}
+
+.world-news-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--world-placeholder-bg);
+}
+
+.world-news-placeholder-icon {
+    font-size: 1.45rem;
+    color: var(--world-placeholder-icon);
+}
+
+/* Summary alongside Thumbnail (Sized for mod_news 90-120 char standard, no truncation) */
+.world-card-summary,
+.world-lead-summary,
+.world-sub-summary {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    font-size: 0.76rem;
+    font-weight: 450;
+    line-height: 1.28;
+    text-align: left;
+    text-wrap: pretty;
+}
+
+.world-card-summary-link,
+.world-lead-summary-link,
+.world-sub-summary-link {
+    color: var(--world-card-muted);
+    text-decoration: none;
+    display: block;
+    transition: color 0.18s ease;
+}
+
+.world-card-summary-link:hover,
+.world-lead-summary-link:hover,
+.world-sub-summary-link:hover {
+    color: var(--world-card-ink);
+}
+
+/* Keyboard Focus */
+.world-news-title-pill:focus-visible,
+.world-news-title-sub:focus-visible {
+    outline: 2px solid #0369a1;
+    outline-offset: 2px;
+    border-radius: 9999px;
+}
+
+.world-card-thumb:focus-visible,
+.world-lead-thumb:focus-visible,
+.world-sub-thumb:focus-visible,
+.world-card-title-link:focus-visible,
+.world-lead-title-link:focus-visible,
+.world-sub-title-link:focus-visible,
+.world-card-summary-link:focus-visible,
+.world-lead-summary-link:focus-visible,
+.world-sub-summary-link:focus-visible {
+    outline: 2px solid #0369a1;
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
+/* Dark Mode */
+html[data-bs-theme="dark"] .world-news-section,
+body.dark .world-news-section,
+body.dark-mode .world-news-section {
+    --world-brand-blue: #0284c7;
+    --world-brand-blue-hover: #38bdf8;
+    --world-capsule-bg: rgba(56, 189, 248, 0.12);
+    --world-capsule-border: rgba(56, 189, 248, 0.28);
+    --world-pill-ink: #f8fafc;
+    --world-sub-ink: #7dd3fc;
+    --world-sub-hover: #ffffff;
+
+    --world-body-bg: #1e293b;
+    --world-border: rgba(255, 255, 255, 0.12);
+    --world-divider: rgba(255, 255, 255, 0.08);
+    --world-row-hover: rgba(255, 255, 255, 0.04);
+    --world-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.45);
+
+    --world-card-ink: #f8fafc;
+    --world-card-ink-hover: #38bdf8;
+    --world-card-muted: #cbd5e1;
+
+    --world-placeholder-bg: #0f172a;
+    --world-placeholder-icon: #38bdf8;
+    --world-thumb-border: rgba(255, 255, 255, 0.12);
+}
+
+/* RTL Support */
+[dir="rtl"] .world-card-body,
+[dir="rtl"] .world-card-head,
+[dir="rtl"] .world-lead-head,
+[dir="rtl"] .world-sub-head,
+[dir="rtl"] .world-card-summary,
+[dir="rtl"] .world-lead-summary,
+[dir="rtl"] .world-sub-summary {
+    text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .world-card,
+    .world-lead,
+    .world-sub,
+    .world-card-thumb-img,
+    .world-lead-thumb-img,
+    .world-sub-thumb-img,
+    .world-news-title-pill,
+    .world-news-title-sub,
+    .world-card-title-link,
+    .world-lead-title-link,
+    .world-sub-title-link,
+    .world-card-summary-link,
+    .world-lead-summary-link,
+    .world-sub-summary-link {
+        transition: none !important;
+        transform: none !important;
+    }
+}

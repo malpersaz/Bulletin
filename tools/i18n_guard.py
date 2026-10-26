@@ -25,7 +25,8 @@ REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 EXCLUDE_DIRS = {
     ".git", ".gemini", ".antigravitycli", ".agents", ".playwright-mcp",
     "vendor", "node_modules", "cache", "templates_c", "backup", "log", "logs",
-    "data", "static/assets/vendor", "static/vendor", "templates/base_static", "base_static"
+    "data", "static/assets/vendor", "static/vendor", "templates/base_static", "base_static",
+    "tools"
 }
 
 # Standard programming abbreviations and vocabulary

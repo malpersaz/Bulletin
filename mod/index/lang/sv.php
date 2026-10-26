@@ -498,6 +498,11 @@ $lang['index'] = [
             'title' => 'Sport',
             'all_items' => 'Visa alla',
         ],
+        'world_news' => [
+            'title' => 'Världen & Mellanöstern',
+            'world_title' => 'Världen',
+            'middle_east_title' => 'Mellanöstern',
+        ],
     ],
     'mod_publication' => [
         'all_publications' => 'Alla publikationer',

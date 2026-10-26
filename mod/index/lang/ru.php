@@ -524,6 +524,11 @@ $lang['index']['mod_news'] = [
         'title' => 'Спорт',
         'all_items' => 'Все новости',
     ],
+    'world_news' => [
+        'title' => 'Мир и Ближний Восток',
+        'world_title' => 'Мир',
+        'middle_east_title' => 'Ближний Восток',
+    ],
 ];
 $lang['index']['comments'] = 'Комментарии';
 $lang['index']['add_comment'] = 'Добавить комментарий';
