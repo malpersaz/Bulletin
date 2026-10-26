@@ -8,306 +8,247 @@
 	{{ lang.mod_user.admin.add_user }}
 {% endblock %}
 
-{% block content %}
-	<style>
-			.edit-container {
-				padding: 12px;
-				display: flex;
-				flex-direction: column;
-				gap: 12px;
-				padding-bottom: 96px;
-			}
-			.edit-card {
-				background: var(--md-sys-color-surface);
-				border-radius: 18px;
-				padding: 16px;
-				box-shadow: var(--md-sys-elevation-1);
-			}
-			.form-row {
-				margin-bottom: 14px;
-			}
-		.form-row:last-child {
-			margin-bottom: 0;
-		}
-		.m3-input-wrapper {
-			position: relative;
-			margin-bottom: 4px;
-		}
-			.m3-input-lg {
-				width: 100%;
-				padding: 14px 16px;
-				border-radius: 14px;
-			border: 1px solid var(--md-sys-color-outline);
-			background: transparent;
-			color: var(--md-sys-color-on-surface);
-			font-size: 16px;
-			outline: none;
-            box-sizing: border-box;
-		}
-			.m3-input-lg:focus {
-				border-color: var(--md-sys-color-primary);
-				border-width: 2px;
-				padding: 13px 15px;
-			}
-		.m3-input-lg:focus + .m3-floating-label,
-		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
-			top: -10px;
-			left: 12px;
-			font-size: 12px;
-			color: var(--md-sys-color-primary);
-			background: var(--md-sys-color-surface);
-			padding: 0 4px;
-		}
-		.m3-floating-label {
-			position: absolute;
-			top: 12px;
-			left: 16px;
-			color: var(--md-sys-color-on-surface-variant);
-			font-size: 16px;
-			pointer-events: none;
-			transition: all 0.2s;
-		}
-        .image-preview-container {
-            margin-top: 12px;
-            display: flex;
-            justify-content: center;
-            border: 1px dashed var(--md-sys-color-outline);
-            border-radius: 8px;
-            padding: 16px;
-            position: relative;
-        }
-        .image-preview-container img {
-            max-width: 150px;
-            max-height: 150px;
-            border-radius: 50%;
-            object-fit: cover;
-            box-shadow: var(--md-sys-elevation-2);
-        }
-	        .filter-group-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 8px;
-            margin-left: 4px;
-	        }
-	        .contact-grid {
-	            display: grid;
-	            gap: 14px;
-	        }
-	        .sr-only {
-	            position: absolute;
-	            width: 1px;
-	            height: 1px;
-	            padding: 0;
-	            margin: -1px;
-	            overflow: hidden;
-	            clip: rect(0, 0, 0, 0);
-	            white-space: nowrap;
-	            border: 0;
-	        }
-	</style>
+{% block headline %}
+	{{ lang.mod_user.admin.add_user }}
+{% endblock %}
 
-	<div class="edit-container">
-		{% if success is defined %}
-			<div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
-				<i class="bi bi-check-circle-fill"></i>
-				<span>{{ message }}</span>
-			</div>
-			<script>
-				setTimeout(() => {
-					window.location.href = "{{ site.saddress }}mod_user/list";
-				}, 2000);
-			</script>
-		{% else %}
-			{% if errors is defined %}
-				<div class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+{% set back_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_title = lang.mod_user.name %}
+
+{% block content %}
+	{% macro select(parent_id, level, selected_id, group) %}
+		{% for entry in attribute(group, parent_id) %}
+			{% set current_parent_id = entry.group_id %}
+			<option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected="selected"{% endif %}>
+				{{ '-'|repeat(level * 2) ~ (entry.display_name|default(entry.name)) }}
+			</option>
+			{% if attribute(group, current_parent_id) is defined and attribute(group, current_parent_id) is iterable and attribute(group, current_parent_id) is not empty %}
+				{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
+			{% endif %}
+		{% endfor %}
+	{% endmacro %}
+
+	<div class="edit-container" data-module="user-form" data-mode="add">
+
+		<div id="formAlert" class="form-alert-container">
+			{% if Success is defined or success is defined %}
+				<div class="banner-m3 banner-success">
+					<i class="bi bi-check-circle-fill"></i>
+					<span>{{ message }}</span>
+				</div>
+			{% endif %}
+
+			{% if errors is defined and errors is not empty %}
+				<div class="banner-m3 banner-danger">
 					{% for error in errors %}
-						<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
+						<div class="error-item">
 							<i class="bi bi-exclamation-circle-fill"></i>
 							<span>{{ error }}</span>
 						</div>
 					{% endfor %}
 				</div>
 			{% endif %}
+		</div>
 
-			<form method="POST" action="" id="addForm" enctype="multipart/form-data">
-				{# Card 1: Account #}
-					<div class="edit-card">
+		<form method="POST" action="" id="addForm" enctype="multipart/form-data" novalidate data-redirect-url="{{ redirect_url|default('/' ~ site.lang ~ '/mod_user/list') }}">
+			<input type="hidden" name="add" value="1">
+			<input type="file" name="image" id="image" class="visually-hidden" accept="image/*" data-action="preview-avatar">
+
+			{# Hero Identity Card with Avatar & Live Info #}
+			<div class="m3-profile-hero">
+				<div class="m3-hero-avatar-wrapper" id="avatarPreviewContainer">
+					<div class="m3-hero-avatar-placeholder" data-action="select-avatar" role="button" tabindex="0" title="{{ lang.mod_user.admin.upload_avatar }}">
+						<i class="bi bi-person-fill"></i>
+					</div>
+					<button type="button" class="m3-hero-avatar-btn upload-btn" data-action="select-avatar" title="{{ lang.mod_user.admin.upload_avatar }}">
+						<i class="bi bi-camera-fill"></i>
+					</button>
+				</div>
+				<div class="m3-hero-info">
+					<h3 class="m3-hero-name" id="heroNamePreview">
+						{{ d.name|default(name|default('')) }} {{ d.last_name|default(last_name|default('')) }}
+					</h3>
+					<p class="m3-hero-email" id="heroSubtitlePreview">
+						@{{ d.username|default(username|default('user')) }}
+					</p>
+					<span class="m3-hero-badge">
+						<i class="bi bi-person-plus-fill"></i> {{ lang.mod_user.admin.new_user_badge }}
+					</span>
+				</div>
+			</div>
+
+			{# 3-Tab Segmented Navigation #}
+			<div class="m3-profile-tabs" role="tablist">
+				<button type="button" class="m3-tab-btn active" data-action="switch-tab" data-tab-target="tab-basic-info" role="tab" aria-selected="true">
+					<i class="bi bi-person-vcard"></i>
+					<span>{{ lang.mod_user.admin.tab_basic }}</span>
+				</button>
+				<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-author-profile" role="tab" aria-selected="false">
+					<i class="bi bi-journal-text"></i>
+					<span>{{ lang.mod_user.admin.tab_author }}</span>
+				</button>
+				<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-social-media" role="tab" aria-selected="false">
+					<i class="bi bi-share"></i>
+					<span>{{ lang.mod_user.admin.tab_social }}</span>
+				</button>
+			</div>
+
+			{# Tab 1: Identity & Account #}
+			<div class="m3-tab-content active" id="tab-basic-info" role="tabpanel">
+				{# Account Credentials Card #}
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-shield-lock-fill"></i>
+						<h3>{{ lang.mod_user.admin.tab_basic }}</h3>
+					</div>
+
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="username" value="{{ username }}" type="text" id="username" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.username }}</label>
+							<input class="m3-input-lg" name="username" value="{{ d.username|default(username|default('')) }}" type="text" id="username" autocomplete="username" placeholder=" " required data-sync-hero="username">
+							<label class="m3-floating-label" for="username">{{ lang.mod_user.username }}</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="password" type="password" id="password" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.password }}</label>
+							<input class="m3-input-lg" name="email" value="{{ d.email|default(email|default('')) }}" type="email" id="email" autocomplete="email" placeholder=" " required>
+							<label class="m3-floating-label" for="email">{{ lang.mod_user.email }}</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="email" value="{{ email }}" type="email" id="email" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.email }}</label>
+							<input class="m3-input-lg" name="password" type="password" id="password" autocomplete="new-password" placeholder=" " required data-action="check-strength">
+							<label class="m3-floating-label" for="password">{{ lang.mod_user.password }}</label>
+							<div class="input-icon-right" data-action="toggle-password" data-target="password" role="button" tabindex="0" title="Show/Hide Password">
+								<i class="bi bi-eye"></i>
+							</div>
+						</div>
+						<div class="strength-container">
+							<div class="strength-bar">
+								<div id="strength-progress" class="strength-progress"></div>
+							</div>
+							<div id="strength-text" class="strength-text"></div>
 						</div>
 					</div>
 
-					{% macro select(parent_id, level, group) %}
-						{% for entry in attribute(group, parent_id) %}
-							{% set current_parent_id = entry.group_id %}
-							<option value="{{ entry.group_id }}">
-								{{ '-'|repeat(level * 2) }} {{ entry.name }}
-							</option>
-							{% if attribute(group, current_parent_id) is defined and attribute(group, current_parent_id) is iterable %}
-								{{ _self.select(current_parent_id, level + 1, group) }}
-							{% endif %}
-						{% endfor %}
-					{% endmacro %}
-
 					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.user_group }}</label>
+						<label class="filter-group-label" for="group_id">{{ lang.mod_user.admin.user_group }}</label>
 						<div class="m3-input-wrapper">
 							<select class="m3-input-lg" name="group_id" id="group_id" required>
-								{{ _self.select(0, 0, group) }}
+								{{ _self.select(0, 0, d.group_id|default(group_id|default(2)), group) }}
 							</select>
 						</div>
 					</div>
 
 					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.columns.status }}</label>
+						<label class="filter-group-label" for="status">{{ lang.mod_user.admin.columns.status }}</label>
 						<div class="m3-input-wrapper">
 							<select class="m3-input-lg" name="status" id="status" required>
-								<option value="y" {% if status == 'y' %} selected {% endif %}>{{ lang.mod_user.grid.active }}</option>
-								<option value="n" {% if status == 'n' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_email_activation }}</option>
-								<option value="a" {% if status == 'a' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_admin_activation }}</option>
+								<option value="y" {% if (d.status|default(status|default('y'))) == 'y' %} selected {% endif %}>{{ lang.mod_user.grid.active }}</option>
+								<option value="n" {% if (d.status|default(status)) == 'n' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_email_activation }}</option>
+								<option value="a" {% if (d.status|default(status)) == 'a' %} selected {% endif %}>{{ lang.mod_user.grid.waiting_admin_activation }}</option>
 							</select>
 						</div>
 					</div>
 				</div>
 
-				{# Card 2: Personal Info #}
-					<div class="edit-card" style="margin-top: 16px;">
-						<div class="contact-grid">
-							<div class="form-row">
-								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="name" value="{{ name }}" type="text" id="name" placeholder=" " required>
-									<label class="m3-floating-label">{{ lang.mod_user.your_name }}</label>
-								</div>
-							</div>
+				{# Personal Details Card #}
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-person-lines-fill"></i>
+						<h3>{{ lang.mod_user.personal_info }}</h3>
+					</div>
 
-							<div class="form-row">
-								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="last_name" value="{{ last_name }}" type="text" id="last_name" placeholder=" " required>
-									<label class="m3-floating-label">{{ lang.mod_user.your_surname }}</label>
-								</div>
+					<div class="contact-grid">
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="name" value="{{ d.name|default(name|default('')) }}" type="text" id="name" autocomplete="given-name" placeholder=" " required data-sync-hero="name">
+								<label class="m3-floating-label" for="name">{{ lang.mod_user.your_name }}</label>
 							</div>
+						</div>
 
-							<div class="form-row">
-								{% include 'mod_user/parts/phone_input.twig' with {
-                                'country_code_value': country_code,
-                                'phone_value': phone,
-                                'label_text': lang.mod_user.mobile_phone,
-                                'input_id': 'phone'
-                            } %}
-							</div>
-
-							<div class="form-row">
-								<div class="m3-input-wrapper">
-									<input class="m3-input-lg" name="city" value="{{ city }}" type="text" id="city" placeholder=" ">
-									<label class="m3-floating-label">{{ lang.mod_user.city }}</label>
-								</div>
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="last_name" value="{{ d.last_name|default(last_name|default('')) }}" type="text" id="last_name" autocomplete="family-name" placeholder=" " required data-sync-hero="last_name">
+								<label class="m3-floating-label" for="last_name">{{ lang.mod_user.your_surname }}</label>
 							</div>
 						</div>
 					</div>
 
-				{# Card 3: Author Profile #}
-					<div class="edit-card" style="margin-top: 16px;">
 					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="blog_name" value="{{ blog_name }}" type="text" id="blog_name" placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.blog_name }}</label>
-						</div>
+						{% include 'mod_user/parts/phone_input.twig' with {
+							'country_code_value': d.country_code|default(country_code|default('+90')),
+							'phone_value': d.phone_national|default(phone|default('')),
+							'label_text': lang.mod_user.mobile_phone,
+							'input_id': 'phone'
+						} %}
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<textarea class="m3-input-lg" name="about" id="about" rows="4" placeholder=" " oninput="updateCharCounter(this, 'aboutCounter', 255)">{{ about }}</textarea>
-							<label class="m3-floating-label">{{ lang.mod_user.about_me }}</label>
-						</div>
-						<div style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;" id="aboutCounter">
-							{{ about|length }} / 255
+							<input class="m3-input-lg" name="city" value="{{ d.city|default(city|default('')) }}" type="text" id="city" autocomplete="address-level2" placeholder=" ">
+							<label class="m3-floating-label" for="city">{{ lang.mod_user.city }}</label>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				{# Card 4: Social Media #}
-				<div class="edit-card" style="margin-top: 16px;">
-					<label class="filter-group-label">{{ lang.mod_user.admin.social_media }}</label>
+			{# Tab 2: Author Profile #}
+			<div class="m3-tab-content" id="tab-author-profile" role="tabpanel">
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-feather"></i>
+						<h3>{{ lang.mod_user.admin.tab_author }}</h3>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name|default(blog_name|default('')) }}" type="text" id="blog_name" placeholder=" ">
+							<label class="m3-floating-label" for="blog_name">{{ lang.mod_user.blog_name }}</label>
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<textarea class="m3-input-lg" name="about" id="about" rows="5" placeholder=" " data-counter-id="aboutCounter" data-char-limit="500">{{ d.about|default(about|default('')) }}</textarea>
+							<label class="m3-floating-label" for="about">{{ lang.mod_user.about_me }}</label>
+						</div>
+						<div class="m3-char-counter" id="aboutCounter">
+							{{ (d.about|default(about|default('')))|length }} / 500
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{# Tab 3: Social Media #}
+			<div class="m3-tab-content" id="tab-social-media" role="tabpanel">
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-globe2"></i>
+						<h3>{{ lang.mod_user.admin.social_media }}</h3>
+					</div>
 					{% include 'mod_user/parts/social_links.twig' with {
-                        'social_platforms': social_platforms,
-                        'social_links': social_links
-                    } %}
+						'social_platforms': social_platforms,
+						'social_links': d.social_links|default(social_links|default({})),
+						'social_active': d.social_active|default(social_active|default({}))
+					} %}
 				</div>
-
-				{# Card 5: Image #}
-					<div class="edit-card" style="margin-top: 16px;">
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input type="file" name="image" id="image" class="m3-input-lg" onchange="previewAvatar(this)">
-							<label class="m3-floating-label">{{ lang.mod_user.profile_picture }}</label>
-						</div>
-						<div class="image-preview-container" id="avatarPreviewContainer">
-							<div style="color: var(--md-sys-color-outline); font-size: 14px;">{{ lang.mod_user.button.select_image }}</div>
-						</div>
-					</div>
-				</div>
-			</form>
-		{% endif %}
+			</div>
+		</form>
 	</div>
 {% endblock %}
 
 {% block fixed_bottom %}
-	{% if oke is not defined %}
-		<div class="m3-final-bar">
-			<a href="{{ site.saddress }}mod_user/list" class="m3-btn-half m3-btn-half-neutral">
-				<i class="bi bi-x-lg"></i>
-				<span class="sr-only">{{ lang.mod_user.button.cancel }}</span>
-			</a>
-			<button type="submit" form="addForm" name="add" value="{{ lang.mod_user.admin.add_user }}" class="m3-btn-half m3-btn-half-primary">
-				<i class="bi bi-check-lg"></i>
-				<span class="sr-only">{{ lang.mod_user.admin.add_user }}</span>
-			</button>
-		</div>
-	{% endif %}
-{% endblock %}
-
-{% block scripts %}
-	<script>
-		function previewAvatar(input) {
-			if (input.files && input.files[0]) {
-				var reader = new FileReader();
-				reader.onload = function (e) {
-					var container = document.getElementById('avatarPreviewContainer');
-					container.innerHTML = '<img src="' + e.target.result + '" id="avatarPreview" style="max-width: 150px; max-height: 150px; border-radius: 50%; object-fit: cover; box-shadow: var(--md-sys-elevation-2);" alt="Avatar">';
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
-
-		function updateCharCounter(input, counterId, max) {
-			const currentLength = input.value.length;
-			const counter = document.getElementById(counterId);
-			if (counter) {
-				counter.innerText = `${currentLength} / ${max}`;
-				if (currentLength > max) {
-					counter.style.color = 'var(--md-sys-color-error)';
-				} else {
-					counter.style.color = 'var(--md-sys-color-on-surface-variant)';
-				}
-			}
-		}
-	</script>
+	<div class="m3-final-bar">
+		<a href="{{ back_url }}" class="m3-btn-half m3-btn-half-neutral">
+			<i class="bi bi-x-lg"></i>
+			<span>{{ lang.mod_user.button.cancel }}</span>
+		</a>
+		<button type="submit" form="addForm" id="submitBtn" name="add" value="1" class="m3-btn-half m3-btn-half-primary">
+			<i class="bi bi-check-lg" id="submitIcon"></i>
+			<span id="submitText">{{ lang.mod_user.admin.add_user }}</span>
+		</button>
+	</div>
 {% endblock %}

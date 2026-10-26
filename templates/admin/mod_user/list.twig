@@ -9,10 +9,6 @@
 {% block title %}{{ lang.mod_user.admin.list }}{% endblock %}
 {% block headline %}{{ lang.mod_user.admin.list }}{% endblock %}
 
-{% block styles %}
-<link rel="stylesheet" href="/templates/admin/assets/css/mod_user.css?v=1.0">
-{% endblock %}
-
 {% block content %}
 <div class="content-stats-container">
     <div class="content-stats-row">
@@ -103,8 +99,4 @@
 <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_user/add" aria-label="{{ lang.mod_user.add }}">
     <i class="bi bi-plus-lg"></i>
 </a>
-{% endblock %}
-
-{% block scripts %}
-<script src="/templates/admin/assets/js/mod_user.js?v=1.1"></script>
 {% endblock %}

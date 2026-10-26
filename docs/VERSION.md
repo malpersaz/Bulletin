@@ -1,5 +1,26 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.10 (2026-10-26)
+- **Admin `mod_user` Form Modernization, Native Mobile App UI & Full Parity Sync (`mod/mod_user/`, `templates/admin/mod_user/`, `templates/admin/assets/css/mod_user.css`, `templates/admin/assets/js/mod_user.js`, `templates/admin/layout.twig`)**:
+  - **Form Submission, Case-Sensitivity Parity Fix & Asynchronous AJAX (`mod/mod_user/index.php`)**:
+    - Fixed the root cause where submitting `mod_user/add` reset back to an empty form without feedback, caused by a case mismatch between `$this->theme->set('Success', true)` in controller helpers and Twig's `{% if success is defined %}`. Standardized both `_message()` and `_app_message()` to assign both `Success` and `success`.
+    - Added AJAX request handling in `add()` and `edit()` returning structured JSON (`status`, `message`, `redirect_url`) with HTTP 422 for validation errors and automatic redirect to `/{lang}/mod_user/list` upon success.
+    - Normalized `$d` view data binding across `add()`, `edit()`, `settings()`, `info()`, and `change_password()`, ensuring `group_id` and all form values persist accurately on validation failures.
+  - **Native Mobile App Surface & Super Polish UI (`templates/admin/mod_user/{add,edit,settings,info,change_password}.twig`, `templates/admin/assets/css/mod_user.css`, `templates/admin/assets/js/mod_user.js`, `templates/admin/layout.twig`)**:
+    - Re-architected `add.twig`, `edit.twig`, and `settings.twig` into a tactile MD3 Native Mobile App layout featuring a Hero Identity Avatar card with instant preview and live title sync, 3-tab segmented navigation (`Identity & Account`, `Author Profile`, `Social Media`), and a sticky bottom action bar with visible labels and loading spinner.
+    - Added live password visibility toggle, 4-bar password strength meter, and character counters.
+    - Trimmed `page_headline` in `templates/admin/layout.twig` and registered centralized `mod_user.css?v=2.0` and `mod_user.js?v=2.0`.
+  - **International ITU-T E.164 Phone Selector (`mod/mod_user/index.php`, `mod/mod_user/validator/`, `templates/admin/mod_user/parts/phone_input.twig`)**:
+    - Implemented a searchable bottom-sheet country dial-code picker with 240+ countries and country flags, normalizing international numbers cleanly into `country_code` and `phone` fields while keeping phone optional on creation/editing with ITU-T format validation if entered.
+    - Updated password length requirement in `mod_user.validator.php` and `edit.validator.php` to modern 8–64 character limits.
+  - **Social Links Interactive Inline Drawer (`templates/admin/mod_user/parts/social_links.twig`, `mod/mod_user/index.php`)**:
+    - Built interactive drawer toggles for 8 social platforms with clean URL input, active status toggle (`mod_user_social.social_active`), and real-time status chips.
+  - **Strict Code Separation & 100% i18n Key Parity (`templates/admin/mod_user/`, `mod/mod_user/lang/{en,tr,ku}.php`)**:
+    - Extracted all inline styles, `<style>` blocks, and inline JavaScript into `mod_user.css` and `mod_user.js`.
+    - Added comprehensive descriptive English keys in `en.php` mirrored across `tr.php` and `ku.php`, eliminating forbidden fallbacks and passing `code_separation_guard.py` and `i18n_guard.py` with 0 errors.
+- **Framework Version Baseline & Completed Plan Cleanup (`config/site.config.php`, `config/site.config.example.php`, `docs/plan/`)**:
+  - Synchronized `config/site.config.php` and `config/site.config.example.php` fallback version to `1.0.10`, and removed completed remediation plan documentation.
+
 ## v1.0.9 (2026-10-26)
 - **Homepage Right Sidebar Block R1 — World & Middle East (`Dünya & Ortadoğu`) Module & 10-Language Localization (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amida/index/index.twig`, `templates/amida/index/mod_news/world_news.twig`, `templates/amida/static/css/world-news.css`)**:
   - **Multi-Category Aggregation & Exclusion Filter in `mod_news_helper::_category_news()` (`mod/index/helper/mod_news.helper.php`)**:

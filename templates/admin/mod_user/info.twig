@@ -12,10 +12,14 @@
 	{{ lang.mod_user.profile_menu.edit_profile }}
 {% endblock %}
 
+{% set back_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_title = lang.mod_user.name %}
+
 {% block content %}
 	<div class="edit-container" data-modal-title="{{ lang.mod_user.profile_menu.edit_profile }}" data-modal-icon="bi-person-gear">
 
-		{% if success is defined %}
+		{% if Success is defined or success is defined %}
 			<div class="banner-m3 banner-success">
 				<i class="bi bi-check-circle-fill"></i>
 				<span>{{ message }}</span>
@@ -36,10 +40,10 @@
 				data-msg-current-password-required="{{ lang.mod_user.js.current_password_required }}"
 				data-msg-email-required="{{ lang.mod_user.js.email_required }}"
 				data-msg-unsaved-title="{{ lang.mod_user.js.unsaved_changes_title }}"
-				data-msg-unsaved-message="{{ lang.mod_user.js.unsaved_changes_message|default('') }}"
+				data-msg-unsaved-message="{{ lang.mod_user.js.unsaved_changes_message }}"
 				data-msg-exit-without-saving="{{ lang.mod_user.js.exit_without_saving }}"
 				data-msg-save="{{ lang.mod_user.button.save }}"
-				data-msg-continue-editing="{{ lang.mod_user.js.continue_editing|default(lang.mod_user.js.stay) }}">
+				data-msg-continue-editing="{{ lang.mod_user.js.continue_editing }}">
 				<input type="file" name="image" id="image" class="visually-hidden" data-action="preview-avatar">
 
 				{# Profile Hero Banner #}

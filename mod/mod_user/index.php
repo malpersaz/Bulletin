@@ -2077,18 +2077,27 @@ class mod_user_mod extends indexMain
         return filter_var($url, FILTER_SANITIZE_URL);
     }
 
-    private function _save_social_links($userId, $input)
+    private function _save_social_links($userId, $input, $active_input = null)
     {
         $userId = intval($userId);
         $db = Load::lib('Database');
         $db->query("DELETE FROM `mod_user_social` WHERE `user_id` = " . $userId);
 
         $links = $this->_extract_social_links($input);
+        if ($active_input === null && isset($_POST['social_active']) && is_array($_POST['social_active'])) {
+            $active_input = $_POST['social_active'];
+        }
+
         $social = Load::model('mod_user.mod_user_social');
         foreach ($this->_get_social_platform_map() as $platform => $meta) {
             $url = $this->_normalize_social_url($links[$platform]);
             if ($url === '') {
                 continue;
+            }
+
+            $is_active = 'y';
+            if (is_array($active_input)) {
+                $is_active = !empty($active_input[$platform]) ? 'y' : 'n';
             }
 
             $social->flush();
@@ -2097,7 +2106,7 @@ class mod_user_mod extends indexMain
             $social->url = $url;
             $social->icon_class = $meta['icon_class'];
             $social->display_order = $meta['display_order'];
-            $social->is_active = 'y';
+            $social->is_active = $is_active;
 
             if ($social->save() === false) {
                 return false;
@@ -2111,6 +2120,7 @@ class mod_user_mod extends indexMain
     {
         $payload = [
             'map' => $this->_blank_social_links(),
+            'active' => [],
             'items' => [],
         ];
 
@@ -2120,7 +2130,7 @@ class mod_user_mod extends indexMain
 
         $social = Load::model('mod_user.mod_user_social');
         $social->flush();
-        $social->where_user_id_and_is_active(intval($userId), 'y')->order('display_order', 'ASC')->gR();
+        $social->where_user_id(intval($userId))->order('display_order', 'ASC')->gR();
 
         if ($social->getSize() === 0) {
             return $payload;
@@ -2133,6 +2143,7 @@ class mod_user_mod extends indexMain
             }
 
             $payload['map'][$row['platform']] = $row['url'];
+            $payload['active'][$row['platform']] = ($row['is_active'] === 'y' || $row['is_active'] === '1' || $row['is_active'] === 1);
             $payload['items'][] = array_merge($row, [
                 'label' => $platformMap[$row['platform']]['label'],
             ]);
@@ -2144,22 +2155,67 @@ class mod_user_mod extends indexMain
     // Helper: Prepare phone data for view
     private function _prepare_phone_data(&$d)
     {
-        // Send the full phone number (+90544...), JavaScript will extract the country code.
-        $d['phone'] = isset($d['phone']) ? $d['phone'] : '';
-        $d['country_code'] = ''; // No longer needed
+        $raw_phone = isset($d['phone']) ? trim((string)$d['phone']) : '';
+        $default_code = '+90';
+        $country_code = isset($d['country_code']) && !empty($d['country_code']) ? trim((string)$d['country_code']) : $default_code;
+        $phone_national = $raw_phone;
+
+        if ($raw_phone !== '') {
+            if (strpos($raw_phone, '+') === 0) {
+                $countries = $this->_get_country_codes();
+                $matched_code = null;
+                $cleaned_raw = preg_replace('/[^\d\+]/', '', $raw_phone);
+                foreach ($countries as $c) {
+                    $c_clean = preg_replace('/[^\d\+]/', '', $c['code']);
+                    if (strpos($cleaned_raw, $c_clean) === 0) {
+                        if ($matched_code === null || strlen($c_clean) > strlen($matched_code)) {
+                            $matched_code = $c_clean;
+                        }
+                    }
+                }
+                if ($matched_code !== null) {
+                    $country_code = $matched_code;
+                    $phone_national = substr($cleaned_raw, strlen($matched_code));
+                } else {
+                    $phone_national = ltrim($cleaned_raw, '+');
+                }
+            } else {
+                $phone_national = $raw_phone;
+            }
+        }
+
+        $d['country_code'] = $country_code;
+        $d['phone_national'] = $phone_national;
+        $d['phone'] = $phone_national;
     }
 
     // Helper: Get combined phone from POST
     private function _get_combined_phone()
     {
-        $country_code = isset($_POST['country_code']) ? $_POST['country_code'] : '';
+        $country_code = isset($_POST['country_code']) ? trim((string)$_POST['country_code']) : '';
         $phone = Req::Post_Safe('phone');
-        
-        if ($country_code && $phone) {
-            // Remove spaces for E.164 standard format
-            return $country_code . $phone;
+        $phone = trim((string)$phone);
+
+        if ($phone === '') {
+            return '';
         }
-        return $phone;
+
+        if (strpos($phone, '+') === 0) {
+            return '+' . preg_replace('/[^\d]/', '', substr($phone, 1));
+        }
+
+        $clean_phone = preg_replace('/[^\d]/', '', $phone);
+        if ($clean_phone === '') {
+            return '';
+        }
+
+        if ($country_code !== '') {
+            $country_code = '+' . preg_replace('/[^\d]/', '', $country_code);
+            $clean_phone = ltrim($clean_phone, '0');
+            return $country_code . $clean_phone;
+        }
+
+        return $clean_phone;
     }
 
     // Helper: Get list of country codes
@@ -2168,62 +2224,129 @@ class mod_user_mod extends indexMain
         return Load::lib('Country')->get_all();
     }
 
+    // Helper: Get localized groups tree
+    private function _get_localized_groups()
+    {
+        $groupKeyMap = [
+            'Site Management' => 'site_manager',
+            'Site Manager' => 'site_manager',
+            'Editors' => 'editors',
+            'Editor' => 'editors',
+            'Normal User' => 'normal_member',
+            'Normal Member' => 'normal_member',
+            'Member' => 'normal_member',
+            'Employee' => 'employee',
+            'Authors' => 'authors',
+            'Author' => 'authors',
+            'Writer' => 'authors',
+            'Nivîskar' => 'authors',
+        ];
+
+        $g = Load::model('mod_user_group');
+        $groups = $g->all()->toArray();
+        $localized = [];
+        foreach ($groups as $group) {
+            $raw = $group['name'];
+            if (isset($groupKeyMap[$raw]) && !empty($this->lang['mod_user']['groups'][$groupKeyMap[$raw]])) {
+                $group['display_name'] = $this->lang['mod_user']['groups'][$groupKeyMap[$raw]];
+            } else {
+                $group['display_name'] = $raw;
+            }
+            $localized[] = $group;
+        }
+        return Helper::nested($localized, 'parent_id', 'group_id');
+    }
+
     public function add()
     {
+        $is_ajax = $this->_is_ajax_request();
+        if ($is_ajax && Req::is_Post('add')) {
+            ob_start();
+        }
+
         // Is there Listing Permission?
         if ($this->user->hasPermission('mod_user', 'add', $this->lang['mod_user']['role_errors']['add'], 1) === False) {
+            if ($is_ajax) {
+                $this->_respond_with_json([
+                    'success' => false,
+                    'message' => $this->lang['mod_user']['role_errors']['add'] ?? 'Access denied',
+                    'errors' => [$this->lang['mod_user']['role_errors']['add'] ?? 'Access denied'],
+                ], 403);
+            }
             return False;
         }
         Run::import('management', '_index');
-        
+
+        $reg_settings = $this->_load_register_settings();
+        $default_group_id = isset($reg_settings['group_id']) ? (int) $reg_settings['group_id'] : 2;
+
         // Initialize data array for template
         $d = [
             'username' => '', 'password' => '', 'email' => '', 
-            'name' => '', 'last_name' => '', 'phone' => '', 'city' => '', 
-            'blog_name' => '', 'about' => '', 'status' => 'y',
-            'social_links' => $this->_blank_social_links()
+            'name' => '', 'last_name' => '', 'phone' => '', 'phone_national' => '', 'country_code' => '+90',
+            'city' => '', 'blog_name' => '', 'about' => '', 'status' => 'y',
+            'group_id' => $default_group_id,
+            'social_links' => $this->_blank_social_links(),
+            'social_active' => []
         ];
 
         if (Req::is_Post('add')) {
-            $this->_add($d);
+            $result = $this->_add($d, $is_ajax);
+            if ($is_ajax) {
+                $this->_respond_with_json($result['payload'], $result['status']);
+            }
         }
-        
-        $g = Load::model('mod_user_group');
-        $group = Helper::nested($g->all()->toArray(), 'parent_id', 'group_id');
+
+        $group = $this->_get_localized_groups();
         $this->site['title'] = $this->lang['mod_user']['admin']['add_area'];
-        
+
         // Prepare phone data for display (whether initial or after error)
         $this->_prepare_phone_data($d);
-        
+
+        $redirect_url = $this->site['saddress'] . 'mod_user/list';
         $this->theme->set('site', $this->site);
+        $this->theme->set('d', $d);
         $this->theme->set('group', $group);
-        
+        $this->theme->set('redirect_url', $redirect_url);
+
         // Pass country codes
         $this->theme->set('country_codes', $this->_get_country_codes());
         $this->theme->set('social_platforms', $this->_get_social_platforms());
-        
-        // Pass all data variables to template
+
+        // Pass all data variables to template (backwards compatibility)
         foreach($d as $k => $v) {
             $this->theme->set($k, $v);
         }
-        
+
         $this->theme->tpl('mod_user/add');
     }
 
-    private function _add(&$d)
+    private function _add(&$d, $is_ajax = false)
     {
         $this->val = Load::validator('mod_user');
-        
+
         // Update $d with posted values so form retains data on error
         foreach($_POST as $key => $val) {
             if(array_key_exists($key, $d)) {
                 $d[$key] = Req::Post_Safe($key);
             }
         }
+        $d['group_id'] = Req::Post_Safe('group_id') ?: ($d['group_id'] ?? 2);
         $d['social_links'] = $this->_extract_social_links($_POST['social_links'] ?? []);
+        $d['social_active'] = isset($_POST['social_active']) && is_array($_POST['social_active']) ? $_POST['social_active'] : [];
 
         if ($this->val->check()) {
             $this->theme->set('errors', $this->val->errors);
+            if ($is_ajax) {
+                return [
+                    'status' => 422,
+                    'payload' => [
+                        'success' => false,
+                        'message' => $this->lang['mod_user']['ajax']['validation_error'] ?? 'Validation error',
+                        'errors' => array_values((array) $this->val->errors),
+                    ],
+                ];
+            }
         } else {
             $db = Load::lib('Database');
             $db->start_transaction();
@@ -2231,17 +2354,17 @@ class mod_user_mod extends indexMain
             $u->username = Req::Post_Safe('username');
             $u->password = $this->_hash_password(Req::Post_Safe('password'));
             $u->email = Req::Post_Safe('email');
-            $u->group_id = Req::Post_Safe('group_id');
+            $u->group_id = Req::Post_Safe('group_id') ?: 2;
             $u->name = Text::title(Req::Post_Safe('name'));
             $u->last_name = Text::title(Req::Post_Safe('last_name'));
-            
+
             // Use helper for phone
             $u->phone = $this->_get_combined_phone();
 
             // Automatic date assignments
             $u->updated_at = date('Y-m-d H:i:s');
             $u->created_at = date('Y-m-d H:i:s');
-            
+
             $u->ip = $_SERVER['REMOTE_ADDR']; // Set IP address
 
             // Optional fields with default values to prevent DB errors
@@ -2249,7 +2372,7 @@ class mod_user_mod extends indexMain
             $u->about = (Req::Post_Safe('about')) ? Req::Post_Safe('about') : '';
             $u->blog_name = (Req::Post_Safe('blog_name')) ? Req::Post_Safe('blog_name') : '';
             $u->status = (Req::Post_Safe('status')) ? Req::Post_Safe('status') : 'y';
-            
+
             // Image Upload Logic
             if (isset($_FILES['image']['name']) and $_FILES['image']['name'] != '') {
                 $image = Load::mod('image');
@@ -2273,6 +2396,16 @@ class mod_user_mod extends indexMain
                     $u->image = $image->url;
                 } else {
                     $this->theme->set('errors', [$image->error]);
+                    if ($is_ajax) {
+                        return [
+                            'status' => 422,
+                            'payload' => [
+                                'success' => false,
+                                'message' => $image->error,
+                                'errors' => [$image->error],
+                            ],
+                        ];
+                    }
                     return FALSE;
                 }
             } else {
@@ -2280,25 +2413,72 @@ class mod_user_mod extends indexMain
             }
 
             if ($u->save(true)) {
-                if ($this->_save_social_links($u->id, $_POST['social_links'] ?? []) === false) {
+                if ($this->_save_social_links($u->id, $_POST['social_links'] ?? [], $_POST['social_active'] ?? null) === false) {
                     $db->rollback();
                     $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
+                    if ($is_ajax) {
+                        return [
+                            'status' => 500,
+                            'payload' => [
+                                'success' => false,
+                                'message' => $this->lang['mod_user']['database_error'],
+                                'errors' => [$this->lang['mod_user']['database_error']],
+                            ],
+                        ];
+                    }
                     return FALSE;
                 }
 
                 $db->commit();
                 $this->_message($this->lang['mod_user']['admin']['added']);
+                $redirect_url = $this->site['saddress'] . 'mod_user/list';
+                $this->theme->set('redirect_url', $redirect_url);
+
+                if ($is_ajax) {
+                    return [
+                        'status' => 200,
+                        'payload' => [
+                            'success' => true,
+                            'message' => $this->lang['mod_user']['admin']['added'],
+                            'redirect' => $redirect_url,
+                            'redirect_url' => $redirect_url,
+                            'user_id' => $u->id,
+                        ],
+                    ];
+                }
+
                 $d = [
                     'username' => '', 'password' => '', 'email' => '',
-                    'name' => '', 'last_name' => '', 'phone' => '', 'city' => '',
-                    'blog_name' => '', 'about' => '', 'status' => 'y',
-                    'social_links' => $this->_blank_social_links()
+                    'name' => '', 'last_name' => '', 'phone' => '', 'phone_national' => '', 'country_code' => '+90',
+                    'city' => '', 'blog_name' => '', 'about' => '', 'status' => 'y',
+                    'group_id' => $d['group_id'] ?? 2,
+                    'social_links' => $this->_blank_social_links(),
+                    'social_active' => []
                 ];
             } else {
                 $db->rollback();
                 $this->theme->set('errors', [$this->lang['mod_user']['database_error']]);
+                if ($is_ajax) {
+                    return [
+                        'status' => 500,
+                        'payload' => [
+                            'success' => false,
+                            'message' => $this->lang['mod_user']['database_error'],
+                            'errors' => [$this->lang['mod_user']['database_error']],
+                        ],
+                    ];
+                }
             }
         }
+
+        return [
+            'status' => 400,
+            'payload' => [
+                'success' => false,
+                'message' => $this->lang['mod_user']['ajax']['error'] ?? 'Error',
+                'errors' => [],
+            ],
+        ];
     }
 
     public function ajax_get_info()
@@ -3087,23 +3267,32 @@ class mod_user_mod extends indexMain
         $d = $this->i->getResultOne()->toArray();
         $d['username'] = Req::is_Post('username') ? Req::Post('username') : $d['username'];
         $d['email'] = Req::is_Post('email') ? Req::Post('email') : $d['email'];
-        $d['social_links'] = $this->_load_social_links($id)['map'];
-        
+        $social_data = $this->_load_social_links($id);
+        $d['social_links'] = $social_data['map'];
+        $d['social_active'] = $social_data['active'];
+
         // Prepare phone data
         $this->_prepare_phone_data($d);
 
-        // Let's pull the Member Group
-        $g = Load::model('mod_user_group');
-        $group = Helper::nested($g->all()->toArray(), 'parent_id', 'group_id');
+        // Let's pull the Member Group (localized)
+        $group = $this->_get_localized_groups();
 
+        $redirect_url = $this->site['saddress'] . 'mod_user/list';
         $this->site['title'] = $this->lang['mod_user']['admin']['edit_area'];
         $this->theme->set('site', $this->site);
         $this->theme->set('d', $d);
         $this->theme->set('group', $group);
-        
+        $this->theme->set('redirect_url', $redirect_url);
+
         // Pass country codes
         $this->theme->set('country_codes', $this->_get_country_codes());
         $this->theme->set('social_platforms', $this->_get_social_platforms());
+
+        // Pass all data variables to template (backwards compatibility)
+        foreach($d as $k => $v) {
+            $this->theme->set($k, $v);
+        }
+
         $this->theme->tpl('mod_user/edit');
     }
 
@@ -3135,10 +3324,10 @@ class mod_user_mod extends indexMain
             $u->group_id = Req::Post_Safe('group_id');
             $u->name = Text::title(Req::Post_Safe('name'));
             $u->last_name = Text::title(Req::Post_Safe('last_name'));
-            
+
             // Use helper for phone
             $u->phone = $this->_get_combined_phone();
-            
+
             $u->updated_at = date('Y-m-d H:i:s'); // Automatically set update time
             if (Req::Post_Safe('password') != '') {
                 $u->password = $this->_hash_password(Req::Post_Safe('password'));
@@ -3150,7 +3339,7 @@ class mod_user_mod extends indexMain
             $u->blog_name = Req::Post_Safe('blog_name');
             $u->about = Req::Post_Safe('about');
 
-            // Image Upload Logic
+            // Image Upload / Removal Logic
             if (isset($_FILES['image']['name']) and $_FILES['image']['name'] != '') {
                 $image = Load::mod('image');
                 $image->mod = 'mod_user';
@@ -3185,18 +3374,23 @@ class mod_user_mod extends indexMain
                     }
                     return FALSE;
                 }
+            } elseif (Req::Post_Safe('delete_image') == '1' || Req::Post_Safe('remove_image') == '1') {
+                $u->image = '';
             }
 
-            if ($u->update('id') && $this->_save_social_links($id, $_POST['social_links'] ?? [])) {
+            if ($u->update('id') && $this->_save_social_links($id, $_POST['social_links'] ?? [], $_POST['social_active'] ?? null)) {
                 $db->commit();
                 $this->_message($this->lang['mod_user']['admin']['updated']);
+                $redirect_url = $this->site['saddress'] . 'mod_user/list';
+                $this->theme->set('redirect_url', $redirect_url);
                 if ($is_ajax) {
                     return [
                         'status' => 200,
                         'payload' => [
                             'success' => true,
                             'message' => $this->lang['mod_user']['admin']['updated'],
-                            'redirect' => $this->site['saddress'] . 'mod_user/list',
+                            'redirect' => $redirect_url,
+                            'redirect_url' => $redirect_url,
                         ],
                     ];
                 }
@@ -3482,6 +3676,7 @@ class mod_user_mod extends indexMain
     private function _message($message)
     {
         $this->theme->set('Success', True);
+        $this->theme->set('success', True);
         $this->theme->set('message', $message);
     }
 
@@ -3495,6 +3690,7 @@ class mod_user_mod extends indexMain
     private function _app_message($message)
     {
         $this->apptemplate->set('Success', True);
+        $this->apptemplate->set('success', True);
         $this->apptemplate->set('message', $message);
     }
 

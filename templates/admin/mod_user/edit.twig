@@ -8,217 +8,143 @@
 	{{ lang.mod_user.admin.edit_user }}
 {% endblock %}
 
-{% block content %}
-	<style>
-		.edit-container {
-			padding: 16px;
-			display: flex;
-			flex-direction: column;
-			gap: 16px;
-			padding-bottom: 120px;
-		}
-		.edit-card {
-			background: var(--md-sys-color-surface);
-			border-radius: 12px;
-			padding: 20px;
-			box-shadow: var(--md-sys-elevation-1);
-		}
-		.card-header-edit {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-bottom: 16px;
-			color: var(--md-sys-color-primary);
-		}
-		.card-header-edit i {
-			font-size: 20px;
-		}
-		.card-header-edit h3 {
-			margin: 0;
-			font-size: 16px;
-			font-weight: 500;
-		}
-			.form-row {
-				margin-bottom: 20px;
-			}
-		.form-row:last-child {
-			margin-bottom: 0;
-		}
-		.m3-input-wrapper {
-			position: relative;
-			margin-bottom: 4px;
-		}
-		.m3-input-lg {
-			width: 100%;
-			padding: 12px 16px;
-			border-radius: 8px;
-			border: 1px solid var(--md-sys-color-outline);
-			background: transparent;
-			color: var(--md-sys-color-on-surface);
-			font-size: 16px;
-			outline: none;
-            box-sizing: border-box;
-		}
-		.m3-input-lg:focus {
-			border-color: var(--md-sys-color-primary);
-			border-width: 2px;
-			padding: 11px 15px;
-		}
-		.m3-input-lg:focus + .m3-floating-label,
-		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
-			top: -10px;
-			left: 12px;
-			font-size: 12px;
-			color: var(--md-sys-color-primary);
-			background: var(--md-sys-color-surface);
-			padding: 0 4px;
-		}
-		.m3-floating-label {
-			position: absolute;
-			top: 12px;
-			left: 16px;
-			color: var(--md-sys-color-on-surface-variant);
-			font-size: 16px;
-			pointer-events: none;
-			transition: all 0.2s;
-		}
-        .image-upload-area {
-            position: relative;
-            margin-top: 8px;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px dashed var(--md-sys-color-outline);
-            border-radius: 12px;
-            padding: 20px;
-            min-height: 150px;
-            transition: all 0.2s;
-        }
-        .image-upload-area:hover {
-            background: rgba(0,0,0,0.02);
-            border-color: var(--md-sys-color-primary);
-        }
-        .image-upload-area img {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 8px;
-            object-fit: cover;
-        }
-        .remove-img-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: #ba1a1a !important;
-            color: white !important;
-            border: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            transition: all 0.2s;
-            z-index: 10;
-        }
-        .remove-img-btn:hover {
-            background: #93000a !important;
-            transform: scale(1.1);
-        }
-        .upload-icon {
-            font-size: 48px;
-            color: var(--md-sys-color-primary);
-            opacity: 0.5;
-            margin-bottom: 8px;
-        }
-	        .filter-group-label {
-	            display: block;
-	            font-size: 12px;
-	            font-weight: 500;
-	            color: var(--md-sys-color-primary);
-	            margin-bottom: 8px;
-	            margin-left: 4px;
-	        }
-	        .contact-grid {
-	            display: grid;
-	            gap: 20px;
-	        }
-		</style>
+{% block headline %}
+	{{ lang.mod_user.admin.edit_user }}
+{% endblock %}
 
-	<div class="edit-container">
-		{% if success is defined %}
-			<div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
-				<i class="bi bi-check-circle-fill"></i>
-				<span>{{ message }}</span>
-			</div>
-			<script>
-				setTimeout(() => {
-					window.location.href = "{{ site.saddress }}mod_user/list";
-				}, 2000);
-			</script>
-		{% else %}
-			<div id="errorBanner" class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;{% if errors is not defined %} display: none;{% endif %}">
-				<div id="errorList">
-					{% if errors is defined %}
-						{% for error in errors %}
-							<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
-								<i class="bi bi-exclamation-circle-fill"></i>
-								<span>{{ error }}</span>
-							</div>
-						{% endfor %}
+{% set back_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_title = lang.mod_user.name %}
+
+{% block content %}
+	{% macro select(parent_id, level, selected_id, group) %}
+		{% for entry in attribute(group, parent_id) %}
+			{% set current_parent_id = entry.group_id %}
+			<option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected="selected"{% endif %}>
+				{{ '-'|repeat(level * 2) ~ (entry.display_name|default(entry.name)) }}
+			</option>
+			{% if attribute(group, current_parent_id) is defined and attribute(group, current_parent_id) is iterable and attribute(group, current_parent_id) is not empty %}
+				{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
+			{% endif %}
+		{% endfor %}
+	{% endmacro %}
+
+	<div class="edit-container" data-module="user-form" data-mode="edit">
+
+		<div id="formAlert" class="form-alert-container">
+			{% if Success is defined or success is defined %}
+				<div class="banner-m3 banner-success">
+					<i class="bi bi-check-circle-fill"></i>
+					<span>{{ message }}</span>
+				</div>
+			{% endif %}
+
+			{% if errors is defined and errors is not empty %}
+				<div class="banner-m3 banner-danger">
+					{% for error in errors %}
+						<div class="error-item">
+							<i class="bi bi-exclamation-circle-fill"></i>
+							<span>{{ error }}</span>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+
+		<form method="POST" action="" id="editForm" enctype="multipart/form-data" novalidate data-redirect-url="{{ redirect_url|default('/' ~ site.lang ~ '/mod_user/list') }}">
+			<input type="hidden" name="edit" value="1">
+			<input type="hidden" name="delete_image" id="deleteImageInput" value="0">
+			<input type="file" name="image" id="image" class="visually-hidden" accept="image/*" data-action="preview-avatar">
+
+			{# Hero Identity Card with Avatar & Live Info #}
+			<div class="m3-profile-hero">
+				<div class="m3-hero-avatar-wrapper" id="avatarPreviewContainer" data-initial-src="{% if d.image is defined and d.image != '' %}{{ site.iaddress }}mod_user/{{ d.image }}{% endif %}">
+					{% if d.image is defined and d.image != '' %}
+						<img src="{{ site.iaddress }}mod_user/{{ d.image }}" id="avatarPreview" class="m3-hero-avatar" alt="Avatar">
+						<button type="button" class="m3-hero-avatar-btn remove-btn" data-action="delete-avatar" title="{{ lang.mod_user.admin.remove_avatar }}">
+							<i class="bi bi-trash"></i>
+						</button>
+					{% else %}
+						<div class="m3-hero-avatar-placeholder" data-action="select-avatar" role="button" tabindex="0" title="{{ lang.mod_user.admin.upload_avatar }}">
+							<i class="bi bi-person-fill"></i>
+						</div>
+						<button type="button" class="m3-hero-avatar-btn upload-btn" data-action="select-avatar" title="{{ lang.mod_user.admin.upload_avatar }}">
+							<i class="bi bi-camera-fill"></i>
+						</button>
 					{% endif %}
 				</div>
-				<div style="display: flex; justify-content: flex-end; margin-top: 12px;">
-					<button type="button" id="copyErrorsButton" class="m3-btn-half" style="height: 40px !important; flex: 0 0 auto !important; padding: 0 16px !important; background: #c62828 !important; color: #fff !important;">
-						<i class="bi bi-clipboard"></i>
-						{{ lang.mod_user.ajax.copy_errors }}
-					</button>
+				<div class="m3-hero-info">
+					<h3 class="m3-hero-name" id="heroNamePreview">
+						{{ d.name|default('') }} {{ d.last_name|default('') }}
+					</h3>
+					<p class="m3-hero-email" id="heroSubtitlePreview">
+						@{{ d.username|default('user') }}
+					</p>
+					{% if d.created_at is defined and d.created_at != '' %}
+						<span class="m3-hero-badge">
+							<i class="bi bi-calendar-event"></i> {{ lang.mod_user.membership_date }}: {{ d.created_at }}
+						</span>
+					{% endif %}
 				</div>
-				<textarea id="errorDetails" readonly style="width: 100%; min-height: 120px; margin-top: 12px; border-radius: 8px; border: 1px solid #f2b8b5; padding: 12px; font-size: 13px; background: #fff8f7; color: #7f1d1d;">{% if errors is defined %}{% for error in errors %}{{ error }}{% if not loop.last %}
-{% endif %}{% endfor %}{% endif %}</textarea>
 			</div>
 
-			<form method="POST" action="" id="editForm" enctype="multipart/form-data">
-				{# Card 1: Account #}
+			{# 3-Tab Segmented Navigation #}
+			<div class="m3-profile-tabs" role="tablist">
+				<button type="button" class="m3-tab-btn active" data-action="switch-tab" data-tab-target="tab-basic-info" role="tab" aria-selected="true">
+					<i class="bi bi-person-vcard"></i>
+					<span>{{ lang.mod_user.admin.tab_basic }}</span>
+				</button>
+				<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-author-profile" role="tab" aria-selected="false">
+					<i class="bi bi-journal-text"></i>
+					<span>{{ lang.mod_user.admin.tab_author }}</span>
+				</button>
+				<button type="button" class="m3-tab-btn" data-action="switch-tab" data-tab-target="tab-social-media" role="tab" aria-selected="false">
+					<i class="bi bi-share"></i>
+					<span>{{ lang.mod_user.admin.tab_social }}</span>
+				</button>
+			</div>
+
+			{# Tab 1: Identity & Account #}
+			<div class="m3-tab-content active" id="tab-basic-info" role="tabpanel">
+				{# Account Credentials Card #}
 				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-shield-lock-fill"></i>
+						<h3>{{ lang.mod_user.admin.tab_basic }}</h3>
+					</div>
+
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="username" value="{{ d.username }}" type="text" id="username" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.username }}</label>
+							<input class="m3-input-lg" name="username" value="{{ d.username|default('') }}" type="text" id="username" autocomplete="username" placeholder=" " required data-sync-hero="username">
+							<label class="m3-floating-label" for="username">{{ lang.mod_user.username }}</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="password" type="password" id="password" placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.current_password }}</label>
+							<input class="m3-input-lg" name="email" value="{{ d.email|default('') }}" type="email" id="email" autocomplete="email" placeholder=" " required>
+							<label class="m3-floating-label" for="email">{{ lang.mod_user.email }}</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="email" value="{{ d.email }}" type="email" id="email" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.email }}</label>
+							<input class="m3-input-lg" name="password" type="password" id="password" autocomplete="new-password" placeholder=" " data-action="check-strength">
+							<label class="m3-floating-label" for="password">{{ lang.mod_user.new_password }}</label>
+							<div class="input-icon-right" data-action="toggle-password" data-target="password" role="button" tabindex="0" title="Show/Hide Password">
+								<i class="bi bi-eye"></i>
+							</div>
+						</div>
+						<div class="strength-container">
+							<div class="strength-bar">
+								<div id="strength-progress" class="strength-progress"></div>
+							</div>
+							<div id="strength-text" class="strength-text"></div>
 						</div>
 					</div>
 
-					{% macro select(parent_id, level, selected_id, group) %}
-						{% for entry in group[parent_id] %}
-							{% set current_parent_id = entry.group_id %}
-							<option value="{{ entry.group_id }}" {% if selected_id == entry.group_id %} selected="selected" {% endif %}>
-								{{ '-'|repeat(level * 2) }} {{ entry.name }}
-							</option>
-							{% if group[current_parent_id] is defined %}
-								{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
-							{% endif %}
-						{% endfor %}
-					{% endmacro %}
-
 					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.user_group }}</label>
+						<label class="filter-group-label" for="group_id">{{ lang.mod_user.admin.user_group }}</label>
 						<div class="m3-input-wrapper">
 							<select class="m3-input-lg" name="group_id" id="group_id" required>
 								{{ _self.select(0, 0, d.group_id, group) }}
@@ -227,7 +153,7 @@
 					</div>
 
 					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.columns.status }}</label>
+						<label class="filter-group-label" for="status">{{ lang.mod_user.admin.columns.status }}</label>
 						<div class="m3-input-wrapper">
 							<select class="m3-input-lg" name="status" id="status" required>
 								<option value="y" {% if d.status == 'y' %} selected {% endif %}>{{ lang.mod_user.grid.active }}</option>
@@ -238,319 +164,101 @@
 					</div>
 				</div>
 
-				{# Card 2: Personal Info #}
-				<div class="edit-card" style="margin-top: 16px;">
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="name" value="{{ d.name }}" type="text" id="name" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.your_name }}</label>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="last_name" value="{{ d.last_name }}" type="text" id="last_name" placeholder=" " required>
-							<label class="m3-floating-label">{{ lang.mod_user.your_surname }}</label>
-						</div>
+				{# Personal Details Card #}
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-person-lines-fill"></i>
+						<h3>{{ lang.mod_user.personal_info }}</h3>
 					</div>
 
 					<div class="contact-grid">
-						<div class="form-row" id="phone-section">
-							{% include 'mod_user/parts/phone_input.twig' with {
-                                'country_code_value': d.country_code,
-                                'phone_value': d.phone,
-                                'label_text': lang.mod_user.mobile_phone,
-                                'input_id': 'phone'
-                            } %}
+						<div class="form-row">
+							<div class="m3-input-wrapper">
+								<input class="m3-input-lg" name="name" value="{{ d.name|default('') }}" type="text" id="name" autocomplete="given-name" placeholder=" " required data-sync-hero="name">
+								<label class="m3-floating-label" for="name">{{ lang.mod_user.your_name }}</label>
+							</div>
 						</div>
 
 						<div class="form-row">
 							<div class="m3-input-wrapper">
-								<input class="m3-input-lg" name="city" value="{{ d.city }}" type="text" id="city" placeholder=" ">
-								<label class="m3-floating-label">{{ lang.mod_user.city }}</label>
+								<input class="m3-input-lg" name="last_name" value="{{ d.last_name|default('') }}" type="text" id="last_name" autocomplete="family-name" placeholder=" " required data-sync-hero="last_name">
+								<label class="m3-floating-label" for="last_name">{{ lang.mod_user.your_surname }}</label>
 							</div>
 						</div>
 					</div>
-				</div>
 
-				{# Card 3: Author Profile #}
-				<div class="edit-card" style="margin-top: 16px;">
+					<div class="form-row">
+						{% include 'mod_user/parts/phone_input.twig' with {
+							'country_code_value': d.country_code|default('+90'),
+							'phone_value': d.phone_national|default(''),
+							'label_text': lang.mod_user.mobile_phone,
+							'input_id': 'phone'
+						} %}
+					</div>
+
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name }}" type="text" id="blog_name" placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.blog_name }}</label>
+							<input class="m3-input-lg" name="city" value="{{ d.city|default('') }}" type="text" id="city" autocomplete="address-level2" placeholder=" ">
+							<label class="m3-floating-label" for="city">{{ lang.mod_user.city }}</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{# Tab 2: Author Profile #}
+			<div class="m3-tab-content" id="tab-author-profile" role="tabpanel">
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-feather"></i>
+						<h3>{{ lang.mod_user.admin.tab_author }}</h3>
+					</div>
+
+					<div class="form-row">
+						<div class="m3-input-wrapper">
+							<input class="m3-input-lg" name="blog_name" value="{{ d.blog_name|default('') }}" type="text" id="blog_name" placeholder=" ">
+							<label class="m3-floating-label" for="blog_name">{{ lang.mod_user.blog_name }}</label>
 						</div>
 					</div>
 
 					<div class="form-row">
 						<div class="m3-input-wrapper">
-							<textarea class="m3-input-lg" name="about" id="about" rows="4" placeholder=" " oninput="updateCharCounter(this, 'aboutCounter', 255)">{{ d.about }}</textarea>
-							<label class="m3-floating-label">{{ lang.mod_user.about_me }}</label>
+							<textarea class="m3-input-lg" name="about" id="about" rows="5" placeholder=" " data-counter-id="aboutCounter" data-char-limit="500">{{ d.about|default('') }}</textarea>
+							<label class="m3-floating-label" for="about">{{ lang.mod_user.about_me }}</label>
 						</div>
-						<div style="text-align: right; font-size: 12px; color: var(--md-sys-color-on-surface-variant); margin-top: 4px;" id="aboutCounter">
-							{{ d.about|length }} / 255
+						<div class="m3-char-counter" id="aboutCounter">
+							{{ (d.about|default(''))|length }} / 500
 						</div>
 					</div>
 				</div>
+			</div>
 
-				{# Card 4: Social Media #}
-				<div class="edit-card" style="margin-top: 16px;">
-					<label class="filter-group-label">{{ lang.mod_user.admin.social_media }}</label>
+			{# Tab 3: Social Media #}
+			<div class="m3-tab-content" id="tab-social-media" role="tabpanel">
+				<div class="edit-card">
+					<div class="card-header-edit">
+						<i class="bi bi-globe2"></i>
+						<h3>{{ lang.mod_user.admin.social_media }}</h3>
+					</div>
 					{% include 'mod_user/parts/social_links.twig' with {
-                        'social_platforms': social_platforms,
-                        'social_links': d.social_links
-                    } %}
+						'social_platforms': social_platforms,
+						'social_links': d.social_links|default({}),
+						'social_active': d.social_active|default({})
+					} %}
 				</div>
-
-				{# Card 5: Image And Dates #}
-				<div class="edit-card" style="margin-top: 16px;">
-					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.profile_picture }}</label>
-						<label for="image" class="image-upload-area" id="image-upload-area">
-							{% if d.image %}
-								<img id="editImgPreview" src="{{ site.iaddress }}mod_user/{{ d.image }}">
-								<button type="button" class="remove-img-btn" onclick="event.preventDefault(); removeUserImage('{{ d.id }}')">
-									<i class="bi bi-trash"></i>
-								</button>
-							{% else %}
-								<i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
-								<p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.button.select_image }}</p>
-							{% endif %}
-						</label>
-						<input type="file" name="image" id="image" style="display:none;" onchange="previewAvatar(this)">
-					</div>
-
-					<div class="form-row" style="margin-top: 24px;">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" value="{{ d.created_at }}" type="text" disabled placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.membership_date }}</label>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="m3-input-wrapper">
-							<input class="m3-input-lg" value="{{ d.updated_at }}" type="text" disabled placeholder=" ">
-							<label class="m3-floating-label">{{ lang.mod_user.update_date }}</label>
-						</div>
-					</div>
-				</div>
-			</form>
-		{% endif %}
+			</div>
+		</form>
 	</div>
 {% endblock %}
 
 {% block fixed_bottom %}
-	{% if oke is not defined %}
-		<div class="m3-final-bar">
-			<a href="{{ site.saddress }}mod_user/list" class="m3-btn-half m3-btn-half-neutral">
-				<i class="bi bi-x-lg"></i>
-				{{ lang.mod_user.button.cancel }}
-			</a>
-			<button id="editSubmitButton" type="submit" form="editForm" name="edit" value="{{ lang.mod_user.admin.edit_user }}" class="m3-btn-half m3-btn-half-primary">
-				<i class="bi bi-check-lg"></i>
-				{{ lang.mod_user.admin.edit_user }}
-			</button>
-		</div>
-	{% endif %}
-{% endblock %}
-
-{% block scripts %}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-	<script>
-		const editForm = document.getElementById('editForm');
-		const submitButton = document.getElementById('editSubmitButton');
-		const errorBanner = document.getElementById('errorBanner');
-		const errorList = document.getElementById('errorList');
-		const errorDetails = document.getElementById('errorDetails');
-		const copyErrorsButton = document.getElementById('copyErrorsButton');
-		const defaultSubmitHtml = submitButton ? submitButton.innerHTML : '';
-
-		function buildErrorMarkup(errors) {
-			return errors.map((error) => {
-				const row = document.createElement('div');
-				row.style.display = 'flex';
-				row.style.alignItems = 'center';
-				row.style.gap = '12px';
-				row.style.fontSize = '14px';
-				row.style.marginBottom = '4px';
-
-				const icon = document.createElement('i');
-				icon.className = 'bi bi-exclamation-circle-fill';
-
-				const text = document.createElement('span');
-				text.textContent = error;
-
-				row.appendChild(icon);
-				row.appendChild(text);
-
-				return row;
-			});
-		}
-
-		function showErrors(message, errors, rawDetails = '') {
-			if (!errorBanner || !errorList || !errorDetails) {
-				return;
-			}
-
-			const normalizedErrors = [];
-			if (message) {
-				normalizedErrors.push(message);
-			}
-			(errors || []).forEach((error) => {
-				if (error && !normalizedErrors.includes(error)) {
-					normalizedErrors.push(error);
-				}
-			});
-
-			if (!normalizedErrors.length) {
-				normalizedErrors.push('{{ lang.mod_user.ajax.error }}');
-			}
-
-			errorList.innerHTML = '';
-			buildErrorMarkup(normalizedErrors).forEach((node) => errorList.appendChild(node));
-			errorDetails.value = rawDetails ? `${normalizedErrors.join('\n')}\n\n${rawDetails}` : normalizedErrors.join('\n');
-			errorBanner.style.display = 'block';
-			errorBanner.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		}
-
-		function clearErrors() {
-			if (!errorBanner || !errorList || !errorDetails) {
-				return;
-			}
-
-			errorBanner.style.display = 'none';
-			errorList.innerHTML = '';
-			errorDetails.value = '';
-		}
-
-		async function copyErrorsToClipboard() {
-			if (!errorDetails || !errorDetails.value) {
-				return;
-			}
-
-			try {
-				await navigator.clipboard.writeText(errorDetails.value);
-			} catch (error) {
-				errorDetails.focus();
-				errorDetails.select();
-				document.execCommand('copy');
-			}
-
-			Swal.fire('{{ lang.mod_user.ajax.success }}', '{{ lang.mod_user.ajax.errors_copied }}', 'success');
-		}
-
-		if (copyErrorsButton) {
-			copyErrorsButton.addEventListener('click', copyErrorsToClipboard);
-		}
-
-		function previewAvatar(input) {
-			if (input.files && input.files[0]) {
-				var reader = new FileReader();
-				reader.onload = function (e) {
-					var area = document.getElementById('image-upload-area');
-					area.innerHTML = '<img id="editImgPreview" src="' + e.target.result + '"><button type="button" class="remove-img-btn" onclick="event.preventDefault(); resetUpload()"><i class="bi bi-x-lg"></i></button>';
-				}
-				reader.readAsDataURL(input.files[0]);
-			}
-		}
-
-        function resetUpload() {
-            var area = document.getElementById('image-upload-area');
-            area.innerHTML = '<i class="bi bi-cloud-arrow-up-fill upload-icon"></i><p style="color: var(--md-sys-color-on-surface-variant); font-size: 14px;">{{ lang.mod_user.button.select_image }}</p>';
-            document.getElementById('image').value = '';
-        }
-
-        function removeUserImage(id) {
-            Swal.fire({
-                title: '{{ lang.mod_user.admin.confirm_remove_image }}',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#ba1a1a',
-                cancelButtonColor: '#6e7881',
-                confirmButtonText: '{{ lang.mod_user.admin.yes }}',
-                cancelButtonText: '{{ lang.mod_user.admin.no }}'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const formData = new FormData();
-                    formData.append('id', id);
-
-                    fetch("{{ site.address }}mod_user/delete_image", {
-                        method: "POST",
-                        body: formData
-                    })
-                    .then(r => r.text())
-                    .then(msg => {
-                        if (msg === 'Success') {
-                            Swal.fire('{{ lang.mod_user.admin.image_removed_success }}', '', 'success');
-                            resetUpload();
-                        } else {
-                            Swal.fire('{{ lang.mod_user.error_label }}', msg, 'error');
-                        }
-                    });
-                }
-            });
-        }
-
-		function updateCharCounter(input, counterId, max) {
-			const currentLength = input.value.length;
-			const counter = document.getElementById(counterId);
-			if (counter) {
-				counter.innerText = `${currentLength} / ${max}`;
-				if (currentLength > max) {
-					counter.style.color = 'var(--md-sys-color-error)';
-				} else {
-					counter.style.color = 'var(--md-sys-color-on-surface-variant)';
-				}
-			}
-		}
-
-		if (editForm && submitButton) {
-			editForm.addEventListener('submit', async (event) => {
-				event.preventDefault();
-				clearErrors();
-
-				submitButton.disabled = true;
-				submitButton.innerHTML = '<i class="bi bi-arrow-repeat"></i> {{ lang.mod_user.js.updating }}';
-
-				const formData = new FormData(editForm);
-				formData.append('edit', '{{ lang.mod_user.admin.edit_user }}');
-				formData.append('ajax_request', 'true');
-
-				try {
-					const response = await fetch(window.location.href, {
-						method: 'POST',
-						headers: {
-							'X-Requested-With': 'XMLHttpRequest',
-							'Accept': 'application/json'
-						},
-						body: formData
-					});
-					const rawResponse = await response.text();
-					let data;
-
-					try {
-						data = JSON.parse(rawResponse);
-					} catch (error) {
-						showErrors('{{ lang.mod_user.ajax.error }}', ['{{ lang.mod_user.ajax.unexpected_response }}'], rawResponse);
-						return;
-					}
-
-					if (!response.ok || !data.success) {
-						showErrors(data.message || '{{ lang.mod_user.ajax.error }}', data.errors || [], rawResponse);
-						return;
-					}
-
-					Swal.fire('{{ lang.mod_user.ajax.success }}', data.message || '{{ lang.mod_user.admin.updated }}', 'success');
-					setTimeout(() => {
-						window.location.href = data.redirect || '{{ site.saddress }}mod_user/list';
-					}, 1200);
-				} catch (error) {
-					showErrors('{{ lang.mod_user.ajax.connection_error }}', [error.message || '{{ lang.mod_user.ajax.connection_error }}']);
-				} finally {
-					submitButton.disabled = false;
-					submitButton.innerHTML = defaultSubmitHtml;
-				}
-			});
-		}
-	</script>
+	<div class="m3-final-bar">
+		<a href="{{ back_url }}" class="m3-btn-half m3-btn-half-neutral">
+			<i class="bi bi-x-lg"></i>
+			<span>{{ lang.mod_user.button.cancel }}</span>
+		</a>
+		<button type="submit" form="editForm" id="submitBtn" name="edit" value="1" class="m3-btn-half m3-btn-half-primary">
+			<i class="bi bi-check-lg" id="submitIcon"></i>
+			<span id="submitText">{{ lang.mod_user.button.save }}</span>
+		</button>
+	</div>
 {% endblock %}

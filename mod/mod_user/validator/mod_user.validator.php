@@ -94,7 +94,7 @@ class mod_user_validator
             [
                 'name' => 'password',
                 'func' => 'length',
-                'arg' => ['min' => 6, 'max' => 20],
+                'arg' => ['min' => 8, 'max' => 64],
                 'message' => $this->lang['mod_user']['error']['password_length_error']
             ]
         );
@@ -120,15 +120,13 @@ class mod_user_validator
 
         );
 
-        // Phone.
-        $this->valid->add(
-            [
-                'name' => 'phone',
-                'func' => 'required',
-                'arg' => '',
-                'message' => $this->lang['mod_user']['register']['error']['phone_required']
-            ]
-        );
+        // Phone (optional in admin create, validate format if provided)
+        $phone_input = Req::Post_Safe('phone');
+        if (!empty($phone_input)) {
+            if (!preg_match('/^[\+]?[0-9\s\-\(\)]{7,20}$/', $phone_input)) {
+                $this->errors[] = $this->lang['mod_user']['register']['error']['invalid_phone'] ?? 'Invalid phone number';
+            }
+        }
 
 
         if ($this->_check() === True) {

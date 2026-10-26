@@ -8,192 +8,114 @@
 	{{ lang.mod_user.admin.membership_settings }}
 {% endblock %}
 
-{% block content %}
-	<style>
-		.edit-container {
-			padding: 16px;
-			display: flex;
-			flex-direction: column;
-			gap: 16px;
-			padding-bottom: 120px;
-		}
-		.edit-card {
-			background: var(--md-sys-color-surface);
-			border-radius: 12px;
-			padding: 20px;
-			box-shadow: var(--md-sys-elevation-1);
-		}
-		.card-header-edit {
-			display: flex;
-			align-items: center;
-			gap: 8px;
-			margin-bottom: 16px;
-			color: var(--md-sys-color-primary);
-		}
-		.card-header-edit i {
-			font-size: 20px;
-		}
-		.card-header-edit h3 {
-			margin: 0;
-			font-size: 16px;
-			font-weight: 500;
-		}
-		.form-row {
-			margin-bottom: 20px;
-		}
-		.form-row:last-child {
-			margin-bottom: 0;
-		}
-		.m3-input-wrapper {
-			position: relative;
-			margin-bottom: 4px;
-		}
-		.m3-input-lg {
-			width: 100%;
-			padding: 12px 16px;
-			border-radius: 8px;
-			border: 1px solid var(--md-sys-color-outline);
-			background: transparent;
-			color: var(--md-sys-color-on-surface);
-			font-size: 16px;
-			outline: none;
-            box-sizing: border-box;
-		}
-		.m3-input-lg:focus {
-			border-color: var(--md-sys-color-primary);
-			border-width: 2px;
-			padding: 11px 15px;
-		}
-		.m3-input-lg:focus + .m3-floating-label,
-		.m3-input-lg:not(:placeholder-shown) + .m3-floating-label {
-			top: -10px;
-			left: 12px;
-			font-size: 12px;
-			color: var(--md-sys-color-primary);
-			background: var(--md-sys-color-surface);
-			padding: 0 4px;
-		}
-		.m3-floating-label {
-			position: absolute;
-			top: 12px;
-			left: 16px;
-			color: var(--md-sys-color-on-surface-variant);
-			font-size: 16px;
-			pointer-events: none;
-			transition: all 0.2s;
-		}
-        .filter-group-label {
-            display: block;
-            font-size: 12px;
-            font-weight: 500;
-            color: var(--md-sys-color-primary);
-            margin-bottom: 8px;
-            margin-left: 4px;
-        }
-	</style>
+{% block headline %}
+	{{ lang.mod_user.admin.membership_settings }}
+{% endblock %}
 
-	<div class="edit-container">
-		{% if success is defined %}
-			<div class="banner-m3 banner-success mb-4" style="background: #e6f4ea; color: #1e4620; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; font-size: 14px;">
-				<i class="bi bi-check-circle-fill"></i>
-				<span>{{ message }}</span>
-			</div>
-			<script>
-				setTimeout(() => {
-					window.location.href = "{{ site.saddress }}mod_user/panel";
-				}, 2000);
-			</script>
-		{% else %}
-			{% if errors is defined %}
-				<div class="banner-m3 banner-danger mb-4" style="background: #fce8e6; color: #c62828; padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+{% set back_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_url = '/' ~ site.lang ~ '/mod_user/list' %}
+{% set breadcrumb_parent_title = lang.mod_user.name %}
+
+{% block content %}
+	{% macro select(parent_id, level, selected_id, group) %}
+		{% for entry in attribute(group, parent_id) %}
+			{% set current_parent_id = entry.group_id %}
+			<option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected="selected"{% endif %}>
+				{{ '-'|repeat(level * 2) ~ (entry.display_name|default(entry.name)) }}
+			</option>
+			{% if attribute(group, current_parent_id) is not empty and attribute(group, current_parent_id) is iterable %}
+				{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
+			{% endif %}
+		{% endfor %}
+	{% endmacro %}
+
+	<div class="edit-container" data-module="user-form" data-mode="settings">
+
+		<div id="formAlert" class="form-alert-container">
+			{% if Success is defined or success is defined %}
+				<div class="banner-m3 banner-success">
+					<i class="bi bi-check-circle-fill"></i>
+					<span>{{ message }}</span>
+				</div>
+			{% endif %}
+
+			{% if errors is defined and errors is not empty %}
+				<div class="banner-m3 banner-danger">
 					{% for error in errors %}
-						<div style="display: flex; align-items: center; gap: 12px; font-size: 14px; margin-bottom: 4px;">
+						<div class="error-item">
 							<i class="bi bi-exclamation-circle-fill"></i>
 							<span>{{ error }}</span>
 						</div>
 					{% endfor %}
 				</div>
 			{% endif %}
+		</div>
 
-			<form method="POST" action="" id="settingsForm">
-				<div class="edit-card">
-					<div class="card-header-edit">
-						<i class="bi bi-gear-fill"></i>
-						<h3>{{ lang.mod_user.admin.membership_settings }}</h3>
-					</div>
+		<form method="POST" action="" id="settingsForm" novalidate data-redirect-url="{{ redirect_url|default('/' ~ site.lang ~ '/mod_user/list') }}">
+			<input type="hidden" name="edit" value="1">
+			<div class="edit-card">
+				<div class="card-header-edit">
+					<i class="bi bi-gear-fill"></i>
+					<h3>{{ lang.mod_user.admin.membership_settings }}</h3>
+				</div>
 
-					{% macro select(parent_id, level, selected_id, group) %}
-						{% for entry in attribute(group, parent_id) %}
-							{% set current_parent_id = entry.group_id %}
-							<option value="{{ entry.group_id }}" {% if entry.group_id == selected_id %}selected="selected"{% endif %}>
-								{{ '-'|repeat(level * 2) ~ entry.name }}
-							</option>
-							{% if attribute(group, current_parent_id) is not empty and attribute(group, current_parent_id) is iterable %}
-								{{ _self.select(current_parent_id, level + 1, selected_id, group) }}
-							{% endif %}
-						{% endfor %}
-					{% endmacro %}
-
-					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.settings.new_user_group }}</label>
-						<div class="m3-input-wrapper">
-							<select class="m3-input-lg" name="group_id" id="group_id">
-								{{ _self.select(0, 0, d.group_id, group) }}
-							</select>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.settings.membership_open }}</label>
-						<div class="m3-input-wrapper">
-							<select name="status" class="m3-input-lg">
-								<option value="1" {% if status == '1' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.open }}</option>
-								<option value="0" {% if status == '0' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.closed }}</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.settings.membership_activation }}</label>
-						<div class="m3-input-wrapper">
-							<select name="activation" class="m3-input-lg">
-								<option value="2" {% if activation == '2' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.admin_approval }}</option>
-								<option value="1" {% if activation == '1' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.email_approval }}</option>
-								<option value="0" {% if activation == '0' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.automatic_approval }}</option>
-							</select>
-						</div>
-					</div>
-
-					<div class="form-row">
-						<label class="filter-group-label">{{ lang.mod_user.admin.settings.allow_multiple_logins }}</label>
-						<div class="m3-input-wrapper">
-							<select name="check_user_login" class="m3-input-lg">
-								<option value="1" {% if check_user_login == '1' %}selected="selected"{% endif %}>
-									{{ lang.mod_user.admin.settings.yes }}
-								</option>
-								<option value="2" {% if check_user_login == '2' %}selected="selected"{% endif %}>
-									{{ lang.mod_user.admin.settings.no }}
-								</option>
-							</select>
-						</div>
+				<div class="form-row">
+					<label class="filter-group-label" for="group_id">{{ lang.mod_user.admin.settings.new_user_group }}</label>
+					<div class="m3-input-wrapper">
+						<select class="m3-input-lg" name="group_id" id="group_id">
+							{{ _self.select(0, 0, d.group_id|default(group_id), group) }}
+						</select>
 					</div>
 				</div>
-			</form>
-		{% endif %}
+
+				<div class="form-row">
+					<label class="filter-group-label" for="status">{{ lang.mod_user.admin.settings.membership_open }}</label>
+					<div class="m3-input-wrapper">
+						<select name="status" id="status" class="m3-input-lg">
+							<option value="1" {% if status == '1' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.open }}</option>
+							<option value="0" {% if status == '0' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.closed }}</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label" for="activation">{{ lang.mod_user.admin.settings.membership_activation }}</label>
+					<div class="m3-input-wrapper">
+						<select name="activation" id="activation" class="m3-input-lg">
+							<option value="2" {% if activation == '2' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.admin_approval }}</option>
+							<option value="1" {% if activation == '1' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.email_approval }}</option>
+							<option value="0" {% if activation == '0' %}selected="selected"{% endif %}>{{ lang.mod_user.admin.settings.automatic_approval }}</option>
+						</select>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<label class="filter-group-label" for="check_user_login">{{ lang.mod_user.admin.settings.allow_multiple_logins }}</label>
+					<div class="m3-input-wrapper">
+						<select name="check_user_login" id="check_user_login" class="m3-input-lg">
+							<option value="1" {% if check_user_login == '1' %}selected="selected"{% endif %}>
+								{{ lang.mod_user.admin.settings.yes }}
+							</option>
+							<option value="2" {% if check_user_login == '2' %}selected="selected"{% endif %}>
+								{{ lang.mod_user.admin.settings.no }}
+							</option>
+						</select>
+					</div>
+				</div>
+			</div>
+		</form>
 	</div>
 {% endblock %}
 
 {% block fixed_bottom %}
-	{% if oke is not defined %}
-		<div class="m3-final-bar">
-			<a href="{{ site.saddress }}mod_user/panel" class="m3-btn-half m3-btn-half-neutral">
-				<i class="bi bi-x-lg"></i>
-				{{ lang.mod_user.button.cancel }}
-			</a>
-			<button type="submit" form="settingsForm" name="edit" value="{{ lang.mod_user.admin.update_membership_settings }}" class="m3-btn-half m3-btn-half-primary">
-				<i class="bi bi-check-lg"></i>
-				{{ lang.mod_user.admin.update_membership_settings }}
-			</button>
-		</div>
-	{% endif %}
+	<div class="m3-final-bar">
+		<a href="{{ back_url }}" class="m3-btn-half m3-btn-half-neutral">
+			<i class="bi bi-x-lg"></i>
+			<span>{{ lang.mod_user.button.cancel }}</span>
+		</a>
+		<button type="submit" form="settingsForm" id="submitBtn" name="edit" value="1" class="m3-btn-half m3-btn-half-primary">
+			<i class="bi bi-check-lg" id="submitIcon"></i>
+			<span id="submitText">{{ lang.mod_user.admin.update_membership_settings }}</span>
+		</button>
+	</div>
 {% endblock %}

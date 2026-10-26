@@ -1,9 +1,10 @@
-{# mod_user social_links part - MD3 Phone-First Pure Twig Template #}
-<div class="settings-social-list">
+{# mod_user social_links part - MD3 Phone-First Native App Component #}
+<div class="settings-social-list" data-component="social-links-list">
 {% for platform in social_platforms %}
-    {% set social_value = social_links is defined and attribute(social_links, platform.key) is defined ? attribute(social_links, platform.key) : '' %}
+    {% set social_value = social_links is defined and attribute(social_links, platform.key) is defined ? attribute(social_links, platform.key) : (d.social_links is defined and attribute(d.social_links, platform.key) is defined ? attribute(d.social_links, platform.key) : '') %}
+    {% set is_active = social_active is defined and attribute(social_active, platform.key) is defined ? attribute(social_active, platform.key) : (d.social_active is defined and attribute(d.social_active, platform.key) is defined ? attribute(d.social_active, platform.key) : (social_value != '')) %}
     
-    <div class="settings-social-item platform-{{ platform.key }}">
+    <div class="settings-social-item platform-{{ platform.key }}{% if social_value != '' %} has-value{% endif %}" data-platform="{{ platform.key }}">
         <div class="social-item-main">
             <div class="social-icon-wrapper">
                 <i class="{{ platform.icon_class|default('bi bi-link') }}"></i>
@@ -22,12 +23,25 @@
         </div>
         <div class="social-item-actions">
             <label class="m3-modern-switch" title="Active / Inactive">
-                <input type="checkbox" name="social_active[{{ platform.key }}]" value="y" {% if social_value != '' %}checked{% endif %}>
+                <input type="checkbox" name="social_active[{{ platform.key }}]" id="social_active_{{ platform.key }}" value="y" {% if is_active %}checked{% endif %}>
                 <span class="m3-modern-slider"></span>
             </label>
             <button type="button" class="social-edit-btn" data-action="edit-social-link" data-key="{{ platform.key }}" data-label="{{ platform.label }}" title="{{ lang.mod_user.change }}">
                 <i class="bi bi-pencil-square"></i>
             </button>
+        </div>
+
+        <!-- Inline Expandable Editor Drawer -->
+        <div class="social-inline-editor" id="social_editor_{{ platform.key }}" hidden>
+            <div class="social-editor-inner">
+                <div class="social-editor-field">
+                    <input type="url" class="social-url-input" id="social_url_{{ platform.key }}" placeholder="https://{{ platform.key }}.com/..." value="{{ social_value }}">
+                </div>
+                <div class="social-editor-buttons">
+                    <button type="button" class="social-chip-btn clear-btn" data-action="clear-social-link" data-key="{{ platform.key }}">{{ lang.mod_user.admin.social_link_clear }}</button>
+                    <button type="button" class="social-chip-btn apply-btn" data-action="apply-social-link" data-key="{{ platform.key }}">{{ lang.mod_user.admin.social_link_apply }}</button>
+                </div>
+            </div>
         </div>
     </div>
 {% endfor %}

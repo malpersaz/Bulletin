@@ -1,30 +1,33 @@
-{# mod_user phone_input part - MD3 Phone-First Pure Twig Template #}
+{# mod_user phone_input part - MD3 Phone-First Native App Component #}
 {% set phone_input_id = input_id|default(field_name|default('phone')) %}
 {% set phone_field_name = field_name|default('phone') %}
-{% set hidden_country_id = hidden_country_input_id|default('country_code') %}
-{% set hidden_country_name = hidden_country_input_name|default('country_code') %}
-{% set store_mode = store_mode|default('split') %}
+{% set current_country_code = country_code_value|default(d.country_code|default(country_code|default('+90'))) %}
+{% set current_phone = phone_value|default(d.phone_national|default(phone|default(''))) %}
 
-<div class="phone-input-wrapper">
-    <div class="phone-input-shell">
-        {% if store_mode == 'split' %}
-            <input type="hidden" id="{{ hidden_country_id }}" name="{{ hidden_country_name }}" value="{{ country_code_value }}">
-        {% endif %}
-        <input
-            class="form-input"
-            name="{{ phone_field_name }}"
-            value="{{ phone_value }}"
-            type="tel"
-            id="{{ phone_input_id }}"
-            data-phone-store-mode="{{ store_mode }}"
-            {% if store_mode == 'split' %}
-            data-country-target-id="{{ hidden_country_id }}"
+<div class="af-phone-field" data-component="phone-field">
+    <input type="hidden" name="country_code" id="country_code" value="{{ current_country_code }}">
+    
+    <div class="af-phone-container">
+        <button type="button" class="af-country-trigger" id="countryPickerBtn" data-action="open-country-picker" aria-haspopup="dialog" aria-expanded="false" title="{{ lang.mod_user.admin.select_country_code }}">
+            <span class="af-country-display" id="countryDisplay">{{ current_country_code }}</span>
+            <i class="bi bi-chevron-down af-country-chevron"></i>
+        </button>
+
+        <div class="af-phone-input-wrap">
+            <input
+                type="tel"
+                name="{{ phone_field_name }}"
+                id="{{ phone_input_id }}"
+                class="af-phone-input"
+                value="{{ current_phone }}"
+                inputmode="tel"
+                autocomplete="tel-national"
+                placeholder="5XX XXX XX XX"
+                data-action="format-phone">
+            {% if hide_label is not defined or not hide_label %}
+                {% set default_phone_label = lang.mod_user.your_phone %}
+                <label class="af-phone-floating-label" for="{{ phone_input_id }}">{{ label_text|default(default_phone_label) }}</label>
             {% endif %}
-            autocomplete="tel"
-            inputmode="tel"
-            placeholder=" ">
-        {% if hide_label is not defined or not hide_label %}
-            <label class="phone-floating-label" for="{{ phone_input_id }}">{{ label_text|default('Mobile Phone') }}</label>
-        {% endif %}
+        </div>
     </div>
 </div>
