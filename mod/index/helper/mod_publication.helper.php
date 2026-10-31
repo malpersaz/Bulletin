@@ -219,7 +219,7 @@ class mod_publication_helper extends indexBase
                 LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                 WHERE mod_publication.status = 'y'
                   AND mod_publication.lang = '" . $this->site['lang'] . "'
-                  AND mod_user.group_id = '4'
+                  AND mod_user.group_id IN (1, 2, 4, 5)
                 GROUP BY mod_publication.user_id
             ) latest
                 ON p.user_id = latest.user_id
@@ -275,7 +275,7 @@ class mod_publication_helper extends indexBase
                     LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                     WHERE mod_publication.status = 'y'
                       AND mod_publication.lang = '" . $this->site['lang'] . "'
-                      AND mod_user.group_id = '4'
+                      AND mod_user.group_id IN (1, 2, 4, 5)
                     GROUP BY mod_publication.user_id
                 ) author_latest
                     ON latest_publications.user_id = author_latest.user_id
@@ -296,7 +296,7 @@ class mod_publication_helper extends indexBase
                 LEFT JOIN mod_user ON mod_user.id = mod_publication.user_id
                 WHERE mod_publication.status = 'y'
                   AND mod_publication.lang = '" . $this->site['lang'] . "'
-                  AND mod_user.group_id = '4'
+                  AND mod_user.group_id IN (1, 2, 4, 5)
                 GROUP BY mod_publication.user_id
             ) author_latest
                 ON latest_publications.user_id = author_latest.user_id
@@ -382,7 +382,7 @@ class mod_publication_helper extends indexBase
             $roleLabel = $this->lang['index']['mod_publication']['editor'] ?? ($userData['group_name'] ?? 'Editor');
         } elseif ($groupId === 3) {
             $roleLabel = $this->lang['index']['mod_publication']['member'] ?? ($userData['group_name'] ?? 'Member');
-        } elseif ($groupId === 4) {
+        } elseif ($groupId === 4 || $groupId === 5) {
             $roleLabel = $this->lang['index']['mod_publication']['author'] ?? ($userData['group_name'] ?? 'Author');
         } elseif (!empty($userData['group_name'])) {
             $roleLabel = $userData['group_name'];
@@ -414,7 +414,7 @@ class mod_publication_helper extends indexBase
 
         // Fetch publications count
         $pubModel = Load::model('mod_publication.publications');
-        $countSql = "SELECT COUNT(*) AS total_count
+        $countSql = "SELECT COUNT(*) total_count
                      FROM publications
                      WHERE user_id = {$userId}
                        AND status = 'y'
@@ -425,7 +425,7 @@ class mod_publication_helper extends indexBase
 
         // Fetch news count
         $newsModel = Load::model('mod_news.newses');
-        $newsCountSql = "SELECT COUNT(*) AS total_count
+        $newsCountSql = "SELECT COUNT(*) total_count
                          FROM newses
                          WHERE user_id = {$userId}
                            AND status = 'y'

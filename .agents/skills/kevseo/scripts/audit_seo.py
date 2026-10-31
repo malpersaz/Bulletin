@@ -91,12 +91,12 @@ class KevseoAuditor:
                 "message": "Content has no outbound citations. At least 1-2 primary source authority links are required for E-E-A-T."
             })
 
-        # 5. Image attribution (Turkish: Fotoğraf: ... or Görsel: ...)
-        if not re.search(r'<strong>\s*(?:Fotoğraf|Görsel)\s*:\s*[^<]+</strong>', html_text, re.IGNORECASE):
+        # 5. Image attribution (Turkish: Fotoğraf: ... / Görsel: ..., Kurdish: Wêne: ...)
+        if not re.search(r'<strong>\s*(?:Fotoğraf|Görsel|Wêne)\s*:\s*[^<]+</strong>', html_text, re.IGNORECASE):
             issues.append({
                 "type": "missing_image_attribution",
                 "severity": "NOTICE",
-                "message": "Image attribution line ('Fotoğraf: ...') not found at the bottom of the article."
+                "message": "Image attribution line ('Wêne: ...' or 'Fotoğraf: ...') not found at the bottom of the article."
             })
 
         # 6. Disallowed French guillemets

@@ -431,6 +431,7 @@ $lang['index']['cache'] = [
     'cache_templates' => 'Templates Cache',
     'cache_llms' => 'LLMs AI Cache',
     'cache_captcha' => 'Captcha Cache',
+    'cache_market' => 'Market Rates Cache',
     'cache_all' => 'ALL JS CSS SQL TEMPLATES Cache',
     'file_deleted' => '%s deleted successfully',
     'file_delete_error' => 'Error deleting %s',
@@ -532,6 +533,22 @@ $lang['index']['mod_news'] = [
         'world_title' => 'World',
         'middle_east_title' => 'Middle East',
     ],
+    'economy_news' => [
+        'title' => 'Economy',
+        'all_items' => 'View All',
+        'kicker' => 'Finance & Markets',
+        'featured' => 'Featured',
+        'markets_title' => 'Markets',
+        'live_data' => 'Live Data',
+        'gram_gold' => 'GRAM GOLD',
+        'dollar' => 'DOLLAR',
+        'euro' => 'EURO',
+        'sterling' => 'STERLING',
+        'bist100' => 'BIST 100',
+        'bitcoin' => 'BITCOIN',
+        'gram_silver' => 'GRAM SILVER',
+        'brent' => 'BRENT',
+    ],
 ];
 $lang['index']['comments'] = 'Comments';
 $lang['index']['add_comment'] = 'Add Comment';
@@ -596,6 +613,8 @@ $lang['index']['mod_publication'] = [
     '18' => 'No publications available in this category.',
 ];
 $lang['index']['mod_publication']['authors'] = 'Our Authors';
+$lang['index']['mod_publication']['authors_section_title'] = 'Authors / Columnists';
+$lang['index']['mod_publication']['all_authors'] = 'All Authors';
 $lang['index']['mod_publication']['author'] = 'Author';
 $lang['index']['mod_publication']['editor'] = 'Editor';
 $lang['index']['mod_publication']['member'] = 'Member';

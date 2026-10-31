@@ -29,7 +29,6 @@ services:
     image: mysql:8.0
     container_name: bulletin_db
     command: --default-authentication-plugin=mysql_native_password
-    restart: always
     environment:
       MYSQL_DATABASE: bulletin
       MYSQL_USER: bulletin
@@ -60,3 +59,5 @@ networks:
 
 volumes:
   db_data:
+    external: true
+    name: bulletin_db_data

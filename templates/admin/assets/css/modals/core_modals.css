@@ -59,9 +59,29 @@ dialog.sheet-dialog-large[open] {
   flex: 1 1 auto !important;
   min-height: 0 !important;
   overflow-y: auto !important;
+  overflow-x: hidden !important;
   padding: 16px;
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
+}
+
+#modal-dynamic-body .mobile-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  transform: none !important;
+  overflow: visible !important;
+}
+
+#modal-dynamic-body .app-scroll-frame {
+  padding-bottom: 24px !important;
+  overflow: visible !important;
 }
 
 #modal-dynamic-body .edit-container {

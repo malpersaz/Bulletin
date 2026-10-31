@@ -91,6 +91,11 @@ class mod_video_embed_mod extends BaseModuleController
         $this->site['title'] = $this->lang['mod_video_embed']['add'];
         $this->theme->tpl('mod_video_embed/add');
         $this->theme->set('site', $this->site);
+        $this->theme->set('is_ajax', $this->_isAjaxRequest() || (isset($_GET['ajax']) && (string)$_GET['ajax'] === '1'));
+        $targetModule = Req::is_Get('target_module') ? Req::Get_Safe('target_module') : '';
+        $targetId = Req::is_Get('target_id') ? intval(Req::Get_Safe('target_id')) : 0;
+        $this->theme->set('target_module', $targetModule);
+        $this->theme->set('target_id', $targetId);
         $this->db->fetch_array("SELECT * FROM `lang` WHERE status='y' ORDER BY is_default DESC, seo ASC");
         $this->theme->set('lang_lang', $this->db->getResult()->toArray());
         $mod_video_embed_category_nested = Load::model('mod_video_embed_category');
@@ -136,6 +141,7 @@ class mod_video_embed_mod extends BaseModuleController
         $this->theme->set('site', $this->site);
         $this->theme->set('d', $d);
         $this->theme->tpl('mod_video_embed/edit');
+        $this->theme->set('is_ajax', $this->_isAjaxRequest() || (isset($_GET['ajax']) && (string)$_GET['ajax'] === '1'));
         $langWhere = "WHERE status='y'";
         if (!empty($d['lang'])) {
             $langWhere .= " OR seo='" . Req::Clear($d['lang']) . "'";
@@ -163,6 +169,7 @@ class mod_video_embed_mod extends BaseModuleController
         $this->site['title'] = $this->lang['mod_video_embed']['list'];
         $this->theme->tpl('mod_video_embed/list');
         $this->theme->set('site', $this->site);
+        $this->theme->set('is_ajax', $this->_isAjaxRequest() || (isset($_GET['ajax']) && (string)$_GET['ajax'] === '1'));
     }
 
     public function autofill_metadata()
@@ -200,25 +207,50 @@ class mod_video_embed_mod extends BaseModuleController
             $metadata = $this->_fetchYouTubeMetadata($videoId);
             $imageFile = '';
             $imageUrl = '';
+            $missingFields = [];
+            $warnings = [];
 
             if (!empty($metadata['thumbnail_url'])) {
-                $imageFile = $this->_importRemoteThumbnail($metadata['thumbnail_url']);
-                if ($imageFile !== '') {
-                    $imageUrl = $this->site['iaddress'] . 'mod_video_embed/thumb/' . $imageFile . '?v=' . time();
+                try {
+                    $imageFile = $this->_importRemoteThumbnail($metadata['thumbnail_url']);
+                    if ($imageFile !== '') {
+                        $imageUrl = $this->site['iaddress'] . 'mod_video_embed/thumb/' . $imageFile . '?v=' . time();
+                    }
+                } catch (Throwable $thumbErr) {
+                    $missingFields[] = 'image';
+                    $warnings[] = $this->_autofillMessage('download_failed');
                 }
+            } else {
+                $missingFields[] = 'image';
             }
+
+            if (empty($metadata['duration'])) {
+                $missingFields[] = 'duration';
+            }
+            if (empty($metadata['description'])) {
+                $missingFields[] = 'description';
+            }
+
+            $isPartial = !empty($missingFields);
+            $responseMessage = $isPartial ? $this->_autofillMessage('partial') : $this->_autofillMessage('success');
+
+            $safeTitle = $this->_stripEmojiAndUnsupportedChars($metadata['title'] ?? '');
+            $safeDescription = $this->_stripEmojiAndUnsupportedChars($metadata['description'] ?? '');
 
             $this->_jsonResponse([
                 'status' => 'success',
-                'message' => $this->_autofillMessage('success'),
+                'is_partial' => $isPartial,
+                'missing_fields' => $missingFields,
+                'warnings' => $warnings,
+                'message' => $responseMessage,
                 'data' => [
                     'video_id' => $videoId,
-                    'name' => $metadata['title'] ?? '',
-                    'title' => $metadata['title'] ?? '',
-                    'description' => $metadata['description'] ?? '',
-                    'content' => $metadata['description'] ?? '',
+                    'name' => $safeTitle,
+                    'title' => $safeTitle,
+                    'description' => $safeDescription,
+                    'content' => $safeDescription,
                     'duration' => $metadata['duration'] ?? '',
-                    'keywords' => $this->_makeKeywordString($metadata['title'] ?? ''),
+                    'keywords' => $this->_makeKeywordString($safeTitle),
                     'original' => 'https://www.youtube.com/watch?v=' . $videoId,
                     'embed' => $this->_buildEmbedCode($videoId),
                     'image' => $imageFile,
@@ -410,10 +442,47 @@ class mod_video_embed_mod extends BaseModuleController
             }
 
             if ($this->mod_video_embed_model->save(TRUE)) {
+                $newId = (int)$this->mod_video_embed_model->insert_id();
+
+                // Automatically attach newly created embedded video to target content if requested.
+                $targetModule = Req::is_Post('target_module') ? Req::Post_Safe('target_module') : (Req::is_Get('target_module') ? Req::Get_Safe('target_module') : null);
+                $targetId = Req::is_Post('target_id') ? intval(Req::Post_Safe('target_id')) : (Req::is_Get('target_id') ? intval(Req::Get_Safe('target_id')) : 0);
+                $attached = false;
+
+                if ($newId > 0 && !empty($targetModule) && $targetId > 0 && BridgeCleanupService::tableExists($targetModule)) {
+                    try {
+                        $targetModel = Load::model($targetModule);
+                        $targetModel->where_id($targetId)->gRo();
+                        if ($targetModel->getSize() > 0) {
+                            $targetModel->sync();
+                            $videoData = $targetModel->video;
+                            $existed = (is_string($videoData) && !empty($videoData)) ? @unserialize($videoData, ['allowed_classes' => false]) : [];
+                            if (!is_array($existed)) {
+                                $existed = [];
+                            }
+                            $valToAttach = 'vid:' . $newId;
+                            if (!in_array($valToAttach, $existed, true)) {
+                                $existed[] = $valToAttach;
+                            }
+                            $targetModel->video = serialize(array_values(array_unique($existed)));
+                            $targetModel->id = $targetId;
+                            if ($targetModel->update('id')) {
+                                $attached = true;
+                            }
+                        }
+                    } catch (\Throwable $e) {
+                        // Keep video creation successful even if relation update encounters an error.
+                    }
+                }
+
                 if ($isAjax) {
                     header('Content-Type: application/json; charset=utf-8');
                     echo json_encode([
                         'status' => 'success',
+                        'id' => $newId,
+                        'attached' => $attached,
+                        'target_module' => $targetModule,
+                        'target_id' => $targetId,
                         'message' => $this->lang['mod_video_embed']['message']['success']['add'],
                         'redirect' => $this->site['saddress'] . 'mod_video_embed/list'
                     ]);
@@ -442,8 +511,19 @@ class mod_video_embed_mod extends BaseModuleController
     // Handle edit form submission.
     protected function _edit($id = NULL)
     {
+        $isAjax = $this->_isAjaxRequest();
+        $autofillImage = Req::Post_Safe('autofill_image');
         $this->val = Load::validator('mod_video_embed.edit');
         if ($this->val->check($id)) {
+            if ($isAjax) {
+                header('Content-Type: application/json; charset=utf-8');
+                echo json_encode([
+                    'status' => 'error',
+                    'message' => implode(', ', $this->val->errors),
+                    'errors' => $this->val->errors
+                ]);
+                exit;
+            }
             foreach ($_POST as $key => $val) {
                 $this->theme->set($key, Req::Post_Safe($key));
             }
@@ -491,6 +571,17 @@ class mod_video_embed_mod extends BaseModuleController
                     $this->_error_message($this->lang['mod_video_embed']['errors']['image_upload_failed']);
                     return FALSE;
                 }
+            } elseif ($autofillImage !== '') {
+                $old_data = Load::model('mod_video_embed');
+                $old_data->where_id($id)->gRo()->sync();
+                if ($old_data->image != '' && $old_data->image !== $autofillImage) {
+                    $image = Load::mod('image');
+                    $image->mod = 'mod_video_embed';
+                    $image->url = $old_data->image;
+                    $option = $this->_videoImageOptions();
+                    $image->_delete_files($option);
+                }
+                $this->mod_video_embed_model->image = $autofillImage;
             } else {
                 if (isset($this->mod_video_embed_model->image)) {
                     unset($this->mod_video_embed_model->image);
@@ -499,11 +590,29 @@ class mod_video_embed_mod extends BaseModuleController
 
             $this->mod_video_embed_model->id = $id;
             if ($this->mod_video_embed_model->update('id')) {
+                if ($isAjax) {
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'status' => 'success',
+                        'message' => $this->lang['mod_video_embed']['message']['success']['edit'],
+                        'id' => $id,
+                        'redirect' => $this->site['saddress'] . 'mod_video_embed/list'
+                    ]);
+                    exit;
+                }
                 $this->_success_message($this->lang['mod_video_embed']['message']['success']['edit']);
             } else {
                 // Roll back the uploaded image if persistence fails.
                 if (isset($image->url)) {
                     $image->_rollback();
+                }
+                if ($isAjax) {
+                    header('Content-Type: application/json; charset=utf-8');
+                    echo json_encode([
+                        'status' => 'error',
+                        'message' => $this->lang['mod_video_embed']['message']['error']['edit']
+                    ]);
+                    exit;
                 }
                 $this->_error_message($this->lang['mod_video_embed']['message']['error']['edit']);
             }
@@ -940,11 +1049,19 @@ class mod_video_embed_mod extends BaseModuleController
             return null;
         }
 
-        if (preg_match('/youtube\.com\/embed\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+        if (strpos($input, '&lt;') !== false || strpos($input, '&quot;') !== false) {
+            $input = html_entity_decode($input, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        }
+
+        if (preg_match('/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
             return $matches[1];
         }
 
-        if (preg_match('/youtube\.com\/shorts\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+        if (preg_match('/youtube(?:-nocookie)?\.com\/shorts\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
+            return $matches[1];
+        }
+
+        if (preg_match('/youtube(?:-nocookie)?\.com\/live\/([A-Za-z0-9_-]{11})/i', $input, $matches)) {
             return $matches[1];
         }
 
@@ -1290,6 +1407,22 @@ class mod_video_embed_mod extends BaseModuleController
                 'option' => 'width',
             ],
         ];
+    }
+
+    private function _stripEmojiAndUnsupportedChars($string)
+    {
+        $string = (string) $string;
+        if ($string === '') {
+            return '';
+        }
+
+        // Remove 4-byte UTF-8 characters (emoji, supplemental symbols outside BMP)
+        $cleaned = preg_replace('/[\x{10000}-\x{10FFFF}]/u', '', $string);
+        if ($cleaned === null) {
+            $cleaned = $string;
+        }
+
+        return trim($cleaned);
     }
 
     private function _formatIso8601Duration($duration)

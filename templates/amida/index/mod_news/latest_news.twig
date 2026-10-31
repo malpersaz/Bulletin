@@ -7,8 +7,8 @@
             <div class="latest-news-heading-wrap">
                 <h2 id="latest-news-heading" class="latest-news-title">
                     <a href="{{ site.saddress }}newses" class="latest-news-title-link">
-                        <i class="bi bi-newspaper" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_news.latest_news.title }}</span>
+                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                        <span>{{ lang.index.mod_news.latest_news.last_24_hours }}</span>
                     </a>
                 </h2>
             </div>
@@ -45,10 +45,13 @@
                                 </div>
                             {% endif %}
 
-                            {% if news.published_ago is defined and news.published_ago is not empty %}
-                                <span class="latest-news-timeago">
-                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
-                                    <span>{{ news.published_ago }}</span>
+                            {% if news.category_name is defined and news.category_name is not empty %}
+                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                    {{ news.category_name }}
+                                </span>
+                            {% elseif news.categoryname is defined and news.categoryname is not empty %}
+                                <span class="latest-news-category-badge" itemprop="articleSection">
+                                    {{ news.categoryname }}
                                 </span>
                             {% endif %}
 
@@ -70,7 +73,13 @@
 
                         <div class="latest-news-body">
                             <div class="latest-news-meta">
-                                {% if news.created_at is defined and news.created_at is not empty %}
+                                {% if news.published_ago is defined and news.published_ago is not empty %}
+                                    <span class="latest-news-meta-item">
+                                        <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                        <time datetime="{{ news.created_at|default('') }}" itemprop="datePublished">{{ news.published_ago }}</time>
+                                    </span>
+                                    <span class="latest-news-meta-sep" aria-hidden="true">·</span>
+                                {% elseif news.created_at is defined and news.created_at is not empty %}
                                     <span class="latest-news-meta-item">
                                         <i class="bi bi-calendar3" aria-hidden="true"></i>
                                         <time datetime="{{ news.created_at }}" itemprop="datePublished">{{ news.created_at|date('d.m.Y') }}</time>
@@ -95,7 +104,7 @@
                             </h3>
 
                             <p class="latest-news-summary" itemprop="description">
-                                {{ clean_summary|length > 180 ? clean_summary|slice(0, 177) ~ '...' : clean_summary }}
+                                {{ clean_summary }}
                             </p>
                         </div>
                     </div>

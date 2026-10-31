@@ -147,6 +147,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Tenena Logoyê Asöyî',
     'header_style_square_name' => 'Logoyê Kare û Nâmê Mâlpərî',
     'header_style_rect_name' => 'Logoyê Asöyî û Nâmê Mâlpərî',
+    'header_style_square_rect' => 'İkon û Logoyê Asöyî',
     'header_style_name_only' => 'Teyna Nâmê Mâlpərê',
     'logo_rect_title' => 'Logoyê Asöyî (3:1)',
     'logo_square_title' => 'Logoyê Kare (1:1)',

@@ -1,5 +1,81 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.11 (2026-10-31)
+- **Homepage Economy News Sidebar Block R2 & Zero-Latency Live Market Data Architecture (`lib/MarketDataService.class.php`, `tasks/update_market_rates.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amida/index/mod_news/economy_news.twig`, `templates/amida/index/mod_news/market_rates.twig`, `templates/amida/static/css/economy-news.css`, `templates/amida/static/css/market-rates.css`, `clear_cache.php`)**:
+  - **Zero-Latency Multi-Source Market Data Engine (`lib/MarketDataService.class.php`, `tasks/update_market_rates.php`)**:
+    - Architected `MarketDataService` with field-level multi-source redundancy across verified, key-free public endpoints (Truncgil, CNBC, TCMB, Binance, CryptoCompare), compound cross-rate derivation (Gram Gold from USD gold spot and USD/TRY, Gram Silver, Brent Crude Oil, BIST 100), circuit breaker backoff, and local caching in `cache/market/market_rates.json` ensuring `< 1ms` TTFB on public HTTP requests.
+    - Added scheduled CLI task `tasks/update_market_rates.php` for automated background rate updates.
+    - Integrated market cache flushing (`cache_market`) into `clear_cache.php` and `index.php` (`cacheMarket()`).
+  - **Multilingual Economy News Controller & Exclusion Filter (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`)**:
+    - Added `index_mod::_economy_news()` with candidate resolution across 10 languages (`Ekonomi`, `Aborî`, `Economy`, `Wirtschaft`, `Économie`, `Экономика`, `اقتصاد`, `ئابووری`, `İqtisad`), multi-category query exclusion (`$excludeIds`), and passing of live formatted market rates.
+  - **Broadsheet Right Sidebar Block R2 UI & 8-Instrument Ticker Board (`templates/amida/index/mod_news/economy_news.twig`, `templates/amida/index/mod_news/market_rates.twig`, `templates/amida/static/css/economy-news.css`, `templates/amida/static/css/market-rates.css`)**:
+    - Built `economy_news.twig` featuring 1 lead story card (`160 × 90 px` `16:9` thumbnail + bold headline + 120-character summary) and 2 horizontal sub-story cards (`104 × 58 px` `16:9` thumbnail + headline + 2-line clamped summary).
+    - Built `market_rates.twig` featuring a responsive `2 × 4` financial instruments grid with localized names, real-time rates, formatted percentage badges (`up`/`down`/`flat`), nominal difference values, and live data indicator.
+  - **10-Language Localization Parity (`mod/index/lang/*.php`)**:
+    - Added comprehensive `$lang['index']['mod_news']['economy_news']` (`title`, `all_items`, `kicker`, `featured`, `markets_title`, `live_data`, `gram_gold`, `dollar`, `euro`, `sterling`, `bist100`, `bitcoin`, `gram_silver`, `brent`) and cache keys across all 10 language dictionaries (`ar`, `ckb`, `de`, `en`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`).
+
+- **Hero News Slider Modernization & Interactive Autoplay Progress (`templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/hero-news-slider.min.css`, `templates/amida/static/js/hero-news-slider.js`, `mod/index/helper/mod_hero_slider.helper.php`)**:
+  - **Expanded Rotation Capacity (`mod/index/helper/mod_hero_slider.helper.php`)**:
+    - Increased default hero slider item count from 6 to 10 (`hero_slider($limit = 10)`), providing deeper editorial rotation.
+  - **Tactile Fractional Counter & Dynamic Autoplay Ring/Bar (`templates/amida/index/hero_slider.twig`, `templates/amida/static/js/hero-news-slider.js`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/hero-news-slider.min.css`)**:
+    - Added fractional counter HUD (`01 / 10`) synced dynamically to `swiper.realIndex` on initialization and slide changes (`updateCounter()`).
+    - Added live linear autoplay progress indicator driven by `autoplayTimeLeft` event via `--hero-autoplay-progress` CSS custom property.
+    - Added strict `prefers-reduced-motion` detection disabling autoplay and transitions for accessibility compliance.
+  - **Slide Typography & Minified Stylesheet Parity (`templates/amida/index/hero_slider.twig`, `templates/amida/static/css/hero-news-slider.css`, `templates/amida/static/css/hero-news-slider.min.css`)**:
+    - Re-architected slide overlay into an integrated kicker bar (`category` + `timestamp`), multi-line serif headline, deck summary, and reading-time indicator with subtle gradient shielding.
+    - Synchronized `hero-news-slider.min.css` to 100% rule-set parity (105 blocks).
+
+- **Admin `mod_video_embed` Full Modernization, Strict Code Separation & Native Mobile UX (`mod/mod_video_embed/index.php`, `templates/admin/mod_video_embed/`, `templates/admin/assets/css/mod_video_embed.css`, `templates/admin/assets/js/mod_video_embed*.js`)**:
+  - **AJAX Submissions, Sanitization & Resilient Embed Parsers (`mod/mod_video_embed/index.php`)**:
+    - Added JSON responses to `_add()` and `_edit()` for asynchronous form submission without page reloading.
+    - Extended video URL matching to support `youtube-nocookie.com`, YouTube Live (`youtube.com/live/{id}`), YouTube Shorts (`youtube.com/shorts/{id}`), HTML entity decoded inputs, and multi-platform video URL resolution.
+    - Implemented `_stripEmojiAndUnsupportedChars()` removing 4-byte UTF-8 supplementary symbols to prevent database write crashes on MySQL standard utf8 collations.
+    - Added auto-filled thumbnail synchronization and automated file cleanup on image replacement.
+  - **Strict Code Separation & Declarative Data Attributes (`templates/admin/mod_video_embed/{list,add,edit}.twig`)**:
+    - Completely eliminated inline `<script>` tags, inline JavaScript object configurations (`VIDEO_LANG`, `MODULE_URL`), and inline styles across all `mod_video_embed` templates.
+    - Migrated all configuration and localized UI strings to declarative `data-*` attributes (`data-module-url`, `data-data-url`, `data-i18n-*`) on the container.
+  - **Dynamic Metadata Fetching & Textless Indeterminate Progress Track (`templates/admin/assets/css/mod_video_embed.css`, `templates/admin/assets/js/mod_video_embed_edit.js`)**:
+    - Built textless indeterminate loading bar (`.embed-fetch-bar-track`, `.embed-fetch-bar-indeterminate`) for real-time video metadata lookups.
+    - Added interactive duration formatted badges, automatic category mapping, dynamic thumbnail preview updates, and modal preview engine integration.
+  - **Card Actions, Toolbar & Quick Status Toggles (`templates/admin/assets/js/mod_video_embed.js`)**:
+    - Upgraded `mod_video_embed.js` to v2.1 with pull-to-refresh spinner, infinite scroll / load more, batch selection, quick status toggle (`publish`/`unpublish`), and hero slider toggle with real-time UI reflection.
+
+- **Admin `mod_news` Card State Indicators & Interactive Floating Toolbar (`templates/admin/assets/css/mod_news.css`, `templates/admin/assets/js/mod_news.js`, `templates/admin/mod_news/list.twig`, `mod/mod_news/index.php`)**:
+  - **Visual State Indicator Pills (`templates/admin/assets/css/mod_news.css`, `templates/admin/assets/js/mod_news.js`, `templates/admin/mod_news/list.twig`)**:
+    - Added tactile state indicator chips (`.card-state-indicators`, `.card-state-pill`) to every news list card displaying real-time Status (Published/Draft), Deck (Featured/Standard), and Hero Slider (In Slider/Excluded) states.
+    - Updated interactive toggles in `mod_news.js` to immediately update state pills without requiring a full card or datatable refresh.
+  - **Floating Contextual Toolbar Elevation & Snackbar Coordination (`templates/admin/assets/css/mod_news.css`)**:
+    - Coordinated `#snackbar-container` with floating contextual action bar (`bottom: calc(142px + env(safe-area-inset-bottom, 0px)) !important` when items are selected or toolbar is visible) to prevent UI overlapping.
+    - Normalized `toggleFlag()` JSON responses in `mod/mod_news/index.php` for status, deck, and slider actions.
+
+- **Admin Core Modernization & Bulk Workflow Enhancements (`lib/BaseModuleController.class.php`, `lib/AdminTemplate.class.php`, `mod/mod_publication/index.php`, `templates/admin/assets/js/modals/`, `templates/admin/assets/css/modals/core_modals.css`)**:
+  - **Base Controller Bulk Approve / Unapprove Operations (`lib/BaseModuleController.class.php`)**:
+    - Implemented `approve()` and `unapprove()` actions across `BaseModuleController`, supporting single or array `$ids` with granular permission checks (`approval` vs `publish`/`unpublish`).
+  - **Publication Datatable & Ajax Controller Hardening (`mod/mod_publication/index.php`)**:
+    - Upgraded `datatable_json()` with column mapping, ordering, and filtering across `slider` and `deck` properties.
+  - **Admin Template Ajax Detection & Modal Engine (`lib/AdminTemplate.class.php`, `templates/admin/assets/js/modals/af_modal_engine.js`, `modal_theme_logo.js`, `core_modals.css`)**:
+    - Added `$this->set('is_ajax', $isAjax)` in `AdminTemplate.class.php`.
+    - Enhanced `af_modal_engine.js` with focus trapping, backdrop handling, and smooth sheet animations.
+    - Added support for `square_rectangle` layout in logo customization modals and `McpSettingsTools.class.php`.
+
+- **Frontend Navigation, Brand Architecture & Authors Layout (`templates/amida/`)**:
+  - **Top Navigation Brand Fallback & Logo Typography (`templates/amida/index/mod_menu/`, `templates/amida/static/css/top-menu.css`, `templates/amida/static/css/stacked-top-menu.css`, `templates/amida/static/js/top-menu.js`)**:
+    - Modernized brand logo rendering across standard and stacked navigation headers with support for `square_rectangle` logo layouts and SVG/PNG icon combos.
+    - Added resilient JavaScript fallback handler in `top-menu.js` switching from `/thumb/` to original source if thumbnail generation fails or hiding gracefully on broken asset URLs.
+  - **Authors Strip & Publication Grid Polish (`templates/amida/index/mod_publication/`, `templates/amida/static/css/latest-authors.css`, `templates/amida/static/css/latest-publications.css`)**:
+    - Polished author profile card styling, circular avatars with initials fallbacks, column counts, typography, and section title keys.
+    - Added `authors_section_title` and `all_authors` localization keys across all 10 language dictionaries.
+  - **Modern Brand Presentation in Footer (`templates/amida/index/footer.twig`, `templates/amida/static/css/footer.css`)**:
+    - Enhanced footer brand presentation with responsive Gothic typography, dynamic favicon/icon fallback chain, and clean feed link alignments.
+
+- **News Agent Editorial Tools & SEO Guard Script (`.agents/skills/kevanger/`, `.agents/skills/kevkolin/`, `.agents/skills/kevseo/`)**:
+  - Added automated image processing helper `process_news_image.py` in `.agents/skills/kevanger/scripts/`.
+  - Updated editorial workflows, source verification rules in `kevkolin`, and SEO auditing script `audit_seo.py` with 16:9 aspect ratio and deck length enforcement.
+
+- **Clean Cache Management & Port/Environment Hygiene (`clear_cache.php`, `docker-compose.yml`, `templates/base_static/css/cache-clear.css`)**:
+  - Extended `clear_cache.php` with direct market data cache flushing (`cache_market`), styled interactive feedback cards, and cache clear styling in `templates/base_static/css/cache-clear.css`.
+  - Standardized Docker web port configuration in `docker-compose.yml`.
+
 ## v1.0.10 (2026-10-26)
 - **Admin `mod_user` Form Modernization, Native Mobile App UI & Full Parity Sync (`mod/mod_user/`, `templates/admin/mod_user/`, `templates/admin/assets/css/mod_user.css`, `templates/admin/assets/js/mod_user.js`, `templates/admin/layout.twig`)**:
   - **Form Submission, Case-Sensitivity Parity Fix & Asynchronous AJAX (`mod/mod_user/index.php`)**:

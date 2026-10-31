@@ -455,6 +455,48 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _market_rates($t)
+    {
+        require_once lib_dir . 'MarketDataService.class.php';
+        $t->ctx_set('market_rates', MarketDataService::getRates((string) ($this->site['lang'] ?? 'tr')));
+    }
+
+    public function _economy_news($t, $limit = 3)
+    {
+        if (!$this->isFeatureReady('news.latest')) {
+            $t->ctx_set('economy_news', []);
+            $t->ctx_set('economy_category_seo', '');
+            $t->ctx_set('economy_category_name', '');
+            $t->ctx_set('economy_category_url', $this->site['saddress'] . 'newses');
+            return;
+        }
+
+        $helper = Load::helper('index.mod_news');
+        $economyGroup = [
+            'Ekonomi', 'Aborî', 'Abori', 'Economy', 'Wirtschaft',
+            'Économie', 'Economie', 'Экономика', 'اقتصاد', 'ئابووری', 'Ekonomiye'
+        ];
+
+        $result = $helper->_category_news(
+            $economyGroup,
+            (int) $limit,
+            'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo',
+            [],
+            false
+        );
+
+        $categorySeo = (string) ($result['category_seo'] ?? '');
+        $categoryName = (string) ($result['category_name'] ?? '');
+        $t->ctx_set('economy_news', $result['items']);
+        $t->ctx_set('economy_category_seo', $categorySeo);
+        $t->ctx_set('economy_category_name', $categoryName);
+        $t->ctx_set(
+            'economy_category_url',
+            $categorySeo !== '' ? $this->site['saddress'] . 'newses/' . $categorySeo : $this->site['saddress'] . 'newses'
+        );
+        unset($helper);
+    }
+
     public function _homepage_news_categories($t, $limit, $select)
     {
         if (!$this->isFeatureReady('news.homepage_categories')) {

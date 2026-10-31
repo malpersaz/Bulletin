@@ -362,7 +362,7 @@ class mod_news_helper extends indexBase
         return [];
     }
 
-    public function _category_news(array $categoryCandidates, int $limit = 3, string $select = 'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo', array $excludeIds = []): array
+    public function _category_news(array $categoryCandidates, int $limit = 3, string $select = 'id,image,name,seo,summary,created_at,video,gallery_id,file_id,deck,category_id,category_name,category_seo', array $excludeIds = [], bool $excludeSlider = true): array
     {
         if (!$this->isFeatureReady('news.latest')) {
             return ['items' => [], 'category_name' => '', 'category_seo' => '', 'matched_categories' => []];
@@ -441,7 +441,9 @@ class mod_news_helper extends indexBase
         $m = Load::model('mod_news.newses');
         $m->flush();
         $m->select($select)->where_lang_and_status($lang, 'y');
-        $m->addWhere("slider='n'");
+        if ($excludeSlider) {
+            $m->addWhere("slider='n'");
+        }
         $cleanExcludeIds = array_values(array_unique(array_filter(array_map('intval', $excludeIds), function ($id) {
             return $id > 0;
         })));
@@ -460,6 +462,35 @@ class mod_news_helper extends indexBase
                 $summaryPlain = trim(strip_tags((string) ($row['summary'] ?? '')));
                 $row['summary_short'] = $summaryPlain;
                 $items[] = $row;
+            }
+        }
+
+        if (count($items) < $limit && $excludeSlider) {
+            $fetchedIds = array_map(function ($it) {
+                return (int) ($it['id'] ?? 0);
+            }, $items);
+            $allExcludes = array_values(array_unique(array_filter(array_merge($cleanExcludeIds, $fetchedIds), function ($id) {
+                return $id > 0;
+            })));
+
+            $remainingLimit = $limit - count($items);
+            $m->flush();
+            $m->select($select)->where_lang_and_status($lang, 'y');
+            if (!empty($allExcludes)) {
+                $m->addWhere("id NOT IN (" . implode(',', $allExcludes) . ")");
+            }
+            $m->addWhere($aclCondition);
+            $m->addWhere("category_id IN ({$targetCatList})");
+            $m->limit($remainingLimit)->order('created_at', 'DESC');
+            $m->gR();
+
+            if ($m->getSize() !== 0) {
+                $rawRows = $this->_cleanNewsRows($m->toArray());
+                foreach ($rawRows as $row) {
+                    $summaryPlain = trim(strip_tags((string) ($row['summary'] ?? '')));
+                    $row['summary_short'] = $summaryPlain;
+                    $items[] = $row;
+                }
             }
         }
 

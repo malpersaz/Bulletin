@@ -599,24 +599,27 @@ class mod_news_mod extends BaseModuleController
         if ($updateModel->update('id')) {
             $response = [
                 'status' => 'success',
-                $column => $newVal,
             ];
             if ($column === 'slider') {
+                $response['slider'] = $newVal;
                 $response['in_hero_slider'] = ($newVal === 'y');
                 $response['message'] = $newVal === 'y'
                     ? $this->lang['mod_news']['hero_slider_added']
                     : $this->lang['mod_news']['hero_slider_removed'];
             } elseif ($column === 'deck') {
+                $response['deck'] = $newVal;
                 $response['in_deck'] = ($newVal === 'y');
                 $response['message'] = $newVal === 'y'
                     ? $this->lang['mod_news']['deck_added']
                     : $this->lang['mod_news']['deck_removed'];
             } elseif ($column === 'status') {
-                $response['is_published'] = ($newVal === 'y');
                 $response['new_status'] = $newVal;
+                $response['is_published'] = ($newVal === 'y');
                 $response['message'] = $newVal === 'y'
                     ? $this->lang['mod_news']['context_menu']['published_msg']
                     : $this->lang['mod_news']['context_menu']['unpublished_msg'];
+            } else {
+                $response[$column] = $newVal;
             }
             $this->jsonResponse($response);
             return;
@@ -627,6 +630,9 @@ class mod_news_mod extends BaseModuleController
             $errorMessage = $this->lang['mod_news']['hero_slider_error'];
         } elseif ($column === 'deck') {
             $errorMessage = $this->lang['mod_news']['deck_error'];
+        } elseif ($column === 'status') {
+            $errorMessage = $this->lang['mod_news']['message']['error']['status']
+                ?? ($this->lang['mod_news']['error_occurred'] ?? 'Failed to update status');
         }
 
         $this->jsonResponse([

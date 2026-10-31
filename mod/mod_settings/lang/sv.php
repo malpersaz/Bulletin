@@ -144,6 +144,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Endast horisontell logotyp',
     'header_style_square_name' => 'Kvadratisk logotyp och webbplatsnamn',
     'header_style_rect_name' => 'Horisontell logotyp och webbplatsnamn',
+    'header_style_square_rect' => 'Ikon och horisontell logotyp',
     'header_style_name_only' => 'Endast webbplatsnamn',
     'logo_rect_title' => 'Horisontell logotyp (3:1)',
     'logo_square_title' => 'Kvadratisk logotyp (1:1)',

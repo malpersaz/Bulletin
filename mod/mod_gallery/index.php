@@ -490,8 +490,8 @@ class mod_gallery_mod extends indexMain
             if ($this->r->save()) {
                 echo json_encode([
                     'status' => 'success',
-                    'url' => 'static/mod_gallery/' . $mod . '/thumb/' . $resim_link,
-                    'original' => $resim_link
+                    'url' => 'static/mod_gallery/' . $mod . '/thumb/' . $imageUrl,
+                    'original' => $imageUrl
                 ]);
             } else {
                 echo json_encode(['status' => 'error', 'message' => $this->lang['mod_gallery']['ajax']['error']]);

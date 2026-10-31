@@ -80,6 +80,10 @@ function getNewsLang() {
         deck_removed: mod.deck_removed || 'Removed from featured',
         deck_error: mod.deck_error || 'Failed to update featured state',
         deck_badge: mod.deck_badge || mod.admin?.columns?.deck || 'Featured',
+        publish: ctx.publish || al.context_menu?.publish || 'Publish',
+        unpublish: ctx.unpublish || al.context_menu?.unpublish || 'Unpublish',
+        published_msg: ctx.published_msg || al.context_menu?.published_msg || 'Published',
+        unpublished_msg: ctx.unpublished_msg || al.context_menu?.unpublished_msg || 'Unpublished',
         status_updated: mod.message?.success?.status || mod.success || 'Status updated',
         status_error: mod.message?.error?.status || mod.error_occurred || mod.error || 'Failed to update status',
         picker: {
@@ -353,6 +357,11 @@ class NewsManager {
             const safeDate = this.escapeHtml(rawDate);
             const safeImgSrc = this.escapeHtml(imgSrc);
 
+            const isPublished = statusRaw === 'y';
+            const statusTitle = this.escapeHtml(isPublished ? getNewsLang().active : getNewsLang().draft);
+            const deckTitle = this.escapeHtml(inDeck ? getNewsLang().deck_badge : getNewsLang().deck_add);
+            const sliderTitle = this.escapeHtml(inHeroSlider ? getNewsLang().hero_slider_badge : getNewsLang().hero_slider_add);
+
             card.innerHTML = `
                 <div class="card-content-layout">
                     <div class="news-thumb-wrapper">
@@ -375,6 +384,17 @@ class NewsManager {
                      <span class="meta-bottom-item"><i class="bi bi-translate"></i> ${safeLang}</span>
                      <span class="meta-bottom-item meta-date"><i class="bi bi-calendar3"></i> ${safeDate}</span>
                      <span class="meta-bottom-item meta-category"><i class="bi bi-diagram-2"></i> ${safeCategoryName}</span>
+                     <div class="card-state-indicators" aria-hidden="true">
+                         <span class="card-state-pill state-status ${isPublished ? 'is-active' : 'is-passive'}" title="${statusTitle}">
+                             <i class="bi ${isPublished ? 'bi-eye-fill' : 'bi-eye-slash'}"></i>
+                         </span>
+                         <span class="card-state-pill state-deck ${inDeck ? 'is-active' : 'is-passive'}" title="${deckTitle}">
+                             <i class="bi ${inDeck ? 'bi-bookmark-star-fill' : 'bi-bookmark-star'}"></i>
+                         </span>
+                         <span class="card-state-pill state-slider ${inHeroSlider ? 'is-active' : 'is-passive'}" title="${sliderTitle}">
+                             <i class="bi bi-stars"></i>
+                         </span>
+                     </div>
                 </div>
             `;
 
@@ -894,7 +914,7 @@ class NewsManager {
                 statusIcon.className = (!active || isPublished) ? 'bi bi-eye-fill' : 'bi bi-eye-slash';
             }
             const statusLabel = active
-                ? (isPublished ? getNewsLang().active : getNewsLang().draft)
+                ? (isPublished ? getNewsLang().unpublish : getNewsLang().publish)
                 : getNewsLang().active;
             statusBtn.title = statusLabel;
             statusBtn.setAttribute('aria-label', statusLabel);
@@ -944,12 +964,18 @@ class NewsManager {
         card.dataset.inHeroSlider = inHeroSlider ? '1' : '0';
         const badge = card.querySelector('.hero-slider-badge');
         const dot = card.querySelector('.hero-slider-dot');
+        const sliderPill = card.querySelector('.card-state-pill.state-slider');
 
         if (badge) {
             badge.classList.toggle('is-hidden', !inHeroSlider);
         }
         if (dot) {
             dot.classList.toggle('is-hidden', !inHeroSlider);
+        }
+        if (sliderPill) {
+            sliderPill.classList.toggle('is-active', Boolean(inHeroSlider));
+            sliderPill.classList.toggle('is-passive', !inHeroSlider);
+            sliderPill.title = inHeroSlider ? getNewsLang().hero_slider_badge : getNewsLang().hero_slider_add;
         }
     }
 
@@ -959,12 +985,38 @@ class NewsManager {
         card.dataset.inDeck = inDeck ? '1' : '0';
         const badge = card.querySelector('.deck-badge');
         const dot = card.querySelector('.deck-dot');
+        const deckPill = card.querySelector('.card-state-pill.state-deck');
 
         if (badge) {
             badge.classList.toggle('is-hidden', !inDeck);
         }
         if (dot) {
             dot.classList.toggle('is-hidden', !inDeck);
+        }
+        if (deckPill) {
+            deckPill.classList.toggle('is-active', Boolean(inDeck));
+            deckPill.classList.toggle('is-passive', !inDeck);
+            deckPill.title = inDeck ? getNewsLang().deck_badge : getNewsLang().deck_add;
+            const deckIcon = deckPill.querySelector('i');
+            if (deckIcon) {
+                deckIcon.className = inDeck ? 'bi bi-bookmark-star-fill' : 'bi bi-bookmark-star';
+            }
+        }
+    }
+
+    applyStatusState(card, isPublished) {
+        if (!card) return;
+
+        card.dataset.status = isPublished ? 'y' : 'n';
+        const statusPill = card.querySelector('.card-state-pill.state-status');
+        if (statusPill) {
+            statusPill.classList.toggle('is-active', Boolean(isPublished));
+            statusPill.classList.toggle('is-passive', !isPublished);
+            statusPill.title = isPublished ? getNewsLang().active : getNewsLang().draft;
+            const statusIcon = statusPill.querySelector('i');
+            if (statusIcon) {
+                statusIcon.className = isPublished ? 'bi bi-eye-fill' : 'bi bi-eye-slash';
+            }
         }
     }
 
@@ -988,15 +1040,16 @@ class NewsManager {
             });
             const result = await response.json();
 
-            if (result.status !== 'success') {
+            const isSuccess = result.status === 'success' || (result.new_status !== undefined && result.status !== 'error');
+            if (!isSuccess) {
                 showSnackbar(result.message || getNewsLang().status_error, 'error');
                 return;
             }
 
-            const newStatus = result.new_status === 'y' ? 'y' : 'n';
+            const newStatus = result.new_status || (result.status === 'y' ? 'y' : 'n');
             if (card) {
                 const previousStatus = card.dataset.status;
-                card.dataset.status = newStatus;
+                this.applyStatusState(card, newStatus === 'y');
 
                 const statusLabelEl = card.querySelector('.status-label-active, .status-label-draft');
                 if (statusLabelEl) {
@@ -1019,7 +1072,7 @@ class NewsManager {
             }
 
             if (window.navigator.vibrate) window.navigator.vibrate(12);
-            showSnackbar(result.message || getNewsLang().status_updated, 'success');
+            showSnackbar(result.message || (newStatus === 'y' ? getNewsLang().published_msg : getNewsLang().unpublished_msg), 'success');
         } catch (error) {
             console.error('Status toggle error:', error);
             showSnackbar(getNewsLang().status_error, 'error');
@@ -1211,8 +1264,7 @@ window.deleteSelected = function () {
                 .then(msg => {
                     const trimmedMsg = (msg || '').trim();
                     if (trimmedMsg === 'Success' || trimmedMsg === 'OK') {
-                        mgr.selectedContentId = null;
-                        mgr.updateToolbar(false);
+                        mgr.clearSelection();
                         mgr.loadData(true);
                         showSnackbar(adminLang.context_menu?.delete_success || 'Deleted successfully', 'success');
                     } else {
@@ -1322,7 +1374,7 @@ window.openMediaRelationPicker = function(contentId, type) {
     
     if (type === 'video') {
         endpoint = `${getNewsModuleUrl()}all_video`;
-        addUrl = `${SITE_URL}mod_video_embed/add`;
+        addUrl = `${SITE_URL}mod_video_embed/add?target_module=mod_news&target_id=${contentId}`;
         manageUrl = `${SITE_URL}mod_video_embed/list`;
     } else if (type === 'gallery') {
         endpoint = `${getNewsModuleUrl()}ajax_get_galleries`;
@@ -1488,17 +1540,41 @@ window.refreshActiveMediaPicker = function(preferredId = null) {
             });
 
             let currentValue = '0';
-            if (preferredId) {
-                currentValue = String(preferredId);
-            } else if (type === 'files' && currentMedia.file_id) {
-                currentValue = String(currentMedia.file_id);
-            } else if (type === 'gallery' && currentMedia.gallery_id) {
-                currentValue = String(currentMedia.gallery_id);
-            } else if (type === 'video' && Array.isArray(currentMedia.video) && currentMedia.video.length > 0) {
-                currentValue = String(currentMedia.video[0]);
+            let matchedOption = null;
+
+            if (preferredId !== null && preferredId !== undefined && preferredId !== '') {
+                const rawPref = String(preferredId).trim();
+                matchedOption = Array.from(select.options).find((o) => {
+                    const val = String(o.value).trim();
+                    return val === rawPref ||
+                           val === `vid:${rawPref}` ||
+                           val === `video:${rawPref}` ||
+                           val.replace(/^(vid|video):/, '') === rawPref.replace(/^(vid|video):/, '');
+                });
+                if (matchedOption) {
+                    currentValue = matchedOption.value;
+                }
             }
-            const hasMatch = Array.from(select.options).some(o => String(o.value) === currentValue);
+
+            if (!matchedOption) {
+                if (type === 'files' && currentMedia && currentMedia.file_id) {
+                    currentValue = String(currentMedia.file_id);
+                } else if (type === 'gallery' && currentMedia && currentMedia.gallery_id) {
+                    currentValue = String(currentMedia.gallery_id);
+                } else if (type === 'video' && currentMedia && Array.isArray(currentMedia.video) && currentMedia.video.length > 0) {
+                    currentValue = String(currentMedia.video[0]);
+                }
+            }
+
+            const hasMatch = Array.from(select.options).some((o) => String(o.value) === currentValue);
             select.value = hasMatch ? currentValue : '0';
+
+            if (preferredId && hasMatch) {
+                window.keepSelectPickerOpenOnce = false;
+                if (typeof closeSelectPickerSheet === 'function') {
+                    closeSelectPickerSheet();
+                }
+            }
 
             if (typeof renderSelectPickerOptions === 'function') {
                 renderSelectPickerOptions();
@@ -1517,7 +1593,7 @@ window.toggleStatus = function (id, currentStatus) {
     const isPublishing = currentStatus !== 'y';
 
     const confirmMsg = isPublishing ? getNewsLang().confirm_publish : getNewsLang().confirm_unpublish;
-    const successMsg = isPublishing ? (adminLang.context_menu?.published_msg || 'Published') : (adminLang.context_menu?.unpublished_msg || 'Unpublished');
+    const successMsg = isPublishing ? (getNewsLang().published_msg || 'Published') : (getNewsLang().unpublished_msg || 'Unpublished');
 
     Swal.fire({
         title: confirmMsg,

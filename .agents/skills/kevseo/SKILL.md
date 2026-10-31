@@ -33,7 +33,8 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
    - In-text citations must use clean descriptive anchors (e.g. `<a href="$URL">$Name</a>`).
    - Major stories must include at least 2 verified, live outbound authority links.
 7. **Image Attribution Block**:
-   - At the bottom of the article: `<p><strong>Fotoğraf: $Source</strong></p>`.
+   - For verified source images: At the bottom of the article: `<p><strong>Wêne: $Source</strong></p>` (or `<p><strong>Fotoğraf: $Source</strong></p>`).
+   - For absent/AI-generated images: `<p><strong>Wêne: Temsîlî</strong></p>` (or `<p><strong>Fotoğraf: Temsili</strong></p>`).
 8. **Strict Code Separation Mandate (AGENTS.md Rule 2)**:
    - Zero inline styles (`style="..."`, `<style>`), zero inline scripts, and zero inline event handlers (`onclick="..."`). Only clean semantic HTML tags.
 
@@ -60,7 +61,7 @@ The news article body (`content`) MUST adhere to strict semantic HTML standards:
 ### 4. Visual Asset Requirements (Google Discover Ready)
 1. **Minimum Dimensions**: Width must be at least 1200px (16:9 aspect ratio preferred).
 2. **Format & Optimization**: WebP format, optimized to under 100 KB.
-3. **Attribution**: Transparent source credit attached in prose (`Fotoğraf: ...`) and CMS metadata.
+3. **Attribution**: Transparent source credit attached in prose (`Wêne: $Source` / `Wêne: Temsîlî` or `Fotoğraf: $Source` / `Fotoğraf: Temsili`) and CMS metadata.
 
 ### 5. SEO Slug & Keywords
 1. **Wikipedia-Style Slug (`seo`)**:

@@ -127,6 +127,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Только прямоугольный логотип',
     'header_style_square_name' => 'Квадратный логотип и название сайта',
     'header_style_rect_name' => 'Прямоугольный логотип и название сайта',
+    'header_style_square_rect' => 'Иконка и горизонтальный логотип',
     'header_style_name_only' => 'Только название сайта',
     'logo_rect_title' => 'Прямоугольный логотип (3:1)',
     'logo_square_title' => 'Квадратный логотип (1:1)',

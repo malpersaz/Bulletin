@@ -380,15 +380,16 @@ function renderLogoIconModalBody(d) {
     const lang = ((typeof adminLang !== "undefined" ? adminLang : {}) && (typeof adminLang !== "undefined" ? adminLang : {}).mod_settings) || {};
     const headerTitle = lang.header_style_title || 'Header Display Style';
     const headerDesc = lang.header_style_desc || 'Choose how the logo and site name will appear in the header.';
-    const styleSquare = lang.header_style_square || 'Only Square Logo';
+    const styleSquare = lang.header_style_square || 'Only Icon';
     const styleRect = lang.header_style_rect || 'Only Rectangle Logo';
-    const styleSquareName = lang.header_style_square_name || 'Square Logo & Site Name';
+    const styleSquareName = lang.header_style_square_name || 'Icon & Site Name';
     const styleRectName = lang.header_style_rect_name || 'Rectangle Logo & Site Name';
+    const styleSquareRect = lang.header_style_square_rect || 'İkon ve Yatay Logo';
     const styleNameOnly = lang.header_style_name_only || 'Site Name Only';
     const assetsTitle = (lang.sections && lang.sections.assets_title) || 'Assets';
     const logoHelpText = lang.logo_help_text || 'Upload a transparent PNG. Minimum 512x512 px, recommended 1024x1024 px or larger. The system will generate favicon, icon, and manifest files automatically.';
     const logoRectTitle = lang.logo_rect_title || 'Rectangle Logo (3:1)';
-    const logoSquareTitle = lang.logo_square_title || 'Square Logo (1:1)';
+    const logoSquareTitle = lang.logo_square_title || 'Icon (1:1)';
     const logoSymbolTitle = lang.logo_symbol_title || 'Favicon (1:1)';
     const deleteText = lang.delete || 'Delete';
 
@@ -547,6 +548,14 @@ function renderLogoIconModalBody(d) {
                             <span style="font-size: 12px; font-weight: 600;">${styleRectName}</span>
                         </div>
                         ${logoType === 'rectangle_name' ? '<i class="bi bi-check-circle-fill" style="color: var(--md-sys-color-primary, #6750A4);"></i>' : ''}
+                    </div>
+
+                    <div onclick="setHeaderStyleAjax('square_rectangle')" class="modal-style-option ${logoType === 'square_rectangle' ? 'active' : ''}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 10px; border: ${logoType === 'square_rectangle' ? '2px solid var(--md-sys-color-primary, #6750A4)' : '1px solid var(--md-sys-color-outline-variant, #E7E0EC)'}; background: ${logoType === 'square_rectangle' ? 'var(--md-sys-color-primary-container, #EADDFF)' : '#ffffff'}; cursor: pointer;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="bi bi-images" style="font-size: 18px; color: var(--md-sys-color-primary, #6750A4);"></i>
+                            <span style="font-size: 12px; font-weight: 600;">${styleSquareRect}</span>
+                        </div>
+                        ${logoType === 'square_rectangle' ? '<i class="bi bi-check-circle-fill" style="color: var(--md-sys-color-primary, #6750A4);"></i>' : ''}
                     </div>
 
                     <div onclick="setHeaderStyleAjax('name_only')" class="modal-style-option ${logoType === 'name_only' ? 'active' : ''}" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 10px; border: ${logoType === 'name_only' ? '2px solid var(--md-sys-color-primary, #6750A4)' : '1px solid var(--md-sys-color-outline-variant, #E7E0EC)'}; background: ${logoType === 'name_only' ? 'var(--md-sys-color-primary-container, #EADDFF)' : '#ffffff'}; cursor: pointer;">
@@ -758,7 +767,7 @@ function processSelectedLogoModalImage(input, step) {
 
     const lang = ((typeof adminLang !== "undefined" ? adminLang : {}) && (typeof adminLang !== "undefined" ? adminLang : {}).mod_settings) || {};
     const cropRect = lang.crop_rect || 'Crop Rectangle Logo (3:1)';
-    const cropSquare = lang.crop_square || 'Crop Square Logo (1:1)';
+    const cropSquare = lang.crop_square || 'Crop Icon (1:1)';
     const cropSymbol = lang.crop_symbol || 'Crop Symbol/Favicon (1:1)';
     const saveBtnText = lang.save || 'Save & Apply Logo';
     const cancelBtnText = (lang.button && lang.button.cancel) || 'Cancel';

@@ -144,6 +144,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Only Rectangle Logo',
     'header_style_square_name' => 'Square Logo & Site Name',
     'header_style_rect_name' => 'Rectangle Logo & Site Name',
+    'header_style_square_rect' => 'Icon & Horizontales Logo',
     'header_style_name_only' => 'Nur Website-Name',
     'logo_rect_title' => 'Rectangle Logo (3:1)',
     'logo_square_title' => 'Square Logo (1:1)',

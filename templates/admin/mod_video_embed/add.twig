@@ -4,13 +4,13 @@
 {% set show_filter_sheet = false %}
 {% set show_wizards = false %}
 {% set show_extra_sheets = false %}
-{% extends 'admin/layout.twig' %}
+{% extends is_ajax ? 'admin/layout_blank.twig' : 'admin/layout.twig' %}
 {% block title %}{{ lang.mod_video_embed.named }}{% endblock %}
 {% block headline %}{{ lang.mod_video_embed.named }}{% endblock %}
 
 {% block styles %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.0">
+    {% if not is_ajax %}{{ parent() }}{% endif %}
+    <link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_video_embed.css?v=2.1">
 {% endblock %}
 
 {% macro select_nested_category_id_function(parent_id, level, allowed_langs) %}
@@ -49,7 +49,7 @@
         {% set allowed_langs = allowed_langs|merge([item.seo|lower]) %}
     {% endif %}
 {% endfor %}
-<div class="form-container">
+<div class="form-container" data-modal-title="{{ lang.mod_video_embed.named }}" data-modal-icon="bi-camera-video">
     {% if success is defined %}
         <div class="banner-m3 banner-success-soft">
             <i class="bi bi-check-circle-fill"></i>
@@ -75,7 +75,7 @@
 
     <form
         method="POST"
-        action=""
+        action="{{ site.saddress }}mod_video_embed/add"
         id="videoAddForm"
         enctype="multipart/form-data"
         data-id="{id}"
@@ -94,29 +94,35 @@
         data-i18n-remove-image-success="{{ lang.mod_video_embed.remove_image_success|e('html_attr') }}"
         data-i18n-unsupported-emoji="{{ lang.mod_video_embed.validator.unsupported_emoji|replace({'%s': lang.mod_video_embed.admin.columns.content})|e('html_attr') }}"
         data-i18n-autofill-missing="{{ lang.mod_video_embed.autofill.missing_source|e('html_attr') }}"
+        data-i18n-autofill-invalid="{{ lang.mod_video_embed.autofill.invalid_source|e('html_attr') }}"
         data-i18n-autofill-loading="{{ lang.mod_video_embed.autofill.loading|e('html_attr') }}"
         data-i18n-autofill-success="{{ lang.mod_video_embed.autofill.success|e('html_attr') }}"
+        data-i18n-autofill-partial="{{ lang.mod_video_embed.autofill.partial|e('html_attr') }}"
         data-i18n-autofill-error="{{ lang.mod_video_embed.autofill.error|e('html_attr') }}"
+        data-i18n-missing-duration="{{ lang.mod_video_embed.admin.columns.duration|e('html_attr') }}"
+        data-i18n-missing-image="{{ lang.mod_video_embed.admin.columns.image|e('html_attr') }}"
+        data-i18n-missing-content="{{ lang.mod_video_embed.admin.columns.content|e('html_attr') }}"
         data-i18n-upload-text="{{ lang.mod_video_embed.wizard.label.upload_text|e('html_attr') }}"
         data-i18n-preview-text="{{ lang.mod_video_embed.admin.columns.preview|e('html_attr') }}"
         data-i18n-fallback-slug="{{ lang.mod_video_embed.js_fallback.video|e('html_attr') }}"
     >
         <input type="hidden" name="add" value="{{ lang.mod_video_embed.button.add }}">
+        <input type="hidden" name="target_module" id="videoTargetModule" value="{{ target_module|default('') }}">
+        <input type="hidden" name="target_id" id="videoTargetId" value="{{ target_id|default('') }}">
 
-        {# Card 1: Embed Code + Live Preview + YouTube Autofill #}
-        <div class="m3-card">
-            <div class="form-group">
+        {# Card 1: Embed Code + Live Preview + Textless Loading Indicator #}
+        <div class="m3-card" id="embedCard">
+            <div class="form-group mb-2">
                 <label class="form-label" for="embedInput">{{ lang.mod_video_embed.admin.columns.embed }}</label>
                 <textarea name="embed" id="embedInput" rows="3" class="form-input embed-code-input" required>{{ embed|default('') }}</textarea>
             </div>
-            <div class="autofill-row">
-                <button type="button" id="autofillButton" class="autofill-btn">
-                    <i class="bi bi-magic"></i>
-                    <span>{{ lang.mod_video_embed.autofill.button }}</span>
-                </button>
-                <span id="autofillStatus" class="autofill-status">{{ lang.mod_video_embed.autofill.hint }}</span>
+            <div class="embed-fetch-bar-track" id="embedFetchBar" aria-hidden="true">
+                <div class="embed-fetch-bar-indeterminate"></div>
             </div>
             <div id="embedPreview" class="embed-preview{% if embed is defined and embed != '' %} has-content{% endif %}">
+                <div class="embed-fetch-spinner" aria-hidden="true">
+                    <span class="embed-spinner-ring"></span>
+                </div>
                 {% if embed is defined and embed != '' %}
                     {{ embed|raw }}
                 {% else %}
@@ -269,28 +275,36 @@
             </div>
         </div>
 
+        {# In-Modal Native Top-Layer AJAX Alert Dialog #}
+        <dialog id="videoAutofillAlertDialog" class="m3-ajax-alert-dialog">
+            <div class="m3-alert-body">
+                <div class="m3-alert-icon-wrapper" id="videoAutofillAlertIcon">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                </div>
+                <h4 class="m3-alert-title" id="videoAutofillAlertTitle">{{ lang.mod_video_embed.information }}</h4>
+                <p class="m3-alert-message" id="videoAutofillAlertMessage"></p>
+                <div class="m3-alert-details is-hidden" id="videoAutofillAlertDetails">
+                    <ul class="m3-alert-list" id="videoAutofillAlertList"></ul>
+                </div>
+                <div class="m3-alert-actions">
+                    <button type="button" class="m3-alert-btn-confirm" id="btnVideoAutofillAlertOk">{{ lang.mod_video_embed.button.ok }}</button>
+                </div>
+            </div>
+        </dialog>
+
     </form>
 </div>
 {% endblock %}
 
 {% block fixed_bottom %}
-    <div class="standard-toolbar">
-        <button type="button" class="toolbar-item active" id="btnCancelEdit" data-href="{{ site.saddress }}mod_video_embed/list">
-            <i class="bi bi-x-lg"></i>
-            <span>{{ lang.mod_video_embed.button.cancel }}</span>
-        </button>
-
-        <div class="toolbar-fab" id="fabSaveEdit" role="button" aria-label="{{ lang.mod_video_embed.button.save }}">
-            <i class="bi bi-check-lg"></i>
-        </div>
-
-        <button type="button" class="toolbar-item active" id="btnSaveEdit">
-            <i class="bi bi-floppy-fill"></i>
-            <span>{{ lang.mod_video_embed.button.save }}</span>
-        </button>
-    </div>
+    {% include 'admin/partials/fixed_bottom_form_bar.twig' with {
+        cancel_url: site.saddress ~ 'mod_video_embed/list',
+        cancel_label: lang.mod_video_embed.button.cancel,
+        submit_label: lang.mod_video_embed.button.save,
+        form_id: 'videoAddForm'
+    } %}
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.0"></script>
+    <script src="{{ site.address }}templates/admin/assets/js/mod_video_embed_edit.js?v=2.5"></script>
 {% endblock %}

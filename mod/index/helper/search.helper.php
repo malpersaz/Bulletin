@@ -213,7 +213,7 @@ class search_helper extends indexBase
                 WHERE u.status = 'y'
                   AND ({$whereClause})
                   AND (
-                    u.group_id IN (1, 2, 4)
+                    u.group_id IN (1, 2, 4, 5)
                     OR EXISTS (SELECT 1 FROM mod_publication WHERE user_id = u.id AND status = 'y')
                     OR EXISTS (SELECT 1 FROM mod_news WHERE user_id = u.id AND status = 'y')
                   )

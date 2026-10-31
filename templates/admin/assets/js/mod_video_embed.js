@@ -4,6 +4,65 @@
  * Modeled after mod_news.js
  */
 
+function getVideoModuleUrl() {
+    const c = document.getElementById('content-list-container');
+    if (c && c.dataset.moduleUrl) return c.dataset.moduleUrl;
+    const base = (typeof SITE_URL !== 'undefined' && SITE_URL) ? SITE_URL : ((window.siteData && window.siteData.saddress) ? window.siteData.saddress : '/');
+    return `${base}mod_video_embed/`;
+}
+
+function getVideoDataUrl() {
+    const c = document.getElementById('content-list-container');
+    if (c && c.dataset.dataUrl) return c.dataset.dataUrl;
+    return `${getVideoModuleUrl()}datatable_json`;
+}
+
+function getVideoLang() {
+    if (typeof window.VIDEO_LANG !== 'undefined' && window.VIDEO_LANG) return window.VIDEO_LANG;
+    const al = (typeof window.adminLang !== 'undefined' && window.adminLang) ? window.adminLang : {};
+    const mod = al.mod_video_embed || {};
+    const ctx = mod.context_menu || al.context_menu || {};
+    const dt = mod.datatable || al.datatable || {};
+
+    const container = document.getElementById('content-list-container');
+    const ds = container ? container.dataset : {};
+
+    return {
+        active: ds.i18nActive || mod.status_badge?.active || 'Active',
+        draft: ds.i18nDraft || mod.status_badge?.draft || 'Draft',
+        hero_slider_badge: ds.i18nSliderBadge || mod.hero_slider_badge || 'Slider',
+        hero_slider_add: ds.i18nSliderAdd || mod.hero_slider_add || 'Send to Slider',
+        hero_slider_remove: ds.i18nSliderRemove || mod.hero_slider_remove || 'Remove from Slider',
+        hero_slider_added: ds.i18nSliderAdded || mod.hero_slider_added || 'Added to Slider',
+        hero_slider_removed: ds.i18nSliderRemoved || mod.hero_slider_removed || 'Removed from Slider',
+        hero_slider_error: ds.i18nSliderError || mod.hero_slider_error || 'Hero Slider error',
+        publish: ds.i18nPublish || mod.admin?.publish?.key || 'Publish',
+        unpublish: ds.i18nUnpublish || mod.admin?.unpublish?.key || 'Unpublish',
+        confirm_delete: ds.i18nDeleteConfirm || mod.delete_confirm || ctx.delete_confirm || 'Are you sure you want to delete this video?',
+        confirm_publish: ds.i18nPublishConfirm || mod.quick_publish_confirm || 'Do you want to publish this video?',
+        confirm_unpublish: ds.i18nUnpublishConfirm || mod.quick_unpublish_confirm || 'Do you want to unpublish this video?',
+        error_general: ds.i18nError || mod.error || 'An error occurred',
+        confirm_yes: ds.i18nYes || mod.button?.yes || ctx.confirm || 'Yes',
+        confirm_no: ds.i18nNo || mod.button?.no || ctx.cancel || 'No',
+        loading: ds.i18nLoading || dt.loading_records || 'Loading...',
+        information: ds.i18nInfo || mod.information || 'Information',
+        image_update_confirm: ds.i18nImageConfirm || mod.image_update_confirm || 'Are you sure?',
+        button: {
+            cancel: ds.i18nCancel || mod.button?.cancel || ctx.cancel || 'Cancel'
+        },
+        sheet: {
+            ok: ds.i18nOk || mod.sheet?.ok || 'OK'
+        },
+        grid: {
+            load_more: ds.i18nLoadMore || mod.grid?.load_more || 'Load More'
+        }
+    };
+}
+
+const MODULE_URL = getVideoModuleUrl();
+const DATA_URL = getVideoDataUrl();
+const VIDEO_LANG = getVideoLang();
+
 class VideoManager {
     constructor() {
         this.container = document.getElementById('content-list-container');
@@ -469,10 +528,18 @@ class VideoManager {
     }
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    window.videoManager = new VideoManager();
-});
+// Initialize on load or immediate
+function initVideoManager() {
+    if (document.getElementById('content-list-container')) {
+        window.videoManager = new VideoManager();
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVideoManager);
+} else {
+    initVideoManager();
+}
 
 // --- Global toolbar action functions ---
 window.editSelected = function () {

@@ -72,6 +72,7 @@ body {
 .cache-icon.template { background: #8e44ad; }
 .cache-icon.llms { background: #0284c7; }
 .cache-icon.captcha { background: #d97706; }
+.cache-icon.market { background: #059669; }
 .cache-icon.all { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 
 .alert {

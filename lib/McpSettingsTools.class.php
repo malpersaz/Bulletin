@@ -309,6 +309,7 @@ class McpSettingsTools extends McpCrudToolsBase
                                 'rectangle',
                                 'square_name',
                                 'rectangle_name',
+                                'square_rectangle',
                                 'name_only',
                             ],
                             'description' => 'Logo layout type. Synchronized across all languages.',
@@ -900,7 +901,7 @@ class McpSettingsTools extends McpCrudToolsBase
         'maintenance_retry_after',
     ];
 
-    private const LOGO_TYPES = ['square', 'rectangle', 'square_name', 'rectangle_name', 'name_only'];
+    private const LOGO_TYPES = ['square', 'rectangle', 'square_name', 'rectangle_name', 'square_rectangle', 'name_only'];
 
     private const COOKIE_CATEGORIES = ['necessary', 'functional', 'analytics', 'marketing'];
 

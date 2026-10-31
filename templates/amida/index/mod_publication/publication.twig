@@ -280,7 +280,7 @@
                         </div>
                     {% endif %}
 
-                    {% if d.image is not empty %}
+                    {% if d.image is defined and d.image is not empty and d.image != '#' %}
                         <div class="detail-hero">
                             <a href="{{ site.iaddress }}mod_publication/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="publication-main-image" aria-label="{{ d.name|escape('html_attr') }}">
                                 <img src="{{ site.iaddress }}mod_publication/{{ d.image }}"
@@ -289,12 +289,6 @@
                                      alt="{{ d.name }}"
                                      title="{{ d.name }}">
                             </a>
-                        </div>
-                    {% else %}
-                        <div class="detail-hero detail-hero-placeholder">
-                            {% if publication_logo_asset is not empty %}
-                                <img src="{{ publication_logo_asset }}" class="detail-placeholder-symbol opacity-75 max-h-48 object-fit-contain" alt="{{ site.name }}" title="{{ d.name }}">
-                            {% endif %}
                         </div>
                     {% endif %}
 

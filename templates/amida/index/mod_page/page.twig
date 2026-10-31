@@ -240,21 +240,11 @@
 							</div>
 						{% endif %}
 
-						{% if d.image is not empty and d.image != '#' %}
+						{% if d.image is defined and d.image is not empty and d.image != '#' %}
 							<div class="detail-hero">
 								<a href="{{ site.iaddress }}mod_page/{{ d.image }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="page-main-image" aria-label="{{ d.name|escape('html_attr') }}">
 									<img src="{{ site.iaddress }}mod_page/{{ d.image }}" fetchpriority="high" class="detail-hero-image" alt="{{ d.name }}" title="{{ d.name }}">
 								</a>
-							</div>
-						{% else %}
-							<div class="detail-hero detail-hero-placeholder">
-								{% if site.logo_path is defined and site.logo_path is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_path }}" class="detail-placeholder-logo" alt="{{ site.title }}" title="{{ d.name }}">
-								{% elseif site.logo_symbol is defined and site.logo_symbol is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.logo_symbol }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
-								{% elseif site.site_icon is defined and site.site_icon is not empty %}
-									<img src="{{ site.iaddress }}mod_settings/{{ site.site_icon }}" class="detail-placeholder-symbol" alt="{{ site.title }}" title="{{ d.name }}">
-								{% endif %}
 							</div>
 						{% endif %}
 

@@ -1934,7 +1934,7 @@ class mod_settings_mod extends indexMain
         }
 
         if (array_key_exists('logo_type', $values) && $values['logo_type'] !== null && $values['logo_type'] !== '') {
-            $valid_types = ['square', 'rectangle', 'square_name', 'rectangle_name', 'name_only'];
+            $valid_types = ['square', 'rectangle', 'square_name', 'rectangle_name', 'square_rectangle', 'name_only'];
             $logo_type = trim((string) $values['logo_type']);
             if (in_array($logo_type, $valid_types, true)) {
                 $normalized['logo_type'] = $logo_type;
@@ -2280,7 +2280,7 @@ class mod_settings_mod extends indexMain
         }
 
         $logo_type = Req::post('logo_type');
-        $valid_types = ['square', 'rectangle', 'square_name', 'rectangle_name', 'name_only'];
+        $valid_types = ['square', 'rectangle', 'square_name', 'rectangle_name', 'square_rectangle', 'name_only'];
         if (!in_array($logo_type, $valid_types, true)) {
             $logo_type = 'rectangle';
         }

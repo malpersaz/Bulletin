@@ -42,13 +42,34 @@ In this repository (`amedbulten.com`), `kevanger` drafts news articles exclusive
 - **Strict Code Separation**:
   - Do not insert inline `style` attributes, `<style>` blocks, or inline JavaScript handlers.
 
-### 4. Ethical Image Creation & WebP Optimization
-- If an existing image from verified sources is attached:
-  - Add attribution at the bottom: `<p><strong>Fotoğraf: $Source</strong></p>`.
-- If an image is AI-generated (`generate_ai_image` / `generate_image`):
-  - Follow clean editorial photojournalism style (no artificial text or banners).
-  - Optimize as WebP (under 100 KB) and attach via MCP.
-  - Add attribution at the bottom: `<p><strong>Fotoğraf: Amed Bülten / Temsili</strong></p>`.
+### 4. Ethical Image Intake, AI Generation & WebP Optimization
+Whenever `kevanger` brings or drafts a news article from any source:
+- **Case 1: Source Image Present**:
+  - Extract and verify the original photograph from the source.
+  - Follow professional photojournalistic standards (minimum 1200px width, 16:9 aspect ratio, authentic composition, strictly no artificial distortion or sensational filters).
+  - Optimize and compress to WebP format under 100 KB.
+  - Attach the image object to `create_news` or `update_news` via MCP (`image: {"data_base64": "...", "mime": "image/webp"}`).
+  - Add transparent source attribution at the bottom of the news body:
+    - Kurdish format: `<p><strong>Wêne: $Çavkanî</strong></p>` (e.g. `<p><strong>Wêne: Amida Haber</strong></p>`).
+    - Turkish format: `<p><strong>Fotoğraf: $Kaynak</strong></p>` (e.g. `<p><strong>Fotoğraf: Amida Haber</strong></p>`).
+- **Case 2: Source Image Absent / Unavailable**:
+  - If no photograph exists at the source or the source has no accessible media:
+  - Invoke the `image-generator` subagent to generate a representative photojournalistic image depicting the news subject accurately.
+  - Follow clean editorial photojournalism guidelines: realistic scene, 16:9 framing, strictly zero artificial text, zero watermarks, and zero overlay banners.
+  - Optimize as WebP format under 100 KB (minimum 1200px width).
+  - Attach the image object to `create_news` or `update_news` via MCP (`image: {"data_base64": "...", "mime": "image/webp"}`).
+  - Add explicit representative attribution at the bottom of the news body:
+    - Kurdish format: `<p><strong>Wêne: Temsîlî</strong></p>`.
+    - Turkish format: `<p><strong>Fotoğraf: Temsili</strong></p>`.
+- **Automated Processing Helper**:
+  - Use `.agents/skills/kevanger/scripts/process_news_image.py` to prepare images deterministically:
+    ```bash
+    # For source image:
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/img.jpg --source "$Source"
+    # For representative image:
+    python3 .agents/skills/kevanger/scripts/process_news_image.py --input /path/to/generated.png --representative
+    ```
+  - The script outputs the exact WebP base64 payload and formatted `<p><strong>...</strong></p>` credit lines.
 
 ### 5. SEO & Semantic HTML Gate (`kevseo` & `audit_content_seo.py`)
 - Determine the intended Wikipedia-style SEO slug `$SEO_SLUG` or leave empty to auto-generate via MCP.
@@ -79,7 +100,7 @@ In this repository (`amedbulten.com`), `kevanger` drafts news articles exclusive
   - `status: "n"` (**STRICT REQUIREMENT: Save as draft, DO NOT publish**)
   - `deck: "y"` (**STRICT REQUIREMENT: Show summary deck**)
   - Valid `summary` (90–120 characters)
-  - Full HTML `content` with in-text citations and image credits (`<p><strong>Fotoğraf: ...</strong></p>`)
+  - Full HTML `content` with in-text citations and image credits (`<p><strong>Wêne: $Çavkanî</strong></p>` / `<p><strong>Wêne: Temsîlî</strong></p>` or `<p><strong>Fotoğraf: $Kaynak</strong></p>` / `<p><strong>Fotoğraf: Temsili</strong></p>`)
   - Wikipedia-style `seo` slug (with underscores and Turkish characters), meta description, and 3–5 relevant Turkish keywords.
 - Attach the WebP image via `update_news` or `create_news`.
 

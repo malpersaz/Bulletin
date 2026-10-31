@@ -432,21 +432,53 @@
                     const titleText = metaContainer.getAttribute('data-modal-title');
                     const iconClass = metaContainer.getAttribute('data-modal-icon') || 'bi-gear';
                     dynamicTitle.innerHTML = `<i class="bi ${iconClass}"></i><h3>${titleText}</h3>`;
-                }
-
-                // Strip any duplicate headers (inner header bars, top app bars)
-                const redundantHeaders = tempDiv.querySelectorAll('.top-app-bar, .modal-header-bar');
-                redundantHeaders.forEach(hdr => {
-                    if (!metaContainer && dynamicTitle) {
-                        const titleWrapper = hdr.querySelector('.modal-title-wrapper') || hdr.querySelector('.headline');
+                } else if (dynamicTitle) {
+                    // Fallback to top-app-bar-default or headline, strictly ignoring contextual bar
+                    const defaultHdr = tempDiv.querySelector('.top-app-bar-default, .modal-header-bar');
+                    let titleText = '';
+                    if (defaultHdr) {
+                        const titleWrapper = defaultHdr.querySelector('.modal-title-wrapper') || defaultHdr.querySelector('.headline');
                         if (titleWrapper) {
-                            dynamicTitle.innerHTML = titleWrapper.innerHTML;
+                            titleText = titleWrapper.textContent.trim();
                         }
                     }
-                    hdr.remove();
-                });
+                    if (!titleText) {
+                        const h1 = tempDiv.querySelector('h1, h2, .headline');
+                        if (h1 && !h1.closest('.top-app-bar-contextual')) {
+                            titleText = h1.textContent.trim();
+                        }
+                    }
+                    if (!titleText) {
+                        const titleTag = tempDiv.querySelector('title');
+                        if (titleTag && titleTag.textContent.trim()) {
+                            titleText = titleTag.textContent.trim();
+                        }
+                    }
+                    if (titleText) {
+                        dynamicTitle.innerHTML = `<i class="bi bi-gear"></i><h3>${titleText}</h3>`;
+                    }
+                }
 
-                updateContainer(tempDiv.innerHTML, true);
+                // Strip any duplicate headers, dialogs, overlays, and floating fabs from loaded content
+                tempDiv.querySelectorAll('.top-app-bar, .modal-header-bar, dialog, .overlay, .main-fab').forEach(el => el.remove());
+
+                // If content is wrapped in main-content or mobile-wrapper, extract it directly to avoid nesting layout frames
+                let contentHtml = tempDiv.innerHTML;
+                const mainContent = tempDiv.querySelector('main.main-content');
+                if (mainContent) {
+                    const links = Array.from(tempDiv.querySelectorAll('link[rel="stylesheet"], style')).map(el => el.outerHTML).join('\n');
+                    const scripts = Array.from(tempDiv.querySelectorAll('script')).map(el => el.outerHTML).join('\n');
+                    contentHtml = links + mainContent.innerHTML + scripts;
+                } else {
+                    const mobileWrapper = tempDiv.querySelector('.mobile-wrapper');
+                    if (mobileWrapper) {
+                        const links = Array.from(tempDiv.querySelectorAll('link[rel="stylesheet"], style')).map(el => el.outerHTML).join('\n');
+                        const scripts = Array.from(tempDiv.querySelectorAll('script')).map(el => el.outerHTML).join('\n');
+                        contentHtml = links + mobileWrapper.innerHTML + scripts;
+                    }
+                }
+
+                updateContainer(contentHtml, true);
                 if (typeof callback === 'function') callback(null, html);
                 return html;
             })

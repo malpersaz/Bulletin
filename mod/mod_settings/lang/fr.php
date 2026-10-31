@@ -144,6 +144,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Logo rectangulaire uniquement',
     'header_style_square_name' => 'Logo carré et nom du site',
     'header_style_rect_name' => 'Logo rectangulaire et nom du site',
+    'header_style_square_rect' => 'Icône et logo horizontal',
     'header_style_name_only' => 'Nom du site uniquement',
     'logo_rect_title' => 'Logo rectangulaire (3:1)',
     'logo_square_title' => 'Logo carré (1:1)',

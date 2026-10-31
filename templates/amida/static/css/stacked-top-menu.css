@@ -110,33 +110,210 @@ header.stacked-header .stacked-header-top {
   background-color: var(--mp-white);
 }
 
-/* Brand Header Logo (Exact 486:128 Aspect Ratio) */
-header.stacked-header .stacked-brand {
+/* Brand Header & 5-Mode Dynamic Logo System */
+.svg-hidden-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+header.stacked-header .stacked-brand,
+.modern-brand {
   display: inline-flex;
   align-items: center;
+  gap: 10px;
+  min-width: 0;
   text-decoration: none;
   flex-shrink: 0;
-  padding: 0.15rem 0;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-header.stacked-header .stacked-brand:focus-visible {
+header.stacked-header .stacked-brand:hover {
+  border-color: var(--mp-border-subtle);
+  background-color: var(--mp-surface-subtle);
+}
+
+header.stacked-header .stacked-brand:focus-visible,
+.modern-brand:focus-visible {
   outline: 2px solid var(--mp-blue-700);
   outline-offset: 4px;
-  border-radius: 4px;
+  border-radius: 8px;
 }
 
-header.stacked-header .stacked-brand .stacked-logo-svg {
-  height: 42px;
+/* Mode: square - Square logo only, hide site name */
+.modern-brand.logo-mode-square {
+  gap: 0;
+  padding: 6px 10px;
+}
+.modern-brand.logo-mode-square .modern-brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+.modern-brand.logo-mode-square .modern-brand-copy {
+  display: none;
+}
+
+/* Mode: rectangle - Horizontal logo only, hide site name */
+.modern-brand.logo-mode-rectangle {
+  gap: 0;
+  padding: 6px 12px;
+}
+.modern-brand.logo-mode-rectangle .modern-brand-mark {
   width: auto;
-  aspect-ratio: 486 / 128;
-  max-width: 195px;
-  object-fit: contain;
-  display: block;
-  filter: invert(27%) sepia(91%) saturate(1650%) hue-rotate(182deg) brightness(91%) contrast(98%);
+  height: 40px;
+  flex: 0 0 auto;
+}
+.modern-brand.logo-mode-rectangle .modern-brand-copy {
+  display: none;
 }
 
-[data-bs-theme="dark"] header.stacked-header .stacked-brand .stacked-logo-svg {
-  filter: brightness(0) invert(1);
+/* Mode: square_name - Square logo + site name */
+.modern-brand.logo-mode-square_name .modern-brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+/* Mode: rectangle_name - Horizontal logo + site name */
+.modern-brand.logo-mode-rectangle_name .modern-brand-mark {
+  width: auto;
+  height: 40px;
+  flex: 0 0 auto;
+}
+
+/* Mode: square_rectangle - Icon + Horizontal Logo */
+.modern-brand.logo-mode-square_rectangle {
+  gap: 10px;
+  padding: 4px 8px;
+}
+.modern-brand.logo-mode-square_rectangle .modern-brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+.modern-brand.logo-mode-square_rectangle .modern-brand-rect-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+.modern-brand.logo-mode-square_rectangle .logo-image.logo-rect {
+  width: auto !important;
+  max-width: 175px !important;
+  height: 40px !important;
+  max-height: 40px !important;
+  object-fit: contain !important;
+}
+
+/* Mode: name_only - Site name only, hide logo mark */
+.modern-brand.logo-mode-name_only,
+.modern-brand.brand-title-only {
+  gap: 0;
+  padding: 6px 10px;
+}
+.modern-brand.logo-mode-name_only .modern-brand-mark {
+  display: none;
+}
+
+.modern-brand-mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+}
+
+.modern-brand .logo-image.logo-square {
+  width: 38px !important;
+  height: 38px !important;
+  max-width: 38px !important;
+  max-height: 38px !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.modern-brand .logo-image.logo-rect,
+.modern-brand .logo-image:not(.logo-square):not(.logo-rect) {
+  width: auto !important;
+  max-width: 175px !important;
+  height: 40px !important;
+  max-height: 40px !important;
+  object-fit: contain !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.brand-monogram {
+  font-family: Georgia, serif;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--mp-blue-700);
+}
+
+.modern-brand-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.modern-brand-title {
+  display: block;
+  white-space: nowrap;
+  font-family: var(--bs-body-font-family, "Inter", system-ui, sans-serif);
+  font-size: 1.12rem;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--mp-ink-main);
+}
+
+/* Animated Logo Transparency & Blend Overrides */
+.modern-brand-mark.logo-animated-mark,
+.modern-brand.logo-mode-rectangle .modern-brand-mark.logo-animated-mark,
+.modern-brand.logo-mode-square .modern-brand-mark.logo-animated-mark {
+  width: auto !important;
+  height: auto !important;
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.logo-animated-video,
+.logo-animated-img,
+.logo-animated-lottie {
+  max-height: 42px;
+  width: auto;
+  object-fit: contain;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.logo-blend-multiply {
+  mix-blend-mode: multiply;
+}
+
+.logo-blend-screen {
+  mix-blend-mode: screen;
 }
 
 /* ==========================================================================
@@ -600,9 +777,36 @@ header.stacked-header .dropdown-item.text-danger:hover,
     padding: 0.4rem 0.9rem;
   }
 
-  header.stacked-header .stacked-brand .stacked-logo-svg {
-    height: 32px;
-    max-width: 145px;
+  header.stacked-header .stacked-brand,
+  .modern-brand {
+    padding: 2px 4px;
+    gap: 8px;
+  }
+
+  .modern-brand .modern-brand-mark,
+  .modern-brand.logo-mode-square .modern-brand-mark,
+  .modern-brand.logo-mode-square_name .modern-brand-mark {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 34px;
+  }
+
+  .modern-brand .logo-image.logo-square {
+    width: 34px !important;
+    height: 34px !important;
+    max-width: 34px !important;
+    max-height: 34px !important;
+  }
+
+  .modern-brand .logo-image.logo-rect,
+  .modern-brand .logo-image:not(.logo-square):not(.logo-rect) {
+    height: 34px !important;
+    max-height: 34px !important;
+    max-width: 145px !important;
+  }
+
+  .modern-brand-title {
+    font-size: 0.98rem;
   }
 
   header.stacked-header .stacked-nav-bar {
@@ -659,9 +863,9 @@ header.stacked-header .dropdown-item.text-danger:hover,
     border-bottom: 1px solid var(--mp-blue-900);
   }
 
-  #amidaMobileMenu .mobile-menu-header .stacked-logo-svg {
-    height: 30px;
-    filter: brightness(0) invert(1);
+  #amidaMobileMenu .mobile-menu-header .modern-brand-title,
+  #amidaMobileMenu .mobile-menu-header .brand-monogram {
+    color: #ffffff;
   }
 
   #amidaMobileMenu .mobile-menu-close {

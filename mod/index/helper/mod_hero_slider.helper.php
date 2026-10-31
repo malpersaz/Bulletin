@@ -23,7 +23,7 @@ class mod_hero_slider_helper extends indexBase
         parent::__construct();
     }
 
-    public function hero_slider($limit = 6)
+    public function hero_slider($limit = 10)
     {
         if (!$this->hasConfiguredDatabase()) {
             return [];

@@ -1,0 +1,32 @@
+{% if market_rates is not defined or market_rates.items is not defined %}
+    {{ run({"mod": "index", "method": "_market_rates"}) }}
+    {% set market_rates = ctx_get('market_rates') %}
+{% endif %}
+
+{% if market_rates.items is defined and market_rates.items is not empty %}
+<section class="market-widget" aria-label="{{ lang.index.mod_news.economy_news.markets_title }}">
+    <div class="market-head">
+        <span class="market-head-title">
+            <i class="bi bi-graph-up-arrow me-1" aria-hidden="true"></i>{{ lang.index.mod_news.economy_news.markets_title }}
+        </span>
+        <span class="market-head-live">
+            <span class="market-live-dot" aria-hidden="true"></span>
+            <span>{{ lang.index.mod_news.economy_news.live_data }}</span>
+        </span>
+    </div>
+    <div class="market-grid">
+        {% for rate in market_rates.items %}
+            <div class="market-item" data-code="{{ rate.code }}">
+                <div class="market-left">
+                    <span class="market-name">{{ rate.title }}</span>
+                    <span class="market-val" dir="ltr">{{ rate.price_formatted }}</span>
+                </div>
+                <div class="market-right">
+                    <span class="market-badge {{ rate.direction }}" dir="ltr">{{ rate.change_pct_formatted }}</span>
+                    <span class="market-diff" dir="ltr">{{ rate.diff_formatted }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

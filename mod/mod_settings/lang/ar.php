@@ -144,6 +144,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'شعار مستطيل فقط',
     'header_style_square_name' => 'شعار مربع واسم الموقع',
     'header_style_rect_name' => 'شعار مستطيل واسم الموقع',
+    'header_style_square_rect' => 'أيقونة وشعار أفقي',
     'header_style_name_only' => 'اسم الموقع فقط',
     'logo_rect_title' => 'الشعار المستطيل (3:1)',
     'logo_square_title' => 'الشعار المربع (1:1)',

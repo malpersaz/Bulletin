@@ -1,0 +1,286 @@
+/* ==========================================================================
+   Live Market Board Widget Styles (Amida Public Theme)
+   Amed Framework - AF/Bulletin
+   Standalone Reusable Widget: templates/amida/index/mod_news/market_rates.twig
+   Strict Code Separation: External Stylesheet with Dark Mode and RTL
+   ========================================================================== */
+
+.market-widget {
+    --market-bg: #fafafa;
+    --market-border: rgba(15, 23, 42, 0.12);
+    --market-divider: #e2e8f0;
+    --market-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
+    --market-brand: #059669;
+    --market-ink: #0f172a;
+    --market-card-bg: #ffffff;
+    --market-card-border: rgba(15, 23, 42, 0.10);
+    --market-val-ink: #0f172a;
+    --market-name-ink: #475569;
+    --market-diff-ink: #64748b;
+
+    --market-up-bg: #eefbf3;
+    --market-up-border: #86efac;
+    --market-up-ink: #166534;
+
+    --market-down-bg: #fef2f2;
+    --market-down-border: #fca5a5;
+    --market-down-ink: #991b1b;
+
+    --market-flat-bg: #f8fafc;
+    --market-flat-border: #cbd5e1;
+    --market-flat-ink: #475569;
+
+    width: 100%;
+    margin: 0;
+    border: 1px solid var(--market-border);
+    border-radius: 12px;
+    background-color: var(--market-bg);
+    box-shadow: var(--market-shadow);
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-sizing: border-box;
+}
+
+.market-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--market-divider);
+}
+
+.market-head-title {
+    color: var(--market-ink);
+    display: inline-flex;
+    align-items: center;
+}
+
+.market-head-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.65rem;
+    color: var(--market-brand);
+    font-weight: 600;
+}
+
+.market-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--market-brand);
+    display: inline-block;
+    animation: market-pulse 2s infinite ease-in-out;
+}
+
+@keyframes market-pulse {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+}
+
+/* Market 2x4 Grid */
+.market-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.35rem;
+}
+
+.market-item {
+    border: 1px solid var(--market-card-border);
+    border-radius: 5px;
+    background-color: var(--market-card-bg);
+    padding: 0.35rem 0.45rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.market-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+.market-left {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.market-name {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--market-name-ink);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.market-val {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--market-val-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.market-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+    gap: 0.1rem;
+    flex-shrink: 0;
+}
+
+.market-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.1rem 0.25rem;
+    border-radius: 3px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.market-badge.up {
+    background-color: var(--market-up-bg);
+    border: 1px solid var(--market-up-border);
+    color: var(--market-up-ink);
+}
+
+.market-badge.down {
+    background-color: var(--market-down-bg);
+    border: 1px solid var(--market-down-border);
+    color: var(--market-down-ink);
+}
+
+.market-badge.flat {
+    background-color: var(--market-flat-bg);
+    border: 1px solid var(--market-flat-border);
+    color: var(--market-flat-ink);
+}
+
+.market-diff {
+    font-size: 0.58rem;
+    color: var(--market-diff-ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile Viewport Adjustments
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+    .market-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.25rem;
+    }
+
+    .market-item {
+        padding: 0.3rem 0.35rem;
+    }
+
+    .market-val {
+        font-size: 0.7rem;
+    }
+
+    .market-badge {
+        font-size: 0.55rem;
+    }
+}
+
+@media (max-width: 340px) {
+    .market-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .market-live-dot {
+        animation: none;
+    }
+
+    .market-item {
+        transition: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Dark Mode Support
+   -------------------------------------------------------------------------- */
+html[data-bs-theme="dark"] .market-widget,
+body.dark .market-widget,
+body.dark-mode .market-widget {
+    --market-bg: #0f172a;
+    --market-border: rgba(255, 255, 255, 0.10);
+    --market-divider: rgba(255, 255, 255, 0.08);
+    --market-shadow: 0 4px 18px -4px rgba(0, 0, 0, 0.45);
+    --market-brand: #10b981;
+    --market-ink: #f8fafc;
+    --market-card-bg: #1e293b;
+    --market-card-border: rgba(255, 255, 255, 0.08);
+    --market-val-ink: #f8fafc;
+    --market-name-ink: #94a3b8;
+    --market-diff-ink: #64748b;
+
+    --market-up-bg: rgba(16, 185, 129, 0.15);
+    --market-up-border: rgba(16, 185, 129, 0.35);
+    --market-up-ink: #34d399;
+
+    --market-down-bg: rgba(239, 68, 68, 0.15);
+    --market-down-border: rgba(239, 68, 68, 0.35);
+    --market-down-ink: #f87171;
+
+    --market-flat-bg: rgba(148, 163, 184, 0.10);
+    --market-flat-border: rgba(148, 163, 184, 0.25);
+    --market-flat-ink: #94a3b8;
+}
+
+/* --------------------------------------------------------------------------
+   Right to Left Support
+   -------------------------------------------------------------------------- */
+[dir="rtl"] .market-head {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .market-head-title,
+[dir="rtl"] .market-head-live {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .market-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .market-left {
+    text-align: right;
+    align-items: flex-end;
+}
+
+[dir="rtl"] .market-right {
+    text-align: left;
+    align-items: flex-start;
+}

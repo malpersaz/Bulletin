@@ -1,0 +1,142 @@
+{{ run({"mod": "index", "method": "_economy_news", "extra": [3]}) }}
+{% set economy_news = ctx_get('economy_news') %}
+{% set economy_url = ctx_get('economy_category_url')|default(site.saddress ~ 'newses') %}
+{% set economy_category_name = ctx_get('economy_category_name') %}
+{% set economy_lang = lang.index.mod_news.economy_news %}
+
+{% if economy_news is not empty %}
+<section class="economy-news-section" aria-labelledby="economy-news-heading">
+    <header class="economy-news-header">
+        <div class="economy-news-header-brand">
+            <span class="economy-brand-indicator" aria-hidden="true">
+                <i class="bi bi-graph-up-arrow"></i>
+            </span>
+            <h2 id="economy-news-heading" class="economy-news-title">
+                <a href="{{ economy_url }}" class="economy-news-title-link">
+                    {{ economy_lang.title|default(economy_category_name|default('Ekonomi')) }}
+                </a>
+            </h2>
+            <span class="economy-news-kicker" aria-hidden="true">{{ economy_lang.kicker|default('Finans & Piyasa') }}</span>
+        </div>
+        <a href="{{ economy_url }}" class="economy-news-more-link" title="{{ economy_lang.all_items|default('Tümünü Gör') }}">
+            <span class="economy-more-label">{{ economy_lang.all_items|default('Tümünü Gör') }}</span>
+            <i class="bi bi-arrow-right economy-more-icon" aria-hidden="true"></i>
+        </a>
+    </header>
+
+    <div class="economy-news-body">
+        {% for item in economy_news %}
+            {% set item_url = site.saddress ~ 'news/' ~ item.seo %}
+            {% if loop.first %}
+                <article class="economy-card-lead" itemscope itemtype="https://schema.org/NewsArticle">
+                    <div class="economy-lead-media-wrapper">
+                        <a href="{{ item_url }}" class="economy-lead-media-link" title="{{ item.name }}" itemprop="url">
+                            {% if item.image is not empty %}
+                                <picture>
+                                    <source srcset="{{ site.iaddress }}mod_news/thumb/{{ item.image }}" media="(max-width: 768px)" sizes="(max-width: 768px) calc(100vw - 32px), 380px">
+                                    <img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
+                                         class="economy-lead-img"
+                                         alt="{{ item.name }}"
+                                         width="640"
+                                         height="360"
+                                         sizes="(max-width: 768px) calc(100vw - 32px), 380px"
+                                         loading="lazy"
+                                         decoding="async"
+                                         itemprop="image">
+                                </picture>
+                            {% else %}
+                                <div class="economy-lead-placeholder">
+                                    <i class="bi bi-cash-stack economy-placeholder-icon" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+                            <span class="economy-lead-badge">{{ economy_lang.featured|default('Öne Çıkan') }}</span>
+                        </a>
+                    </div>
+                    <div class="economy-lead-content">
+                        <div class="economy-lead-meta">
+                            {% if item.published_ago is defined and item.published_ago is not empty %}
+                                <span class="economy-meta-item">
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                </span>
+                                <span class="economy-meta-sep" aria-hidden="true">·</span>
+                            {% elseif item.created_at is defined and item.created_at is not empty %}
+                                <span class="economy-meta-item">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                </span>
+                                <span class="economy-meta-sep" aria-hidden="true">·</span>
+                            {% endif %}
+
+                            {% set clean_summary = (item.summary != '' ? item.summary : item.name)|striptags %}
+                            {% set words = clean_summary|split(' ')|length %}
+                            {% set reading_minutes = (words / 180)|round(0, 'ceil') %}
+                            {% if reading_minutes < 1 %}{% set reading_minutes = 1 %}{% endif %}
+                            <span class="economy-meta-item">
+                                <i class="bi bi-book" aria-hidden="true"></i>
+                                <span>{{ reading_minutes }} {{ lang.index.minute }}</span>
+                            </span>
+                        </div>
+                        <h3 class="economy-lead-title" itemprop="headline">
+                            <a href="{{ item_url }}" class="economy-lead-title-link" itemprop="url">{{ item.name|raw }}</a>
+                        </h3>
+                        {% if item.summary_short is defined and item.summary_short is not empty %}
+                            <p class="economy-lead-summary" itemprop="description">
+                                <a href="{{ item_url }}" class="economy-lead-summary-link">{{ item.summary_short }}</a>
+                            </p>
+                        {% endif %}
+                    </div>
+                </article>
+            {% else %}
+                {% if loop.index == 2 %}
+                    <div class="economy-sub-list">
+                {% endif %}
+                <article class="economy-card-sub" itemscope itemtype="https://schema.org/NewsArticle">
+                    <a href="{{ item_url }}" class="economy-sub-thumb" title="{{ item.name }}" itemprop="url">
+                        {% if item.image is not empty %}
+                            <picture>
+                                <img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
+                                     class="economy-sub-img"
+                                     alt="{{ item.name }}"
+                                     width="480"
+                                     height="270"
+                                     sizes="108px"
+                                     loading="lazy"
+                                     decoding="async"
+                                     itemprop="image">
+                            </picture>
+                        {% else %}
+                            <div class="economy-sub-placeholder">
+                                <i class="bi bi-bar-chart-line economy-placeholder-icon" aria-hidden="true"></i>
+                            </div>
+                        {% endif %}
+                    </a>
+                    <div class="economy-sub-content">
+                        <div class="economy-sub-meta">
+                            <span class="economy-sub-index" aria-hidden="true">0{{ loop.index }}</span>
+                            <span class="economy-meta-sep" aria-hidden="true">·</span>
+                            {% if item.published_ago is defined and item.published_ago is not empty %}
+                                <span class="economy-sub-time">
+                                    <i class="bi bi-clock-history" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at|default('') }}" itemprop="datePublished">{{ item.published_ago }}</time>
+                                </span>
+                            {% elseif item.created_at is defined and item.created_at is not empty %}
+                                <span class="economy-sub-time">
+                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                                    <time datetime="{{ item.created_at }}" itemprop="datePublished">{{ item.created_at|date('d.m.Y') }}</time>
+                                </span>
+                            {% endif %}
+                        </div>
+                        <h3 class="economy-sub-title" itemprop="headline">
+                            <a href="{{ item_url }}" class="economy-sub-title-link" itemprop="url">{{ item.name|raw }}</a>
+                        </h3>
+                    </div>
+                </article>
+                {% if loop.last %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+    </div>
+</section>
+{% endif %}

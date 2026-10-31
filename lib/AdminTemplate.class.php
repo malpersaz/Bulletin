@@ -17,5 +17,7 @@ class AdminTemplate extends TwigTemplate
         $this->lang(Load::lang('mod_newsletter'));
         $this->lang(Load::lang('mod_settings'));
         $this->lang(Load::lang('mod_user'));
+        $isAjax = Req::is_Ajax() || (isset($_GET['ajax']) && (string)$_GET['ajax'] === '1');
+        $this->set('is_ajax', $isAjax);
     }
 }

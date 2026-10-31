@@ -427,6 +427,7 @@ $lang['index']['cache'] = [
     'cache_templates' => 'Кэш шаблонов',
     'cache_llms' => 'Кэш ИИ LLMs',
     'cache_captcha' => 'Кэш Captcha',
+    'cache_market' => 'Кэш рыночных данных',
     'cache_all' => 'ВЕСЬ кэш JS CSS SQL ШАБЛОНОВ',
     'file_deleted' => '%s успешно удален',
     'file_delete_error' => 'Ошибка при удалении %s',
@@ -529,6 +530,22 @@ $lang['index']['mod_news'] = [
         'world_title' => 'Мир',
         'middle_east_title' => 'Ближний Восток',
     ],
+    'economy_news' => [
+        'title' => 'Экономика',
+        'all_items' => 'Все новости',
+        'kicker' => 'Финансы и Рынки',
+        'featured' => 'Главное',
+        'markets_title' => 'Рынки',
+        'live_data' => 'Онлайн-данные',
+        'gram_gold' => 'ЗОЛОТО (ГР)',
+        'dollar' => 'ДОЛЛАР',
+        'euro' => 'ЕВРО',
+        'sterling' => 'ФУНТ',
+        'bist100' => 'BIST 100',
+        'bitcoin' => 'БИТКОИН',
+        'gram_silver' => 'СЕРЕБРО (ГР)',
+        'brent' => 'BRENT',
+    ],
 ];
 $lang['index']['comments'] = 'Комментарии';
 $lang['index']['add_comment'] = 'Добавить комментарий';
@@ -593,6 +610,8 @@ $lang['index']['mod_publication'] = [
     '18' => 'В этой категории пока нет публикаций.',
 ];
 $lang['index']['mod_publication']['authors'] = 'Наши авторы';
+$lang['index']['mod_publication']['authors_section_title'] = 'Авторы / Колонки';
+$lang['index']['mod_publication']['all_authors'] = 'Все авторы';
 $lang['index']['mod_publication']['author'] = 'Автор';
 $lang['index']['mod_publication']['editor'] = 'Редактор';
 $lang['index']['mod_publication']['member'] = 'Участник';

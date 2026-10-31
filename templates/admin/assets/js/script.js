@@ -1592,10 +1592,31 @@ window.handleSelectPickerAddDirect = function() {
         }
     }
     if (window.currentMediaPickerAddUrl) {
+        let targetAddUrl = window.currentMediaPickerAddUrl;
+        const recordId = window.currentMediaPickerRecordId || window.currentMediaPickerContentId;
+        const modName = window.currentMediaPickerModule;
+        if (recordId && modName && !targetAddUrl.includes('target_id=')) {
+            const separator = targetAddUrl.includes('?') ? '&' : '?';
+            targetAddUrl = `${targetAddUrl}${separator}target_module=${encodeURIComponent(modName)}&target_id=${encodeURIComponent(recordId)}`;
+        }
+
         if (window.AFModalEngine && typeof window.AFModalEngine.push === 'function') {
-            window.AFModalEngine.push(window.currentMediaPickerAddUrl, { skipHistory: true });
+            const dynamicBody = document.getElementById('modal-dynamic-body');
+            if (dynamicBody) {
+                dynamicBody.dataset.loadedUrl = '';
+                dynamicBody.innerHTML = '';
+            }
+            const dynamicDialog = document.getElementById('modal-dynamic-dialog');
+            if (dynamicDialog) {
+                dynamicDialog.addEventListener('close', () => {
+                    if (typeof window.refreshActiveMediaPicker === 'function') {
+                        window.refreshActiveMediaPicker();
+                    }
+                }, { once: true });
+            }
+            window.AFModalEngine.push(targetAddUrl, { skipHistory: true });
         } else {
-            window.location.href = window.currentMediaPickerAddUrl;
+            window.location.href = targetAddUrl;
         }
     }
 };
@@ -1635,7 +1656,7 @@ window.refreshActiveMediaPicker = function(preferredId = null) {
 
     const endpoint = type === 'gallery'
         ? `${baseUrl}${modName}/ajax_get_galleries`
-        : `${baseUrl}${modName}/ajax_get_files`;
+        : (type === 'video' ? `${baseUrl}${modName}/all_video` : `${baseUrl}${modName}/ajax_get_files`);
 
     const formData = new FormData();
     formData.append('q', '');
@@ -1659,16 +1680,39 @@ window.refreshActiveMediaPicker = function(preferredId = null) {
         });
 
         let currentValue = '0';
-        if (preferredId) {
-            currentValue = String(preferredId);
-        } else if (type === 'files' && currentMedia && currentMedia.file_id) {
-            currentValue = String(currentMedia.file_id);
-        } else if (type === 'gallery' && currentMedia && currentMedia.gallery_id) {
-            currentValue = String(currentMedia.gallery_id);
+        let matchedOption = null;
+
+        if (preferredId !== null && preferredId !== undefined && preferredId !== '') {
+            const rawPref = String(preferredId).trim();
+            matchedOption = Array.from(select.options).find(o => {
+                const val = String(o.value).trim();
+                return val === rawPref ||
+                       val === `vid:${rawPref}` ||
+                       val === `video:${rawPref}` ||
+                       val.replace(/^(vid|video):/, '') === rawPref.replace(/^(vid|video):/, '');
+            });
+            if (matchedOption) {
+                currentValue = matchedOption.value;
+            }
+        }
+
+        if (!matchedOption) {
+            if (type === 'files' && currentMedia && currentMedia.file_id) {
+                currentValue = String(currentMedia.file_id);
+            } else if (type === 'gallery' && currentMedia && currentMedia.gallery_id) {
+                currentValue = String(currentMedia.gallery_id);
+            } else if (type === 'video' && currentMedia && Array.isArray(currentMedia.video) && currentMedia.video.length > 0) {
+                currentValue = String(currentMedia.video[0]);
+            }
         }
 
         const hasMatch = Array.from(select.options).some(o => String(o.value) === currentValue);
         select.value = hasMatch ? currentValue : '0';
+
+        if (preferredId && hasMatch && typeof closeSelectPickerSheet === 'function') {
+            window.keepSelectPickerOpenOnce = false;
+            closeSelectPickerSheet();
+        }
 
         if (typeof renderSelectPickerOptions === 'function') {
             renderSelectPickerOptions();

@@ -3,9 +3,17 @@
 		<div class="row gy-4">
 			<!-- Site Information -->
 			<div class="col-md-5 col-lg-4">
-				{% set footer_svg_logo = 'static/mod_settings/logo.svg' %}
-				<a class="footer-brand d-inline-flex align-items-center mb-3" href="{{ site.saddress }}" title="{{ site.title }}" aria-label="{{ site.title }}">
-					<img src="{{ site.address }}{{ footer_svg_logo }}" alt="{{ site.title }}" width="175" height="42" class="footer-logo-svg d-inline-block">
+				{% set raw_site_name = site.site_name|default('')|trim %}
+				{% set raw_site_title = site.title|default('')|trim %}
+				{% set display_site_name = (raw_site_name is not empty and (raw_site_title is empty or raw_site_name|length <= raw_site_title|length))
+					? raw_site_name
+					: (raw_site_title is not empty ? raw_site_title : site.name|default('')) %}
+				{% set footer_icon = (site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : ((site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.favicon_path is defined and site.favicon_path is not empty) ? site.favicon_path : null)) %}
+				<a class="footer-brand d-inline-flex align-items-center gap-2 mb-3" href="{{ site.saddress }}" title="{{ display_site_name }}" aria-label="{{ display_site_name }}">
+					{% if footer_icon is not empty %}
+						<img src="{{ site.iaddress }}mod_settings/thumb/{{ footer_icon }}" alt="{{ display_site_name }}" width="32" height="32" class="footer-logo-icon d-inline-block rounded-2 object-fit-contain">
+					{% endif %}
+					<span class="brand-text-gothic">{{ display_site_name }}</span>
 				</a>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
                 <div class="mt-4 d-flex flex-wrap gap-3 feeds-area">

@@ -73,6 +73,10 @@ Compile the verified findings into a standardized Research Dossier containing:
    - Source names and deep URLs for each claim.
 4. **Contradictions & Nuances**:
    - Explicitly listed discrepancies between sources.
+5. **Visual Assets & Media Identification**:
+   - Inspect verified sources for authentic editorial photographs or graphics.
+   - If present: Record original image URL and source outlet attribution credit (`$Source`).
+   - If absent: Explicitly note `Image: None (requires downstream representative generation)`.
 
 ### 5. Hand-off to Kevrast (Stage 1 Pre-Verification)
 - Pass the compiled Research Dossier to `kevrast` for Stage 1 pre-draft verification.

@@ -1711,11 +1711,16 @@ abstract class BaseModuleController
     protected function updateSingleColumn($column, $value, $ids, $permission_action = 'edit')
     {
         // Check permission
-        if ($this->user->hasPermission($this->module_name, $permission_action, $this->lang[$this->module_name]['role_errors'][$permission_action]) === false) {
+        $errorMsg = $this->lang[$this->module_name]['role_errors'][$permission_action] ?? ($this->lang[$this->module_name]['role_errors']['edit'] ?? 'Access denied');
+        if ($this->user->hasPermission($this->module_name, $permission_action, $errorMsg) === false) {
             return false;
         }
 
         $model = Load::model($this->model_name);
+
+        if (!is_array($ids) && !empty($ids)) {
+            $ids = [$ids];
+        }
 
         if (is_array($ids)) {
             foreach ($ids as $id) {
@@ -1730,6 +1735,34 @@ abstract class BaseModuleController
         }
 
         return false;
+    }
+
+    /**
+     * Approve records (set status = 'y')
+     */
+    public function approve()
+    {
+        $query = Req::Post_Safe('query');
+        $perm = (isset($this->lang[$this->module_name]['role']['approval']) && $this->user->hasPermission($this->module_name, 'approval', '', 1)) ? 'approval' : 'publish';
+        if ($this->updateSingleColumn('status', 'y', $query, $perm)) {
+            $this->echoSuccessResponse();
+        } else {
+            echo 'ERROR';
+        }
+    }
+
+    /**
+     * Unapprove records (set status = 'n')
+     */
+    public function unapprove()
+    {
+        $query = Req::Post_Safe('query');
+        $perm = (isset($this->lang[$this->module_name]['role']['approval']) && $this->user->hasPermission($this->module_name, 'approval', '', 1)) ? 'approval' : 'unpublish';
+        if ($this->updateSingleColumn('status', 'n', $query, $perm)) {
+            $this->echoSuccessResponse();
+        } else {
+            echo 'ERROR';
+        }
     }
 
     /**

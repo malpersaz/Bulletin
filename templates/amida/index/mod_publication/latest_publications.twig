@@ -1,82 +1,48 @@
-{{ run({"mod": "index", "method": "_latest_publications", "extra": ["6", "id,image,name,seo,keywords,summary,created_at,deck"]}) }}
-{% set latest_publications = ctx_get('latest_publications') %}
+{# Block L2: Horizontal Authors & Latest Publications Strip (3 Columns) - docs/plan/homepage-layout-wireframe.html #}
+{% set author_limit = limit|default(3) %}
+{{ run({"mod": "index", "method": "_latest_authors", "extra": [author_limit]}) }}
+{% set latest_authors = ctx_get('latest_authors') %}
 
-{% if latest_publications is not empty %}
-    <link rel="preload" as="style" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version }}" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version }}"></noscript>
-
-    <section class="latest-publications-section" aria-labelledby="latest-publications-heading">
-        <header class="latest-publications-header">
-            <div class="latest-publications-heading-wrap">
-                <h2 id="latest-publications-heading" class="latest-publications-title">
-                    <a href="{{ site.saddress }}publications" class="latest-publications-title-link">
-                        {{ lang.index.mod_publication.latest_publications.title }}
+{% if latest_authors is not empty %}
+    <section id="latest-publication-authors" class="latest-authors-section" aria-labelledby="latest-authors-heading">
+        <div class="latest-authors-card">
+            <header class="latest-authors-head">
+                <h2 id="latest-authors-heading" class="latest-authors-title">
+                    <a href="{{ site.saddress }}authors" class="latest-authors-title-link">
+                        <span>{{ lang.index.mod_publication.all_authors }}</span>
                     </a>
                 </h2>
-            </div>
-            <a href="{{ site.saddress }}publications" class="latest-publications-view-all">
-                <span>{{ lang.index.mod_publication.latest_publications.all_items }}</span>
-                <i class="bi bi-arrow-right" aria-hidden="true"></i>
-            </a>
-        </header>
+                <a href="{{ site.saddress }}publications" class="latest-authors-view-all">
+                    <span>{{ lang.index.mod_publication.articles }}</span>
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </a>
+            </header>
 
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            {% for publication in latest_publications %}
-                <article class="col">
-                    <div class="latest-pub-card">
-                        <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="latest-pub-media" title="{{ publication.name }}">
-                            {% if publication.image is not empty %}
-                                <picture>
-                                    <source srcset="{{ site.iaddress }}mod_publication/thumb/{{ publication.image }}" media="(max-width: 768px)">
-                                    <img src="{{ site.iaddress }}mod_publication/thumb/{{ publication.image }}"
-                                         class="latest-pub-img"
-                                         alt="{{ publication.name }}"
-                                         width="400"
-                                         height="260"
-                                         loading="lazy"
-                                         decoding="async">
-                                </picture>
+            <div class="latest-authors-list">
+                {% for author in latest_authors %}
+                    {% set latest_author_name = (author.u_name ~ ' ' ~ author.u_last_name)|trim %}
+                    {% set latest_author_initials = (author.u_name|slice(0, 1) ~ author.u_last_name|slice(0, 1))|upper %}
+                    {% set latest_publication_title = (author.title is defined and author.title is not empty ? author.title : author.name)|trim %}
+                    <article class="latest-authors-item">
+                        <a class="latest-authors-avatar" href="{{ site.saddress }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
+                            {% if author.user_image is defined and author.user_image is not empty %}
+                                <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}"
+                                     alt="{{ latest_author_name }}"
+                                     width="52"
+                                     height="52"
+                                     loading="lazy"
+                                     decoding="async">
                             {% else %}
-                                <div class="latest-pub-placeholder">
-                                    <i class="bi bi-journal-text latest-pub-placeholder-icon" aria-hidden="true"></i>
-                                </div>
+                                <span>{{ latest_author_initials }}</span>
                             {% endif %}
                         </a>
-
-                        <div class="latest-pub-body">
-                            {% if publication.created_at is defined and publication.created_at is not empty %}
-                                <div class="latest-pub-meta">
-                                    <i class="bi bi-calendar3" aria-hidden="true"></i>
-                                    <time datetime="{{ publication.created_at }}">{{ publication.created_at|date('d.m.Y') }}</time>
-                                </div>
-                            {% endif %}
-
-                            <h3 class="latest-pub-title">
-                                <a href="{{ site.saddress }}publication/{{ publication.seo }}">{{ publication.name }}</a>
-                            </h3>
-
-                            {% set publication_excerpt = publication.summary != '' ? publication.summary : (publication.deck is defined and publication.deck != '' ? publication.deck : publication.name) %}
-                            {% set clean_excerpt = publication_excerpt|striptags %}
-                            <p class="latest-pub-summary">
-                                {{ clean_excerpt|length > 200 ? clean_excerpt|slice(0, 197) ~ '...' : clean_excerpt }}
-                            </p>
-
-                            <div class="latest-pub-footer">
-                                <a href="{{ site.saddress }}publication/{{ publication.seo }}" class="latest-pub-read-link" aria-label="{{ publication.name }}">
-                                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                                </a>
-                            </div>
+                        <div class="latest-authors-copy">
+                            <a class="latest-authors-name" href="{{ site.saddress }}author/{{ author.username }}">{{ latest_author_name }}</a>
+                            <a class="latest-authors-publication" href="{{ site.saddress }}publication/{{ author.seo }}">{{ latest_publication_title }}</a>
                         </div>
-                    </div>
-                </article>
-            {% endfor %}
+                    </article>
+                {% endfor %}
+            </div>
         </div>
-
-        <footer class="latest-publications-mobile-footer text-center d-md-none">
-            <a href="{{ site.saddress }}publications" class="btn latest-publications-mobile-btn w-100">
-                <span>{{ lang.index.mod_publication.latest_publications.all_items }}</span>
-                <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
-            </a>
-        </footer>
     </section>
 {% endif %}

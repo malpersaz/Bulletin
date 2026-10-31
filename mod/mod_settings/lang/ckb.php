@@ -150,6 +150,7 @@ $lang['mod_settings'] = [
     'header_style_rect' => 'Tenê Logoya Asoyî',
     'header_style_square_name' => 'Logoya Çargoşe û Navê Malperê',
     'header_style_rect_name' => 'Logoya Asoyî û Navê Malperê',
+    'header_style_square_rect' => 'ئایکۆن و لۆگۆی ئاسۆیی',
     'header_style_name_only' => 'Tenê Navê Malperê',
     'logo_rect_title' => 'Logoya Asoyî (3:1)',
     'logo_square_title' => 'Logoya Çargoşe (1:1)',

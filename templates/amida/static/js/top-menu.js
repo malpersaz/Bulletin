@@ -301,4 +301,24 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, { passive: true });
     }
+
+    // --- Resilient Brand Logo Fallback Handler ---
+    document.querySelectorAll('.modern-brand .logo-image, .footer-brand .footer-logo-icon').forEach((img) => {
+        const handleFallback = () => {
+            if (img.dataset.fallbackApplied) return;
+            img.dataset.fallbackApplied = 'true';
+
+            const currentSrc = img.getAttribute('src') || '';
+            if (currentSrc.includes('/thumb/')) {
+                img.src = currentSrc.replace('/thumb/', '/');
+            } else {
+                img.classList.add('d-none');
+            }
+        };
+
+        img.addEventListener('error', handleFallback);
+        if (img.complete && img.naturalWidth === 0) {
+            handleFallback();
+        }
+    });
 });

@@ -165,7 +165,8 @@ $directories = [
     'cache/video_tmp',
     'cache/video_log',
     'cache/llms',
-    'cache/captcha'
+    'cache/captcha',
+    'cache/market'
 ];
 
 $c = $_GET['cache'] ?? '';
@@ -227,6 +228,10 @@ $pageTitle = $lang['index']['cache']['title'] ?? 'Cache Management';
                             $captchaTitle = $lang['index']['cache']['cache_captcha'] ?? 'Captcha Cache';
                             echo "<h2 class='section-title'><i class='bi bi-shield-check me-2'></i>" . htmlspecialchars($captchaTitle, ENT_QUOTES, 'UTF-8') . "</h2>";
                             $cleanupResults[] = clear_directory('cache/captcha', $lang);
+                        } elseif ($c === 'market') {
+                            $marketTitle = $lang['index']['cache']['cache_market'] ?? 'Market Rates Cache';
+                            echo "<h2 class='section-title'><i class='bi bi-graph-up me-2'></i>" . htmlspecialchars($marketTitle, ENT_QUOTES, 'UTF-8') . "</h2>";
+                            $cleanupResults[] = clear_directory('cache/market', $lang);
                         } elseif ($c === 'all') {
                             echo "<h2 class='section-title'><i class='bi bi-lightning-charge me-2'></i>" . htmlspecialchars($lang['index']['cache']['cache_all'] ?? 'ALL JS CSS SQL TEMPLATES Cache', ENT_QUOTES, 'UTF-8') . "</h2>";
                             foreach ($directories as $dirItem) {
@@ -327,6 +332,18 @@ $pageTitle = $lang['index']['cache']['title'] ?? 'Cache Management';
                                         <div class="flex-grow-1">
                                             <h5 class="mb-1"><?php echo htmlspecialchars($lang['index']['cache']['cache_captcha'] ?? 'Captcha Cache', ENT_QUOTES, 'UTF-8'); ?></h5>
                                             <small class="text-muted">Clear temporary captcha files</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </a>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="<?php echo $current_url; ?>&amp;cache=market" class="list-group-item list-group-item-action">
+                                        <div class="cache-icon market">
+                                            <i class="bi bi-graph-up"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1"><?php echo htmlspecialchars($lang['index']['cache']['cache_market'] ?? 'Market Rates Cache', ENT_QUOTES, 'UTF-8'); ?></h5>
+                                            <small class="text-muted">Clear market rates cache files</small>
                                         </div>
                                         <i class="bi bi-chevron-right text-muted"></i>
                                     </a>

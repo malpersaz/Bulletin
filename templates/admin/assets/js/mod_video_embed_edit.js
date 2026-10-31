@@ -4,9 +4,11 @@
  * Complies strictly with AGENTS.md Rule 2 (Strict Code Separation Mandate).
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+function initVideoEmbedForm() {
     const form = document.getElementById('videoEditForm') || document.getElementById('videoAddForm');
     if (!form) return;
+    if (form.dataset.initialized === 'true') return;
+    form.dataset.initialized = 'true';
 
     const siteAddress = form.dataset.siteAddress || (window.SITE_URL || '/');
     const videoId = form.dataset.id || '{id}';
@@ -24,8 +26,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('imageInput');
     const autofillImageInput = document.getElementById('autofillImageInput');
     const imageUploadArea = document.getElementById('imageUploadArea');
-    const autofillBtn = document.getElementById('autofillButton');
-    const autofillStatus = document.getElementById('autofillStatus');
+    const embedCard = document.getElementById('embedCard') || (embedInput ? embedInput.closest('.m3-card') : null);
+    const alertDialog = document.getElementById('videoAutofillAlertDialog');
+    const alertTitle = document.getElementById('videoAutofillAlertTitle');
+    const alertMessage = document.getElementById('videoAutofillAlertMessage');
+    const alertIcon = document.getElementById('videoAutofillAlertIcon');
+    const alertDetails = document.getElementById('videoAutofillAlertDetails');
+    const alertList = document.getElementById('videoAutofillAlertList');
+    const alertBtnOk = document.getElementById('btnVideoAutofillAlertOk');
+
+    let isFetchingAutofill = false;
+    let autofillAbortController = null;
+    let lastFetchedVideoId = '';
+    let embedInputDebounceTimer = null;
+
+    if (alertBtnOk && alertDialog) {
+        alertBtnOk.addEventListener('click', () => {
+            if (alertDialog.open) {
+                alertDialog.close();
+            }
+        });
+    }
 
     if (dateInput && !dateInput.value) {
         const now = new Date();
@@ -49,13 +70,25 @@ document.addEventListener('DOMContentLoaded', () => {
         removeImageSuccess: form.dataset.i18nRemoveImageSuccess || 'Image Removed',
         unsupportedEmoji: form.dataset.i18nUnsupportedEmoji || 'Emoji or unsupported characters are not allowed in the Content field.',
         autofillMissing: form.dataset.i18nAutofillMissing || 'Paste a YouTube URL or embed code first.',
+        autofillInvalid: form.dataset.i18nAutofillInvalid || 'A valid YouTube video could not be detected from the provided input.',
         autofillLoading: form.dataset.i18nAutofillLoading || 'Fetching video details from YouTube...',
         autofillSuccess: form.dataset.i18nAutofillSuccess || 'Video details imported successfully.',
+        autofillPartial: form.dataset.i18nAutofillPartial || 'Cover image and basic details were imported. Fill the remaining fields if YouTube did not expose all metadata.',
         autofillError: form.dataset.i18nAutofillError || 'Video details could not be imported.',
+        missingDuration: form.dataset.i18nMissingDuration || 'Duration',
+        missingImage: form.dataset.i18nMissingImage || 'Image',
+        missingContent: form.dataset.i18nMissingContent || 'Content',
         uploadPlaceholder: form.dataset.i18nUploadText || 'Tap or Drag to Upload Image',
         previewText: form.dataset.i18nPreviewText || 'Preview',
         fallbackSlug: form.dataset.i18nFallbackSlug || 'video'
     };
+
+    /**
+     * Remove 4-byte characters (emoji, supplemental pictographs outside BMP)
+     */
+    function stripUnsupportedEmoji(val) {
+        return (val || '').toString().replace(/[\u{10000}-\u{10FFFF}]/gu, '').trim();
+    }
 
     /**
      * Clean meta text from forbidden characters
@@ -71,9 +104,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Slugify string for Wikipedia-style URL preview
+     * Format slug string for Wikipedia-style URL preview
      */
-    function slugifyVideoName(value) {
+    function formatVideoSlug(value) {
         let slug = cleanMetaText(value);
         slug = slug.replace(/\s+/g, '_');
         slug = slug.replace(/\u0130/g, 'i');
@@ -88,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function updateSeoPreview() {
         if (!seoPreviewInput || !nameInput) return;
-        const slug = slugifyVideoName(nameInput.value);
+        const slug = formatVideoSlug(nameInput.value);
         seoPreviewInput.value = `${siteAddress}video/${videoId}-${slug}`;
     }
 
@@ -112,9 +145,285 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * Parse YouTube Video ID from embed iframe or watch/short/share URL
+     */
+    function extractYouTubeVideoId(input) {
+        let raw = (input || '').toString().trim();
+        if (!raw) return null;
+
+        // Decode encoded HTML entities if present
+        if (raw.includes('&lt;') || raw.includes('&gt;') || raw.includes('&quot;') || raw.includes('&#')) {
+            const txt = document.createElement('textarea');
+            txt.innerHTML = raw;
+            raw = txt.value;
+        }
+
+        // Standard embed format
+        const embedMatch = raw.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{11})/i);
+        if (embedMatch) return embedMatch[1];
+
+        // Shorts format
+        const shortsMatch = raw.match(/youtube(?:-nocookie)?\.com\/shorts\/([A-Za-z0-9_-]{11})/i);
+        if (shortsMatch) return shortsMatch[1];
+
+        // Live stream format
+        const liveMatch = raw.match(/youtube(?:-nocookie)?\.com\/live\/([A-Za-z0-9_-]{11})/i);
+        if (liveMatch) return liveMatch[1];
+
+        // Short domain format
+        const shortUrlMatch = raw.match(/youtu\.be\/([A-Za-z0-9_-]{11})/i);
+        if (shortUrlMatch) return shortUrlMatch[1];
+
+        // Standard watch parameter: [?&]v={id}
+        const watchMatch = raw.match(/[?&]v=([A-Za-z0-9_-]{11})/i);
+        if (watchMatch) return watchMatch[1];
+
+        // Pure 11-char ID
+        if (/^[A-Za-z0-9_-]{11}$/.test(raw)) {
+            return raw;
+        }
+
+        return null;
+    }
+
+    /**
+     * Show Top-Layer Safe In-Modal AJAX Alert Dialog
+     */
+    function showAutofillAjaxAlert(title, message, items = [], isWarning = false) {
+        if (!alertDialog) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: isWarning ? 'warning' : 'error',
+                    title: title || i18n.information,
+                    text: message,
+                    confirmButtonText: i18n.ok,
+                    confirmButtonColor: '#ba1a1a'
+                });
+            } else {
+                alert((title ? title + '\n' : '') + message);
+            }
+            return;
+        }
+
+        if (alertTitle) alertTitle.textContent = title || (isWarning ? i18n.information : i18n.error);
+        if (alertMessage) alertMessage.textContent = message || '';
+
+        if (alertIcon) {
+            alertIcon.classList.toggle('is-warning', isWarning);
+            alertIcon.innerHTML = isWarning ? '<i class="bi bi-exclamation-triangle-fill"></i>' : '<i class="bi bi-x-circle-fill"></i>';
+        }
+
+        if (alertDetails && alertList) {
+            if (Array.isArray(items) && items.length > 0) {
+                alertList.innerHTML = items.map(it => `<li>${it}</li>`).join('');
+                alertDetails.classList.remove('is-hidden');
+            } else {
+                alertList.innerHTML = '';
+                alertDetails.classList.add('is-hidden');
+            }
+        }
+
+        if (typeof alertDialog.showModal === 'function') {
+            if (!alertDialog.open) {
+                alertDialog.showModal();
+            }
+        } else {
+            alertDialog.setAttribute('open', '');
+        }
+    }
+
+    /**
+     * Toggle Textless Indeterminate Fetch State
+     */
+    function setFetchingState(loading) {
+        isFetchingAutofill = Boolean(loading);
+        if (embedCard) {
+            embedCard.classList.toggle('is-fetching', isFetchingAutofill);
+        }
+        if (embedPreview) {
+            embedPreview.classList.toggle('is-fetching', isFetchingAutofill);
+        }
+    }
+
+    /**
+     * Trigger visual flash highlight on auto-populated inputs
+     */
+    function flashInputFields(fields) {
+        fields.forEach(el => {
+            if (!el) return;
+            el.classList.remove('is-autofilled-flash');
+            void el.offsetWidth;
+            el.classList.add('is-autofilled-flash');
+            setTimeout(() => {
+                el.classList.remove('is-autofilled-flash');
+            }, 850);
+        });
+    }
+
+    /**
+     * Automatic YouTube Metadata Fetch Execution
+     */
+    async function triggerAutoFetchMetadata(videoId, sourceInputVal) {
+        if (!videoId || isFetchingAutofill) return;
+        if (videoId === lastFetchedVideoId) return;
+
+        if (autofillAbortController) {
+            autofillAbortController.abort();
+        }
+        autofillAbortController = new AbortController();
+
+        setFetchingState(true);
+
+        try {
+            const embedVal = embedInput ? embedInput.value.trim() : '';
+            const originalVal = originalInput ? originalInput.value.trim() : '';
+
+            const fd = new FormData();
+            fd.append('embed', embedVal || sourceInputVal || '');
+            fd.append('original', originalVal || (videoId ? `https://www.youtube.com/watch?v=${videoId}` : ''));
+
+            const response = await fetch(`${siteAddress}mod_video_embed/autofill_metadata`, {
+                method: 'POST',
+                body: fd,
+                signal: autofillAbortController.signal
+            });
+
+            const res = await response.json();
+
+            if (res.status === 'success' && res.data) {
+                lastFetchedVideoId = videoId;
+                const data = res.data;
+                const populatedElements = [];
+
+                if (data.name && nameInput) {
+                    nameInput.value = stripUnsupportedEmoji(data.name);
+                    populatedElements.push(nameInput);
+                }
+                if (data.original && originalInput) {
+                    originalInput.value = stripUnsupportedEmoji(data.original);
+                    populatedElements.push(originalInput);
+                }
+                if (data.duration && durationInput) {
+                    durationInput.value = stripUnsupportedEmoji(data.duration);
+                    populatedElements.push(durationInput);
+                }
+                if (data.embed && embedInput && embedInput.value.trim() !== data.embed.trim()) {
+                    embedInput.value = data.embed;
+                }
+                if (data.content && contentInput) {
+                    contentInput.value = stripUnsupportedEmoji(data.content);
+                    populatedElements.push(contentInput);
+                }
+                if (data.title && titleInput) {
+                    titleInput.value = stripUnsupportedEmoji(data.title);
+                    populatedElements.push(titleInput);
+                }
+                if (data.keywords && keywordsInput) {
+                    keywordsInput.value = stripUnsupportedEmoji(data.keywords);
+                    populatedElements.push(keywordsInput);
+                }
+                if (data.description && descriptionInput) {
+                    descriptionInput.value = stripUnsupportedEmoji(data.description);
+                    populatedElements.push(descriptionInput);
+                }
+
+                if (data.image && autofillImageInput) {
+                    autofillImageInput.value = data.image;
+                }
+                if (data.image_url && imageUploadArea) {
+                    imageUploadArea.innerHTML = `
+                        <div class="current-image-wrapper">
+                            <img src="${data.image_url}" class="current-image" alt="${data.name || 'Preview'}">
+                            <button type="button" class="remove-img-btn" id="btnRemoveExistingImage" aria-label="${i18n.removeImageTitle}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                    bindRemoveImageButton();
+                }
+
+                updateEmbedPreview();
+                updateSeoPreview();
+                flashInputFields(populatedElements);
+
+                // Check for missing fields / partial data
+                if (res.is_partial || (Array.isArray(res.missing_fields) && res.missing_fields.length > 0)) {
+                    const missingLabels = (res.missing_fields || []).map(f => {
+                        if (f === 'duration') return i18n.missingDuration;
+                        if (f === 'image') return i18n.missingImage;
+                        if (f === 'description') return i18n.missingContent;
+                        return f;
+                    });
+                    showAutofillAjaxAlert(i18n.information, res.message || i18n.autofillPartial, missingLabels, true);
+                }
+            } else {
+                const errMsg = res.message || i18n.autofillError;
+                showAutofillAjaxAlert(i18n.error, errMsg, res.warnings || [], false);
+            }
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                return;
+            }
+            console.error('Autofill error:', err);
+            showAutofillAjaxAlert(i18n.error, i18n.autofillError, [err.message || String(err)], false);
+        } finally {
+            setFetchingState(false);
+        }
+    }
+
+    /**
+     * Listeners for automatic detection on Embed & Original input
+     */
+    function handleEmbedInputChange(e) {
+        updateEmbedPreview();
+
+        if (embedInputDebounceTimer) {
+            clearTimeout(embedInputDebounceTimer);
+        }
+
+        const rawVal = embedInput ? embedInput.value.trim() : '';
+        if (!rawVal) {
+            lastFetchedVideoId = '';
+            return;
+        }
+
+        const detectedId = extractYouTubeVideoId(rawVal);
+        if (detectedId) {
+            if (detectedId !== lastFetchedVideoId) {
+                const delay = (e && e.type === 'paste') ? 80 : 350;
+                embedInputDebounceTimer = setTimeout(() => {
+                    triggerAutoFetchMetadata(detectedId, rawVal);
+                }, delay);
+            }
+        } else {
+            // If the user entered a substantial string (like an iframe or http) that cannot be parsed as YouTube
+            if (rawVal.length > 20 && (rawVal.includes('<iframe') || rawVal.startsWith('http'))) {
+                embedInputDebounceTimer = setTimeout(() => {
+                    showAutofillAjaxAlert(i18n.information, i18n.autofillInvalid, [], true);
+                }, 800);
+            }
+        }
+    }
+
     // Embed input listeners
     if (embedInput) {
-        embedInput.addEventListener('input', updateEmbedPreview);
+        embedInput.addEventListener('input', handleEmbedInputChange);
+        embedInput.addEventListener('paste', handleEmbedInputChange);
+        embedInput.addEventListener('change', handleEmbedInputChange);
+    }
+
+    if (originalInput) {
+        originalInput.addEventListener('input', () => {
+            const rawVal = originalInput.value.trim();
+            const detectedId = extractYouTubeVideoId(rawVal);
+            if (detectedId && detectedId !== lastFetchedVideoId && (!embedInput || !embedInput.value.trim())) {
+                if (embedInputDebounceTimer) clearTimeout(embedInputDebounceTimer);
+                embedInputDebounceTimer = setTimeout(() => {
+                    triggerAutoFetchMetadata(detectedId, rawVal);
+                }, 350);
+            }
+        });
     }
 
     // Name input auto-fills SEO fields
@@ -147,103 +456,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     });
-
-    /**
-     * YouTube Metadata Autofill
-     */
-    if (autofillBtn) {
-        autofillBtn.addEventListener('click', async () => {
-            const embedVal = embedInput ? embedInput.value.trim() : '';
-            const originalVal = originalInput ? originalInput.value.trim() : '';
-            const source = embedVal || originalVal;
-
-            if (!source) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'warning',
-                        text: i18n.autofillMissing,
-                        confirmButtonText: i18n.ok,
-                        confirmButtonColor: '#ba1a1a'
-                    });
-                } else {
-                    alert(i18n.autofillMissing);
-                }
-                return;
-            }
-
-            autofillBtn.classList.add('is-loading');
-            const originalBtnHtml = autofillBtn.innerHTML;
-            autofillBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> <span>${i18n.autofillLoading}</span>`;
-            if (autofillStatus) autofillStatus.textContent = i18n.autofillLoading;
-
-            try {
-                const fd = new FormData();
-                fd.append('embed', embedVal);
-                fd.append('original', originalVal);
-
-                const response = await fetch(`${siteAddress}mod_video_embed/autofill_metadata`, {
-                    method: 'POST',
-                    body: fd
-                });
-                const res = await response.json();
-
-                if (res.status === 'success' && res.data) {
-                    const data = res.data;
-                    if (data.name && nameInput) nameInput.value = data.name;
-                    if (data.original && originalInput) originalInput.value = data.original;
-                    if (data.duration && durationInput) durationInput.value = data.duration;
-                    if (data.embed && embedInput) embedInput.value = data.embed;
-                    if (data.content && contentInput) contentInput.value = data.content;
-                    if (data.title && titleInput) titleInput.value = data.title;
-                    if (data.keywords && keywordsInput) keywordsInput.value = data.keywords;
-                    if (data.description && descriptionInput) descriptionInput.value = data.description;
-
-                    if (data.image && autofillImageInput) autofillImageInput.value = data.image;
-                    if (data.image_url && imageUploadArea) {
-                        imageUploadArea.innerHTML = `
-                            <div class="current-image-wrapper">
-                                <img src="${data.image_url}" class="current-image" alt="${data.name || 'Preview'}">
-                                <button type="button" class="remove-img-btn" id="btnRemoveExistingImage" aria-label="${i18n.removeImageTitle}">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        `;
-                        bindRemoveImageButton();
-                    }
-
-                    updateEmbedPreview();
-                    updateSeoPreview();
-
-                    if (autofillStatus) autofillStatus.textContent = i18n.autofillSuccess;
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'success',
-                            text: res.message || i18n.autofillSuccess,
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
-                    }
-                } else {
-                    const errMsg = res.message || i18n.autofillError;
-                    if (autofillStatus) autofillStatus.textContent = errMsg;
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'warning',
-                            text: errMsg,
-                            confirmButtonText: i18n.ok,
-                            confirmButtonColor: '#ba1a1a'
-                        });
-                    }
-                }
-            } catch (err) {
-                console.error('Autofill error:', err);
-                if (autofillStatus) autofillStatus.textContent = i18n.autofillError;
-            } finally {
-                autofillBtn.classList.remove('is-loading');
-                autofillBtn.innerHTML = originalBtnHtml;
-            }
-        });
-    }
 
     /**
      * Image Upload & Preview Handling
@@ -378,15 +590,28 @@ document.addEventListener('DOMContentLoaded', () => {
     bindRemoveImageButton();
 
     /**
-     * Bottom Toolbar Action Buttons
+     * Bottom Action Buttons & Cancel
      */
-    const btnCancel = document.getElementById('btnCancelEdit');
-    if (btnCancel) {
-        btnCancel.addEventListener('click', () => {
-            const href = btnCancel.dataset.href;
-            if (href) window.location.href = href;
+    const cancelBtns = [
+        document.getElementById('btnCancelEdit'),
+        ...document.querySelectorAll('a.m3-btn-half-neutral[href*="mod_video_embed/list"]'),
+        ...document.querySelectorAll('[data-action="cancel-edit"]')
+    ].filter(Boolean);
+
+    cancelBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const isInsideModal = Boolean(form.closest('#modal-dynamic-body') || document.getElementById('modal-dynamic-dialog')?.open);
+            if (isInsideModal && window.AFModalEngine && typeof window.AFModalEngine.back === 'function') {
+                e.preventDefault();
+                window.AFModalEngine.back();
+                return;
+            }
+            const href = btn.dataset.href || btn.getAttribute('href');
+            if (href && !btn.getAttribute('href')) {
+                window.location.href = href;
+            }
         });
-    }
+    });
 
     const triggerFormSubmit = () => {
         if (form) {
@@ -409,9 +634,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Form Submit & Emoji Validation
+     * Form Submit: Handles emoji validation & modal AJAX submission
      */
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
         const restrictedFields = [nameInput, titleInput, keywordsInput, descriptionInput, contentInput];
         const hasUnsupportedChar = restrictedFields.some(f => f && /[\u{10000}-\u{10FFFF}]/u.test(f.value || ''));
 
@@ -427,6 +652,100 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 alert(i18n.unsupportedEmoji);
             }
+            return;
+        }
+
+        const isInsideModal = Boolean(form.closest('#modal-dynamic-body') || document.getElementById('modal-dynamic-dialog')?.open);
+        if (!isInsideModal) {
+            return;
+        }
+
+        e.preventDefault();
+        const submitBtn = form.querySelector('button[type="submit"]') || document.querySelector('button[type="submit"][form="' + form.id + '"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        try {
+            const formData = new FormData(form);
+            formData.append('ajax_request', '1');
+
+            // Ensure target module & content id are included if adding from a content media picker
+            const targetContentId = window.currentMediaPickerRecordId || window.currentMediaPickerContentId;
+            const targetModule = window.currentMediaPickerModule || 'mod_news';
+            if (targetContentId && !formData.get('target_id')) {
+                formData.append('target_id', String(targetContentId));
+                formData.append('target_module', targetModule);
+            }
+
+            const targetUrl = form.getAttribute('action') || (siteAddress + (form.id === 'videoAddForm' ? 'mod_video_embed/add' : 'mod_video_embed/edit/' + videoId));
+
+            const response = await fetch(targetUrl, {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: formData
+            });
+
+            const text = await response.text();
+            let res;
+            try {
+                res = JSON.parse(text);
+            } catch (jsonErr) {
+                console.error('Non-JSON server response:', text);
+                showAutofillAjaxAlert(i18n.error, i18n.error, [text.slice(0, 300)], false);
+                return;
+            }
+
+            if (res.status === 'success') {
+                if (window.AFModalEngine && typeof window.AFModalEngine.showToast === 'function') {
+                    window.AFModalEngine.showToast(res.message || i18n.success, 'success');
+                } else if (typeof showSnackbar === 'function') {
+                    showSnackbar(res.message || i18n.success, 'success');
+                }
+                const newId = res.id || null;
+                const prefVideoId = newId ? `vid:${newId}` : null;
+
+                // Client-side fallback: If targetContentId exists and was not confirmed attached by backend
+                if (targetContentId && newId && res.attached !== true) {
+                    try {
+                        const relFd = new FormData();
+                        relFd.append('id', String(targetContentId));
+                        relFd.append('type', 'video');
+                        relFd.append('value', prefVideoId);
+                        fetch(`${siteAddress}${targetModule}/ajax_update_relation`, {
+                            method: 'POST',
+                            body: relFd
+                        }).catch(() => {});
+                    } catch (relErr) {
+                        console.error('Relation fallback update error:', relErr);
+                    }
+                }
+
+                if (typeof window.refreshActiveMediaPicker === 'function') {
+                    window.refreshActiveMediaPicker(prefVideoId);
+                }
+                if (typeof closeSelectPickerSheet === 'function') {
+                    closeSelectPickerSheet();
+                }
+                const mgr = window.newsManager || window.contentManager;
+                if (mgr && typeof mgr.loadData === 'function') {
+                    mgr.loadData(true);
+                }
+                if (window.AFModalEngine && typeof window.AFModalEngine.back === 'function') {
+                    window.AFModalEngine.back();
+                }
+            } else {
+                const errMsg = res.message || (res.errors ? res.errors.join(', ') : i18n.error);
+                const details = Array.isArray(res.errors) ? res.errors : [];
+                showAutofillAjaxAlert(i18n.error, errMsg, details, false);
+            }
+        } catch (err) {
+            console.error('Video form submit error:', err);
+            showAutofillAjaxAlert(i18n.error, i18n.error, [err.message || String(err)], false);
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
         }
     });
 
@@ -438,4 +757,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial runs
     updateEmbedPreview();
     updateSeoPreview();
-});
+}
+
+window.initVideoEmbedForm = initVideoEmbedForm;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVideoEmbedForm);
+} else {
+    initVideoEmbedForm();
+}
