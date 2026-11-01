@@ -32,5 +32,5 @@ Calibrate three core dials (scale 1 to 10) to guide execution:
 - **Layout Structure**: Avoid standard centered hero blocks with 3 identical feature cards unless specifically indicated. Use asymmetrical offsets, broken grids, or editorial flows where appropriate.
 
 ### 4. Repository Architectural Constraints
-- **Strict Code Separation**: Never insert inline styles (`style="..."` or `<style>`) or inline JavaScript in Twig/HTML templates. All styles must reside in dedicated CSS files (e.g. `templates/amida/assets/css/` or theme asset folders).
+- **Strict Code Separation**: Never insert inline styles (`style="..."` or `<style>`) or inline JavaScript in Twig/HTML templates. All styles must reside in dedicated CSS files (e.g. `templates/amed/assets/css/` or theme asset folders).
 - **Theme Parity**: When designing public theme views, respect the repository theme contract documented in `/.agents/design/public-theme/DESIGN.md`.

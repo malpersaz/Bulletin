@@ -345,10 +345,10 @@ abstract class indexBase
                 $this->site[$final_key] = $value;
             }
 
-            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amida';
+            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amed';
             $fullTemplatePath = template_dir . $activeTemplate;
             if (!file_exists($fullTemplatePath) || !is_dir($fullTemplatePath)) {
-                $activeTemplate = 'amida';
+                $activeTemplate = 'amed';
             }
             $this->site['app_template'] = $activeTemplate;
             Registry::set('app_template', $activeTemplate);

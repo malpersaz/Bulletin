@@ -44,7 +44,7 @@ class Tier0QualityContractsTest extends TestCase
             'templates/admin/mod_settings',
             'templates/admin/mod_acl',
             'templates/admin/mod_user',
-            'templates/amida/partials',
+            'templates/amed/partials',
         ];
 
         $checkedFiles = [];
@@ -120,7 +120,7 @@ class Tier0QualityContractsTest extends TestCase
 
     public function testTwigFaqMacroStructure(): void
     {
-        $macroPath = 'templates/amida/macros/faq.twig';
+        $macroPath = 'templates/amed/macros/faq.twig';
         $fullPath = $this->baseDir . '/' . $macroPath;
         if (file_exists($fullPath)) {
             $audit = $this->twigAuditor->auditMacro($macroPath, ['render', 'schema']);

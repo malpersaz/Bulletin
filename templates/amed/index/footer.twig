@@ -3,17 +3,117 @@
 		<div class="row gy-4">
 			<!-- Site Information -->
 			<div class="col-md-5 col-lg-4">
+				{# === Footer Logo Options - 6 modes (Synced with Header) ===========
+				   square           -> Only Icon (site_icon), hide site title
+				   rectangle        -> Only Horizontal logo (logo_path), hide site title
+				   square_name      -> Icon + site title
+				   rectangle_name   -> Horizontal logo + site title
+				   square_rectangle -> Icon + Horizontal logo (site_icon + logo_path)
+				   name_only        -> Site title only, hide logo
+				   ================================================================== #}
+				{% set logo_type = site.logo_type is defined and site.logo_type is not empty ? site.logo_type : 'rectangle' %}
+				{% set show_logo_area = (site.show_logo is not defined or site.show_logo == 'y') and logo_type != 'name_only' %}
+				{% set is_square_mode = (logo_type == 'square' or logo_type == 'square_name') %}
+				{% set is_dual_mode = (logo_type == 'square_rectangle') %}
+				{% set show_site_title = (logo_type == 'square_name' or logo_type == 'rectangle_name' or logo_type == 'name_only') %}
+
+				{% if is_square_mode %}
+					{% set active_logo_file = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : ((site.favicon_path is defined and site.favicon_path is not empty) ? site.favicon_path : null)) %}
+				{% elseif is_dual_mode %}
+					{% set active_square_file = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : ((site.favicon_path is defined and site.favicon_path is not empty) ? site.favicon_path : null)) %}
+					{% set active_rect_file = (site.logo_path is defined and site.logo_path is not empty) ? site.logo_path : null %}
+					{% set active_logo_file = active_square_file is not empty ? active_square_file : active_rect_file %}
+				{% else %}
+					{% set active_logo_file = (site.logo_path is defined and site.logo_path is not empty) ? site.logo_path : null %}
+				{% endif %}
+
+				{% set use_animated = site.use_animated_logo is defined and site.use_animated_logo == 'y' and site.animated_logo_path is defined and site.animated_logo_path is not empty %}
+				{% set anim_ext = site.animated_logo_type|default('webm') %}
+				{% set anim_mode = site.animated_logo_mode|default('loop') %}
+				{% set anim_blend = site.animated_logo_blend|default('multiply') %}
+				{% set blend_class = anim_blend == 'multiply' ? 'logo-blend-multiply' : (anim_blend == 'screen' ? 'logo-blend-screen' : '') %}
+
+				{% set has_logo_image = show_logo_area and active_logo_file is not null %}
+				{% set has_logo_mark = show_logo_area %}
 				{% set raw_site_name = site.site_name|default('')|trim %}
 				{% set raw_site_title = site.title|default('')|trim %}
 				{% set display_site_name = (raw_site_name is not empty and (raw_site_title is empty or raw_site_name|length <= raw_site_title|length))
 					? raw_site_name
 					: (raw_site_title is not empty ? raw_site_title : site.name|default('')) %}
-				{% set footer_icon = (site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : ((site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.favicon_path is defined and site.favicon_path is not empty) ? site.favicon_path : null)) %}
-				<a class="footer-brand d-inline-flex align-items-center gap-2 mb-3" href="{{ site.saddress }}" title="{{ display_site_name }}" aria-label="{{ display_site_name }}">
-					{% if footer_icon is not empty %}
-						<img src="{{ site.iaddress }}mod_settings/thumb/{{ footer_icon }}" alt="{{ display_site_name }}" width="32" height="32" class="footer-logo-icon d-inline-block rounded-2 object-fit-contain">
+
+				<a class="footer-brand modern-brand logo-mode-{{ logo_type }}{% if not show_logo_area %} brand-title-only{% endif %} d-inline-flex align-items-center mb-3" href="{{ site.saddress }}" title="{{ display_site_name }}" aria-label="{{ display_site_name }}">
+					{% if show_logo_area and use_animated %}
+						<span class="modern-brand-mark logo-animated-mark logo-transparent {{ blend_class }}">
+							{% if anim_ext == 'webm' or anim_ext == 'mp4' %}
+								<video
+									src="{{ site.iaddress }}mod_settings/{{ site.animated_logo_path }}"
+									autoplay
+									{% if anim_mode == 'loop' %}loop{% endif %}
+									muted
+									playsinline
+									class="logo-animated-video {{ blend_class }}">
+									{% if has_logo_image %}
+										<img src="{{ site.iaddress }}mod_settings/thumb/{{ active_logo_file }}" alt="{{ display_site_name }}" class="logo-image {{ blend_class }}">
+									{% endif %}
+								</video>
+							{% elseif anim_ext == 'json' %}
+								<lottie-player
+									src="{{ site.iaddress }}mod_settings/{{ site.animated_logo_path }}"
+									background="transparent"
+									speed="1"
+									class="logo-animated-lottie {{ blend_class }}"
+									{% if anim_mode == 'loop' %}loop{% endif %}
+									autoplay>
+								</lottie-player>
+							{% else %}
+								<img
+									src="{{ site.iaddress }}mod_settings/{{ site.animated_logo_path }}"
+									alt="{{ display_site_name }}"
+									class="logo-animated-img {{ blend_class }}">
+							{% endif %}
+						</span>
+					{% elseif is_dual_mode and show_logo_area %}
+						{% if active_square_file is not empty %}
+							<span class="modern-brand-mark">
+								<img
+									src="{{ site.iaddress }}mod_settings/thumb/{{ active_square_file }}"
+									alt="{{ display_site_name }}"
+									class="logo-image logo-square"
+									width="42" height="42">
+							</span>
+						{% endif %}
+						{% if active_rect_file is not empty %}
+							<span class="modern-brand-rect-wrap">
+								<img
+									src="{{ site.iaddress }}mod_settings/thumb/{{ active_rect_file }}"
+									alt="{{ display_site_name }}"
+									class="logo-image logo-rect"
+									width="160" height="42">
+							</span>
+						{% else %}
+							<span class="modern-brand-copy">
+								<span class="modern-brand-title">{{ display_site_name }}</span>
+							</span>
+						{% endif %}
+					{% elseif show_logo_area and has_logo_image %}
+						<span class="modern-brand-mark">
+							<img
+								src="{{ site.iaddress }}mod_settings/thumb/{{ active_logo_file }}"
+								alt="{{ display_site_name }}"
+								class="logo-image {% if is_square_mode %}logo-square{% else %}logo-rect{% endif %}"
+								{% if is_square_mode %}width="42" height="42"{% else %}width="160" height="42"{% endif %}>
+						</span>
+					{% elseif show_logo_area %}
+						<span class="modern-brand-mark">
+							<span class="brand-monogram">{{ display_site_name|slice(0, 1) }}</span>
+						</span>
 					{% endif %}
-					<span class="brand-text-gothic">{{ display_site_name }}</span>
+
+					{% if show_site_title or (not has_logo_mark and not is_dual_mode) %}
+						<span class="modern-brand-copy">
+							<span class="modern-brand-title">{{ display_site_name }}</span>
+						</span>
+					{% endif %}
 				</a>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
                 <div class="mt-4 d-flex flex-wrap gap-3 feeds-area">

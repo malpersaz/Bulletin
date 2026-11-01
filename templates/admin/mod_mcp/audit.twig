@@ -7,86 +7,119 @@
 {% block headline %}{{ lang.mod_mcp.audit_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=1.1">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=2.0">
 {% endblock %}
 
 {% block content %}
-<div class="mcp-tabs">
-    <a href="{{ site.saddress }}mod_mcp/list" class="mcp-tab-item">{{ lang.mod_mcp.nav_keys }}</a>
-    <a href="{{ site.saddress }}mod_mcp/audit" class="mcp-tab-item active">{{ lang.mod_mcp.nav_audit }}</a>
-</div>
+<div class="mcp-app-shell">
+    <nav class="mcp-tabs" aria-label="{{ lang.mod_mcp.audit_title }}">
+        <a href="{{ site.saddress }}mod_mcp/list" class="mcp-tab-item">
+            <i class="bi bi-key-fill" aria-hidden="true"></i>
+            <span>{{ lang.mod_mcp.nav_keys }}</span>
+        </a>
+        <a href="{{ site.saddress }}mod_mcp/audit" class="mcp-tab-item active">
+            <i class="bi bi-activity" aria-hidden="true"></i>
+            <span>{{ lang.mod_mcp.nav_audit }}</span>
+        </a>
+    </nav>
 
-<div class="mcp-page-intro">{{ lang.mod_mcp.audit_intro }}</div>
+    <p class="mcp-page-intro">{{ lang.mod_mcp.audit_intro }}</p>
 
-<div class="mcp-stats-grid">
-    <div class="mcp-stat-card">
-        <span class="mcp-stat-val">{{ total_calls }}</span>
-        <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_total_calls }}</span>
-    </div>
-    <div class="mcp-stat-card {% if error_calls > 0 %}mcp-stat-error{% endif %}">
-        <span class="mcp-stat-val">{{ error_calls }}</span>
-        <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_error_calls }}</span>
-    </div>
-    <div class="mcp-stat-card">
-        <span class="mcp-stat-val">{{ daily_tokens }}</span>
-        <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_daily_tokens }}</span>
-    </div>
-</div>
-
-<div class="mcp-filter-card">
-    <form method="get" action="{{ site.saddress }}mod_mcp/audit">
-        <div class="mcp-filter-row">
-            <select name="caller_type" class="mcp-input">
-                <option value="">{{ lang.mod_mcp.audit_filter_all }}</option>
-                <option value="api_key" {% if filters.caller_type == 'api_key' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_api_key }}</option>
-                <option value="oauth" {% if filters.caller_type == 'oauth' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_oauth }}</option>
-                <option value="agent_chat" {% if filters.caller_type == 'agent_chat' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_agent_chat }}</option>
-                <option value="internal" {% if filters.caller_type == 'internal' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_internal }}</option>
-            </select>
-            <input type="text" name="tool_name" value="{{ filters.tool_name }}" placeholder="{{ lang.mod_mcp.audit_tool_name }}" class="mcp-input">
+    <div class="mcp-stats-grid">
+        <div class="mcp-stat-card">
+            <span class="mcp-stat-val">{{ total_calls }}</span>
+            <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_total_calls }}</span>
         </div>
-        <button type="submit" class="mcp-btn mcp-btn-secondary">{{ lang.mod_mcp.status_label }}</button>
-    </form>
-</div>
-
-<div class="mcp-key-list">
-    {% if audit_logs|length == 0 %}
-        <div class="mcp-empty-state">{{ lang.mod_mcp.audit_no_logs }}</div>
-    {% endif %}
-    {% for log in audit_logs %}
-        <div class="mcp-key-card {% if log.is_error %}mcp-key-card-revoked{% endif %}">
-            <div class="mcp-key-card-header">
-                <span class="mcp-audit-tool">{{ log.tool_name }}</span>
-                <span class="mcp-key-badge {% if log.is_error == 0 %}mcp-badge-success{% else %}mcp-badge-error{% endif %}">
-                    {{ log.status_code }}
-                </span>
-            </div>
-            <div class="mcp-key-card-meta">
-                <span class="mcp-audit-caller">{{ log.caller_type }}:{{ log.caller_id }}</span>
-                <span>{{ log.ip_address }}</span>
-            </div>
-            <div class="mcp-key-card-meta">
-                <span>{{ lang.mod_mcp.audit_latency }}: {{ log.execution_time_ms }} ms</span>
-                {% if log.tokens_used > 0 %}
-                    <span>{{ log.tokens_used }} tokens</span>
-                {% endif %}
-            </div>
-            <div class="mcp-key-card-footer">
-                <span class="mcp-key-creator">{{ log.created_at }}</span>
-            </div>
+        <div class="mcp-stat-card {% if error_calls > 0 %}mcp-stat-error{% endif %}">
+            <span class="mcp-stat-val">{{ error_calls }}</span>
+            <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_error_calls }}</span>
         </div>
-    {% endfor %}
-</div>
+        <div class="mcp-stat-card">
+            <span class="mcp-stat-val">{{ daily_tokens }}</span>
+            <span class="mcp-stat-lbl">{{ lang.mod_mcp.audit_daily_tokens }}</span>
+        </div>
+    </div>
 
-{% if audit_logs|length >= 30 or current_page > 1 %}
-<div class="mcp-pagination">
-    {% if current_page > 1 %}
-        <a href="{{ site.saddress }}mod_mcp/audit?p={{ current_page - 1 }}" class="mcp-btn mcp-btn-small mcp-btn-secondary">&laquo;</a>
-    {% endif %}
-    <span class="mcp-btn mcp-btn-small mcp-btn-secondary">{{ current_page }}</span>
-    {% if audit_logs|length >= 30 %}
-        <a href="{{ site.saddress }}mod_mcp/audit?p={{ current_page + 1 }}" class="mcp-btn mcp-btn-small mcp-btn-secondary">&raquo;</a>
+    <section class="mcp-filter-card">
+        <form method="get" action="{{ site.saddress }}mod_mcp/audit" class="mcp-filter-form">
+            <div class="mcp-filter-row">
+                <select name="caller_type" class="mcp-input" aria-label="{{ lang.mod_mcp.audit_caller }}">
+                    <option value="">{{ lang.mod_mcp.audit_filter_all }}</option>
+                    <option value="api_key" {% if filters.caller_type == 'api_key' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_api_key }}</option>
+                    <option value="oauth" {% if filters.caller_type == 'oauth' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_oauth }}</option>
+                    <option value="agent_chat" {% if filters.caller_type == 'agent_chat' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_agent_chat }}</option>
+                    <option value="internal" {% if filters.caller_type == 'internal' %}selected{% endif %}>{{ lang.mod_mcp.audit_filter_internal }}</option>
+                </select>
+                <input type="text" name="tool_name" value="{{ filters.tool_name }}" placeholder="{{ lang.mod_mcp.audit_tool_name }}" class="mcp-input" aria-label="{{ lang.mod_mcp.audit_tool_name }}">
+            </div>
+            <button type="submit" class="mcp-btn mcp-btn-secondary mcp-btn-block">
+                <i class="bi bi-funnel-fill" aria-hidden="true"></i>
+                <span>{{ lang.mod_mcp.audit_filter_submit }}</span>
+            </button>
+        </form>
+    </section>
+
+    <section class="mcp-section">
+        <div class="mcp-key-list">
+            {% if audit_logs|length == 0 %}
+                <div class="mcp-empty-state">
+                    <i class="bi bi-journal-code" aria-hidden="true"></i>
+                    <span>{{ lang.mod_mcp.audit_no_logs }}</span>
+                </div>
+            {% endif %}
+            {% for log in audit_logs %}
+                <article class="mcp-key-card {% if log.is_error %}mcp-key-card-revoked{% endif %}">
+                    <div class="mcp-key-card-header">
+                        <div class="mcp-key-title-group">
+                            <span class="mcp-status-dot {% if log.is_error == 0 %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
+                            <span class="mcp-audit-tool">{{ log.tool_name }}</span>
+                        </div>
+                        <span class="mcp-key-badge {% if log.is_error == 0 %}mcp-badge-success{% else %}mcp-badge-error{% endif %}">
+                            {{ log.status_code }}
+                        </span>
+                    </div>
+
+                    <div class="mcp-meta-grid">
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-person-badge" aria-hidden="true"></i> {{ lang.mod_mcp.audit_caller }}</span>
+                            <span class="mcp-meta-val mcp-audit-caller">{{ log.caller_type }}:{{ log.caller_id }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-globe2" aria-hidden="true"></i> IP</span>
+                            <span class="mcp-meta-val">{{ log.ip_address }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-stopwatch" aria-hidden="true"></i> {{ lang.mod_mcp.audit_latency }}</span>
+                            <span class="mcp-meta-val">{{ log.execution_time_ms }} ms</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-clock" aria-hidden="true"></i> {{ lang.mod_mcp.audit_timestamp }}</span>
+                            <span class="mcp-meta-val">{{ log.created_at }}</span>
+                        </div>
+                    </div>
+
+                    {% if log.tokens_used > 0 %}
+                    <div class="mcp-audit-token-bar">
+                        <i class="bi bi-coin" aria-hidden="true"></i>
+                        <span>{{ log.tokens_used }} tokens</span>
+                    </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+
+    {% if audit_logs|length >= 30 or current_page > 1 %}
+    {% set filter_qs = (filter_caller ? '&caller_type=' ~ (filter_caller|url_encode) : '') ~ (filter_tool ? '&tool_name=' ~ (filter_tool|url_encode) : '') %}
+    <div class="mcp-pagination">
+        {% if current_page > 1 %}
+            <a href="{{ site.saddress }}mod_mcp/audit?p={{ current_page - 1 }}{{ filter_qs }}" class="mcp-btn mcp-btn-small mcp-btn-secondary">&laquo;</a>
+        {% endif %}
+        <span class="mcp-btn mcp-btn-small mcp-btn-secondary">{{ current_page }}</span>
+        {% if audit_logs|length >= 30 %}
+            <a href="{{ site.saddress }}mod_mcp/audit?p={{ current_page + 1 }}{{ filter_qs }}" class="mcp-btn mcp-btn-small mcp-btn-secondary">&raquo;</a>
+        {% endif %}
+    </div>
     {% endif %}
 </div>
-{% endif %}
 {% endblock %}

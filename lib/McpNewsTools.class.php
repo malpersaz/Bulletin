@@ -210,8 +210,8 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'image' => [
                             'type' => 'object',
-                            'nullable' => true,
-                            'description' => 'Image upload object or null to clear.',
+                            'nullable' => false,
+                            'description' => 'Featured image upload object (required; news articles cannot be created without an image).',
                             'properties' => [
                                 'data_base64' => [
                                     'type' => 'string',
@@ -219,13 +219,14 @@ class McpNewsTools extends McpCrudToolsBase
                                 ],
                                 'mime' => [
                                     'type' => 'string',
-                                    'description' => 'Image MIME type (e.g. image/jpeg, image/png, image/webp).',
+                                    'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+                                    'description' => 'Image MIME type (image/jpeg, image/png, image/gif, image/webp).',
                                 ],
                             ],
                             'required' => ['data_base64', 'mime'],
                         ],
                     ],
-                    'required' => ['name', 'lang', 'category_id', 'content', 'summary'],
+                    'required' => ['name', 'lang', 'category_id', 'content', 'summary', 'image'],
                 ],
                 'title' => 'Create News Article',
                 'annotations' => [
@@ -318,10 +319,18 @@ class McpNewsTools extends McpCrudToolsBase
                         ],
                         'image' => [
                             'type' => 'object',
-                            'nullable' => true,
+                            'nullable' => false,
+                            'description' => 'Featured image upload object (cannot be null; removing the featured image is not allowed).',
                             'properties' => [
-                                'data_base64' => ['type' => 'string'],
-                                'mime' => ['type' => 'string'],
+                                'data_base64' => [
+                                    'type' => 'string',
+                                    'description' => 'Base64 encoded image binary data.',
+                                ],
+                                'mime' => [
+                                    'type' => 'string',
+                                    'enum' => ['image/jpeg', 'image/png', 'image/gif', 'image/webp'],
+                                    'description' => 'Image MIME type (image/jpeg, image/png, image/gif, image/webp).',
+                                ],
                             ],
                             'required' => ['data_base64', 'mime'],
                         ],
@@ -718,11 +727,24 @@ class McpNewsTools extends McpCrudToolsBase
         }
         $model->user_id = $authorUserId;
 
-        $imageUrl = null;
-        if (array_key_exists('image', $args)) {
-            $imageUrl = $this->resolveImageArgument('mod_news', $args, self::NEWS_IMAGE_SIZES, null);
-            $model->image = (string) $imageUrl;
+        if (!isset($args['image']) || !is_array($args['image'])) {
+            throw new McpToolException("Field 'image' (with 'data_base64' and 'mime') is required when creating a news article. News articles cannot be created without an image.");
         }
+        $imgData = trim((string) ($args['image']['data_base64'] ?? ''));
+        $imgMime = trim((string) ($args['image']['mime'] ?? ''));
+        if ($imgData === '' || $imgMime === '') {
+            throw new McpToolException("Field 'image' must contain non-empty 'data_base64' and 'mime'.");
+        }
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+        if (!in_array(strtolower($imgMime), $allowedMimes, true)) {
+            throw new McpToolException("Image MIME type '{$imgMime}' is not allowed. Allowed types: " . implode(', ', $allowedMimes) . ".");
+        }
+
+        $imageUrl = $this->resolveImageArgument('mod_news', $args, self::NEWS_IMAGE_SIZES, null);
+        if ($imageUrl === null || trim((string) $imageUrl) === '') {
+            throw new McpToolException("Failed to upload featured image. A valid image is required.");
+        }
+        $model->image = (string) $imageUrl;
 
         if (!$model->save(true)) {
             if ($imageUrl !== null && $imageUrl !== '') {
@@ -851,11 +873,28 @@ class McpNewsTools extends McpCrudToolsBase
         $model->updated_at = date('Y-m-d H:i:s');
 
         if (array_key_exists('image', $args)) {
+            if ($args['image'] === null) {
+                throw new McpToolException("Removing the featured image is not allowed; a news article must always have an image.");
+            }
+            if (!is_array($args['image'])) {
+                throw new McpToolException("Field 'image' must be an object containing 'data_base64' and 'mime'.");
+            }
+            $imgData = trim((string) ($args['image']['data_base64'] ?? ''));
+            $imgMime = trim((string) ($args['image']['mime'] ?? ''));
+            if ($imgData === '' || $imgMime === '') {
+                throw new McpToolException("Image upload must contain non-empty 'data_base64' and 'mime'.");
+            }
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            if (!in_array(strtolower($imgMime), $allowedMimes, true)) {
+                throw new McpToolException("Image MIME type '{$imgMime}' is not allowed. Allowed types: " . implode(', ', $allowedMimes) . ".");
+            }
             $previousUrl = (string) ($model->image ?? '');
             $newUrl = $this->resolveImageArgument('mod_news', $args, self::NEWS_IMAGE_SIZES, $previousUrl);
-            if ($newUrl !== null) {
+            if ($newUrl !== null && trim((string) $newUrl) !== '') {
                 $model->image = $newUrl;
             }
+        } elseif (trim((string) ($model->image ?? '')) === '') {
+            throw new McpToolException("This news article does not currently have a featured image. You must provide an 'image' argument to update it.");
         }
 
         if (!$model->update('id')) {

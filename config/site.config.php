@@ -58,7 +58,7 @@ $site['generator'] = 'Amed Framework';
 $site['developer'] = 'AKMSoftware';
 
 // Automatically resolve active framework version from docs/VERSION.md with fallback
-$site['version'] = '1.0.11';
+$site['version'] = '1.0.12';
 $versionFile = (defined('root_dir') ? root_dir : dirname(__DIR__) . DIRECTORY_SEPARATOR) . 'docs' . DIRECTORY_SEPARATOR . 'VERSION.md';
 if (is_readable($versionFile)) {
     $versionHandle = fopen($versionFile, 'r');
@@ -74,7 +74,7 @@ if (is_readable($versionFile)) {
 }
 
 $site['build'] = 'Bulletin CMS';
-$site['app_template'] = $site['app_template'] ?? 'amida';
+$site['app_template'] = $site['app_template'] ?? 'amed';
 
 $cookieTheme = $_COOKIE['theme'] ?? $_COOKIE['tema'] ?? null;
 if ($cookieTheme !== null) {
@@ -83,6 +83,17 @@ if ($cookieTheme !== null) {
         $site['app_template'] = basename(Req::Clear($cookieTheme));
     }
 }
+
+// MCP protocol configuration and trusted CIMD client hosts (Google Gemini, AI Studio, ChatGPT)
+$site['mcp_server_name'] = $site['mcp_server_name'] ?? 'amed-bulletin-mcp';
+$site['mcp_cimd_allowed_hosts'] = $site['mcp_cimd_allowed_hosts'] ?? [
+    'chatgpt.com',
+    'aistudio.google.com',
+    'gemini.google.com',
+    'developers.google.com',
+    '*.google.com',
+    '*.googleapis.com',
+];
 
 $localSiteConfig = __DIR__ . DIRECTORY_SEPARATOR . 'site.config.local.php';
 if (file_exists($localSiteConfig)) {

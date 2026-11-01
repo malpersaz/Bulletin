@@ -365,7 +365,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF8_ShareJsClipboardCopyFallback(): void
     {
-        $js = $this->baseDir . '/templates/amida/static/js/share.js';
+        $js = $this->baseDir . '/templates/amed/static/js/share.js';
         if (file_exists($js)) {
             $content = file_get_contents($js);
             $this->assertStringContainsString('clipboard', $content);
@@ -382,7 +382,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF8_ShareCssMobileResponsive(): void
     {
-        $css = $this->baseDir . '/templates/amida/static/css/share.css';
+        $css = $this->baseDir . '/templates/amed/static/css/share.css';
         if (file_exists($css)) {
             $content = file_get_contents($css);
             $this->assertTrue(str_contains($content, 'display') || str_contains($content, 'gap'));
@@ -422,7 +422,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF9_CompactShareCssPrintHide(): void
     {
-        $css = $this->baseDir . '/templates/amida/static/css/share.css';
+        $css = $this->baseDir . '/templates/amed/static/css/share.css';
         if (file_exists($css)) {
             $content = file_get_contents($css);
             $this->assertTrue(str_contains($content, '@media') || str_contains($content, 'share') || str_contains($content, 'none'));
@@ -437,7 +437,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF10_ImageCategoriesDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_imagecategories/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_imagecategories/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share') || str_contains($content, 'detail'));
@@ -449,9 +449,9 @@ class Tier2BoundariesCornersTest extends TestCase
     public function testF10_DetailViewsHaveZeroLegacyShareButtons(): void
     {
         $detailFiles = [
-            $this->baseDir . '/templates/amida/mod_news/detail.twig',
-            $this->baseDir . '/templates/amida/mod_publication/detail.twig',
-            $this->baseDir . '/templates/amida/mod_content/detail.twig',
+            $this->baseDir . '/templates/amed/mod_news/detail.twig',
+            $this->baseDir . '/templates/amed/mod_publication/detail.twig',
+            $this->baseDir . '/templates/amed/mod_content/detail.twig',
         ];
         foreach ($detailFiles as $f) {
             if (file_exists($f)) {
@@ -469,7 +469,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF10_DetailViewsZeroInlineStyles(): void
     {
-        $detailViews = $this->staticAuditor->scanDirectory('templates/amida', ['twig']);
+        $detailViews = $this->staticAuditor->scanDirectory('templates/amed', ['twig']);
         $violations = $this->staticAuditor->checkCodeSeparation($detailViews);
         $detailViolations = array_filter($violations, fn($v) => str_contains($v['file'], 'detail.twig'));
         $this->assertCount(0, $detailViolations);
@@ -477,7 +477,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF10_DetailViewsBlockInheritance(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_content/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_content/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'extends') || str_contains($content, 'block'));
@@ -694,7 +694,7 @@ class Tier2BoundariesCornersTest extends TestCase
 
     public function testF16_BrandFallbackHeroSliderParity(): void
     {
-        $css = $this->baseDir . '/templates/amida/static/css/hero-news-slider.css';
+        $css = $this->baseDir . '/templates/amed/static/css/hero-news-slider.css';
         if (file_exists($css)) {
             $content = file_get_contents($css);
             $this->assertTrue(strlen($content) > 0);

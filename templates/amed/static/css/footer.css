@@ -149,39 +149,46 @@ body.dark-mode .footer-version-text {
     font-display: swap;
 }
 
-/* Brand Title & Icon in Footer */
+/* Brand Title & Icon in Footer (Synced with Header Modern Brand) */
+.site-footer .footer-brand {
+    padding: 0.25rem 0;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    border: none;
+    background: transparent;
+    transition: opacity 0.2s ease;
+}
+
+.site-footer .footer-brand:hover {
+    opacity: 0.88;
+    background: transparent;
+    border-color: transparent;
+}
+
+.site-footer .footer-brand .modern-brand-title,
 .site-footer .brand-text-gothic {
     font-family: var(--bs-font-sans-serif, "Inter", system-ui, sans-serif) !important;
     font-weight: 800 !important;
-    font-size: 1.25rem !important;
-    letter-spacing: 0.04em !important;
+    font-size: 1.15rem !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase;
-    line-height: 1.2 !important;
+    line-height: 1.1 !important;
     color: var(--bs-body-color, #0f172a) !important;
     -webkit-text-fill-color: currentColor !important;
     text-decoration: none !important;
 }
 
+[data-bs-theme="dark"] .site-footer .footer-brand .modern-brand-title,
+body.dark-mode .site-footer .footer-brand .modern-brand-title,
 [data-bs-theme="dark"] .site-footer .brand-text-gothic,
 body.dark-mode .site-footer .brand-text-gothic {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Footer Brand Logo */
-.site-footer .footer-brand {
-    padding: 0.2rem 0;
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-}
-
-.site-footer .footer-brand:hover {
-    opacity: 0.88;
-}
-
 .site-footer .footer-brand .footer-logo-icon {
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     object-fit: contain;
     flex-shrink: 0;
 }

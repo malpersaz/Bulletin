@@ -18,7 +18,7 @@ Use `python3 tools/i18n_guard.py` to perform instant, automated code quality and
 
 2. **Audit Specific Path or Directory**:
    ```bash
-   python3 tools/i18n_guard.py --path templates/amida/index/mod_publication
+   python3 tools/i18n_guard.py --path templates/amed/index/mod_publication
    ```
 
 3. **Audit Entire Repository**:

@@ -112,7 +112,7 @@ class mod_settings extends installerbase implements installerbaseinterface
                 $this->model->site_webmanifest = 'site.webmanifest';
                 $this->model->manifest_192 = 'web-app-manifest-192x192.png';
                 $this->model->manifest_512 = 'web-app-manifest-512x512.png';
-                $this->model->app_template = 'amida';
+                $this->model->app_template = 'amed';
                 $this->model->cookie_policy_content = $this->_get_default_cookie_policy($lang['seo']);
                 $this->model->user_id = 1;
 

@@ -11,6 +11,7 @@ class mod_mcp_mod extends BaseModuleController
     public function __construct()
     {
         parent::__construct('mod_mcp');
+        $this->ensureInfrastructure();
     }
 
     /**
@@ -23,6 +24,37 @@ class mod_mcp_mod extends BaseModuleController
             if (!$pdo) {
                 return;
             }
+
+            $driver = strtolower((string) $pdo->getAttribute(\PDO::ATTR_DRIVER_NAME));
+            $apiKeySql = $driver === 'sqlite'
+                ? "CREATE TABLE IF NOT EXISTS `mod_mcp_api_key` (
+                    `id` INTEGER PRIMARY KEY AUTOINCREMENT,
+                    `name` VARCHAR(255) NOT NULL,
+                    `key_prefix` VARCHAR(16) NOT NULL,
+                    `api_key_hash` VARCHAR(64) NOT NULL UNIQUE,
+                    `user_id` INTEGER NOT NULL DEFAULT 1,
+                    `group_id` INTEGER NOT NULL DEFAULT 1,
+                    `status` TEXT NOT NULL DEFAULT 'y' CHECK(status IN ('y', 'n')),
+                    `last_used_at` DATETIME NULL,
+                    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    `updated_at` DATETIME NULL
+                );"
+                : "CREATE TABLE IF NOT EXISTS `mod_mcp_api_key` (
+                    `id` INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                    `name` VARCHAR(255) NOT NULL,
+                    `key_prefix` VARCHAR(16) NOT NULL,
+                    `api_key_hash` VARCHAR(64) NOT NULL UNIQUE,
+                    `user_id` INT UNSIGNED NOT NULL DEFAULT 1,
+                    `group_id` INT UNSIGNED NOT NULL DEFAULT 1,
+                    `status` ENUM('y', 'n') NOT NULL DEFAULT 'y',
+                    `last_used_at` DATETIME NULL,
+                    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    `updated_at` DATETIME NULL,
+                    INDEX `idx_status` (`status`),
+                    INDEX `idx_user` (`user_id`),
+                    INDEX `idx_group` (`group_id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+            $pdo->exec($apiKeySql);
 
             // Ensure module entry in 'mods' table
             $stmt = $pdo->prepare("SELECT `mod_id` FROM `mods` WHERE `mod_name` = ? LIMIT 1");
@@ -149,6 +181,7 @@ class mod_mcp_mod extends BaseModuleController
         $this->view->set('mcp_endpoint', rtrim(isset($site['address']) ? $site['address'] : '', '/') . '/mcp.php');
 
         Load::libfile('McpOAuth');
+        McpOAuth::ensureTables();
         if ($creatorGroupId === 1) {
             $this->db->fetch_array(
                 "SELECT c.`id`, c.`client_id`, c.`client_name`, c.`redirect_uris`, c.`status`, c.`created_at`,

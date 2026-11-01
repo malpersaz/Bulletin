@@ -20,12 +20,12 @@ from typing import Dict, List, Set, Tuple
 ROOT_DIR = Path(__file__).resolve().parent.parent
 
 BUNDLE_MANIFEST: Dict[str, List[str]] = {
-    "templates/amida/static/css/custom.min.css": [
-        "templates/amida/static/css/custom.css",
-        "templates/amida/static/css/stacked-top-menu.css",
+    "templates/amed/static/css/custom.min.css": [
+        "templates/amed/static/css/custom.css",
+        "templates/amed/static/css/stacked-top-menu.css",
     ],
-    "templates/amida/static/css/hero-news-slider.min.css": [
-        "templates/amida/static/css/hero-news-slider.css",
+    "templates/amed/static/css/hero-news-slider.min.css": [
+        "templates/amed/static/css/hero-news-slider.css",
     ],
 }
 

@@ -461,6 +461,12 @@ class index_mod extends indexBase
         $t->ctx_set('market_rates', MarketDataService::getRates((string) ($this->site['lang'] ?? 'tr')));
     }
 
+    public function _super_league($t)
+    {
+        require_once lib_dir . 'SportsDataService.class.php';
+        $t->ctx_set('super_league', SportsDataService::getSuperLeagueData((string) ($this->site['lang'] ?? 'tr')));
+    }
+
     public function _economy_news($t, $limit = 3)
     {
         if (!$this->isFeatureReady('news.latest')) {

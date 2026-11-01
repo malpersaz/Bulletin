@@ -40,7 +40,7 @@ class McpOAuth
     public function __construct()
     {
         $this->session = Load::lib('Session');
-        $this->resource = rtrim((string) (Registry::get('site_config')['address'] ?? ''), '/');
+        $this->resource = class_exists('McpServer') ? McpServer::resolveCanonicalResource() : rtrim((string) (Registry::get('site_config')['address'] ?? ''), '/');
     }
 
     /**
@@ -204,6 +204,7 @@ class McpOAuth
      */
     public function handle(): void
     {
+        self::ensureTables();
         header('X-Content-Type-Options: nosniff');
         header('X-Frame-Options: DENY');
         header('Referrer-Policy: no-referrer');
@@ -256,7 +257,7 @@ class McpOAuth
             'response_modes_supported' => ['query'],
             'grant_types_supported' => ['authorization_code', 'refresh_token'],
             'code_challenge_methods_supported' => ['S256'],
-            'token_endpoint_auth_methods_supported' => ['none'],
+            'token_endpoint_auth_methods_supported' => ['none', 'client_secret_post', 'client_secret_basic'],
             'client_id_metadata_document_supported' => true,
             'scopes_supported' => [self::SCOPE],
         ]);
@@ -542,14 +543,54 @@ class McpOAuth
 
     /**
      * Resolves a CIMD client_id URL by fetching and validating the hosted
-     * client metadata document. Hosts are restricted to chatgpt.com to avoid
-     * an SSRF vector; results are cached briefly in the system temp directory.
+    /**
+     * Client ID Metadata Document (CIMD): dereferences an HTTPS
+     * client metadata document. Hosts are restricted to configured CIMD
+     * allowlist hosts to avoid an SSRF vector; results are cached briefly
+     * in the system temp directory.
      */
     private function loadCimdClient(string $clientId): ?array
     {
-        $host = (string) (parse_url($clientId, PHP_URL_HOST) ?? '');
-        if ($host !== 'chatgpt.com') {
-            self::logDiag('cimd: rejected foreign client_id host=' . $host);
+        $host = strtolower((string) (parse_url($clientId, PHP_URL_HOST) ?? ''));
+        if ($host === '' || $host === 'localhost' || $host === '127.0.0.1' || $host === '::1' || filter_var($host, FILTER_VALIDATE_IP)) {
+            self::logDiag('cimd: rejected unsafe/private host=' . $host);
+            return null;
+        }
+
+        $site = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+        $allowedHosts = $site['mcp_cimd_allowed_hosts'] ?? [
+            'chatgpt.com',
+            'aistudio.google.com',
+            'gemini.google.com',
+            'developers.google.com',
+            '*.google.com',
+            '*.googleapis.com',
+        ];
+
+        $matched = false;
+        foreach ((array) $allowedHosts as $allowed) {
+            $allowed = strtolower(trim((string) $allowed));
+            if ($allowed === '') {
+                continue;
+            }
+            if ($host === $allowed) {
+                $matched = true;
+                break;
+            }
+            if (str_starts_with($allowed, '*.')) {
+                $suffix = substr($allowed, 2);
+                if ($host === $suffix || str_ends_with($host, '.' . $suffix)) {
+                    $matched = true;
+                    break;
+                }
+            } elseif (str_ends_with($host, '.' . $allowed)) {
+                $matched = true;
+                break;
+            }
+        }
+
+        if (!$matched) {
+            self::logDiag('cimd: rejected unlisted client_id host=' . $host);
             return null;
         }
 
@@ -623,13 +664,42 @@ class McpOAuth
             return;
         }
 
-        $grantType = (string) ($_POST['grant_type'] ?? '');
-        self::logDiag('token request: grant=' . $grantType . ' fields=' . implode(',', array_keys($_POST)) . ' client_id=' . (string) ($_POST['client_id'] ?? '') . ' resource=' . (string) ($_POST['resource'] ?? ''));
+        $tokenParams = $_POST;
+        $contentType = (string) ($_SERVER['CONTENT_TYPE'] ?? $_SERVER['HTTP_CONTENT_TYPE'] ?? '');
+        if (empty($tokenParams) || stripos($contentType, 'application/json') !== false) {
+            $rawBody = (string) file_get_contents('php://input');
+            $jsonBody = json_decode($rawBody, true);
+            if (is_array($jsonBody)) {
+                $tokenParams = array_merge($tokenParams, $jsonBody);
+            }
+        }
+
+        // Support Authorization: Basic client_id:client_secret (Google Gemini Managed Agent Credentials proxy)
+        $authHeader = (string) ($_SERVER['HTTP_AUTHORIZATION'] ?? ($_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? ''));
+        if ($authHeader === '' && function_exists('getallheaders')) {
+            $requestHeaders = getallheaders();
+            $authHeader = (string) ($requestHeaders['Authorization'] ?? ($requestHeaders['authorization'] ?? ''));
+        }
+        if (stripos(trim($authHeader), 'Basic ') === 0) {
+            $decoded = base64_decode(substr(trim($authHeader), 6));
+            if ($decoded !== false && strpos($decoded, ':') !== false) {
+                [$basicUser, $basicPass] = explode(':', $decoded, 2);
+                if (empty($tokenParams['client_id'])) {
+                    $tokenParams['client_id'] = urldecode($basicUser);
+                }
+                if (empty($tokenParams['client_secret'])) {
+                    $tokenParams['client_secret'] = urldecode($basicPass);
+                }
+            }
+        }
+
+        $grantType = (string) ($tokenParams['grant_type'] ?? '');
+        self::logDiag('token request: grant=' . $grantType . ' fields=' . implode(',', array_keys($tokenParams)) . ' client_id=' . (string) ($tokenParams['client_id'] ?? '') . ' resource=' . (string) ($tokenParams['resource'] ?? ''));
         try {
             if ($grantType === 'authorization_code') {
-                $response = $this->grantAuthorizationCode();
+                $response = $this->grantAuthorizationCode($tokenParams);
             } elseif ($grantType === 'refresh_token') {
-                $response = $this->grantRefreshToken();
+                $response = $this->grantRefreshToken($tokenParams);
             } else {
                 McpAuditLogger::log([
                     'caller_type' => 'oauth',
@@ -683,12 +753,12 @@ class McpOAuth
         $this->sendJson($response);
     }
 
-    private function grantAuthorizationCode(): array
+    private function grantAuthorizationCode(array $params = []): array
     {
-        $clientId = trim((string) ($_POST['client_id'] ?? ''));
-        $code = (string) ($_POST['code'] ?? '');
-        $redirectUri = (string) ($_POST['redirect_uri'] ?? '');
-        $codeVerifier = (string) ($_POST['code_verifier'] ?? '');
+        $clientId = trim((string) ($params['client_id'] ?? ($_POST['client_id'] ?? '')));
+        $code = (string) ($params['code'] ?? ($_POST['code'] ?? ''));
+        $redirectUri = (string) ($params['redirect_uri'] ?? ($_POST['redirect_uri'] ?? ''));
+        $codeVerifier = (string) ($params['code_verifier'] ?? ($_POST['code_verifier'] ?? ''));
 
         $client = $this->loadClient($clientId);
         if ($client === null) {
@@ -738,10 +808,10 @@ class McpOAuth
         );
     }
 
-    private function grantRefreshToken(): array
+    private function grantRefreshToken(array $params = []): array
     {
-        $refreshToken = (string) ($_POST['refresh_token'] ?? '');
-        $clientId = trim((string) ($_POST['client_id'] ?? ''));
+        $refreshToken = (string) ($params['refresh_token'] ?? ($_POST['refresh_token'] ?? ''));
+        $clientId = trim((string) ($params['client_id'] ?? ($_POST['client_id'] ?? '')));
         if ($refreshToken === '') {
             throw new OAuthTokenException('invalid_request', 'The refresh_token parameter is required.');
         }
@@ -893,8 +963,9 @@ class McpOAuth
         }
 
         $clientName = !empty($client['client_name']) ? (string) $client['client_name'] : (string) ($client['client_id'] ?? '');
-        $siteConfig = Registry::get('site_config');
-        $serverName = (string) ($siteConfig['site_name'] ?? $this->resource);
+        $siteConfig = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+        Load::libfile('McpServer');
+        $serverName = (string) (!empty($siteConfig['site_name']) ? $siteConfig['site_name'] : (class_exists('McpServer') ? McpServer::resolveServerName() : $this->resource));
 
         $viewData = [
             'logged_in' => $loggedIn,

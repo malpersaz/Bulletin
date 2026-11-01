@@ -204,14 +204,14 @@ class Amed
                 $this->site = array_merge($this->site, $settingsModel->toArray());
             }
 
-            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amida';
+            $activeTemplate = !empty($this->site['app_template']) ? basename(Req::Clear($this->site['app_template'])) : 'amed';
             $cookieTheme = isset($_COOKIE['theme']) ? basename(Req::Clear($_COOKIE['theme'])) : null;
             if ($cookieTheme && file_exists(template_dir . $cookieTheme) && is_dir(template_dir . $cookieTheme)) {
                 $activeTemplate = $cookieTheme;
             }
             $fullTemplatePath = template_dir . $activeTemplate;
             if (!file_exists($fullTemplatePath) || !is_dir($fullTemplatePath)) {
-                $activeTemplate = 'amida';
+                $activeTemplate = 'amed';
             }
             $this->site['app_template'] = $activeTemplate;
             Registry::set('app_template', $activeTemplate);
@@ -327,9 +327,9 @@ class Amed
 
             if (!$exists) {
                 if (strpos($adapter, 'PDO_SQLITE') !== false || strpos($adapter, 'POSTGRESQL') !== false) {
-                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN app_template VARCHAR(64) DEFAULT 'amida'";
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN app_template VARCHAR(64) DEFAULT 'amed'";
                 } else {
-                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `app_template` VARCHAR(64) DEFAULT 'amida'";
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `app_template` VARCHAR(64) DEFAULT 'amed'";
                 }
                 $db->query($sql);
                 $exists = true;

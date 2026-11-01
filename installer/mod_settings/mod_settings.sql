@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `lang` varchar(10) NOT NULL,
   `title` varchar(255) DEFAULT NULL,
   `site_name` varchar(255) DEFAULT NULL,
-  `app_template` varchar(255) DEFAULT 'amida',
+  `app_template` varchar(255) DEFAULT 'amed',
   `description` text DEFAULT NULL,
   `owner_name` varchar(255) DEFAULT NULL,
   `phone` varchar(50) DEFAULT NULL,

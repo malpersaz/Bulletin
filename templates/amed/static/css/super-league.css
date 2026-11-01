@@ -1,0 +1,513 @@
+/* ==========================================================================
+   Live Super League Widget Styles (Amida Public Theme)
+   Amed Framework - AF/Bulletin
+   Component: templates/amed/index/mod_news/super_league.twig
+   Strict Code Separation: External Stylesheet with Dark Mode and RTL
+   ========================================================================== */
+
+.super-league-widget {
+    --sl-ink: #0f172a;
+    --sl-muted: #64748b;
+    --sl-subtle: #94a3b8;
+    --sl-bg: #ffffff;
+    --sl-border: rgba(15, 23, 42, 0.12);
+    --sl-panel-bg: #f8fafc;
+    --sl-panel-border: rgba(15, 23, 42, 0.08);
+    --sl-card-bg: #ffffff;
+    --sl-card-border: rgba(15, 23, 42, 0.08);
+    --sl-card-hover: rgba(15, 23, 42, 0.03);
+    --sl-divider: #e2e8f0;
+    --sl-accent: #15803d;
+    --sl-live: #16a34a;
+    --sl-live-bg: #ecfdf5;
+    --sl-amed-bg: rgba(22, 163, 74, 0.08);
+    --sl-amed-border: rgba(22, 163, 74, 0.25);
+    --sl-amed-ink: #14532d;
+    --sl-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
+
+    position: relative;
+    width: 100%;
+    margin: 12px 0 0 0;
+    padding: 12px;
+    border: 1px solid var(--sl-border);
+    border-radius: 8px;
+    background: var(--sl-bg);
+    box-shadow: var(--sl-shadow);
+    box-sizing: border-box;
+    font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+}
+
+/* 1. Header Bar */
+.super-league-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 2px solid var(--sl-accent);
+}
+
+.super-league-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.super-league-trophy {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: var(--sl-live-bg);
+    color: var(--sl-accent);
+    font-size: 0.85rem;
+    flex-shrink: 0;
+}
+
+.super-league-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.super-league-title {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--sl-ink);
+}
+
+.super-league-subtitle {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--sl-muted);
+}
+
+.super-league-live-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background: var(--sl-live-bg);
+    border: 1px solid rgba(22, 163, 74, 0.2);
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--sl-live);
+}
+
+.super-league-live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--sl-live);
+    display: inline-block;
+    animation: super-league-pulse 2s infinite ease-in-out;
+}
+
+@keyframes super-league-pulse {
+    0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.25);
+        opacity: 1;
+    }
+}
+
+/* 2. Split Body Layout */
+.super-league-body {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+@media (min-width: 768px) {
+    .super-league-body {
+        grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+        align-items: stretch;
+    }
+}
+
+/* Panels */
+.super-league-panel {
+    background: var(--sl-panel-bg);
+    border: 1px solid var(--sl-panel-border);
+    border-radius: 6px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.super-league-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 6px 4px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--sl-divider);
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--sl-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.super-league-panel-meta {
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--sl-muted);
+}
+
+.super-league-panel-live-sub {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--sl-live);
+}
+
+.super-league-sub-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background-color: var(--sl-live);
+}
+
+/* Left Panel: Matches 2x3 Grid */
+.super-league-matches-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+    flex: 1;
+}
+
+@media (min-width: 520px) {
+    .super-league-matches-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.super-league-match-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 6px 8px;
+    background: var(--sl-card-bg);
+    border: 1px solid var(--sl-card-border);
+    border-radius: 6px;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.super-league-match-card:hover {
+    background-color: var(--sl-card-hover);
+}
+
+.super-league-match-card.is-live {
+    border-color: rgba(22, 163, 74, 0.35);
+    background: linear-gradient(135deg, var(--sl-card-bg) 0%, rgba(22, 163, 74, 0.03) 100%);
+}
+
+.super-league-match-card.is-amed-match {
+    border-color: var(--sl-amed-border);
+}
+
+.super-league-match-teams {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.super-league-team-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    font-size: 0.74rem;
+    color: var(--sl-ink);
+    line-height: 1.2;
+}
+
+.super-league-team-row.is-winner {
+    font-weight: 700;
+}
+
+.super-league-team-row.is-amed-team {
+    color: var(--sl-accent);
+    font-weight: 700;
+}
+
+.super-league-team-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.super-league-team-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.super-league-team-fallback {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    color: var(--sl-subtle);
+    flex-shrink: 0;
+}
+
+.super-league-team-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.super-league-team-score {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    font-size: 0.78rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.super-league-winner-caret {
+    width: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.52rem;
+    color: var(--sl-ink);
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+/* Match Status Badge Column */
+.super-league-match-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-left: 6px;
+    border-left: 1px solid var(--sl-divider);
+    min-width: 44px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 0.65rem;
+    line-height: 1.15;
+}
+
+.super-league-status-live {
+    color: var(--sl-live);
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.super-league-status-clock {
+    color: var(--sl-live);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.super-league-status-ft {
+    font-weight: 700;
+    color: var(--sl-muted);
+}
+
+.super-league-status-day {
+    color: var(--sl-subtle);
+    font-size: 0.6rem;
+}
+
+.super-league-status-time {
+    font-weight: 700;
+    color: var(--sl-ink);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.68rem;
+}
+
+/* Right Panel: Standings Table */
+.super-league-table-wrap {
+    overflow-x: auto;
+    flex: 1;
+}
+
+.super-league-table {
+    width: 100%;
+    height: 100%;
+    border-collapse: collapse;
+    font-size: 0.72rem;
+    line-height: 1.25;
+}
+
+.super-league-table thead th {
+    padding: 4px 4px;
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: var(--sl-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--sl-divider);
+    white-space: nowrap;
+}
+
+.super-league-table thead th.col-club {
+    padding-left: 6px;
+    padding-right: 6px;
+    text-align: left;
+}
+
+.super-league-table thead th.col-stat,
+.super-league-table thead th.col-pts {
+    text-align: center;
+}
+
+.super-league-table tbody td {
+    padding: 5px 6px;
+    border-bottom: 1px solid var(--sl-divider);
+    color: var(--sl-ink);
+    vertical-align: middle;
+}
+
+.super-league-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.super-league-table .cell-rank {
+    font-weight: 700;
+    color: var(--sl-muted);
+    width: 16px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.super-league-table .cell-club {
+    text-align: left;
+    min-width: 110px;
+}
+
+.cell-club-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.super-league-club-logo {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.cell-club-name {
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.super-league-table .cell-stat {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    color: var(--sl-muted);
+    font-size: 0.7rem;
+    padding: 5px 4px;
+}
+
+.super-league-table .cell-pts {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    color: var(--sl-ink);
+    font-size: 0.76rem;
+    padding: 5px 6px;
+}
+
+/* Regional Club Row Highlighting (Amed SK) */
+.super-league-table-row.is-amed-row {
+    background-color: var(--sl-amed-bg);
+}
+
+.super-league-table-row.is-amed-row td {
+    border-bottom-color: var(--sl-amed-border);
+}
+
+.super-league-table-row.is-amed-row .cell-club-name {
+    color: var(--sl-amed-ink);
+    font-weight: 800;
+}
+
+.super-league-table-row.is-amed-row .cell-pts {
+    color: var(--sl-accent);
+}
+
+/* Dark Mode Tokens */
+html[data-bs-theme="dark"] .super-league-widget,
+body.dark .super-league-widget,
+body.dark-mode .super-league-widget {
+    --sl-ink: #f8fafc;
+    --sl-muted: #94a3b8;
+    --sl-subtle: #64748b;
+    --sl-bg: #1e293b;
+    --sl-border: rgba(255, 255, 255, 0.12);
+    --sl-panel-bg: #0f172a;
+    --sl-panel-border: rgba(255, 255, 255, 0.08);
+    --sl-card-bg: #1e293b;
+    --sl-card-border: rgba(255, 255, 255, 0.08);
+    --sl-card-hover: rgba(255, 255, 255, 0.05);
+    --sl-divider: #334155;
+    --sl-accent: #4ade80;
+    --sl-live: #22c55e;
+    --sl-live-bg: rgba(34, 197, 94, 0.15);
+    --sl-amed-bg: rgba(74, 222, 128, 0.12);
+    --sl-amed-border: rgba(74, 222, 128, 0.25);
+    --sl-amed-ink: #86efac;
+    --sl-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* RTL Support */
+[dir="rtl"] .super-league-match-status {
+    padding-left: 0;
+    padding-right: 6px;
+    border-left: none;
+    border-right: 1px solid var(--sl-divider);
+}
+
+[dir="rtl"] .super-league-table thead th.col-club,
+[dir="rtl"] .super-league-table .cell-club {
+    text-align: right;
+}
+
+[dir="rtl"] .super-league-winner-caret {
+    transform: scaleX(-1);
+    display: inline-block;
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .super-league-live-dot {
+        animation: none !important;
+    }
+    .super-league-match-card {
+        transition: none !important;
+    }
+}

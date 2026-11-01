@@ -1,0 +1,144 @@
+{# Super League Standings & Matchday Widget (Amida Theme) #}
+{% if super_league is not defined or super_league.standings is not defined %}
+    {{ run({"mod": "index", "method": "_super_league"}) }}
+    {% set super_league = ctx_get('super_league') %}
+{% endif %}
+
+{% if super_league.standings is defined and super_league.standings is not empty %}
+<section class="super-league-widget" aria-label="{{ lang.index.mod_news.sports_news.league_title }}">
+    <!-- 1. Top League Bar -->
+    <header class="super-league-head">
+        <div class="super-league-brand">
+            <span class="super-league-trophy" aria-hidden="true">
+                <i class="bi bi-trophy-fill"></i>
+            </span>
+            <div class="super-league-title-group">
+                <h3 class="super-league-title">{{ lang.index.mod_news.sports_news.league_title }}</h3>
+                <span class="super-league-subtitle">{{ super_league.matchday_label }}</span>
+            </div>
+        </div>
+        <span class="super-league-live-pill">
+            <span class="super-league-live-dot" aria-hidden="true"></span>
+            <span>{{ lang.index.mod_news.sports_news.live_data }}</span>
+        </span>
+    </header>
+
+    <!-- 2. Split Body: Left (Matches 2x3 Grid) + Right (Standings Table) -->
+    <div class="super-league-body">
+        <!-- Left Panel: Matchday Fixtures -->
+        <div class="super-league-panel super-league-matches-panel">
+            <div class="super-league-panel-head">
+                <span class="super-league-panel-title">{{ lang.index.mod_news.sports_news.matches_title }}</span>
+                <span class="super-league-panel-meta">{{ super_league.matchday_label }}</span>
+            </div>
+            <div class="super-league-matches-grid">
+                {% for match in super_league.matches %}
+                    <article class="super-league-match-card{% if match.state == 'in' %} is-live{% endif %}{% if match.home.is_amed or match.away.is_amed %} is-amed-match{% endif %}">
+                        <div class="super-league-match-teams">
+                            <!-- Home Team Row -->
+                            <div class="super-league-team-row{% if match.home.is_winner %} is-winner{% endif %}{% if match.home.is_amed %} is-amed-team{% endif %}">
+                                <span class="super-league-team-info">
+                                    {% if match.home.logo is not empty %}
+                                        <img src="{{ match.home.logo }}" alt="{{ match.home.name }}" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
+                                    {% else %}
+                                        <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
+                                    {% endif %}
+                                    <span class="super-league-team-name">{{ match.home.name }}</span>
+                                </span>
+                                {% if match.state != 'pre' %}
+                                    <span class="super-league-team-score" dir="ltr">
+                                        <span>{{ match.home.score }}</span>
+                                        <span class="super-league-winner-caret" aria-hidden="true">{% if match.home.is_winner %}◀{% endif %}</span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <!-- Away Team Row -->
+                            <div class="super-league-team-row{% if match.away.is_winner %} is-winner{% endif %}{% if match.away.is_amed %} is-amed-team{% endif %}">
+                                <span class="super-league-team-info">
+                                    {% if match.away.logo is not empty %}
+                                        <img src="{{ match.away.logo }}" alt="{{ match.away.name }}" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
+                                    {% else %}
+                                        <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
+                                    {% endif %}
+                                    <span class="super-league-team-name">{{ match.away.name }}</span>
+                                </span>
+                                {% if match.state != 'pre' %}
+                                    <span class="super-league-team-score" dir="ltr">
+                                        <span>{{ match.away.score }}</span>
+                                        <span class="super-league-winner-caret" aria-hidden="true">{% if match.away.is_winner %}◀{% endif %}</span>
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Match Status / Time Column -->
+                        <div class="super-league-match-status">
+                            {% if match.state == 'in' %}
+                                <span class="super-league-status-live">{{ match.status_label }}</span>
+                                {% if match.clock_display is not empty %}
+                                    <span class="super-league-status-clock" dir="ltr">{{ match.clock_display }}</span>
+                                {% endif %}
+                            {% elseif match.state == 'post' %}
+                                <span class="super-league-status-ft">{{ match.status_label }}</span>
+                                <span class="super-league-status-day">{{ match.day_label }}</span>
+                            {% else %}
+                                <span class="super-league-status-day">{{ match.day_label }}</span>
+                                <span class="super-league-status-time" dir="ltr">{{ match.kickoff_time }}</span>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Right Panel: Standings Table -->
+        <div class="super-league-panel super-league-table-panel">
+            <div class="super-league-panel-head">
+                <span class="super-league-panel-title">{{ lang.index.mod_news.sports_news.standings_title }}</span>
+                <span class="super-league-panel-live-sub">
+                    <span class="super-league-sub-dot" aria-hidden="true"></span>
+                    <span>{{ lang.index.mod_news.sports_news.league_title }}</span>
+                </span>
+            </div>
+            <div class="super-league-table-wrap">
+                <table class="super-league-table">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="col-club" colspan="2">{{ lang.index.mod_news.sports_news.club_col }}</th>
+                            <th scope="col" class="col-stat" title="{{ lang.index.mod_news.sports_news.mp_col }}">{{ lang.index.mod_news.sports_news.mp_col }}</th>
+                            <th scope="col" class="col-stat" title="{{ lang.index.mod_news.sports_news.w_col }}">{{ lang.index.mod_news.sports_news.w_col }}</th>
+                            <th scope="col" class="col-stat" title="{{ lang.index.mod_news.sports_news.d_col }}">{{ lang.index.mod_news.sports_news.d_col }}</th>
+                            <th scope="col" class="col-stat" title="{{ lang.index.mod_news.sports_news.l_col }}">{{ lang.index.mod_news.sports_news.l_col }}</th>
+                            <th scope="col" class="col-stat" title="{{ lang.index.mod_news.sports_news.gd_col }}">{{ lang.index.mod_news.sports_news.gd_col }}</th>
+                            <th scope="col" class="col-pts" title="{{ lang.index.mod_news.sports_news.pts_col }}">{{ lang.index.mod_news.sports_news.pts_col }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in super_league.standings %}
+                            <tr class="super-league-table-row{% if row.is_amed %} is-amed-row{% endif %}{% if loop.first %} is-leader-row{% endif %}">
+                                <td class="cell-rank" dir="ltr">{{ row.rank }}</td>
+                                <td class="cell-club">
+                                    <div class="cell-club-inner">
+                                        {% if row.logo is not empty %}
+                                            <img src="{{ row.logo }}" alt="{{ row.name }}" class="super-league-club-logo" width="18" height="18" loading="lazy" decoding="async">
+                                        {% else %}
+                                            <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
+                                        {% endif %}
+                                        <span class="cell-club-name">{{ row.name }}</span>
+                                    </div>
+                                </td>
+                                <td class="cell-stat" dir="ltr">{{ row.mp }}</td>
+                                <td class="cell-stat" dir="ltr">{{ row.w }}</td>
+                                <td class="cell-stat" dir="ltr">{{ row.d }}</td>
+                                <td class="cell-stat" dir="ltr">{{ row.l }}</td>
+                                <td class="cell-stat" dir="ltr">{{ row.gd }}</td>
+                                <td class="cell-pts" dir="ltr">{{ row.pts }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}

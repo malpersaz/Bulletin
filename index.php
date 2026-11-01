@@ -171,6 +171,19 @@ if (empty($installCheck['is_installed'])) {
     exit;
 }
 
+// Direct handler for OAuth 2.1 endpoints (RFC 8414, RFC 9728, RFC 7591, RFC 7636)
+$oauthUri = (string) (parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/');
+if (
+    $oauthUri === '/.well-known/oauth-protected-resource'
+    || $oauthUri === '/.well-known/oauth-authorization-server'
+    || str_starts_with($oauthUri, '/oauth/')
+) {
+    /** @var McpOAuth $oauth */
+    $oauth = Load::lib('McpOAuth');
+    $oauth->handle();
+    exit;
+}
+
 Load::lib('Amed');
 
 

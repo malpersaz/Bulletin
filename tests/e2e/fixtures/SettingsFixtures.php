@@ -18,8 +18,8 @@ class SettingsFixtures
             'social_twitter' => 'https://twitter.com/bulletin_news',
             'social_facebook' => 'https://facebook.com/bulletin.official',
             'social_youtube' => 'https://youtube.com/@bulletin',
-            'theme_logo' => 'templates/amida/assets/img/logo.svg',
-            'theme_favicon' => 'templates/amida/assets/img/favicon.ico',
+            'theme_logo' => 'templates/amed/assets/img/logo.svg',
+            'theme_favicon' => 'templates/amed/assets/img/favicon.ico',
         ];
     }
 

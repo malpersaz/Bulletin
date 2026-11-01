@@ -26,7 +26,7 @@ class McpFaqTools extends McpCrudToolsBase
                     'properties' => [
                         'mod_name' => [
                             'type' => 'string',
-                            'description' => 'Filter by host module name (e.g. mod_page). FAQ records are attached to records of host modules registered in mod_faq_mod.',
+                            'description' => 'Filter by host module name (e.g. mod_news, mod_publication, mod_page). FAQ records are attached to records of host modules registered in mod_faq_mod.',
                         ],
                         'vid' => [
                             'type' => 'integer',
@@ -106,7 +106,7 @@ class McpFaqTools extends McpCrudToolsBase
                     'properties' => [
                         'mod_name' => [
                             'type' => 'string',
-                            'description' => 'Host module name that owns the entity (must be registered in mod_faq_mod, e.g. mod_page).',
+                            'description' => 'Host module name that owns the entity (must be registered in mod_faq_mod, e.g. mod_news, mod_publication, mod_page).',
                         ],
                         'vid' => [
                             'type' => 'integer',

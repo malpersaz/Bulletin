@@ -1,6 +1,6 @@
 ---
 name: frontend-theme
-description: Create, audit, or register repository-safe public frontend themes under templates theme folders for this Amed Framework/CMS repository. Use when Codex is asked to create a new public theme, scaffold from templates/amida, update theme activation through the theme cookie, audit frontend theme parity, wire localized theme UI, or validate a theme against repository agent policy.
+description: Create, audit, or register repository-safe public frontend themes under templates theme folders for this Amed Framework/CMS repository. Use when Codex is asked to create a new public theme, scaffold from templates/amed, update theme activation through the theme cookie, audit frontend theme parity, wire localized theme UI, or validate a theme against repository agent policy.
 ---
 
 # Frontend Theme Skill
@@ -21,17 +21,17 @@ Keep this skill as a short ordered operation. Do not treat it as a knowledge bas
 
    ```bash
    find templates -maxdepth 2 -type d | sort
-   find templates/amida -maxdepth 3 -type f | sort
-   rg -n "app_template|\$_COOKIE\['theme'\]|template_dir|site\.app_template|site\.tadres" config lib templates/amida
+   find templates/amed -maxdepth 3 -type f | sort
+   rg -n "app_template|\$_COOKIE\['theme'\]|template_dir|site\.app_template|site\.tadres" config lib templates/amed
    ```
 
 7. Confirm the requested theme name is lowercase ASCII and will live at `templates/<theme>`.
 8. If creating a durable visual theme, draft `templates/<theme>/DESIGN.md` before visual implementation.
-9. If creating a production theme, scaffold from `templates/amida` unless the user explicitly asks for a different strategy.
+9. If creating a production theme, scaffold from `templates/amed` unless the user explicitly asks for a different strategy.
 10. Clean copied references before visual work:
 
    ```bash
-   rg -n "templates/amida|amida/static|amida/|artist|new|new_theme|template.php" templates/<theme>
+   rg -n "templates/amed|amed/static|amed/|artist|new|new_theme|template.php" templates/<theme>
    ```
 
 11. Preserve layout metadata, menu pipeline, homepage composition, module templates, auth flows, cookie consent, popup, gallery/share behavior, context script injection, and active-theme asset paths.

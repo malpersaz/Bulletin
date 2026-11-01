@@ -1,32 +1,33 @@
 /* ==========================================================================
    Live Market Board Widget Styles (Amida Public Theme)
    Amed Framework - AF/Bulletin
-   Standalone Reusable Widget: templates/amida/index/mod_news/market_rates.twig
+   Standalone Reusable Widget: templates/amed/index/mod_news/market_rates.twig
    Strict Code Separation: External Stylesheet with Dark Mode and RTL
    ========================================================================== */
 
 .market-widget {
-    --market-bg: #fafafa;
+    --market-bg: #f8fafc;
     --market-border: rgba(15, 23, 42, 0.12);
     --market-divider: #e2e8f0;
     --market-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.06);
     --market-brand: #059669;
     --market-ink: #0f172a;
     --market-card-bg: #ffffff;
-    --market-card-border: rgba(15, 23, 42, 0.10);
+    --market-card-border: rgba(15, 23, 42, 0.08);
+    --market-card-hover-border: rgba(15, 23, 42, 0.16);
     --market-val-ink: #0f172a;
     --market-name-ink: #475569;
     --market-diff-ink: #64748b;
 
-    --market-up-bg: #eefbf3;
-    --market-up-border: #86efac;
-    --market-up-ink: #166534;
+    --market-up-bg: #ecfdf5;
+    --market-up-border: #a7f3d0;
+    --market-up-ink: #047857;
 
     --market-down-bg: #fef2f2;
-    --market-down-border: #fca5a5;
-    --market-down-ink: #991b1b;
+    --market-down-border: #fecaca;
+    --market-down-ink: #b91c1c;
 
-    --market-flat-bg: #f8fafc;
+    --market-flat-bg: #f1f5f9;
     --market-flat-border: #cbd5e1;
     --market-flat-ink: #475569;
 
@@ -39,19 +40,16 @@
     padding: 0.75rem;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.55rem;
     box-sizing: border-box;
+    font-family: 'Plus Jakarta Sans', var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
 }
 
 .market-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding-bottom: 0.35rem;
+    padding-bottom: 0.45rem;
     border-bottom: 1px solid var(--market-divider);
 }
 
@@ -59,15 +57,29 @@
     color: var(--market-ink);
     display: inline-flex;
     align-items: center;
+    gap: 0.38rem;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.2;
+}
+
+.market-head-icon {
+    color: var(--market-brand);
+    font-size: 0.82rem;
 }
 
 .market-head-live {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     color: var(--market-brand);
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
 }
 
 .market-live-dot {
@@ -80,17 +92,13 @@
 }
 
 @keyframes market-pulse {
-    0% {
+    0%, 100% {
         transform: scale(0.95);
         opacity: 0.7;
     }
     50% {
-        transform: scale(1.3);
+        transform: scale(1.25);
         opacity: 1;
-    }
-    100% {
-        transform: scale(0.95);
-        opacity: 0.7;
     }
 }
 
@@ -98,50 +106,53 @@
 .market-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.35rem;
+    gap: 0.42rem;
 }
 
 .market-item {
     border: 1px solid var(--market-card-border);
-    border-radius: 5px;
+    border-radius: 7px;
     background-color: var(--market-card-bg);
-    padding: 0.35rem 0.45rem;
+    padding: 0.45rem 0.55rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 0.35rem;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    gap: 0.4rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
 .market-item:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 6px -1px rgba(0, 0, 0, 0.08);
+    border-color: var(--market-card-hover-border);
+    box-shadow: 0 3px 8px -2px rgba(15, 23, 42, 0.07);
 }
 
 .market-left {
     display: flex;
     flex-direction: column;
     text-align: left;
-    gap: 0.1rem;
+    gap: 0.14rem;
     min-width: 0;
 }
 
 .market-name {
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     font-weight: 700;
     color: var(--market-name-ink);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.025em;
+    line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .market-val {
-    font-size: 0.75rem;
+    font-size: 0.84rem;
     font-weight: 800;
     color: var(--market-val-ink);
     font-variant-numeric: tabular-nums;
-    line-height: 1.1;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
     white-space: nowrap;
 }
 
@@ -150,16 +161,16 @@
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
-    gap: 0.1rem;
+    gap: 0.14rem;
     flex-shrink: 0;
 }
 
 .market-badge {
     font-size: 0.6rem;
     font-weight: 700;
-    padding: 0.1rem 0.25rem;
-    border-radius: 3px;
-    line-height: 1.1;
+    padding: 0.12rem 0.32rem;
+    border-radius: 4px;
+    line-height: 1.15;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
 }
@@ -184,9 +195,10 @@
 
 .market-diff {
     font-size: 0.58rem;
+    font-weight: 500;
     color: var(--market-diff-ink);
     font-variant-numeric: tabular-nums;
-    line-height: 1.1;
+    line-height: 1.15;
     white-space: nowrap;
 }
 
@@ -196,19 +208,19 @@
 @media (max-width: 480px) {
     .market-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.25rem;
+        gap: 0.32rem;
     }
 
     .market-item {
-        padding: 0.3rem 0.35rem;
+        padding: 0.38rem 0.45rem;
     }
 
     .market-val {
-        font-size: 0.7rem;
+        font-size: 0.76rem;
     }
 
     .market-badge {
-        font-size: 0.55rem;
+        font-size: 0.56rem;
     }
 }
 
@@ -242,6 +254,7 @@ body.dark-mode .market-widget {
     --market-ink: #f8fafc;
     --market-card-bg: #1e293b;
     --market-card-border: rgba(255, 255, 255, 0.08);
+    --market-card-hover-border: rgba(255, 255, 255, 0.16);
     --market-val-ink: #f8fafc;
     --market-name-ink: #94a3b8;
     --market-diff-ink: #64748b;

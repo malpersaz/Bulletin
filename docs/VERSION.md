@@ -1,5 +1,61 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.12 (2026-11-01)
+- **MCP Protocol Hardening, Target Pinning & Google Gemini OAuth 2.1 Compatibility (`lib/McpServer.class.php`, `lib/McpOAuth.class.php`, `mcp.php`, `index.php`, `config/site.config.php`, `config/site.config.example.php`, `mod/mod_mcp/index.php`)**:
+  - **Positive Target Pinning & HTTP 421 Misdirected Request Gate**:
+    - Implemented multi-instance target binding via `X-MCP-Expected-Server` and `X-MCP-Expected-Resource` headers.
+    - Added case, hyphen, and underscore normalization (`amed-bulletin-mcp` $\leftrightarrow$ `amed_bulletin_mcp`) for seamless Gemini compatibility.
+    - Added strict HTTP 421 Misdirected Request rejection with host and port validation across loopback (`localhost`, `127.0.0.1`, `::1`) and remote origins on target mismatches, preventing cross-tenant request hijacking.
+  - **Google Gemini OAuth 2.1 & Managed Agent Credentials**:
+    - Enabled both `application/x-www-form-urlencoded` and `application/json` payload parsing on `/oauth/token`.
+    - Added `client_secret_basic` alongside `client_secret_post` support by parsing and RFC 6749 URL-decoding `Authorization: Basic` headers for automated credential exchange.
+    - Configured multi-vendor CIMD allowlist (`$site['mcp_cimd_allowed_hosts']`) supporting Google Gemini (`*.google.com`, `*.googleapis.com`, `aistudio.google.com`, `gemini.google.com`, `developers.google.com`), OpenAI (`chatgpt.com`), and custom providers.
+    - Enforced complete RFC 9728 `WWW-Authenticate: Bearer` emission across all 401 Unauthorized branches and automatic self-healing OAuth/API key table provisioning (`McpOAuth::ensureTables()`, `mod_mcp_mod::ensureInfrastructure()`).
+  - **MCP `2026-07-28` Stateless Protocol Standard**:
+    - Added `'2026-07-28'` to `SUPPORTED_PROTOCOL_VERSIONS` and implemented `server/discover` method routing to `handleInitialize`.
+    - Added `Mcp-Method` and `Mcp-Name` to CORS headers, and emitted `X-MCP-Server-Name` and `X-MCP-Resource` response headers across both JSON (`sendJson()`) and empty-body notification/preflight (`sendEmptyStatus()`) responses.
+    - Pre-parsed request payloads to preserve exact scalar (`int|string`) JSON-RPC `$requestId` values on error responses and suppressed response bodies (HTTP 202 Accepted) on JSON-RPC notifications to prevent agent hangs.
+
+- **Mandatory Editorial Featured Image Contract (`lib/McpNewsTools.class.php`, `lib/McpFaqTools.class.php`, `.agents/skills/kevanger/SKILL.md`)**:
+  - Enforced required, non-nullable featured image with valid base64 payload and MIME (`image/webp`, `image/jpeg`, `image/png`, `image/gif`) on `create_news`.
+  - Prohibited removing featured images (`image: null`) on `update_news`, ensuring production editorial visual quality.
+  - Clarified cross-module FAQ relationships (`mod_news`, `mod_publication`, `mod_page`).
+
+- **Docker Environment & Infrastructure Resilience (`docker-compose.yml`, `docker/nginx/default.conf`, `docker/php/php.dev.ini`)**:
+  - Added `restart: unless-stopped`, parameterized ports (`${BULLETIN_WEB_PORT:-8080}:80`), and MySQL ping healthchecks.
+  - Secured uploads folder against arbitrary script execution in Nginx.
+  - Configured 300s FastCGI timeouts and buffers, and enabled `/.well-known/` routing for RFC 8414 and RFC 9728 discovery before dotfile blocking.
+  - Set `xdebug.start_with_request = trigger`.
+
+- **Positive-Pinned Stdio Bridges, Auto-Discovering Health Check & Smoke Suite (`~/.gemini/antigravity/bin/amed_bulletin_mcp.py`, `~/.gemini/antigravity-cli/bin/amed_bulletin_mcp.py`, `tools/mcp_health_check.py`, `tasks/mcp_smoke.php`, `mod/mod_gallery/index.php`)**:
+  - Pinned stdio bridges to `EXPECTED_SERVER_NAME = "amed-bulletin-mcp"` with strict missing/mismatched `X-MCP-Server-Name` validation and image pre-flight checks.
+  - Synchronized byte-for-byte parity across both runtime bridge paths.
+  - Built 7-stage automated health checker `tools/mcp_health_check.py` with zero hardcoded URLs (passing all 24 verification checks) and expanded `tasks/mcp_smoke.php` to 56 checks with zero PHP 8.2+ deprecations.
+
+- **Admin `mod_mcp` Taste Skill & Super Polish Mobile Modernization (`templates/admin/mod_mcp/`, `templates/admin/assets/css/mod_mcp.css`, `templates/admin/assets/js/mod_mcp.js`, `mod/mod_mcp/lang/`)**:
+  - Modernized `/mod_mcp/list` and `/mod_mcp/audit` with phone-only mobile application aesthetics, tactile interactive endpoint pill and key-prefix one-tap copy buttons, real-time KPI count synchronization (`syncSummaryCounts()`), and filter-preserving audit pagination.
+  - Rewrote 100% of Kurmanji (`ku.php`), Zazaki (`zza.php`), and Sorani (`ckb.php`) localization dictionaries and aligned `oauth_hint` across all 10 supported languages (`63` keys each).
+  - Enforced strict zero inline styles, zero inline event handlers, and `--md-sys-color-*` token wrappers (`code_separation_guard` and `i18n_guard` 100% clean).
+
+- **Public Theme Canonicalization (`templates/amida/` $\rightarrow$ `templates/amed/`, `lib/Amed.class.php`, `lib/TwigTemplate.class.php`, `mod/mod_settings/`, `installer/mod_settings/`, `tools/min_css_guard.py`, `tests/e2e/`)**:
+  - Renamed the canonical public frontend theme directory and default theme identifiers from `amida` to `amed` across framework libraries, installer and module SQL seeds, CSS bundle guards, E2E test suites, and repository documentation.
+
+- **Super League Live Standings & Fixtures Sidebar Widget (`lib/SportsDataService.class.php`, `tasks/update_sports_data.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amed/index/mod_news/super_league.twig`, `templates/amed/static/css/super-league.css`, `clear_cache.php`)**:
+  - Built `SportsDataService` with multi-source live standings and fixture aggregation, local JSON caching (`cache/sports/`), background CLI updater `tasks/update_sports_data.php`, cache flushing integration (`cache_sports` in `clear_cache.php` and `index.php`), and 10-language localization in `mod/index/lang/*.php`.
+
+- **Live Market Board Widget — Typography, Rhythm & Surface Polish (`templates/amed/index/mod_news/market_rates.twig`, `templates/amed/static/css/market-rates.css`)**:
+  - **Restrained Broadsheet Financial Header (`templates/amed/index/mod_news/market_rates.twig`, `templates/amed/static/css/market-rates.css`)**:
+    - Refined `.market-head` with clean horizontal alignment (`justify-content: space-between`), pairing `.market-head-title` (`bi-graph-up-arrow` + `Plus Jakarta Sans` 800 uppercase) on the left with `.market-head-live` (pulsing `.market-live-dot` + live status label) on the right over a crisp `1px` divider.
+  - **2×4 Financial Instrument Cards & Tabular Hierarchy (`templates/amed/index/mod_news/market_rates.twig`, `templates/amed/static/css/market-rates.css`)**:
+    - Tuned `.market-item` card spacing, border contrast, and `Plus Jakarta Sans` `tabular-nums` hierarchy (`line-height: 1.3` on `.market-name` preventing diacritic clipping on `GRAM GÜMÜŞ`, `0.84rem` extra-bold `.market-val`, and soft semantic `.market-badge` pills) across light, dark, and RTL modes.
+
+- **Footer Brand & Logo Management Parity with Header (`templates/amed/index/footer.twig`, `templates/amed/static/css/footer.css`)**:
+  - **Dynamic 6-Mode Admin Logo & Title Synchronization (`templates/amed/index/footer.twig`)**:
+    - Synchronized the footer brand section with the header's dynamic logo management system (`mod_settings`), supporting all 6 layout modes (`square`, `rectangle`, `square_name`, `rectangle_name`, `square_rectangle`, and `name_only`), `show_logo` visibility toggles, and animated logo configurations (`webm`, `mp4`, `json` Lottie, image, blend modes, and loop settings).
+    - Preserved resilient icon fallback order (`site_icon` -> `favicon_96` -> `favicon_path` -> monogram) and automatic `/thumb/` fallback via `top-menu.js`.
+  - **Modern Brand Styling & Dark Mode Parity (`templates/amed/static/css/footer.css`)**:
+    - Aligned `.site-footer .footer-brand` with `.modern-brand` layout rules and dark/light theme typography.
+
 ## v1.0.11 (2026-10-31)
 - **Homepage Economy News Sidebar Block R2 & Zero-Latency Live Market Data Architecture (`lib/MarketDataService.class.php`, `tasks/update_market_rates.php`, `mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/lang/*.php`, `templates/amida/index/mod_news/economy_news.twig`, `templates/amida/index/mod_news/market_rates.twig`, `templates/amida/static/css/economy-news.css`, `templates/amida/static/css/market-rates.css`, `clear_cache.php`)**:
   - **Zero-Latency Multi-Source Market Data Engine (`lib/MarketDataService.class.php`, `tasks/update_market_rates.php`)**:

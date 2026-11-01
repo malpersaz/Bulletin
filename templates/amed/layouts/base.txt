@@ -7,7 +7,7 @@ File content:
 - Top navigation and layout partials inclusion
 - Customizable CSS and JavaScript blocks
 
-The file is located at `templates/amida/layouts/base.twig` and serves as the master layout template.
+The file is located at `templates/amed/layouts/base.twig` and serves as the master layout template.
 
 Role and purpose within the framework:
 
@@ -90,6 +90,6 @@ JavaScript:
 
 5. Creating a New Theme:
 1. Copy Theme:
-`cp -r templates/amida templates/new_theme`
+`cp -r templates/amed templates/new_theme`
 2. Update Theme Configuration in settings or `config/site.config.php`
 3. Customize CSS, layouts, and assets in `templates/new_theme/`

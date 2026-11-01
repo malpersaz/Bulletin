@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS `mod_settings` (
   `logo_symbol` VARCHAR(500) DEFAULT NULL,
   `stat_workforce` INT DEFAULT 1200,
   `stat_offices` INT DEFAULT 18,
-  `app_template` VARCHAR(64) DEFAULT 'amida',
+  `app_template` VARCHAR(64) DEFAULT 'amed',
   `cookie_policy_content` TEXT DEFAULT NULL,
   UNIQUE KEY `unique_lang` (`lang`)
 ) ENGINE=INNODB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

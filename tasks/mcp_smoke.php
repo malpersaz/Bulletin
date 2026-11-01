@@ -36,6 +36,7 @@ if (!Registry::has('lang')) {
 class SmokeMcpServer extends McpServer
 {
     private string $body = '';
+    public int $lastStatusCode = 200;
 
     public function setBody(string $body): void
     {
@@ -45,6 +46,18 @@ class SmokeMcpServer extends McpServer
     protected function readRequestBody(): string
     {
         return $this->body;
+    }
+
+    protected function sendJson($payload, int $statusCode): void
+    {
+        $this->lastStatusCode = $statusCode;
+        parent::sendJson($payload, $statusCode);
+    }
+
+    protected function sendEmptyStatus(int $statusCode): void
+    {
+        $this->lastStatusCode = $statusCode;
+        parent::sendEmptyStatus($statusCode);
     }
 }
 
@@ -90,11 +103,17 @@ function runRpc($payload, string $bearerKey = '', array $serverOverrides = []): 
         $_SERVER = $savedServer;
         $raw = ob_get_clean();
         $decoded = json_decode($raw, true);
-        return $decoded === null ? ['__raw' => $raw] : $decoded;
+        if ($decoded === null) {
+            return ['__raw' => $raw, '__status' => $server->lastStatusCode];
+        }
+        if (!array_is_list($decoded)) {
+            $decoded['__status'] = $server->lastStatusCode;
+        }
+        return $decoded;
     } catch (\Throwable $e) {
         $_SERVER = $savedServer;
         ob_end_clean();
-        return ['__exception' => get_class($e) . ': ' . $e->getMessage()];
+        return ['__exception' => get_class($e) . ': ' . $e->getMessage(), '__status' => 500];
     }
 }
 
@@ -354,6 +373,7 @@ if ($sharedNewsCategoryId === 0) {
 // MCP-1: 145-char summary accepted + HTML sanitization
 $longSummary145 = str_pad('Curator SERP summary within 90-160 chars window for Google snippet parity and meta description synchronization ', 145, 'x');
 $dirtyHtmlInput = '<h1>Main Heading</h1><p sty' . 'le="color:red" on' . 'click="alert(1)">Clean paragraph text.</p><scr' . 'ipt>evil()</scr' . 'ipt>';
+$dummyBase64Png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
 $resCurator = runRpc(['jsonrpc' => '2.0', 'id' => 16, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
     'name' => 'MCP Smoke Curator Hardening Item',
     'lang' => $testLang,
@@ -361,6 +381,10 @@ $resCurator = runRpc(['jsonrpc' => '2.0', 'id' => 16, 'method' => 'tools/call', 
     'summary' => $longSummary145,
     'content' => $dirtyHtmlInput,
     'seo' => 'curator_smoke_slug_v1',
+    'image' => [
+        'data_base64' => $dummyBase64Png,
+        'mime' => 'image/png',
+    ],
 ]]], $plaintextKey);
 $curatorCreated = json_decode($resCurator['result']['content'][0]['text'] ?? 'null', true);
 $curatorId = (int) ($curatorCreated['id'] ?? 0);
@@ -511,6 +535,84 @@ runRpc(['jsonrpc' => '2.0', 'id' => 26, 'method' => 'tools/call', 'params' => ['
     'corporate_address' => (string) ($beforeItem['corporate_address'] ?? ''),
     'contact_address' => (string) ($beforeItem['contact_address'] ?? ''),
 ]]], $plaintextKey);
+
+// =========================================================================
+// 6.1 Protocol Hardening & Target Pinning (v1.0.12)
+// =========================================================================
+
+// Image Enforcement Gate: create_news without image fails
+$resNoImg = runRpc(['jsonrpc' => '2.0', 'id' => 30, 'method' => 'tools/call', 'params' => ['name' => 'create_news', 'arguments' => [
+    'name' => 'MCP Smoke Image Gate Test',
+    'lang' => $testLang,
+    'category_id' => $sharedNewsCategoryId,
+    'summary' => 'This is a valid summary between 90 and 160 characters long for testing image contract validation gate.',
+    'content' => '<p>Valid content body for image test.</p>',
+    'seo' => 'smoke_image_gate_test_slug',
+]]], $plaintextKey);
+check('Contract[Image]: create_news without image fails with editorial error',
+    ($resNoImg['result']['isError'] ?? false) === true
+    && str_contains($resNoImg['result']['content'][0]['text'] ?? '', 'image'),
+    json_encode($resNoImg)
+);
+
+// MCP 2026-07-28: server/discover returns capabilities
+$resDiscover = runRpc(['jsonrpc' => '2.0', 'id' => 31, 'method' => 'server/discover'], $plaintextKey);
+check('Protocol[2026-07-28]: server/discover routes to handleInitialize and reports serverInfo',
+    isset($resDiscover['result']['serverInfo']['name'])
+    && $resDiscover['result']['serverInfo']['name'] === 'amed-bulletin-mcp',
+    json_encode($resDiscover)
+);
+
+// Positive Pinning: Matching expected server succeeds
+$resPinMatch = runRpc(['jsonrpc' => '2.0', 'id' => 32, 'method' => 'ping'], $plaintextKey, [
+    'HTTP_X_MCP_EXPECTED_SERVER' => 'amed_bulletin_mcp',
+]);
+check('Pinning: X-MCP-Expected-Server matching normalized identifier succeeds',
+    ($resPinMatch['result'] ?? null) === [],
+    json_encode($resPinMatch)
+);
+
+// Positive Pinning: Misdirected request returns HTTP 421 and echoes exact integer ID
+$resPinMismatch = runRpc(['jsonrpc' => '2.0', 'id' => 33, 'method' => 'ping'], $plaintextKey, [
+    'HTTP_X_MCP_EXPECTED_SERVER' => '__foreign_agent_target__',
+]);
+check('Pinning: X-MCP-Expected-Server mismatch triggers HTTP 421 Misdirected Request',
+    ($resPinMismatch['__status'] ?? 0) === 421
+    && ($resPinMismatch['error']['code'] ?? 0) === -32600
+    && ($resPinMismatch['id'] ?? null) === 33,
+    json_encode($resPinMismatch)
+);
+
+// Positive Pinning: Misdirected resource returns HTTP 421
+$resResourceMismatch = runRpc(['jsonrpc' => '2.0', 'id' => 34, 'method' => 'ping'], $plaintextKey, [
+    'HTTP_X_MCP_EXPECTED_RESOURCE' => 'https://foreign-cms.example.com',
+]);
+check('Pinning: X-MCP-Expected-Resource mismatch triggers HTTP 421 Misdirected Request',
+    ($resResourceMismatch['__status'] ?? 0) === 421
+    && ($resResourceMismatch['error']['code'] ?? 0) === -32600
+    && ($resResourceMismatch['id'] ?? null) === 34,
+    json_encode($resResourceMismatch)
+);
+
+// Positive Pinning: Loopback port mismatch returns HTTP 421
+$resPortMismatch = runRpc(['jsonrpc' => '2.0', 'id' => 35, 'method' => 'ping'], $plaintextKey, [
+    'HTTP_HOST' => 'localhost:8080',
+    'HTTP_X_MCP_EXPECTED_RESOURCE' => 'http://localhost:8090',
+]);
+check('Pinning: Loopback port mismatch (8090 vs 8080) triggers HTTP 421 Misdirected Request',
+    ($resPortMismatch['__status'] ?? 0) === 421
+    && ($resPortMismatch['error']['code'] ?? 0) === -32600
+    && ($resPortMismatch['id'] ?? null) === 35,
+    json_encode($resPortMismatch)
+);
+
+// Notification: notifications/initialized returns HTTP 202 with empty body
+$resNotif = runRpc(['jsonrpc' => '2.0', 'method' => 'notifications/initialized'], $plaintextKey);
+check('Notification: notifications/initialized returns HTTP 202 with empty body',
+    ($resNotif['__status'] ?? 0) === 202
+    && ($resNotif['__raw'] ?? null) === '',
+    json_encode($resNotif)
+);
 
 // =========================================================================
 // 7. Cleanup

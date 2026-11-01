@@ -7,140 +7,306 @@
 {% block headline %}{{ lang.mod_mcp.module_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=1.0">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=2.0">
 {% endblock %}
 
 {% block content %}
-<div class="mcp-tabs">
-    <a href="{{ site.saddress }}mod_mcp/list" class="mcp-tab-item active">{{ lang.mod_mcp.nav_keys }}</a>
-    <a href="{{ site.saddress }}mod_mcp/audit" class="mcp-tab-item">{{ lang.mod_mcp.nav_audit }}</a>
-</div>
+{% set active_key_count = 0 %}
+{% for k in mcp_keys %}
+    {% if k.status == 'y' %}
+        {% set active_key_count = active_key_count + 1 %}
+    {% endif %}
+{% endfor %}
 
-<div class="mcp-page-intro">{{ lang.mod_mcp.page_intro }}</div>
+<div class="mcp-app-shell">
+    <nav class="mcp-tabs" aria-label="{{ lang.mod_mcp.module_title }}">
+        <a href="{{ site.saddress }}mod_mcp/list" class="mcp-tab-item active">
+            <i class="bi bi-key-fill" aria-hidden="true"></i>
+            <span>{{ lang.mod_mcp.nav_keys }}</span>
+        </a>
+        <a href="{{ site.saddress }}mod_mcp/audit" class="mcp-tab-item">
+            <i class="bi bi-activity" aria-hidden="true"></i>
+            <span>{{ lang.mod_mcp.nav_audit }}</span>
+        </a>
+    </nav>
 
-<div class="mcp-endpoint-card">
-    <div class="mcp-endpoint-label">{{ lang.mod_mcp.endpoint_label }}</div>
-    <div class="mcp-endpoint-value" id="mcpEndpointValue">{{ mcp_endpoint }}</div>
-</div>
+    <p class="mcp-page-intro">{{ lang.mod_mcp.page_intro }}</p>
 
-{% if session.flash.mcp_new_key is defined %}
-<div class="mcp-reveal-card" data-key-id="{{ session.flash.mcp_new_key_id }}">
-    <div class="mcp-reveal-title">{{ lang.mod_mcp.key_created_title }}</div>
-    <div class="mcp-reveal-warning">{{ lang.mod_mcp.key_created_warning }}</div>
-    <div class="mcp-reveal-key">{{ session.flash.mcp_new_key }}</div>
-    <button type="button" class="mcp-btn mcp-btn-secondary mcp-copy-btn" data-copy-source="#mcpFlashKeySource">{{ lang.mod_mcp.copy_key }}</button>
-    <input type="hidden" id="mcpFlashKeySource" value="{{ session.flash.mcp_new_key }}">
-</div>
-{% endif %}
+    <div class="mcp-summary-strip">
+        <div class="mcp-summary-pill">
+            <span class="mcp-summary-num" id="mcpStatTotalKeys">{{ mcp_keys|length }}</span>
+            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_total_keys }}</span>
+        </div>
+        <div class="mcp-summary-pill mcp-summary-pill-active">
+            <span class="mcp-summary-num" id="mcpStatActiveKeys">{{ active_key_count }}</span>
+            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_active_keys }}</span>
+        </div>
+        <div class="mcp-summary-pill">
+            <span class="mcp-summary-num" id="mcpStatOauthClients">{{ mcp_oauth_clients|length }}</span>
+            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_oauth_clients }}</span>
+        </div>
+    </div>
 
-<div class="mcp-create-card">
-    <div class="mcp-card-title">{{ lang.mod_mcp.create_key_title }}</div>
-    <form id="mcpCreateForm">
-        <label class="mcp-field-label" for="mcpKeyName">{{ lang.mod_mcp.key_name }}</label>
-        <input type="text" id="mcpKeyName" name="name" class="mcp-input" maxlength="100" placeholder="{{ lang.mod_mcp.name_placeholder }}" autocomplete="off">
+    <section class="mcp-endpoint-card">
+        <div class="mcp-endpoint-top">
+            <div class="mcp-endpoint-heading">
+                <span class="mcp-endpoint-icon"><i class="bi bi-hdd-network-fill" aria-hidden="true"></i></span>
+                <span class="mcp-endpoint-label">{{ lang.mod_mcp.endpoint_label }}</span>
+            </div>
+            <button type="button"
+                class="mcp-icon-btn mcp-copy-btn"
+                data-copy-text="{{ mcp_endpoint }}"
+                data-copied-msg="{{ lang.mod_mcp.endpoint_copied }}"
+                title="{{ lang.mod_mcp.copy_endpoint }}"
+                aria-label="{{ lang.mod_mcp.copy_endpoint }}">
+                <i class="bi bi-copy" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="mcp-endpoint-value" id="mcpEndpointValue">{{ mcp_endpoint }}</div>
+    </section>
 
-        <label class="mcp-field-label" for="mcpKeyGroup">{{ lang.mod_mcp.group_label }}</label>
-        <select id="mcpKeyGroup" name="group_id" class="mcp-input">
-            {% for group in mcp_groups %}
-                <option value="{{ group.group_id }}">{{ group.name }}</option>
+    {% if session.flash.mcp_new_key is defined %}
+    <section class="mcp-reveal-card" data-key-id="{{ session.flash.mcp_new_key_id }}">
+        <div class="mcp-reveal-header">
+            <span class="mcp-reveal-icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+            <div class="mcp-reveal-heading-group">
+                <div class="mcp-reveal-title">{{ lang.mod_mcp.key_created_title }}</div>
+                <div class="mcp-reveal-warning">{{ lang.mod_mcp.key_created_warning }}</div>
+            </div>
+        </div>
+        <div class="mcp-reveal-key">{{ session.flash.mcp_new_key }}</div>
+        <div class="mcp-reveal-actions">
+            <button type="button" class="mcp-btn mcp-btn-secondary mcp-copy-btn" data-copy-source="#mcpFlashKeySource">
+                <i class="bi bi-copy" aria-hidden="true"></i>
+                <span>{{ lang.mod_mcp.copy_key }}</span>
+            </button>
+            <button type="button" class="mcp-btn mcp-btn-ghost mcp-reveal-dismiss-btn">
+                <i class="bi bi-check2" aria-hidden="true"></i>
+                <span>{{ lang.mod_mcp.reveal_close }}</span>
+            </button>
+        </div>
+        <input type="hidden" id="mcpFlashKeySource" value="{{ session.flash.mcp_new_key }}">
+    </section>
+    {% endif %}
+
+    <section class="mcp-create-card">
+        <div class="mcp-card-header-row">
+            <span class="mcp-section-icon"><i class="bi bi-plus-circle-fill" aria-hidden="true"></i></span>
+            <h2 class="mcp-card-title">{{ lang.mod_mcp.create_key_title }}</h2>
+        </div>
+        <form id="mcpCreateForm" class="mcp-create-form">
+            <div class="mcp-field-group">
+                <label class="mcp-field-label" for="mcpKeyName">
+                    <i class="bi bi-tag" aria-hidden="true"></i>
+                    <span>{{ lang.mod_mcp.key_name }}</span>
+                </label>
+                <input type="text" id="mcpKeyName" name="name" class="mcp-input" maxlength="100" placeholder="{{ lang.mod_mcp.name_placeholder }}" autocomplete="off">
+            </div>
+
+            <div class="mcp-field-group">
+                <label class="mcp-field-label" for="mcpKeyGroup">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    <span>{{ lang.mod_mcp.group_label }}</span>
+                </label>
+                <select id="mcpKeyGroup" name="group_id" class="mcp-input">
+                    {% for group in mcp_groups %}
+                        <option value="{{ group.group_id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="mcp-btn mcp-btn-primary mcp-btn-block" id="mcpCreateSubmit">
+                <i class="bi bi-key-fill" aria-hidden="true"></i>
+                <span>{{ lang.mod_mcp.submit_create }}</span>
+            </button>
+        </form>
+    </section>
+
+    <section class="mcp-section">
+        <div class="mcp-section-header">
+            <div class="mcp-section-title-wrap">
+                <i class="bi bi-key" aria-hidden="true"></i>
+                <h2 class="mcp-section-title">{{ lang.mod_mcp.keys_section_title }}</h2>
+            </div>
+            <span class="mcp-section-count">{{ mcp_keys|length }}</span>
+        </div>
+
+        <div class="mcp-key-list" id="mcpKeyList">
+            {% if mcp_keys|length == 0 %}
+                <div class="mcp-empty-state">
+                    <i class="bi bi-key" aria-hidden="true"></i>
+                    <span>{{ lang.mod_mcp.no_keys }}</span>
+                </div>
+            {% endif %}
+            {% for key in mcp_keys %}
+                <article class="mcp-key-card {% if key.status != 'y' %}mcp-key-card-revoked{% endif %}" data-key-id="{{ key.id }}">
+                    <div class="mcp-key-card-header">
+                        <div class="mcp-key-title-group">
+                            <span class="mcp-status-dot {% if key.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
+                            <span class="mcp-key-name">{{ key.name }}</span>
+                        </div>
+                        <span class="mcp-key-badge {% if key.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
+                            {% if key.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="mcp-key-prefix-row">
+                        <span class="mcp-key-prefix-lbl">{{ lang.mod_mcp.key_prefix_label }}</span>
+                        <button type="button" class="mcp-key-prefix mcp-copy-btn" data-copy-text="{{ key.key_prefix }}" data-copy-msg="{{ lang.mod_mcp.key_copied }}" aria-label="{{ lang.mod_mcp.copy_key }}">
+                            <code>{{ key.key_prefix }}&hellip;</code>
+                            <i class="bi bi-copy" aria-hidden="true"></i>
+                        </button>
+                    </div>
+
+                    <div class="mcp-meta-grid">
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-shield-lock" aria-hidden="true"></i> {{ lang.mod_mcp.group_label }}</span>
+                            <span class="mcp-meta-val">{{ key.group_name }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-person" aria-hidden="true"></i> {{ lang.mod_mcp.creator_label }}</span>
+                            <span class="mcp-meta-val">{{ key.creator_username }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ lang.mod_mcp.created_at_label }}</span>
+                            <span class="mcp-meta-val">{{ key.created_at }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-clock-history" aria-hidden="true"></i> {{ lang.mod_mcp.last_used_label }}</span>
+                            <span class="mcp-meta-val">{{ key.last_used_at ? key.last_used_at : lang.mod_mcp.never_used }}</span>
+                        </div>
+                    </div>
+
+                    {% if session.permissions.mod_mcp.edit is defined or session.permissions.mod_mcp.delete is defined %}
+                    <div class="mcp-key-card-footer">
+                        <div class="mcp-key-actions">
+                            {% if session.permissions.mod_mcp.edit is defined %}
+                                <button type="button" class="mcp-btn mcp-btn-action mcp-toggle-btn" data-key-id="{{ key.id }}" data-key-status="{{ key.status }}">
+                                    {% if key.status == 'y' %}
+                                        <i class="bi bi-pause-circle" aria-hidden="true"></i>
+                                        <span>{{ lang.mod_mcp.toggle_revoke }}</span>
+                                    {% else %}
+                                        <i class="bi bi-play-circle" aria-hidden="true"></i>
+                                        <span>{{ lang.mod_mcp.toggle_activate }}</span>
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+                            {% if session.permissions.mod_mcp.delete is defined %}
+                                <button type="button" class="mcp-btn mcp-btn-action mcp-btn-danger mcp-delete-btn" data-key-id="{{ key.id }}" data-key-name="{{ key.name }}">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span>{{ lang.mod_mcp.delete_key }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </article>
             {% endfor %}
-        </select>
-
-        <button type="submit" class="mcp-btn mcp-btn-primary" id="mcpCreateSubmit">{{ lang.mod_mcp.submit_create }}</button>
-    </form>
-</div>
-
-<div class="mcp-key-list" id="mcpKeyList">
-    {% if mcp_keys|length == 0 %}
-        <div class="mcp-empty-state">{{ lang.mod_mcp.no_keys }}</div>
-    {% endif %}
-    {% for key in mcp_keys %}
-        <div class="mcp-key-card {% if key.status != 'y' %}mcp-key-card-revoked{% endif %}" data-key-id="{{ key.id }}">
-            <div class="mcp-key-card-header">
-                <span class="mcp-key-name">{{ key.name }}</span>
-                <span class="mcp-key-badge {% if key.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
-                    {% if key.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
-                </span>
-            </div>
-            <div class="mcp-key-card-meta">
-                <span class="mcp-key-prefix">{{ key.key_prefix }}&hellip;</span>
-                <span class="mcp-key-group">{{ lang.mod_mcp.group_label }}: {{ key.group_name }}</span>
-            </div>
-            <div class="mcp-key-card-meta">
-                <span>{{ lang.mod_mcp.created_at_label }}: {{ key.created_at }}</span>
-                <span>{{ lang.mod_mcp.last_used_label }}: {{ key.last_used_at ? key.last_used_at : lang.mod_mcp.never_used }}</span>
-            </div>
-            <div class="mcp-key-card-footer">
-                <span class="mcp-key-creator">{{ lang.mod_mcp.creator_label }}: {{ key.creator_username }}</span>
-                <div class="mcp-key-actions">
-                    {% if session.permissions.mod_mcp.edit is defined %}
-                        <button type="button" class="mcp-btn mcp-btn-small mcp-toggle-btn" data-key-id="{{ key.id }}" data-key-status="{{ key.status }}">
-                            {% if key.status == 'y' %}{{ lang.mod_mcp.toggle_revoke }}{% else %}{{ lang.mod_mcp.toggle_activate }}{% endif %}
-                        </button>
-                    {% endif %}
-                    {% if session.permissions.mod_mcp.delete is defined %}
-                        <button type="button" class="mcp-btn mcp-btn-small mcp-btn-danger mcp-delete-btn" data-key-id="{{ key.id }}" data-key-name="{{ key.name }}">
-                            {{ lang.mod_mcp.delete_key }}
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
         </div>
-    {% endfor %}
-</div>
+    </section>
 
-<div class="mcp-oauth-section">
-    <div class="mcp-card-title">{{ lang.mod_mcp.oauth_section_title }}</div>
-    <div class="mcp-oauth-hint">{{ lang.mod_mcp.oauth_hint }}</div>
-    {% if mcp_oauth_clients|length == 0 %}
-        <div class="mcp-empty-state">{{ lang.mod_mcp.oauth_no_clients }}</div>
-    {% endif %}
-    {% for client in mcp_oauth_clients %}
-        <div class="mcp-key-card {% if client.status != 'y' %}mcp-key-card-revoked{% endif %}" data-client-id="{{ client.id }}">
-            <div class="mcp-key-card-header">
-                <span class="mcp-key-name">{{ client.client_name }}</span>
-                <span class="mcp-key-badge {% if client.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
-                    {% if client.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
-                </span>
+    <section class="mcp-oauth-section">
+        <div class="mcp-section-header">
+            <div class="mcp-section-title-wrap">
+                <i class="bi bi-shield-shaded" aria-hidden="true"></i>
+                <h2 class="mcp-section-title">{{ lang.mod_mcp.oauth_section_title }}</h2>
             </div>
-            <div class="mcp-oauth-client-id">{{ client.client_id }}</div>
-            <div class="mcp-oauth-redirects">
-                {% for redirect in client.redirect_uris|split("\n") %}
-                    <div class="mcp-oauth-redirect">{{ redirect }}</div>
-                {% endfor %}
-            </div>
-            <div class="mcp-key-card-meta">
-                <span>{{ lang.mod_mcp.oauth_tokens_active }}: {{ client.active_tokens }}</span>
-                <span>{{ lang.mod_mcp.created_at_label }}: {{ client.created_at }}</span>
-                <span>{{ lang.mod_mcp.last_used_label }}: {{ client.last_used_at ? client.last_used_at : lang.mod_mcp.never_used }}</span>
-            </div>
-            <div class="mcp-key-card-footer">
-                <div class="mcp-key-actions">
-                    {% if session.permissions.mod_mcp.edit is defined %}
-                        <button type="button" class="mcp-btn mcp-btn-small mcp-oauth-toggle-btn" data-client-id="{{ client.id }}" data-client-status="{{ client.status }}">
-                            {% if client.status == 'y' %}{{ lang.mod_mcp.oauth_deactivate }}{% else %}{{ lang.mod_mcp.oauth_activate }}{% endif %}
-                        </button>
-                    {% endif %}
-                    {% if session.permissions.mod_mcp.delete is defined %}
-                        <button type="button" class="mcp-btn mcp-btn-small mcp-btn-danger mcp-oauth-delete-btn" data-client-id="{{ client.id }}" data-client-name="{{ client.client_name }}">
-                            {{ lang.mod_mcp.oauth_delete }}
-                        </button>
-                    {% endif %}
-                </div>
-            </div>
+            <span class="mcp-section-count">{{ mcp_oauth_clients|length }}</span>
         </div>
-    {% endfor %}
+
+        <div class="mcp-oauth-hint">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span>{{ lang.mod_mcp.oauth_hint }}</span>
+        </div>
+
+        <div class="mcp-oauth-list">
+            {% if mcp_oauth_clients|length == 0 %}
+                <div class="mcp-empty-state">
+                    <i class="bi bi-hdd-rack" aria-hidden="true"></i>
+                    <span>{{ lang.mod_mcp.oauth_no_clients }}</span>
+                </div>
+            {% endif %}
+            {% for client in mcp_oauth_clients %}
+                <article class="mcp-key-card {% if client.status != 'y' %}mcp-key-card-revoked{% endif %}" data-client-id="{{ client.id }}">
+                    <div class="mcp-key-card-header">
+                        <div class="mcp-key-title-group">
+                            <span class="mcp-status-dot {% if client.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
+                            <span class="mcp-key-name">{{ client.client_name }}</span>
+                        </div>
+                        <span class="mcp-key-badge {% if client.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
+                            {% if client.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
+                        </span>
+                    </div>
+
+                    <div class="mcp-oauth-client-id">{{ client.client_id }}</div>
+
+                    <div class="mcp-oauth-redirects">
+                        {% for redirect in client.redirect_uris|split("\n") %}
+                            {% if redirect|trim != '' %}
+                                <div class="mcp-oauth-redirect">
+                                    <i class="bi bi-arrow-return-right" aria-hidden="true"></i>
+                                    <span>{{ redirect }}</span>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="mcp-meta-grid">
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-lightning-charge" aria-hidden="true"></i> {{ lang.mod_mcp.oauth_tokens_active }}</span>
+                            <span class="mcp-meta-val">{{ client.active_tokens }}</span>
+                        </div>
+                        <div class="mcp-meta-item">
+                            <span class="mcp-meta-lbl"><i class="bi bi-calendar3" aria-hidden="true"></i> {{ lang.mod_mcp.created_at_label }}</span>
+                            <span class="mcp-meta-val">{{ client.created_at }}</span>
+                        </div>
+                        <div class="mcp-meta-item mcp-meta-item-wide">
+                            <span class="mcp-meta-lbl"><i class="bi bi-clock-history" aria-hidden="true"></i> {{ lang.mod_mcp.last_used_label }}</span>
+                            <span class="mcp-meta-val">{{ client.last_used_at ? client.last_used_at : lang.mod_mcp.never_used }}</span>
+                        </div>
+                    </div>
+
+                    {% if session.permissions.mod_mcp.edit is defined or session.permissions.mod_mcp.delete is defined %}
+                    <div class="mcp-key-card-footer">
+                        <div class="mcp-key-actions">
+                            {% if session.permissions.mod_mcp.edit is defined %}
+                                <button type="button" class="mcp-btn mcp-btn-action mcp-oauth-toggle-btn" data-client-id="{{ client.id }}" data-client-status="{{ client.status }}">
+                                    {% if client.status == 'y' %}
+                                        <i class="bi bi-pause-circle" aria-hidden="true"></i>
+                                        <span>{{ lang.mod_mcp.oauth_deactivate }}</span>
+                                    {% else %}
+                                        <i class="bi bi-play-circle" aria-hidden="true"></i>
+                                        <span>{{ lang.mod_mcp.oauth_activate }}</span>
+                                    {% endif %}
+                                </button>
+                            {% endif %}
+                            {% if session.permissions.mod_mcp.delete is defined %}
+                                <button type="button" class="mcp-btn mcp-btn-action mcp-btn-danger mcp-oauth-delete-btn" data-client-id="{{ client.id }}" data-client-name="{{ client.client_name }}">
+                                    <i class="bi bi-trash3" aria-hidden="true"></i>
+                                    <span>{{ lang.mod_mcp.oauth_delete }}</span>
+                                </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    </section>
 </div>
 
 <input type="hidden" id="mcpLangData"
     data-copied="{{ lang.mod_mcp.key_copied }}"
+    data-endpoint-copied="{{ lang.mod_mcp.endpoint_copied }}"
     data-delete-confirm="{{ lang.mod_mcp.delete_confirm }}"
     data-created-title="{{ lang.mod_mcp.key_created_title }}"
     data-created-warning="{{ lang.mod_mcp.key_created_warning }}"
     data-copy-key="{{ lang.mod_mcp.copy_key }}"
-    data-oauth-delete-confirm="{{ lang.mod_mcp.oauth_delete_confirm }}">
+    data-reveal-close="{{ lang.mod_mcp.reveal_close }}"
+    data-oauth-delete-confirm="{{ lang.mod_mcp.oauth_delete_confirm }}"
+    data-network-error="{{ lang.mod_mcp.message.error.edit }}">
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/mod_mcp.js?v=1.0"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_mcp.js?v=2.0"></script>
 {% endblock %}

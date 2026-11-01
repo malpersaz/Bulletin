@@ -10,6 +10,7 @@ class mod_gallery_mod extends indexMain
     public $mod_gallery_model;
     public $mod_info;
     public $r;
+    public $theme;
 
     function __construct()
     {

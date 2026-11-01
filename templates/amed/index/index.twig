@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-publications.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/super-league.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/world-news.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/economy-news.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version }}">
@@ -57,6 +58,9 @@
             {# Block L4 — Sports News Section (2 Horizontal Cards in 2x1 Grid) #}
             {% include 'index/mod_news/sports_news.twig' %}
 
+            {# Block L4.1 — Live Super League Standings & Matchday Widget #}
+            {% include 'index/mod_news/super_league.twig' %}
+
             {# Block L5 — Video Gallery (3 Cards in 3x1 Grid) #}
             {% include 'index/mod_video_embed/latest_videos.twig' with { limit: 3 } %}
         </article>
@@ -77,7 +81,7 @@
             
             {% if homepage_categories and homepage_categories|length > 0 %}
                 {% for category in homepage_categories %}
-                    {% if category.news|length > 0 and category.seo not in ['Dünya', 'Ortadoğu', 'Cîhan', 'Rojhilata_Navîn', 'World', 'Middle_East', 'Ekonomi', 'Aborî', 'Abori', 'Economy', 'Wirtschaft', 'Économie', 'Economie', 'Экономика', 'اقتصاد', 'ئابووری', 'Ekonomiye'] %}
+                    {% if category.news|length > 0 and category.seo not in ['Dünya', 'Ortadoğu', 'Cîhan', 'Rojhilata_Navîn', 'World', 'Middle_East', 'Ekonomi', 'Aborî', 'Abori', 'Economy', 'Wirtschaft', 'Économie', 'Economie', 'Экономика', 'اقتصاد', 'ئابووری', 'Ekonomiye', 'Spor', 'Werzîş', 'Werzis', 'Sports', 'Sport', 'Спорт', 'رياضة', 'وەرزش'] and category.name not in ['Spor', 'Werzîş', 'Werzis', 'Sports', 'Sport', 'Спорт', 'رياضة', 'وەرزش'] %}
                         <div class="category-homepage-section">
                             <h2 class="nyt-news-heading">
                                 <a href="{{ site.saddress }}newses/{{ category.seo }}" class="text-decoration-none nyt-news-heading-link">{{ category.name|raw }}</a>

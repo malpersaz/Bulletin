@@ -22,7 +22,7 @@ class TwigTemplate
         $loader = new FilesystemLoader([
             template_dir . Registry::get('admin_template') . DS,
             template_dir . Registry::get('app_template') . DS,
-            template_dir . 'amida' . DS,
+            template_dir . 'amed' . DS,
             template_dir // Add templates root for macros
         ]);
         $this->twig = new Environment($loader, [

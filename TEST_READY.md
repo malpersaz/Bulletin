@@ -102,7 +102,7 @@ The test suite accurately surfaces the 26 features awaiting implementation by th
    - `templates/admin/mod_acl/`: Purge `script.twig` and legacy Turkish references (`processSil`).
    - `templates/admin/partials/`: Decouple `header.twig` and `filter_sheet.twig` to `modal_user_menu.js` and `core_modals.css`.
 2. **Milestone M3 (Universal Share Toolbar & Document Export)**:
-   - `templates/amida/partials/share.twig`: Refactor to zero-inline and bind to external share assets.
+   - `templates/amed/partials/share.twig`: Refactor to zero-inline and bind to external share assets.
 3. **Milestone M4 (Corporate Legal & Fiscal Schema)**:
    - `installer/mod_settings/mod_settings.sql` & `mod/mod_settings/mod_settings.sql`: Add 16 corporate fields.
    - `installer/mod_page/index.php`: Add 9 Legal Information and 9 Cookie Policy multilingual seeds.

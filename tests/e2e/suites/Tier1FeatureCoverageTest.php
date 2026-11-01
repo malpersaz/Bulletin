@@ -433,7 +433,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF8_ShareToolbarTwigZeroInlineCode(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share_toolbar.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share_toolbar.twig';
         if (file_exists($file)) {
             $violations = $this->staticAuditor->checkCodeSeparation([$file]);
             $this->assertCount(0, $violations, 'share_toolbar.twig must have 0 inline styles and 0 inline scripts');
@@ -444,7 +444,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF8_ShareToolbarSocialLinks(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share_toolbar.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share_toolbar.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertStringContainsString('whatsapp', strtolower($content));
@@ -457,7 +457,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF8_ShareToolbarDocumentExportLinks(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share_toolbar.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share_toolbar.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'tools/saveHtml') || str_contains($content, 'saveHtml'), 'Must link to HTML document export');
@@ -469,7 +469,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF8_ShareToolbarPrintAction(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share_toolbar.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share_toolbar.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertStringContainsString('data-action="print"', $content, 'Print button must use data-action="print"');
@@ -481,8 +481,8 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF8_ShareCssAndJsAssets(): void
     {
-        $css = $this->baseDir . '/templates/amida/static/css/share.css';
-        $js = $this->baseDir . '/templates/amida/static/js/share.js';
+        $css = $this->baseDir . '/templates/amed/static/css/share.css';
+        $js = $this->baseDir . '/templates/amed/static/js/share.js';
         if (file_exists($css) && file_exists($js)) {
             $this->assertTrue(filesize($css) > 0);
             $this->assertTrue(filesize($js) > 0);
@@ -497,7 +497,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF9_CompactShareTwigZeroInlineCode(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share.twig';
         if (file_exists($file)) {
             $violations = $this->staticAuditor->checkCodeSeparation([$file]);
             $this->assertCount(0, $violations, 'share.twig must have 0 inline styles or inline handlers');
@@ -508,7 +508,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF9_CompactShareUsesExternalShareAssets(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertFalse(str_contains($content, '<style>'), 'Compact share must not include <style> blocks');
@@ -520,7 +520,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF9_CompactShareNativeShareIntegration(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/share.twig';
+        $file = $this->baseDir . '/templates/amed/partials/share.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $hasShareTrigger = str_contains($content, 'share') || str_contains($content, 'data-action');
@@ -532,7 +532,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF9_CompactShareClipboardTooltipElement(): void
     {
-        $jsFile = $this->baseDir . '/templates/amida/static/js/share.js';
+        $jsFile = $this->baseDir . '/templates/amed/static/js/share.js';
         if (file_exists($jsFile)) {
             $content = file_get_contents($jsFile);
             $this->assertTrue(str_contains($content, 'clipboard') || str_contains($content, 'tooltip') || str_contains($content, 'copy'), 'share.js should implement clipboard feedback');
@@ -543,7 +543,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF9_CompactShareTouchTargetSizes(): void
     {
-        $cssFile = $this->baseDir . '/templates/amida/static/css/share.css';
+        $cssFile = $this->baseDir . '/templates/amed/static/css/share.css';
         if (file_exists($cssFile)) {
             $content = file_get_contents($cssFile);
             $this->assertTrue(str_contains($content, 'min-height') || str_contains($content, 'min-width') || str_contains($content, 'padding'), 'share.css should define tactile button dimensions');
@@ -558,7 +558,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF10_NewsDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_news/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_news/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share_toolbar.twig') || str_contains($content, 'share.twig'), 'mod_news/detail.twig must include modernized share toolbar');
@@ -569,7 +569,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF10_PublicationDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_publication/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_publication/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share_toolbar.twig') || str_contains($content, 'share.twig'), 'mod_publication/detail.twig must include share toolbar');
@@ -580,7 +580,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF10_ContentDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_content/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_content/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share_toolbar.twig') || str_contains($content, 'share.twig'), 'mod_content/detail.twig must include share toolbar');
@@ -591,7 +591,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF10_PageDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_page/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_page/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share_toolbar.twig') || str_contains($content, 'share.twig'), 'mod_page/detail.twig must include share toolbar');
@@ -602,7 +602,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF10_AnnouncementsDetailIncludesShareToolbar(): void
     {
-        $file = $this->baseDir . '/templates/amida/mod_announcements/detail.twig';
+        $file = $this->baseDir . '/templates/amed/mod_announcements/detail.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'share_toolbar.twig') || str_contains($content, 'share.twig'), 'mod_announcements/detail.twig must include share toolbar');
@@ -768,7 +768,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF14_LegalInfoPartialZeroInlineCode(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/_legal_info.twig';
+        $file = $this->baseDir . '/templates/amed/partials/_legal_info.twig';
         if (file_exists($file)) {
             $violations = $this->staticAuditor->checkCodeSeparation([$file]);
             $this->assertCount(0, $violations, '_legal_info.twig must have 0 inline styles and 0 inline scripts');
@@ -779,7 +779,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF14_CookieConsentPartialDynamicSlug(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/_cookie_consent.twig';
+        $file = $this->baseDir . '/templates/amed/partials/_cookie_consent.twig';
         if (file_exists($file)) {
             $violations = $this->staticAuditor->checkCodeSeparation([$file]);
             $this->assertCount(0, $violations, '_cookie_consent.twig must have 0 inline styles and 0 inline scripts');
@@ -790,7 +790,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF14_FooterTwigLinksToLegalAndCookiePages(): void
     {
-        $file = $this->baseDir . '/templates/amida/index/footer.twig';
+        $file = $this->baseDir . '/templates/amed/index/footer.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'legal') || str_contains($content, 'cookie') || str_contains($content, 'page/'), 'Footer should link to legal/cookie pages');
@@ -801,7 +801,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF14_LegalInfoRendersPublishingCredentials(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/_legal_info.twig';
+        $file = $this->baseDir . '/templates/amed/partials/_legal_info.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertTrue(str_contains($content, 'managing_director') || str_contains($content, 'editor_in_chief') || str_contains($content, 'company_name'));
@@ -812,7 +812,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF14_CookieConsentZeroInlineStyles(): void
     {
-        $file = $this->baseDir . '/templates/amida/partials/_cookie_consent.twig';
+        $file = $this->baseDir . '/templates/amed/partials/_cookie_consent.twig';
         if (file_exists($file)) {
             $content = file_get_contents($file);
             $this->assertFalse(str_contains($content, 'style="'));
@@ -889,7 +889,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF16_BrandFallbackPriority2SiteLogo(): void
     {
-        $site = ['logo_path' => 'templates/amida/assets/img/logo.svg'];
+        $site = ['logo_path' => 'templates/amed/assets/img/logo.svg'];
         $item = ['image' => null];
         $placeholderMode = ($item['image'] === null && !empty($site['logo_path'])) ? 'logo' : 'symbol';
         $this->assertEquals('logo', $placeholderMode);
@@ -897,7 +897,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF16_BrandFallbackPriority3SiteSymbol(): void
     {
-        $site = ['logo_path' => null, 'logo_symbol' => 'templates/amida/assets/img/symbol.svg'];
+        $site = ['logo_path' => null, 'logo_symbol' => 'templates/amed/assets/img/symbol.svg'];
         $item = ['image' => null];
         $placeholderMode = ($item['image'] === null && empty($site['logo_path']) && !empty($site['logo_symbol'])) ? 'symbol' : 'gradient';
         $this->assertEquals('symbol', $placeholderMode);
@@ -913,7 +913,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF16_DetailFoundationCssContainsFallbackStyles(): void
     {
-        $css = $this->baseDir . '/templates/amida/static/css/detail-foundation.css';
+        $css = $this->baseDir . '/templates/amed/static/css/detail-foundation.css';
         if (file_exists($css)) {
             $content = file_get_contents($css);
             $this->assertTrue(str_contains($content, 'placeholder') || str_contains($content, 'gradient') || str_contains($content, 'hero'), 'detail-foundation.css must define placeholder styling');
@@ -987,7 +987,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF18_AppJsInterceptionEventListener(): void
     {
-        $js = $this->baseDir . '/templates/amida/static/js/app.js';
+        $js = $this->baseDir . '/templates/amed/static/js/app.js';
         if (file_exists($js)) {
             $content = file_get_contents($js);
             $this->assertTrue(str_contains($content, 'error') || str_contains($content, 'addEventListener') || str_contains($content, 'img'), 'app.js should attach image error listener');
@@ -998,7 +998,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF18_AppJsReplacesBrokenImageWithPlaceholder(): void
     {
-        $js = $this->baseDir . '/templates/amida/static/js/app.js';
+        $js = $this->baseDir . '/templates/amed/static/js/app.js';
         if (file_exists($js)) {
             $content = file_get_contents($js);
             $this->assertNotEmpty($content);
@@ -1009,7 +1009,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF18_HeroNewsSliderJsInterception(): void
     {
-        $js = $this->baseDir . '/templates/amida/static/js/hero-news-slider.js';
+        $js = $this->baseDir . '/templates/amed/static/js/hero-news-slider.js';
         if (file_exists($js)) {
             $content = file_get_contents($js);
             $this->assertNotEmpty($content);
@@ -1020,7 +1020,7 @@ class Tier1FeatureCoverageTest extends TestCase
 
     public function testF18_AppJsPreventsInfiniteErrorLoop(): void
     {
-        $js = $this->baseDir . '/templates/amida/static/js/app.js';
+        $js = $this->baseDir . '/templates/amed/static/js/app.js';
         if (file_exists($js)) {
             $content = file_get_contents($js);
             $this->assertStringNotContainsString('this.src = this.src', $content, 'Must avoid infinite reload loops on broken images');
@@ -1032,9 +1032,9 @@ class Tier1FeatureCoverageTest extends TestCase
     public function testF18_JsFilesPassSyntaxCheck(): void
     {
         $jsFiles = [
-            $this->baseDir . '/templates/amida/static/js/app.js',
-            $this->baseDir . '/templates/amida/static/js/hero-news-slider.js',
-            $this->baseDir . '/templates/amida/static/js/share.js',
+            $this->baseDir . '/templates/amed/static/js/app.js',
+            $this->baseDir . '/templates/amed/static/js/hero-news-slider.js',
+            $this->baseDir . '/templates/amed/static/js/share.js',
         ];
         foreach ($jsFiles as $js) {
             if (file_exists($js)) {

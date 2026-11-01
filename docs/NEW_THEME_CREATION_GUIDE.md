@@ -10,7 +10,7 @@ It replaces the older theme notes that referenced non-existent or project-extern
 
 This guide applies to public frontend themes such as:
 
-- `templates/amida`
+- `templates/amed`
 - `templates/<new_theme>`
 
 It does not apply to:
@@ -23,7 +23,7 @@ If a theme task touches admin templates, the admin mobile-only rule applies: des
 
 ## Current Architecture Facts
 
-Before creating a theme, verify the current repository state. At the time this guide is written, the active public theme folder in this worktree is `templates/amida`.
+Before creating a theme, verify the current repository state. At the time this guide is written, the active public theme folder in this worktree is `templates/amed`.
 
 The public theme is selected as follows:
 
@@ -145,11 +145,11 @@ find templates -maxdepth 2 -type d | sort
 ```
 
 ```bash
-find templates/amida -maxdepth 3 -type f | sort
+find templates/amed -maxdepth 3 -type f | sort
 ```
 
 ```bash
-rg -n "app_template|\$_COOKIE\['theme'\]|template_dir|site\.app_template|site\.taddress" config lib templates/amida
+rg -n "app_template|\$_COOKIE\['theme'\]|template_dir|site\.app_template|site\.taddress" config lib templates/amed
 ```
 
 Confirm:
@@ -200,7 +200,7 @@ Use one of these strategies.
 
 Preferred for production work:
 
-1. Copy `templates/amida` as a temporary scaffold.
+1. Copy `templates/amed` as a temporary scaffold.
 2. Immediately clean inherited references.
 3. Rebuild visual design and assets inside `templates/<theme>`.
 4. Preserve module coverage from the baseline.
@@ -218,7 +218,7 @@ Do not start from a folder that does not exist in this repository.
 If using `amida` as the scaffold:
 
 ```bash
-cp -a templates/amida templates/<theme>
+cp -a templates/amed templates/<theme>
 ```
 
 After copying, do not begin styling first. First remove technical inheritance mistakes.
@@ -226,7 +226,7 @@ After copying, do not begin styling first. First remove technical inheritance mi
 Search for old theme references:
 
 ```bash
-rg -n "templates/amida|amida/static|amida/|artist|new|new_theme|template.php" templates/<theme>
+rg -n "templates/amed|amida/static|amida/|artist|new|new_theme|template.php" templates/<theme>
 ```
 
 Fix every unintended reference before continuing.
@@ -267,7 +267,7 @@ Use active-theme asset paths:
 Do not use hardcoded paths like:
 
 ```twig
-templates/amida/static/css/custom.css
+templates/amed/static/css/custom.css
 ```
 
 ### 7. Preserve Navigation Behavior
@@ -303,7 +303,7 @@ Visible labels must use language keys from `mod/index/lang/*.php` or the relevan
 
 ### 8. Preserve Homepage Composition Deliberately
 
-`templates/amida/index/index.twig` currently composes the homepage from active module feeds and helper outputs.
+`templates/amed/index/index.twig` currently composes the homepage from active module feeds and helper outputs.
 
 Before changing the homepage, list every helper/template include in the baseline:
 
@@ -320,7 +320,7 @@ Homepage design may change, but the data must still come from CMS-managed module
 
 ### 9. Preserve Module Templates
 
-For each module folder under `templates/amida/index/`, decide one of:
+For each module folder under `templates/amed/index/`, decide one of:
 
 - copy and restyle
 - rewrite with the same context contract
@@ -379,7 +379,7 @@ Only change configuration or UI when the task requires it.
 Review:
 
 - `config/site.config.php`
-- `templates/amida/index/mod_menu/stacked_top_menu.twig`
+- `templates/amed/index/mod_menu/stacked_top_menu.twig`
 - any JavaScript that sets or reads the `theme` cookie
 
 Use `template.php` for theme gallery switching.
@@ -466,7 +466,7 @@ find templates/<theme> -type f | sort
 ```
 
 ```bash
-rg -n "amida/|templates/amida|artist|new|new_theme|template.php" templates/<theme>
+rg -n "amida/|templates/amed|artist|new|new_theme|template.php" templates/<theme>
 ```
 
 ```bash

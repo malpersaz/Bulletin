@@ -174,9 +174,9 @@ class mod_settings_mod extends indexMain
 
             if (!$exists) {
                 if (strpos($adapter, 'PDO_SQLITE') !== false || strpos($adapter, 'POSTGRESQL') !== false) {
-                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN app_template VARCHAR(64) DEFAULT 'amida'";
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN app_template VARCHAR(64) DEFAULT 'amed'";
                 } else {
-                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `app_template` VARCHAR(64) DEFAULT 'amida'";
+                    $sql = "ALTER TABLE `" . $safeTable . "` ADD COLUMN `app_template` VARCHAR(64) DEFAULT 'amed'";
                 }
                 $this->db->query($sql);
             }
@@ -1799,7 +1799,7 @@ class mod_settings_mod extends indexMain
 
         $activeTheme = Registry::get('app_template');
         if (empty($activeTheme)) {
-            $activeTheme = $this->site['app_template'] ?? 'amida';
+            $activeTheme = $this->site['app_template'] ?? 'amed';
         }
 
         $themesDir = template_dir;

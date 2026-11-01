@@ -39,11 +39,43 @@ require_once(lib_dir . 'McpPromptManager.class.php');
 
 class McpServer
 {
-    private const SUPPORTED_PROTOCOL_VERSIONS = ['2024-11-05', '2025-03-26', '2025-06-18', '2025-11-25'];
+    private const SUPPORTED_PROTOCOL_VERSIONS = ['2024-11-05', '2025-03-26', '2025-06-18', '2025-11-25', '2026-07-28'];
     private const DEFAULT_PROTOCOL_VERSION = '2025-03-26';
-    private const SERVER_NAME = 'amed-bulletin-mcp';
+    public const DEFAULT_SERVER_NAME = 'amed-bulletin-mcp';
     private const SERVER_VERSION = '1.0.0';
     private const API_KEY_PREFIX = 'amcp_';
+
+    public static function resolveServerName(): string
+    {
+        $envName = getenv('AF_MCP_SERVER_NAME');
+        if (is_string($envName) && trim($envName) !== '') {
+            return trim($envName);
+        }
+        $site = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+        $configured = trim((string) ($site['mcp_server_name'] ?? ''));
+        if ($configured !== '' && $configured !== 'auto') {
+            return $configured;
+        }
+        $host = strtolower((string) parse_url((string) ($site['address'] ?? ''), PHP_URL_HOST));
+        if ($host !== '' && $host !== 'localhost' && $host !== '127.0.0.1') {
+            $slug = trim((string) preg_replace('/[^a-z0-9]+/', '-', $host), '-');
+            if ($slug !== '') {
+                return 'amed-mcp-' . $slug;
+            }
+        }
+        return self::DEFAULT_SERVER_NAME;
+    }
+
+    public static function normalizeServerIdentifier(string $name): string
+    {
+        return strtolower(str_replace('_', '-', trim($name)));
+    }
+
+    public static function resolveCanonicalResource(): string
+    {
+        $site = Registry::has('site_config') ? (array) Registry::get('site_config') : [];
+        return rtrim((string) ($site['address'] ?? ''), '/');
+    }
 
     public const TOOLSET_GROUPS = [
         'content' => ['news', 'page', 'publication', 'announcement', 'headline'],
@@ -356,6 +388,83 @@ class McpServer
     }
 
     /**
+     * Positive Target-Binding Gate
+     * Validates X-MCP-Expected-Server and X-MCP-Expected-Resource headers
+     */
+    public function verifyTargetBinding(int|string|null $requestId = null, bool $isNotification = false): bool
+    {
+        $expectedServer = $_SERVER['HTTP_X_MCP_EXPECTED_SERVER'] ?? null;
+        if ($expectedServer !== null && trim((string) $expectedServer) !== '') {
+            $expectedNorm = self::normalizeServerIdentifier((string) $expectedServer);
+            $actualNorm = self::normalizeServerIdentifier(self::resolveServerName());
+            if ($expectedNorm !== $actualNorm) {
+                if ($isNotification) {
+                    $this->sendEmptyStatus(421);
+                    return false;
+                }
+                $this->sendJson(
+                    $this->errorResponse(
+                        $requestId,
+                        self::JSON_RPC_INVALID_REQUEST,
+                        "Misdirected request: target server '{$expectedServer}' does not match actual server '" . self::resolveServerName() . "'."
+                    ),
+                    421
+                );
+                return false;
+            }
+        }
+
+        $expectedResource = $_SERVER['HTTP_X_MCP_EXPECTED_RESOURCE'] ?? null;
+        if ($expectedResource !== null && trim((string) $expectedResource) !== '') {
+            $expectedParsed = parse_url(trim((string) $expectedResource));
+            $expectedOrigin = strtolower(($expectedParsed['scheme'] ?? 'http') . '://' . ($expectedParsed['host'] ?? ''))
+                . (isset($expectedParsed['port']) ? ':' . $expectedParsed['port'] : '');
+
+            $canonical = self::resolveCanonicalResource();
+            $canonicalParsed = parse_url($canonical);
+            $canonicalOrigin = strtolower(($canonicalParsed['scheme'] ?? 'http') . '://' . ($canonicalParsed['host'] ?? ''))
+                . (isset($canonicalParsed['port']) ? ':' . $canonicalParsed['port'] : '');
+
+            $actualHostHeader = strtolower(trim((string) ($_SERVER['HTTP_HOST'] ?? 'localhost')));
+            $actualParsed = parse_url('http://' . $actualHostHeader);
+            $actualHostName = $actualParsed['host'] ?? $actualHostHeader;
+            $actualPort = $actualParsed['port'] ?? null;
+            $expectedPort = $expectedParsed['port'] ?? null;
+
+            $loopbackHosts = ['localhost', '127.0.0.1', '::1', '[::1]'];
+            $isLoopback = in_array($actualHostName, $loopbackHosts, true);
+
+            $matchesCanonical = ($expectedOrigin === $canonicalOrigin);
+            $matchesLoopback = false;
+            if ($isLoopback && isset($expectedParsed['host'])) {
+                $expectedHost = strtolower($expectedParsed['host']);
+                $portMatches = ($expectedPort === null || $actualPort === null || (int) $expectedPort === (int) $actualPort);
+                if (in_array($expectedHost, $loopbackHosts, true) && $portMatches) {
+                    $matchesLoopback = true;
+                }
+            }
+
+            if (!$matchesCanonical && !$matchesLoopback) {
+                if ($isNotification) {
+                    $this->sendEmptyStatus(421);
+                    return false;
+                }
+                $this->sendJson(
+                    $this->errorResponse(
+                        $requestId,
+                        self::JSON_RPC_INVALID_REQUEST,
+                        "Misdirected request: target resource '{$expectedResource}' does not match server resource '{$canonical}'."
+                    ),
+                    421
+                );
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Handles the full HTTP request lifecycle for the MCP endpoint
      */
     public function handle(): void
@@ -369,9 +478,7 @@ class McpServer
         }
 
         if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'OPTIONS') {
-            if (!headers_sent()) {
-                http_response_code(204);
-            }
+            $this->sendEmptyStatus(204);
             return;
         }
 
@@ -395,12 +502,29 @@ class McpServer
             return;
         }
 
+        $raw = $this->readRequestBody();
+        $payload = json_decode($raw, true);
+
+        $requestId = null;
+        $isNotification = false;
+        if (is_array($payload)) {
+            if (array_key_exists('id', $payload)) {
+                $requestId = (is_int($payload['id']) || is_string($payload['id'])) ? $payload['id'] : null;
+            } elseif (isset($payload['method'])) {
+                $isNotification = true;
+            }
+        }
+
         $requestedVersion = $_SERVER['HTTP_MCP_PROTOCOL_VERSION'] ?? null;
         if ($requestedVersion !== null && trim((string) $requestedVersion) !== '') {
             $requestedVersion = trim((string) $requestedVersion);
             if (!in_array($requestedVersion, self::SUPPORTED_PROTOCOL_VERSIONS, true)) {
+                if ($isNotification) {
+                    $this->sendEmptyStatus(400);
+                    return;
+                }
                 $this->sendJson(
-                    $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, "Unsupported MCP-Protocol-Version '{$requestedVersion}'. Supported versions: " . implode(', ', self::SUPPORTED_PROTOCOL_VERSIONS)),
+                    $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, "Unsupported MCP-Protocol-Version '{$requestedVersion}'. Supported versions: " . implode(', ', self::SUPPORTED_PROTOCOL_VERSIONS)),
                     400
                 );
                 return;
@@ -408,16 +532,21 @@ class McpServer
             $this->negotiatedProtocolVersion = $requestedVersion;
         }
 
-        if (!$this->authenticate()) {
+        if (!$this->verifyTargetBinding($requestId, $isNotification)) {
             return;
         }
 
-        $raw = $this->readRequestBody();
-        $payload = json_decode($raw, true);
+        if (!$this->authenticate($requestId, $isNotification)) {
+            return;
+        }
 
         if ($payload === null && json_last_error() !== JSON_ERROR_NONE) {
+            if ($isNotification) {
+                $this->sendEmptyStatus(400);
+                return;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_PARSE_ERROR, 'Parse error: ' . json_last_error_msg()),
+                $this->errorResponse($requestId, self::JSON_RPC_PARSE_ERROR, 'Parse error: ' . json_last_error_msg()),
                 400
             );
             return;
@@ -426,7 +555,7 @@ class McpServer
         if (is_array($payload) && array_is_list($payload)) {
             if (version_compare($this->negotiatedProtocolVersion, '2025-06-18', '>=')) {
                 $this->sendJson(
-                    $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, "JSON-RPC batching is not supported in MCP protocol version '{$this->negotiatedProtocolVersion}'."),
+                    $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, "JSON-RPC batching is not supported in MCP protocol version '{$this->negotiatedProtocolVersion}'."),
                     400
                 );
                 return;
@@ -437,9 +566,7 @@ class McpServer
 
         $response = $this->dispatch($payload);
         if ($response === null) {
-            if (!headers_sent()) {
-                http_response_code(202);
-            }
+            $this->sendEmptyStatus(202);
             return;
         }
         $this->sendJson($response, 200);
@@ -460,9 +587,7 @@ class McpServer
         }
 
         if ($responses === []) {
-            if (!headers_sent()) {
-                http_response_code(202);
-            }
+            $this->sendEmptyStatus(202);
             return;
         }
         $this->sendJson($responses, 200);
@@ -513,35 +638,51 @@ class McpServer
         }
         if (!headers_sent()) {
             header('Access-Control-Allow-Methods: POST, OPTIONS');
-            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, Mcp-Session-Id, MCP-Protocol-Version, Last-Event-ID');
-            header('Access-Control-Expose-Headers: Mcp-Session-Id, MCP-Protocol-Version');
+            header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Api-Key, Mcp-Session-Id, MCP-Protocol-Version, Last-Event-ID, X-MCP-Expected-Server, X-MCP-Expected-Resource, Mcp-Method, Mcp-Name');
+            header('Access-Control-Expose-Headers: Mcp-Session-Id, MCP-Protocol-Version, X-MCP-Server-Name, X-MCP-Resource');
         }
         return true;
     }
 
-    private function sendJson($payload, int $statusCode): void
+    protected function sendJson($payload, int $statusCode): void
     {
         if (!headers_sent()) {
             http_response_code($statusCode);
             header('Content-Type: application/json; charset=utf-8');
             header('Cache-Control: no-store');
             header('MCP-Protocol-Version: ' . $this->negotiatedProtocolVersion);
+            header('X-MCP-Server-Name: ' . self::resolveServerName());
+            header('X-MCP-Resource: ' . self::resolveCanonicalResource());
         }
         echo json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
+    protected function sendEmptyStatus(int $statusCode): void
+    {
+        if (!headers_sent()) {
+            http_response_code($statusCode);
+            header('MCP-Protocol-Version: ' . $this->negotiatedProtocolVersion);
+            header('X-MCP-Server-Name: ' . self::resolveServerName());
+            header('X-MCP-Resource: ' . self::resolveCanonicalResource());
+        }
     }
 
     // ------------------------------------------------------------------
     // Authentication
     // ------------------------------------------------------------------
 
-    private function authenticate(): bool
+    private function authenticate(int|string|null $requestId = null, bool $isNotification = false): bool
     {
         require_once __DIR__ . '/McpAuditLogger.class.php';
         $ip = (string) ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1');
         $maxAuthFailures = (int) (getenv('MCP_AUTH_FAILURE_LIMIT_PER_MINUTE') ?: 60);
         if (!McpAuditLogger::checkRateLimit('api_key', 'ip_' . $ip, $maxAuthFailures, 'auth_failed')) {
+            if ($isNotification) {
+                $this->sendEmptyStatus(429);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'Too many failed authentication attempts. Please try again later.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'Too many failed authentication attempts. Please try again later.'),
                 429
             );
             return false;
@@ -554,17 +695,21 @@ class McpServer
             if (!headers_sent()) {
                 header('WWW-Authenticate: ' . $this->bearerChallenge());
             }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'Missing API key. Provide it via the "Authorization: Bearer <key>" or "X-Api-Key" header.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'Missing API key. Provide it via the "Authorization: Bearer <key>" or "X-Api-Key" header.'),
                 401
             );
             return false;
         }
 
         if (str_starts_with($providedKey, self::API_KEY_PREFIX)) {
-            $ok = $this->authenticateApiKey($providedKey);
+            $ok = $this->authenticateApiKey($providedKey, $requestId, $isNotification);
         } else {
-            $ok = $this->authenticateAccessToken($providedKey);
+            $ok = $this->authenticateAccessToken($providedKey, $requestId, $isNotification);
         }
 
         if (!$ok) {
@@ -604,14 +749,21 @@ class McpServer
     /**
      * Authenticates a static admin-panel API key (amcp_...)
      */
-    private function authenticateApiKey(string $providedKey): bool
+    private function authenticateApiKey(string $providedKey, int|string|null $requestId = null, bool $isNotification = false): bool
     {
         $model = $this->freshModel('mod_mcp.mod_mcp_api_key');
         $model->where_api_key_hash(hash('sha256', $providedKey))->limit(1)->getResultOne(true, true);
 
         if ($model->getSize() === 0) {
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'Invalid API key.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'Invalid API key.'),
                 401
             );
             return false;
@@ -619,16 +771,24 @@ class McpServer
 
         $row = $model->toArray();
         if (!is_array($row) || !isset($row['id'])) {
+            if ($isNotification) {
+                $this->sendEmptyStatus(500);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INTERNAL_ERROR, 'API key record could not be read.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INTERNAL_ERROR, 'API key record could not be read.'),
                 500
             );
             return false;
         }
 
         if (($row['status'] ?? 'n') !== 'y') {
+            if ($isNotification) {
+                $this->sendEmptyStatus(403);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'This API key has been revoked.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'This API key has been revoked.'),
                 403
             );
             return false;
@@ -636,8 +796,15 @@ class McpServer
 
         $liveUser = $this->loadLiveUser((int) $row['user_id']);
         if ($liveUser === null) {
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'The user account associated with this API key is inactive or no longer exists.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'The user account associated with this API key is inactive or no longer exists.'),
                 401
             );
             return false;
@@ -659,16 +826,22 @@ class McpServer
     /**
      * Authenticates an OAuth 2.1 access token issued by McpOAuth
      */
-    private function authenticateAccessToken(string $accessToken): bool
+    private function authenticateAccessToken(string $accessToken, int|string|null $requestId = null, bool $isNotification = false): bool
     {
         $model = $this->freshModel('mod_mcp.mod_mcp_oauth_token');
         $model->where_access_token_hash(hash('sha256', $accessToken))->limit(1)->getResultOne(true, true);
 
         if ($model->getSize() === 0) {
             McpOAuth::logDiag('authenticate: token not found in mod_mcp_oauth_token (presented_hash=' . substr(hash('sha256', $accessToken), 0, 8) . ')');
-            header('WWW-Authenticate: ' . $this->bearerChallenge());
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'Invalid access token.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'Invalid access token.'),
                 401
             );
             return false;
@@ -676,8 +849,12 @@ class McpServer
 
         $row = $model->toArray();
         if (!is_array($row) || !isset($row['id'])) {
+            if ($isNotification) {
+                $this->sendEmptyStatus(500);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INTERNAL_ERROR, 'Access token record could not be read.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INTERNAL_ERROR, 'Access token record could not be read.'),
                 500
             );
             return false;
@@ -685,9 +862,15 @@ class McpServer
 
         if (($row['status'] ?? 'n') !== 'y') {
             McpOAuth::logDiag('authenticate: token revoked (status=' . (string) ($row['status'] ?? 'n') . ')');
-            header('WWW-Authenticate: ' . $this->bearerChallenge());
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'This access token has been revoked.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'This access token has been revoked.'),
                 401
             );
             return false;
@@ -695,9 +878,15 @@ class McpServer
 
         if (strtotime((string) ($row['expires_at'] ?? '')) <= time()) {
             McpOAuth::logDiag('authenticate: token expired (expires_at=' . (string) ($row['expires_at'] ?? '') . ' now=' . date('Y-m-d H:i:s') . ')');
-            header('WWW-Authenticate: ' . $this->bearerChallenge());
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'This access token has expired.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'This access token has expired.'),
                 401
             );
             return false;
@@ -705,8 +894,12 @@ class McpServer
 
         if (!$this->tokenMatchesResource((string) ($row['resource'] ?? ''))) {
             McpOAuth::logDiag('authenticate: token resource mismatch (resource=' . (string) ($row['resource'] ?? '') . ' canonical=' . $this->canonicalResource() . ')');
+            if ($isNotification) {
+                $this->sendEmptyStatus(403);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'This access token was not issued for this MCP server.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'This access token was not issued for this MCP server.'),
                 403
             );
             return false;
@@ -715,9 +908,15 @@ class McpServer
         $liveUser = $this->loadLiveUser((int) $row['user_id']);
         if ($liveUser === null) {
             McpOAuth::logDiag('authenticate: user account inactive or missing (user_id=' . (int) $row['user_id'] . ')');
-            header('WWW-Authenticate: ' . $this->bearerChallenge());
+            if (!headers_sent()) {
+                header('WWW-Authenticate: ' . $this->bearerChallenge());
+            }
+            if ($isNotification) {
+                $this->sendEmptyStatus(401);
+                return false;
+            }
             $this->sendJson(
-                $this->errorResponse(null, self::JSON_RPC_INVALID_REQUEST, 'The user account associated with this access token is inactive or no longer exists.'),
+                $this->errorResponse($requestId, self::JSON_RPC_INVALID_REQUEST, 'The user account associated with this access token is inactive or no longer exists.'),
                 401
             );
             return false;
@@ -751,7 +950,7 @@ class McpServer
 
     private function canonicalResource(): string
     {
-        return rtrim((string) (Registry::get('site_config')['address'] ?? ''), '/');
+        return self::resolveCanonicalResource();
     }
 
     private function tokenMatchesResource(string $resource): bool
@@ -865,6 +1064,7 @@ class McpServer
         try {
             switch ($method) {
                 case 'initialize':
+                case 'server/discover':
                     $result = $this->handleInitialize($params);
                     break;
                 case 'ping':
@@ -975,7 +1175,7 @@ class McpServer
                 'prompts' => ['listChanged' => false],
             ],
             'serverInfo' => [
-                'name' => self::SERVER_NAME,
+                'name' => self::resolveServerName(),
                 'version' => self::SERVER_VERSION,
             ],
             'instructions' => $this->buildServerInstructions(),
