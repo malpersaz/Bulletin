@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'العنوان الرئيسي',
       'mod_news_category' => 'تصنيفات الأخبار',
       'mod_publication_category' => 'تصنيفات المنشورات',
+      'mod_event_category' => 'فئات الفعاليات',
       'mod_acl' => 'التحكم بالوصول',
       'mod_survey' => 'الاستبيان',
       'mod_announcements' => 'الإعلانات',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'تضمين الفيديو',
       'mod_news' => 'الأخبار',
       'mod_publication' => 'المنشورات',
+      'mod_event' => 'الفعاليات',
     ],
     'checks' => [
       'php_version' => [

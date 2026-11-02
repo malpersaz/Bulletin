@@ -77,6 +77,12 @@ class McpResourceManager
                     'description' => 'Direct read access to any announcement record by ID.',
                     'mimeType' => 'application/json',
                 ],
+                [
+                    'uriTemplate' => 'cms://event/{id}',
+                    'name' => 'Event by ID',
+                    'description' => 'Direct read access to any event record by ID.',
+                    'mimeType' => 'application/json',
+                ],
             ],
         ];
     }
@@ -115,6 +121,10 @@ class McpResourceManager
 
         if (preg_match('#^cms://announcement/(\d+)$#', $uri, $matches)) {
             return $this->readEntity($uri, 'mod_announcements', 'mod_announcements', (int) $matches[1], 'Announcement');
+        }
+
+        if (preg_match('#^cms://event/(\d+)$#', $uri, $matches)) {
+            return $this->readEntity($uri, 'mod_event', 'mod_event', (int) $matches[1], 'Event');
         }
 
         throw new McpToolException("Resource not found: {$uri}");

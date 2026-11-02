@@ -1,0 +1,29 @@
+{% set module_lang_key = 'mod_event' %}
+{% set wizard_module = 'mod_event' %}
+{% extends 'admin/layout.twig' %}
+{% set hide_search = true %}
+{% set hide_fab = true %}
+{% set hide_navbar = true %}
+
+{% block title %}{{ lang.mod_event.add }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_event.css?v={{ site.version }}">
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_event_wizard.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+    <div class="wizard-page-loader" id="eventAddShell"
+        data-list-url="{{ site.saddress }}mod_event/list"
+        data-active-lang="{{ site.lang|lower }}">
+        <div class="spinner-track wizard-page-spinner">
+            <div class="spinner-fill"></div>
+        </div>
+        <p>{{ lang.mod_event.wizard_loading }}</p>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/mod_event.js?v={{ site.version }}"></script>
+<script src="/templates/admin/assets/js/mod_event_wizard.js?v={{ site.version }}"></script>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "layouts/base.twig" %}
+
+{% set current_year = ctx_get('current_year') %}
+{% set current_month = ctx_get('current_month') %}
+{% set categories = ctx_get('categories') %}
+{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.saddress }}event-calendar">
+{% endblock %}
+
+{% block title %}
+    <title>{{ lang.index.mod_event.event_calendar }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ lang.index.mod_event.event_calendar }} - {{ site.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.saddress }}event-calendar">
+    <meta property="og:title" content="{{ lang.index.mod_event.event_calendar }} - {{ site.title }}">
+    <meta property="og:description" content="{{ lang.index.mod_event.event_calendar }} - {{ site.description }}">
+    <meta property="og:image" content="{{ event_logo_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ lang.index.mod_event.event_calendar }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ lang.index.mod_event.event_calendar }} - {{ site.description }}">
+    <meta name="twitter:image" content="{{ event_logo_asset }}">
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/events.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<main class="event-calendar-page py-4" 
+      id="calendarApp" 
+      data-api="{{ site.saddress }}event-calendar/json" 
+      data-year="{{ current_year }}" 
+      data-month="{{ current_month }}"
+      data-base-url="{{ site.saddress }}"
+      data-today-label="{{ lang.index.mod_event.today|e('html_attr') }}"
+      data-empty-msg="{{ lang.index.mod_event.no_events_found|e('html_attr') }}">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ site.saddress }}">{{ lang.index.home }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ site.saddress }}events">{{ lang.index.mod_event.events }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ lang.index.mod_event.calendar }}</li>
+        </ol>
+    </nav>
+
+    <div class="calendar-header-card p-3 p-md-4 rounded shadow-sm mb-4">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h1 class="calendar-page-title h3 mb-1">{{ lang.index.mod_event.event_calendar }}</h1>
+                <div class="d-flex align-items-center gap-2">
+                    <span id="calendarCurrentMonthYear" class="calendar-display-date fs-5 fw-bold text-primary"></span>
+                    <span class="spinner-border spinner-border-sm text-primary d-none" id="calendarSpinner" role="status" aria-hidden="true"></span>
+                </div>
+            </div>
+
+            <div class="calendar-controls d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="calendarPrevBtn" aria-label="{{ lang.index.mod_event.previous_month }}">
+                    <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                </button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="calendarTodayBtn">
+                    {{ lang.index.mod_event.today }}
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="calendarNextBtn" aria-label="{{ lang.index.mod_event.next_month }}">
+                    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                </button>
+                <a href="{{ site.saddress }}events" class="btn btn-light btn-sm ms-2">
+                    <i class="bi bi-list-ul me-1" aria-hidden="true"></i>{{ lang.index.mod_event.all_events }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Interactive Category Filters for Calendar #}
+    {% if categories is defined and categories is not empty %}
+        <div class="calendar-category-filters mb-4 d-flex flex-wrap gap-2" role="group" aria-label="{{ lang.index.mod_event.filter_by_category }}">
+            <button type="button" class="btn btn-sm btn-primary calendar-cat-btn active" data-category="">
+                {{ lang.index.mod_event.all_categories }}
+            </button>
+            {% for cat in categories %}
+                <button type="button" class="btn btn-sm btn-outline-secondary calendar-cat-btn" data-category="{{ cat.seo }}">
+                    {{ cat.name }}
+                </button>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="calendar-layout-container row g-4">
+        <div class="col-12 col-lg-8">
+            <div class="calendar-grid-card p-3 rounded shadow-sm">
+                <div class="calendar-weekdays-grid">
+                    <div class="calendar-weekday">{{ lang.index.mod_event.monday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.tuesday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.wednesday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.thursday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.friday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.saturday_short }}</div>
+                    <div class="calendar-weekday">{{ lang.index.mod_event.sunday_short }}</div>
+                </div>
+                <div class="calendar-days-grid" id="calendarDaysGrid"></div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="calendar-events-drawer p-3 rounded shadow-sm h-100">
+                <h2 class="h5 mb-3 border-bottom pb-2" id="selectedDateTitle">
+                    {{ lang.index.mod_event.events }}
+                </h2>
+                <div id="calendarEventsContainer" class="calendar-events-stream">
+                    <p class="text-muted small" id="calendarEmptyMessage">{{ lang.index.mod_event.no_events_found }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/event-calendar.js?v={{ site.version }}" defer></script>
+{% endblock %}

@@ -7,7 +7,7 @@
 {% block headline %}{{ lang.mod_mcp.module_title }}{% endblock %}
 
 {% block styles %}
-<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=2.0">
+<link rel="stylesheet" href="{{ site.address }}templates/admin/assets/css/mod_mcp.css?v=2.7">
 {% endblock %}
 
 {% block content %}
@@ -34,16 +34,25 @@
 
     <div class="mcp-summary-strip">
         <div class="mcp-summary-pill">
-            <span class="mcp-summary-num" id="mcpStatTotalKeys">{{ mcp_keys|length }}</span>
-            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_total_keys }}</span>
+            <span class="mcp-summary-icon"><i class="bi bi-key-fill" aria-hidden="true"></i></span>
+            <div class="mcp-summary-body">
+                <span class="mcp-summary-num" id="mcpStatTotalKeys">{{ mcp_keys|length }}</span>
+                <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_total_keys }}</span>
+            </div>
         </div>
         <div class="mcp-summary-pill mcp-summary-pill-active">
-            <span class="mcp-summary-num" id="mcpStatActiveKeys">{{ active_key_count }}</span>
-            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_active_keys }}</span>
+            <span class="mcp-summary-icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span>
+            <div class="mcp-summary-body">
+                <span class="mcp-summary-num" id="mcpStatActiveKeys">{{ active_key_count }}</span>
+                <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_active_keys }}</span>
+            </div>
         </div>
         <div class="mcp-summary-pill">
-            <span class="mcp-summary-num" id="mcpStatOauthClients">{{ mcp_oauth_clients|length }}</span>
-            <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_oauth_clients }}</span>
+            <span class="mcp-summary-icon"><i class="bi bi-hdd-network-fill" aria-hidden="true"></i></span>
+            <div class="mcp-summary-body">
+                <span class="mcp-summary-num" id="mcpStatOauthClients">{{ mcp_oauth_clients|length }}</span>
+                <span class="mcp-summary-lbl">{{ lang.mod_mcp.stat_oauth_clients }}</span>
+            </div>
         </div>
     </div>
 
@@ -52,11 +61,13 @@
             <div class="mcp-endpoint-heading">
                 <span class="mcp-endpoint-icon"><i class="bi bi-hdd-network-fill" aria-hidden="true"></i></span>
                 <span class="mcp-endpoint-label">{{ lang.mod_mcp.endpoint_label }}</span>
+                <span class="mcp-proto-tag">JSON-RPC 2.0</span>
             </div>
             <button type="button"
                 class="mcp-icon-btn mcp-copy-btn"
                 data-copy-text="{{ mcp_endpoint }}"
                 data-copied-msg="{{ lang.mod_mcp.endpoint_copied }}"
+                data-copy-msg="{{ lang.mod_mcp.endpoint_copied }}"
                 title="{{ lang.mod_mcp.copy_endpoint }}"
                 aria-label="{{ lang.mod_mcp.copy_endpoint }}">
                 <i class="bi bi-copy" aria-hidden="true"></i>
@@ -142,17 +153,21 @@
                 <article class="mcp-key-card {% if key.status != 'y' %}mcp-key-card-revoked{% endif %}" data-key-id="{{ key.id }}">
                     <div class="mcp-key-card-header">
                         <div class="mcp-key-title-group">
-                            <span class="mcp-status-dot {% if key.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
-                            <span class="mcp-key-name">{{ key.name }}</span>
+                            <span class="mcp-key-avatar"><i class="bi bi-key-fill" aria-hidden="true"></i></span>
+                            <div class="mcp-key-title-stack">
+                                <span class="mcp-key-name">{{ key.name }}</span>
+                                <span class="mcp-key-id-sub">#{{ key.id }}</span>
+                            </div>
                         </div>
                         <span class="mcp-key-badge {% if key.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
-                            {% if key.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
+                            <span class="mcp-status-dot {% if key.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
+                            <span>{% if key.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}</span>
                         </span>
                     </div>
 
                     <div class="mcp-key-prefix-row">
                         <span class="mcp-key-prefix-lbl">{{ lang.mod_mcp.key_prefix_label }}</span>
-                        <button type="button" class="mcp-key-prefix mcp-copy-btn" data-copy-text="{{ key.key_prefix }}" data-copy-msg="{{ lang.mod_mcp.key_copied }}" aria-label="{{ lang.mod_mcp.copy_key }}">
+                        <button type="button" class="mcp-key-prefix mcp-copy-btn" data-copy-text="{{ key.key_prefix }}" data-copied-msg="{{ lang.mod_mcp.key_copied }}" data-copy-msg="{{ lang.mod_mcp.key_copied }}" aria-label="{{ lang.mod_mcp.copy_key }}">
                             <code>{{ key.key_prefix }}&hellip;</code>
                             <i class="bi bi-copy" aria-hidden="true"></i>
                         </button>
@@ -219,7 +234,7 @@
             <span>{{ lang.mod_mcp.oauth_hint }}</span>
         </div>
 
-        <div class="mcp-oauth-list">
+        <div class="mcp-oauth-list" id="mcpOauthList">
             {% if mcp_oauth_clients|length == 0 %}
                 <div class="mcp-empty-state">
                     <i class="bi bi-hdd-rack" aria-hidden="true"></i>
@@ -230,11 +245,15 @@
                 <article class="mcp-key-card {% if client.status != 'y' %}mcp-key-card-revoked{% endif %}" data-client-id="{{ client.id }}">
                     <div class="mcp-key-card-header">
                         <div class="mcp-key-title-group">
-                            <span class="mcp-status-dot {% if client.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
-                            <span class="mcp-key-name">{{ client.client_name }}</span>
+                            <span class="mcp-key-avatar mcp-avatar-oauth"><i class="bi bi-shield-shaded" aria-hidden="true"></i></span>
+                            <div class="mcp-key-title-stack">
+                                <span class="mcp-key-name">{{ client.client_name }}</span>
+                                <span class="mcp-key-id-sub">#{{ client.id }}</span>
+                            </div>
                         </div>
                         <span class="mcp-key-badge {% if client.status == 'y' %}mcp-badge-active{% else %}mcp-badge-revoked{% endif %}">
-                            {% if client.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}
+                            <span class="mcp-status-dot {% if client.status == 'y' %}mcp-dot-active{% else %}mcp-dot-revoked{% endif %}"></span>
+                            <span>{% if client.status == 'y' %}{{ lang.mod_mcp.active }}{% else %}{{ lang.mod_mcp.revoked }}{% endif %}</span>
                         </span>
                     </div>
 
@@ -308,5 +327,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{{ site.address }}templates/admin/assets/js/mod_mcp.js?v=2.0"></script>
+<script src="{{ site.address }}templates/admin/assets/js/mod_mcp.js?v=2.4"></script>
 {% endblock %}

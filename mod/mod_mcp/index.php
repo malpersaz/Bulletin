@@ -587,11 +587,17 @@ class mod_mcp_mod extends BaseModuleController
         require_once lib_dir . 'McpAuditLogger.class.php';
         McpAuditLogger::ensureTable();
 
+        [$creatorUserId, $creatorGroupId] = $this->resolveCurrentUserScope();
+        $scopedUserId = ($creatorGroupId === 1) ? null : $creatorUserId;
+
         $callerType = trim((string) Req::Get_Safe('caller_type'));
         $toolName = trim((string) Req::Get_Safe('tool_name'));
         $isError = Req::Get_Safe('is_error');
 
         $filters = [];
+        if ($scopedUserId !== null) {
+            $filters['user_id'] = $scopedUserId;
+        }
         if ($callerType !== '' && in_array($callerType, ['api_key', 'oauth', 'agent_chat', 'internal'], true)) {
             $filters['caller_type'] = $callerType;
         }
@@ -607,15 +613,15 @@ class mod_mcp_mod extends BaseModuleController
         $offset = ($page - 1) * $perPage;
 
         $logs = McpAuditLogger::queryLogs($filters, $perPage, $offset);
-        $dailyTokens = McpAuditLogger::getDailyTokenUsage();
+        $dailyTokens = McpAuditLogger::getDailyTokenUsage($scopedUserId);
+        $summaryStats = McpAuditLogger::getSummaryStats($filters);
 
-        $this->db->fetch_array("SELECT COUNT(*) FROM mod_mcp_audit_log");
-        $totalCalls = (int) ($this->db->toRow()[0] ?? 0);
+        $totalCalls = (int) ($summaryStats['total_calls'] ?? 0);
+        $errorCalls = (int) ($summaryStats['error_calls'] ?? 0);
 
-        $this->db->fetch_array("SELECT COALESCE(SUM(is_error), 0) FROM mod_mcp_audit_log");
-        $errorCalls = (int) ($this->db->toRow()[0] ?? 0);
+        $formattedLogs = $this->formatAuditLogs($logs);
 
-        $this->view->set('audit_logs', $logs);
+        $this->view->set('audit_logs', $formattedLogs);
         $this->view->set('daily_tokens', $dailyTokens);
         $this->view->set('total_calls', $totalCalls);
         $this->view->set('error_calls', $errorCalls);
@@ -628,6 +634,168 @@ class mod_mcp_mod extends BaseModuleController
 
         Run::import('management', '_index');
         $this->view->tpl('admin/mod_mcp/audit');
+    }
+
+    /**
+     * Formats raw audit logs with rich caller, status, icon, and latency metadata for phone-first UI
+     */
+    private function formatAuditLogs(array $logs): array
+    {
+        $mcpLang = $this->lang['mod_mcp'] ?? ($this->lang ?? []);
+        $keyNames = [];
+        try {
+            $this->db->fetch_array("SELECT `id`, `name` FROM `mod_mcp_api_key`");
+            $rows = $this->db->getResult()->toArray() ?: [];
+            foreach ($rows as $r) {
+                if (isset($r['id'], $r['name'])) {
+                    $keyNames[(int) $r['id']] = (string) $r['name'];
+                }
+            }
+        } catch (\Throwable $e) {
+            // Graceful fallback
+        }
+
+        $todayDate = date('Y-m-d');
+        $formatted = [];
+
+        foreach ($logs as $log) {
+            $callerType = $log['caller_type'] ?? 'internal';
+            $callerId = (string) ($log['caller_id'] ?? '');
+            $statusCode = (int) ($log['status_code'] ?? 200);
+            $isError = !empty($log['is_error']) || $statusCode >= 400;
+            $toolName = (string) ($log['tool_name'] ?? 'unknown');
+
+            // Caller identity resolution
+            $callerKind = 'other';
+            $callerTitle = '';
+            $callerSubtitle = '';
+
+            if ($callerType === 'api_key') {
+                if (str_starts_with($callerId, 'ip_')) {
+                    $callerKind = 'anon';
+                    $callerTitle = $mcpLang['audit_caller_anon'] ?? 'Anonymous (No Key)';
+                    $callerSubtitle = 'No Key';
+                } elseif (str_starts_with($callerId, 'key_')) {
+                    $callerKind = 'key';
+                    $keyId = (int) substr($callerId, 4);
+                    $keyName = $keyNames[$keyId] ?? null;
+                    $callerTitle = $keyName ?: ('API Key #' . $keyId);
+                    $callerSubtitle = '#' . $keyId;
+                } else {
+                    $callerKind = 'key';
+                    $callerTitle = $callerId !== '' ? $callerId : 'API Key';
+                    $callerSubtitle = 'API Key';
+                }
+            } elseif ($callerType === 'oauth') {
+                $callerKind = 'oauth';
+                if (str_starts_with($callerId, 'token_')) {
+                    $tokenId = (int) substr($callerId, 6);
+                    $callerTitle = 'OAuth Token #' . $tokenId;
+                    $callerSubtitle = '#' . $tokenId;
+                } else {
+                    $callerTitle = $callerId !== '' ? $callerId : 'OAuth 2.1';
+                    $callerSubtitle = 'OAuth';
+                }
+            } elseif ($callerType === 'agent_chat') {
+                $callerKind = 'agent';
+                if (str_starts_with($callerId, 'user_')) {
+                    $userId = (int) substr($callerId, 5);
+                    $callerTitle = 'User #' . $userId;
+                    $callerSubtitle = 'Agent Chat';
+                } else {
+                    $callerTitle = $callerId !== '' ? $callerId : 'Agent Chat';
+                    $callerSubtitle = 'Agent';
+                }
+            } else {
+                $callerKind = 'internal';
+                $callerTitle = $mcpLang['audit_caller_internal'] ?? 'System / Internal';
+                $callerSubtitle = 'System';
+            }
+
+            // Tool icon & category
+            $isAuthFailure = ($toolName === 'auth_failed');
+            $toolIcon = 'bi-terminal-fill';
+            if ($isAuthFailure) {
+                $toolIcon = 'bi-shield-slash-fill';
+            } elseif ($toolName === 'server/discover' || $toolName === 'tools/list' || $toolName === 'resources/list') {
+                $toolIcon = 'bi-compass';
+            } elseif (str_starts_with($toolName, 'list_') || str_starts_with($toolName, 'get_')) {
+                $toolIcon = 'bi-search';
+            } elseif (str_starts_with($toolName, 'create_') || str_starts_with($toolName, 'update_')) {
+                $toolIcon = 'bi-pencil-square';
+            } elseif (str_starts_with($toolName, 'delete_')) {
+                $toolIcon = 'bi-trash3';
+            }
+
+            // Status badge details
+            if ($statusCode === 200) {
+                $statusClass = 'mcp-badge-success';
+                $statusText = 'OK';
+            } elseif ($statusCode === 201) {
+                $statusClass = 'mcp-badge-success';
+                $statusText = 'Created';
+            } elseif ($statusCode === 202) {
+                $statusClass = 'mcp-badge-success';
+                $statusText = 'Accepted';
+            } elseif ($statusCode === 401) {
+                $statusClass = 'mcp-badge-auth';
+                $statusText = 'Unauthorized';
+            } elseif ($statusCode === 403) {
+                $statusClass = 'mcp-badge-auth';
+                $statusText = 'Forbidden';
+            } elseif ($statusCode === 404) {
+                $statusClass = 'mcp-badge-warning';
+                $statusText = 'Not Found';
+            } elseif ($statusCode === 429) {
+                $statusClass = 'mcp-badge-rate';
+                $statusText = 'Rate Limited';
+            } elseif ($statusCode >= 400 && $statusCode < 500) {
+                $statusClass = 'mcp-badge-warning';
+                $statusText = 'Client Error';
+            } else {
+                $statusClass = 'mcp-badge-error';
+                $statusText = 'Server Error';
+            }
+
+            // Latency formatting
+            $execMs = (float) ($log['execution_time_ms'] ?? 0.0);
+            $latencyLevel = 'fast';
+            if ($execMs >= 1000) {
+                $latencyLevel = 'slow';
+                $latencyDisplay = number_format($execMs / 1000, 2) . ' s';
+            } elseif ($execMs < 1 && $execMs > 0) {
+                $latencyDisplay = '< 1 ms';
+            } else {
+                $latencyDisplay = number_format($execMs, 2) . ' ms';
+                if ($execMs >= 300) {
+                    $latencyLevel = 'medium';
+                }
+            }
+
+            // Timestamp parsing
+            $createdAt = (string) ($log['created_at'] ?? '');
+            $parts = explode(' ', $createdAt, 2);
+            $datePart = $parts[0] ?? '';
+            $timePart = $parts[1] ?? '';
+
+            $log['is_error'] = $isError ? 1 : 0;
+            $log['caller_kind'] = $callerKind;
+            $log['caller_title'] = $callerTitle;
+            $log['caller_subtitle'] = $callerSubtitle;
+            $log['tool_icon'] = $toolIcon;
+            $log['is_auth_failure'] = $isAuthFailure;
+            $log['status_class'] = $statusClass;
+            $log['status_text'] = $statusText;
+            $log['latency_display'] = $latencyDisplay;
+            $log['latency_level'] = $latencyLevel;
+            $log['date_part'] = $datePart;
+            $log['time_part'] = $timePart;
+            $log['is_today'] = ($datePart === $todayDate);
+
+            $formatted[] = $log;
+        }
+
+        return $formatted;
     }
 
     private function groupExists($groupId)

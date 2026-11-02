@@ -1,6 +1,6 @@
 <div class="drawer-scrim" id="drawerScrim"></div>
 
-{% set content_active = mod == 'mod_news_category' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' %}
+{% set content_active = mod == 'mod_news_category' or mod == 'mod_news' or mod == 'mod_publication' or mod == 'mod_publication_category' or mod == 'mod_event' or mod == 'mod_event_category' or mod == 'mod_menu' or mod == 'mod_page' or mod == 'mod_document' or mod == 'mod_survey' %}
 {% set media_active = mod == 'mod_video' or mod == 'mod_video_embed' or mod == 'mod_video_embed_category' or mod == 'mod_slider' or mod == 'mod_headline' or mod == 'mod_imagecategories' or mod == 'mod_gallery_mod' or mod == 'mod_attachment_mod' %}
 {% set announcements_active = mod == 'mod_announcements' or mod == 'mod_popup' or mod == 'mod_newsletter' %}
 {% set seo_active = mod == 'mod_seo' or mod == 'mod_redirect' %}
@@ -60,6 +60,18 @@
                     <a href="{{ site.saddress }}mod_publication_category/list" class="nav-item {% if mod == 'mod_publication_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_publication_category" data-nav-label="{{ lang.management.publication_categories }}">
                         <i class="bi bi-collection-fill nav-item-icon"></i>
                         <span class="nav-item-label">{{ lang.management.publication_categories }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_event_category.list is defined %}
+                    <a href="{{ site.saddress }}mod_event_category/list" class="nav-item {% if mod == 'mod_event_category' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_event_category" data-nav-label="{{ lang.management.event_categories }}">
+                        <i class="bi bi-calendar2-range-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.event_categories }}</span>
+                    </a>
+                {% endif %}
+                {% if session.permissions.mod_event.list is defined %}
+                    <a href="{{ site.saddress }}mod_event/list" class="nav-item {% if mod == 'mod_event' %}active{% endif %}" data-nav-track="1" data-nav-id="mod_event" data-nav-label="{{ lang.management.event_management }}">
+                        <i class="bi bi-calendar-event-fill nav-item-icon"></i>
+                        <span class="nav-item-label">{{ lang.management.event_management }}</span>
                     </a>
                 {% endif %}
                 {% if session.permissions.mod_menu.list is defined %}

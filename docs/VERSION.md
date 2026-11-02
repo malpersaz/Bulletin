@@ -1,5 +1,67 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.13 (2026-11-02)
+- **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:
+  - **Dual-Database Storage & Installation Parity**:
+    - Created complete MySQL 5.7+ / SQLite schemas for `mod_event` and `mod_event_category` with zero-alias SQL queries and proper index coverage (`idx_event_lang_seo`, `idx_event_start_date`, `idx_event_category`).
+    - Seeded module registries, bridge installer mappings (`mod_gallery_mod`, `mod_attachment_mod`, `mod_faq_mod`, `mod_menu`), and catalogs (`InstallerModuleCatalog.php`, `ModuleRegistry.class.php`).
+  - **11-Language i18n Localization**:
+    - Authored and verified all 22 module language dictionaries across 11 languages (`ar`, `ckb`, `de`, `en`, `fa`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`), adhering to descriptive English keys and zero missing translations.
+    - Added public event and search localization to `mod/index/lang/*.php`.
+    - Added event management localization keys across all 10 language dictionaries in `mod/management/lang/` and `mod/mod_user/lang/`.
+  - **Phone-Only Admin Surface & Modernization**:
+    - Implemented `mod_event` and `mod_event_category` admin controllers extending `BaseModuleController` and `indexMain`.
+    - Integrated mobile card streams, stat badges, 9-step full-screen add wizard (`wizard_event.twig`), 9-button quick toolbar, inline image upload modal, and category drag-and-drop tree reordering with zero inline styles and zero inline scripts.
+    - Wired layout inclusions into `templates/admin/layout.twig`, `sidebar.twig`, and `fab.twig` with `fab-row-event`.
+  - **Public Broadsheet Theme (`templates/amed/index/mod_event/`)**:
+    - Created `event_agenda.twig` broadsheet sidebar widget (Block R4 in `index.twig`) featuring 148px vertical 3:4 poster previews and responsive agenda lists.
+    - Created `event.twig` detail view with full `Schema.org/Event` JSON-LD microdata, quick info ribbon, hero poster, HTML details, video embeds, gallery, attachments, FAQ, and related events.
+    - Created `events.twig` category-filterable card stream with responsive 3:4 poster aspect ratio and broadsheet pagination.
+    - Created `calendar.twig` interactive event calendar with month navigation and dynamic JSON feed (`/event-calendar/json`).
+    - Integrated event search indexing in `mod/index/helper/search.helper.php` and `templates/amed/index/search.twig`.
+  - **Hero Slider Integration & 3:4 Poster Presentation (`mod/index/helper/mod_hero_slider.helper.php`, `templates/amed/index/hero_slider.twig`, `templates/amed/static/css/hero-news-slider.css`, `templates/amed/static/css/hero-news-slider.min.css`)**:
+    - Integrated `mod_event` into homepage hero slider with `loadEventItems($limit)` honoring module feature gate (`event.front`), publication status, slider toggle, category permissions, and language filtering.
+    - Built 3:4 vertical poster presentation mode (`.hero-news-slide--event`) within the 16:9 hero slider container featuring ambient dark backdrop (`#090d16`), contained aspect-ratio scaling, and depth shadowing (`0 8px 30px rgba(0, 0, 0, 0.6)`).
+    - Synchronized compiled CSS bundle `templates/amed/static/css/hero-news-slider.min.css` passing `min_css_guard`.
+  - **Clean Wikipedia-Style URL Routing & XML Sitemaps (`config/url.config.php`, `mod/index/index.php`)**:
+    - Registered clean SEO routes for event details (`event/:any`, `event/detail/:any`), event archive (`events`, `events/:category`), calendar views (`event-calendar`, `event-calendar/json`), and event sitemap (`eventSitemap.xml`).
+    - Implemented dedicated XML sitemap feed `eventSitemap()` in `mod/index/index.php` with 50,000-entry pagination, language scoping, and ACL-isolated public visibility checks.
+    - Integrated event sitemap and category URLs into the master sitemap index (`sitemap.xml`) and categories sitemap index.
+  - **AI Discovery & MCP Integration (`lib/LlmsService.class.php`, `lib/McpEventTools.class.php`, `lib/McpResourceManager.class.php`, `tasks/mcp_smoke.php`)**:
+    - Registered active events and event full-text in `lib/LlmsService.class.php` (`/llms.txt` and `/llms-full.txt`).
+    - Created `lib/McpEventTools.class.php` implementing 10 MCP CRUD tools (`list_events`, `get_event`, `create_event`, `update_event`, `delete_event`, `list_event_categories`, `get_event_category`, `create_event_category`, `update_event_category`, `delete_event_category`) and registered `cms://event/{id}` resource in `McpResourceManager.class.php`.
+    - Added MCP discovery assertions to `tasks/mcp_smoke.php`.
+
+- **MCP Admin Audit Dashboard Remediation & UI Super Polish (`mod/mod_mcp/index.php`, `lib/McpAuditLogger.class.php`, `templates/admin/mod_mcp/audit.twig`, `templates/admin/mod_mcp/list.twig`, `templates/admin/assets/css/mod_mcp.css`, `templates/admin/assets/js/mod_mcp.js`, `tasks/mcp_smoke.php`)**:
+  - **Resolved Fatal `Database::toRow()` Runtime Exception**:
+    - Eliminated undefined `$this->db->toRow()` calls in `mod_mcp_mod::audit()` by implementing a centralized, PDO-prepared `McpAuditLogger::getSummaryStats($filters)` helper.
+    - Enforced zero-alias SQL policy in strict compliance with `i18n_guard` using positional row fetching (`\PDO::FETCH_NUM`).
+  - **Multi-Tenant User Scope Isolation**:
+    - Integrated `resolveCurrentUserScope()` into `mod_mcp_mod::audit()`, restricting non-root administrators (`group_id !== 1`) to their scoped user audit logs, summary metrics, and personal token consumption (`getDailyTokenUsage($scopedUserId)`).
+  - **Tactile Phone-First UI Polish**:
+    - Enhanced audit dashboard with interactive search bar and clear button (`.mcp-filter-search-icon`, `.mcp-btn-filter-reset`), status dot indicators (`.mcp-status-dot`), avatar icons (`.mcp-avatar-oauth`, `.mcp-avatar-audit`, `.mcp-avatar-error`, `.mcp-avatar-auth`), protocol badge pill (`.mcp-proto-tag`), and tactile stat cards with tap scaling (`scale(0.97)`).
+    - Preserved `filters.caller_type`, `filters.tool_name`, and `filters.is_error` across pagination links.
+    - Sanitized caller identifier formatting to prevent trailing delimiters when `caller_id` is null or empty.
+  - **DOM Identifier & Data-Attribute Synchronization**:
+    - Synchronized `#mcpKeyList` and `#mcpOauthList` DOM selectors and unified `data-copied-msg` / `data-copy-msg` attributes between `templates/admin/mod_mcp/list.twig` and `templates/admin/assets/js/mod_mcp.js`, restoring real-time KPI count synchronization upon key or client deletion.
+  - **Automated Regression Coverage**:
+    - Extended `tasks/mcp_smoke.php` with regression tests verifying `McpAuditLogger::getSummaryStats()`, filtered log queries, and repository-wide elimination of `Database::toRow()` calls (63/63 smoke tests passing).
+
+- **Installer Modernization & Full 11-Language Russian Localization (`installer/installerbase.php`, `installer/mods/index.php`, `installer/mod_slider/index.php`, `installer/lang/ru.php`, `installer/lang/`)**:
+  - **Modernized Permission & Role Lifecycle**:
+    - Refactored legacy role and permission methods (`insert_roll()` $\rightarrow$ `insert_roles()`, `remove_rool()` $\rightarrow$ `delete_roles()`), while maintaining backward-compatible aliases.
+    - Purified installer codebase and comments to standard English.
+  - **11-Language Parity with Russian Addition**:
+    - Authored complete Russian (`installer/lang/ru.php`) language pack for the installer wizard.
+    - Registered `mod_event` and `mod_event_category` across all 11 installer language dictionaries (`ar`, `ckb`, `de`, `en`, `fa`, `fr`, `ku`, `ru`, `sv`, `tr`, `zza`).
+
+- **Pre-Release Search Engine Directives & Frontend Strict Code Separation (`.htaccess`, `robots.php`, `robots.txt`, `llms.php`, `templates/amed/mod_user/login.twig`, `templates/amed/static/js/login.js`)**:
+  - **Strict Crawling & Indexing Shield**:
+    - Enforced `X-Robots-Tag: noindex, nofollow, noarchive` and `Disallow: /` across `.htaccess`, `robots.php`, `robots.txt`, and `llms.php` to prevent pre-release staging instances from premature search indexing.
+  - **Strict Code Separation on Login Surface**:
+    - Refactored standalone login view `templates/amed/mod_user/login.twig` by decoupling inline JavaScript into external `templates/amed/static/js/login.js`.
+    - Bound AJAX endpoint, redirect URL, and localized error messages via HTML data attributes, eliminating forbidden translation fallbacks and achieving 100% `code_separation_guard` and `i18n_guard` compliance (0 errors).
+
 ## v1.0.12 (2026-11-01)
 - **MCP Protocol Hardening, Target Pinning & Google Gemini OAuth 2.1 Compatibility (`lib/McpServer.class.php`, `lib/McpOAuth.class.php`, `mcp.php`, `index.php`, `config/site.config.php`, `config/site.config.example.php`, `mod/mod_mcp/index.php`)**:
   - **Positive Target Pinning & HTTP 421 Misdirected Request Gate**:

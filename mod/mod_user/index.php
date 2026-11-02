@@ -1728,6 +1728,11 @@ class mod_user_mod extends indexMain
                         $add('mod_publication', 'add', $base . 'mod_publication/add'),
                         $cats('mod_publication_category', 'list', $base . 'mod_publication_category/list'),
                     ]),
+                    $mod('mod_event', 'list', $management['event_management'], 'bi bi-calendar-event', [
+                        $list('mod_event', 'list', $base . 'mod_event/list'),
+                        $add('mod_event', 'add', $base . 'mod_event/add'),
+                        $cats('mod_event_category', 'list', $base . 'mod_event_category/list'),
+                    ]),
                     $mod('mod_page', 'list', $management['page_management'], 'bi bi-file-richtext', [
                         $list('mod_page', 'list', $base . 'mod_page/list'),
                         $add('mod_page', 'add', $base . 'mod_page/add'),
@@ -1932,6 +1937,7 @@ class mod_user_mod extends indexMain
             [$management_lang, ['management', 'content_management']],
             [$management_lang, ['management', 'news_management']],
             [$management_lang, ['management', 'publication_management']],
+            [$management_lang, ['management', 'event_management']],
             [$management_lang, ['management', 'system_tools']],
             [$management_lang, ['management', 'members']],
             [$management_lang, ['management', 'user_groups']],
@@ -1958,6 +1964,7 @@ class mod_user_mod extends indexMain
             [$this->lang, ['mod_user', 'fab', 'add_content']],
             [$this->lang, ['mod_user', 'fab', 'add_page']],
             [$this->lang, ['mod_user', 'fab', 'add_publication']],
+            [$this->lang, ['mod_user', 'fab', 'add_event']],
             [$this->lang, ['mod_user', 'fab', 'add_video']],
             [$this->lang, ['mod_user', 'fab', 'add_announcement']],
         ];

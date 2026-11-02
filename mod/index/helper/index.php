@@ -90,6 +90,31 @@ class index_mod extends indexBase
         return $this->_loadHelper("index.mod_publication", "archive");
     }
 
+    public function event($seo = null)
+    {
+        return $this->_loadHelper("index.mod_event", "event", [$seo]);
+    }
+
+    public function events($category = null, $page = 1)
+    {
+        return $this->_loadHelper("index.mod_event", "events", [$category, $page]);
+    }
+
+    public function event_calendar()
+    {
+        return $this->_loadHelper("index.mod_event", "calendar");
+    }
+
+    public function event_calendar_json()
+    {
+        return $this->_loadHelper("index.mod_event", "calendar_json");
+    }
+
+    public function _event_agenda($limit = 10)
+    {
+        return $this->_loadHelper("index.mod_event", "_event_agenda", [$limit]);
+    }
+
     // Mod Announcements
     public function announcement($id = null)
     {
@@ -176,19 +201,8 @@ class index_mod extends indexBase
     }
 
     // Search
-    public function ara($kelime = null)
+    public function search($query = null)
     {
-        return $this->_loadHelper("index.ara", "ara", [$kelime]);
-    }
-
-    // Information Collection
-    public function gercek_kisi()
-    {
-        return $this->_loadHelper("index.bilgiedinme", "gercek_kisi");
-    }
-
-    public function tuzel_kisi()
-    {
-        return $this->_loadHelper("index.bilgiedinme", "tuzel_kisi");
+        return $this->_loadHelper("index.search", "search", [$query]);
     }
 }

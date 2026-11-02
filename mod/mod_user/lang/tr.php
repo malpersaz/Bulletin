@@ -566,6 +566,8 @@ $lang['mod_user'] = [
         'add_video_alert' => 'Video Formu',
         'add_content_alert' => 'Haber Sihirbazı',
         'add_publication_alert' => 'Yayın Sihirbazı',
+    'add_event' => 'Etkinlik Ekle',
+    'add_event_alert' => 'Etkinlik Sihirbazı',
     ],
     'profile_menu' => [
         'edit_profile' => 'Profili Düzenle',

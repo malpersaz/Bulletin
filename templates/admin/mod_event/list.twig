@@ -1,0 +1,213 @@
+{% set module_lang_key = 'mod_event' %}
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set show_search = true %}
+{% set show_search_filter_button = true %}
+{% set wizard_module = 'mod_event' %}
+{% extends 'admin/layout.twig' %}
+{% block title %}{{ lang.mod_event.list }}{% endblock %}
+
+{% block headline %}{{ lang.mod_event.list }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_event.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+{% set stat_total_event_label = lang.mod_event.ui.all %}
+{% set stat_published_event_label = lang.mod_event.admin.radio.publish_yes %}
+{% set stat_draft_event_label = lang.mod_event.admin.radio.publish_no %}
+{% set empty_zero_records_label = lang.mod_event.datatable.zeroRecords %}
+{% set empty_table_label = lang.mod_event.datatable.emptyTable %}
+{% set loading_records_label = lang.mod_event.datatable.loadingRecords %}
+<div class="content-stats-container">
+    <div class="content-stats-row">
+        <button type="button" class="content-stat-card active" data-status-filter="all" aria-label="{{ stat_total_event_label }}">
+            <div id="statTotalEvent" class="content-stat-value">{{ total_event|default(0) }}</div>
+            <div class="content-stat-label">{{ stat_total_event_label }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-published" data-status-filter="y" aria-label="{{ stat_published_event_label }}">
+            <div id="statPublishedEvent" class="content-stat-value">{{ published_event|default(0) }}</div>
+            <div class="content-stat-label">{{ stat_published_event_label }}</div>
+        </button>
+        <button type="button" class="content-stat-card stat-draft" data-status-filter="n" aria-label="{{ stat_draft_event_label }}">
+            <div id="statDraftEvent" class="content-stat-value">{{ draft_event|default(0) }}</div>
+            <div class="content-stat-label">{{ stat_draft_event_label }}</div>
+        </button>
+    </div>
+</div>
+
+<div id="ptr-spinner" class="ptr-spinner">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+</div>
+
+<div id="content-list-container" class="content-list"
+    data-module-url="{{ site.saddress }}mod_event/"
+    data-data-url="{{ site.saddress }}mod_event/datatable_json"
+    data-categories="{{ categories|json_encode|escape('html_attr') }}">
+</div>
+
+<div id="empty-state" class="empty-state is-hidden">
+    <div class="empty-icon"><i class="bi bi-calendar-x"></i></div>
+    <h3>{{ empty_zero_records_label }}</h3>
+    <p>{{ empty_table_label }}</p>
+</div>
+
+<div id="infinite-loader" class="infinite-loader is-hidden">
+    <div class="spinner-track">
+        <div class="spinner-fill"></div>
+    </div>
+    <span>{{ loading_records_label }}</span>
+</div>
+
+<form id="filterForm" class="is-hidden">
+    <input type="hidden" name="start" id="filterStart" value="0">
+    <input type="hidden" name="length" id="filterLength" value="10">
+    <input type="hidden" name="draw" id="filterDraw" value="1">
+    <input type="hidden" name="search[name]" id="filterSearch" value="">
+    <input type="hidden" name="search[lang]" id="filterLang" value="">
+    <input type="hidden" name="search[category_id]" id="filterCategory" value="">
+    <input type="hidden" name="search_radio[status]" id="filterStatus" value="">
+    <input type="hidden" name="order[0][column]" id="filterSortColumn" value="1">
+    <input type="hidden" name="order[0][dir]" id="filterSortDir" value="desc">
+</form>
+
+<div id="eventImageModal" class="event-image-modal" aria-hidden="true">
+    <div class="event-image-modal__scrim" data-action="close-image-uploader"></div>
+    <div class="event-image-modal__sheet" role="dialog" aria-modal="true" aria-labelledby="eventImageModalTitle">
+        <header class="wizard-header">
+            <button type="button" class="icon-btn" data-action="close-image-uploader">
+                <i class="bi bi-x-lg"></i>
+            </button>
+            <div class="wizard-title">
+                <span id="eventImageModalTitle">{{ lang.mod_event.wizard.steps.poster }}</span>
+                <span id="eventImageModalSubtitle" hidden></span>
+            </div>
+            <button type="button" id="eventImageSaveBtn" class="m3-btn-text event-image-save" data-action="submit-list-image-upload" disabled hidden>{{ lang.mod_event.button.send }}</button>
+        </header>
+
+        <div class="wizard-progress-bar">
+            <div class="wizard-progress-fill progress-full-width"></div>
+        </div>
+
+        <div class="wizard-content event-image-modal__body">
+            {% include 'admin/partials/image_uploader.twig' with {
+                shell_id: 'listImageShell',
+                shell_class: 'event-image-shell',
+                has_image: false,
+                shell_attrs: {
+                    'data-drop-title': lang.mod_event.upload_image,
+                    'data-drop-description': lang.mod_event.admin.columns.image,
+                    'data-upload-link': lang.mod_event.add_image,
+                    'data-link-separator': lang.mod_event.filter.clear,
+                    'data-link-placeholder': lang.mod_event.filter.select_label,
+                    'data-link-action': lang.mod_event.filter.apply,
+                    'data-hint-loading': lang.mod_event.grid.loading,
+                    'data-hint-invalid-type': lang.mod_event.validator.inarray,
+                    'data-hint-no-drop-data': lang.mod_event.grid.no_data,
+                    'data-hint-remote-failed': lang.mod_event.grid.connection_error,
+                    'data-empty-name': lang.mod_event.filter.select_label,
+                    'data-empty-meta': lang.mod_event.admin.columns.image
+                },
+                dropzone_id: 'listImageDropzone',
+                empty_state_id: 'listImageEmptyState',
+                drop_title: lang.mod_event.upload_image,
+                upload_link: lang.mod_event.add_image,
+                preview_card_id: 'listImagePreviewCard',
+                remove_button_label: lang.mod_event.button.delete,
+                preview_img_id: 'listImgPreview',
+                preview_alt: '',
+                preview_hidden: true,
+                meta_id: 'listImageMeta',
+                meta_hidden: true,
+                file_name_id: 'listImageFileName',
+                file_name_text: lang.mod_event.filter.select_label,
+                file_details_id: 'listImageFileDetails',
+                file_details_text: lang.mod_event.admin.columns.image,
+                divider_hidden: false,
+                link_separator: lang.mod_event.filter.clear,
+                url_row_hidden: false,
+                url_input_id: 'listImageUrlInput',
+                link_placeholder: lang.mod_event.filter.select_label,
+                import_btn_id: 'listImageUrlImportBtn',
+                link_action: lang.mod_event.filter.apply,
+                file_input_id: 'listImgInput'
+            } %}
+
+            <div id="eventImageModalFooter" class="wizard-footer event-image-modal__footer is-single-action">
+                <button type="button" id="eventImageCancelBtn" class="m3-btn-outlined" data-action="close-image-uploader">{{ lang.mod_event.button.cancel }}</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar event-toolbar" id="contentToolbar" role="toolbar" aria-label="{{ lang.mod_event.list }}" aria-hidden="true">
+    {% if session.permissions.mod_event.edit is defined or session.permissions.mod_event.change_status is defined or session.permissions.mod_event.approval is defined %}
+        <button id="toolbarStatus" class="toolbar-item is-disabled" data-action="toggle-status" title="{{ lang.mod_event.toolbar.status }}" aria-label="{{ lang.mod_event.toolbar.status }}">
+            <i class="bi bi-eye-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.edit is defined %}
+        <button id="toolbarDeck" class="toolbar-item is-disabled" data-action="toggle-deck" title="{{ lang.mod_event.toolbar.deck }}" aria-label="{{ lang.mod_event.toolbar.deck }}">
+            <i class="bi bi-bookmark-star"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.edit is defined %}
+        <button id="toolbarSlider" class="toolbar-item is-disabled" data-action="toggle-slider" title="{{ lang.mod_event.toolbar.slider }}" aria-label="{{ lang.mod_event.toolbar.slider }}">
+            <i class="bi bi-stars"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.edit is defined %}
+        <button id="toolbarVideo" class="toolbar-item is-disabled" data-action="open-video" title="{{ lang.mod_event.toolbar.video }}" aria-label="{{ lang.mod_event.toolbar.video }}">
+            <i class="bi bi-camera-video"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.gallery is defined %}
+        <button id="toolbarGallery" class="toolbar-item is-disabled" data-action="open-gallery" title="{{ lang.mod_event.toolbar.gallery }}" aria-label="{{ lang.mod_event.toolbar.gallery }}">
+            <i class="bi bi-images"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.file is defined %}
+        <button id="toolbarFiles" class="toolbar-item is-disabled" data-action="open-files" title="{{ lang.mod_event.toolbar.files }}" aria-label="{{ lang.mod_event.toolbar.files }}">
+            <i class="bi bi-paperclip"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.faq is defined or session.permissions.mod_event.edit is defined %}
+        <button id="toolbarFaq" class="toolbar-item is-disabled" data-action="open-faq" title="{{ lang.mod_event.toolbar.faq }}" aria-label="{{ lang.mod_event.toolbar.faq }}">
+            <i class="bi bi-patch-question-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.edit is defined %}
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-content" title="{{ lang.mod_event.toolbar.edit }}" aria-label="{{ lang.mod_event.toolbar.edit }}">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-content" title="{{ lang.mod_event.toolbar.delete }}" aria-label="{{ lang.mod_event.toolbar.delete }}">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+</div>
+
+{% if session.permissions.mod_event.add is defined %}
+    <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_event/add" aria-label="{{ lang.mod_event.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/mod_event.js?v={{ site.version }}"></script>
+{% endblock %}

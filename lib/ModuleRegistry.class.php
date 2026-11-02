@@ -47,6 +47,18 @@ class ModuleRegistry
             'modules' => ['mod_video_embed'],
             'tables' => ['mod_video_embed'],
         ],
+        'event.front' => [
+            'modules' => ['mod_event', 'mod_event_category'],
+            'tables' => ['mod_event', 'mod_event_category'],
+        ],
+        'event.latest' => [
+            'modules' => ['mod_event'],
+            'tables' => ['mod_event'],
+        ],
+        'event.calendar' => [
+            'modules' => ['mod_event', 'mod_event_category'],
+            'tables' => ['mod_event', 'mod_event_category'],
+        ],
     ];
 
     private $installDependencies = [
@@ -62,12 +74,17 @@ class ModuleRegistry
             'modules' => ['mod_video_embed_category', 'mod_user'],
             'tables' => ['mod_video_embed_category', 'mod_user'],
         ],
+        'mod_event' => [
+            'modules' => ['mod_event_category', 'mod_gallery', 'mod_user'],
+            'tables' => ['mod_event_category', 'mod_gallery', 'mod_user'],
+        ],
     ];
 
     private $uninstallDependents = [
         'mod_news_category' => ['mod_news'],
         'mod_publication_category' => ['mod_publication'],
         'mod_video_embed_category' => ['mod_video_embed'],
+        'mod_event_category' => ['mod_event'],
     ];
 
     public function getFeatureConfig($feature)

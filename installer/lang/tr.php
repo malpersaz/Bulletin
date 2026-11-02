@@ -245,6 +245,7 @@ $installerLang = [
       'mod_headline' => 'Manşet',
       'mod_news_category' => 'Haber Kategorileri',
       'mod_publication_category' => 'Yayın Kategorileri',
+      'mod_event_category' => 'Etkinlik Kategorileri',
       'mod_acl' => 'Erişim Kontrolü',
       'mod_survey' => 'Anket',
       'mod_announcements' => 'Duyurular',
@@ -260,6 +261,7 @@ $installerLang = [
       'mod_video_embed' => 'Gömülü Video',
       'mod_news' => 'Haberler',
       'mod_publication' => 'Yayınlar',
+      'mod_event' => 'Etkinlikler',
     ],
     'checks' => [
       'php_version' => [

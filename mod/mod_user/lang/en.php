@@ -590,7 +590,9 @@ $lang['mod_user']['fab'] = [
     'add_announcement_alert' => 'Announcement Form',
     'add_video_alert' => 'Video Form',
     'add_content_alert' => 'News Wizard',
-    'add_publication_alert' => 'Publication Wizard'
+    'add_publication_alert' => 'Publication Wizard',
+    'add_event' => 'Add Event',
+    'add_event_alert' => 'Event Wizard',
 ];
 
 $lang['mod_user']['profile_menu'] = [

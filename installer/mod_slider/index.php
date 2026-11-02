@@ -18,20 +18,20 @@ class mod_slider extends installerbase implements installerbaseinterface
 
     public function install()
     {
-		  // Tabloları Oluşturalım
-	        if ($this->create_tables() === FALSE) {
-	            return FALSE;
-	        }
-	        // Modülü Ekleyelim
-	        if ($this->insert_mods() === FALSE) {
-	            return FALSE;
-	        }
-	        // Roller ve Permleri Ekleyelim
-	        if ($this->insert_roll() === FALSE) {
-	            return FALSE;
-	        }
+        // Create tables
+        if ($this->create_tables() === FALSE) {
+            return FALSE;
+        }
+        // Register module
+        if ($this->insert_mods() === FALSE) {
+            return FALSE;
+        }
+        // Register roles and permissions
+        if ($this->insert_roles() === FALSE) {
+            return FALSE;
+        }
 
-	        return TRUE;
+        return TRUE;
     }
 
 
@@ -40,7 +40,7 @@ class mod_slider extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

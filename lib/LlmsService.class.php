@@ -151,6 +151,23 @@ class LlmsService
             }
         }
 
+        // 8.1. Events & Cultural Agenda (mod_event)
+        $events = [];
+        if ($this->runtime->isModuleReady('mod_event')) {
+            $events = $this->getActiveEvents($lang, 10);
+            if (!empty($events)) {
+                $md[] = "## Events & Cultural Agenda";
+                foreach ($events as $eventItem) {
+                    $eventTitle = !empty($eventItem['name']) ? $eventItem['name'] : (!empty($eventItem['title']) ? $eventItem['title'] : 'Event');
+                    $eventSlug = !empty($eventItem['seo']) ? $eventItem['seo'] : Helper::legacy_seo($eventTitle);
+                    $eventUrl = $this->buildUrl($lang, 'event/' . $eventSlug);
+                    $eventDescription = $this->resolveItemSummary($eventItem, 'Scheduled event, cultural gathering, and discussion.');
+                    $md[] = "- [" . $eventTitle . "](" . $eventUrl . "): " . $eventDescription;
+                }
+                $md[] = "";
+            }
+        }
+
         // 9. Video & Multimedia Broadcasts (mod_video_embed)
         if ($this->runtime->isModuleReady('mod_video_embed')) {
             $videos = $this->getActiveVideos($lang, 10);
@@ -276,6 +293,18 @@ class LlmsService
                         $aTitle = !empty($a['name']) ? $a['name'] : (!empty($a['title']) ? $a['title'] : 'Announcement');
                         $md[] = "### Announcement: " . $aTitle;
                         $md[] = $this->htmlToCleanMarkdown($a['content']);
+                        $md[] = "";
+                    }
+                }
+            }
+
+            if (!empty($events)) {
+                foreach ($events as $eventItem) {
+                    $eventBody = !empty($eventItem['description']) ? $eventItem['description'] : (!empty($eventItem['summary']) ? $eventItem['summary'] : '');
+                    if (!empty($eventBody)) {
+                        $eventTitle = !empty($eventItem['name']) ? $eventItem['name'] : (!empty($eventItem['title']) ? $eventItem['title'] : 'Event');
+                        $md[] = "### Event: " . $eventTitle;
+                        $md[] = $this->htmlToCleanMarkdown($eventBody);
                         $md[] = "";
                     }
                 }
@@ -428,6 +457,22 @@ class LlmsService
             $model = Load::model('mod_announcements');
             $model->where_status_and_lang('y', $lang);
             $model->order('created_at', 'DESC');
+            $model->limit($limit);
+            $model->gR();
+            if ($model->getSize() > 0) {
+                return $model->toArray();
+            }
+        } catch (\Throwable $e) {
+        }
+        return [];
+    }
+
+    private function getActiveEvents(string $lang, int $limit = 10): array
+    {
+        try {
+            $model = Load::model('mod_event');
+            $model->where_status_and_lang('y', $lang);
+            $model->order('start_date', 'ASC');
             $model->limit($limit);
             $model->gR();
             if ($model->getSize() > 0) {

@@ -6,7 +6,7 @@
     <div class="swiper hero-news-swiper">
         <div class="swiper-wrapper">
             {% for item in hero_slider %}
-            <div class="swiper-slide hero-slide{% if loop.first %} swiper-slide-active{% endif %}" data-slide-index="{{ loop.index0 }}">
+            <div class="swiper-slide hero-slide{% if loop.first %} swiper-slide-active{% endif %}{% if item.source_mod == 'mod_event' %} hero-news-slide--event{% endif %}" data-slide-index="{{ loop.index0 }}">
                 <a class="hero-slide__hitbox" href="{{ item.detail_url }}" aria-label="{{ item.name }}"></a>
 
                 <div class="hero-slide__image">

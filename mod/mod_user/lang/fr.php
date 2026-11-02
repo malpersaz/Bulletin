@@ -499,6 +499,8 @@ $lang['mod_user'] = [
         'add_video_alert' => 'Add Video Form',
         'add_content_alert' => 'Add Content Wizard',
         'add_publication_alert' => 'Add Publication Wizard',
+    'add_event' => 'Ajouter un événement',
+    'add_event_alert' => 'Assistant d\'événement',
     ],
     'profile_menu' => [
         'edit_profile' => 'Modifier le profil',

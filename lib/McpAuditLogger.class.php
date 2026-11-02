@@ -209,7 +209,7 @@ class McpAuditLogger
                     WHERE created_at >= :today_start";
             $params = [':today_start' => $todayStart];
 
-            if ($userId !== null && $userId > 0) {
+            if ($userId !== null) {
                 $sql .= " AND user_id = :user_id";
                 $params[':user_id'] = $userId;
             }
@@ -264,6 +264,10 @@ class McpAuditLogger
                 $conditions[] = 'is_error = :is_error';
                 $params[':is_error'] = (int) $filters['is_error'];
             }
+            if (isset($filters['user_id']) && $filters['user_id'] !== '') {
+                $conditions[] = 'user_id = :user_id';
+                $params[':user_id'] = (int) $filters['user_id'];
+            }
 
             $whereSql = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
             $limit = max(1, min($limit, 200));
@@ -282,6 +286,65 @@ class McpAuditLogger
         } catch (\Throwable $e) {
             error_log('[McpAuditLogger] queryLogs failed: ' . $e->getMessage());
             return [];
+        }
+    }
+
+    /**
+     * Returns aggregate total_calls and error_calls counts for the audit dashboard
+     *
+     * @param array $filters Optional filters (caller_type, tool_name, is_error, user_id)
+     * @return array{total_calls: int, error_calls: int}
+     */
+    public static function getSummaryStats(array $filters = []): array
+    {
+        $default = ['total_calls' => 0, 'error_calls' => 0];
+        $pdo = self::getPdo();
+        if (!$pdo) {
+            return $default;
+        }
+
+        try {
+            self::ensureTable();
+            $conditions = [];
+            $params = [];
+
+            if (!empty($filters['caller_type'])) {
+                $conditions[] = 'caller_type = :caller_type';
+                $params[':caller_type'] = $filters['caller_type'];
+            }
+            if (!empty($filters['tool_name'])) {
+                $conditions[] = 'tool_name LIKE :tool_name';
+                $params[':tool_name'] = '%' . $filters['tool_name'] . '%';
+            }
+            if (isset($filters['is_error']) && $filters['is_error'] !== '') {
+                $conditions[] = 'is_error = :is_error';
+                $params[':is_error'] = (int) $filters['is_error'];
+            }
+            if (isset($filters['user_id']) && $filters['user_id'] !== '') {
+                $conditions[] = 'user_id = :user_id';
+                $params[':user_id'] = (int) $filters['user_id'];
+            }
+
+            $whereSql = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
+            $sql = "SELECT COUNT(*),
+                           COALESCE(SUM(CASE WHEN is_error = 1 THEN 1 ELSE 0 END), 0)
+                    FROM mod_mcp_audit_log
+                    {$whereSql}";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $row = $stmt->fetch(\PDO::FETCH_NUM);
+            if (!is_array($row)) {
+                return $default;
+            }
+
+            return [
+                'total_calls' => (int) ($row[0] ?? 0),
+                'error_calls' => (int) ($row[1] ?? 0),
+            ];
+        } catch (\Throwable $e) {
+            error_log('[McpAuditLogger] getSummaryStats failed: ' . $e->getMessage());
+            return $default;
         }
     }
 

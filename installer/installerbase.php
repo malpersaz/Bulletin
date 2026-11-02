@@ -727,15 +727,15 @@ class installerbase
      */
     protected function addperm($role_id, $role_name)
     {
-        $pmodel = Load::model('mod_user.mod_user_perm');
+        $permissionModel = Load::model('mod_user.mod_user_perm');
 
-        $pmodel->where_mod_id_and_role_id_and_group_id($this->mod_id, $role_id, '1')->limit(1)->getResultOne(TRUE, TRUE);
-        if ($pmodel->getSize() === 0) {
-            $pmodel->group_id = 1;
-            $pmodel->role_id = $role_id;
-            $pmodel->mod_id = $this->mod_id;
-            if ($pmodel->save() === FALSE) {
-                $this->error(" ERROR OCCURRED WHILE ADDING PERMISSIONS:" . print_r($pmodel, TRUE));
+        $permissionModel->where_mod_id_and_role_id_and_group_id($this->mod_id, $role_id, '1')->limit(1)->getResultOne(TRUE, TRUE);
+        if ($permissionModel->getSize() === 0) {
+            $permissionModel->group_id = 1;
+            $permissionModel->role_id = $role_id;
+            $permissionModel->mod_id = $this->mod_id;
+            if ($permissionModel->save() === FALSE) {
+                $this->error(" ERROR OCCURRED WHILE ADDING PERMISSIONS:" . print_r($permissionModel, TRUE));
                 return FALSE;
             }
             $this->success("Role '" . $role_name . "' added as permission for Group ID 1");
@@ -788,6 +788,14 @@ class installerbase
                     $sql = "DROP VIEW " . $table;
                 }
             }
+        } else {
+            $this->db->fetch_array("SHOW FULL TABLES LIKE '" . $table . "'");
+            if ($this->db->getSize() > 0) {
+                $res = $this->db->toArray();
+                if (isset($res[0]['Table_type']) && strtoupper($res[0]['Table_type']) === 'VIEW') {
+                    $sql = "DROP VIEW IF EXISTS " . $table;
+                }
+            }
         }
 
         if ($this->db->query($sql)) {
@@ -835,10 +843,10 @@ class installerbase
 
     protected function delete_roles()
     {
-        return $this->remove_rool();
+        return $this->remove_role();
     }
 
-    protected function remove_rool()
+    protected function remove_role()
     {
         if ($this->uninstall_blocked === TRUE) {
             return FALSE;
@@ -945,6 +953,19 @@ class installerbase
                 'tr' => 'Yayınlar',
                 'zza' => 'Weşan',
                 'ru' => 'Публикации',
+            ),
+            'events' => array(
+                'ar' => 'الفعاليات',
+                'de' => 'Veranstaltungen',
+                'en' => 'Events',
+                'fa' => 'رویدادها',
+                'fr' => 'Événements',
+                'ku' => 'Çalakî',
+                'ckb' => 'چالاکییەکان',
+                'sv' => 'Evenemang',
+                'tr' => 'Etkinlikler',
+                'zza' => 'Çalakî',
+                'ru' => 'Мероприятия',
             ),
             'bulletin' => array(
                 'ar' => 'النشرة',

@@ -217,6 +217,10 @@ check('Discovery: get_news registered', in_array('get_news', $toolNames, true));
 check('Discovery: create_news registered', in_array('create_news', $toolNames, true));
 check('Discovery: list_news_categories registered', in_array('list_news_categories', $toolNames, true));
 check('Discovery: list_publications registered', in_array('list_publications', $toolNames, true));
+check('Discovery: list_events registered', in_array('list_events', $toolNames, true));
+check('Discovery: get_event registered', in_array('get_event', $toolNames, true));
+check('Discovery: create_event registered', in_array('create_event', $toolNames, true));
+check('Discovery: list_event_categories registered', in_array('list_event_categories', $toolNames, true));
 check('Discovery: list_pages registered', in_array('list_pages', $toolNames, true));
 check('Discovery: list_galleries registered', in_array('list_galleries', $toolNames, true));
 check('Discovery: list_videos registered', in_array('list_videos', $toolNames, true));
@@ -607,11 +611,35 @@ check('Pinning: Loopback port mismatch (8090 vs 8080) triggers HTTP 421 Misdirec
 );
 
 // Notification: notifications/initialized returns HTTP 202 with empty body
-$resNotif = runRpc(['jsonrpc' => '2.0', 'method' => 'notifications/initialized'], $plaintextKey);
+$resNotification = runRpc(['jsonrpc' => '2.0', 'method' => 'notifications/initialized'], $plaintextKey);
 check('Notification: notifications/initialized returns HTTP 202 with empty body',
-    ($resNotif['__status'] ?? 0) === 202
-    && ($resNotif['__raw'] ?? null) === '',
-    json_encode($resNotif)
+    ($resNotification['__status'] ?? 0) === 202
+    && ($resNotification['__raw'] ?? null) === '',
+    json_encode($resNotification)
+);
+
+// =========================================================================
+// 6.2 Audit Logger & Admin Audit Controller Regression (v1.0.13)
+// =========================================================================
+require_once dirname(__DIR__) . '/lib/McpAuditLogger.class.php';
+$auditStats = McpAuditLogger::getSummaryStats();
+check('Audit[v1.0.13]: McpAuditLogger::getSummaryStats returns valid totals without error',
+    is_array($auditStats)
+    && array_key_exists('total_calls', $auditStats)
+    && array_key_exists('error_calls', $auditStats)
+    && is_int($auditStats['total_calls'])
+    && is_int($auditStats['error_calls']),
+    json_encode($auditStats)
+);
+
+$auditQuery = McpAuditLogger::queryLogs(['caller_type' => 'api_key'], 10, 0);
+check('Audit[v1.0.13]: McpAuditLogger::queryLogs executes cleanly with caller_type filter',
+    is_array($auditQuery)
+);
+
+$modMcpContent = file_get_contents(dirname(__DIR__) . '/mod/mod_mcp/index.php');
+check('Audit[v1.0.13]: mod/mod_mcp/index.php contains zero calls to undefined Database::toRow()',
+    !str_contains($modMcpContent, 'toRow')
 );
 
 // =========================================================================

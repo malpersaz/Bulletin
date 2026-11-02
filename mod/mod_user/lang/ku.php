@@ -566,6 +566,8 @@ $lang['mod_user'] = [
     'add_video_alert' => 'Forma Vîdeoyê',
     'add_content_alert' => 'Sêrbaza Nûçeyan',
     'add_publication_alert' => 'Sêrbaza Weşanan',
+    'add_event' => 'Çalakiyê Lêke',
+    'add_event_alert' => 'Sêrbazê Çalakiyê',
   ],
   'profile_menu' => [
     'edit_profile' => 'Profîlê Biguhere',

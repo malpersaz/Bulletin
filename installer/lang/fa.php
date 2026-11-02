@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'سرتیتر',
       'mod_news_category' => 'دسته‌های خبر',
       'mod_publication_category' => 'دسته‌های انتشار',
+      'mod_event_category' => 'دسته‌بندی‌های رویدادها',
       'mod_acl' => 'کنترل دسترسی',
       'mod_survey' => 'نظرسنجی',
       'mod_announcements' => 'اعلان‌ها',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'جاسازی ویدئو',
       'mod_news' => 'خبرها',
       'mod_publication' => 'انتشارها',
+      'mod_event' => 'رویدادها',
     ],
     'checks' => [
       'php_version' => [

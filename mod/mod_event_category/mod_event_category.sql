@@ -1,0 +1,21 @@
+CREATE TABLE `mod_event_category` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `lang` varchar(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT 0,
+  `order` int(11) NOT NULL DEFAULT 0,
+  `root` enum('y','n') NOT NULL DEFAULT 'n',
+  `seo` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `keywords` varchar(255) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `menu` int(11) NOT NULL DEFAULT 0,
+  `show_on_homepage` enum('y','n') NOT NULL DEFAULT 'n',
+  `acl_id` int(11) NOT NULL DEFAULT 0,
+  `user_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `idx_eventcat_lang_seo` (`lang`, `seo`),
+  INDEX `idx_eventcat_parent` (`parent_id`),
+  INDEX `idx_eventcat_root` (`root`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

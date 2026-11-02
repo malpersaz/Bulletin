@@ -10,115 +10,11 @@
 {% endblock %}
 
 {% block head %}
-    <meta name="robots" content="noindex">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginForm = document.getElementById('login-form');
-            const loginButton = document.getElementById('manual-submit-button');
-            const alertContainer = document.getElementById('login-alerts');
+    <meta name="robots" content="noindex, nofollow, noarchive">
+{% endblock %}
 
-            if (loginButton) {
-                loginButton.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    submitFormAjax();
-                });
-            }
-
-            if (loginForm) {
-                loginForm.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    submitFormAjax();
-                });
-
-                const usernameInput = document.getElementById('username');
-                const passwordInput = document.getElementById('password');
-
-                function handleEnterKey(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        submitFormAjax();
-                    }
-                }
-
-                if (usernameInput) {
-                    usernameInput.addEventListener('keypress', handleEnterKey);
-                }
-                if (passwordInput) {
-                    passwordInput.addEventListener('keypress', handleEnterKey);
-                }
-            }
-
-            function showAlert(message, type) {
-                if (alertContainer) {
-                    alertContainer.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
-                }
-            }
-
-            function submitFormAjax() {
-                const form = document.getElementById('login-form');
-                if (!form) return;
-
-                const username = document.getElementById('username').value;
-                const password = document.getElementById('password').value;
-                const button = document.getElementById('manual-submit-button');
-                const originalText = button.textContent;
-
-                // Loading state
-                button.disabled = true;
-                button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>...';
-
-                const formData = new FormData();
-                formData.append('username', username);
-                formData.append('password', password);
-                formData.append('login', 'login');
-                formData.append('ajax_request', 'true');
-
-                fetch('{{ site.saddress }}login', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'same-origin',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                })
-                .then(response => {
-                    const contentType = response.headers.get('content-type');
-                    if (contentType && contentType.includes('application/json')) {
-                        return response.json();
-                    }
-                    throw new Error('server_response_error');
-                })
-                .then(data => {
-                    if (data.success) {
-                        showAlert(data.message, 'success');
-                        setTimeout(() => {
-                            window.location.href = data.redirect || '{{ site.saddress }}';
-                        }, 500);
-                    } else {
-                        let errorHtml = '<ul class="mb-0">';
-                        if (data.errors && data.errors.length > 0) {
-                            data.errors.forEach(err => {
-                                errorHtml += `<li>${err}</li>`;
-                            });
-                        } else {
-                            errorHtml += `<li>${data.message}</li>`;
-                        }
-                        errorHtml += '</ul>';
-                        showAlert(errorHtml, 'danger');
-                        button.disabled = false;
-                        button.textContent = originalText;
-                    }
-                })
-                .catch(error => {
-                    console.error('Login request failed:', error);
-                    showAlert('{{ lang.mod_user.ajax.connection_error|default("Têkilî bi serverê re serneket") }}', 'danger');
-                    button.disabled = false;
-                    button.textContent = originalText;
-                });
-            }
-        });
-    </script>
+{% block js_custom %}
+    <script src="{{ site.taddress }}{{ site.app_template }}/static/js/login.js?v={{ site.version }}" defer></script>
 {% endblock %}
 
 {% block content %}
@@ -163,7 +59,7 @@
 
                     <div id="login-alerts"></div>
 
-                    <form method="post" action="{{ site.saddress }}login" id="login-form">
+                    <form method="post" action="{{ site.saddress }}login" id="login-form" data-login-url="{{ site.saddress }}login" data-redirect-url="{{ site.saddress }}" data-connection-error="{{ lang.mod_user.ajax.connection_error }}">
                             <div class="mb-3">
                                 <label class="form-label" for="username">{{ lang.mod_user.username }}</label>
                                 <input type="text"

@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'Rubrik',
       'mod_news_category' => 'Nyhetskategorier',
       'mod_publication_category' => 'Publikationskategorier',
+      'mod_event_category' => 'Evenemangskategorier',
       'mod_acl' => 'Åtkomstkontroll',
       'mod_survey' => 'Undersökning',
       'mod_announcements' => 'Meddelanden',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'Videoinbäddning',
       'mod_news' => 'Nyheter',
       'mod_publication' => 'Publikationer',
+      'mod_event' => 'Evenemang',
     ],
     'checks' => [
       'php_version' => [

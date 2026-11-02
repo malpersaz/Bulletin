@@ -118,6 +118,24 @@ class search_helper extends indexBase
             Cache::set($publication->toArray(), $keyword . "-search-mod_publication");
         }
 
+        if (Cache::exists($keyword . "-search-mod_event")) {
+            $cached_data = Cache::get($keyword . "-search-mod_event");
+            if ($cached_data !== FALSE) {
+                $this->theme->set('events', $cached_data);
+            }
+        } else {
+            $eventModel = Load::model('mod_event');
+            $eventModel->select('id,name,seo,summary,subject,location,start_date,image');
+            $eventModel->where_lang_and_status($this->site['lang'], 'y');
+            $eventModel->addWhere("(name LIKE '{$like_keyword}' OR summary LIKE '{$like_keyword}' OR subject LIKE '{$like_keyword}' OR location LIKE '{$like_keyword}')");
+            $eventModel->order('start_date', 'DESC');
+            $eventModel->gR();
+            if ($eventModel->getSize() !== 0) {
+                $this->theme->set('events', $eventModel->toArray());
+            }
+            Cache::set($eventModel->toArray(), $keyword . "-search-mod_event");
+        }
+
         if (Cache::exists($keyword . "-search-mod_announcements")) {
             $cached_data = Cache::get($keyword . "-search-mod_announcements");
             if ($cached_data !== FALSE) {

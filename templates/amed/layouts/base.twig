@@ -21,7 +21,7 @@
 		{% block meta_tags %}
 			<!-- Standard Meta -->
 			<meta name="author" content="{{ site.title }}">
-			<meta name="robots" content="index, follow">
+			<meta name="robots" content="noindex, nofollow, noarchive">
 			<meta
 			name="theme-color" content="#ffffff">
 
@@ -89,6 +89,8 @@
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version }}">
 		<!-- Market Rates Widget CSS -->
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/market-rates.css?v={{ site.version }}">
+		<!-- Event Agenda Widget CSS -->
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/event-agenda.css?v={{ site.version }}">
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
@@ -130,6 +132,8 @@
 
 		<!-- Top Menu Engine -->
 		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/top-menu.js?v={{ site.version }}" defer></script>
+		<!-- Event Agenda Widget Engine -->
+		<script src="{{ site.taddress }}{{ site.app_template }}/static/js/event-agenda.js?v={{ site.version }}" defer></script>
 		{% if not is_logged_in %}
 			<script src="{{ site.taddress }}{{ site.app_template }}/static/js/login-modal.js?v={{ site.version }}" defer></script>
 		{% endif %}

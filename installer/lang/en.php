@@ -245,6 +245,7 @@ $installerLang = [
       'mod_headline' => 'Headline',
       'mod_news_category' => 'News Categories',
       'mod_publication_category' => 'Publication Categories',
+      'mod_event_category' => 'Event Categories',
       'mod_acl' => 'Access Control',
       'mod_survey' => 'Survey',
       'mod_announcements' => 'Announcements',
@@ -260,6 +261,7 @@ $installerLang = [
       'mod_video_embed' => 'Video Embed',
       'mod_news' => 'News',
       'mod_publication' => 'Publications',
+      'mod_event' => 'Events',
     ],
     'checks' => [
       'php_version' => [

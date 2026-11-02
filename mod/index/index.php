@@ -191,6 +191,52 @@ class index_mod extends indexBase
         unset($publication);
     }
 
+    public function event($seo = null)
+    {
+        if (!$this->guardFeatureOr404('event.front')) {
+            return;
+        }
+
+        Load::lib("Session");
+        $event = Load::helper("index.mod_event");
+        $event->event($seo);
+        unset($event);
+    }
+
+    public function events($category = null, $page = 1)
+    {
+        if (!$this->guardFeatureOr404('event.front')) {
+            return;
+        }
+
+        $event = Load::helper("index.mod_event");
+        $event->events($category, $page);
+        unset($event);
+    }
+
+    public function event_calendar()
+    {
+        if (!$this->guardFeatureOr404('event.calendar')) {
+            return;
+        }
+
+        $event = Load::helper("index.mod_event");
+        $event->calendar();
+        unset($event);
+    }
+
+    public function event_calendar_json()
+    {
+        if (!$this->guardFeatureOr404('event.calendar')) {
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode([]);
+            return;
+        }
+
+        $event = Load::helper("index.mod_event");
+        $event->calendar_json();
+        unset($event);
+    }
 
     public function announcement($id = null)
     {
@@ -516,6 +562,19 @@ class index_mod extends indexBase
         unset($helper);
     }
 
+    public function _event_agenda($t, $limit = 5)
+    {
+        if (!$this->isFeatureReady('event.front')) {
+            $t->ctx_set('event_agenda', []);
+            return;
+        }
+
+        $helper = Load::helper('index.mod_event');
+        $result = $helper->_event_agenda($limit);
+        $t->ctx_set('event_agenda', $result);
+        unset($helper);
+    }
+
     public function _latest_publications($t, $limit, $select)
     {
         if (!$this->isFeatureReady('publication.latest')) {
@@ -647,6 +706,11 @@ class index_mod extends indexBase
                         <loc>' . $this->site['address'] . $l . '/publicationSitemap.xml</loc>
                       </sitemap>';
             }
+            if ($this->isFeatureReady('event.front')) {
+                echo '<sitemap>
+                        <loc>' . $this->site['address'] . $l . '/eventSitemap.xml</loc>
+                      </sitemap>';
+            }
 
             echo '<sitemap>
                     <loc>' . $this->site['address'] . $l . '/announcementSitemap.xml</loc>
@@ -743,7 +807,42 @@ class index_mod extends indexBase
         exit;
     }
 
+    public function eventSitemap($page = 1)
+    {
+        if (!$this->guardFeatureOr404('event.front')) {
+            return;
+        }
 
+        header("content-type: text/xml");
+        $page_limit = 50000;
+        $page = (intval($page) === 0) ? 1 : intval($page);
+        $offset = ($page - 1) * $page_limit;
+
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_event_category', (string) $this->site['lang'], true);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+
+        $event = Load::model('mod_event');
+        $event->where_status_and_lang('y', $this->site['lang']);
+        $event->addWhere('(acl_id = 0 OR acl_id IS NULL)');
+        $event->addWhere("category_id IN ({$allowedCatList})");
+        $event->order('start_date', 'DESC');
+        $event->select(['seo', 'lang']);
+        $event->limit($page_limit, $offset);
+        $event->gR();
+
+        echo '<?xml version="1.0" encoding="UTF-8"?>
+        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+        if ($event->getSize() != 0) {
+            foreach ($event->toArray() as $o) {
+                echo '<url>
+                          <loc>' . $this->site['address'] . $o['lang'] . '/event/' . $o['seo'] . '</loc>
+                          <priority>0.80</priority>
+                    </url>';
+            }
+        }
+        echo '</urlset>';
+        exit;
+    }
 
     public function announcementSitemap($page = 1)
     {
@@ -905,6 +1004,28 @@ class index_mod extends indexBase
                         if ($o['seo'] !== '#' && $o['seo'] !== '') {
                             echo '<url>
                                       <loc>' . $this->site['address'] . $o['lang'] . '/publications/' . $o['seo'] . '</loc>
+                                      <priority>0.60</priority>
+                                </url>';
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($this->isFeatureReady('event.front')) {
+            $allowedEventCats = $this->getAllowedCategoryIds('mod_event_category', (string) $this->site['lang'], true);
+            if (!empty($allowedEventCats)) {
+                $catList = implode(',', array_map('intval', $allowedEventCats));
+                $cat_event = Load::model('mod_event_category');
+                $cat_event->where_lang_and_root($this->site['lang'], 'n');
+                $cat_event->addWhere("id IN ({$catList})");
+                $cat_event->select(['seo', 'lang']);
+                $cat_event->gR();
+                if ($cat_event->getSize() != 0) {
+                    foreach ($cat_event->toArray() as $o) {
+                        if ($o['seo'] !== '#' && $o['seo'] !== '') {
+                            echo '<url>
+                                      <loc>' . $this->site['address'] . $o['lang'] . '/events/' . $o['seo'] . '</loc>
                                       <priority>0.60</priority>
                                 </url>';
                         }

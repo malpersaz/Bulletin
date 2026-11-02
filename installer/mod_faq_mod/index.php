@@ -62,6 +62,13 @@ class mod_faq_mod extends installerbase implements installerbaseinterface
                 'mod_key' => 'id',
                 'mod_value' => 'name',
                 'user_id' => 1
+            ),
+            array(
+                'name' => 'Event FAQs',
+                'mod_name' => 'mod_event',
+                'mod_key' => 'id',
+                'mod_value' => 'name',
+                'user_id' => 1
             )
         );
 

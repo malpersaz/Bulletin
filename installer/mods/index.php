@@ -96,7 +96,7 @@ class mods extends installerbase implements installerbaseinterface
 
         $this->remove_tables();
         $this->remove_mods();
-        $this->remove_rool();
+        $this->delete_roles();
         $this->remove_perm();
         return TRUE;
     }

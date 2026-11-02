@@ -1,0 +1,186 @@
+{# ==========================================================================
+   City Events Agenda Widget (Amed Broadsheet Theme)
+   templates/amed/index/mod_event/event_agenda.twig
+   Strict Code Separation: Zero Inline CSS, Zero Inline JS
+   ========================================================================== #}
+{% if event_agenda is not defined %}
+    {{ run({"mod": "index", "method": "_event_agenda", "extra": [5]}) }}
+    {% set event_agenda = ctx_get('event_agenda') %}
+{% endif %}
+
+{% if event_agenda is defined and event_agenda is not empty %}
+<section class="event-agenda-widget" aria-label="{{ lang.index.mod_event.city_agenda }}">
+    <!-- Widget Header -->
+    <header class="event-agenda-header">
+        <div class="event-agenda-header-main">
+            <div class="event-agenda-kicker-row">
+                <span class="event-agenda-live-pulse" aria-hidden="true"></span>
+                <span class="event-agenda-kicker">{{ lang.index.mod_event.city_agenda_subtitle }}</span>
+            </div>
+            <h2 class="event-agenda-heading">
+                <i class="bi bi-calendar4-week event-agenda-head-icon" aria-hidden="true"></i>
+                <span>{{ lang.index.mod_event.city_agenda }}</span>
+                <span class="event-agenda-counter" title="{{ event_agenda|length }} {{ lang.index.mod_event.events }}">{{ event_agenda|length }}</span>
+            </h2>
+        </div>
+        <div class="event-agenda-header-actions">
+            <a href="{{ site.saddress }}event-calendar" class="event-agenda-calendar-btn" title="{{ lang.index.mod_event.event_calendar }}">
+                <i class="bi bi-calendar3" aria-hidden="true"></i>
+                <span>{{ lang.index.mod_event.calendar }}</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Fast Interactive Filter Nav -->
+    <nav class="event-agenda-nav" role="tablist" aria-label="Event Filters">
+        <button type="button" role="tab" class="event-agenda-filter-btn is-active" data-filter="all" aria-selected="true">
+            {{ lang.index.mod_event.all_filter }}
+        </button>
+        <button type="button" role="tab" class="event-agenda-filter-btn" data-filter="this-week" aria-selected="false">
+            {{ lang.index.mod_event.this_week }}
+        </button>
+        <button type="button" role="tab" class="event-agenda-filter-btn" data-filter="upcoming" aria-selected="false">
+            {{ lang.index.mod_event.upcoming_filter }}
+        </button>
+    </nav>
+
+    <!-- Events List Container -->
+    <div class="event-agenda-container">
+        <ul class="event-agenda-list" role="list">
+            {% for ev in event_agenda %}
+                {% set ev_poster = ev.image is not empty ? (site.iaddress ~ 'mod_event/thumb/' ~ ev.image) : '' %}
+                {% set ev_url = site.saddress ~ 'event/' ~ ev.seo %}
+                {% set ev_cat = ev.category_name is defined and ev.category_name is not empty ? ev.category_name : (ev.subject is defined and ev.subject is not empty ? ev.subject : '') %}
+
+                <li class="event-agenda-item"
+                    data-is-upcoming="{{ ev.is_upcoming ? '1' : '0' }}"
+                    data-is-this-week="{{ ev.is_this_week ? '1' : '0' }}"
+                    data-is-today="{{ ev.is_today ? '1' : '0' }}"
+                    data-title="{{ ev.name|e('html_attr') }}"
+                    data-location="{{ ev.location|default('')|e('html_attr') }}"
+                    data-summary="{{ ev.summary|default('')|e('html_attr') }}"
+                    data-iso-start="{{ ev.iso_start|default('') }}"
+                    data-iso-end="{{ ev.iso_end|default('') }}"
+                    data-url="{{ ev_url|e('html_attr') }}">
+
+                    <!-- Media Poster with Date Seal -->
+                    <div class="event-agenda-media">
+                        <a href="{{ ev_url }}" class="event-agenda-thumb-link" title="{{ ev.name }}">
+                            {% if ev_poster is not empty %}
+                                <img src="{{ ev_poster }}" alt="{{ ev.name }}" class="event-agenda-thumb-img" width="76" height="96" loading="lazy">
+                                <span class="event-agenda-thumb-glow" aria-hidden="true"></span>
+                            {% else %}
+                                <div class="event-agenda-thumb-placeholder">
+                                    <i class="bi bi-calendar2-event" aria-hidden="true"></i>
+                                </div>
+                            {% endif %}
+
+                            <!-- Crisp Date Seal Badge -->
+                            <div class="event-agenda-date-seal" aria-hidden="true">
+                                <span class="event-agenda-seal-month">{{ ev.start_month_localized|default(ev.start_month) }}</span>
+                                <span class="event-agenda-seal-day">{{ ev.start_day }}</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <!-- Event Information Body -->
+                    <div class="event-agenda-body">
+                        <!-- Top Meta Line: Category Tag + Status Pill -->
+                        <div class="event-agenda-meta-top">
+                            {% if ev_cat is not empty %}
+                                <span class="event-agenda-cat-badge">{{ ev_cat }}</span>
+                            {% endif %}
+
+                            {% if ev.is_today %}
+                                <span class="event-agenda-status-pill status-today">
+                                    <span class="status-pulse-dot" aria-hidden="true"></span>
+                                    <span>{{ lang.index.mod_event.today }}</span>
+                                </span>
+                            {% elseif ev.is_tomorrow %}
+                                <span class="event-agenda-status-pill status-tomorrow">
+                                    <span>{{ lang.index.mod_event.tomorrow }}</span>
+                                </span>
+                            {% elseif ev.days_until is defined and ev.days_until > 0 and ev.days_until <= 7 %}
+                                <span class="event-agenda-status-pill status-soon">
+                                    <span>{{ ev.days_until }} {{ lang.index.mod_event.days_left }}</span>
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Event Title -->
+                        <h3 class="event-agenda-title">
+                            <a href="{{ ev_url }}" class="event-agenda-title-link">{{ ev.name }}</a>
+                        </h3>
+
+                        <!-- Venue Link (Full Venue Name, Clickable to Google Maps) -->
+                        {% if ev.location is defined and ev.location is not empty %}
+                            <div class="event-agenda-venue-row">
+                                <a href="{{ ev.map_search_url|default('https://www.google.com/maps/search/?api=1&query=' ~ ev.location|url_encode) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   class="event-agenda-venue-link"
+                                   title="{{ ev.location }} ({{ lang.index.mod_event.view_on_map }})">
+                                    <i class="bi bi-geo-alt-fill event-agenda-venue-icon" aria-hidden="true"></i>
+                                    <span class="event-agenda-venue-name">{{ ev.location }}</span>
+                                    <i class="bi bi-arrow-up-right event-agenda-venue-arrow" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        <!-- Action Bar: Time + Add to Calendar Menu -->
+                        <div class="event-agenda-action-row">
+                            {% if ev.start_time is defined and ev.start_time is not empty %}
+                                <span class="event-agenda-time-badge">
+                                    <i class="bi bi-clock" aria-hidden="true"></i>
+                                    <span>{{ ev.start_time }}</span>
+                                </span>
+                            {% endif %}
+
+                            <!-- Dropdown Trigger & Popover -->
+                            <div class="event-agenda-cal-action">
+                                <button type="button"
+                                        class="event-agenda-cal-trigger"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        title="{{ lang.index.mod_event.add_to_calendar }}">
+                                    <i class="bi bi-calendar-plus" aria-hidden="true"></i>
+                                    <span>{{ lang.index.mod_event.add_to_calendar }}</span>
+                                    <i class="bi bi-chevron-down ms-1 event-agenda-caret" aria-hidden="true"></i>
+                                </button>
+                                <div class="event-agenda-dropdown-menu" role="menu" aria-hidden="true">
+                                    <a href="{{ ev.google_calendar_url|default('#') }}" target="_blank" rel="noopener noreferrer" class="event-agenda-dropdown-item gcal-link" role="menuitem">
+                                        <i class="bi bi-google text-danger" aria-hidden="true"></i>
+                                        <span>Google Calendar</span>
+                                    </a>
+                                    <button type="button" class="event-agenda-dropdown-item ics-download-btn" role="menuitem">
+                                        <i class="bi bi-apple text-dark" aria-hidden="true"></i>
+                                        <span>Apple / Outlook (.ics)</span>
+                                    </button>
+                                    <button type="button" class="event-agenda-dropdown-item copy-link-btn" role="menuitem" data-copied-text="{{ lang.index.mod_event.link_copied }}">
+                                        <i class="bi bi-link-45deg text-primary" aria-hidden="true"></i>
+                                        <span class="copy-text">{{ lang.index.mod_event.copy_link }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <!-- Empty Filter State -->
+        <div class="event-agenda-empty-state" hidden>
+            <i class="bi bi-calendar-x event-agenda-empty-icon" aria-hidden="true"></i>
+            <p class="event-agenda-empty-text">{{ lang.index.mod_event.no_events_found }}</p>
+        </div>
+    </div>
+
+    <!-- Widget Footer CTA -->
+    <footer class="event-agenda-footer">
+        <a href="{{ site.saddress }}events" class="event-agenda-all-link">
+            <span class="event-agenda-all-text">{{ lang.index.mod_event.view_all_events }}</span>
+            <i class="bi bi-arrow-right event-agenda-all-arrow" aria-hidden="true"></i>
+        </a>
+    </footer>
+</section>
+{% endif %}

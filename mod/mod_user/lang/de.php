@@ -524,7 +524,9 @@ $lang['mod_user']['fab'] = [
     'add_announcement_alert' => 'Ankündigungsformular',
     'add_video_alert' => 'Videoformular',
     'add_content_alert' => 'Nachrichtenassistent',
-    'add_publication_alert' => 'Veröffentlichungsassistent'
+    'add_publication_alert' => 'Veröffentlichungsassistent',
+    'add_event' => 'Veranstaltung hinzufügen',
+    'add_event_alert' => 'Veranstaltungs-Assistent',
 ];
 
 $lang['mod_user']['profile_menu'] = [

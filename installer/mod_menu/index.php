@@ -242,6 +242,22 @@ class mod_menu extends installerbase implements installerbaseinterface
                                 'zza' => 'Eşnawiyayışi',
                                 'ru' => 'Объявления',
                             ]
+                        ],
+                        [
+                            'url_suffix' => 'events',
+                            'names' => [
+                                'ar' => 'الفعاليات',
+                                'ckb' => 'چالاکییەکان',
+                                'de' => 'Veranstaltungen',
+                                'en' => 'Events',
+                                'fa' => 'رویدادها',
+                                'fr' => 'Événements',
+                                'ku' => 'Çalakî',
+                                'sv' => 'Evenemang',
+                                'tr' => 'Etkinlikler',
+                                'zza' => 'Çalakî',
+                                'ru' => 'Мероприятия',
+                            ]
                         ]
                     ];
 

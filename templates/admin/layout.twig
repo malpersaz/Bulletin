@@ -73,7 +73,11 @@
         <!-- WIZARDS & MODALS -->
         {% if (show_wizards is defined and show_wizards) or (show_wizards is not defined and wizard_module is defined) %}
             {% block wizards %}
-                {% include 'admin/partials/wizard_content.twig' %}
+                {% if wizard_module == 'mod_event' %}
+                    {% include 'admin/partials/wizard_event.twig' %}
+                {% else %}
+                    {% include 'admin/partials/wizard_content.twig' %}
+                {% endif %}
                 {% include 'admin/partials/wizard_video_embed.twig' %}
             {% endblock %}
         {% endif %}
@@ -113,6 +117,9 @@
                 {% elseif wizard_module == 'mod_publication' %}
                     {% set wizard_title_key = 'publication_title' %}
                     {% set wizard_body_key = 'publication' %}
+                {% elseif wizard_module == 'mod_event' %}
+                    {% set wizard_title_key = 'name' %}
+                    {% set wizard_body_key = 'content' %}
                 {% endif %}
                 step: {
                     language: {{ wizard_lang.wizard.step.language|default('')|json_encode|raw }},

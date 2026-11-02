@@ -24,6 +24,13 @@
             <div class="add-badge"><i class="bi bi-plus"></i></div>
         </a>
         {% endif %}
+        {% if shared_admin_modules is defined and shared_admin_modules.mod_event %}
+        <a href="{{ site.saddress }}mod_event/add" class="fab-mini fab-row-event" title="{{ lang.mod_user.fab.add_event }}" data-action="event-add">
+            <span class="fab-label">{{ lang.mod_user.fab.add_event }}</span>
+            <i class="bi bi-calendar-event-fill main-icon"></i>
+            <div class="add-badge"><i class="bi bi-plus"></i></div>
+        </a>
+        {% endif %}
         {% if shared_admin_modules is defined and shared_admin_modules.mod_video_embed %}
         <a href="{{ site.saddress }}mod_video_embed/add" class="fab-mini fab-row-video" title="{{ lang.mod_user.fab.add_video }}" data-action="video-embed-add">
             <span class="fab-label">{{ lang.mod_user.fab.add_video }}</span>

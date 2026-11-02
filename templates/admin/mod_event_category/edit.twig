@@ -1,0 +1,193 @@
+{% set hide_navbar = true %}
+{% extends "admin/layout.twig" %}
+{% set hide_fab = true %}
+{% set hide_search = true %}
+{% set module_lang_key = 'mod_event_category' %}
+
+{% block title %}{{ lang.mod_event_category.edit }}{% endblock %}
+{% block headline %}{{ lang.mod_event_category.edit }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_event_category.css?v={{ site.version }}">
+{% endblock %}
+
+{% macro select_nested_parent_id_function(select_nested_parent_id_result, parent_id, selected_id, self_id, level = 0, disable = false) %}
+    {% if select_nested_parent_id_result[parent_id] is defined %}
+        {% for entry in select_nested_parent_id_result[parent_id] %}
+            {% set parent_id_loop = entry.id %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %} {% if entry.id == self_id or disable %} disabled="disabled" {% endif %}>
+                {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }} ({% if entry.lang is defined %}{{ entry.lang|upper }}{% endif %})
+            </option>
+            {% if select_nested_parent_id_result[parent_id_loop] is defined and select_nested_parent_id_result[parent_id_loop] is iterable and parent_id_loop != parent_id and level < 20 %}
+                {% set next_disable = disable or (entry.id == self_id) %}
+                {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, parent_id_loop, selected_id, self_id, level + 1, next_disable) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% macro select_nested_menu_function(select_nested_menu_result, parent_id, selected_id, level = 0) %}
+    {% if select_nested_menu_result[parent_id] is defined %}
+        {% for entry in select_nested_menu_result[parent_id] %}
+            {% set sub_loop = entry.id %}
+            <option value="{{ entry.id }}" {% if selected_id == entry.id %} selected="selected" {% endif %}>
+                 {{ '&nbsp;&nbsp;&nbsp;'|repeat(level)|raw }}{{ entry.display_name }}
+            </option>
+            {% if select_nested_menu_result[sub_loop] is defined and select_nested_menu_result[sub_loop] is iterable and sub_loop != parent_id and level < 20 %}
+                {{ _self.select_nested_menu_function(select_nested_menu_result, sub_loop, selected_id, level + 1) }}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+    {% set selected_parent_id = category_selected_parent_id %}
+    {% set selected_menu_id = d.menu is defined ? d.menu : 0 %}
+    {% set selected_acl_id = d.acl_id is defined ? d.acl_id : 0 %}
+
+    <form method="POST" action="{{ site.saddress }}mod_event_category/edit/{{ d.id }}" enctype="multipart/form-data">
+        <input type="hidden" name="edit" value="1">
+        <input type="hidden" name="root" value="{{ d.root }}">
+
+        <div class="edit-container">
+            {% if Success is defined and Success %}
+                <div class="banner-m3 banner-success-soft">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>{{ message is defined ? message : '' }}</span>
+                </div>
+            {% endif %}
+            {% if error is defined %}
+                <div class="banner-m3 banner-error-soft">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>{{ message is defined ? message : '' }}</span>
+                </div>
+            {% endif %}
+
+            {# Card 1: Language & Parent #}
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-translate"></i>
+                    <span>{{ lang.mod_event_category.form.basic_info }}</span>
+                </div>
+
+                <div class="form-row">
+                    <label class="field-section-label">{{ lang.mod_event_category.form.language }}</label>
+                    <select name="lang" id="categoryLangSelect" class="m3-input-lg" required>
+                        {% for language in lang_lang %}
+                            <option value="{{ language.seo }}" {% if (d.lang is defined and d.lang == language.seo) or (selected_lang == language.seo) %}selected="selected"{% endif %}>
+                                {{ language.name }} ({{ language.seo|upper }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label class="field-section-label">{{ lang.mod_event_category.form.parent_category }}</label>
+                    <select name="parent_id" class="m3-input-lg">
+                        {% if category_language_root_label %}
+                            <option value="{{ category_parent_root_id }}" {% if selected_parent_id == category_parent_root_id %}selected="selected"{% endif %}>
+                                {{ category_language_root_label }}
+                            </option>
+                        {% endif %}
+                        {% if select_nested_parent_id_result[category_parent_root_id] is defined %}
+                            {{ _self.select_nested_parent_id_function(select_nested_parent_id_result, category_parent_root_id, selected_parent_id, d.id, 1) }}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="name" id="categoryNameInput" placeholder=" " value="{{ d.name }}" required>
+                        <label class="m3-floating-label">{{ lang.mod_event_category.form.name }}</label>
+                    </div>
+                </div>
+            </div>
+
+            {# Card 2: Display & Options #}
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-sliders"></i>
+                    <span>{{ lang.mod_event_category.form.display_options }}</span>
+                </div>
+
+                <div class="form-row">
+                    <label class="field-section-label">{{ lang.mod_event_category.form.show_on_homepage }}</label>
+                    <select name="show_on_homepage" class="m3-input-lg">
+                        <option value="y" {% if d.show_on_homepage == 'y' %}selected="selected"{% endif %}>{{ lang.mod_event_category.radio.yes }}</option>
+                        <option value="n" {% if d.show_on_homepage != 'y' %}selected="selected"{% endif %}>{{ lang.mod_event_category.radio.no }}</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label class="field-section-label">{{ lang.mod_event_category.form.menu_integration }}</label>
+                    <select name="menu" class="m3-input-lg">
+                        <option value="0">{{ lang.mod_event_category.form.no_menu_link }}</option>
+                        {% if select_nested_menu_result[category_menu_root_id] is defined %}
+                            {{ _self.select_nested_menu_function(select_nested_menu_result, category_menu_root_id, selected_menu_id, 0) }}
+                        {% endif %}
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label class="field-section-label">{{ lang.mod_event_category.form.access_control }}</label>
+                    <select name="acl_id" class="m3-input-lg">
+                        <option value="0">{{ lang.mod_event_category.form.public_access }}</option>
+                        {% if mod_acl_acl_id is defined %}
+                            {% for acl in mod_acl_acl_id %}
+                                <option value="{{ acl.id }}" {% if selected_acl_id == acl.id %}selected="selected"{% endif %}>
+                                    {{ acl.name }}
+                                </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+
+            {# Card 3: SEO Meta #}
+            <div class="edit-card">
+                <div class="card-header-edit">
+                    <i class="bi bi-search"></i>
+                    <span>{{ lang.mod_event_category.form.seo_settings }}</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="seo" id="categorySeoInput" placeholder=" " value="{{ d.seo }}">
+                        <label class="m3-floating-label">{{ lang.mod_event_category.form.seo_url }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="title" id="categoryMetaTitleInput" placeholder=" " value="{{ d.title }}">
+                        <label class="m3-floating-label">{{ lang.mod_event_category.form.page_title }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <input type="text" class="m3-input-lg" name="keywords" id="categoryMetaKeywordsInput" placeholder=" " value="{{ d.keywords }}">
+                        <label class="m3-floating-label">{{ lang.mod_event_category.form.keywords }}</label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="m3-input-wrapper">
+                        <textarea class="m3-input-lg" name="description" id="categoryMetaDescInput" rows="3" placeholder=" ">{{ d.description }}</textarea>
+                        <label class="m3-floating-label">{{ lang.mod_event_category.form.description }}</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions-bar">
+                <button type="submit" class="m3-btn-filled">
+                    <i class="bi bi-check2"></i>
+                    <span>{{ lang.mod_event_category.button.edit }}</span>
+                </button>
+                <a href="{{ site.saddress }}mod_event_category/list" class="m3-btn-outlined">
+                    <span>{{ lang.mod_event_category.button.cancel }}</span>
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

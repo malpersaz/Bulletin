@@ -1,0 +1,114 @@
+{% set hide_navbar = true %}
+{% set hide_fab = true %}
+{% set module_lang_key = 'mod_event_category' %}
+{% extends "admin/layout.twig" %}
+
+{% block title %}{{ lang.mod_event_category.list }}{% endblock %}
+{% block headline %}{{ lang.mod_event_category.list }}{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="/templates/admin/assets/css/mod_event_category.css?v={{ site.version }}">
+{% endblock %}
+
+{% macro render_tree(items, parent_id, level, site, lang) %}
+    {% if items[parent_id] is defined %}
+        {% for entry in items[parent_id] %}
+            {% set display_name = entry.display_name %}
+            {% set has_children = items[entry.id] is defined %}
+            <div class="category-node" data-id="{{ entry.id }}" data-parent="{{ parent_id }}" data-name="{{ display_name|lower }}">
+                <div class="m3-list-card" data-action="select-category" data-id="{{ entry.id }}">
+                    <div class="drag-handle"><i class="bi bi-grip-vertical"></i></div>
+
+                    {% if has_children %}
+                        <button type="button" class="toggle-btn collapsed" data-action="toggle-category" aria-label="{{ display_name }}">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    {% else %}
+                        <div class="toggle-placeholder"></div>
+                    {% endif %}
+
+                    <div class="card-thumb">
+                        {% if entry.image %}
+                            <img src="{{ site.iaddress }}mod_event_category/thumb/{{ entry.image }}" alt="{{ display_name }}">
+                        {% else %}
+                            <i class="bi bi-calendar2-range"></i>
+                        {% endif %}
+                    </div>
+
+                    <div class="card-info">
+                        <div class="card-title">
+                            {{ display_name }}
+                            <button type="button" class="btn-icon-subtle" data-action="toggle-homepage" data-id="{{ entry.id }}" aria-label="{{ lang.management.show_on_homepage }}">
+                                {% if entry.show_on_homepage == 'y' %}
+                                    <i class="bi bi-eye-fill text-primary" title="{{ lang.management.show_on_homepage }}"></i>
+                                {% else %}
+                                    <i class="bi bi-eye-slash text-muted"></i>
+                                {% endif %}
+                            </button>
+                        </div>
+                        <div class="card-meta">
+                            {% if entry.lang %} <span class="meta-badge">{{ entry.lang|upper }}</span> {% endif %}
+                            <span class="meta-id">#{{ entry.id }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if entry.id != parent_id and level < 20 %}
+                <div class="list-children collapsed{% if not has_children %} list-children-empty{% endif %}">
+                    {% if has_children %}
+                        {{ _self.render_tree(items, entry.id, level + 1, site, lang) }}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
+
+{% block content %}
+    <div class="content-list" id="categoryRootList">
+        <div class="reorder-controller">
+            <button type="button" id="reorderToggleBtn" class="reorder-btn" data-action="toggle-reorder">
+                <i class="bi bi-lock-fill" id="reorderIcon"></i>
+                <span id="reorderText">{{ lang.mod_event_category.actions.unlock_reorder }}</span>
+            </button>
+        </div>
+
+        {% if category_tree[0] is defined %}
+             {{ _self.render_tree(category_tree, 0, 0, site, lang) }}
+        {% else %}
+            <div class="empty-state-container">
+                <div class="empty-icon-box">
+                    <i class="bi bi-folder2-open"></i>
+                </div>
+                <h2>{{ lang.mod_event_category.empty.no_categories }}</h2>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block fixed_bottom %}
+<div class="standard-toolbar category-toolbar" id="contentToolbar" role="toolbar" aria-label="{{ lang.mod_event_category.list }}" aria-hidden="true">
+    {% if session.permissions.mod_event_category.edit is defined %}
+        <button id="toolbarEdit" class="toolbar-item is-disabled" data-action="edit-category" title="{{ lang.mod_event_category.button.edit }}" aria-label="{{ lang.mod_event_category.button.edit }}">
+            <i class="bi bi-pencil-fill"></i>
+        </button>
+    {% endif %}
+
+    {% if session.permissions.mod_event_category.delete is defined %}
+        <button id="toolbarDelete" class="toolbar-item is-disabled" data-action="delete-category" title="{{ lang.mod_event_category.button.delete }}" aria-label="{{ lang.mod_event_category.button.delete }}">
+            <i class="bi bi-trash3-fill"></i>
+        </button>
+    {% endif %}
+</div>
+
+{% if session.permissions.mod_event_category.add is defined %}
+    <a class="main-fab" id="mainFab" href="{{ site.saddress }}mod_event_category/add" aria-label="{{ lang.mod_event_category.add }}">
+        <i class="bi bi-plus-lg"></i>
+    </a>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="/templates/admin/assets/js/mod_event_category.js?v={{ site.version }}"></script>
+{% endblock %}

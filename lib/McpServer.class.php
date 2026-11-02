@@ -18,6 +18,7 @@ require_once(lib_dir . 'McpOAuth.class.php');
 require_once(lib_dir . 'McpNewsTools.class.php');
 require_once(lib_dir . 'McpPublicationTools.class.php');
 require_once(lib_dir . 'McpAnnouncementTools.class.php');
+require_once(lib_dir . 'McpEventTools.class.php');
 require_once(lib_dir . 'McpSettingsTools.class.php');
 require_once(lib_dir . 'McpMenuTools.class.php');
 require_once(lib_dir . 'McpAclTools.class.php');
@@ -96,6 +97,7 @@ class McpServer
         'news' => McpNewsTools::class,
         'publication' => McpPublicationTools::class,
         'announcement' => McpAnnouncementTools::class,
+        'event' => McpEventTools::class,
         'settings' => McpSettingsTools::class,
         'menu' => McpMenuTools::class,
         'acl' => McpAclTools::class,

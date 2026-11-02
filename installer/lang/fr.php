@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'Titre principal',
       'mod_news_category' => 'Catégories d’actualités',
       'mod_publication_category' => 'Catégories de publication',
+      'mod_event_category' => 'Catégories d\'événements',
       'mod_acl' => 'Contrôle d’accès',
       'mod_survey' => 'Sondage',
       'mod_announcements' => 'Annonces',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'Intégration vidéo',
       'mod_news' => 'Actualités',
       'mod_publication' => 'Publications',
+      'mod_event' => 'Événements',
     ],
     'checks' => [
       'php_version' => [

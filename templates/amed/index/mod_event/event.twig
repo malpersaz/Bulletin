@@ -1,0 +1,397 @@
+{% extends "layouts/base.twig" %}
+{% import "macros/faq.twig" as faq %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/detail-foundation.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/events.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/gallery.css?v={{ site.version }}">
+{% endblock %}
+
+{% block detail_plugins %}
+    {% include 'partials/_detail_scripts.twig' %}
+{% endblock %}
+
+{% set d = ctx_get('detail') ?: ctx_get('d') %}
+{% set categories = ctx_get('categories') %}
+{% set gallery = ctx_get('gallery') ?: ctx_get('res') %}
+{% set video = ctx_get('video') %}
+{% set files = ctx_get('files') ?: ctx_get('file') %}
+{% set faqs = ctx_get('faqs') ?: ctx_get('faq') %}
+{% set related_events = ctx_get('related_events') %}
+{% set related_news = ctx_get('related_news') %}
+
+{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+{% set event_share_image = d.image is not empty ? site.iaddress ~ 'mod_event/' ~ d.image : event_logo_asset %}
+{% set event_share_ext = event_share_image|split('?')|first|split('.')|last|lower %}
+{% set event_share_mime = event_share_ext == 'png' ? 'image/png' : (event_share_ext == 'webp' ? 'image/webp' : 'image/jpeg') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.saddress }}event/{{ d.seo }}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ d.name }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ d.summary ?: (d.description|striptags|slice(0, 200)) }}">
+{% endblock %}
+
+{% block keywords %}
+    <meta name="keywords" content="{{ d.keywords }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site.saddress }}event/{{ d.seo }}">
+    <meta property="og:title" content="{{ d.name }}">
+    <meta property="og:description" content="{{ (d.summary ?: d.description)|striptags|slice(0, 200) }}">
+    <meta property="og:image" content="{{ event_share_image }}">
+    <meta property="og:image:secure_url" content="{{ event_share_image }}">
+    <meta property="og:image:type" content="{{ event_share_mime }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ site.saddress }}event/{{ d.seo }}">
+    <meta name="twitter:title" content="{{ d.name }}">
+    <meta name="twitter:description" content="{{ (d.summary ?: d.description)|striptags|slice(0, 200) }}">
+    <meta name="twitter:image" content="{{ event_share_image }}">
+{% endblock %}
+
+{% block head %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": {{ d.name|json_encode|raw }},
+      "startDate": {{ d.start_date|json_encode|raw }},
+      {% if d.end_date is defined and d.end_date is not empty %}
+      "endDate": {{ d.end_date|json_encode|raw }},
+      {% endif %}
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@type": "Place",
+        "name": {{ (d.location ?: site.title)|json_encode|raw }},
+        "address": {{ (d.location ?: site.title)|json_encode|raw }}
+      },
+      "image": {{ event_share_image|json_encode|raw }},
+      "description": {{ (d.summary ?: (d.description ?: site.description))|striptags|slice(0, 200)|json_encode|raw }},
+      "organizer": {
+        "@type": "Organization",
+        "name": {{ site.title|json_encode|raw }},
+        "url": {{ site.address|json_encode|raw }}
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": {{ lang.index.home|json_encode|raw }},
+          "item": {{ site.address|json_encode|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": {{ lang.index.mod_event.events|json_encode|raw }},
+          "item": {{ (site.saddress ~ 'events')|json_encode|raw }}
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": {{ d.name|json_encode|raw }},
+          "item": {{ (site.saddress ~ 'event/' ~ d.seo)|json_encode|raw }}
+        }
+      ]
+    }
+    </script>
+    {{ faq.schema(faqs) }}
+{% endblock %}
+
+{% block content %}
+<main class="event-detail-page py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ site.saddress }}">{{ lang.index.home }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ site.saddress }}events">{{ lang.index.mod_event.events }}</a></li>
+            {% if d.category_name is defined and d.category_name is not empty %}
+                <li class="breadcrumb-item"><a href="{{ site.saddress }}events/{{ d.category_seo }}">{{ d.category_name }}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active" aria-current="page">{{ d.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <article class="col-12 col-lg-8 event-main-column">
+            <div class="event-detail-hero d-flex flex-column flex-md-row gap-4 mb-4 p-3 p-md-4 rounded-3 border shadow-sm">
+                {% if d.image is defined and d.image is not empty %}
+                    <div class="event-hero-poster flex-shrink-0">
+                        <a href="{{ site.iaddress }}mod_event/{{ d.image }}" class="glightbox d-block h-100" data-bs-toggle="lightbox" data-gallery="event-poster" aria-label="{{ d.name }}">
+                            <img src="{{ site.iaddress }}mod_event/{{ d.image }}" alt="{{ d.name }}" class="img-fluid rounded shadow-sm event-poster-img" fetchpriority="high" width="240" height="320">
+                        </a>
+                    </div>
+                {% endif %}
+
+                <header class="event-detail-header d-flex flex-column justify-content-between flex-grow-1">
+                    <div>
+                        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                            {% if d.category_name is defined and d.category_name is not empty %}
+                                <a href="{{ site.saddress }}events/{{ d.category_seo }}" class="event-category-badge d-inline-block">
+                                    {{ d.category_name }}
+                                </a>
+                            {% endif %}
+
+                            {# Prominent Status & Countdown Badge #}
+                            {% if d.is_today %}
+                                <span class="badge bg-danger text-white py-1 px-2">
+                                    <i class="bi bi-clock-history me-1" aria-hidden="true"></i>{{ lang.index.mod_event.today }}
+                                </span>
+                            {% elseif d.is_tomorrow %}
+                                <span class="badge bg-warning text-dark py-1 px-2">
+                                    <i class="bi bi-alarm me-1" aria-hidden="true"></i>{{ lang.index.mod_event.tomorrow }}
+                                </span>
+                            {% elseif d.is_upcoming and d.days_until > 0 %}
+                                <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle py-1 px-2">
+                                    <i class="bi bi-hourglass-split me-1" aria-hidden="true"></i>{{ d.days_until }} {{ lang.index.mod_event.days_left }}
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary py-1 px-2">
+                                    <i class="bi bi-check2-circle me-1" aria-hidden="true"></i>{{ lang.index.mod_event.event_completed }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <h1 class="event-detail-title mb-2">{{ d.name }}</h1>
+                        {% if d.subject is defined and d.subject is not empty %}
+                            <p class="event-detail-subject text-primary fw-semibold mb-3">{{ d.subject }}</p>
+                        {% endif %}
+
+                        {% if d.has_deck and d.summary is defined and d.summary is not empty %}
+                            <div class="event-summary-callout mb-3 p-3 rounded">
+                                <p class="mb-0 fw-medium small">{{ d.summary }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="event-quick-info d-flex flex-wrap gap-3 align-items-center py-2 px-3 rounded mt-2">
+                        <div class="quick-info-item d-flex align-items-center">
+                            <i class="bi bi-calendar3 event-quick-icon me-2" aria-hidden="true"></i>
+                            <div>
+                                <span class="d-block small text-muted">{{ lang.index.mod_event.date }}</span>
+                                <strong>{{ d.start_date_formatted }}</strong>
+                            </div>
+                        </div>
+                        {% if d.location is defined and d.location is not empty %}
+                            <div class="quick-info-item d-flex align-items-center">
+                                <i class="bi bi-geo-alt event-quick-icon me-2" aria-hidden="true"></i>
+                                <div>
+                                    <span class="d-block small text-muted">{{ lang.index.mod_event.location }}</span>
+                                    <strong>{{ d.location }}</strong>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </header>
+            </div>
+
+            {# Rich HTML Content Body #}
+            <div class="event-content-body detail-content mb-4">
+                {{ d.content|raw }}
+            </div>
+
+            {% if video is not empty %}
+                <section id="event_video" class="detail-section mb-4" aria-labelledby="event-video-title">
+                    <h2 id="event-video-title" class="detail-section-heading h4 mb-3">
+                        <i class="bi bi-play-btn me-2" aria-hidden="true"></i>{{ lang.index.mod_video_embed.title }}
+                    </h2>
+                    <div class="row g-3">
+                        {% for v in video %}
+                            <div class="col-12 col-md-6">
+                                {% if v.embed is defined and v.embed is not empty %}
+                                    <div class="ratio ratio-16x9 bg-dark rounded overflow-hidden shadow-sm">
+                                        {{ v.embed|replace({'iframe': 'iframe loading="lazy" title="' ~ v.name ~ '"'})|raw }}
+                                    </div>
+                                {% else %}
+                                    <a href="{{ site.saddress }}tools/videoFlv/mod_event/{{ d.id }}/{{ v.id }}/show.mp4" class="video-card-wrapper" data-bs-toggle="lightbox" data-gallery="videos" data-title="{{ v.name }}">
+                                        <div class="video-poster ratio ratio-16x9 rounded overflow-hidden shadow-sm position-relative">
+                                            <img src="{{ site.address }}tools/videoResim/mod_event/{{ d.id }}/{{ v.id }}/show.jpg" alt="{{ v.name }}" class="w-100 h-100 object-fit-cover">
+                                            <i class="bi bi-play-circle-fill play-icon" aria-hidden="true"></i>
+                                        </div>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if gallery is not empty %}
+                <section class="detail-section mb-4" id="event_gallery" aria-labelledby="event-gallery-title">
+                    <h2 id="event-gallery-title" class="detail-section-heading h4 mb-3">
+                        <i class="bi bi-images me-2" aria-hidden="true"></i>{{ lang.index.mod_event.gallery }}
+                    </h2>
+                    <div class="row g-3 detail-gallery-grid">
+                        {% for image in gallery %}
+                            <div class="col-6 col-md-4">
+                                <div class="detail-gallery-card">
+                                    <a href="{{ site.iaddress }}mod_gallery/mod_event/original/{{ image.url }}" class="glightbox" data-bs-toggle="lightbox" data-gallery="event-images" data-title="{{ image.name }}">
+                                        <img src="{{ site.iaddress }}mod_gallery/mod_event/thumb/{{ image.url }}" class="img-fluid rounded" alt="{{ image.name }}" loading="lazy">
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if files is not empty %}
+                <section class="detail-section mb-4" id="event_files" aria-labelledby="event-files-title">
+                    <h2 id="event-files-title" class="detail-section-heading h4 mb-3">
+                        <i class="bi bi-paperclip me-2" aria-hidden="true"></i>{{ lang.index.mod_event.files }}
+                    </h2>
+                    <div class="list-group">
+                        {% for file_item in files %}
+                            {% set file_name = file_item.filename ?: file_item.original_name %}
+                            <a href="{{ site.saddress }}tools/saveFile/mod_event/{{ d.id }}/{{ file_item.id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-file-earmark-arrow-down me-2 text-primary" aria-hidden="true"></i>{{ file_name }}</span>
+                                <i class="bi bi-download" aria-hidden="true"></i>
+                            </a>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% if faqs is not empty %}
+                <section class="detail-section mb-4" id="event_faq" aria-labelledby="event-faq-title">
+                    {{ faq.render(faqs, lang.index.mod_event.faq) }}
+                </section>
+            {% endif %}
+
+            {# Related News from mod_news #}
+            {% if related_news is defined and related_news is not empty %}
+                <section class="detail-section mb-4" id="event_related_news" aria-labelledby="event-news-title">
+                    <h2 id="event-news-title" class="detail-section-heading h4 mb-3">
+                        <i class="bi bi-newspaper me-2 text-primary" aria-hidden="true"></i>{{ lang.index.mod_event.related_news }}
+                    </h2>
+                    <div class="row g-3">
+                        {% for news_item in related_news %}
+                            {% set n_url = site.saddress ~ 'news/' ~ news_item.seo %}
+                            {% set n_img = news_item.image is not empty ? (site.iaddress ~ 'mod_news/thumb/' ~ news_item.image) : '' %}
+                            <div class="col-12 col-md-6">
+                                <article class="card h-100 border shadow-sm">
+                                    {% if n_img is not empty %}
+                                        <a href="{{ n_url }}"><img src="{{ n_img }}" alt="{{ news_item.name }}" class="card-img-top" loading="lazy"></a>
+                                    {% endif %}
+                                    <div class="card-body p-3">
+                                        <h3 class="h6 card-title mb-1"><a href="{{ n_url }}" class="text-decoration-none text-reset">{{ news_item.name }}</a></h3>
+                                        {% if news_item.summary is not empty %}
+                                            <p class="card-text small text-muted mb-0">{{ news_item.summary|slice(0, 90) }}...</p>
+                                        {% endif %}
+                                    </div>
+                                </article>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+            {% endif %}
+
+            {% include 'partials/share_toolbar.twig' with {
+                'share_url_path': 'event',
+                'mod_name': 'mod_event',
+                'item_id': d.id,
+                'has_gallery': gallery is defined and gallery is not empty
+            } %}
+        </article>
+
+        <aside class="col-12 col-lg-4 event-sidebar-column">
+            <div class="event-meta-card p-4 rounded shadow-sm mb-4">
+                <h3 class="event-meta-title h5 mb-3">
+                    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>{{ lang.index.mod_event.details }}
+                </h3>
+
+                <dl class="event-meta-list mb-0">
+                    <dt class="text-muted small">{{ lang.index.mod_event.start_date }}</dt>
+                    <dd class="fw-semibold mb-3">{{ d.start_date_formatted }}</dd>
+
+                    {% if d.end_date_formatted is defined and d.end_date_formatted is not empty %}
+                        <dt class="text-muted small">{{ lang.index.mod_event.end_date }}</dt>
+                        <dd class="fw-semibold mb-3">{{ d.end_date_formatted }}</dd>
+                    {% endif %}
+
+                    {% if d.location is defined and d.location is not empty %}
+                        <dt class="text-muted small">{{ lang.index.mod_event.location }}</dt>
+                        <dd class="fw-semibold mb-3">
+                            {% if d.map_search_url is defined and d.map_search_url is not empty %}
+                                <a href="{{ d.map_search_url }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
+                                    <i class="bi bi-geo-alt me-1 text-danger" aria-hidden="true"></i>{{ d.location }}
+                                    <i class="bi bi-arrow-up-right small ms-1" aria-hidden="true"></i>
+                                </a>
+                            {% else %}
+                                <span>{{ d.location }}</span>
+                            {% endif %}
+                        </dd>
+                    {% endif %}
+
+                    {% if d.guests is defined and d.guests is not empty %}
+                        <dt class="text-muted small">{{ lang.index.mod_event.guests }}</dt>
+                        <dd class="fw-semibold mb-3">{{ d.guests }}</dd>
+                    {% endif %}
+
+                    {% if d.participants is defined and d.participants is not empty %}
+                        <dt class="text-muted small">{{ lang.index.mod_event.participants }}</dt>
+                        <dd class="fw-semibold mb-3">{{ d.participants }}</dd>
+                    {% endif %}
+                </dl>
+
+                <div class="mt-4 pt-3 border-top">
+                    {% if d.google_calendar_url is defined and d.google_calendar_url is not empty %}
+                        <a href="{{ d.google_calendar_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-danger w-100 mb-2">
+                            <i class="bi bi-calendar-plus me-2" aria-hidden="true"></i>{{ lang.index.mod_event.add_to_calendar }} (Google)
+                        </a>
+                    {% endif %}
+                    <a href="{{ site.saddress }}event-calendar" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="bi bi-calendar3 me-2" aria-hidden="true"></i>{{ lang.index.mod_event.calendar }}
+                    </a>
+                    <a href="{{ site.saddress }}events" class="btn btn-light w-100">
+                        {{ lang.index.mod_event.all_events }}
+                    </a>
+                </div>
+            </div>
+
+            {% if related_events is defined and related_events is not empty %}
+                <div class="related-events-widget p-3 rounded shadow-sm mb-4">
+                    <h3 class="related-events-title h6 mb-3 border-bottom pb-2">
+                        <i class="bi bi-calendar-check me-2" aria-hidden="true"></i>{{ lang.index.mod_event.related_events }}
+                    </h3>
+                    <div class="related-events-list">
+                        {% for rel in related_events %}
+                            <div class="related-event-item d-flex gap-3 mb-3 pb-2 border-bottom">
+                                <div class="related-event-badge text-center rounded p-1">
+                                    <span class="d-block fw-bold fs-6">{{ rel.start_day }}</span>
+                                    <span class="d-block small text-uppercase">{{ rel.start_month_localized }}</span>
+                                </div>
+                                <div class="related-event-info">
+                                    <h4 class="h6 mb-1">
+                                        <a href="{{ site.saddress }}event/{{ rel.seo }}" class="text-decoration-none text-reset">
+                                            {{ rel.name }}
+                                        </a>
+                                    </h4>
+                                    {% if rel.location is defined and rel.location is not empty %}
+                                        <span class="text-muted small d-block">
+                                            <i class="bi bi-geo-alt me-1" aria-hidden="true"></i>{{ rel.location }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </aside>
+    </div>
+</main>
+{% endblock %}

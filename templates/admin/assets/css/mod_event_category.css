@@ -1,0 +1,234 @@
+/**
+ * Amed Framework - Event Category Styles (Phone-first Mobile Admin)
+ * templates/admin/assets/css/mod_event_category.css
+ */
+
+.category-node {
+    margin-bottom: 8px;
+    position: relative;
+}
+
+.m3-list-card {
+    display: flex;
+    align-items: center;
+    background: var(--md-sys-color-surface, #fff);
+    border: 1px solid var(--md-sys-color-outline-variant, #e0e0e0);
+    border-radius: 12px;
+    padding: 10px 14px;
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.m3-list-card:hover {
+    background: var(--md-sys-color-surface-container-high, #f8f9fa);
+}
+
+.m3-list-card.selected {
+    border-color: var(--md-sys-color-primary, #6750a4);
+    background: var(--md-sys-color-primary-container, #eaddff);
+}
+
+.drag-handle {
+    cursor: grab;
+    color: var(--md-sys-color-on-surface-variant, #79747e);
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 8px;
+    color: var(--md-sys-color-on-surface-variant, #79747e);
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.toggle-btn.collapsed i {
+    transform: rotate(-90deg);
+}
+
+.toggle-placeholder {
+    width: 24px;
+    margin-right: 4px;
+}
+
+.card-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--md-sys-color-surface-container, #f3edf7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: var(--md-sys-color-primary, #6750a4);
+    font-size: 20px;
+}
+
+.card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.meta-badge {
+    font-size: 11px;
+    font-weight: 700;
+    background: var(--md-sys-color-secondary-container, #e8def8);
+    color: var(--md-sys-color-on-secondary-container, #1d192b);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.meta-id {
+    font-size: 12px;
+    color: var(--md-sys-color-outline, #79747e);
+}
+
+.list-children {
+    margin-left: 20px;
+    margin-top: 8px;
+    border-left: 2px solid var(--md-sys-color-outline-variant, #e0e0e0);
+    padding-left: 10px;
+    transition: all 0.2s ease;
+}
+
+.list-children.collapsed {
+    display: none;
+}
+
+.list-children-empty {
+    min-height: 48px;
+    border: 2px dashed rgba(103, 80, 164, 0.4);
+    border-radius: 12px;
+    margin-top: 8px;
+    margin-left: 24px;
+    display: none;
+}
+
+body.reorder-active .list-children-empty {
+    display: block;
+}
+
+.reorder-controller {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+}
+
+.reorder-btn {
+    border-radius: 12px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    background: var(--md-sys-color-surface-container, #f3edf7);
+    color: var(--md-sys-color-primary, #6750a4);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.reorder-btn.active {
+    background: var(--md-sys-color-primary, #6750a4);
+    color: #fff;
+}
+
+.empty-state-container {
+    text-align: center;
+    padding: 48px 16px;
+}
+
+.empty-icon-box {
+    font-size: 48px;
+    color: var(--md-sys-color-outline, #79747e);
+    margin-bottom: 16px;
+}
+
+.toolbar-fab-static {
+    margin: 40px auto 0 auto;
+    position: static;
+}
+
+/* Category Edit / Add Form Styles */
+.edit-container {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-bottom: 120px;
+}
+
+.edit-card {
+    background: var(--md-sys-color-surface, #fff);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--md-sys-elevation-1, 0 1px 3px rgba(0,0,0,0.1));
+}
+
+.card-header-edit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--md-sys-color-on-surface, #1d1b20);
+}
+
+.card-header-edit i {
+    color: var(--md-sys-color-primary, #6750a4);
+}
+
+.form-row {
+    margin-bottom: 16px;
+}
+
+.form-row:last-child {
+    margin-bottom: 0;
+}
+
+.field-section-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface-variant, #49454f);
+    margin-bottom: 6px;
+}
+
+.form-actions-bar {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}

@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'Sername',
       'mod_news_category' => 'Kategoriyê xeberan',
       'mod_publication_category' => 'Kategoriyê weşanan',
+      'mod_event_category' => 'Kategoriyê çalakiyan',
       'mod_acl' => 'Kontrolê gihıştişî',
       'mod_survey' => 'Anket',
       'mod_announcements' => 'Ragihandış',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'Cihdayışê vîdyoyî',
       'mod_news' => 'Xeber',
       'mod_publication' => 'Weşan',
+      'mod_event' => 'Çalakî',
     ],
     'checks' => [
       'php_version' => [

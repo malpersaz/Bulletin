@@ -141,6 +141,19 @@ $url['authors/(:num)']='index/authors/$1';
 $url['author/(:any)']='index/author/$1';
 $url['author/(:any)/(:num)']='index/author/$1/$2';
 
+// Event and Event Category
+$url['event/detail/(:any)']='index/event/$1';
+$url['event/(:any)']='index/event/$1';
+$url['events']='index/events';
+$url['events/']='index/events';
+$url['events/(:num)']='index/events/$1';
+$url['events/(:any)']='index/events/$1';
+$url['events/(:any)/(:num)']='index/events/$1/$2';
+$url['event-calendar']='index/event_calendar';
+$url['event-calendar/']='index/event_calendar';
+$url['event-calendar/json']='index/event_calendar_json';
+$url['eventSitemap.xml']='index/eventSitemap';
+
 // File
 $url['download/(:num)']='mod_attachment/indir/$1';
 

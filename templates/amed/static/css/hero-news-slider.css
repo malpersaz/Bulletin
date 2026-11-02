@@ -244,6 +244,29 @@
     }
 }
 
+/* Event poster 3:4 presentation in 16:9 hero slider */
+.hero-news-slide--event .hero-slide__image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #090d16;
+}
+
+.hero-news-slide--event .hero-slide__cover-img {
+    position: relative;
+    width: auto !important;
+    height: 100% !important;
+    max-height: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: contain;
+    margin: 0 auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+.hero-news-slide--event .hero-slide__picture {
+    z-index: 2;
+}
+
 /* Video & iframe embeds */
 .hero-slide__image video.hero-bg-video,
 .hero-slide__image iframe.hero-bg-embed {

@@ -547,6 +547,8 @@ $lang['mod_user'] = [
         'add_video_alert' => 'Перейти к добавлению видео',
         'add_content_alert' => 'Перейти к добавлению материала',
         'add_publication_alert' => 'Перейти к добавлению публикации',
+    'add_event' => 'Добавить мероприятие',
+    'add_event_alert' => 'Мастер мероприятий',
     ],
     'profile_menu' => [
         'edit_profile' => 'Редактировать профиль',

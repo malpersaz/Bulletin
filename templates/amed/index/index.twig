@@ -75,6 +75,9 @@
             {# Block R3 — Live Market Rates Widget #}
             {% include 'index/mod_news/market_rates.twig' %}
 
+            {# Block R4 — City Events Agenda Widget #}
+            {% include 'index/mod_event/event_agenda.twig' %}
+
             {# Pinned Homepage Categories Sidebar #}
             {{ run({"mod": "index", "method": "_homepage_news_categories", "extra": [1, "image,name,seo,summary,created_at,video,gallery_id,file_id"]}) }}
             {% set homepage_categories = ctx_get('homepage_news_categories') %}

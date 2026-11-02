@@ -71,7 +71,7 @@
     function bindCopyButton(btn) {
         btn.addEventListener('click', function () {
             const directText = btn.dataset.copyText || '';
-            const customMsg = btn.dataset.copiedMsg || langData.copied;
+            const customMsg = btn.dataset.copiedMsg || btn.dataset.copyMsg || langData.copied;
             if (directText !== '') {
                 copyValueFrom(directText, customMsg, btn);
                 return;
@@ -376,7 +376,7 @@
     }
 
     function syncSummaryCounts() {
-        const keysList = document.getElementById('mcpKeysList');
+        const keysList = document.getElementById('mcpKeyList') || document.getElementById('mcpKeysList');
         const oauthList = document.getElementById('mcpOauthList');
         if (keysList) {
             const keyCards = keysList.querySelectorAll('.mcp-key-card');
@@ -397,7 +397,7 @@
         if (oauthList) {
             const clientCards = oauthList.querySelectorAll('.mcp-key-card');
             const oauthStat = document.getElementById('mcpStatOauthClients');
-            const sectionCount = oauthList.closest('.mcp-section') ? oauthList.closest('.mcp-section').querySelector('.mcp-section-count') : null;
+            const sectionCount = oauthList.closest('.mcp-oauth-section, .mcp-section') ? oauthList.closest('.mcp-oauth-section, .mcp-section').querySelector('.mcp-section-count') : null;
             if (oauthStat) {
                 oauthStat.textContent = String(clientCards.length);
             }

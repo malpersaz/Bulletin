@@ -1,0 +1,174 @@
+{% extends "layouts/base.twig" %}
+
+{% set events = ctx_get('events') %}
+{% set categories = ctx_get('categories') %}
+{% set category_sections = ctx_get('category_sections') %}
+{% set active_category = ctx_get('active_category') %}
+{% set active_section = ctx_get('active_section') %}
+{% set subcategories = ctx_get('subcategories') %}
+{% set total_events = ctx_get('total_events') %}
+{% set page = ctx_get('page') %}
+{% set page_count = ctx_get('page_count') %}
+
+{% set page_title = active_category ? active_category.name : lang.index.mod_event.all_events %}
+{% set is_filtered = active_category is defined and active_category is not empty %}
+{% set event_logo_asset = site.logo_path is defined and site.logo_path is not empty ? site.iaddress ~ 'mod_settings/' ~ site.logo_path : (site.iaddress ~ 'mod_settings/logo.png') %}
+
+{% block canonical %}
+    <link rel="canonical" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if page > 1 %}/{{ page }}{% endif %}">
+{% endblock %}
+
+{% block title %}
+    <title>{{ page_title }} - {{ site.title }}</title>
+{% endblock %}
+
+{% block description %}
+    <meta name="description" content="{{ page_title }} - {{ site.description }}">
+{% endblock %}
+
+{% block meta_tags %}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}">
+    <meta property="og:title" content="{{ page_title }} - {{ site.title }}">
+    <meta property="og:description" content="{{ page_title }} - {{ site.description }}">
+    <meta property="og:image" content="{{ event_logo_asset }}">
+    <meta property="og:site_name" content="{{ site.title }}">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ page_title }} - {{ site.title }}">
+    <meta name="twitter:description" content="{{ page_title }} - {{ site.description }}">
+    <meta name="twitter:image" content="{{ event_logo_asset }}">
+{% endblock %}
+
+{% block css_custom %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/events.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<main class="events-listing-page py-4" itemscope itemtype="https://schema.org/CollectionPage">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ site.saddress }}">{{ lang.index.home }}</a></li>
+            {% if is_filtered %}
+                <li class="breadcrumb-item"><a href="{{ site.saddress }}events">{{ lang.index.mod_event.events }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ active_category.name }}</li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">{{ lang.index.mod_event.events }}</li>
+            {% endif %}
+        </ol>
+    </nav>
+
+    <div class="events-header d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <h1 class="events-main-title h2 mb-0">{{ page_title }}</h1>
+            <span class="badge rounded-pill bg-primary-subtle text-primary border border-primary-subtle fs-6">{{ total_events }}</span>
+        </div>
+        <div class="events-actions mt-2 mt-sm-0">
+            <a href="{{ site.saddress }}event-calendar" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-calendar3 me-1" aria-hidden="true"></i>{{ lang.index.mod_event.calendar }}
+            </a>
+        </div>
+    </div>
+
+    {# Top Level Category Filter Bar: Always visible for all categories #}
+    {% if categories is defined and categories is not empty %}
+        <div class="events-filter-bar mb-3" role="navigation" aria-label="{{ lang.index.mod_event.filter_by_category }}">
+            <ul class="nav nav-pills events-category-pills">
+                <li class="nav-item">
+                    <a class="nav-link{% if not is_filtered %} active{% endif %}" href="{{ site.saddress }}events">
+                        {{ lang.index.mod_event.all_categories }}
+                    </a>
+                </li>
+                {% for cat in categories %}
+                    <li class="nav-item">
+                        <a class="nav-link{% if is_filtered and active_category.id == cat.id %} active{% endif %}" href="{{ site.saddress }}events/{{ cat.seo }}">
+                            {{ cat.name }}
+                            {% if cat.event_count > 0 %}
+                                <span class="badge rounded-pill bg-light text-secondary ms-1">{{ cat.event_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {# Subcategories chips (when viewing a category that has child subcategories) #}
+    {% if is_filtered and subcategories is defined and subcategories is not empty %}
+        <div class="events-subcategories-bar mb-4 pb-2 border-bottom" role="navigation" aria-label="{{ lang.index.mod_event.subcategories }}">
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <span class="small text-muted me-1 fw-semibold">{{ lang.index.mod_event.subcategories }}:</span>
+                {% for sub in subcategories %}
+                    <a href="{{ site.saddress }}events/{{ sub.seo }}" class="btn btn-sm btn-outline-secondary rounded-pill">
+                        {{ sub.name }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# HUB MODE: Partitioned Broadsheet Grid across Cultural & Civic Sections #}
+    {% if not is_filtered %}
+        {% if category_sections is defined and category_sections is not empty %}
+            <div class="row g-4 events-category-sections mb-2">
+                {% for section in category_sections %}
+                    {% if section.is_civic is not defined or not section.is_civic %}
+                        <div class="{{ section.section_col_class }}">
+                            {% include section.template_path with {'section': section, 'is_single_view': false} %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="row g-4 events-civic-sections mt-2 pt-4 border-top">
+                {% for section in category_sections %}
+                    {% if section.is_civic is defined and section.is_civic %}
+                        <div class="{{ section.section_col_class }}">
+                            {% include section.template_path with {'section': section, 'is_single_view': false} %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="events-empty-state text-center py-5 my-4 bg-light rounded">
+                <i class="bi bi-calendar-x display-4 text-muted mb-3 d-block" aria-hidden="true"></i>
+                <h2 class="h5 text-muted">{{ lang.index.mod_event.no_events_found }}</h2>
+            </div>
+        {% endif %}
+    {% else %}
+        {# SINGLE CATEGORY VIEW: Include active category dedicated template #}
+        {% if active_section is defined and active_section is not empty %}
+            {% include active_section.template_path with {'section': active_section, 'is_single_view': true} %}
+        {% endif %}
+
+        {% if page_count > 1 %}
+            <nav class="events-pagination mt-5" aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    {% if page > 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if page - 1 > 1 %}/{{ page - 1 }}{% endif %}">
+                                <i class="bi bi-chevron-left" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for p in 1..page_count %}
+                        <li class="page-item{% if p == page %} active{% endif %}">
+                            <a class="page-link" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}{% if p > 1 %}/{{ p }}{% endif %}">
+                                {{ p }}
+                            </a>
+                        </li>
+                    {% endfor %}
+
+                    {% if page < page_count %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ site.saddress }}events{% if is_filtered %}/{{ active_category.seo }}{% endif %}/{{ page + 1 }}">
+                                <i class="bi bi-chevron-right" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% endif %}
+</main>
+{% endblock %}

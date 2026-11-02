@@ -33,7 +33,8 @@ class mod_hero_slider_helper extends indexBase
 
         $items = array_merge(
             $this->loadNewsItems($limit),
-            $this->loadPublicationItems($limit)
+            $this->loadPublicationItems($limit),
+            $this->loadEventItems($limit)
         );
 
         if (empty($items)) {
@@ -164,6 +165,62 @@ class mod_hero_slider_helper extends indexBase
         return array_values(array_filter($items));
     }
 
+    private function loadEventItems(int $limit)
+    {
+        if (!$this->isFeatureReady('event.front')) {
+            return [];
+        }
+
+        if (!$this->hasSliderColumn('mod_event')) {
+            return [];
+        }
+
+        $currentLang = strtolower(Req::Clear($this->site['lang']));
+        $allowedCatIds = $this->getAllowedCategoryIds('mod_event_category', $currentLang);
+        $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
+        $aclCondition = $this->getAllowedAclCondition('');
+
+        $event_model = Load::model('mod_event.events');
+        $event_model->flush();
+        $event_model->select([
+            'id',
+            'name',
+            'seo',
+            'image',
+            'summary',
+            'created_at',
+            'slider',
+            'category_name',
+            'category_seo',
+            'user_id',
+            'u_name',
+            'u_last_name',
+            'username',
+            'lang',
+        ]);
+        $event_model->addWhere("status='y' AND slider='y' AND LOWER(lang)='" . $currentLang . "'");
+        $event_model->addWhere($aclCondition);
+        $event_model->addWhere("category_id IN ({$allowedCatList})");
+        $event_model->order('created_at', 'DESC');
+        $event_model->limit($limit);
+        $event_model->gR();
+
+        $records = $event_model->toArray();
+        if (!is_array($records) || empty($records)) {
+            return [];
+        }
+
+        $items = [];
+        foreach ($records as $record) {
+            $items[] = $this->normalizeItem(
+                'mod_event',
+                $record,
+                ''
+            );
+        }
+
+        return array_values(array_filter($items));
+    }
 
     private function loadUserImageMap(array $records)
     {
@@ -231,6 +288,11 @@ class mod_hero_slider_helper extends indexBase
             $category_path = 'publications/';
             $image_base = 'mod_publication/';
             $thumb_base = 'mod_publication/thumb/';
+        } elseif ($source_mod === 'mod_event') {
+            $detail_path = 'event/';
+            $category_path = 'events/';
+            $image_base = 'mod_event/';
+            $thumb_base = 'mod_event/thumb/';
         }
         $image = isset($record['image']) ? (string) $record['image'] : '';
         $category_seo = isset($record['category_seo']) ? (string) $record['category_seo'] : '';

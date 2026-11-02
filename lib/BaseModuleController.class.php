@@ -1611,7 +1611,7 @@ abstract class BaseModuleController
 
     protected function echoSuccessResponse()
     {
-        if (in_array($this->module_name, ['mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed'])) {
+        if (in_array($this->module_name, ['mod_publication', 'mod_news', 'mod_video', 'mod_page', 'mod_survey', 'mod_document', 'mod_video_embed', 'mod_event'])) {
             echo 'Success';
         } else {
             echo 'OK';

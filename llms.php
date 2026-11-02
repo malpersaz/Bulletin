@@ -21,7 +21,7 @@ try {
 
     header('Content-Type: text/plain; charset=utf-8');
     header('Cache-Control: public, max-age=3600, stale-while-revalidate=86400');
-    header('X-Robots-Tag: all');
+    header('X-Robots-Tag: noindex, nofollow, noarchive');
 
     echo $output;
 } catch (\Throwable $e) {

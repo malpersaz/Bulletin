@@ -1,0 +1,92 @@
+{# ==========================================================================
+   Category Section: Resmi Tatil (Official & Public Holidays)
+   templates/amed/index/mod_event/sections/section_official_holidays.twig
+   Strict Code Separation: Zero Inline CSS, Zero Inline JS
+   ========================================================================== #}
+{% set civic_col_class = (is_single_view is defined and is_single_view) ? 'col-12 col-md-6 col-lg-4' : 'col-12' %}
+<section class="event-category-section event-civic-card-section h-100 d-flex flex-column rounded-3 p-3 border" id="cat-{{ section.seo }}" aria-labelledby="heading-{{ section.seo }}">
+    <div class="event-section-header mb-3 pb-2 border-bottom">
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-1">
+            <h2 class="event-section-title h5 fw-bold mb-0" id="heading-{{ section.seo }}">
+                <a href="{{ site.saddress }}events/{{ section.seo }}" class="text-decoration-none text-reset">
+                    <i class="bi bi-flag me-2 text-danger" aria-hidden="true"></i>{{ section.name }}
+                </a>
+                {% if section.event_count > 0 %}
+                    <span class="badge rounded-pill bg-light text-secondary border ms-1">{{ section.event_count }}</span>
+                {% endif %}
+            </h2>
+            {% if is_single_view is not defined or not is_single_view %}
+                {% if section.event_count > 0 %}
+                    <a href="{{ site.saddress }}events/{{ section.seo }}" class="btn btn-outline-danger btn-sm flex-shrink-0">
+                        <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                    </a>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if section.description is defined and section.description is not empty %}
+            <p class="event-section-desc text-muted mb-0 small text-truncate">{{ section.description }}</p>
+        {% endif %}
+    </div>
+
+    {% if section.events is defined and section.events is not empty %}
+        <div class="row g-3 events-grid-holidays flex-grow-1">
+            {% for ev in section.events %}
+                {% set ev_url = site.saddress ~ 'event/' ~ ev.seo %}
+                <div class="{{ civic_col_class }}">
+                    <article class="holiday-card h-100 rounded-3 shadow-sm p-3 d-flex flex-row align-items-stretch gap-3 border">
+                        <div class="civic-date-seal civic-date-seal--holiday rounded-3 d-flex flex-column align-items-center justify-content-center text-center flex-shrink-0 px-2 py-2">
+                            <span class="civic-date-day fw-bold fs-4 lh-1">{{ ev.start_day }}</span>
+                            <span class="civic-date-month small text-uppercase fw-semibold lh-1 mt-1">{{ ev.start_month_localized }}</span>
+                        </div>
+
+                        <div class="d-flex flex-column flex-grow-1 justify-content-between min-w-0">
+                            <div>
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-1 mb-1">
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                        {{ ev.duration_days is defined and ev.duration_days >= 1 ? (ev.duration_days ~ ' ' ~ lang.index.mod_event.duration_days) : section.name }}
+                                    </span>
+
+                                    {% if ev.is_today %}
+                                        <span class="badge bg-danger text-white pulse-badge">
+                                            {{ lang.index.mod_event.today }}
+                                        </span>
+                                    {% elseif ev.is_tomorrow %}
+                                        <span class="badge bg-warning text-dark">
+                                            {{ lang.index.mod_event.tomorrow }}
+                                        </span>
+                                    {% elseif ev.is_upcoming and ev.days_until > 0 %}
+                                        <span class="badge bg-light text-secondary border">
+                                            {{ ev.days_until }} {{ lang.index.mod_event.days_left }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-muted border">
+                                            {{ lang.index.mod_event.event_completed }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+
+                                <h3 class="holiday-card-title h6 mb-1">
+                                    <a href="{{ ev_url }}" class="text-decoration-none text-reset fw-bold">{{ ev.name }}</a>
+                                </h3>
+                            </div>
+
+                            <div class="holiday-card-dates pt-2 border-top mt-2 small text-muted d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <span>
+                                    <i class="bi bi-calendar3 me-1 text-danger" aria-hidden="true"></i>{{ ev.start_date_only }}
+                                    {% if ev.end_date_only is defined and ev.end_date_only is not empty and ev.end_date_only != ev.start_date_only %}
+                                        &ndash; {{ ev.end_date_only }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="event-section-empty-notice rounded-3 py-3 px-3 d-flex align-items-center gap-2 flex-grow-1" role="status">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span>{{ lang.index.mod_event.no_category_events_recorded }}</span>
+        </div>
+    {% endif %}
+</section>

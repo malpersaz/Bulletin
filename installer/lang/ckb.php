@@ -244,6 +244,7 @@ $installerLang = [
       'mod_headline' => 'سەردێڕ',
       'mod_news_category' => 'هاوپۆلەکانی هەواڵ',
       'mod_publication_category' => 'هاوپۆلەکانی بڵاوکراوە',
+      'mod_event_category' => 'پۆلەکانی چالاکییەکان',
       'mod_acl' => 'کۆنترۆڵی دەستگەیشتن',
       'mod_survey' => 'ڕاپرسی',
       'mod_announcements' => 'ڕاگەیاندنەکان',
@@ -259,6 +260,7 @@ $installerLang = [
       'mod_video_embed' => 'تێخستنی ڤیدیۆ',
       'mod_news' => 'هەواڵ',
       'mod_publication' => 'بڵاوکراوە',
+      'mod_event' => 'چالاکییەکان',
     ],
     'checks' => [
       'php_version' => [
