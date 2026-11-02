@@ -1,6 +1,6 @@
 # Amed Framework — Bulletin CMS Version History
 
-## v1.0.14 (In Progress)
+## v1.0.15 (In Progress)
 - **Mobile PageSpeed & Lighthouse Optimization (`lib/SportsDataService.class.php`, `templates/amed/`)**:
   - **Network Payload & Image Delivery Optimization**:
     - Replaced unconstrained 500x500 ESPN team badges with dimension-constrained, high-efficiency ESPN combiner thumbnails (`w=40&h=40&scale=crop`), shrinking asset weight by 98.8% (from ~1.25 MB to ~15 KB total) and enabling 24-hour cache TTL.
@@ -14,6 +14,10 @@
     - Removed redundant `alt` text on author avatar images inside named links, preventing repetitive screen reader announcements.
   - **Compositor Animation Performance**:
     - Refactored `.event-agenda-live-pulse` in `event-agenda.css` to use GPU-accelerated composited properties (`transform: scale()`, `opacity`) via `::after`, eliminating main-thread repaint overhead caused by non-composited `box-shadow` animations.
+
+## v1.0.14 (2026-11-02)
+- **Core Maintenance & Staging Baseline**:
+  - Baseline framework maintenance, production parity sync, and version lifecycle transition.
 
 ## v1.0.13 (2026-11-02)
 - **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:
