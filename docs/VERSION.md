@@ -1,5 +1,7 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.14 (In Progress)
+
 ## v1.0.13 (2026-11-02)
 - **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:
   - **Dual-Database Storage & Installation Parity**:
