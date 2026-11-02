@@ -1,6 +1,6 @@
 # Amed Framework — Bulletin CMS Version History
 
-## v1.0.15 (In Progress)
+## v1.0.15 (2026-11-02)
 - **Mobile PageSpeed Insights & Diagnostics Remediation (`lib/SportsDataService.class.php`, `resize.php`, `.htaccess`, `templates/amed/`)**:
   - **Efficient Cache Lifetimes (`131 KiB` savings)**:
     - Added 18 local `36x36` WebP club badges (`templates/amed/static/img/teams/{id}.webp`) served with 1-year `Cache-Control: max-age=31536000, public, immutable` headers and wired `SportsDataService::resolveTeamLogo()` across live, cached, and seed standings/matchday payloads.
