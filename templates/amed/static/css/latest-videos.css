@@ -25,6 +25,8 @@
     border: 1px solid var(--video-box-border);
     border-radius: 8px;
     background: var(--video-box-bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 300px;
 }
 
 html[data-bs-theme="dark"] .latest-videos-section,

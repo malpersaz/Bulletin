@@ -24,6 +24,8 @@
     border: 1px solid var(--sports-box-border);
     border-radius: 8px;
     background: var(--sports-box-bg);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 320px;
 }
 
 .sports-news-header {

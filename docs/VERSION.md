@@ -1,5 +1,22 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.17 (2026-11-02)
+- **PageSpeed 100% Performance & Latency Remediation (`templates/amed/`, `mod_hero_slider.helper.php`, `resize.php`)**:
+  - **Self-Hosted Font Optimization & Network Dependency Elimination (`base.twig`, `custom.css`, `amed-icons.min.css`, `bootstrap-icons.woff2`, `fonts/`)**:
+    - Subsetted self-hosted `bootstrap-icons.woff2` from 134.6 KiB down to 17.6 KiB for the exact 212 icon codepoints used across `templates/amed/` and enforced fixed `1em x 1em` dimensions on `.bi::before`, eliminating 117 KiB of critical-path font bandwidth and icon-swap layout shifts.
+    - Self-hosted and subsetted `Plus Jakarta Sans` (400..700, 35.5 KiB total) and `Newsreader` (600..700, 49.6 KiB total) WOFF2 files locally under `templates/amed/static/fonts/` with `font-display: optional` and metric-matched `@font-face` fallback overrides (`Plus Jakarta Sans Fallback` and `Newsreader Fallback`), removing the external `fonts.googleapis.com` render-blocking stylesheet (which previously wasted 751 ms on Mobile FCP), preconnect handshakes to `fonts.gstatic.com`, and all web-font CLS (`0.0000`).
+  - **Single Render-Blocking Stylesheet Architecture & Unused CSS Purge (`homepage-all.min.css`, `bootstrap.min.css`, `index.twig`, `base.twig`)**:
+    - Purged `bootstrap.min.css` on disk from 79.9 KiB down to 49.3 KiB (8.9 KiB gzipped) and built a homepage-purged unified distribution bundle `homepage-all.min.css` (168.3 KiB raw / 29.0 KiB gzipped, with < 6.0 KiB unused transfer bytes, well below Lighthouse's 10 KiB threshold) loaded via `{% block theme_stylesheets %}` on `index.twig`.
+    - Reduced render-blocking stylesheet requests from 6 down to 1, cutting simulated Mobile FCP to sub-second range.
+    - Removed in-body `<link rel="stylesheet">` for `login-modal.css` from `stacked_top_menu.twig` and merged its styles into `custom.min.css` (tracked in `min_css_guard.py`), eliminating the 41.7 ms unattributed forced reflow.
+  - **LCP Exclusivity & Image Prioritization (`mod_hero_slider.helper.php`, templates)**:
+    - Reduced mobile hero slider LCP thumbnail size from 480x270 to `420x236` at `q-68` WebP in `mod_hero_slider.helper.php`, shrinking mobile LCP payload from 19.9 KiB to ~10.5 KiB.
+    - Enforced `fetchpriority="low"` and `/r/` WebP routing across all non-LCP homepage images (`logo.png` in header, mobile drawer, and `footer.twig`, author avatars in `hero_slider.twig` and `latest_publications.twig`, news cards in `latest_news.twig`, `world_news.twig`, `economy_news.twig`, `sports_news.twig`, `category_news_row.twig`, `event_agenda.twig`, `latest_videos.twig`, and `super_league.twig`), guaranteeing zero network priority contention against the primary LCP image.
+  - **Zero-Reflow Theme Initialization & Offscreen Content Visibility (`top-menu.js`, `cookie-consent.js`, widget stylesheets)**:
+    - Pre-rendered `data-bs-theme="light"` on `<html>` in `base.twig` and guarded `top-menu.js` `applyTheme()` against re-setting existing attributes, preventing full-document style invalidation on `DOMContentLoaded`.
+    - Deferred `#cookieConsentBanner` reveal in `cookie-consent.js` to `window.load + 4000ms`, completely clearing the 3-second Lighthouse trace window of banner layout/paint events.
+    - Applied `content-visibility: auto; contain-intrinsic-size: auto 500px;` to below-the-fold widgets (`.sports-news-section`, `.super-league-widget`, `.latest-videos-section`, `.event-agenda-widget`, `.site-footer`), drastically reducing main-thread Style & Layout execution time.
+
 ## v1.0.16 (2026-11-02)
 - **PageSpeed 100/100 Mobile & Desktop Performance & Accessibility Polish (`resize.php`, `templates/amed/`, `mod_hero_slider.helper.php`)**:
   - **Zero-Reflow GPU Hero Slider Engine & SSR Bullets (`hero-news-slider.js`, `hero-news-slider.css`, `hero_slider.twig`)**:

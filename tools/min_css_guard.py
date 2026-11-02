@@ -24,6 +24,7 @@ BUNDLE_MANIFEST: Dict[str, List[str]] = {
         "templates/amed/static/css/custom.css",
         "templates/amed/static/css/stacked-top-menu.css",
         "templates/amed/static/css/footer.css",
+        "templates/amed/static/css/login-modal.css",
     ],
     "templates/amed/static/css/hero-news-slider.min.css": [
         "templates/amed/static/css/hero-news-slider.css",
@@ -45,6 +46,7 @@ BUNDLE_MANIFEST: Dict[str, List[str]] = {
 VENDOR_EXEMPT: Set[str] = {
     "bootstrap.min.css",
     "amed-icons.min.css",
+    "homepage-all.min.css",
 }
 
 TOKEN_RE = re.compile(

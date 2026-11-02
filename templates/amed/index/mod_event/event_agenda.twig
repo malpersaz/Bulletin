@@ -69,7 +69,7 @@
                     <div class="event-agenda-media">
                         <a href="{{ ev_url }}" class="event-agenda-thumb-link" title="{{ ev.name }}">
                             {% if ev_poster is not empty %}
-                                <img src="{{ ev_poster_1x }}" srcset="{{ ev_poster_1x }} 1x, {{ ev_poster_2x }} 2x" alt="{{ ev.name }}" class="event-agenda-thumb-img" width="76" height="102" loading="lazy" decoding="async">
+                                <img src="{{ ev_poster_1x }}" srcset="{{ ev_poster_1x }} 1x, {{ ev_poster_2x }} 2x" alt="{{ ev.name }}" class="event-agenda-thumb-img" width="76" height="102" loading="lazy" fetchpriority="low" decoding="async">
                                 <span class="event-agenda-thumb-glow" aria-hidden="true"></span>
                             {% else %}
                                 <div class="event-agenda-thumb-placeholder">

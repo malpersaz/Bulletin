@@ -75,14 +75,14 @@
         }
     }
 
-    if (window.requestIdleCallback) {
-        requestIdleCallback(revealBanner, { timeout: 4000 });
-    } else if (document.readyState === 'complete') {
-        setTimeout(revealBanner, 2000);
+    function scheduleReveal() {
+        setTimeout(revealBanner, 4000);
+    }
+
+    if (document.readyState === 'complete') {
+        scheduleReveal();
     } else {
-        window.addEventListener('load', function () {
-            setTimeout(revealBanner, 2000);
-        }, { once: true });
+        window.addEventListener('load', scheduleReveal, { once: true });
     }
 
     acceptButton.addEventListener('click', function () {

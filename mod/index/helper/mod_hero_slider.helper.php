@@ -307,8 +307,8 @@ class mod_hero_slider_helper extends indexBase
         $category_name = html_entity_decode($category_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $author_name = html_entity_decode($author_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
-        $desktop_resize = ($source_mod === 'mod_event') ? 'r/w-450/h-600/c-1/f/' : 'r/w-800/h-450/c-1/f/';
-        $mobile_resize  = ($source_mod === 'mod_event') ? 'r/w-300/h-400/c-1/f/' : 'r/w-480/h-270/c-1/f/';
+        $desktop_resize = ($source_mod === 'mod_event') ? 'r/w-450/h-600/c-1/q-68/f/' : 'r/w-800/h-450/c-1/q-68/f/';
+        $mobile_resize  = ($source_mod === 'mod_event') ? 'r/w-300/h-400/c-1/q-68/f/' : 'r/w-420/h-236/c-1/q-68/f/';
 
         return [
             'source_mod' => $source_mod,

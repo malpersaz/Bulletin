@@ -81,7 +81,7 @@
 									alt="{{ display_site_name }}"
 									class="logo-image logo-square"
 									width="42" height="42"
-									loading="lazy" decoding="async">
+									loading="lazy" fetchpriority="low" decoding="async">
 							</span>
 						{% endif %}
 						{% if active_rect_file is not empty %}
@@ -92,7 +92,7 @@
 									alt="{{ display_site_name }}"
 									class="logo-image logo-rect"
 									width="120" height="40"
-									loading="lazy" decoding="async">
+									loading="lazy" fetchpriority="low" decoding="async">
 							</span>
 						{% else %}
 							<span class="modern-brand-copy">
@@ -107,7 +107,7 @@
 								alt="{{ display_site_name }}"
 								class="logo-image {% if is_square_mode %}logo-square{% else %}logo-rect{% endif %}"
 								{% if is_square_mode %}width="42" height="42"{% else %}width="120" height="40"{% endif %}
-								loading="lazy" decoding="async">
+								loading="lazy" fetchpriority="low" decoding="async">
 						</span>
 					{% elseif show_logo_area %}
 						<span class="modern-brand-mark">

@@ -35,6 +35,8 @@
     box-shadow: var(--sl-shadow);
     box-sizing: border-box;
     font-family: var(--bs-font-sans-serif, system-ui, -apple-system, sans-serif);
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
 }
 
 /* 1. Header Bar */

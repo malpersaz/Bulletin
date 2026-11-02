@@ -110,7 +110,8 @@
 									srcset="{{ site.address }}r/w-42/h-42/f/mod_settings/thumb/{{ active_square_file }} 1x, {{ site.address }}r/w-84/h-84/f/mod_settings/thumb/{{ active_square_file }} 2x"
 									alt="{{ display_site_name }}"
 									class="logo-image logo-square"
-									width="42" height="42">
+									width="42" height="42"
+									loading="eager" fetchpriority="low" decoding="async">
 							</span>
 						{% endif %}
 						{% if active_rect_file is not empty %}
@@ -120,7 +121,8 @@
 									srcset="{{ site.address }}r/w-120/h-40/f/mod_settings/thumb/{{ active_rect_file }} 1x, {{ site.address }}r/w-240/h-80/f/mod_settings/thumb/{{ active_rect_file }} 2x"
 									alt="{{ display_site_name }}"
 									class="logo-image logo-rect"
-									width="120" height="40">
+									width="120" height="40"
+									loading="eager" fetchpriority="low" decoding="async">
 							</span>
 						{% else %}
 							<span class="modern-brand-copy">
@@ -134,7 +136,8 @@
 								srcset="{{ site.address }}r/{% if is_square_mode %}w-42/h-42{% else %}w-120/h-40{% endif %}/f/mod_settings/thumb/{{ active_logo_file }} 1x, {{ site.address }}r/{% if is_square_mode %}w-84/h-84{% else %}w-240/h-80{% endif %}/f/mod_settings/thumb/{{ active_logo_file }} 2x"
 								alt="{{ display_site_name }}"
 								class="logo-image {% if is_square_mode %}logo-square{% else %}logo-rect{% endif %}"
-								{% if is_square_mode %}width="42" height="42"{% else %}width="120" height="40"{% endif %}>
+								{% if is_square_mode %}width="42" height="42"{% else %}width="120" height="40"{% endif %}
+								loading="eager" fetchpriority="low" decoding="async">
 						</span>
 					{% elseif show_logo_area %}
 						<span class="modern-brand-mark">
@@ -325,7 +328,7 @@
 							alt="{{ display_site_name }}"
 							class="logo-image logo-square"
 							width="32" height="32"
-							loading="lazy" decoding="async">
+							loading="lazy" fetchpriority="low" decoding="async">
 					</span>
 				{% endif %}
 				{% if active_rect_file is not empty %}
@@ -336,7 +339,7 @@
 							alt="{{ display_site_name }}"
 							class="logo-image logo-rect"
 							width="120" height="40"
-							loading="lazy" decoding="async">
+							loading="lazy" fetchpriority="low" decoding="async">
 					</span>
 				{% else %}
 					<span class="modern-brand-copy">
@@ -351,7 +354,7 @@
 						alt="{{ display_site_name }}"
 						class="logo-image {% if is_square_mode %}logo-square{% else %}logo-rect{% endif %}"
 						{% if is_square_mode %}width="32" height="32"{% else %}width="120" height="40"{% endif %}
-						loading="lazy" decoding="async">
+						loading="lazy" fetchpriority="low" decoding="async">
 				</span>
 			{% elseif show_logo_area %}
 				<span class="modern-brand-mark">
@@ -564,7 +567,4 @@
 	</div>
 {% endif %}
 
-<!-- CSS Assets -->
-{% if not is_logged_in %}
-	<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/login-modal.css?v={{ site.version }}">
-{% endif %}
+

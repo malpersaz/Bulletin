@@ -90,7 +90,7 @@
                             <span class="hero-slide__avatar">
                                 {% if item.author_image_url is not empty %}
                                     {% if loop.first %}
-                                        <img src="{{ item.author_image_url }}" {% if item.author_image_2x_url is defined and item.author_image_2x_url is not empty %}srcset="{{ item.author_image_url }} 1x, {{ item.author_image_2x_url }} 2x"{% endif %} alt="{{ item.author_name }}" width="28" height="28" loading="lazy" decoding="async">
+                                        <img src="{{ item.author_image_url }}" {% if item.author_image_2x_url is defined and item.author_image_2x_url is not empty %}srcset="{{ item.author_image_url }} 1x, {{ item.author_image_2x_url }} 2x"{% endif %} alt="{{ item.author_name }}" width="28" height="28" loading="lazy" fetchpriority="low" decoding="async">
                                     {% else %}
                                         <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="28" height="28" loading="lazy" decoding="async">
                                     {% endif %}

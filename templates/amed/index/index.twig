@@ -14,9 +14,8 @@
     {% endif %}
 {% endblock %}
 
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/homepage-bundle.min.css?v={{ site.version }}">
+{% block theme_stylesheets %}
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/homepage-all.min.css?v={{ site.version }}">
 {% endblock %}
 
 {% block js_custom %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ site.lang }}" data-bs-theme="auto" class="h-100">
+<html lang="{{ site.lang }}" data-bs-theme="light" class="h-100">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,17 +73,12 @@
 			<link rel="manifest" href="{{ site.address }}site.webmanifest"/>
 		{% endif %}
 
-		<!-- Preconnect & DNS Pre-resolve -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
-
-		<!-- Bootstrap 5.3 CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/bootstrap.min.css?v={{ site.version }}">
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/amed-icons.min.css?v={{ site.version }}">
-
-		<!-- Core Theme CSS (Custom Styles, Navigation & Footer Consolidated) -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version }}">
+		<!-- Theme Stylesheets -->
+		{% block theme_stylesheets %}
+			<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/bootstrap.min.css?v={{ site.version }}">
+			<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/amed-icons.min.css?v={{ site.version }}">
+			<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version }}">
+		{% endblock %}
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}
