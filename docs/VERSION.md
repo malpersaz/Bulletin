@@ -1,6 +1,6 @@
 # Amed Framework — Bulletin CMS Version History
 
-## v1.0.15 (In Progress)
+## v1.0.14 (2026-11-02)
 - **Mobile PageSpeed & Lighthouse Optimization (`lib/SportsDataService.class.php`, `templates/amed/`)**:
   - **Network Payload & Image Delivery Optimization**:
     - Replaced unconstrained 500x500 ESPN team badges with dimension-constrained, high-efficiency ESPN combiner thumbnails (`w=40&h=40&scale=crop`), shrinking asset weight by 98.8% (from ~1.25 MB to ~15 KB total) and enabling 24-hour cache TTL.
@@ -17,10 +17,6 @@
 - **Latest News Category Filtering (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/helper/index.php`, `templates/amed/index/mod_news/latest_news.twig`)**:
   - Implemented category exclusion support (`$excludeCategories`) in `_latest_news()`, resolving multilingual category aliases (`spor`, `dünya`, `ortadoğu`, `ekonomi`) and child category hierarchies into database-level `category_id NOT IN (...)` clauses.
   - Excluded sports, world, middle east, and economy news from the latest news section, ensuring dedicated homepage category blocks remain distinct while guaranteeing 6 full news items in the latest news stream.
-
-## v1.0.14 (2026-11-02)
-- **Core Maintenance & Staging Baseline**:
-  - Baseline framework maintenance, production parity sync, and version lifecycle transition.
 
 ## v1.0.13 (2026-11-02)
 - **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:
