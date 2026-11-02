@@ -336,7 +336,7 @@ class mod_news_helper extends indexBase
         $this->_index();
     }
 
-    public function _latest_news($limit, $select)
+    public function _latest_news($limit, $select, array $excludeCategories = [])
     {
         if (!$this->isFeatureReady('news.latest')) {
             return [];
@@ -347,12 +347,102 @@ class mod_news_helper extends indexBase
         $allowedCatList = !empty($allowedCatIds) ? implode(',', array_map('intval', $allowedCatIds)) : '0';
         $aclCondition = $this->getAllowedAclCondition('');
 
+        $excludedCategoryIds = [];
+        if (!empty($excludeCategories) && !empty($allowedCatIds)) {
+            $catAliases = [
+                'spor' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'werzîş' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'werzis' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'sports' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'sport' => ['spor', 'werzîş', 'werzis', 'sports', 'sport', 'رياضة', 'وەرزش'],
+                'dünya' => ['dünya', 'dunya', 'cîhan', 'cihan', 'world', 'welt', 'monde', 'världen', 'العالم', 'جیهان'],
+                'dunya' => ['dünya', 'dunya', 'cîhan', 'cihan', 'world', 'welt', 'monde', 'världen', 'العالم', 'جیهان'],
+                'cîhan' => ['dünya', 'dunya', 'cîhan', 'cihan', 'world', 'welt', 'monde', 'världen', 'العالم', 'جیهان'],
+                'cihan' => ['dünya', 'dunya', 'cîhan', 'cihan', 'world', 'welt', 'monde', 'världen', 'العالم', 'جیهان'],
+                'world' => ['dünya', 'dunya', 'cîhan', 'cihan', 'world', 'welt', 'monde', 'världen', 'العالم', 'جیهان'],
+                'ortadoğu' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'ortadogu' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'rojhilata_navîn' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'rojhilata navîn' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'middle east' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'middle_east' => ['ortadoğu', 'ortadogu', 'rojhilata_navîn', 'rojhilata navîn', 'middle_east', 'middle east', 'naher_osten', 'naher osten', 'moyen-orient', 'mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست'],
+                'ekonomi' => ['ekonomi', 'aborî', 'abori', 'economy', 'wirtschaft', 'économie', 'economie', 'экономика', 'اقتصاد', 'ئابووری', 'ekonomiye'],
+                'aborî' => ['ekonomi', 'aborî', 'abori', 'economy', 'wirtschaft', 'économie', 'economie', 'экономика', 'اقتصاد', 'ئابووری', 'ekonomiye'],
+                'abori' => ['ekonomi', 'aborî', 'abori', 'economy', 'wirtschaft', 'économie', 'economie', 'экономика', 'اقتصاد', 'ئابووری', 'ekonomiye'],
+                'economy' => ['ekonomi', 'aborî', 'abori', 'economy', 'wirtschaft', 'économie', 'economie', 'экономика', 'اقتصاد', 'ئابووری', 'ekonomiye'],
+            ];
+
+            $candidateLookup = [];
+            foreach ($excludeCategories as $categoryCandidate) {
+                $cLower = mb_strtolower(trim((string) $categoryCandidate));
+                if ($cLower === '') {
+                    continue;
+                }
+                $candidateLookup[] = $cLower;
+                $cNormalized = str_replace(['_', '-'], ' ', $cLower);
+                $candidateLookup[] = $cNormalized;
+                $candidateLookup[] = str_replace(' ', '_', $cNormalized);
+                $candidateLookup[] = str_replace(' ', '-', $cNormalized);
+                if (isset($catAliases[$cLower])) {
+                    foreach ($catAliases[$cLower] as $alias) {
+                        $aLower = mb_strtolower(trim((string) $alias));
+                        $candidateLookup[] = $aLower;
+                        $aNorm = str_replace(['_', '-'], ' ', $aLower);
+                        $candidateLookup[] = $aNorm;
+                        $candidateLookup[] = str_replace(' ', '_', $aNorm);
+                        $candidateLookup[] = str_replace(' ', '-', $aNorm);
+                    }
+                }
+            }
+            $candidateLookup = array_values(array_unique($candidateLookup));
+
+            $catModel = Load::model('mod_news_category');
+            $catModel->flush();
+            $catModel->where_lang($lang);
+            $catModel->addWhere("id IN ({$allowedCatList})");
+            $catModel->gR();
+
+            if ($catModel->getSize() > 0) {
+                $categories = $catModel->toArray();
+                foreach ($categories as $cat) {
+                    $cName = mb_strtolower(trim((string) ($cat['name'] ?? '')));
+                    $cSeo = mb_strtolower(trim((string) ($cat['seo'] ?? '')));
+                    $cNameNorm = str_replace(['_', '-'], ' ', $cName);
+                    $cSeoNorm = str_replace(['_', '-'], ' ', $cSeo);
+
+                    if (
+                        in_array($cName, $candidateLookup, true) ||
+                        in_array($cSeo, $candidateLookup, true) ||
+                        in_array($cNameNorm, $candidateLookup, true) ||
+                        in_array($cSeoNorm, $candidateLookup, true)
+                    ) {
+                        $excludedCategoryIds[] = (int) $cat['id'];
+                    }
+                }
+            }
+
+            if (!empty($excludedCategoryIds)) {
+                $targetExcludedIds = $excludedCategoryIds;
+                foreach ($excludedCategoryIds as $exCatId) {
+                    $descendants = $this->getCategoryDescendantIds($exCatId, $lang, 'mod_news_category');
+                    if (!empty($descendants)) {
+                        $targetExcludedIds = array_merge($targetExcludedIds, $descendants);
+                    }
+                }
+                $excludedCategoryIds = array_values(array_unique(array_map('intval', $targetExcludedIds)));
+            }
+        }
+
         $m = Load::model('mod_news.newses');
         $m->flush();
         $m->select($select)->where_lang_and_status($lang, 'y');
         $m->addWhere("slider='n'");
         $m->addWhere($aclCondition);
         $m->addWhere("category_id IN ({$allowedCatList})");
+        if (!empty($excludedCategoryIds)) {
+            $excludedCatList = implode(',', $excludedCategoryIds);
+            $m->addWhere("category_id NOT IN ({$excludedCatList})");
+        }
         $m->limit($limit)->order('created_at', 'DESC');
         $m->gR();
         if ($m->getSize() !== 0) {

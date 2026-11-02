@@ -408,15 +408,24 @@ class index_mod extends indexBase
 
 
 
-    public function _latest_news($t, $limit, $select)
+    public function _latest_news($t, $limit = 6, $select = 'id,image,name,seo,keywords,summary,created_at,video,gallery_id,file_id,category_id,category_name,category_seo', $excludeCategories = null)
     {
         if (!$this->isFeatureReady('news.latest')) {
             $t->ctx_set('latest_news', []);
             return;
         }
 
+        if ($excludeCategories === null) {
+            $excludeCategories = [
+                'Spor', 'Werzîş', 'Werzis', 'Sports', 'Sport', 'رياضة', 'وەرزش',
+                'Dünya', 'Dunya', 'Cîhan', 'Cihan', 'World', 'Welt', 'Monde', 'Världen', 'العالم', 'جیهان',
+                'Ortadoğu', 'Ortadogu', 'Rojhilata_Navîn', 'Rojhilata Navîn', 'Middle_East', 'Middle East', 'Naher_Osten', 'Naher Osten', 'Moyen-Orient', 'Mellanöstern', 'الشرق_الأوسط', 'ڕۆژهەڵاتی_ناوەڕاست',
+                'Ekonomi', 'Aborî', 'Abori', 'Economy', 'Wirtschaft', 'Économie', 'Economie', 'Экономика', 'اقتصاد', 'ئابووری', 'Ekonomiye',
+            ];
+        }
+
         $helper = Load::helper('index.mod_news');
-        $result = $helper->_latest_news($limit, $select);
+        $result = $helper->_latest_news($limit, $select, (array) $excludeCategories);
         $t->ctx_set('latest_news', $result);
         unset($helper);
     }
