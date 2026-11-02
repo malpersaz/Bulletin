@@ -18,7 +18,7 @@
             </h2>
             <span class="economy-news-kicker" aria-hidden="true">{{ economy_lang.kicker|default('Finans & Piyasa') }}</span>
         </div>
-        <a href="{{ economy_url }}" class="economy-news-more-link" title="{{ economy_lang.all_items|default('Tümünü Gör') }}">
+        <a href="{{ economy_url }}" class="economy-news-more-link" title="{{ economy_lang.all_items|default('Tümünü Gör') }}" aria-label="{{ economy_lang.title|default(economy_category_name|default('Ekonomi')) }} - {{ economy_lang.all_items|default('Tümünü Gör') }}">
             <span class="economy-more-label">{{ economy_lang.all_items|default('Tümünü Gör') }}</span>
             <i class="bi bi-arrow-right economy-more-icon" aria-hidden="true"></i>
         </a>

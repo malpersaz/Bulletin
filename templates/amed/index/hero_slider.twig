@@ -29,13 +29,13 @@
                         {% set is_lcp_img = loop.first %}
                         <picture class="hero-slide__picture">
                             {% if item.thumb_url is defined and item.thumb_url is not empty %}
-                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}" sizes="100vw">
+                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}">
                             {% endif %}
-                            <img src="{{ item.image_url }}"
+                            <source media="(min-width: 769px)" srcset="{{ item.image_url }}">
+                            <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
                                  alt="{{ item.name }}"
                                  width="1280"
                                  height="720"
-                                 sizes="(max-width: 991px) 100vw, 800px"
                                  class="hero-slide__cover-img"
                                  loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
                                  fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"

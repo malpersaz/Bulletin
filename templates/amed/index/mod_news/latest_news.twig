@@ -12,7 +12,7 @@
                     </a>
                 </h2>
             </div>
-            <a href="{{ site.saddress }}newses" class="latest-news-view-all">
+            <a href="{{ site.saddress }}newses" class="latest-news-view-all" aria-label="{{ lang.index.mod_news.latest_news.last_24_hours }} - {{ lang.index.mod_news.latest_news.all_items }}">
                 <span>{{ lang.index.mod_news.latest_news.all_items }}</span>
                 <i class="bi bi-arrow-right" aria-hidden="true"></i>
             </a>
@@ -113,7 +113,7 @@
         </div>
 
         <footer class="latest-news-mobile-footer text-center d-md-none">
-            <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100">
+            <a href="{{ site.saddress }}newses" class="btn latest-news-mobile-btn w-100" aria-label="{{ lang.index.mod_news.latest_news.last_24_hours }} - {{ lang.index.mod_news.latest_news.all_items }}">
                 <span>{{ lang.index.mod_news.latest_news.all_items }}</span>
                 <i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
             </a>

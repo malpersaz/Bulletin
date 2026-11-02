@@ -719,7 +719,7 @@ class SportsDataService
         }
 
         if ($logoUrl === '' && $teamId !== '') {
-            $logoUrl = 'https://a.espncdn.com/i/teamlogos/soccer/500/' . $teamId . '.png';
+            $logoUrl = 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/' . $teamId . '.png&w=40&h=40&scale=crop';
         }
 
         return [
@@ -840,7 +840,7 @@ class SportsDataService
                     'id' => '432',
                     'rank' => 1,
                     'name' => 'Galatasaray',
-                    'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/432.png',
+                    'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/432.png&w=40&h=40&scale=crop',
                     'is_amed' => false,
                     'mp' => 10,
                     'w' => 8,
@@ -853,7 +853,7 @@ class SportsDataService
                     'id' => '132335',
                     'rank' => 2,
                     'name' => 'Amed SK',
-                    'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/132335.png',
+                    'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132335.png&w=40&h=40&scale=crop',
                     'is_amed' => true,
                     'mp' => 9,
                     'w' => 6,
@@ -866,7 +866,7 @@ class SportsDataService
                     'id' => '997',
                     'rank' => 3,
                     'name' => 'Trabzonspor',
-                    'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/997.png',
+                    'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/997.png&w=40&h=40&scale=crop',
                     'is_amed' => false,
                     'mp' => 9,
                     'w' => 6,
@@ -879,7 +879,7 @@ class SportsDataService
                     'id' => '1895',
                     'rank' => 4,
                     'name' => 'Beşiktaş',
-                    'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/1895.png',
+                    'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/1895.png&w=40&h=40&scale=crop',
                     'is_amed' => false,
                     'mp' => 9,
                     'w' => 6,
@@ -892,7 +892,7 @@ class SportsDataService
                     'id' => '436',
                     'rank' => 5,
                     'name' => 'Fenerbahçe',
-                    'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/436.png',
+                    'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/436.png&w=40&h=40&scale=crop',
                     'is_amed' => false,
                     'mp' => 9,
                     'w' => 5,
@@ -915,7 +915,7 @@ class SportsDataService
                     'home' => [
                         'id' => '436',
                         'name' => 'Fenerbahçe',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/436.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/436.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -923,7 +923,7 @@ class SportsDataService
                     'away' => [
                         'id' => '789',
                         'name' => 'Göztepe',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/789.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/789.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -941,7 +941,7 @@ class SportsDataService
                     'home' => [
                         'id' => '995',
                         'name' => 'Kocaelispor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/995.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/995.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -949,7 +949,7 @@ class SportsDataService
                     'away' => [
                         'id' => '7656',
                         'name' => 'Rizespor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/7656.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/7656.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -967,7 +967,7 @@ class SportsDataService
                     'home' => [
                         'id' => '19267',
                         'name' => 'Erzurumspor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/19267.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/19267.png&w=40&h=40&scale=crop',
                         'score' => 1,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -975,7 +975,7 @@ class SportsDataService
                     'away' => [
                         'id' => '132334',
                         'name' => 'Çorum FK',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/132334.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132334.png&w=40&h=40&scale=crop',
                         'score' => 3,
                         'is_winner' => true,
                         'is_amed' => false,
@@ -993,7 +993,7 @@ class SportsDataService
                     'home' => [
                         'id' => '7648',
                         'name' => 'Konyaspor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/7648.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/7648.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -1001,7 +1001,7 @@ class SportsDataService
                     'away' => [
                         'id' => '432',
                         'name' => 'Galatasaray',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/432.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/432.png&w=40&h=40&scale=crop',
                         'score' => 4,
                         'is_winner' => true,
                         'is_amed' => false,
@@ -1019,7 +1019,7 @@ class SportsDataService
                     'home' => [
                         'id' => '132335',
                         'name' => 'Amed SK',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/132335.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/132335.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => true,
@@ -1027,7 +1027,7 @@ class SportsDataService
                     'away' => [
                         'id' => '20729',
                         'name' => 'Eyüpspor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/20729.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/20729.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -1045,7 +1045,7 @@ class SportsDataService
                     'home' => [
                         'id' => '7914',
                         'name' => 'Başakşehir',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/7914.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/7914.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,
@@ -1053,7 +1053,7 @@ class SportsDataService
                     'away' => [
                         'id' => '11429',
                         'name' => 'Samsunspor',
-                        'logo' => 'https://a.espncdn.com/i/teamlogos/soccer/500/11429.png',
+                        'logo' => 'https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/11429.png&w=40&h=40&scale=crop',
                         'score' => 0,
                         'is_winner' => false,
                         'is_amed' => false,

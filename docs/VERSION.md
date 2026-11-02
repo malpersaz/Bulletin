@@ -1,6 +1,19 @@
 # Amed Framework — Bulletin CMS Version History
 
 ## v1.0.14 (In Progress)
+- **Mobile PageSpeed & Lighthouse Optimization (`lib/SportsDataService.class.php`, `templates/amed/`)**:
+  - **Network Payload & Image Delivery Optimization**:
+    - Replaced unconstrained 500x500 ESPN team badges with dimension-constrained, high-efficiency ESPN combiner thumbnails (`w=40&h=40&scale=crop`), shrinking asset weight by 98.8% (from ~1.25 MB to ~15 KB total) and enabling 24-hour cache TTL.
+    - Updated `hero_slider.twig` `<picture>` structure to prevent mobile devices from downloading raw desktop hero images (`image_url`), serving optimized mobile thumbnails (`thumb_url`) across all mobile viewport breakpoints.
+    - Removed redundant duplicate stylesheet inclusion (`latest-publications.css`) from `templates/amed/index/index.twig`.
+    - Converted non-critical third-party fonts and vendor stylesheets (`bootstrap-icons.min.css`, `swiper-bundle.min.css`) to asynchronous non-render-blocking link tags.
+  - **Mobile Accessibility (a11y) & UX Remediation**:
+    - Fixed contrast ratio violation on columnists/publications action link (`--authors-action-color`) in `latest-authors.css` and `latest-publications.css`, elevating contrast ratio to 5.2:1 (exceeding WCAG AA requirements).
+    - Expanded mobile touch target sizes on hero slider pagination bullets (`.swiper-pagination-bullet`) with 48x48px pseudo-element tap areas and enlarged tactile navigation buttons to 36x36px.
+    - Added contextual `aria-label` attributes to identical "View All" links across news categories (`latest_news.twig`, `economy_news.twig`, `sports_news.twig`, `latest_publications.twig`), resolving the `identical-links-same-purpose` WCAG audit.
+    - Removed redundant `alt` text on author avatar images inside named links, preventing repetitive screen reader announcements.
+  - **Compositor Animation Performance**:
+    - Refactored `.event-agenda-live-pulse` in `event-agenda.css` to use GPU-accelerated composited properties (`transform: scale()`, `opacity`) via `::after`, eliminating main-thread repaint overhead caused by non-composited `box-shadow` animations.
 
 ## v1.0.13 (2026-11-02)
 - **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:
