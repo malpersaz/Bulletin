@@ -16,21 +16,23 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/hero-news-slider.min.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-authors.css?v={{ site.version }}">
     <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-news.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/super-league.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/world-news.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/economy-news.css?v={{ site.version }}">
-    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version }}">
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/sports-news.css?v={{ site.version }}"></noscript>
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/super-league.css?v={{ site.version }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/super-league.css?v={{ site.version }}"></noscript>
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/world-news.css?v={{ site.version }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/world-news.css?v={{ site.version }}"></noscript>
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/economy-news.css?v={{ site.version }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/economy-news.css?v={{ site.version }}"></noscript>
+    <link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/latest-videos.css?v={{ site.version }}"></noscript>
 {% endblock %}
 
 {% block js_custom %}
     {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
     <script src="{{ site.taddress }}{{ site.app_template }}/static/js/hero-news-slider.js?v={{ site.version }}" defer></script>
 {% endblock %}
 

@@ -13,8 +13,10 @@
                     {# Fail-safe base background: dark branded placeholder is always present underneath #}
                     <div class="hero-slide__placeholder" aria-hidden="true">
                         <div class="hero-slide__placeholder-pattern"></div>
-                        {% set hero_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
-                        <img src="{{ site.iaddress }}mod_settings/thumb/{{ hero_fallback_icon }}" class="hero-slide__placeholder-symbol" width="48" height="48" alt="" loading="lazy">
+                        {% if item.image_url is empty %}
+                            {% set hero_fallback_icon = (site.site_icon is defined and site.site_icon is not empty) ? site.site_icon : ((site.manifest_512 is defined and site.manifest_512 is not empty) ? site.manifest_512 : ((site.logo_symbol is defined and site.logo_symbol is not empty) ? site.logo_symbol : ((site.favicon_96 is defined and site.favicon_96 is not empty) ? site.favicon_96 : 'logo_square.png'))) %}
+                            <img src="{{ site.iaddress }}mod_settings/thumb/{{ hero_fallback_icon }}" class="hero-slide__placeholder-symbol" width="48" height="48" alt="" loading="lazy">
+                        {% endif %}
                     </div>
 
                     {% if item.video_url is defined and item.video_url is not empty %}
@@ -27,19 +29,36 @@
                         <iframe src="{{ item.embed_url }}{{ '?' in item.embed_url ? '&' : '?' }}autoplay=1&mute=1&controls=0&loop=1&background=1" title="{{ item.name|escape('html_attr') }}" class="hero-bg-embed" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" aria-hidden="true"></iframe>
                     {% elseif item.image_url is not empty %}
                         {% set is_lcp_img = loop.first %}
+                        {% set primary_src = item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url %}
                         <picture class="hero-slide__picture">
-                            {% if item.thumb_url is defined and item.thumb_url is not empty %}
-                                <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}">
+                            {% if is_lcp_img %}
+                                {% if item.thumb_url is defined and item.thumb_url is not empty %}
+                                    <source media="(max-width: 768px)" srcset="{{ item.thumb_url }}">
+                                {% endif %}
+                                <source media="(min-width: 769px)" srcset="{{ item.image_url }}">
+                                <img src="{{ primary_src }}"
+                                     alt="{{ item.name }}"
+                                     width="1280"
+                                     height="720"
+                                     class="hero-slide__cover-img"
+                                     loading="eager"
+                                     fetchpriority="high"
+                                     decoding="async">
+                            {% else %}
+                                {% if item.thumb_url is defined and item.thumb_url is not empty %}
+                                    <source media="(max-width: 768px)" data-srcset="{{ item.thumb_url }}">
+                                {% endif %}
+                                <source media="(min-width: 769px)" data-srcset="{{ item.image_url }}">
+                                <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+                                     data-src="{{ primary_src }}"
+                                     alt="{{ item.name }}"
+                                     width="1280"
+                                     height="720"
+                                     class="hero-slide__cover-img"
+                                     loading="lazy"
+                                     fetchpriority="low"
+                                     decoding="async">
                             {% endif %}
-                            <source media="(min-width: 769px)" srcset="{{ item.image_url }}">
-                            <img src="{{ item.thumb_url is defined and item.thumb_url is not empty ? item.thumb_url : item.image_url }}"
-                                 alt="{{ item.name }}"
-                                 width="1280"
-                                 height="720"
-                                 class="hero-slide__cover-img"
-                                 loading="{{ is_lcp_img ? 'eager' : 'lazy' }}"
-                                 fetchpriority="{{ is_lcp_img ? 'high' : 'auto' }}"
-                                 decoding="async">
                         </picture>
                     {% endif %}
                 </div>
@@ -70,7 +89,11 @@
                         <div class="hero-slide__author">
                             <span class="hero-slide__avatar">
                                 {% if item.author_image_url is not empty %}
-                                    <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="26" height="26" loading="lazy">
+                                    {% if loop.first %}
+                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="26" height="26" loading="lazy" decoding="async">
+                                    {% else %}
+                                        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="26" height="26" loading="lazy" decoding="async">
+                                    {% endif %}
                                 {% endif %}
                                 <span class="hero-slide__avatar-initials{% if item.author_image_url is empty %} is-visible{% endif %}">{{ item.author_initials }}</span>
                             </span>

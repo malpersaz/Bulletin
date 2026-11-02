@@ -1,5 +1,26 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.15 (In Progress)
+- **Mobile PageSpeed Insights & Diagnostics Remediation (`lib/SportsDataService.class.php`, `resize.php`, `.htaccess`, `templates/amed/`)**:
+  - **Efficient Cache Lifetimes (`131 KiB` savings)**:
+    - Added 18 local `36x36` WebP club badges (`templates/amed/static/img/teams/{id}.webp`) served with 1-year `Cache-Control: max-age=31536000, public, immutable` headers and wired `SportsDataService::resolveTeamLogo()` across live, cached, and seed standings/matchday payloads.
+    - Replaced external unpinned `swiper@11` CDN assets (`swiper-bundle.min.js` and `swiper-bundle.min.css`) on the homepage with a self-contained native cross-fade controller in `hero-news-slider.js`.
+  - **Zero Forced Reflow (`70 ms` layout thrashing eliminated)**:
+    - Replaced Swiper's synchronous layout-reading initialization (`updateSize` / `updateSlidesOffset`) with a zero-reflow class-toggling cross-fade engine in `hero-news-slider.js` and `hero-news-slider.css`.
+    - Conditionally loaded `jquery.js` and `jquery.cookie.js` in `templates/amed/layouts/base.twig` only when `ctx_get('jquery_document')` is populated, eliminating jQuery's `DOMContentLoaded` box-model reflow on public pages.
+  - **Render-Blocking Requests & Network Dependency Tree Optimization**:
+    - Removed duplicate `@font-face` declaration for `bootstrap-icons` from `templates/amed/static/css/custom.css` so `custom.min.css` no longer chains `bootstrap-icons.woff2` on the critical path.
+    - Converted Google Fonts and below-the-fold widget stylesheets (`footer.css`, `market-rates.css`, `event-agenda.css`, `sports-news.css`, `super-league.css`, `world-news.css`, `economy-news.css`, `latest-videos.css`) to non-render-blocking `<link media="print" onload="this.media='all'">` tags while keeping above-the-fold styles synchronous (`CLS = 0.00`).
+  - **Image Delivery Optimization (`135 KiB` savings)**:
+    - Updated `templates/amed/index/hero_slider.twig` and `hero-news-slider.js` to defer hidden slides (`2..10`) via `data-srcset` / `data-src` on-demand hydration, preventing the browser from downloading all 10 stacked fade-slide images and fallback placeholders during initial page load.
+    - Fixed `resize.php` and `.htaccess` to support `.webp` extensions, append file extensions for `Intervention\Image` v3 encoder compatibility, emit 1-year immutable cache headers, and serve exact-sized thumbnails for `event_agenda.twig`, `sports_news.twig`, `world_news.twig`, and `economy_news.twig`.
+  - **Mobile Accessibility 100/100 Polish (`super-league.css`, `latest-authors.css`, `latest-publications.css`)**:
+    - Darkened `--sl-live` (`#15803d`), `--sl-muted` (`#475569`), and `--sl-subtle` (`#64748b`) in `super-league.css` to exceed WCAG AA 4.5:1 contrast ratios.
+    - Enforced `min-height: 24px` and `gap: 4px` on `.latest-authors-name` / `.latest-authors-copy` to satisfy Lighthouse touch target spacing requirements.
+- **Latest News Category Filtering (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/helper/index.php`, `templates/amed/index/mod_news/latest_news.twig`)**:
+  - Implemented category exclusion support (`$excludeCategories`) in `_latest_news()`, resolving multilingual category aliases (`spor`, `dünya`, `ortadoğu`, `ekonomi`) and child category hierarchies into database-level `category_id NOT IN (...)` clauses.
+  - Excluded sports, world, middle east, and economy news from the latest news section, ensuring dedicated homepage category blocks remain distinct while guaranteeing 6 full news items in the latest news stream.
+
 ## v1.0.14 (2026-11-02)
 - **Mobile PageSpeed & Lighthouse Optimization (`lib/SportsDataService.class.php`, `templates/amed/`)**:
   - **Network Payload & Image Delivery Optimization**:
@@ -14,9 +35,6 @@
     - Removed redundant `alt` text on author avatar images inside named links, preventing repetitive screen reader announcements.
   - **Compositor Animation Performance**:
     - Refactored `.event-agenda-live-pulse` in `event-agenda.css` to use GPU-accelerated composited properties (`transform: scale()`, `opacity`) via `::after`, eliminating main-thread repaint overhead caused by non-composited `box-shadow` animations.
-- **Latest News Category Filtering (`mod/index/helper/mod_news.helper.php`, `mod/index/index.php`, `mod/index/helper/index.php`, `templates/amed/index/mod_news/latest_news.twig`)**:
-  - Implemented category exclusion support (`$excludeCategories`) in `_latest_news()`, resolving multilingual category aliases (`spor`, `dünya`, `ortadoğu`, `ekonomi`) and child category hierarchies into database-level `category_id NOT IN (...)` clauses.
-  - Excluded sports, world, middle east, and economy news from the latest news section, ensuring dedicated homepage category blocks remain distinct while guaranteeing 6 full news items in the latest news stream.
 
 ## v1.0.13 (2026-11-02)
 - **Event & Cultural Agenda System Modernization (`mod_event`, `mod_event_category`, `installer/mod_event/`, `installer/mod_event_category/`, `templates/admin/mod_event/`, `templates/admin/mod_event_category/`, `templates/amed/index/mod_event/`, `lib/McpEventTools.class.php`)**:

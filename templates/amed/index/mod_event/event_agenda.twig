@@ -49,6 +49,7 @@
         <ul class="event-agenda-list" role="list">
             {% for ev in event_agenda %}
                 {% set ev_poster = ev.image is not empty ? (site.iaddress ~ 'mod_event/thumb/' ~ ev.image) : '' %}
+                {% set ev_poster_resized = ev.image is not empty ? (site.address ~ 'r/w-152/h-192/f/mod_event/thumb/' ~ ev.image) : '' %}
                 {% set ev_url = site.saddress ~ 'event/' ~ ev.seo %}
                 {% set ev_cat = ev.category_name is defined and ev.category_name is not empty ? ev.category_name : (ev.subject is defined and ev.subject is not empty ? ev.subject : '') %}
 
@@ -67,7 +68,7 @@
                     <div class="event-agenda-media">
                         <a href="{{ ev_url }}" class="event-agenda-thumb-link" title="{{ ev.name }}">
                             {% if ev_poster is not empty %}
-                                <img src="{{ ev_poster }}" alt="{{ ev.name }}" class="event-agenda-thumb-img" width="76" height="96" loading="lazy">
+                                <img src="{{ ev_poster_resized }}" alt="{{ ev.name }}" class="event-agenda-thumb-img" width="76" height="96" loading="lazy" decoding="async">
                                 <span class="event-agenda-thumb-glow" aria-hidden="true"></span>
                             {% else %}
                                 <div class="event-agenda-thumb-placeholder">

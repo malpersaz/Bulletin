@@ -12,7 +12,7 @@ RewriteRule ^([a-z]{2,3})/llms-full\.txt$ llms.php?lang=$1&mode=full [L]
 # Your existing rewrite rules
 RewriteRule ^cache/js/(.*).js$ js.php?cachefile=$1 [L]
 RewriteRule ^cache/css/(.*).css$ css.php?cachefile=$1 [L]
-RewriteRule ^r/(.*)/f/(.*)\.(gif|jpe?g|png)$ resize.php?file=$2.$3&options=$1 [L]
+RewriteRule ^r/(.*)/f/(.*)\.(gif|jpe?g|png|webp)$ resize.php?file=$2.$3&options=$1 [L]
 
 # Sitemap Rewrites
 RewriteRule ^sitemap\.xml$ index.php [L]

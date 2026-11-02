@@ -9,33 +9,39 @@ use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
 
-function showImage($file, $uzanti)
+function showImage($file, $extension)
 {
     $types = array(
         'gif' => 'image/gif',
         'png' => 'image/png',
         'jpeg' => 'image/jpeg',
         'jpg' => 'image/jpeg',
+        'webp' => 'image/webp',
     );
-    if (!isset($types[$uzanti])) {
+    if (!isset($types[$extension])) {
         exit;
     }
-    header('Content-type: ' . $types[$uzanti]);
+    header('Content-Type: ' . $types[$extension]);
+    header('Cache-Control: max-age=31536000, public, immutable');
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
     readfile($file);
     exit;
 }
 
 $dir = dirname(__FILE__) . "/";
 $cache = $dir . "cache/img/";
+if (!is_dir($cache)) {
+    @mkdir($cache, 0777, true);
+}
 $options = Req::is_Get('options') ? Req::Get_Safe('options') : exit("1");
 $file = Req::is_Get('file') ? Req::Get_Safe('file') : exit("2");
 
-$uzanti = Helper::extension($file);
+$extension = strtolower((string) Helper::extension($file));
 
 $key = md5($file . $options);
-$cache_file = $cache . $key;
-if (file_exists($cache_file)) {
-    showImage($cache_file, $uzanti);
+$cache_file = $cache . $key . '.' . $extension;
+if (file_exists($cache_file) && filesize($cache_file) > 0) {
+    showImage($cache_file, $extension);
 }
 
 // Parse Options
@@ -62,49 +68,55 @@ $u = 1;
 // Parse Options
 foreach ($options as $o) {
     if (preg_match("@^w-(\d+)@", $o, $c)) {
-        $w = $c[1];
+        $w = (int) $c[1];
         continue;
     }
     if (preg_match("@^h-(\d+)@", $o, $c)) {
-        $h = $c[1];
+        $h = (int) $c[1];
         continue;
     }
     if (preg_match("@^a-([0|1])@", $o, $c)) {
-        $a = $c[1];
+        $a = (int) $c[1];
         continue;
     }
     if (preg_match("@^u-([0|1])@", $o, $c)) {
-        $u = $c[1];
+        $u = (int) $c[1];
         continue;
     }
 }
 
+try {
+    $manager = new ImageManager(new Driver());
 
-$manager = new ImageManager(new Driver());
+    // open and resize an image file
+    $image = $manager->read($fullfile);
 
-
-// open and resize an image file
-$image = $manager->read($fullfile);
-
-// Handle resize based on options
-if ($a == 1 && $u == 1) {
-    // Maintain aspect ratio and upsize (scaleDown behavior)
-    if ($w && $h) {
-        $image = $image->scaleDown($w, $h);
-    } elseif ($w) {
-        $image = $image->scaleDown($w);
-    } elseif ($h) {
-        $image = $image->scaleDown(height: $h);
+    // Handle resize based on options
+    if ($a == 1 && $u == 1) {
+        // Maintain aspect ratio and upsize (scaleDown behavior)
+        if ($w && $h) {
+            $image = $image->scaleDown($w, $h);
+        } elseif ($w) {
+            $image = $image->scaleDown($w);
+        } elseif ($h) {
+            $image = $image->scaleDown(height: $h);
+        }
+    } else {
+        // Exact resize without constraints
+        if ($w && $h) {
+            $image = $image->resize($w, $h);
+        } elseif ($w) {
+            $image = $image->resize($w, null);
+        } elseif ($h) {
+            $image = $image->resize(null, $h);
+        }
     }
-} else {
-    // Exact resize without constraints
-    if ($w && $h) {
-        $image = $image->resize($w, $h);
-    } elseif ($w) {
-        $image = $image->resize($w, null);
-    } elseif ($h) {
-        $image = $image->resize(null, $h);
+    $image->save($cache_file);
+    if (file_exists($cache_file) && filesize($cache_file) > 0) {
+        showImage($cache_file, $extension);
     }
+} catch (\Throwable $exception) {
+    // Fall back to original file if GD/Intervention cannot process
 }
-$image->save($cache_file);
-showImage($cache_file, $uzanti);
+
+showImage($fullfile, $extension);
