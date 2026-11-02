@@ -76,19 +76,23 @@
 						{% if active_square_file is not empty %}
 							<span class="modern-brand-mark">
 								<img
-									src="{{ site.iaddress }}mod_settings/thumb/{{ active_square_file }}"
+									src="{{ site.address }}r/w-42/h-42/f/mod_settings/thumb/{{ active_square_file }}"
+									srcset="{{ site.address }}r/w-42/h-42/f/mod_settings/thumb/{{ active_square_file }} 1x, {{ site.address }}r/w-84/h-84/f/mod_settings/thumb/{{ active_square_file }} 2x"
 									alt="{{ display_site_name }}"
 									class="logo-image logo-square"
-									width="42" height="42">
+									width="42" height="42"
+									loading="lazy" decoding="async">
 							</span>
 						{% endif %}
 						{% if active_rect_file is not empty %}
 							<span class="modern-brand-rect-wrap">
 								<img
-									src="{{ site.iaddress }}mod_settings/thumb/{{ active_rect_file }}"
+									src="{{ site.address }}r/w-120/h-40/f/mod_settings/thumb/{{ active_rect_file }}"
+									srcset="{{ site.address }}r/w-120/h-40/f/mod_settings/thumb/{{ active_rect_file }} 1x, {{ site.address }}r/w-240/h-80/f/mod_settings/thumb/{{ active_rect_file }} 2x"
 									alt="{{ display_site_name }}"
 									class="logo-image logo-rect"
-									width="160" height="42">
+									width="120" height="40"
+									loading="lazy" decoding="async">
 							</span>
 						{% else %}
 							<span class="modern-brand-copy">
@@ -98,10 +102,12 @@
 					{% elseif show_logo_area and has_logo_image %}
 						<span class="modern-brand-mark">
 							<img
-								src="{{ site.iaddress }}mod_settings/thumb/{{ active_logo_file }}"
+								src="{{ site.address }}r/{% if is_square_mode %}w-42/h-42{% else %}w-120/h-40{% endif %}/f/mod_settings/thumb/{{ active_logo_file }}"
+								srcset="{{ site.address }}r/{% if is_square_mode %}w-42/h-42{% else %}w-120/h-40{% endif %}/f/mod_settings/thumb/{{ active_logo_file }} 1x, {{ site.address }}r/{% if is_square_mode %}w-84/h-84{% else %}w-240/h-80{% endif %}/f/mod_settings/thumb/{{ active_logo_file }} 2x"
 								alt="{{ display_site_name }}"
 								class="logo-image {% if is_square_mode %}logo-square{% else %}logo-rect{% endif %}"
-								{% if is_square_mode %}width="42" height="42"{% else %}width="160" height="42"{% endif %}>
+								{% if is_square_mode %}width="42" height="42"{% else %}width="120" height="40"{% endif %}
+								loading="lazy" decoding="async">
 						</span>
 					{% elseif show_logo_area %}
 						<span class="modern-brand-mark">
@@ -117,13 +123,13 @@
 				</a>
 				<p class="mb-0 opacity-75">{{ site.description }}</p>
                 <div class="mt-4 d-flex flex-wrap gap-3 feeds-area">
-                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.rss_feed }}" aria-label="{{ lang.index.rss_feed }}">
+                    <a href="{{ site.address }}{{ site.lang }}/rss.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.rss_feed }}">
                         <i class="bi bi-rss-fill text-warning"></i> RSS
                     </a>
-                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.sitemap }}" aria-label="{{ lang.index.sitemap }}">
+                    <a href="{{ site.address }}sitemap.xml" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.sitemap }}">
                         <i class="bi bi-diagram-3-fill text-info"></i> {{ lang.index.sitemap }}
                     </a>
-                    <a href="{{ site.saddress }}llms.txt" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.llms_index }}" aria-label="{{ lang.index.llms_index }}">
+                    <a href="{{ site.saddress }}llms.txt" class="text-decoration-none transition-link d-flex align-items-center gap-2 small opacity-75" target="_blank" rel="noopener noreferrer" title="{{ lang.index.llms_index }}">
                         <i class="bi bi-cpu text-primary"></i> llms.txt
                     </a>
                 </div>

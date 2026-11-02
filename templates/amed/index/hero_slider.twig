@@ -38,8 +38,8 @@
                                 <source media="(min-width: 769px)" srcset="{{ item.image_url }}">
                                 <img src="{{ primary_src }}"
                                      alt="{{ item.name }}"
-                                     width="1280"
-                                     height="720"
+                                     width="800"
+                                     height="450"
                                      class="hero-slide__cover-img"
                                      loading="eager"
                                      fetchpriority="high"
@@ -52,8 +52,8 @@
                                 <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
                                      data-src="{{ primary_src }}"
                                      alt="{{ item.name }}"
-                                     width="1280"
-                                     height="720"
+                                     width="800"
+                                     height="450"
                                      class="hero-slide__cover-img"
                                      loading="lazy"
                                      fetchpriority="low"
@@ -90,9 +90,9 @@
                             <span class="hero-slide__avatar">
                                 {% if item.author_image_url is not empty %}
                                     {% if loop.first %}
-                                        <img src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="26" height="26" loading="lazy" decoding="async">
+                                        <img src="{{ item.author_image_url }}" {% if item.author_image_2x_url is defined and item.author_image_2x_url is not empty %}srcset="{{ item.author_image_url }} 1x, {{ item.author_image_2x_url }} 2x"{% endif %} alt="{{ item.author_name }}" width="28" height="28" loading="lazy" decoding="async">
                                     {% else %}
-                                        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="26" height="26" loading="lazy" decoding="async">
+                                        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="{{ item.author_image_url }}" alt="{{ item.author_name }}" width="28" height="28" loading="lazy" decoding="async">
                                     {% endif %}
                                 {% endif %}
                                 <span class="hero-slide__avatar-initials{% if item.author_image_url is empty %} is-visible{% endif %}">{{ item.author_initials }}</span>
@@ -106,7 +106,13 @@
         </div>
 
         <div class="hero-slider__dock" aria-label="{{ lang.index.hero_slider.title }}">
-            <div class="hero-news-swiper-pagination"></div>
+            <div class="hero-news-swiper-pagination">
+                {% if hero_slider|length > 1 %}
+                    {% for item in hero_slider %}
+                        <button type="button" class="swiper-pagination-bullet{% if loop.first %} swiper-pagination-bullet-active{% endif %}" aria-label="{{ lang.index.hero_slider.go_to_slide|format(loop.index) }}" data-slide-to="{{ loop.index0 }}"></button>
+                    {% endfor %}
+                {% endif %}
+            </div>
             <div class="hero-slider__counter" aria-live="polite">
                 <span class="hero-slider__counter-current">01</span>
                 <span class="hero-slider__counter-sep">/</span>

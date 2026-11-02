@@ -32,7 +32,7 @@
     justify-content: center;
     color: var(--bs-secondary, #6c757d);
     border: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .social-icon-btn:hover {
@@ -51,7 +51,7 @@
     justify-content: center;
     background-color: var(--bs-body-bg, #fff);
     font-size: 1rem;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .contact-card:hover .footer-icon-box {
@@ -60,12 +60,12 @@
 
 /* Link Animations */
 .transition-link {
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
     display: inline-block;
 }
 
 .transition-link:hover {
-    padding-left: 5px;
+    transform: translateX(4px);
     color: var(--bs-primary, #0d6efd) !important;
 }
 

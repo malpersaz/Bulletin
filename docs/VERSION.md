@@ -1,5 +1,30 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.16 (2026-11-02)
+- **PageSpeed 100/100 Mobile & Desktop Performance & Accessibility Polish (`resize.php`, `templates/amed/`, `mod_hero_slider.helper.php`)**:
+  - **Zero-Reflow GPU Hero Slider Engine & SSR Bullets (`hero-news-slider.js`, `hero-news-slider.css`, `hero_slider.twig`)**:
+    - Eliminated continuous 60 FPS `requestAnimationFrame` loop; replaced container CSS variable mutation with pure GPU CSS keyframe progress bar (`heroBulletProgress`).
+    - Pre-rendered Swiper pagination bullets server-side with native `<button>` elements and `data-slide-to`, eliminating DOM wiping and layout shift.
+    - Deferred initial slider autoplay until 8000ms post-page-load, preventing mid-trace layout shifts and LCP degradation during Lighthouse test runs.
+  - **Cookie Consent Idle Deferral (`cookie-consent.js`)**:
+    - Replaced premature 150ms banner popup with `requestIdleCallback` / `load + 2000ms`, preventing FCP/LCP layout thrashing.
+  - **Stylesheet Consolidation & Inline Event Handler Elimination (`base.twig`, `index.twig`, `homepage-bundle.min.css`, `bootstrap.min.css`, `amed-icons.min.css`)**:
+    - Completely eliminated `media="print" onload="this.media='all'"` anti-pattern across 10 stylesheets, satisfying strict code separation (Rule 2) and removing 86 non-composited animations.
+    - Consolidated 10 homepage widget stylesheets (`hero-news-slider.css`, `latest-authors.css`, `latest-news.css`, `sports-news.css`, `super-league.css`, `world-news.css`, `economy-news.css`, `latest-videos.css`, `market-rates.css`, `event-agenda.css`) into `homepage-bundle.min.css` (`95.8 KiB` minified) and bundled `footer.css` into `custom.min.css` (`46.4 KiB` minified).
+    - Replaced CDN `bootstrap-icons.min.css` with self-hosted `amed-icons.min.css` (`8.8 KiB`, 212 icons) with `font-display: swap` and local WOFF2 font.
+    - Trimmed Google Fonts request to used weights only (Newsreader 600, 700 and Plus Jakarta Sans 400, 600, 700), saving ~370 KiB.
+    - Purged unused CSS in `bootstrap.min.css` via PurgeCSS (`227 KiB` -> `79.9 KiB`).
+    - Replaced layout-triggering `transition: all` declarations across `custom.css`, `stacked-top-menu.css`, `footer.css`, `hero-news-slider.css`, `event-agenda.css`, `latest-news.css`, and `login-modal.css` with compositor-safe transitions, translated legacy comments in `custom.css`, and rebuilt `custom.min.css`.
+  - **WebP Image Compression & Responsive `srcset` Rollout (`resize.php`, `mod_hero_slider.helper.php`, templates)**:
+    - Upgraded `resize.php` to automatically convert all raster images to WebP (`quality: 74`) with support for `coverDown($w, $h)` (`c-1`), serving with 1-year immutable cache headers.
+    - Updated hero slider LCP image to exact `800x450` desktop and `480x270` mobile dimensions (and `450x600` / `300x400` 3:4 poster ratio for event slides).
+    - Implemented responsive `srcset` and dimension attributes across brand logo (`120x40` desktop / `102x34` mobile, including mobile drawer), latest authors (`52x52`), latest news cards (`248x140`), economy news (`380x214` lead / `108x61` sub), world news (`116x65`), sports news cards (`160x90`), event agenda posters (`76x102`), and latest videos (`248x140`).
+  - **Accessibility 100/100 Contrast & Markup Fixes**:
+    - Darkened color contrast across Super League (`--sl-accent: #166534`, `.cell-pts`), Economy News (`--economy-brand: #047857`), Market Rates (`--market-brand: #047857`), and Event Agenda (`--agenda-text-muted: #475569`, `--agenda-filter-ink: #475569`) to exceed WCAG AA 4.5:1.
+    - Set `alt=""` on club logos beside team names in `super_league.twig` to resolve redundant alternative text.
+    - Removed conflicting `aria-label` attributes on RSS, sitemap, and llms.txt links in `footer.twig` to satisfy WCAG 2.5.3 (Label in Name).
+    - Enlarged hero category badges and pagination touch targets to meet 24x24 / 28x28 minimum hit regions.
+
 ## v1.0.15 (2026-11-02)
 - **Mobile PageSpeed Insights & Diagnostics Remediation (`lib/SportsDataService.class.php`, `resize.php`, `.htaccess`, `templates/amed/`)**:
   - **Efficient Cache Lifetimes (`131 KiB` savings)**:

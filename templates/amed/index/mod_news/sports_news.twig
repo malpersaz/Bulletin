@@ -29,12 +29,12 @@
             <article class="sports-news-card" itemscope itemtype="https://schema.org/NewsArticle">
                 <a href="{{ site.saddress }}news/{{ item.seo }}" class="sports-news-thumb-link" title="{{ item.name }}" itemprop="url">
                     {% if item.image is not empty %}
-                        <img src="{{ site.address }}r/w-320/h-180/f/mod_news/thumb/{{ item.image }}"
+                        <img src="{{ site.address }}r/w-160/h-90/c-1/f/mod_news/thumb/{{ item.image }}"
+                             srcset="{{ site.address }}r/w-160/h-90/c-1/f/mod_news/thumb/{{ item.image }} 1x, {{ site.address }}r/w-320/h-180/c-1/f/mod_news/thumb/{{ item.image }} 2x"
                              class="sports-news-thumb-img"
                              alt="{{ item.name }}"
                              width="160"
                              height="90"
-                             sizes="160px"
                              loading="lazy"
                              decoding="async"
                              itemprop="image">

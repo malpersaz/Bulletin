@@ -26,7 +26,8 @@
                     <article class="latest-authors-item">
                         <a class="latest-authors-avatar" href="{{ site.saddress }}author/{{ author.username }}" aria-label="{{ latest_author_name }}">
                             {% if author.user_image is defined and author.user_image is not empty %}
-                                <img src="{{ site.iaddress }}mod_user/thumb/{{ author.user_image }}"
+                                <img src="{{ site.address }}r/w-52/h-52/c-1/f/mod_user/thumb/{{ author.user_image }}"
+                                     srcset="{{ site.address }}r/w-52/h-52/c-1/f/mod_user/thumb/{{ author.user_image }} 1x, {{ site.address }}r/w-104/h-104/c-1/f/mod_user/thumb/{{ author.user_image }} 2x"
                                      alt=""
                                      width="52"
                                      height="52"

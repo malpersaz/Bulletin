@@ -39,7 +39,7 @@
                             <div class="super-league-team-row{% if match.home.is_winner %} is-winner{% endif %}{% if match.home.is_amed %} is-amed-team{% endif %}">
                                 <span class="super-league-team-info">
                                     {% if match.home.logo is not empty %}
-                                        <img src="{{ match.home.logo }}" alt="{{ match.home.name }}" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
+                                        <img src="{{ match.home.logo }}" alt="" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
                                     {% else %}
                                         <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
                                     {% endif %}
@@ -56,7 +56,7 @@
                             <div class="super-league-team-row{% if match.away.is_winner %} is-winner{% endif %}{% if match.away.is_amed %} is-amed-team{% endif %}">
                                 <span class="super-league-team-info">
                                     {% if match.away.logo is not empty %}
-                                        <img src="{{ match.away.logo }}" alt="{{ match.away.name }}" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
+                                        <img src="{{ match.away.logo }}" alt="" class="super-league-team-logo" width="18" height="18" loading="lazy" decoding="async">
                                     {% else %}
                                         <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
                                     {% endif %}
@@ -120,7 +120,7 @@
                                 <td class="cell-club">
                                     <div class="cell-club-inner">
                                         {% if row.logo is not empty %}
-                                            <img src="{{ row.logo }}" alt="{{ row.name }}" class="super-league-club-logo" width="18" height="18" loading="lazy" decoding="async">
+                                            <img src="{{ row.logo }}" alt="" class="super-league-club-logo" width="18" height="18" loading="lazy" decoding="async">
                                         {% else %}
                                             <i class="bi bi-shield-shaded super-league-team-fallback" aria-hidden="true"></i>
                                         {% endif %}

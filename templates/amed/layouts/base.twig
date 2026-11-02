@@ -76,26 +76,14 @@
 		<!-- Preconnect & DNS Pre-resolve -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..800;1,6..72,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap">
 
 		<!-- Bootstrap 5.3 CSS -->
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/bootstrap.min.css?v={{ site.version }}">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"></noscript>
+		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/amed-icons.min.css?v={{ site.version }}">
 
-		<!-- Core Theme CSS (Custom Styles & Navigation Consolidated) -->
+		<!-- Core Theme CSS (Custom Styles, Navigation & Footer Consolidated) -->
 		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/custom.min.css?v={{ site.version }}">
-		<!-- Footer CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version }}" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/footer.css?v={{ site.version }}"></noscript>
-		<!-- Market Rates Widget CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/market-rates.css?v={{ site.version }}" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/market-rates.css?v={{ site.version }}"></noscript>
-		<!-- Event Agenda Widget CSS -->
-		<link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/event-agenda.css?v={{ site.version }}" media="print" onload="this.media='all'">
-		<noscript><link rel="stylesheet" href="{{ site.taddress }}{{ site.app_template }}/static/css/event-agenda.css?v={{ site.version }}"></noscript>
 		{% block stylesheets %}{% endblock %}
 
 		{% if site.google_analytics_id is defined and site.google_analytics_id is not empty %}

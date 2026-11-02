@@ -506,7 +506,7 @@ html[data-bs-theme="dark"] {
     background: var(--news-card-border);
     color: var(--news-ink);
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .latest-news-card:hover .latest-news-read-link {
@@ -550,7 +550,7 @@ html[data-bs-theme="dark"] {
     border: 1px solid var(--news-card-border);
     border-radius: 10px;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .latest-news-mobile-btn:hover {
@@ -647,7 +647,7 @@ html[data-bs-theme="dark"] {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    transition: all 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .nyt-news-heading-link,

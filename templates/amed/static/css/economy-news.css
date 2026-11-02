@@ -10,10 +10,10 @@
 
 .economy-news-section {
     /* Brand & Accent Tokens */
-    --economy-brand: #059669;
-    --economy-brand-hover: #047857;
-    --economy-brand-light: rgba(5, 150, 105, 0.10);
-    --economy-brand-border: rgba(5, 150, 105, 0.25);
+    --economy-brand: #047857;
+    --economy-brand-hover: #065f46;
+    --economy-brand-light: rgba(4, 120, 87, 0.10);
+    --economy-brand-border: rgba(4, 120, 87, 0.25);
 
     /* Body & Surface Tokens */
     --economy-bg: #ffffff;

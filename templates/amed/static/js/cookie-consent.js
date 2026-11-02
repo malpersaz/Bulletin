@@ -62,11 +62,28 @@
         return;
     }
 
-    banner.classList.remove('d-none');
-    setTimeout(function () {
-        banner.classList.add('is-visible');
-        banner.setAttribute('aria-hidden', 'false');
-    }, 150);
+    function revealBanner() {
+        banner.classList.remove('d-none');
+        if (window.requestAnimationFrame) {
+            requestAnimationFrame(function () {
+                banner.classList.add('is-visible');
+                banner.setAttribute('aria-hidden', 'false');
+            });
+        } else {
+            banner.classList.add('is-visible');
+            banner.setAttribute('aria-hidden', 'false');
+        }
+    }
+
+    if (window.requestIdleCallback) {
+        requestIdleCallback(revealBanner, { timeout: 4000 });
+    } else if (document.readyState === 'complete') {
+        setTimeout(revealBanner, 2000);
+    } else {
+        window.addEventListener('load', function () {
+            setTimeout(revealBanner, 2000);
+        }, { once: true });
+    }
 
     acceptButton.addEventListener('click', function () {
         persistConsent();

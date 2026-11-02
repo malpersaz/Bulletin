@@ -27,18 +27,16 @@
                            title="{{ news.name }}"
                            itemprop="url">
                             {% if news.image is not empty %}
-                                <picture>
-                                    <source srcset="{{ site.iaddress }}mod_news/thumb/{{ news.image }}" media="(max-width: 768px)" sizes="(max-width: 768px) calc(100vw - 48px), 248px">
-                                    <img src="{{ site.iaddress }}mod_news/thumb/{{ news.image }}"
-                                         class="latest-news-img"
-                                         alt="{{ news.name }}"
-                                         width="480"
-                                         height="270"
-                                         sizes="(max-width: 768px) calc(100vw - 48px), 248px"
-                                         loading="lazy"
-                                         decoding="async"
-                                         itemprop="image">
-                                </picture>
+                                <img src="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }}"
+                                     srcset="{{ site.address }}r/w-256/h-144/c-1/f/mod_news/thumb/{{ news.image }} 256w, {{ site.address }}r/w-384/h-216/c-1/f/mod_news/thumb/{{ news.image }} 384w, {{ site.address }}r/w-480/h-270/c-1/f/mod_news/thumb/{{ news.image }} 480w"
+                                     sizes="(max-width: 767px) 360px, 248px"
+                                     class="latest-news-img"
+                                     alt="{{ news.name }}"
+                                     width="248"
+                                     height="140"
+                                     loading="lazy"
+                                     decoding="async"
+                                     itemprop="image">
                             {% else %}
                                 <div class="latest-news-placeholder">
                                     <i class="bi bi-newspaper latest-news-placeholder-icon" aria-hidden="true"></i>

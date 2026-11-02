@@ -28,12 +28,12 @@
                 <div class="world-card-content">
                     <a href="{{ item_url }}" class="world-card-thumb" title="{{ item.name }}" itemprop="url">
                         {% if item.image is not empty %}
-                            <img src="{{ site.address }}r/w-232/h-131/f/mod_news/thumb/{{ item.image }}"
+                            <img src="{{ site.address }}r/w-116/h-65/c-1/f/mod_news/thumb/{{ item.image }}"
+                                 srcset="{{ site.address }}r/w-116/h-65/c-1/f/mod_news/thumb/{{ item.image }} 1x, {{ site.address }}r/w-232/h-130/c-1/f/mod_news/thumb/{{ item.image }} 2x"
                                  class="world-card-thumb-img"
                                  alt="{{ item.name }}"
                                  width="116"
                                  height="65"
-                                 sizes="116px"
                                  loading="lazy"
                                  decoding="async"
                                  itemprop="image">

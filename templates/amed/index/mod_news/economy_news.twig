@@ -13,13 +13,13 @@
             </span>
             <h2 id="economy-news-heading" class="economy-news-title">
                 <a href="{{ economy_url }}" class="economy-news-title-link">
-                    {{ economy_lang.title|default(economy_category_name|default('Ekonomi')) }}
+                    {{ economy_lang.title }}
                 </a>
             </h2>
-            <span class="economy-news-kicker" aria-hidden="true">{{ economy_lang.kicker|default('Finans & Piyasa') }}</span>
+            <span class="economy-news-kicker" aria-hidden="true">{{ economy_lang.kicker }}</span>
         </div>
-        <a href="{{ economy_url }}" class="economy-news-more-link" title="{{ economy_lang.all_items|default('Tümünü Gör') }}" aria-label="{{ economy_lang.title|default(economy_category_name|default('Ekonomi')) }} - {{ economy_lang.all_items|default('Tümünü Gör') }}">
-            <span class="economy-more-label">{{ economy_lang.all_items|default('Tümünü Gör') }}</span>
+        <a href="{{ economy_url }}" class="economy-news-more-link" title="{{ economy_lang.all_items }}" aria-label="{{ economy_lang.title }} - {{ economy_lang.all_items }}">
+            <span class="economy-more-label">{{ economy_lang.all_items }}</span>
             <i class="bi bi-arrow-right economy-more-icon" aria-hidden="true"></i>
         </a>
     </header>
@@ -32,24 +32,22 @@
                     <div class="economy-lead-media-wrapper">
                         <a href="{{ item_url }}" class="economy-lead-media-link" title="{{ item.name }}" itemprop="url">
                             {% if item.image is not empty %}
-                                <picture>
-                                    <source srcset="{{ site.iaddress }}mod_news/thumb/{{ item.image }}" media="(max-width: 768px)" sizes="(max-width: 768px) calc(100vw - 32px), 380px">
-                                    <img src="{{ site.iaddress }}mod_news/thumb/{{ item.image }}"
-                                         class="economy-lead-img"
-                                         alt="{{ item.name }}"
-                                         width="640"
-                                         height="360"
-                                         sizes="(max-width: 768px) calc(100vw - 32px), 380px"
-                                         loading="lazy"
-                                         decoding="async"
-                                         itemprop="image">
-                                </picture>
+                                <img src="{{ site.address }}r/w-380/h-214/c-1/f/mod_news/thumb/{{ item.image }}"
+                                     srcset="{{ site.address }}r/w-380/h-214/c-1/f/mod_news/thumb/{{ item.image }} 380w, {{ site.address }}r/w-480/h-270/c-1/f/mod_news/thumb/{{ item.image }} 480w"
+                                     sizes="(max-width: 767px) 360px, 380px"
+                                     class="economy-lead-img"
+                                     alt="{{ item.name }}"
+                                     width="380"
+                                     height="214"
+                                     loading="lazy"
+                                     decoding="async"
+                                     itemprop="image">
                             {% else %}
                                 <div class="economy-lead-placeholder">
                                     <i class="bi bi-cash-stack economy-placeholder-icon" aria-hidden="true"></i>
                                 </div>
                             {% endif %}
-                            <span class="economy-lead-badge">{{ economy_lang.featured|default('Öne Çıkan') }}</span>
+                            <span class="economy-lead-badge">{{ economy_lang.featured }}</span>
                         </a>
                     </div>
                     <div class="economy-lead-content">
@@ -94,17 +92,15 @@
                 <article class="economy-card-sub" itemscope itemtype="https://schema.org/NewsArticle">
                     <a href="{{ item_url }}" class="economy-sub-thumb" title="{{ item.name }}" itemprop="url">
                         {% if item.image is not empty %}
-                            <picture>
-                                <img src="{{ site.address }}r/w-216/h-122/f/mod_news/thumb/{{ item.image }}"
-                                     class="economy-sub-img"
-                                     alt="{{ item.name }}"
-                                     width="108"
-                                     height="61"
-                                     sizes="108px"
-                                     loading="lazy"
-                                     decoding="async"
-                                     itemprop="image">
-                            </picture>
+                            <img src="{{ site.address }}r/w-108/h-61/c-1/f/mod_news/thumb/{{ item.image }}"
+                                 srcset="{{ site.address }}r/w-108/h-61/c-1/f/mod_news/thumb/{{ item.image }} 1x, {{ site.address }}r/w-216/h-122/c-1/f/mod_news/thumb/{{ item.image }} 2x"
+                                 class="economy-sub-img"
+                                 alt="{{ item.name }}"
+                                 width="108"
+                                 height="61"
+                                 loading="lazy"
+                                 decoding="async"
+                                 itemprop="image">
                         {% else %}
                             <div class="economy-sub-placeholder">
                                 <i class="bi bi-bar-chart-line economy-placeholder-icon" aria-hidden="true"></i>

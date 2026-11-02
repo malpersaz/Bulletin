@@ -23,14 +23,28 @@ BUNDLE_MANIFEST: Dict[str, List[str]] = {
     "templates/amed/static/css/custom.min.css": [
         "templates/amed/static/css/custom.css",
         "templates/amed/static/css/stacked-top-menu.css",
+        "templates/amed/static/css/footer.css",
     ],
     "templates/amed/static/css/hero-news-slider.min.css": [
         "templates/amed/static/css/hero-news-slider.css",
+    ],
+    "templates/amed/static/css/homepage-bundle.min.css": [
+        "templates/amed/static/css/hero-news-slider.css",
+        "templates/amed/static/css/latest-authors.css",
+        "templates/amed/static/css/latest-news.css",
+        "templates/amed/static/css/sports-news.css",
+        "templates/amed/static/css/super-league.css",
+        "templates/amed/static/css/world-news.css",
+        "templates/amed/static/css/economy-news.css",
+        "templates/amed/static/css/latest-videos.css",
+        "templates/amed/static/css/market-rates.css",
+        "templates/amed/static/css/event-agenda.css",
     ],
 }
 
 VENDOR_EXEMPT: Set[str] = {
     "bootstrap.min.css",
+    "amed-icons.min.css",
 }
 
 TOKEN_RE = re.compile(

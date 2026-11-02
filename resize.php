@@ -4,23 +4,24 @@ require 'vendor/autoload.php';
 require 'lib/Req.class.php';
 require 'lib/Helper.class.php';
 
-// import the Intervention Image Manager Class
 use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Drivers\Imagick\Driver as ImagickDriver;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
-
-function showImage($file, $extension)
+function showImage(string $file, string $extension): void
 {
-    $types = array(
-        'gif' => 'image/gif',
-        'png' => 'image/png',
+    $types = [
+        'gif'  => 'image/gif',
+        'png'  => 'image/png',
         'jpeg' => 'image/jpeg',
-        'jpg' => 'image/jpeg',
+        'jpg'  => 'image/jpeg',
         'webp' => 'image/webp',
-    );
+    ];
+
     if (!isset($types[$extension])) {
         exit;
     }
+
     header('Content-Type: ' . $types[$extension]);
     header('Cache-Control: max-age=31536000, public, immutable');
     header('Expires: ' . gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT');
@@ -28,72 +29,89 @@ function showImage($file, $extension)
     exit;
 }
 
-$dir = dirname(__FILE__) . "/";
-$cache = $dir . "cache/img/";
+$dir = dirname(__FILE__) . '/';
+$cache = $dir . 'cache/img/';
 if (!is_dir($cache)) {
     @mkdir($cache, 0777, true);
 }
-$options = Req::is_Get('options') ? Req::Get_Safe('options') : exit("1");
-$file = Req::is_Get('file') ? Req::Get_Safe('file') : exit("2");
 
-$extension = strtolower((string) Helper::extension($file));
+$options = Req::is_Get('options') ? Req::Get_Safe('options') : exit('1');
+$file = Req::is_Get('file') ? Req::Get_Safe('file') : exit('2');
+
+// Sanitization
+$file = str_replace('@..@', '', $file);
+$source_extension = strtolower((string) Helper::extension($file));
+
+// For all raster photo formats, produce optimized WebP
+$target_extension = ($source_extension === 'gif') ? 'gif' : 'webp';
 
 $key = md5($file . $options);
-$cache_file = $cache . $key . '.' . $extension;
+$cache_file = $cache . $key . '.' . $target_extension;
 if (file_exists($cache_file) && filesize($cache_file) > 0) {
-    showImage($cache_file, $extension);
+    showImage($cache_file, $target_extension);
 }
 
-// Parse Options
-$options = explode("/", $options);
-// Remove File ..
-$file = str_replace('@..@', '', $file);
-// This mod?
-if (preg_match("@^mod_@", $file)) {
+// Module path prefix
+if (preg_match('@^mod_@', $file)) {
     $dir = $dir . 'static/';
 }
-// Full File Dir
 $fullfile = $dir . $file;
 
-// File is Exists?
 if (!file_exists($fullfile)) {
-    exit("3");
+    exit('3');
 }
 
-$w = NULL;
-$h = NULL;
+// Parse Options
+$option_parts = explode('/', $options);
+$w = null;
+$h = null;
 $a = 1;
 $u = 1;
+$c = 0;
+$q = 74;
 
-// Parse Options
-foreach ($options as $o) {
-    if (preg_match("@^w-(\d+)@", $o, $c)) {
-        $w = (int) $c[1];
+foreach ($option_parts as $o) {
+    if (preg_match('@^w-(\d+)@', $o, $m)) {
+        $w = (int) $m[1];
         continue;
     }
-    if (preg_match("@^h-(\d+)@", $o, $c)) {
-        $h = (int) $c[1];
+    if (preg_match('@^h-(\d+)@', $o, $m)) {
+        $h = (int) $m[1];
         continue;
     }
-    if (preg_match("@^a-([0|1])@", $o, $c)) {
-        $a = (int) $c[1];
+    if (preg_match('@^a-([0|1])@', $o, $m)) {
+        $a = (int) $m[1];
         continue;
     }
-    if (preg_match("@^u-([0|1])@", $o, $c)) {
-        $u = (int) $c[1];
+    if (preg_match('@^u-([0|1])@', $o, $m)) {
+        $u = (int) $m[1];
+        continue;
+    }
+    if (preg_match('@^c-([0|1])@', $o, $m)) {
+        $c = (int) $m[1];
+        continue;
+    }
+    if (preg_match('@^q-(\d+)@', $o, $m)) {
+        $q = max(30, min(100, (int) $m[1]));
         continue;
     }
 }
 
 try {
-    $manager = new ImageManager(new Driver());
+    if (extension_loaded('imagick')) {
+        $manager = new ImageManager(new ImagickDriver());
+    } elseif (extension_loaded('gd')) {
+        $manager = new ImageManager(new GdDriver());
+    } else {
+        showImage($fullfile, $source_extension);
+    }
 
-    // open and resize an image file
     $image = $manager->read($fullfile);
 
-    // Handle resize based on options
-    if ($a == 1 && $u == 1) {
-        // Maintain aspect ratio and upsize (scaleDown behavior)
+    // Apply transformation
+    if ($c === 1 && $w && $h) {
+        $image = $image->coverDown($w, $h);
+    } elseif ($a === 1 && $u === 1) {
         if ($w && $h) {
             $image = $image->scaleDown($w, $h);
         } elseif ($w) {
@@ -102,7 +120,6 @@ try {
             $image = $image->scaleDown(height: $h);
         }
     } else {
-        // Exact resize without constraints
         if ($w && $h) {
             $image = $image->resize($w, $h);
         } elseif ($w) {
@@ -111,12 +128,19 @@ try {
             $image = $image->resize(null, $h);
         }
     }
-    $image->save($cache_file);
+
+    if ($target_extension === 'webp') {
+        $encoded = $image->toWebp($q);
+        $encoded->save($cache_file);
+    } else {
+        $image->save($cache_file);
+    }
+
     if (file_exists($cache_file) && filesize($cache_file) > 0) {
-        showImage($cache_file, $extension);
+        showImage($cache_file, $target_extension);
     }
 } catch (\Throwable $exception) {
-    // Fall back to original file if GD/Intervention cannot process
+    // Fall back to original file if resizing fails
 }
 
-showImage($fullfile, $extension);
+showImage($fullfile, $source_extension);

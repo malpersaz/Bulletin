@@ -46,7 +46,7 @@
     border-left: none;
     padding: 0.75rem 1rem;
     border-color: #e2e8f0;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 [data-bs-theme="dark"] .login-step .form-control {
@@ -67,7 +67,7 @@
     font-weight: 600;
     padding: 0.75rem 1.5rem;
     border-radius: 0.75rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #loginModal .btn-primary:hover {
@@ -78,7 +78,7 @@
 
 /* Step Animatons */
 .login-step {
-    transition: all 0.4s ease-in-out;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
 }
 
 /* Password Toggle Icon */

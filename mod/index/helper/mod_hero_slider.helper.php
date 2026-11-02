@@ -307,6 +307,9 @@ class mod_hero_slider_helper extends indexBase
         $category_name = html_entity_decode($category_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         $author_name = html_entity_decode($author_name, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
+        $desktop_resize = ($source_mod === 'mod_event') ? 'r/w-450/h-600/c-1/f/' : 'r/w-800/h-450/c-1/f/';
+        $mobile_resize  = ($source_mod === 'mod_event') ? 'r/w-300/h-400/c-1/f/' : 'r/w-480/h-270/c-1/f/';
+
         return [
             'source_mod' => $source_mod,
             'source_id' => $source_id,
@@ -321,12 +324,14 @@ class mod_hero_slider_helper extends indexBase
             'category_url' => $category_seo !== '' ? $this->site['saddress'] . $category_path . $category_seo : '',
             'detail_url' => $this->site['saddress'] . $detail_path . (isset($record['seo']) ? $record['seo'] : ''),
             'image' => $image,
-            'image_url' => $image !== '' ? $this->site['iaddress'] . $image_base . $image : '',
-            'thumb_url' => $image !== '' ? $this->site['iaddress'] . $thumb_base . $image : '',
+            'raw_image_url' => $image !== '' ? $this->site['iaddress'] . $image_base . $image : '',
+            'image_url' => $image !== '' ? $this->site['address'] . $desktop_resize . $image_base . $image : '',
+            'thumb_url' => $image !== '' ? $this->site['address'] . $mobile_resize . $thumb_base . $image : '',
             'author_name' => $author_name,
             'author_initials' => $this->buildAuthorInitials($author_name),
             'user_image' => $user_image,
-            'author_image_url' => $user_image !== '' ? $this->site['iaddress'] . 'mod_user/thumb/' . $user_image : '',
+            'author_image_url' => $user_image !== '' ? $this->site['address'] . 'r/w-28/h-28/c-1/f/mod_user/thumb/' . $user_image : '',
+            'author_image_2x_url' => $user_image !== '' ? $this->site['address'] . 'r/w-56/h-56/c-1/f/mod_user/thumb/' . $user_image : '',
         ];
     }
 

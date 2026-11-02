@@ -131,7 +131,7 @@ header.stacked-header .stacked-brand,
   border: 1px solid transparent;
   border-radius: 10px;
   background: transparent;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 header.stacked-header .stacked-brand:hover {
@@ -204,10 +204,11 @@ header.stacked-header .stacked-brand:focus-visible,
   flex: 0 0 auto;
 }
 .modern-brand.logo-mode-square_rectangle .logo-image.logo-rect {
-  width: auto !important;
+  width: 120px !important;
   max-width: 175px !important;
   height: 40px !important;
   max-height: 40px !important;
+  aspect-ratio: 3 / 1;
   object-fit: contain !important;
 }
 
@@ -246,10 +247,11 @@ header.stacked-header .stacked-brand:focus-visible,
 
 .modern-brand .logo-image.logo-rect,
 .modern-brand .logo-image:not(.logo-square):not(.logo-rect) {
-  width: auto !important;
+  width: 120px !important;
   max-width: 175px !important;
   height: 40px !important;
   max-height: 40px !important;
+  aspect-ratio: 3 / 1;
   object-fit: contain !important;
   border-radius: 8px !important;
   background: transparent !important;
@@ -791,6 +793,13 @@ header.stacked-header .dropdown-item.text-danger:hover,
     flex: 0 0 34px;
   }
 
+  .modern-brand.logo-mode-rectangle .modern-brand-mark,
+  .modern-brand.logo-mode-rectangle_name .modern-brand-mark {
+    width: auto;
+    height: 34px;
+    flex: 0 0 auto;
+  }
+
   .modern-brand .logo-image.logo-square {
     width: 34px !important;
     height: 34px !important;
@@ -800,9 +809,11 @@ header.stacked-header .dropdown-item.text-danger:hover,
 
   .modern-brand .logo-image.logo-rect,
   .modern-brand .logo-image:not(.logo-square):not(.logo-rect) {
+    width: 102px !important;
     height: 34px !important;
     max-height: 34px !important;
     max-width: 145px !important;
+    aspect-ratio: 3 / 1;
   }
 
   .modern-brand-title {

@@ -29,11 +29,13 @@
                        title="{{ video.name }}">
                         <div class="latest-video-media">
                             {% if video.image is not empty %}
-                                <img src="{{ site.iaddress }}mod_video_embed/thumb/{{ video.image }}"
+                                <img src="{{ site.address }}r/w-256/h-144/c-1/f/mod_video_embed/thumb/{{ video.image }}"
+                                     srcset="{{ site.address }}r/w-256/h-144/c-1/f/mod_video_embed/thumb/{{ video.image }} 256w, {{ site.address }}r/w-480/h-270/c-1/f/mod_video_embed/thumb/{{ video.image }} 480w"
+                                     sizes="(max-width: 767px) 360px, 248px"
                                      class="latest-video-img"
                                      alt="{{ video.name }}"
-                                     width="480"
-                                     height="270"
+                                     width="248"
+                                     height="140"
                                      loading="lazy"
                                      decoding="async">
                             {% else %}

@@ -17,8 +17,8 @@
     --sl-card-border: rgba(15, 23, 42, 0.08);
     --sl-card-hover: rgba(15, 23, 42, 0.03);
     --sl-divider: #e2e8f0;
-    --sl-accent: #15803d;
-    --sl-live: #15803d;
+    --sl-accent: #166534;
+    --sl-live: #166534;
     --sl-live-bg: #ecfdf5;
     --sl-amed-bg: rgba(22, 163, 74, 0.08);
     --sl-amed-border: rgba(22, 163, 74, 0.25);
@@ -457,7 +457,7 @@
 }
 
 .super-league-table-row.is-amed-row .cell-pts {
-    color: var(--sl-accent);
+    color: var(--sl-amed-ink);
 }
 
 /* Dark Mode Tokens */

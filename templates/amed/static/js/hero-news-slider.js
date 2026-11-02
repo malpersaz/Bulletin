@@ -46,6 +46,10 @@
         sliderEl.dataset.initialized = '1';
 
         var sliderContainer = sliderEl.closest('.hero-news-slider');
+        if (sliderContainer) {
+            sliderContainer.classList.add('is-initialized');
+        }
+
         var slides = Array.prototype.slice.call(sliderEl.querySelectorAll('.swiper-slide'));
         var slideCount = slides.length;
         if (slideCount === 0) {
@@ -63,8 +67,7 @@
 
         var currentIndex = 0;
         var autoplayDelay = 6000;
-        var autoplayRaf = null;
-        var autoplayStart = 0;
+        var autoplayTimer = null;
         var isPaused = false;
 
         var currentEl = sliderContainer ? sliderContainer.querySelector('.hero-slider__counter-current') : null;
@@ -73,19 +76,23 @@
         var bullets = [];
 
         if (paginationEl && isMultiple) {
-            paginationEl.innerHTML = '';
-            var fragment = document.createDocumentFragment();
-            for (var i = 0; i < slideCount; i++) {
-                var bullet = document.createElement('span');
-                bullet.className = 'swiper-pagination-bullet' + (i === 0 ? ' swiper-pagination-bullet-active' : '');
-                bullet.setAttribute('role', 'button');
-                bullet.setAttribute('tabindex', '0');
-                bullet.setAttribute('aria-label', 'Go to slide ' + (i + 1));
-                bullet.dataset.slideTo = String(i);
-                fragment.appendChild(bullet);
-                bullets.push(bullet);
+            var existingBullets = paginationEl.querySelectorAll('.swiper-pagination-bullet');
+            if (existingBullets.length === slideCount) {
+                bullets = Array.prototype.slice.call(existingBullets);
+            } else {
+                paginationEl.innerHTML = '';
+                var fragment = document.createDocumentFragment();
+                for (var i = 0; i < slideCount; i++) {
+                    var bullet = document.createElement('button');
+                    bullet.type = 'button';
+                    bullet.className = 'swiper-pagination-bullet' + (i === 0 ? ' swiper-pagination-bullet-active' : '');
+                    bullet.setAttribute('aria-label', 'Slide ' + (i + 1));
+                    bullet.dataset.slideTo = String(i);
+                    fragment.appendChild(bullet);
+                    bullets.push(bullet);
+                }
+                paginationEl.appendChild(fragment);
             }
-            paginationEl.appendChild(fragment);
         }
 
         function updateCounter(idx) {
@@ -97,10 +104,29 @@
             totalEl.textContent = slideCount < 10 ? '0' + slideCount : String(slideCount);
         }
 
-        function setProgress(pct) {
-            if (sliderContainer) {
-                sliderContainer.style.setProperty('--hero-autoplay-progress', pct.toFixed(1) + '%');
+        function stopAutoplay() {
+            if (autoplayTimer) {
+                clearTimeout(autoplayTimer);
+                autoplayTimer = null;
             }
+            if (sliderContainer) {
+                sliderContainer.classList.remove('is-autoplay-running');
+            }
+        }
+
+        function scheduleNextSlide(delayMs) {
+            stopAutoplay();
+            if (!isMultiple || prefersReducedMotion || isPaused || document.hidden) {
+                return;
+            }
+            var delay = typeof delayMs === 'number' ? delayMs : autoplayDelay;
+            if (sliderContainer) {
+                sliderContainer.classList.remove('is-autoplay-paused');
+                sliderContainer.classList.add('is-autoplay-running');
+            }
+            autoplayTimer = setTimeout(function () {
+                goToSlide(currentIndex + 1);
+            }, delay);
         }
 
         function goToSlide(targetIdx) {
@@ -127,49 +153,57 @@
 
             currentIndex = nextIdx;
             updateCounter(currentIndex);
-            autoplayStart = performance.now();
-            setProgress(0);
-        }
 
-        function stepAutoplay(now) {
-            if (!isMultiple || prefersReducedMotion) {
-                return;
+            if (!isPaused && !document.hidden && !prefersReducedMotion) {
+                scheduleNextSlide(autoplayDelay);
             }
-            if (isPaused || document.hidden) {
-                autoplayStart = now;
-                autoplayRaf = requestAnimationFrame(stepAutoplay);
-                return;
-            }
-            if (!autoplayStart) {
-                autoplayStart = now;
-            }
-            var elapsed = now - autoplayStart;
-            if (elapsed >= autoplayDelay) {
-                goToSlide(currentIndex + 1);
-                autoplayStart = now;
-            } else {
-                var pct = Math.min(100, Math.max(0, (elapsed / autoplayDelay) * 100));
-                setProgress(pct);
-            }
-            autoplayRaf = requestAnimationFrame(stepAutoplay);
         }
 
         hydrateSlideMedia(slides[0]);
         updateCounter(0);
 
         if (isMultiple && !prefersReducedMotion) {
-            autoplayRaf = requestAnimationFrame(stepAutoplay);
+            var startAutoplayAfterDelay = function () {
+                setTimeout(function () {
+                    if (!isPaused && !document.hidden) {
+                        scheduleNextSlide(autoplayDelay);
+                    }
+                }, 8000);
+            };
+
+            if (document.readyState === 'complete') {
+                startAutoplayAfterDelay();
+            } else {
+                window.addEventListener('load', startAutoplayAfterDelay, { once: true });
+            }
         }
 
         if (sliderContainer) {
             sliderContainer.addEventListener('mouseenter', function () {
                 isPaused = true;
+                stopAutoplay();
+                sliderContainer.classList.add('is-autoplay-paused');
             }, { passive: true });
 
             sliderContainer.addEventListener('mouseleave', function () {
                 isPaused = false;
-                autoplayStart = performance.now();
+                sliderContainer.classList.remove('is-autoplay-paused');
+                scheduleNextSlide(autoplayDelay);
             }, { passive: true });
+
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    stopAutoplay();
+                    if (sliderContainer) {
+                        sliderContainer.classList.add('is-autoplay-paused');
+                    }
+                } else if (!isPaused) {
+                    if (sliderContainer) {
+                        sliderContainer.classList.remove('is-autoplay-paused');
+                    }
+                    scheduleNextSlide(autoplayDelay);
+                }
+            });
 
             sliderContainer.addEventListener('click', function (e) {
                 var nextBtn = e.target.closest('.hero-news-swiper-button-next');
