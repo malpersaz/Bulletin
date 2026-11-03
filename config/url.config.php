@@ -118,6 +118,8 @@ $url['videos/(:any)/(:num)']='index/videos/$1/$2';
 
 
 // News and News Category
+$url['news']='index/newses';
+$url['news/']='index/newses';
 $url['news/detail/(:any)']='index/news/$1';
 $url['news/(:any)']='index/news/$1';
 $url['newses']='index/newses';
@@ -128,6 +130,8 @@ $url['newses/(:any)/(:num)']='index/newses/$1/$2';
 $url['news-archive']='index/news_archive';
 
 // Publications and Publication Category
+$url['publication']='index/publications';
+$url['publication/']='index/publications';
 $url['publication/detail/(:any)']='index/publication/$1';
 $url['publication/(:any)']='index/publication/$1';
 $url['publications']='index/publications';
@@ -142,6 +146,8 @@ $url['author/(:any)']='index/author/$1';
 $url['author/(:any)/(:num)']='index/author/$1/$2';
 
 // Event and Event Category
+$url['event']='index/events';
+$url['event/']='index/events';
 $url['event/detail/(:any)']='index/event/$1';
 $url['event/(:any)']='index/event/$1';
 $url['events']='index/events';

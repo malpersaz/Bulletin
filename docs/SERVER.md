@@ -155,3 +155,21 @@ Heke hûn bi rêya SSH têkevin nav serverê (`ssh ssh-w02232db@w02232db.kasserv
   ```bash
   tail -n 50 /www/htdocs/w02232db/amedbulten.com/logs/error.log
   ```
+
+---
+
+## 7. Kontrola Qsûr û Kêmasiyan (Defect Audit & Resolutions)
+
+Di kontrola berfireh a pergala zindî de ev kêmasî hatin dîtin û bi temamî hatin çareserkirin:
+
+1. **Çewtiya `view_count` di Databasê de (`mod_page`, `mod_publication`):**
+   - **Kêmasî:** Dema rûpelek ji `/page/` an gotarek ji `/publication/` dihate vekirin, ji ber ku stûna `view_count` di wan tabloyên databasê de tune bû, `DatabaseException: Column not found: 1054 Unknown column 'view_count'` dihat tomarkirin.
+   - **Çareserî:** Stûna `view_count INT(11) NOT NULL DEFAULT 0` li ser her du tabloyên databasê hate zêdekirin. Her wiha di koda `_update_view_count()` de (`indexMain.php` û `indexBase.php`) bloka ewlehiyê ya `try ... catch` hate bicihkirin da ku tu carî pergalê nexe xetayê.
+2. **Çareserkirina Rûpela Kurmancî (`https://amedbulten.com/ku/`):**
+   - **Kêmasî:** Zimanê Kurmancî di tabloya `lang` a databasê de bi `status = 'n'` rawestiyabû; loma dema kesek diçû `/ku/`, routerê ew wekî modul fam dikir û xetaya `"ku modülü bulunamadı"` dida.
+   - **Çareserî:** Di tabloya `lang` de rewşa `ku` hate çalakirin (`status = 'y'`). Niha rûpela sereke ya Kurmancî bi rewşa **HTTP 200 OK** bêkêmasî dixebite.
+3. **Pêşîlêgirtina Xetayên 404 li ser Navên Modulan (`/news`, `/publication`, `/event`):**
+   - **Kêmasî:** Heke bikarhêner rasterast biçûya navnîşanên kurt ên mîna `/news`, `/publication`, `/event`, ji ber nebûna rêgeza rasterast 404 dida.
+   - **Çareserî:** Di `config/url.config.php` de rêgezên kurt rasterast ber bi lîsteyên wan ve hatin girêdan.
+4. **Paqijkirina Tomarên Çewtiyan (Zero Error Log State):**
+   - Pelê `logs/ajax_errors.log` hate kontrolkirin û hemû daxwazên nû yên malperê bi 0 çewtî dixebitin.

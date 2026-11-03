@@ -530,8 +530,12 @@ abstract class indexBase
                         VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
 
             if ($db->affected_rows() > 0) {
-                $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
-                return true;
+                try {
+                    $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
+                    return true;
+                } catch (Throwable $e) {
+                    return false;
+                }
             }
         }
         

@@ -87,10 +87,14 @@ class indexMain
             $db->query("INSERT IGNORE INTO `sys_view_logs` (`table_name`, `item_id`, `ip_address`, `created_at`) 
                         VALUES ('$table', " . intval($id) . ", '$ip', '$today')");
             
-            // If inserted, increment view count
+            // If inserted, increment view count safely
             if ($db->affected_rows() > 0) {
-                $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
-                return true;
+                try {
+                    $db->query("UPDATE `$table` SET `view_count` = `view_count` + 1 WHERE `id` = " . intval($id));
+                    return true;
+                } catch (Throwable $e) {
+                    return false;
+                }
             }
         }
         

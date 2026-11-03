@@ -15,6 +15,10 @@
     - Maintained explicit whitelist access for public web manifest (`site.webmanifest`).
 - **Server Deployment Documentation (`docs/SERVER.md`)**:
   - Authored comprehensive production server architecture guide, directory taxonomy, and deployment protocol under `docs/SERVER.md`.
+- **Defect Resolution & Runtime Stabilization (`url.config.php`, `indexMain.php`, `indexBase.php`, Database)**:
+  - Fixed missing `view_count` column across `mod_page` and `mod_publication` in database and guarded `_update_view_count()` with try/catch blocks.
+  - Activated Kurmanji language (`ku`) in `lang` database table, eliminating routing fallback error `"ku modülü bulunamadı"` on `/ku/`.
+  - Added direct route aliases for `/news`, `/publication`, and `/event` in `config/url.config.php`, preventing 404s on shortened URL patterns.
 
 ## v1.0.18 (2026-11-03)
 - **Production Indexing Shield Deactivation & Search Engine Parity (`.htaccess`, `robots.txt`, `robots.php`, `llms.php`, `templates/amed/`)**:
