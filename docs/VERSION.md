@@ -1,5 +1,21 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.27 (2026-11-04)
+- **Public News Category Listing & Card Typography Polish (`templates/amed/index/mod_news/newses.twig`, `templates/amed/static/css/news.css`, `config/site.config.php`)**:
+  - **Header De-Cluttering & Redundancy Elimination (`newses.twig`)**:
+    - Removed redundant `.newses-header` block containing repeated category title with newspaper icon, contradictory "Tüm Haberler" subtitle under specific category views, and detached single-count badge.
+    - Preserved semantic SEO and screen-reader accessibility by maintaining `<h1 class="visually-hidden" itemprop="name">{{ current_page_title }}</h1>`.
+    - Allowed breadcrumb navigation to flow directly into the main news content grid without intermediate visual clutter.
+  - **Category Sidebar Streamlining (`newses.twig`)**:
+    - Eliminated obsolete `.news-filter-header` box title (`📁 Kategori`) and redundant "Tüm Haberler" item from the category sidebar list.
+    - Removed file-manager-style folder icons (`bi-folder`) from category links, establishing pure typographical hierarchy displaying strictly category names and their numeric article count badges.
+  - **News Card Cleanup & Reading Time Layout Hardening (`newses.twig`, `news.css`)**:
+    - Removed obsolete "Devamını Oku" (`.news-card-read-more`) call-to-action link from the news card footer, eliminating awkward multi-line text wrapping on narrow columns and delegating article navigation cleanly to clickable media and headline links.
+    - Removed folder icon (`bi-folder-fill`) from the card category badge pill for a lighter editorial aesthetic.
+    - Hardened `.news-card-read-time` with `white-space: nowrap` and adjusted `.news-card-footer` layout to `justify-content: flex-start`, guaranteeing clean single-line reading time presentation across all viewports.
+  - **Framework Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Bumped version to `1.0.27` across `config/site.config.php` and `docs/VERSION.md`.
+
 ## v1.0.26 (2026-11-04)
 - **Admin Module Edit/Save Lifecycle & PHP 8+ Type-Safety Hardening (`lib/BaseModuleController.class.php`, `lib/Helper.class.php`, `mod/mod_news/index.php`, `lib/GoogleIndexingService.class.php`)**:
   - **PHP 8+ Loose Comparison Remediation on Menu Integration (`lib/BaseModuleController.class.php`)**:

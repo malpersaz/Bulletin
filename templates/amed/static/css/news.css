@@ -321,7 +321,7 @@ html[data-bs-theme="dark"] .newses-page {
 .news-card-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: 0.75rem;
     padding-top: 0.85rem;
     border-top: 1px solid var(--news-card-border);
@@ -334,6 +334,7 @@ html[data-bs-theme="dark"] .newses-page {
     gap: 0.35rem;
     font-size: 0.8rem;
     color: var(--news-ink-muted);
+    white-space: nowrap;
 }
 
 .news-card-read-more {

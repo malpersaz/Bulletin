@@ -69,49 +69,17 @@
         </ol>
     </nav>
 
-    <header class="newses-header">
-        <div class="newses-header-lead">
-            <h1 class="newses-page-title" itemprop="name">
-                <i class="bi bi-newspaper" aria-hidden="true"></i>
-                <span>{{ current_page_title }}</span>
-            </h1>
-            {% if is_filtered_category %}
-                <p class="newses-subtitle">{{ all_news_label }}</p>
-            {% endif %}
-        </div>
-        {% if newses is not empty %}
-            <span class="newses-count-badge">
-                <i class="bi bi-newspaper" aria-hidden="true"></i>
-                <span>{{ newses|length }}{% if pagination is not empty %}+{% endif %}</span>
-            </span>
-        {% endif %}
-    </header>
+    <h1 class="visually-hidden" itemprop="name">{{ current_page_title }}</h1>
 
     <div class="row g-4" id="mod_news_list">
         <aside class="col-lg-3 col-md-4 newses-sidebar-col" aria-label="{{ lang.index.mod_news.category }}">
             <nav class="news-filter-card" aria-label="{{ lang.index.mod_news.category }}">
-                <div class="news-filter-header">
-                    <h2 class="news-filter-title">
-                        <i class="bi bi-folder2-open" aria-hidden="true"></i>
-                        <span>{{ lang.index.mod_news.category }}</span>
-                    </h2>
-                </div>
                 <div class="news-filter-list">
-                    <a href="{{ site.saddress }}newses"
-                       class="news-filter-item{% if not is_filtered_category %} active{% endif %}">
-                        <span class="news-filter-name">
-                            <i class="bi bi-grid-fill" aria-hidden="true"></i>
-                            <span>{{ all_news_label }}</span>
-                        </span>
-                    </a>
                     {% for category in categories %}
                         {% if category.news_count > 0 %}
                             <a href="{{ site.saddress }}newses/{{ category.seo }}"
                                class="news-filter-item{% if category_seo == category.seo %} active{% endif %}">
-                                <span class="news-filter-name">
-                                    <i class="bi bi-folder" aria-hidden="true"></i>
-                                    <span>{{ category.name }}</span>
-                                </span>
+                                <span class="news-filter-name">{{ category.name }}</span>
                                 <span class="news-filter-badge">{{ category.news_count }}</span>
                             </a>
                         {% endif %}
@@ -168,10 +136,7 @@
                                         {% endif %}
 
                                         {% if news.categoryname is defined and news.categoryname is not empty %}
-                                            <span class="news-card-category-pill" itemprop="articleSection">
-                                                <i class="bi bi-folder-fill" aria-hidden="true"></i>
-                                                <span>{{ news.categoryname }}</span>
-                                            </span>
+                                            <span class="news-card-category-pill" itemprop="articleSection">{{ news.categoryname }}</span>
                                         {% endif %}
                                     </div>
 
@@ -190,12 +155,6 @@
                                             <i class="bi bi-clock" aria-hidden="true"></i>
                                             <span>{{ reading_minutes }} {{ lang.index.min_read }}</span>
                                         </span>
-                                        <a href="{{ site.saddress }}news/{{ news.seo }}"
-                                           class="news-card-read-more"
-                                           aria-label="{{ news_title }}">
-                                            <span>{{ lang.index.read_more }}</span>
-                                            <i class="bi bi-arrow-right" aria-hidden="true"></i>
-                                        </a>
                                     </div>
                                 </div>
                             </article>
