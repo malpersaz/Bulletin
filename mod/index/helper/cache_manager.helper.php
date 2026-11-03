@@ -12,7 +12,7 @@ class cache_manager_helper extends indexBase
         'video' => ['cache/video', 'cache/video_tmp', 'cache/video_log'],
         'css' => ['cache/css'],
         'sql' => ['cache/sql', 'cache/test_sql'],
-        'templates' => ['templates_c'],
+        'templates' => ['templates_c', 'cache/twig'],
         'llms' => ['cache/llms'],
         'captcha' => ['cache/captcha'],
         'market' => ['cache/market'],
@@ -126,7 +126,7 @@ class cache_manager_helper extends indexBase
     }
 
     /**
-     * Resolves target from URL parameter or query string.
+     * Resolves target from URL parameter or POST body.
      *
      * @param string|null $rawTarget
      * @return string
@@ -135,7 +135,7 @@ class cache_manager_helper extends indexBase
     {
         $target = $rawTarget !== null ? strtolower(trim((string) $rawTarget)) : '';
         if ($target === '') {
-            $target = strtolower(trim((string) ($_GET['cache'] ?? '')));
+            $target = strtolower(trim((string) ($_POST['target'] ?? '')));
         }
         return Req::Url_Clear($target);
     }
@@ -157,7 +157,19 @@ class cache_manager_helper extends indexBase
         header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
         header('Pragma: no-cache');
 
-        $target = $this->resolveTarget($targetParam);
+        if (!$this->session) {
+            Load::lib('Session');
+            $this->session = new Session();
+        }
+
+        $csrfToken = (string) $this->session->get('clear_cache_csrf');
+        if (strlen($csrfToken) !== 32) {
+            $csrfToken = bin2hex(random_bytes(16));
+            $this->session->set('clear_cache_csrf', $csrfToken);
+        }
+
+        $errorMessage = null;
+        $target = '';
         $results = [];
         $summary = [
             'total' => 0,
@@ -166,24 +178,33 @@ class cache_manager_helper extends indexBase
             'directories' => 0,
         ];
 
-        if ($target !== '') {
-            $dirsToPurge = [];
-            if ($target === 'all') {
-                foreach ($this->directoryMap as $dirs) {
-                    $dirsToPurge = array_merge($dirsToPurge, $dirs);
-                }
-                $dirsToPurge = array_unique($dirsToPurge);
-            } elseif (isset($this->directoryMap[$target])) {
-                $dirsToPurge = $this->directoryMap[$target];
-            }
+        // Execute purge ONLY on POST with valid CSRF token
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $submittedCsrf = (string) ($_POST['csrf'] ?? '');
+            if ($submittedCsrf === '' || !hash_equals($csrfToken, $submittedCsrf)) {
+                $errorMessage = $this->lang['index']['cache']['csrf_error'] ?? 'Security token invalid or expired.';
+            } else {
+                $target = $this->resolveTarget($_POST['target'] ?? $targetParam);
+                if ($target !== '') {
+                    $dirsToPurge = [];
+                    if ($target === 'all') {
+                        foreach ($this->directoryMap as $dirs) {
+                            $dirsToPurge = array_merge($dirsToPurge, $dirs);
+                        }
+                        $dirsToPurge = array_unique($dirsToPurge);
+                    } elseif (isset($this->directoryMap[$target])) {
+                        $dirsToPurge = $this->directoryMap[$target];
+                    }
 
-            foreach ($dirsToPurge as $dir) {
-                $res = $this->purgeDirectory($dir);
-                $results[] = $res;
-                $summary['total'] += $res['total'];
-                $summary['deleted'] += $res['deleted'];
-                $summary['errors'] += $res['errors'];
-                $summary['directories']++;
+                    foreach ($dirsToPurge as $dir) {
+                        $res = $this->purgeDirectory($dir);
+                        $results[] = $res;
+                        $summary['total'] += $res['total'];
+                        $summary['deleted'] += $res['deleted'];
+                        $summary['errors'] += $res['errors'];
+                        $summary['directories']++;
+                    }
+                }
             }
         }
 
@@ -191,9 +212,11 @@ class cache_manager_helper extends indexBase
         $this->site['title'] = $pageTitle;
         $this->tema->set('site', $this->site);
         $this->tema->set('title', $pageTitle);
+        $this->tema->set('clear_cache_csrf', $csrfToken);
         $this->tema->set('cache_target', $target);
         $this->tema->set('cache_results', $results);
         $this->tema->set('cache_summary', $summary);
+        $this->tema->set('cache_error', $errorMessage);
         $this->tema->tpl('index/cache_clear');
     }
 }

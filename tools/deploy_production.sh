@@ -37,6 +37,12 @@ RSYNC_OPTS=(
     --human-readable
     --delete
     --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r
+    --include='/cache/'
+    --include='/cache/.htaccess'
+    --include='/templates_c/'
+    --include='/templates_c/.htaccess'
+    --include='/logs/'
+    --include='/logs/.htaccess'
     --exclude-from="${ROOT_DIR}/.deployignore"
     --filter='protect config/*.local.php'
     --filter='protect data/*.json'

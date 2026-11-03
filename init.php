@@ -9,7 +9,17 @@
  * Defined Variables
  */
 // Debug State
-define('DEBUG', TRUE);
+if (!defined('DEBUG')) {
+    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $isLocalEnv = (
+        $host === 'localhost'
+        || strpos($host, 'localhost') !== false
+        || strpos($host, '127.0.0.1') !== false
+        || strpos($host, 'pinggy.link') !== false
+        || PHP_SAPI === 'cli'
+    );
+    define('DEBUG', $isLocalEnv);
+}
 // Framework Loaded Flag
 define('AKM_LOADED', TRUE);
 // Current Time
@@ -43,7 +53,7 @@ define('up_dir', root_dir . 'static' . DS);
 // Cache Directory
 define('cache_dir', root_dir . 'cache' . DS);
 // Log Directory
-define('log_dir', root_dir . 'log' . DS);
+define('log_dir', root_dir . 'logs' . DS);
 // Error Log Path
 define('PHPLOG', log_dir . 'php-error-log.txt');
 ini_set('error_log', PHPLOG);

@@ -119,19 +119,25 @@ set_exception_handler(function($e) use ($isAjaxRequest, $isLocal, $ajax_logger) 
         exit;
     }
     
-    if (method_exists($e, 'show')) {
+    if ($e instanceof ModException) {
         $e->show();
-    } else {
-        if (!headers_sent()) {
-            http_response_code(500);
-        }
-        if (!$isLocal) {
-            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>500 Internal Server Error</title><meta name="robots" content="noindex, nofollow"></head><body><h1>Internal Server Error</h1><p>An unexpected error occurred. Please try again later.</p></body></html>';
+        exit;
+    }
+
+    if (!headers_sent()) {
+        http_response_code(500);
+    }
+
+    if ($isLocal) {
+        if (method_exists($e, 'show')) {
+            $e->show();
         } else {
             echo '<h1>Error</h1>';
             echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
             echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
         }
+    } else {
+        echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>500 Internal Server Error</title><meta name="robots" content="noindex, nofollow"></head><body><h1>Internal Server Error</h1><p>An unexpected error occurred. Please try again later.</p></body></html>';
     }
     exit;
 });

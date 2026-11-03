@@ -2,24 +2,27 @@
 
 ## v1.0.20 (2026-11-03)
 - **Security Hardening, Controller-Routed Cache Management & Apache Shields (`config/url.config.php`, `mod/index/`, `.htaccess`, `tools/deploy_production.sh`)**:
-  - **Framework Route `/clear-cache` Modernization (`config/url.config.php`, `mod/index/`, `templates/amed/index/cache_clear.twig`)**:
+  - **Framework Route `/clear-cache` Modernization (`config/url.config.php`, `mod/index/`, `templates/amed/index/cache_clear.twig`, `templates/base_static/css/cache-clear.css`)**:
     - Replaced unauthenticated root script `clear_cache.php` with framework route `/clear-cache` and `/clear-cache/(:any)` mapped to `index/clear_cache`.
-    - Created `mod/index/helper/cache_manager.helper.php` implementing granular, safe multi-subsystem cache purging (`img`, `js`, `video`, `css`, `sql`, `templates`, `llms`, `captcha`, `market`, `sports`, `all`) with strict path containment checks.
-    - Implemented `clear_cache($target = null)` action in `mod/index/index.php`, strictly enforcing authenticated administrative permissions (`AclService::hasPermission('admin_access')`), CSRF validation, and localized flash responses.
-    - Designed zero-inline Twig template `templates/amed/index/cache_clear.twig` adhering to AGENTS.md Rule 2 and mobile-first responsive cards.
-    - Added full English, Kurdish, and Turkish localization keys across `mod/index/lang/` without forbidden fallback defaults.
-  - **Retirement & Deletion of Legacy Root Scripts (`clear_cache.php`, `modules.php`, `tools/cross_repo_sync.py`)**:
+    - Created `mod/index/helper/cache_manager.helper.php` implementing granular, safe multi-subsystem cache purging (`img`, `js`, `video`, `css`, `sql`, `templates`, `llms`, `captcha`, `market`, `sports`, `all`) with strict path containment checks and added `cache/twig` to template cleanup.
+    - Enforced mandatory CSRF token validation and POST-only execution on cache purging actions, preventing unintended cache clearing via GET prefetching or CSRF attacks.
+    - Rebuilt `cache_clear.twig` with clean semantic POST forms, removing all hardcoded text strings in favor of dictionary translations.
+    - Fully localized cache management across all 10 supported system languages (`en.php`, `ku.php`, `tr.php`, `de.php`, `fr.php`, `sv.php`, `ru.php`, `ar.php`, `ckb.php`, `zza.php`).
+    - Aligned `cache-clear.css` with the Amed theme: scoped styles within container, added dark-mode responsiveness, removed global `body` overrides, and enforced compositor-safe transitions.
+  - **Retirement & Deletion of Legacy Root & Data Scripts (`clear_cache.php`, `modules.php`, `data/makeModel.php`)**:
     - Permanently deleted `clear_cache.php` and `modules.php` from local repository tracking (`git rm`) and removed their residual copies from the remote production server web root.
+    - Removed obsolete `data/makeModel.php` and remote dev/smoke tasks from `tasks/` and residual log artifacts (`logs/login_debug.log`).
     - Removed `clear_cache.php` reference from `tools/cross_repo_sync.py` to prevent synchronization drift.
-  - **Production Error Handling & Information Leakage Mitigation (`index.php`)**:
-    - Gated verbose PHP `display_errors` and raw HTML stack trace dumps behind `$isLocal` environment detection in `index.php`.
+  - **Production Error Handling & Information Leakage Mitigation (`index.php`, `init.php`)**:
+    - Hardened global exception handler in `index.php` to prevent `$e->show()` from exposing internal database error messages, SQL queries, and file traces in production environments.
+    - Dynamically initialized `DEBUG` in `init.php` based on local environment detection and corrected `log_dir` mapping to `logs/`.
     - In production, suppressed public error display and served clean, localized HTTP 500 error pages while securely recording trace details to `logs/error.log`.
   - **Multi-Layer Apache `.htaccess` Protection & Directory Shields (`.htaccess`, `logs/`, `templates_c/`, `cache/`, `static/`)**:
     - Reinforced root `.htaccess` with a direct HTTP rewrite block returning 403 Forbidden for internal system directories: `(config|lib|vendor|tasks|data|logs|tools|tests|installer|docs|templates_c)`.
     - Deployed dedicated access shield `Require all denied` in `logs/.htaccess` and `templates_c/.htaccess`.
     - Hardened `cache/.htaccess` to disable directory indexes (`Options -Indexes`) and deny direct HTTP execution for all script extensions (`.php`, `.phtml`, `.phar`, `.sh`, `.py`, `.cgi`).
     - Added script execution blockage to `static/.htaccess` for uploaded files to prevent remote code execution vectors.
-    - Whitelisted `!/logs/.htaccess` and `!/templates_c/.htaccess` in `.gitignore` and `.deployignore`.
+    - Updated `tools/deploy_production.sh` with explicit `--include` rules ensuring directory `.htaccess` shields sync cleanly to production.
   - **Production Deployment & Server Permissions Hardening (`tools/deploy_production.sh`, `.deployignore`)**:
     - Updated `tools/deploy_production.sh` with `--delete` flag to automatically prune retired legacy files on remote deploys.
     - Enforced POSIX permission sanitization during transfer: `--chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r` (directories `0755`, files `0644`).

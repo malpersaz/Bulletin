@@ -55,11 +55,8 @@ data/*.json
 data/sqlite/
 static/mod_*/**
 cache/*
-!cache/.htaccess
 templates_c/*
-!templates_c/.htaccess
 logs/*
-!logs/.htaccess
 scratch/
 __pycache__/
 *.pyc

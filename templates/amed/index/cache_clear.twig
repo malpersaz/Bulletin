@@ -18,11 +18,18 @@
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <div class="cache-container">
-                <div class="page-header">
+                <div class="cache-header">
                     <h1><i class="bi bi-speedometer2 me-2"></i>{{ lang.index.cache.title }}</h1>
                     <p>{{ lang.index.cache.desc }}</p>
                 </div>
                 <div class="cache-content">
+                    {% if cache_error is defined and cache_error is not empty %}
+                        <div class="alert alert-danger">
+                            <i class="bi bi-shield-x me-2"></i>
+                            {{ cache_error }}
+                        </div>
+                    {% endif %}
+
                     {% if cache_target is not empty %}
                         <h2 class="section-title">
                             <i class="bi bi-lightning-charge me-2"></i>
@@ -67,7 +74,7 @@
                             {% else %}
                                 <div class="alert alert-warning">
                                     <i class="bi bi-exclamation-triangle me-2"></i>
-                                    <strong>{{ res.directory }}:</strong> {{ lang.index.cache.cache_cleared_partial }} ({{ res.deleted }}/{{ res.total }}, {{ res.errors }} error)
+                                    <strong>{{ res.directory }}:</strong> {{ lang.index.cache.cache_cleared_partial }} ({{ res.deleted }}/{{ res.total }}, {{ res.errors }} {{ lang.index.cache.error_label }})
                                 </div>
                             {% endif %}
                         {% endfor %}
@@ -92,114 +99,158 @@
                     {% else %}
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/img" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon img"><i class="bi bi-image"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_image }}</h5>
-                                        <small class="text-muted">Clear image cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="img">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon img"><i class="bi bi-image"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_image }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_image }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/js" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon js"><i class="bi bi-filetype-js"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_js }}</h5>
-                                        <small class="text-muted">Clear JavaScript cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="js">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon js"><i class="bi bi-filetype-js"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_js }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_js }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/video" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon video"><i class="bi bi-play-circle"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_video }}</h5>
-                                        <small class="text-muted">Clear video cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="video">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon video"><i class="bi bi-play-circle"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_video }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_video }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/css" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon css"><i class="bi bi-filetype-css"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_css }}</h5>
-                                        <small class="text-muted">Clear CSS cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="css">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon css"><i class="bi bi-filetype-css"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_css }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_css }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/sql" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon sql"><i class="bi bi-database"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_sql }}</h5>
-                                        <small class="text-muted">Clear SQL query cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="sql">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon sql"><i class="bi bi-database"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_sql }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_sql }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/templates" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon template"><i class="bi bi-file-earmark-code"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_templates }}</h5>
-                                        <small class="text-muted">Clear compiled Twig templates</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="templates">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon template"><i class="bi bi-file-earmark-code"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_templates }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_templates }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/llms" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon llms"><i class="bi bi-cpu"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_llms }}</h5>
-                                        <small class="text-muted">Clear LLMs index cache files</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="llms">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon llms"><i class="bi bi-cpu"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_llms }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_llms }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/captcha" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon captcha"><i class="bi bi-shield-check"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_captcha }}</h5>
-                                        <small class="text-muted">Clear temporary captcha images</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="captcha">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon captcha"><i class="bi bi-shield-check"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_captcha }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_captcha }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/market" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon market"><i class="bi bi-graph-up"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_market }}</h5>
-                                        <small class="text-muted">Clear market rates cache</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="market">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon market"><i class="bi bi-graph-up"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_market }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_market }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-md-6">
-                                <a href="{{ site.saddress }}clear-cache/sports" class="list-group-item list-group-item-action">
-                                    <div class="cache-icon sports"><i class="bi bi-trophy"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_sports }}</h5>
-                                        <small class="text-muted">Clear sports standings cache</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right text-muted"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="sports">
+                                    <button type="submit" class="list-group-item list-group-item-action w-100 text-start border-0">
+                                        <div class="cache-icon sports"><i class="bi bi-trophy"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_sports }}</h5>
+                                            <small class="text-muted">{{ lang.index.cache.desc_sports }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right text-muted"></i>
+                                    </button>
+                                </form>
                             </div>
                             <div class="col-12">
-                                <a href="{{ site.saddress }}clear-cache/all" class="list-group-item list-group-item-action primary-action">
-                                    <div class="cache-icon all"><i class="bi bi-lightning-charge"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1">{{ lang.index.cache.cache_all }}</h5>
-                                        <small>Clear all cache files across all subsystems</small>
-                                    </div>
-                                    <i class="bi bi-chevron-right"></i>
-                                </a>
+                                <form method="POST" action="{{ site.saddress }}clear-cache" class="cache-tile-form">
+                                    <input type="hidden" name="csrf" value="{{ clear_cache_csrf }}">
+                                    <input type="hidden" name="target" value="all">
+                                    <button type="submit" class="list-group-item list-group-item-action primary-action w-100 text-start border-0">
+                                        <div class="cache-icon all"><i class="bi bi-lightning-charge"></i></div>
+                                        <div class="flex-grow-1">
+                                            <h5 class="mb-1">{{ lang.index.cache.cache_all }}</h5>
+                                            <small>{{ lang.index.cache.desc_all }}</small>
+                                        </div>
+                                        <i class="bi bi-chevron-right"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     {% endif %}
