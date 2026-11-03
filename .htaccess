@@ -1,5 +1,9 @@
 RewriteEngine On
 
+# Preserve HTTP Authorization header for Apache FastCGI / PHP-FPM
+RewriteCond %{HTTP:Authorization} .+
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
 RewriteRule ^robots\.txt$ robots.php [L]
 
 # LLMS.txt AI Index Rewrites

@@ -92,6 +92,13 @@ class index_mod extends indexBase
         unset($cache);
     }
 
+    public function cron($target = null)
+    {
+        $cron = Load::helper("index.cron_manager");
+        $cron->render($target);
+        unset($cron);
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {

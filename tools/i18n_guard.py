@@ -50,6 +50,7 @@ DEV_TERMS = {
     "k", "v", "x", "y", "z", "e", "th", "td", "tr", "ul", "ol", "li", "p",
     "h1", "h2", "h3", "h4", "h5", "h6", "div", "span", "hr", "br", "pre",
     "em", "b", "i", "u", "s", "sub", "sup", "nav", "del", "ins", "ok", "err",
+    "cron", "cgi", "fastcgi", "pw",
     "whatsapp", "favicon", "webmanifest", "imagick", "anim", "video", "aspect",
     "captcha", "kurdish", "snackbar", "fab", "workspace", "ssid", "profil", "goto",
     "az", "za", "dob", "datatable", "emessage", "semail", "akfiles", "akfilestime",

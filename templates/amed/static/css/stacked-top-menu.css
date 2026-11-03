@@ -260,6 +260,13 @@ header.stacked-header .stacked-brand:focus-visible,
   box-shadow: none !important;
 }
 
+[data-bs-theme="dark"] .modern-brand .logo-image.logo-rect,
+[data-bs-theme="dark"] .modern-brand .logo-image:not(.logo-square),
+[data-bs-theme="dark"] .mobile-drawer-brand .logo-image.logo-rect,
+[data-bs-theme="dark"] .mobile-drawer-brand .logo-image:not(.logo-square) {
+  filter: brightness(0) invert(1);
+}
+
 .brand-monogram {
   font-family: Georgia, serif;
   font-size: 1.35rem;
@@ -768,6 +775,18 @@ header.stacked-header .dropdown-item.text-danger:hover,
 #amidaMobileMenu .dropdown-item.text-danger:hover {
   background-color: #fef2f2;
   color: #991b1b !important;
+}
+
+/* ==========================================================================
+   Desktop Grid Alignment (Synced with 1200px Grid: 800px + 16px + 384px)
+   ========================================================================== */
+@media (min-width: 1224px) {
+  header.stacked-header .stacked-header-top,
+  header.stacked-header .stacked-nav-bar {
+    max-width: 1224px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 }
 
 /* ==========================================================================

@@ -709,5 +709,9 @@ class Amed
         if (isset($_SESSION)) {
             session_write_close();
         }
+
+        if (!empty($GLOBALS['__amed_deferred_tasks']) && class_exists('MarketDataService', false)) {
+            MarketDataService::runDeferredTasks();
+        }
     }
 }

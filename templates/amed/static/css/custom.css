@@ -107,6 +107,20 @@
 }
 
 /* -------------------------------------------------------------------------
+   Dark Mode Base Palette Harmonization (Slate/Navy Architecture)
+   ------------------------------------------------------------------------- */
+[data-bs-theme="dark"] {
+  --bs-body-bg: #090d16;
+  --bs-body-bg-rgb: 9, 13, 22;
+  --bs-body-color: #f1f5f9;
+  --bs-body-color-rgb: 241, 245, 249;
+  --bs-border-color: rgba(255, 255, 255, 0.1);
+  --bs-border-color-translucent: rgba(255, 255, 255, 0.1);
+  --bs-primary: #38bdf8;
+  --bs-primary-rgb: 56, 189, 248;
+}
+
+/* -------------------------------------------------------------------------
    Base Style Overrides
    ------------------------------------------------------------------------- */
 body {

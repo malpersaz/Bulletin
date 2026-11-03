@@ -38,6 +38,11 @@ $url['clear-cache'] = 'index/clear_cache';
 $url['clear-cache/'] = 'index/clear_cache';
 $url['clear-cache/(:any)'] = 'index/clear_cache/$1';
 
+// Automated Cron & Background Feed Refresh Routes
+$url['cron'] = 'index/cron';
+$url['cron/'] = 'index/cron';
+$url['cron/(:any)'] = 'index/cron/$1';
+
 // Statutory Legal & Policy Routes
 $url['legal'] = 'index/legal';
 $url['legal/'] = 'index/legal';

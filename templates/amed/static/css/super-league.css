@@ -467,8 +467,8 @@ html[data-bs-theme="dark"] .super-league-widget,
 body.dark .super-league-widget,
 body.dark-mode .super-league-widget {
     --sl-ink: #f8fafc;
-    --sl-muted: #94a3b8;
-    --sl-subtle: #64748b;
+    --sl-muted: #cbd5e1;
+    --sl-subtle: #94a3b8;
     --sl-bg: #1e293b;
     --sl-border: rgba(255, 255, 255, 0.12);
     --sl-panel-bg: #0f172a;

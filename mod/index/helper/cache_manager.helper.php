@@ -78,7 +78,7 @@ class cache_manager_helper extends indexBase
             return $allFiles;
         }
 
-        $ignoredNames = ['.', '..', '.gitkeep', '.gitignore', '.htaccess', 'Thumb.db', 'Thumbs.db'];
+        $ignoredNames = ['.', '..', '.gitkeep', '.gitignore', '.htaccess', 'refresh.lock', 'Thumb.db', 'Thumbs.db'];
 
         while (($file = readdir($handler)) !== false) {
             if (in_array($file, $ignoredNames, true)) {
@@ -203,6 +203,15 @@ class cache_manager_helper extends indexBase
                         $summary['deleted'] += $res['deleted'];
                         $summary['errors'] += $res['errors'];
                         $summary['directories']++;
+                    }
+
+                    if (class_exists('RedisCache', false) && RedisCache::isEnabled()) {
+                        if ($target === 'all' || $target === 'market') {
+                            RedisCache::delete('bulletin_market_rates_v1');
+                        }
+                        if ($target === 'all' || $target === 'sports') {
+                            RedisCache::delete('bulletin_super_league_v1');
+                        }
                     }
                 }
             }

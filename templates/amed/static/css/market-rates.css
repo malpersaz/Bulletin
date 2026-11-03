@@ -80,6 +80,10 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
     line-height: 1.2;
+    padding: 0.15rem 0.45rem;
+    border-radius: 999px;
+    background-color: var(--market-up-bg);
+    border: 1px solid var(--market-up-border);
 }
 
 .market-live-dot {
@@ -203,30 +207,108 @@
 }
 
 /* --------------------------------------------------------------------------
-   Mobile Viewport Adjustments
+   Mobile Viewport Adjustments (Clean Single-Column List / No Scroll)
    -------------------------------------------------------------------------- */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
+    .market-widget {
+        padding: 0.65rem 0.8rem;
+        gap: 0.3rem;
+        border-radius: 12px;
+    }
+
+    .market-head {
+        padding-bottom: 0.4rem;
+    }
+
     .market-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.32rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
     }
 
     .market-item {
-        padding: 0.38rem 0.45rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.44rem 0.35rem;
+        border: none;
+        border-bottom: 1px solid var(--market-divider);
+        border-radius: 6px;
+        background: transparent;
+        box-shadow: none;
+        gap: 0.5rem;
+        transition: background-color 0.15s ease;
+    }
+
+    .market-item:hover,
+    .market-item:active {
+        background-color: rgba(148, 163, 184, 0.08);
+    }
+
+    .market-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0.15rem;
+    }
+
+    .market-left {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        justify-content: space-between;
+        flex: 1 1 auto;
+        min-width: 0;
+        margin-inline-end: 0.75rem;
+        gap: 0.5rem;
+    }
+
+    .market-name {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--market-name-ink);
+        letter-spacing: 0.025em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
     }
 
     .market-val {
-        font-size: 0.76rem;
+        font-size: 0.86rem;
+        font-weight: 800;
+        color: var(--market-val-ink);
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.015em;
+        white-space: nowrap;
+        text-align: right;
+    }
+
+    .market-right {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.4rem;
+        flex: 0 0 auto;
     }
 
     .market-badge {
-        font-size: 0.56rem;
+        font-size: 0.62rem;
+        font-weight: 700;
+        padding: 0.14rem 0.35rem;
+        border-radius: 4px;
+        min-width: 48px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
     }
-}
 
-@media (max-width: 340px) {
-    .market-grid {
-        grid-template-columns: 1fr;
+    .market-diff {
+        font-size: 0.58rem;
+        font-weight: 500;
+        color: var(--market-diff-ink);
+        min-width: 50px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        line-height: 1.2;
     }
 }
 
@@ -256,8 +338,8 @@ body.dark-mode .market-widget {
     --market-card-border: rgba(255, 255, 255, 0.08);
     --market-card-hover-border: rgba(255, 255, 255, 0.16);
     --market-val-ink: #f8fafc;
-    --market-name-ink: #94a3b8;
-    --market-diff-ink: #64748b;
+    --market-name-ink: #cbd5e1;
+    --market-diff-ink: #94a3b8;
 
     --market-up-bg: rgba(16, 185, 129, 0.15);
     --market-up-border: rgba(16, 185, 129, 0.35);
@@ -269,7 +351,16 @@ body.dark-mode .market-widget {
 
     --market-flat-bg: rgba(148, 163, 184, 0.10);
     --market-flat-border: rgba(148, 163, 184, 0.25);
-    --market-flat-ink: #94a3b8;
+    --market-flat-ink: #cbd5e1;
+}
+
+html[data-bs-theme="dark"] .market-item:hover,
+body.dark .market-item:hover,
+body.dark-mode .market-item:hover,
+html[data-bs-theme="dark"] .market-item:active,
+body.dark .market-item:active,
+body.dark-mode .market-item:active {
+    background-color: rgba(255, 255, 255, 0.04);
 }
 
 /* --------------------------------------------------------------------------

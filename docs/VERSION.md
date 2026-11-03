@@ -1,5 +1,41 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.21 (2026-11-03)
+- **Automated Web Cron Architecture, FastCGI Self-Healing & Live Data Feed Hardening (`mod/index/helper/cron_manager.helper.php`, `config/url.config.php`, `config/site.config.php`, `lib/Amed.class.php`, `lib/MarketDataService.class.php`, `lib/SportsDataService.class.php`, `.htaccess`)**:
+  - **Controller-Routed Web Cron Endpoint (`/cron`, `/cron/market`, `/cron/sports`, `/cron/all`)**:
+    - Created `mod/index/helper/cron_manager.helper.php` mapped to canonical routes `/cron`, `/cron/`, and `/cron/(:any)` via `config/url.config.php` and `mod/index/index.php::cron()`.
+    - Implemented multi-tier constant-time cryptographic authentication (`hash_equals()`): HTTP Basic Auth (`PHP_AUTH_USER` & `PHP_AUTH_PW`), `X-Cron-Token` request header, query string `?token=...`, Super Admin session fallback, and CLI SAPI authorization.
+    - Enforced zero-secret repository hygiene: removed hardcoded cron tokens from tracked `config/site.config.php` and `config/site.config.example.php`, delegating live credentials strictly to untracked `config/site.config.local.php` or `AMED_CRON_TOKEN` environment variables.
+    - Added unauthorized attempt audit logging (`logs/cron_security.log`), `HTTP 400 Bad Request` validation for unsupported cron targets, and a 60-second anti-abuse cooldown window (`CRON_COOLDOWN`) on forced HTTP cron calls.
+    - Added HTTP Authorization header preservation rule in `.htaccess` (`RewriteCond %{HTTP:Authorization} .+`, `RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]`) ensuring FastCGI / PHP-FPM under Apache on ALL-INKL KAS receives Basic Auth credentials cleanly.
+    - Added security headers (`X-Robots-Tag: noindex, nofollow, noarchive`, `Cache-Control: no-store, no-cache`, `X-Content-Type-Options: nosniff`) and structured JSON telemetry with millisecond execution timing.
+  - **Dual-Shutdown FastCGI Lifecycle Remediation & Unified Deferred Task Coordinator (`lib/Amed.class.php`, `lib/MarketDataService.class.php`, `lib/SportsDataService.class.php`, `mod/index/helper/cache_manager.helper.php`)**:
+    - Architected a shared deferred task queue (`$GLOBALS['__amed_deferred_tasks']`) with `MarketDataService::runDeferredTasks()` invoked at the end of `Amed::__destruct()` immediately after `TwigTemplate::output()` and `session_write_close()`.
+    - Resolved the PHP lifecycle ordering flaw where `Amed::__destruct()` rendered templates and registered deferred tasks *during* shutdown, and eliminated duplicate FastCGI socket flushes (`fastcgi_finish_request()`).
+    - Synchronized `readCache()` across `MarketDataService` and `SportsDataService` so missing disk JSON files are never masked by stale Redis keys.
+    - Updated `mod/index/helper/cache_manager.helper.php` to safeguard `refresh.lock` from cache cleanup deletions and invalidate associated Redis keys (`bulletin_market_rates_v1`, `bulletin_super_league_v1`) during manual or scheduled cache purge cycles.
+  - **Adaptive Live-Match Polling Engine (`lib/SportsDataService.class.php`, `mod/index/helper/cron_manager.helper.php`)**:
+    - Implemented `hasActiveLiveMatches()`: dynamically polls every 3–5 minutes when a match is live (`state === 'in'`) or kickoff is within 15 minutes, while automatically throttling to 15 minutes (`IDLE_CACHE_TTL = 900`) outside match windows unless `?force=1` is explicitly requested.
+  - **PHP 8.5 Compatibility Modernization**:
+    - Removed obsolete `curl_close()` calls across `MarketDataService.class.php` and `SportsDataService.class.php`, eliminating PHP 8.5 deprecation warnings.
+- **Dark Mode UI Harmonization, Brand Logo Inversion & Broadsheet Grid Alignment (`templates/amed/static/css/`)**:
+  - **Brand Logo Dark-Mode Contrast Inversion (`stacked-top-menu.css`, `footer.css`, `custom.min.css`, `homepage-all.min.css`)**:
+    - Applied CSS filter `brightness(0) invert(1)` to horizontal brand wordmarks (`.modern-brand .logo-image.logo-rect`, `.modern-brand .logo-image:not(.logo-square)`, `.mobile-drawer-brand`, and `.site-footer .footer-brand`) under `[data-bs-theme="dark"]` and `body.dark-mode`.
+    - Converted single-color blue brand logo (`#0370b4`) to clean luminous white (`#ffffff`) on dark backgrounds, achieving WCAG AAA contrast and eliminating visual illegibility in both header and footer.
+  - **Midnight Navy / Slate Palette Harmonization (`custom.css`, `footer.css`, `custom.min.css`, `homepage-all.min.css`)**:
+    - Overrode Bootstrap 5's default murky brownish-gray canvas (`--bs-body-bg: #212529`) with cohesive midnight navy (`#090d16`), seamlessly unifying header (`#0b1526`), editorial category bar (`#0c2b47`), widgets (`#0f172a`, `#1e293b`), and canvas.
+    - Upgraded footer dark palette: unified footer background to `#0b1526`, contact/map cards to `#0f172a`, icon containers to `#1e293b`, and borders to `#1e293b`, removing obsolete legacy shades (`#1a1d20`, `#212529`, `#2c3034`).
+    - Enhanced footer contact typography and iconography: mapped `.text-primary` and `.text-info` to vibrant sky blue (`#38bdf8`), transition links to `#cbd5e1` (hover `#38bdf8`), and muted copyright/version text to `#94a3b8`.
+  - **Widget Typography & Low-Contrast Text Remediation (`market-rates.css`, `super-league.css`, `homepage-bundle.min.css`, `homepage-all.min.css`)**:
+    - **Market Rates Widget (`market-rates.css`)**: Lightened currency names from `--market-name-ink: #94a3b8` to `#cbd5e1`, diff percentage text from `--market-diff-ink: #64748b` to `#94a3b8` (4.6:1 contrast against `#1e293b`), and neutral badges to `#cbd5e1`.
+    - **Super League Widget (`super-league.css`)**: Lightened standings table headers (`KULÜP O G B M AV P`) from `--sl-muted: #94a3b8` to `#cbd5e1` (8.2:1 contrast) and match status day indicators (`MS Bugün`, `MS Dün`, `Yarın`) from `--sl-subtle: #64748b` to `#94a3b8` (4.6:1 contrast).
+  - **1224px Desktop Grid Alignment & Margin Parity (`stacked-top-menu.css`, `custom.min.css`, `homepage-all.min.css`)**:
+    - Added `@media (min-width: 1224px)` constraint to `header.stacked-header .stacked-header-top` and `header.stacked-header .stacked-nav-bar` (`max-width: 1224px; padding-left: 12px; padding-right: 12px;`).
+    - Aligned header brand logo, editorial navigation items, hero news slider, live sports widget, and footer content along the exact same vertical baseline, eliminating the previous 16px horizontal drift on desktop displays.
+  - **Minified CSS Bundle Parity & Validation (`tools/min_css_guard.py`)**:
+    - Rebuilt `custom.min.css` (413 rule blocks) and `homepage-bundle.min.css` (579 rule blocks) via `tools/min_css_guard.py --build`.
+    - Synchronized unified standalone distribution bundle `homepage-all.min.css` (169.3 KiB) with zero drift (`missing-in-min = 0`, `stale-in-min = 0`).
+
 ## v1.0.20 (2026-11-03)
 - **Security Hardening, Controller-Routed Cache Management & Apache Shields (`config/url.config.php`, `mod/index/`, `.htaccess`, `tools/deploy_production.sh`)**:
   - **Framework Route `/clear-cache` Modernization (`config/url.config.php`, `mod/index/`, `templates/amed/index/cache_clear.twig`, `templates/base_static/css/cache-clear.css`)**:

@@ -13,7 +13,9 @@ class SportsDataService
     private const CACHE_FILENAME = 'super_league.json';
     private const LOCK_FILENAME = 'refresh.lock';
     private const CACHE_TTL = 180;
+    private const IDLE_CACHE_TTL = 900;
     private const RETRY_COOLDOWN = 60;
+    private const CRON_COOLDOWN = 60;
     private const CONNECT_TIMEOUT = 2;
     private const FETCH_TIMEOUT = 4;
     private const REDIS_KEY = 'bulletin_super_league_v1';
@@ -65,8 +67,9 @@ class SportsDataService
         } else {
             $updatedAt = (int) ($cachedData['updated_at'] ?? 0);
             $lastAttemptAt = (int) ($cachedData['last_attempt_at'] ?? 0);
+            $effectiveTtl = self::hasActiveLiveMatches($cachedData) ? self::CACHE_TTL : self::IDLE_CACHE_TTL;
 
-            if (($currentTime - $updatedAt) > self::CACHE_TTL) {
+            if (($currentTime - $updatedAt) > $effectiveTtl) {
                 if (($currentTime - $lastAttemptAt) > self::RETRY_COOLDOWN) {
                     self::scheduleDeferredRefresh();
                 }
@@ -254,20 +257,30 @@ class SportsDataService
         $previous = self::readCache();
         $currentTime = time();
 
-        if (!$force && $previous !== null) {
+        if ($previous !== null) {
             $lastAttempt = (int) ($previous['last_attempt_at'] ?? 0);
             $updatedAt = (int) ($previous['updated_at'] ?? 0);
 
-            if (($currentTime - $updatedAt) < self::CACHE_TTL) {
+            if ($force && PHP_SAPI !== 'cli' && ($currentTime - $lastAttempt) < self::CRON_COOLDOWN) {
                 @flock($lockHandle, LOCK_UN);
                 @fclose($lockHandle);
                 return $previous;
             }
 
-            if (($currentTime - $lastAttempt) < self::RETRY_COOLDOWN) {
-                @flock($lockHandle, LOCK_UN);
-                @fclose($lockHandle);
-                return $previous;
+            if (!$force) {
+                $effectiveTtl = self::hasActiveLiveMatches($previous) ? self::CACHE_TTL : self::IDLE_CACHE_TTL;
+
+                if (($currentTime - $updatedAt) < $effectiveTtl) {
+                    @flock($lockHandle, LOCK_UN);
+                    @fclose($lockHandle);
+                    return $previous;
+                }
+
+                if (($currentTime - $lastAttempt) < self::RETRY_COOLDOWN) {
+                    @flock($lockHandle, LOCK_UN);
+                    @fclose($lockHandle);
+                    return $previous;
+                }
             }
         }
 
@@ -344,6 +357,34 @@ class SportsDataService
     }
 
     /**
+     * Determine if there is currently an active match in progress or about to kick off.
+     *
+     * @param array|null $previous Previous cached data
+     * @return bool
+     */
+    private static function hasActiveLiveMatches(?array $previous): bool
+    {
+        if ($previous === null || empty($previous['matches']) || !is_array($previous['matches'])) {
+            return true;
+        }
+
+        $currentTime = time();
+        foreach ($previous['matches'] as $match) {
+            $state = (string) ($match['state'] ?? '');
+            if ($state === 'in') {
+                return true;
+            }
+
+            $matchTimestamp = (int) ($match['timestamp'] ?? 0);
+            if ($matchTimestamp > 0 && abs($currentTime - $matchTimestamp) <= 900) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Schedule deferred refresh after request response flush.
      */
     private static function scheduleDeferredRefresh(): void
@@ -358,20 +399,14 @@ class SportsDataService
 
         self::$refreshScheduled = true;
 
-        register_shutdown_function(static function () {
-            while (ob_get_level() > 0) {
-                @ob_end_flush();
+        if (!class_exists('MarketDataService', false)) {
+            $marketFile = (defined('lib_dir') ? lib_dir : __DIR__ . '/') . 'MarketDataService.class.php';
+            if (is_file($marketFile)) {
+                require_once $marketFile;
             }
-            flush();
+        }
 
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                @session_write_close();
-            }
-
-            if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
-            }
-
+        MarketDataService::registerDeferredTask('sports', static function () {
             SportsDataService::refreshSuperLeagueData(false);
         });
     }
@@ -444,7 +479,7 @@ class SportsDataService
             $body = (string) curl_multi_getcontent($singleHandle);
             $responses[$feedKey] = ($httpCode >= 200 && $httpCode < 300) ? $body : '';
             curl_multi_remove_handle($multiHandle, $singleHandle);
-            curl_close($singleHandle);
+            unset($singleHandle);
         }
 
         curl_multi_close($multiHandle);
@@ -1123,14 +1158,15 @@ class SportsDataService
      */
     private static function readCache(): ?array
     {
+        $filePath = self::getCacheDirectory() . self::CACHE_FILENAME;
+
         if (class_exists('RedisCache', false) && RedisCache::isEnabled()) {
             $redisData = RedisCache::get(self::REDIS_KEY);
-            if (is_array($redisData) && !empty($redisData['standings'])) {
+            if (is_array($redisData) && !empty($redisData['standings']) && file_exists($filePath) && filesize($filePath) > 0) {
                 return $redisData;
             }
         }
 
-        $filePath = self::getCacheDirectory() . self::CACHE_FILENAME;
         if (!file_exists($filePath) || filesize($filePath) === 0) {
             return null;
         }

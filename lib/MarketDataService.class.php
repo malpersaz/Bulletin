@@ -14,6 +14,7 @@ class MarketDataService
     private const LOCK_FILENAME = 'refresh.lock';
     private const CACHE_TTL = 300;
     private const RETRY_COOLDOWN = 120;
+    private const CRON_COOLDOWN = 60;
     private const CONNECT_TIMEOUT = 2;
     private const FETCH_TIMEOUT = 4;
     private const REDIS_KEY = 'bulletin_market_rates_v1';
@@ -164,20 +165,28 @@ class MarketDataService
         $previous = self::readCache();
         $currentTime = time();
 
-        if (!$force && $previous !== null) {
+        if ($previous !== null) {
             $lastAttempt = (int) ($previous['last_attempt_at'] ?? 0);
             $updatedAt = (int) ($previous['updated_at'] ?? 0);
 
-            if (($currentTime - $updatedAt) < self::CACHE_TTL) {
+            if ($force && PHP_SAPI !== 'cli' && ($currentTime - $lastAttempt) < self::CRON_COOLDOWN) {
                 @flock($lockHandle, LOCK_UN);
                 @fclose($lockHandle);
                 return $previous;
             }
 
-            if (($currentTime - $lastAttempt) < self::RETRY_COOLDOWN) {
-                @flock($lockHandle, LOCK_UN);
-                @fclose($lockHandle);
-                return $previous;
+            if (!$force) {
+                if (($currentTime - $updatedAt) < self::CACHE_TTL) {
+                    @flock($lockHandle, LOCK_UN);
+                    @fclose($lockHandle);
+                    return $previous;
+                }
+
+                if (($currentTime - $lastAttempt) < self::RETRY_COOLDOWN) {
+                    @flock($lockHandle, LOCK_UN);
+                    @fclose($lockHandle);
+                    return $previous;
+                }
             }
         }
 
@@ -236,23 +245,63 @@ class MarketDataService
         }
 
         self::$refreshScheduled = true;
+        self::registerDeferredTask('market', static function () {
+            MarketDataService::refreshRates(false);
+        });
+    }
 
-        register_shutdown_function(static function () {
+    /**
+     * Register a deferred task in the shared shutdown coordinator.
+     * Guarantees single-flush FastCGI finalization across services without socket aborts.
+     *
+     * @param string $key Task identifier
+     * @param callable $task Executable closure
+     */
+    public static function registerDeferredTask(string $key, callable $task): void
+    {
+        if (!isset($GLOBALS['__amed_deferred_tasks'])) {
+            $GLOBALS['__amed_deferred_tasks'] = [];
+            register_shutdown_function([self::class, 'runDeferredTasks']);
+        }
+
+        $GLOBALS['__amed_deferred_tasks'][$key] = $task;
+    }
+
+    /**
+     * Execute all queued deferred tasks after the HTTP response has been sent to the client.
+     * Safe to invoke from Amed::__destruct() or a top-level shutdown handler.
+     */
+    public static function runDeferredTasks(): void
+    {
+        if (empty($GLOBALS['__amed_deferred_tasks']) || !is_array($GLOBALS['__amed_deferred_tasks'])) {
+            return;
+        }
+
+        $tasks = $GLOBALS['__amed_deferred_tasks'];
+        $GLOBALS['__amed_deferred_tasks'] = [];
+
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            @session_write_close();
+        }
+
+        if (function_exists('fastcgi_finish_request')) {
+            @fastcgi_finish_request();
+        } else {
             while (ob_get_level() > 0) {
                 @ob_end_flush();
             }
             flush();
+        }
 
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                @session_write_close();
+        foreach ($tasks as $taskKey => $callback) {
+            if (is_callable($callback)) {
+                try {
+                    $callback();
+                } catch (\Throwable $e) {
+                    error_log("Deferred task [{$taskKey}] error: " . $e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+                }
             }
-
-            if (function_exists('fastcgi_finish_request')) {
-                fastcgi_finish_request();
-            }
-
-            MarketDataService::refreshRates(false);
-        });
+        }
     }
 
     /**
@@ -300,7 +349,7 @@ class MarketDataService
             $body = (string) curl_multi_getcontent($singleHandle);
             $responses[$feedKey] = ($httpCode >= 200 && $httpCode < 300) ? $body : '';
             curl_multi_remove_handle($multiHandle, $singleHandle);
-            curl_close($singleHandle);
+            unset($singleHandle);
         }
 
         curl_multi_close($multiHandle);
@@ -326,7 +375,7 @@ class MarketDataService
         ]);
         $response = (string) curl_exec($singleHandle);
         $code = (int) curl_getinfo($singleHandle, CURLINFO_HTTP_CODE);
-        curl_close($singleHandle);
+        unset($singleHandle);
 
         return ($code >= 200 && $code < 300) ? $response : '';
     }
@@ -847,14 +896,15 @@ class MarketDataService
      */
     private static function readCache(): ?array
     {
+        $filePath = self::getCacheDirectory() . self::CACHE_FILENAME;
+
         if (class_exists('RedisCache', false) && RedisCache::isEnabled()) {
             $redisData = RedisCache::get(self::REDIS_KEY);
-            if (is_array($redisData) && !empty($redisData['items'])) {
+            if (is_array($redisData) && !empty($redisData['items']) && file_exists($filePath) && filesize($filePath) > 0) {
                 return $redisData;
             }
         }
 
-        $filePath = self::getCacheDirectory() . self::CACHE_FILENAME;
         if (!file_exists($filePath) || filesize($filePath) === 0) {
             return null;
         }
