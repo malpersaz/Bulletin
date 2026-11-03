@@ -1,2 +1,18 @@
 User-agent: *
-Disallow: /
+Allow: /
+
+# Disallow internal utility and tool endpoints
+Disallow: /tools/
+Disallow: /*/tools/
+Disallow: /cache/
+Disallow: /installer/
+
+# Master Sitemap Index for AKM Bulletin CMS
+Sitemap: https://amedbulten.com/sitemap.xml
+Sitemap: https://amedbulten.com/newsSitemap.xml
+
+# Specific Language fallbacks
+Sitemap: https://amedbulten.com/tr/newsSitemap.xml
+
+# AI / LLM Index
+# LLMS-Txt: https://amedbulten.com/llms.txt

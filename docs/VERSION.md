@@ -1,5 +1,15 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.18 (2026-11-03)
+- **Production Indexing Shield Deactivation & Search Engine Parity (`.htaccess`, `robots.txt`, `robots.php`, `llms.php`, `templates/amed/`)**:
+  - Lifted restrictive development shield `X-Robots-Tag: noindex, nofollow, noarchive` across `.htaccess` and `robots.php`, enabling crawler discovery.
+  - Re-enabled public crawler indexing across `robots.txt` and dynamic `robots.php` with direct XML sitemap index definitions (`https://amedbulten.com/sitemap.xml`, `newsSitemap.xml`, `tr/newsSitemap.xml`) while preserving security exclusions for `/tools/`, `/cache/`, and `/installer/`.
+  - Updated meta robots directive to `<meta name="robots" content="index, follow">` in primary layout `templates/amed/layouts/base.twig` and author views (`author.twig`, `authors.twig`).
+  - Restored `X-Robots-Tag: all` on public AI and LLM ingestion endpoint `llms.php`.
+- **Google Cloud Platform, Vertex AI & Gemini Enterprise Integrations (`config/site.config.php`, `data/`)**:
+  - Updated active framework release version to `1.0.18` in `config/site.config.php`.
+  - Configured GCP service account identity, Search Console API bindings, and Gemini Enterprise API credentials.
+
 ## v1.0.17 (2026-11-02)
 - **PageSpeed 100% Performance & Latency Remediation (`templates/amed/`, `mod_hero_slider.helper.php`, `resize.php`)**:
   - **Self-Hosted Font Optimization & Network Dependency Elimination (`base.twig`, `custom.css`, `amed-icons.min.css`, `bootstrap-icons.woff2`, `fonts/`)**:
