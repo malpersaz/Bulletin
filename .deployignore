@@ -1,0 +1,60 @@
+# ==============================================================================
+# Bulletin Production Deployment Ignore (.deployignore)
+# Used by rsync / deployment tools to keep the production server web root clean.
+# ==============================================================================
+
+# Version Control & Metadata
+.git/
+.gitignore
+.gitattributes
+.deployignore
+
+# AI & Agent Framework Files
+.agents/
+.gemini/
+.codex
+.playwright-mcp/
+
+# Documentation & Internal Markdown
+docs/
+*.md
+
+# Local Docker & Containerization
+docker/
+docker-compose.yml
+
+# Refactoring & Dev Tooling
+rector.php
+package.json
+package-lock.json
+node_modules/
+
+# Test Suites & Quality Assurance
+tests/
+tools/
+installer/
+
+# Development Task Scripts (Keep only runtime production cron tasks)
+tasks/agent_*
+tasks/mcp_smoke.php
+tasks/module_management_smoke.php
+tasks/migrate_*dry_run.php
+
+# Composer Metadata (vendor/ is transferred, but not metadata in public root)
+composer.json
+composer.lock
+
+# Server-Side Runtime & Environment Protection (DO NOT OVERWRITE OR WIPE ON SERVER)
+config/*.local.php
+data/*.sqlite
+data/*.json
+data/sqlite/
+static/mod_*/**
+cache/*
+!cache/.htaccess
+templates_c/*
+logs/*
+!logs/.htaccess
+scratch/
+__pycache__/
+*.pyc

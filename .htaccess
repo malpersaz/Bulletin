@@ -42,6 +42,34 @@ Header always set X-XSS-Protection "1; mode=block"
 Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 Header always set Cross-Origin-Opener-Policy "same-origin"
 
+# Strict Security Shields: Deny access to hidden files and sensitive extensions
+<FilesMatch "^\.">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+<FilesMatch "\.(md|markdown|json|lock|yml|yaml|dist|sql|sqlite|log|sh|bak|backup|swp)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+<Files "site.webmanifest">
+  <IfModule mod_authz_core.c>
+    Require all granted
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Allow from all
+  </IfModule>
+</Files>
+
 # Disable directory browsing
 Options All -Indexes
 

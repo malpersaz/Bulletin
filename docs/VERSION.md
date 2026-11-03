@@ -1,5 +1,21 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.19 (2026-11-03)
+- **Production Server Root Hardening & Clutter Elimination (`.deployignore`, `tools/deploy_production.sh`, `.htaccess`, `config/.htaccess`)**:
+  - **Zero-Clutter Deployment Architecture (`.deployignore`, `tools/deploy_production.sh`)**:
+    - Introduced `.deployignore` and automated synchronization script `tools/deploy_production.sh` using `rsync` with strict filter protection.
+    - Prevented development and AI metadata (`.git/`, `.agents/`, `.gemini/`, `.codex`), local documentation (`docs/`, `*.md`), container configurations (`docker/`, `docker-compose.yml`), test suites (`tests/`), audit tooling (`tools/`), NPM configs (`package.json`), and refactoring scripts (`rector.php`) from ever deploying to the production server.
+    - Preserved production runtime integrity: protected server-side credentials (`config/*.local.php`, `data/*.json`), media uploads (`static/mod_*`), cache directories (`cache/`, `templates_c/`), and application logs (`logs/`).
+  - **Server Root Sanitization (`w02232db/amedbulten.com/`)**:
+    - Purged over 55 MB of development artifacts, including the public `.git` directory (33 MB) and `.agents` framework (20 MB), reducing root directories from 19 to 11 and root files from 28 to 13.
+    - Eliminated all root markdown files (`AGENTS.md`, `CODE_QUALITY_AGENT_STRATEGY.md`, `DESIGN.md`, `PILOT_AGENT_REVIEW_FLOW.md`, `PROJECT.md`, `TEST_INFRA.md`, `TEST_READY.md`) and dev configs (`composer.json`, `package.json`, `rector.php`) from the production web root.
+  - **Multi-Layer Security Hardening (`.htaccess`, `config/.htaccess`)**:
+    - Enforced strict Apache shields blocking direct HTTP requests to hidden files/directories (`^\.`), sensitive extensions (`.md`, `.json`, `.lock`, `.sql`, `.sqlite`, `.log`, `.sh`, `.yml`), and configuration assets.
+    - Deployed dedicated access shield `Require all denied` inside `config/.htaccess`.
+    - Maintained explicit whitelist access for public web manifest (`site.webmanifest`).
+- **Server Deployment Documentation (`docs/SERVER.md`)**:
+  - Authored comprehensive production server architecture guide, directory taxonomy, and deployment protocol under `docs/SERVER.md`.
+
 ## v1.0.18 (2026-11-03)
 - **Production Indexing Shield Deactivation & Search Engine Parity (`.htaccess`, `robots.txt`, `robots.php`, `llms.php`, `templates/amed/`)**:
   - Lifted restrictive development shield `X-Robots-Tag: noindex, nofollow, noarchive` across `.htaccess` and `robots.php`, enabling crawler discovery.
