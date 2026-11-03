@@ -1,5 +1,15 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.20 (2026-11-03)
+- **Local Workspace Root Modernization & Clutter Elimination (`docs/`, `.deployignore`)**:
+  - **Local Workspace Root Reorganization & Documentation Relocation**:
+    - Relocated durable architectural, design, and testing documentation files (`DESIGN.md`, `PROJECT.md`, `TEST_INFRA.md`, `TEST_READY.md`) from the root directory into `docs/` (`docs/DESIGN.md`, `docs/PROJECT.md`, `docs/TEST_INFRA.md`, `docs/TEST_READY.md`) in strict compliance with AGENTS.md Rule 3.
+    - Purged obsolete 5-line stub files (`CODE_QUALITY_AGENT_STRATEGY.md`, `PILOT_AGENT_REVIEW_FLOW.md`) from the root directory whose authoritative versions reside in `docs/`.
+    - Eliminated untracked, empty directories and stale development artifacts from local root: `depo/`, `.codex`, `.playwright-mcp/`, and `scratch/`.
+    - Removed residual empty directory `depo/` from the remote production server web root (`w02232db/amedbulten.com/`).
+  - **Framework Release & Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
+    - Updated active framework version to `1.0.20` in `config/site.config.php`.
+
 ## v1.0.19 (2026-11-03)
 - **Production Server Root Hardening & Clutter Elimination (`.deployignore`, `tools/deploy_production.sh`, `.htaccess`, `config/.htaccess`)**:
   - **Zero-Clutter Deployment Architecture (`.deployignore`, `tools/deploy_production.sh`)**:
