@@ -34,8 +34,10 @@
     - Purged obsolete 5-line stub files (`CODE_QUALITY_AGENT_STRATEGY.md`, `PILOT_AGENT_REVIEW_FLOW.md`) from the root directory whose authoritative versions reside in `docs/`.
     - Eliminated untracked, empty directories and stale development artifacts from local root: `depo/`, `.codex`, `.playwright-mcp/`, and `scratch/`.
     - Removed residual empty directory `depo/` from the remote production server web root (`w02232db/amedbulten.com/`).
-  - **Framework Release & Version Parity (`config/site.config.php`, `docs/VERSION.md`)**:
-    - Updated active framework version to `1.0.20` in `config/site.config.php`.
+  - **Completed Engineering Plan Cleanup (`docs/plan/`)**:
+    - Purged 7 completed and implemented plans (`mod-event-editorial-broadsheet-layout-plan.md`, `mod-event-modernization-plan.md`, `mod-event-taxonomy-and-feature-expansion-plan.md`, `pagespeed-100-all-metrics-remediation-plan.md`, `pagespeed-100-performance-accessibility-plan.md`, `security-hardening-and-cache-route-modernization-plan.md`, `server-root-cleanup-and-deployment-hardening-plan.md`) while preserving `homepage-layout-wireframe.html` as the layout wireframe reference.
+  - **Framework Release & Version Parity (`config/site.config.php`, `config/site.config.example.php`, `docs/VERSION.md`)**:
+    - Synchronized active framework version to `1.0.20` in `config/site.config.php` and fallback in `config/site.config.example.php`.
 
 ## v1.0.19 (2026-11-03)
 - **Production Server Root Hardening & Clutter Elimination (`.deployignore`, `tools/deploy_production.sh`, `.htaccess`, `config/.htaccess`)**:
