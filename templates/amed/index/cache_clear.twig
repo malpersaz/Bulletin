@@ -1,0 +1,212 @@
+{% extends "layouts/base.twig" %}
+
+{% block title %}
+	<title>{{ lang.index.cache.title }} - {{ site.name }}</title>
+{% endblock %}
+
+{% block meta_tags %}
+	<meta name="robots" content="noindex, nofollow, noarchive">
+{% endblock %}
+
+{% block css_custom %}
+	<link rel="stylesheet" href="{{ site.address }}templates/base_static/css/cache-clear.css?v={{ site.version }}">
+{% endblock %}
+
+{% block content %}
+<!-- START: index/cache_clear.twig -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="cache-container">
+                <div class="page-header">
+                    <h1><i class="bi bi-speedometer2 me-2"></i>{{ lang.index.cache.title }}</h1>
+                    <p>{{ lang.index.cache.desc }}</p>
+                </div>
+                <div class="cache-content">
+                    {% if cache_target is not empty %}
+                        <h2 class="section-title">
+                            <i class="bi bi-lightning-charge me-2"></i>
+                            {% if cache_target == 'all' %}
+                                {{ lang.index.cache.cache_all }}
+                            {% elseif cache_target == 'img' %}
+                                {{ lang.index.cache.cache_image }}
+                            {% elseif cache_target == 'js' %}
+                                {{ lang.index.cache.cache_js }}
+                            {% elseif cache_target == 'css' %}
+                                {{ lang.index.cache.cache_css }}
+                            {% elseif cache_target == 'video' %}
+                                {{ lang.index.cache.cache_video }}
+                            {% elseif cache_target == 'sql' %}
+                                {{ lang.index.cache.cache_sql }}
+                            {% elseif cache_target == 'templates' %}
+                                {{ lang.index.cache.cache_templates }}
+                            {% elseif cache_target == 'llms' %}
+                                {{ lang.index.cache.cache_llms }}
+                            {% elseif cache_target == 'captcha' %}
+                                {{ lang.index.cache.cache_captcha }}
+                            {% elseif cache_target == 'market' %}
+                                {{ lang.index.cache.cache_market }}
+                            {% elseif cache_target == 'sports' %}
+                                {{ lang.index.cache.cache_sports }}
+                            {% else %}
+                                {{ cache_target|capitalize }}
+                            {% endif %}
+                        </h2>
+
+                        {% for res in cache_results %}
+                            {% if res.total == 0 %}
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    <strong>{{ res.directory }}:</strong> {{ lang.index.cache.no_cache_files }}
+                                </div>
+                            {% elseif res.errors == 0 %}
+                                <div class="alert alert-success">
+                                    <i class="bi bi-check-circle-fill me-2"></i>
+                                    <strong>{{ res.directory }}:</strong> {{ lang.index.cache.cache_cleared_success }} ({{ res.deleted }}/{{ res.total }})
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    <i class="bi bi-exclamation-triangle me-2"></i>
+                                    <strong>{{ res.directory }}:</strong> {{ lang.index.cache.cache_cleared_partial }} ({{ res.deleted }}/{{ res.total }}, {{ res.errors }} error)
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if cache_summary.directories > 0 %}
+                            <div class="alert {% if cache_summary.errors > 0 %}alert-warning{% else %}alert-success{% endif %}">
+                                <strong>
+                                    <i class="bi {% if cache_summary.errors > 0 %}bi-exclamation-triangle-fill{% else %}bi-check-circle-fill{% endif %} me-2"></i>
+                                    {{ lang.index.cache.summary_title }}
+                                </strong>
+                                <div>{{ lang.index.cache.directories_scanned }}: {{ cache_summary.directories }}</div>
+                                <div>{{ lang.index.cache.files_found }}: {{ cache_summary.total }}</div>
+                                <div>{{ lang.index.cache.files_deleted }}: {{ cache_summary.deleted }}</div>
+                                <div>{{ lang.index.cache.files_failed }}: {{ cache_summary.errors }}</div>
+                            </div>
+                        {% endif %}
+
+                        <a href="{{ site.saddress }}clear-cache" class="back-link">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            {{ lang.index.cache.back_to_management }}
+                        </a>
+                    {% else %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/img" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon img"><i class="bi bi-image"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_image }}</h5>
+                                        <small class="text-muted">Clear image cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/js" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon js"><i class="bi bi-filetype-js"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_js }}</h5>
+                                        <small class="text-muted">Clear JavaScript cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/video" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon video"><i class="bi bi-play-circle"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_video }}</h5>
+                                        <small class="text-muted">Clear video cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/css" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon css"><i class="bi bi-filetype-css"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_css }}</h5>
+                                        <small class="text-muted">Clear CSS cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/sql" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon sql"><i class="bi bi-database"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_sql }}</h5>
+                                        <small class="text-muted">Clear SQL query cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/templates" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon template"><i class="bi bi-file-earmark-code"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_templates }}</h5>
+                                        <small class="text-muted">Clear compiled Twig templates</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/llms" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon llms"><i class="bi bi-cpu"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_llms }}</h5>
+                                        <small class="text-muted">Clear LLMs index cache files</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/captcha" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon captcha"><i class="bi bi-shield-check"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_captcha }}</h5>
+                                        <small class="text-muted">Clear temporary captcha images</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/market" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon market"><i class="bi bi-graph-up"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_market }}</h5>
+                                        <small class="text-muted">Clear market rates cache</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ site.saddress }}clear-cache/sports" class="list-group-item list-group-item-action">
+                                    <div class="cache-icon sports"><i class="bi bi-trophy"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_sports }}</h5>
+                                        <small class="text-muted">Clear sports standings cache</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right text-muted"></i>
+                                </a>
+                            </div>
+                            <div class="col-12">
+                                <a href="{{ site.saddress }}clear-cache/all" class="list-group-item list-group-item-action primary-action">
+                                    <div class="cache-icon all"><i class="bi bi-lightning-charge"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1">{{ lang.index.cache.cache_all }}</h5>
+                                        <small>Clear all cache files across all subsystems</small>
+                                    </div>
+                                    <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END: index/cache_clear.twig -->
+{% endblock %}

@@ -37,13 +37,23 @@ if ($reqPath === '/site.webmanifest') {
     }
 }
 
+// Detect environment for secure error display
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isLocal = ($host === 'localhost' 
+    || strpos($host, 'localhost') !== false 
+    || strpos($host, '127.0.0.1') !== false
+    || strpos($host, 'pinggy.link') !== false
+    || PHP_SAPI === 'cli'
+);
+
 // Error display
-if ($isAjaxRequest) {
-    ini_set('display_errors', 0);
+if ($isAjaxRequest || !$isLocal) {
+    ini_set('display_errors', '0');
+    ini_set('display_startup_errors', '0');
 } else {
-    ini_set('display_errors', 1);
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
 }
-ini_set('display_startup_errors', 1);
 error_reporting(E_ALL & ~E_DEPRECATED);
 ini_set('log_errors', TRUE);
 
@@ -51,7 +61,7 @@ ini_set('log_errors', TRUE);
 $ajax_logger = function($message, $file, $line, $trace = '') {
     $logFile = __DIR__ . '/logs/ajax_errors.log';
     if (!is_dir(__DIR__ . '/logs')) {
-        @mkdir(__DIR__ . '/logs', 0777, true);
+        @mkdir(__DIR__ . '/logs', 0755, true);
     }
     $logMessage = '[' . date('Y-m-d H:i:s') . "] Error: $message\n";
     $logMessage .= "  File: $file:$line\n";
@@ -71,7 +81,6 @@ set_error_handler(function($errorNumber, $errorMessage, $errorFile, $errorLine) 
     
     if ($isAjaxRequest) {
         // Only exit on fatal-like errors, or if we want to be strict
-        // For now, let's just log and continue for non-fatal if we can
         if ($errorNumber === E_RECOVERABLE_ERROR) {
             while (ob_get_level() > 0) ob_end_clean();
             if (!headers_sent()) {
@@ -86,7 +95,7 @@ set_error_handler(function($errorNumber, $errorMessage, $errorFile, $errorLine) 
 });
 
 // Global Exception Handler
-set_exception_handler(function($e) use ($isAjaxRequest, $ajax_logger) {
+set_exception_handler(function($e) use ($isAjaxRequest, $isLocal, $ajax_logger) {
     $ajax_logger($e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
     
     if ($isAjaxRequest) {
@@ -95,24 +104,34 @@ set_exception_handler(function($e) use ($isAjaxRequest, $ajax_logger) {
             header('Content-Type: application/json; charset=utf-8');
             http_response_code(500);
         }
-        echo json_encode([
+        $response = [
             'status' => 'error',
-            'message' => 'Xeletiya Serverê: ' . $e->getMessage(),
-            'debug' => [
+            'message' => 'Xeletiya Serverê: ' . ($isLocal ? $e->getMessage() : 'An internal error occurred.'),
+        ];
+        if ($isLocal) {
+            $response['debug'] = [
                 'file' => basename($e->getFile()),
                 'line' => $e->getLine(),
                 'type' => get_class($e)
-            ]
-        ]);
+            ];
+        }
+        echo json_encode($response);
         exit;
     }
     
     if (method_exists($e, 'show')) {
         $e->show();
     } else {
-        echo '<h1>Error</h1>';
-        echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
-        echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+        if (!headers_sent()) {
+            http_response_code(500);
+        }
+        if (!$isLocal) {
+            echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>500 Internal Server Error</title><meta name="robots" content="noindex, nofollow"></head><body><h1>Internal Server Error</h1><p>An unexpected error occurred. Please try again later.</p></body></html>';
+        } else {
+            echo '<h1>Error</h1>';
+            echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
+            echo '<pre>' . htmlspecialchars($e->getTraceAsString()) . '</pre>';
+        }
     }
     exit;
 });

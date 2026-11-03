@@ -403,6 +403,12 @@ $lang['index'] = [
     ],
     'cache' => [
         'title' => 'Rêveberiya Cache',
+        'desc' => 'Bi paqijkirina pelên pêşbîrê karbidestiya malpera xwe zêde bike',
+        'summary_title' => 'Kurteya Paqijkirinê',
+        'directories_scanned' => 'Pelrêçên hatine venêrtin',
+        'files_found' => 'Pelên hatine dîtin',
+        'files_deleted' => 'Pelên hatine jêbirin',
+        'files_failed' => 'Pelên têkneçûyî',
         'cache_image' => 'Cache yên Wêne',
         'cache_js' => 'Cache yên JavaScript',
         'cache_video' => 'Cache yên Vîdeo',

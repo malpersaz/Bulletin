@@ -85,6 +85,13 @@ class index_mod extends indexBase
         unset($legal);
     }
 
+    public function clear_cache($target = null)
+    {
+        $cache = Load::helper("index.cache_manager");
+        $cache->render($target);
+        unset($cache);
+    }
+
     public function videos($category = null, $page = 1)
     {
         if (!$this->guardFeatureOr404('video_embed.front')) {

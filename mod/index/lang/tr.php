@@ -403,6 +403,12 @@ $lang['index'] = [
     ],
     'cache' => [
         'title' => 'Önbellek Yönetimi',
+        'desc' => 'Önbellek dosyalarını temizleyerek web sitenizin performansını optimize edin',
+        'summary_title' => 'Temizleme Özeti',
+        'directories_scanned' => 'Taranan dizinler',
+        'files_found' => 'Bulunan dosyalar',
+        'files_deleted' => 'Silinen dosyalar',
+        'files_failed' => 'Silinemeyen dosyalar',
         'cache_image' => 'Resim Önbelleği',
         'cache_js' => 'JavaScript Önbelleği',
         'cache_video' => 'Video Önbelleği',

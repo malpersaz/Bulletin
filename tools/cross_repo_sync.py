@@ -108,7 +108,6 @@ POLICY = {
     "installer/assets/css/installer.css": "adapted",  # Association keeps installer-msg-* classes; BOTH installerbases reference them, Business lacks the definitions (reverse backlog)
     "installer/assets/": "mirror",
     # ---- root bootstrap scripts: per-repo adaptations (several Association-ahead)
-    "clear_cache.php": "adapted",
     "css.php": "adapted",
     "js.php": "adapted",
     "resize.php": "adapted",

@@ -35,6 +35,8 @@ ssh -o BatchMode=yes -o ConnectTimeout=8 "${SERVER_USER}@${SERVER_HOST}" "true" 
 RSYNC_OPTS=(
     -avz
     --human-readable
+    --delete
+    --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r
     --exclude-from="${ROOT_DIR}/.deployignore"
     --filter='protect config/*.local.php'
     --filter='protect data/*.json'
@@ -54,8 +56,8 @@ echo "[2/4] Synchronizing files to production server..."
 rsync "${RSYNC_OPTS[@]}" "${ROOT_DIR}/" "${SERVER_USER}@${SERVER_HOST}:${REMOTE_DOCROOT}"
 
 if [[ "${DRY_RUN}" == "false" ]]; then
-    echo "[3/4] Purging server-side Twig cache..."
-    ssh -o BatchMode=yes "${SERVER_USER}@${SERVER_HOST}" "rm -rf ${REMOTE_DOCROOT}cache/twig/* 2>/dev/null || true"
+    echo "[3/4] Purging server-side Twig cache & securing local configs..."
+    ssh -o BatchMode=yes "${SERVER_USER}@${SERVER_HOST}" "rm -rf ${REMOTE_DOCROOT}cache/twig/* 2>/dev/null || true; chmod 640 ${REMOTE_DOCROOT}config/*.local.php ${REMOTE_DOCROOT}data/*.json ${REMOTE_DOCROOT}data/*.sqlite 2>/dev/null || true"
 
     echo "[4/4] Verifying site health..."
     HTTP_STATUS=$(curl -s -L -o /dev/null -w "%{http_code}" https://amedbulten.com/ || echo "000")

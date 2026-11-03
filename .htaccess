@@ -30,6 +30,9 @@ RewriteRule ^favicon-96x96\.png$ static/mod_settings/favicon-96x96.png [L]
 RewriteRule ^apple-touch-icon\.png$ static/mod_settings/apple-touch-icon.png [L]
 RewriteRule ^site\.webmanifest$ static/mod_settings/site.webmanifest [L]
 
+# Block direct HTTP access to internal framework, runtime, task, and tool directories
+RewriteRule ^(config|lib|vendor|tasks|data|logs|tools|tests|installer|docs|templates_c)(/|$) - [F,L]
+
 # Front controller
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

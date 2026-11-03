@@ -423,6 +423,12 @@ $lang['index']['modal'] = [
 # cache management
 $lang['index']['cache'] = [
     'title' => 'Cache Management',
+    'desc' => 'Optimize your website performance by clearing cache files',
+    'summary_title' => 'Cleanup Summary',
+    'directories_scanned' => 'Directories scanned',
+    'files_found' => 'Files found',
+    'files_deleted' => 'Files deleted',
+    'files_failed' => 'Files failed',
     'cache_image' => 'Image Cache',
     'cache_js' => 'Javascript Cache',
     'cache_video' => 'Video Cache',

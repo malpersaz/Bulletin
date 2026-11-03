@@ -1,0 +1,11 @@
+# Prevent direct access to cache files and block script execution
+<FilesMatch "\.(?i:php[0-9]?|phtml|phar|pl|py|cgi|sh)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+Options -Indexes

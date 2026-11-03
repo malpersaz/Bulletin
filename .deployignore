@@ -28,6 +28,8 @@ rector.php
 package.json
 package-lock.json
 node_modules/
+clear_cache.php
+modules.php
 
 # Test Suites & Quality Assurance
 tests/
@@ -38,7 +40,9 @@ installer/
 tasks/agent_*
 tasks/mcp_smoke.php
 tasks/module_management_smoke.php
-tasks/migrate_*dry_run.php
+tasks/migrate_*
+tasks/recompress_*
+tasks/mcp_bootstrap.php
 
 # Composer Metadata (vendor/ is transferred, but not metadata in public root)
 composer.json
@@ -53,6 +57,7 @@ static/mod_*/**
 cache/*
 !cache/.htaccess
 templates_c/*
+!templates_c/.htaccess
 logs/*
 !logs/.htaccess
 scratch/

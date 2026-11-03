@@ -10,8 +10,10 @@
 !/cache/.htaccess
 /log/*.txt
 /log/*.log
-/logs/*.log
+/logs/*
+!/logs/.htaccess
 /templates_c/*
+!/templates_c/.htaccess
 
 # Docker
 /docker/mysql/data/
