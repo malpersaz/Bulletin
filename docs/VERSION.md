@@ -1,5 +1,29 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.26 (2026-11-04)
+- **Admin Module Edit/Save Lifecycle & PHP 8+ Type-Safety Hardening (`lib/BaseModuleController.class.php`, `lib/Helper.class.php`, `mod/mod_news/index.php`, `lib/GoogleIndexingService.class.php`)**:
+  - **PHP 8+ Loose Comparison Remediation on Menu Integration (`lib/BaseModuleController.class.php`)**:
+    - Identified that `Req::Post_Safe('menu') != 0` evaluated to `true` under PHP 8.0+ when the `menu` input field was not submitted (`"" != 0` is `true`), triggering `handleMenuIntegration()` on every article create and update.
+    - Enforced strict integer validation `(int) Req::Post_Safe('menu') > 0` for menu additions and updates.
+    - Added pre-update menu URL preservation (`$oldMenuUrl`) prior to database record mutation to ensure menu URL changes synchronize accurately without dirty model collisions.
+  - **Singleton ORM Clean State & Menu Sync Hardening (`lib/BaseModuleController.class.php`)**:
+    - Added `$model->flush()` in `_add()` and `_edit()` to eliminate stale query builder clauses from previous lookups.
+    - Hardened `handleMenuIntegration()` with defensive checks: verifies record size before calling `sync()`, flushes menu models, and uses explicit primary key targeting `update('id')`.
+  - **PHP 8+ Type Safety in `Helper::nested()` (`lib/Helper.class.php`)**:
+    - Added array validation and empty check before `array_keys(current($datas))` to eliminate fatal `TypeError` under PHP 8.0+ when hierarchical tables are empty.
+  - **Singleton Query Isolation in Category Retrieval (`mod/mod_news/index.php`, `lib/BaseModuleController.class.php`)**:
+    - Added `$nested_model->flush()` in `BaseModuleController::getFormData()` and `$mod_news_category->flush()` in `mod_news_mod::getFormData()` to prevent query state pollution across repeated model lookups.
+  - **Telemetry Error Isolation in `GoogleIndexingService` (`lib/GoogleIndexingService.class.php`)**:
+    - Wrapped Google Indexing client initialization and URL notifications in `\Throwable` catches with `error_log()`, preventing external networking or configuration warnings from blocking content persistence.
+- **Bootstrap Component Restoration & Public Layout Parity (`templates/amed/static/css/bootstrap.min.css`, `templates/amed/static/css/homepage-all.min.css`, `tools/min_css_guard.py`)**:
+  - **Comprehensive Bootstrap Grid & Utility Restoration (`bootstrap.min.css`)**:
+    - Identified that over-aggressive PurgeCSS optimization in v1.0.17 (aimed at homepage PageSpeed 100/100) stripped 153 grid and utility classes used across inner page templates, severely breaking layouts on news collection pages (`/tr/newses/*`), publication archives, and video embeds.
+    - Specifically, the removal of `.col-lg-3`, `.col-lg-9`, `.col-md-4`, `.col-md-8`, and `.row-cols-xl-3` caused category sidebars in `newses.twig` and `publications.twig` to expand to 100% width, pushing article grids beneath them and forcing a 2-column fallback instead of the intended 3-column desktop layout.
+    - Reconstructed `bootstrap.min.css` (81.6 KiB) by restoring all template-wide Bootstrap grid, list-group, ratio, and utility classes from v1.0.16 while retaining v1.0.17 form validation enhancements and v1.0.24 dark theme styles, achieving 100% class coverage across all `templates/amed/**/*.twig` templates.
+  - **Bundle Synchronization & Guard Verification (`homepage-all.min.css`, `min_css_guard.py`)**:
+    - Rebuilt `homepage-all.min.css` (1839/1839 rule blocks) via `tools/min_css_guard.py --build` to preserve full stylesheet parity.
+    - Verified bundle integrity with `tools/min_css_guard.py --check`, confirming `missing_in_min = 0` and `stale_in_min = 0`.
+
 ## v1.0.25 (2026-11-04)
 - **MCP Editorial Workflow & Draft Status Hardening (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `amed_bulletin_mcp.py`)**:
   - **Draft Status as Default for News & Publications (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:

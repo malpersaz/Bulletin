@@ -66,6 +66,7 @@ class mod_news_mod extends BaseModuleController
 
         // Get All Categories for Wizard (Flat List with Lang)
         $mod_news_category = Load::model('mod_news_category');
+        $mod_news_category->flush();
         $mod_news_category->select('id, name, lang');
         $mod_news_category->addWhere("root != 'y'");
         $mod_news_category->order('order', 'ASC')->all();

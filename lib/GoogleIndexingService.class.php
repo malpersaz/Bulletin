@@ -32,8 +32,8 @@ class GoogleIndexingService
                 $client->addScope(Indexing::INDEXING);
                 $this->indexingService = new Indexing($client);
                 $this->isEnabled = true;
-            } catch (Exception $e) {
-                trigger_error('Google Indexing API initialization failed: ' . $e->getMessage(), E_USER_WARNING);
+            } catch (\Throwable $e) {
+                error_log('Google Indexing API initialization failed: ' . $e->getMessage());
             }
         }
     }
@@ -56,8 +56,8 @@ class GoogleIndexingService
             $urlNotification->setType('URL_UPDATED');
             $this->indexingService->urlNotifications->publish($urlNotification);
             return true;
-        } catch (Exception $e) {
-            trigger_error('Google Indexing API notifyUpdate failed for ' . $url . ': ' . $e->getMessage(), E_USER_WARNING);
+        } catch (\Throwable $e) {
+            error_log('Google Indexing API notifyUpdate failed for ' . $url . ': ' . $e->getMessage());
             return false;
         }
     }
@@ -80,8 +80,8 @@ class GoogleIndexingService
             $urlNotification->setType('URL_DELETED');
             $this->indexingService->urlNotifications->publish($urlNotification);
             return true;
-        } catch (Exception $e) {
-            trigger_error('Google Indexing API notifyDelete failed for ' . $url . ': ' . $e->getMessage(), E_USER_WARNING);
+        } catch (\Throwable $e) {
+            error_log('Google Indexing API notifyDelete failed for ' . $url . ': ' . $e->getMessage());
             return false;
         }
     }

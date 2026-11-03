@@ -305,17 +305,24 @@ class Helper
     // Build a nested array based on given parameters
     public static function nested($datas, $parentKey, $idKey)
     {
-        if (!is_array($datas)) {
-            return FALSE;
+        if (!is_array($datas) || empty($datas)) {
+            return false;
         }
-        $keys = array_keys(current($datas));
-        if (in_array($parentKey, $keys) === FALSE || in_array($idKey, $keys) === FALSE) {
-            return FALSE;
+        $firstRow = current($datas);
+        if (!is_array($firstRow)) {
+            return false;
+        }
+        $keys = array_keys($firstRow);
+        if (in_array($parentKey, $keys, true) === false || in_array($idKey, $keys, true) === false) {
+            return false;
         }
         $array = [];
         foreach ($datas as $data) {
+            if (!is_array($data) || !array_key_exists($parentKey, $data) || !array_key_exists($idKey, $data)) {
+                continue;
+            }
             foreach ($keys as $k) {
-                $array[$data[$parentKey]][$data[$idKey]][$k] = $data[$k];
+                $array[$data[$parentKey]][$data[$idKey]][$k] = $data[$k] ?? null;
             }
         }
         return $array;

@@ -288,9 +288,10 @@ abstract class BaseModuleController
         // Load nested hierarchical data - Load model, Helper::nested with 'parent_id', 'id'
         foreach ($this->need_nested_data as $model_name => $variable_name) {
             $nested_model = Load::model($model_name);
+            $nested_model->flush();
             $nested_model->order('order', 'ASC')->all();
             $nested_result = Helper::nested($nested_model->toArray(), 'parent_id', 'id');
-            $data[$variable_name] = $nested_result;
+            $data[$variable_name] = is_array($nested_result) ? $nested_result : [];
         }
 
         // Load content references - same table loaded multiple times with different variable names
@@ -383,7 +384,7 @@ abstract class BaseModuleController
         }
 
         if (Req::is_Post('edit')) {
-            $this->_edit($id);
+            $this->_edit($id, $d);
         }
 
         Run::import('management', '_index');
@@ -1309,6 +1310,7 @@ abstract class BaseModuleController
             $this->view->set('message', isset($this->lang[$this->module_name]['error_occurred']) ? $this->lang[$this->module_name]['error_occurred'] : 'Error Occurred!');
         } else {
             $model = Load::model($this->model_name);
+            $model->flush();
 
             // Process fields
             $this->processFieldData($model);
@@ -1360,7 +1362,7 @@ abstract class BaseModuleController
     /**
      * Internal edit processing
      */
-    protected function _edit($id = null)
+    protected function _edit($id = null, $existingRecord = null)
     {
         $isAjax = $this->isAjaxRequest();
         $validator_name = $this->module_name . '.edit';
@@ -1381,7 +1383,14 @@ abstract class BaseModuleController
             $this->view->set('error', true);
             $this->view->set('message', isset($this->lang[$this->module_name]['error_occurred']) ? $this->lang[$this->module_name]['error_occurred'] : 'Error Occurred!');
         } else {
+            // Compute pre-update menu url before modifying the model
+            $oldMenuUrl = null;
+            if (!empty($existingRecord) && $this->menu_url_pattern) {
+                $oldMenuUrl = $this->generateMenuUrl($existingRecord, false);
+            }
+
             $model = Load::model($this->model_name);
+            $model->flush();
             $model->id = $id;
 
             // Process fields
@@ -1412,7 +1421,7 @@ abstract class BaseModuleController
             // Update model
             if ($model->update('id')) {
                 // Execute post-update callback
-                $this->executeAfterUpdateCallback($model, $id);
+                $this->executeAfterUpdateCallback($model, $id, $oldMenuUrl);
 
                 $successMsg = $this->lang[$this->module_name]['message']['success']['edit'] ?? 'Record updated successfully.';
                 if ($isAjax) {
@@ -1880,8 +1889,9 @@ abstract class BaseModuleController
      */
     protected function executeAfterSaveCallback($model)
     {
-        // Handle menu integration if pattern is configured and menu is selected
-        if ($this->menu_url_pattern && Req::Post_Safe('menu') != 0) {
+        // Handle menu integration if pattern is configured and valid menu parent is selected
+        $menuParentId = (int) Req::Post_Safe('menu');
+        if ($this->menu_url_pattern && $menuParentId > 0) {
             $this->handleMenuIntegration($model, 'add');
         }
 
@@ -1928,11 +1938,12 @@ abstract class BaseModuleController
      * Execute callback after successful update (edit operation)
      * Calls afterUpdate() method which can be overridden in child classes
      */
-    protected function executeAfterUpdateCallback($model, $id)
+    protected function executeAfterUpdateCallback($model, $id, $old_url = null)
     {
-        // Handle menu integration if pattern is configured and menu is selected
-        if ($this->menu_url_pattern && Req::Post_Safe('menu') != 0) {
-            $this->handleMenuIntegration($model, 'update', $id);
+        // Handle menu integration if pattern is configured and menu is selected or existing menu item exists
+        $menuParentId = (int) Req::Post_Safe('menu');
+        if ($this->menu_url_pattern && ($menuParentId > 0 || !empty($old_url))) {
+            $this->handleMenuIntegration($model, 'update', $id, $old_url);
         }
 
         // Notify Google Indexing API of status update
@@ -1996,43 +2007,74 @@ abstract class BaseModuleController
     /**
      * Generic menu integration handler with automatic ACL support
      */
-    protected function handleMenuIntegration($model, $operation, $original_id = null)
+    protected function handleMenuIntegration($model, $operation, $original_id = null, $old_url = null)
     {
         if ($operation === 'add') {
+            $parentId = (int) Req::Post_Safe('menu');
+            if ($parentId <= 0) {
+                return;
+            }
+
             // Add new menu entry
             $menu_model = Load::model('mod_menu');
-            $menu_model->parent_id = Req::Post_Safe('menu');
-            $menu_model->name = $model->name;
-            $menu_model->lang = $model->lang;
-            $menu_model->status = $model->status;
+            $menu_model->flush();
+            $menu_model->parent_id = $parentId;
+            $menu_model->name = is_object($model) ? ($model->name ?? '') : ($model['name'] ?? '');
+            $menu_model->lang = is_object($model) ? ($model->lang ?? 'tr') : ($model['lang'] ?? 'tr');
+            $menu_model->status = is_object($model) ? ($model->status ?? 'y') : ($model['status'] ?? 'y');
             $menu_model->url = $this->generateMenuUrl($model);
+            $menu_model->order = 0;
 
             // Automatically include acl_id if model has it
-            if (isset($model->acl_id)) {
-                $menu_model->acl_id = $model->acl_id;
+            $aclId = is_object($model) ? ($model->acl_id ?? null) : ($model['acl_id'] ?? null);
+            if ($aclId !== null && $aclId !== '') {
+                $menu_model->acl_id = (int) $aclId;
             }
 
             $menu_model->save();
         } elseif ($operation === 'update' && $original_id) {
-            // Update existing menu entry if it exists
-            $original_model = Load::model($this->model_name);
-            $original_model->where_id($original_id)->gRo()->sync();
-            $old_url = $this->generateMenuUrl($original_model);
-
-            $mod_menu_model = Load::model('mod_menu');
-            if ($mod_menu_model->exists_url($old_url)) {
-                $mod_menu_model->getResultOne()->sync();
-                $mod_menu_model->name = $model->name;
-                $mod_menu_model->lang = $model->lang;
-                $mod_menu_model->status = $model->status;
-                $mod_menu_model->url = $this->generateMenuUrl($model);
-
-                // Automatically include acl_id if model has it
-                if (isset($model->acl_id)) {
-                    $mod_menu_model->acl_id = $model->acl_id;
+            // Resolve original menu entry URL if not already provided
+            if (empty($old_url)) {
+                $original_model = Load::model($this->model_name);
+                $original_model->flush();
+                $original_model->where_id($original_id)->gRo();
+                if ($original_model->getSize() > 0) {
+                    $original_model->sync();
+                    $old_url = $this->generateMenuUrl($original_model, false);
                 }
+            }
 
-                $mod_menu_model->update();
+            if (!empty($old_url)) {
+                $mod_menu_model = Load::model('mod_menu');
+                $mod_menu_model->flush();
+                if ($mod_menu_model->exists_url($old_url) && $mod_menu_model->getSize() > 0) {
+                    $mod_menu_model->getResultOne()->sync();
+
+                    $newName = is_object($model) ? ($model->name ?? null) : ($model['name'] ?? null);
+                    if ($newName !== null) {
+                        $mod_menu_model->name = $newName;
+                    }
+
+                    $newLang = is_object($model) ? ($model->lang ?? null) : ($model['lang'] ?? null);
+                    if ($newLang !== null) {
+                        $mod_menu_model->lang = $newLang;
+                    }
+
+                    $newStatus = is_object($model) ? ($model->status ?? null) : ($model['status'] ?? null);
+                    if ($newStatus !== null) {
+                        $mod_menu_model->status = $newStatus;
+                    }
+
+                    $mod_menu_model->url = $this->generateMenuUrl($model);
+
+                    // Automatically include acl_id if model has it
+                    $aclId = is_object($model) ? ($model->acl_id ?? null) : ($model['acl_id'] ?? null);
+                    if ($aclId !== null && $aclId !== '') {
+                        $mod_menu_model->acl_id = (int) $aclId;
+                    }
+
+                    $mod_menu_model->update('id');
+                }
             }
         }
     }
@@ -2049,29 +2091,40 @@ abstract class BaseModuleController
      * - {field_name|upper} - uppercase field (e.g., {name|upper})
      * - {field_name|lower} - lowercase field (e.g., {title|lower})
      */
-    protected function generateMenuUrl($model)
+    protected function generateMenuUrl($model, $preferPost = true)
     {
         if ($this->menu_url_pattern) {
             // Use dynamic placeholder replacement for all fields including lang and id
-            return $this->replaceDynamicPlaceholders($this->menu_url_pattern, $model);
+            return $this->replaceDynamicPlaceholders($this->menu_url_pattern, $model, $preferPost);
         }
+        return '';
     }
 
     /**
      * Replace dynamic field placeholders in URL pattern
      * Supports patterns like {field_name} and {field_name|transformation}
      */
-    protected function replaceDynamicPlaceholders($url, $model)
+    protected function replaceDynamicPlaceholders($url, $model, $preferPost = true)
     {
         // Match patterns like {field_name} or {field_name|transformation}
         $pattern = '/\{([a-zA-Z_]+)(\|([a-zA-Z]+))?\}/';
 
-        return preg_replace_callback($pattern, function ($matches) use ($model) {
+        return preg_replace_callback($pattern, function ($matches) use ($model, $preferPost) {
             $field_name = $matches[1];
             $transformation = isset($matches[3]) ? $matches[3] : null;
 
-            // Get field value (prefer POST data, fallback to model)
-            $field_value = Req::Post($field_name) ?: (isset($model->$field_name) ? $model->$field_name : '');
+            // Get field value (prefer POST data only when preferPost is true, fallback to model)
+            if ($preferPost && Req::Post($field_name) !== null && Req::Post($field_name) !== '') {
+                $field_value = Req::Post($field_name);
+            } else {
+                if (is_array($model)) {
+                    $field_value = $model[$field_name] ?? '';
+                } elseif (is_object($model)) {
+                    $field_value = isset($model->$field_name) ? $model->$field_name : '';
+                } else {
+                    $field_value = '';
+                }
+            }
 
             // Apply transformation if specified
             if ($transformation) {
