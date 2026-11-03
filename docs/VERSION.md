@@ -1,5 +1,18 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.23 (2026-11-04)
+- **Public Breadcrumb Navigation Restoration & Detail Polish (`templates/amed/static/css/custom.css`, `templates/amed/static/css/detail-foundation.css`, `tools/min_css_guard.py`)**:
+  - **Global `.breadcrumb` Component Restoration (`custom.css`, `custom.min.css`, `homepage-all.min.css`)**:
+    - Identified that `bootstrap.min.css` was compiled without the Bootstrap 5 `.breadcrumb` component, causing `<ol class="breadcrumb">` across public templates to fall back to the browser's default ordered list styling (vertical numbered list `1. 2. 3. 4.`).
+    - Implemented complete horizontal flexbox styles in `custom.css` (`display: flex; flex-wrap: wrap; align-items: center; list-style: none; padding: 0; margin: 0;`), inline-flex `.breadcrumb-item` alignment, and `›` chevron dividers (`.breadcrumb-item + .breadcrumb-item::before { content: '›'; }`).
+  - **News Detail Breadcrumb Wrap Hardening (`detail-foundation.css`)**:
+    - Polished `.detail-breadcrumb-wrap` within `.detail-card`: optimized padding (`0.85rem 1.35rem` desktop, `0.75rem 1rem` mobile), added smooth color transitions and primary underline hovers for parent link navigation.
+    - Implemented active item headline truncation (`max-width: 420px` desktop, `max-width: 220px` mobile, `overflow: hidden; text-overflow: ellipsis; white-space: nowrap;`) to prevent long article titles from breaking layout proportions.
+  - **Deterministic CSS Minification & Bundle Parity (`tools/min_css_guard.py`)**:
+    - Recompiled and verified `custom.min.css` (421/421 rule blocks) and standalone `homepage-all.min.css` (1545/1545 rule blocks) with zero missing or stale rules via `tools/min_css_guard.py --build`.
+- **Agent Workflow Optimization (`AGENTS.md`)**:
+  - Removed restrictive rule ("User Question vs Execution Rule") to eliminate unnecessary back-and-forth confirmations, enabling immediate root-cause investigation, diagnostic tool execution, and code fixes when bugs or URLs are submitted.
+
 ## v1.0.22 (2026-11-03)
 - **Database-Backed Policy & Statutory Pages (`mod_page`), Hierarchical Footer Tree & Newsroom Attribution (`mod/index/helper/legal.helper.php`, `templates/amed/index/legal/`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`, `.agents/skills/kevanger/SKILL.md`)**:
   - **Dynamic `mod_page` Resolution for Statutory & Policy Routes (`mod/index/helper/legal.helper.php`, `templates/amed/index/legal/*.twig`)**:
