@@ -728,28 +728,36 @@ class McpNewsTools extends McpCrudToolsBase
             $reqUserId = (int) $args['user_id'];
             $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
             if ($db->getSize() > 0) {
-                $uRow = $db->getRow();
+                $uRow = $db->getResultOne()->toArray();
                 if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
                     $targetUsername = 'habermerkezi';
                 } else {
                     $authorUserId = (int) $uRow['id'];
                 }
+            } else {
+                $targetUsername = 'habermerkezi';
             }
         }
         if ($targetUsername !== '') {
             $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
             if ($db->getSize() > 0) {
-                $userRow = $db->getRow();
+                $userRow = $db->getResultOne()->toArray();
                 $authorUserId = (int) $userRow['id'];
+            } else {
+                $db->fetch_array("SELECT id FROM mod_user WHERE username = 'habermerkezi' AND status = 'y' LIMIT 1");
+                if ($db->getSize() > 0) {
+                    $deskRow = $db->getResultOne()->toArray();
+                    $authorUserId = (int) $deskRow['id'];
+                }
             }
         } else {
             $db->fetch_array("SELECT username FROM mod_user WHERE id = " . (int) $authorUserId . " LIMIT 1");
             if ($db->getSize() > 0) {
-                $actRow = $db->getRow();
+                $actRow = $db->getResultOne()->toArray();
                 if (strtolower((string) ($actRow['username'] ?? '')) === 'admin') {
                     $db->fetch_array("SELECT id FROM mod_user WHERE username = 'habermerkezi' AND status = 'y' LIMIT 1");
                     if ($db->getSize() > 0) {
-                        $deskRow = $db->getRow();
+                        $deskRow = $db->getResultOne()->toArray();
                         $authorUserId = (int) $deskRow['id'];
                     }
                 }
@@ -889,19 +897,27 @@ class McpNewsTools extends McpCrudToolsBase
                 $reqUserId = (int) $args['user_id'];
                 $db->fetch_array("SELECT id, username FROM mod_user WHERE id = " . $reqUserId . " AND status = 'y' LIMIT 1");
                 if ($db->getSize() > 0) {
-                    $uRow = $db->getRow();
+                    $uRow = $db->getResultOne()->toArray();
                     if (strtolower((string) ($uRow['username'] ?? '')) === 'admin') {
                         $targetUsername = 'habermerkezi';
                     } else {
                         $model->user_id = (int) $uRow['id'];
                     }
+                } else {
+                    $targetUsername = 'habermerkezi';
                 }
             }
             if ($targetUsername !== '') {
                 $db->fetch_array("SELECT id FROM mod_user WHERE username = '" . Obuilder::cc($targetUsername) . "' AND status = 'y' LIMIT 1");
                 if ($db->getSize() > 0) {
-                    $userRow = $db->getRow();
+                    $userRow = $db->getResultOne()->toArray();
                     $model->user_id = (int) $userRow['id'];
+                } else {
+                    $db->fetch_array("SELECT id FROM mod_user WHERE username = 'habermerkezi' AND status = 'y' LIMIT 1");
+                    if ($db->getSize() > 0) {
+                        $deskRow = $db->getResultOne()->toArray();
+                        $model->user_id = (int) $deskRow['id'];
+                    }
                 }
             }
         }

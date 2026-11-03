@@ -389,6 +389,17 @@ class Database
         return $this;
     }
 
+    public function getRow($build = false, $fetch = false)
+    {
+        if ($build) {
+            $this->build();
+        }
+        if ($fetch) {
+            $this->fetch_array();
+        }
+        return isset($this->_db_result[self::$database][0]) ? $this->_db_result[self::$database][0] : null;
+    }
+
     public function gR()
     {
         $this->build();

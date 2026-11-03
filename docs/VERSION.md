@@ -1,5 +1,13 @@
 # Amed Framework — Bulletin CMS Version History
 
+## v1.0.24 (2026-11-04)
+- **Database Single-Row Retrieval & MCP Author Attribution Hardening (`lib/Database/Database.php`, `lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:
+  - **Native `Database::getRow()` Helper (`lib/Database/Database.php`)**:
+    - Added `getRow($build = false, $fetch = false)` to `Database`, returning the first associative row from `$this->_db_result[self::$database][0]` (or `null` when empty) to prevent undefined method fatals when querying single records via `Load::lib('Database')`.
+  - **MCP News & Publication Author Resolution (`lib/McpNewsTools.class.php`, `lib/McpPublicationTools.class.php`)**:
+    - Replaced `$db->getRow()` calls in `createNews()`, `updateNews()`, `createPublication()`, and `updatePublication()` with `$db->getResultOne()->toArray()`.
+    - Enforced deterministic fallback to the `habermerkezi` newsroom account whenever a supplied `username` or `user_id` is not found or resolves to `admin`, ensuring articles and publications are never attributed to the `admin` account (`user_id = 1`).
+
 ## v1.0.23 (2026-11-04)
 - **Public Breadcrumb Navigation Restoration & Detail Polish (`templates/amed/static/css/custom.css`, `templates/amed/static/css/detail-foundation.css`, `tools/min_css_guard.py`)**:
   - **Global `.breadcrumb` Component Restoration (`custom.css`, `custom.min.css`, `homepage-all.min.css`)**:
